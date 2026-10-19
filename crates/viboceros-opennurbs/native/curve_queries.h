@@ -80,3 +80,46 @@ extern "C" int32_t vibo_curve_plane_normal(uint32_t degree, size_t count,
   }
   return 0;
 }
+
+// Explicit analytic approximation; general affine geometry transforms retain
+// their exact NURBS image instead. ON_Circle::Transform is the public policy
+// used by native parameter editing of analytic curves inside block references.
+extern "C" int32_t vibo_transform_analytic_circle(const double* frame,
+    const double* matrix, double* result, char* error, size_t capacity) {
+  set_error(error, capacity, "");
+  try {
+    if (!frame || !matrix || !result) {
+      set_error(error, capacity, "Invalid analytic circle buffers"); return 0;
+    }
+    for (int i=0; i<10; ++i) if (!std::isfinite(frame[i])) {
+      set_error(error, capacity, "Nonfinite analytic circle frame"); return 0;
+    }
+    ON_Xform xform;
+    for (int i=0; i<16; ++i) {
+      if (!std::isfinite(matrix[i])) {
+        set_error(error, capacity, "Nonfinite analytic circle transform"); return 0;
+      }
+      xform[i/4][i%4] = matrix[i];
+    }
+    if (matrix[12]!=0. || matrix[13]!=0. || matrix[14]!=0. || matrix[15]!=1.) {
+      set_error(error, capacity, "Analytic circle transform must be affine"); return 0;
+    }
+    vibo_begin_open_nurbs();
+    ON_Circle circle(ON_Plane(ON_3dPoint(frame), ON_3dVector(frame+3), ON_3dVector(frame+6)), frame[9]);
+    if (!circle.IsValid() || !circle.Transform(xform) || !circle.IsValid()) {
+      set_error(error, capacity, "Analytic circle transformation failed"); return 0;
+    }
+    for (int i=0; i<3; ++i) {
+      result[i] = circle.plane.origin[i];
+      result[3+i] = circle.plane.xaxis[i];
+      result[6+i] = circle.plane.zaxis[i];
+    }
+    result[9] = circle.radius;
+    return 1;
+  } catch (const std::exception& exception) {
+    set_error(error, capacity, std::string("Analytic circle transform failed: ") + exception.what());
+  } catch (...) {
+    set_error(error, capacity, "Unknown analytic circle transform failure");
+  }
+  return 0;
+}

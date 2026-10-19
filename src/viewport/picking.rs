@@ -33,6 +33,15 @@ impl PickHit {
         self.depth == other.depth
     }
 
+    pub(super) fn is_ambiguous_without_depth(self, other: Self) -> bool {
+        self.priority == other.priority && (self.distance - other.distance).abs() <= 0.75
+    }
+
+    pub(super) fn is_curve_surface_overlap(self, other: Self) -> bool {
+        matches!((self.priority, other.priority), (1, 2) | (2, 1))
+            && (self.distance - other.distance).abs() <= 0.75
+    }
+
     pub(super) fn rank(self, other: Self) -> std::cmp::Ordering {
         self.distance
             .total_cmp(&other.distance)
@@ -376,6 +385,46 @@ impl Viewport {
         mesh: &TriangleMesh,
     ) -> Option<(PickHit, usize, Option<Point3>)> {
         let mut nearest = None;
+        self.visit_mesh_face_hits(pointer, rect, mesh, |hit, face_index, points, screen| {
+            if nearest
+                .is_none_or(|(best, _, _, _): (PickHit, usize, _, _)| hit.is_better_than(best))
+            {
+                nearest = Some((hit, face_index, points, screen));
+            }
+        });
+        nearest.map(|(hit, face_index, points, screen)| {
+            let world_point = triangle_world_point(
+                pointer,
+                screen,
+                points,
+                points.map(|point| self.view_depth(point)),
+                !self.kind.is_parallel(),
+            );
+            (hit, face_index, world_point)
+        })
+    }
+    pub(super) fn mesh_face_capture_hits(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        mesh: &TriangleMesh,
+    ) -> Vec<(PickHit, usize)> {
+        let mut hits = Vec::new();
+        self.visit_mesh_face_hits(pointer, rect, mesh, |hit, index, _, _| {
+            if hit.distance.is_finite() && hit.distance <= PICK_CAPTURE_PIXELS {
+                hits.push((hit, index));
+            }
+        });
+        hits
+    }
+
+    fn visit_mesh_face_hits(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        mesh: &TriangleMesh,
+        mut visit: impl FnMut(PickHit, usize, [Point3; 3], [Pos2; 3]),
+    ) {
         let mut triangle_index = 0;
         for (face_index, face) in mesh.faces().iter().enumerate() {
             for _ in 0..if face.is_triangle() { 1 } else { 2 } {
@@ -422,24 +471,10 @@ impl Viewport {
                                     )),
                             )
                         };
-                    if nearest.is_none_or(|(best, _, _, _): (PickHit, usize, _, _)| {
-                        hit.is_better_than(best)
-                    }) {
-                        nearest = Some((hit, face_index, points, [first, second, third]));
-                    }
+                    visit(hit, face_index, points, [first, second, third]);
                 }
             }
         }
-        nearest.map(|(hit, face_index, points, screen)| {
-            let world_point = triangle_world_point(
-                pointer,
-                screen,
-                points,
-                points.map(|point| self.view_depth(point)),
-                !self.kind.is_parallel(),
-            );
-            (hit, face_index, world_point)
-        })
     }
 }
 

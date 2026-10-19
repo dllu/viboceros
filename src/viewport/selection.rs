@@ -769,7 +769,7 @@ impl Viewport {
         )
     }
 
-    fn pick_display_geometry(
+    pub(super) fn pick_display_geometry(
         &self,
         pointer: Pos2,
         rect: Rect,

@@ -301,3 +301,172 @@ fn automatic_size_handles_an_interior_collapsed_isocurve_and_rejects_zero_width_
     assert!(!doc.can_undo());
     assert!(doc.can_redo());
 }
+
+fn block_document() -> (CommandRegistry, Document, ObjectId) {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let file = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../tools/rhino_oracle/fixtures/reparameterize_blocks/line_explicit.3dm");
+    registry
+        .execute(&mut doc, &format!("Open \"{}\"", file.display()))
+        .unwrap();
+    let root = doc
+        .objects()
+        .find(|o| o.attributes().name() == Some("Root0"))
+        .unwrap()
+        .id();
+    doc.clear_selection();
+    doc.clear_history().unwrap();
+    (registry, doc, root)
+}
+#[test]
+fn block_member_paths_copy_placed_geometry_with_fresh_attributes_and_preserved_definitions() {
+    let (registry, mut doc, root) = block_document();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    let definitions = doc.block_definitions().cloned().collect::<Vec<_>>();
+    for bad in [
+        "Member=",
+        "Member=2",
+        "Member=0/0",
+        "Member=-1",
+        "Member=0 Member=1",
+    ] {
+        assert!(
+            registry
+                .execute(
+                    &mut doc,
+                    &format!("Reparameterize Object={root} {bad} Automatic")
+                )
+                .is_err()
+        );
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+        assert!(!doc.can_undo());
+    }
+    assert!(
+        registry
+            .execute(
+                &mut doc,
+                &format!("Reparameterize Surface={root} Member=0 Automatic")
+            )
+            .is_err()
+    );
+    registry
+        .execute(
+            &mut doc,
+            &format!("Reparameterize Object={root} Member=1 -2 8"),
+        )
+        .unwrap();
+    for source in &before {
+        assert_eq!(doc.object(source.id()), Some(source));
+    }
+    assert_eq!(
+        doc.block_definitions().cloned().collect::<Vec<_>>(),
+        definitions
+    );
+    let copy = doc
+        .objects()
+        .find(|o| !before.iter().any(|s| s.id() == o.id()))
+        .unwrap()
+        .clone();
+    assert_eq!(copy.geometry().curve_ref().unwrap().domain(), -2. ..=8.);
+    let curve = copy.geometry().curve_ref().unwrap();
+    assert!(
+        curve
+            .evaluate(-2.)
+            .unwrap()
+            .distance_to(Point3::try_new(30., 0., 0.).unwrap())
+            .unwrap()
+            < 1e-12
+    );
+    assert_eq!(
+        copy.attributes(),
+        &ObjectAttributes::on_layer(doc.current_layer_id())
+    );
+    assert!(copy.group_ids().is_empty());
+    assert!(!doc.is_selected(copy.id()));
+    assert_eq!(
+        copy.geometry_user_text()
+            .get("GeometryCode")
+            .map(String::as_str),
+        Some("alternate")
+    );
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!doc.can_undo());
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.object(copy.id()), Some(&copy));
+}
+#[test]
+fn staged_block_batches_reject_later_bad_paths_and_stale_sources_without_partial_copies() {
+    for change in [
+        "path",
+        "prototype_visibility",
+        "root_visibility",
+        "layer",
+        "metadata",
+        "tolerance",
+    ] {
+        let (_, mut doc, root) = block_document();
+        let references = [0, 1].map(|member| ReparameterizeReference {
+            object: root,
+            member: Some(vec![member]),
+            face: None,
+        });
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        if change == "path" {
+            let refs = [
+                references[0].clone(),
+                ReparameterizeReference {
+                    member: Some(vec![2]),
+                    ..references[1].clone()
+                },
+            ];
+            assert!(
+                ReparameterizeSelection::prepare(&doc, refs, ReparameterizeDomains::Automatic)
+                    .is_err()
+            );
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+            continue;
+        }
+        let selection = ReparameterizeSelection::prepare(
+            &doc,
+            references,
+            ReparameterizeDomains::Explicit(vec![-2., 8.]),
+        )
+        .unwrap();
+        match change {
+            "prototype_visibility" => {
+                let Geometry::BlockInstance(instance) = doc.object(root).unwrap().geometry() else {
+                    panic!()
+                };
+                let layer = instance.members()[0].attributes.layer_id();
+                doc.set_layer_visibility(layer, false).unwrap();
+            }
+            "root_visibility" => {
+                doc.set_objects_visibility([root], false).unwrap();
+            }
+            "layer" => {
+                let layer = doc
+                    .add_layer("Another", viboceros_document::ColorRgb::new(1, 2, 3))
+                    .unwrap();
+                doc.set_current_layer(layer).unwrap();
+            }
+            "metadata" => {
+                doc.set_object_geometry_user_text([root], "Changed", Some("yes"))
+                    .unwrap();
+            }
+            _ => {
+                doc.set_tolerance(Tolerance::try_new(1e-5, 1e-12, 1e-8).unwrap());
+            }
+        }
+        let before_commit = doc.objects().cloned().collect::<Vec<_>>();
+        let label = doc.undo_label().map(str::to_owned);
+        assert!(selection.commit(&mut doc).is_err(), "{change}");
+        assert_eq!(
+            doc.objects().cloned().collect::<Vec<_>>(),
+            before_commit,
+            "{change}"
+        );
+        assert_eq!(doc.undo_label(), label.as_deref());
+    }
+}

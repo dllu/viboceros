@@ -6,6 +6,13 @@ use std::ffi::{c_char, c_int};
 pub struct CurveQueryError(pub String);
 
 unsafe extern "C" {
+    fn vibo_transform_analytic_circle(
+        frame: *const f64,
+        matrix: *const f64,
+        result: *mut f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_arc_through_points(
         points: *const f64,
         found: *mut c_int,
@@ -25,6 +32,49 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+}
+
+/// OpenNURBS' analytic circle approximation under a general affine transform.
+/// Input is origin/X/Y/radius; output is origin/X/normal/radius. Nonuniform
+/// placements retain a circle, whose radius follows the transformed plane area.
+pub fn transform_analytic_circle(
+    frame: [f64; 10],
+    matrix: [[f64; 4]; 4],
+) -> Result<[f64; 10], CurveQueryError> {
+    if frame
+        .iter()
+        .chain(matrix.as_flattened())
+        .any(|v| !v.is_finite())
+        || frame[9] <= 0.
+    {
+        return Err(CurveQueryError(
+            "Invalid analytic circle transform input".into(),
+        ));
+    }
+    let mut output = [0.; 10];
+    let mut error = [0_u8; 1024];
+    // Fixed live buffers; the bridge transforms an owned circle synchronously.
+    let status = unsafe {
+        vibo_transform_analytic_circle(
+            frame.as_ptr(),
+            matrix.as_flattened().as_ptr(),
+            output.as_mut_ptr(),
+            error.as_mut_ptr().cast(),
+            error.len(),
+        )
+    };
+    if status != 1 {
+        let end = error.iter().position(|b| *b == 0).unwrap_or(error.len());
+        return Err(CurveQueryError(
+            String::from_utf8_lossy(&error[..end]).into_owned(),
+        ));
+    }
+    if output.iter().any(|v| !v.is_finite()) || output[9] <= 0. {
+        return Err(CurveQueryError(
+            "Invalid transformed analytic circle".into(),
+        ));
+    }
+    Ok(output)
 }
 
 /// Public OpenNURBS arc construction, retaining its plane and angular interval.
@@ -142,6 +192,33 @@ pub fn curve_plane_normal(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn analytic_circle_transform_uses_plane_area_and_rejects_invalid_buffers() {
+        let frame = [0., 0., 0., 1., 0., 0., 0., 1., 0., 2.];
+        let transform = [
+            [-2., 0.3, 0., 7.],
+            [0., 0.5, 0., 4.],
+            [0., 0., 1., 0.],
+            [0., 0., 0., 1.],
+        ];
+        let result = transform_analytic_circle(frame, transform).unwrap();
+        assert_eq!(&result[..3], &[7., 4., 0.]);
+        assert_eq!(&result[3..6], &[-1., 0., 0.]);
+        assert_eq!(&result[6..9], &[0., 0., -1.]);
+        assert!((result[9] - 2.).abs() < 1e-14);
+        for kind in 0..4 {
+            let mut frame = frame;
+            let mut transform = transform;
+            match kind {
+                0 => frame[0] = f64::NAN,
+                1 => frame[9] = 0.,
+                2 => transform[0][0] = f64::INFINITY,
+                _ => transform[3][0] = 1.,
+            }
+            assert!(transform_analytic_circle(frame, transform).is_err());
+        }
+    }
     #[test]
     fn public_three_point_arc_returns_an_owned_plane_and_rejects_invalid_points() {
         let arc = arc_through_points([[1., 0., 0.], [0., 1., 0.], [-1., 0., 0.]])

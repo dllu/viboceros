@@ -168,6 +168,8 @@ int32_t vibo_curve_plane_normal(uint32_t degree, size_t control_count,
 // found=0 means construction failed; result is center/X/Y/Z/radius/sweep.
 int32_t vibo_arc_through_points(const double* points, int32_t* found,
     double* result, char* error, size_t capacity);
+int32_t vibo_transform_analytic_circle(const double* frame, const double* matrix,
+    double* result, char* error, size_t capacity);
 
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
                       char* error, size_t error_capacity);

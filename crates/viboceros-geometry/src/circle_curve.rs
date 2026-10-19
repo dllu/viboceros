@@ -248,4 +248,39 @@ impl Circle3 {
                 domain: self.domain,
             }))
     }
+
+    /// OpenNURBS' analytic circle approximation. A nonuniform affine map uses
+    /// the transformed plane area to scale the radius. This deliberately differs
+    /// from the exact elliptic NURBS image used for ordinary geometry transforms.
+    pub fn transformed_as_circle(
+        self,
+        transform: AffineTransform3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        transform.orientation_reversing()?;
+        let mut frame = [0.; 10];
+        frame[..3].copy_from_slice(&self.center().to_array());
+        frame[3..6].copy_from_slice(&self.x_axis().as_vector().to_array());
+        frame[6..9].copy_from_slice(&self.y_axis().as_vector().to_array());
+        frame[9] = self.radius();
+        let mut matrix = [[0.; 4]; 4];
+        let linear = transform.linear_rows();
+        let translation = transform.translation().to_array();
+        for i in 0..3 {
+            matrix[i][..3].copy_from_slice(&linear[i]);
+            matrix[i][3] = translation[i];
+        }
+        matrix[3][3] = 1.;
+        let result = viboceros_opennurbs::transform_analytic_circle(frame, matrix)?;
+        let direction =
+            |i| Vector3::try_new(result[i], result[i + 1], result[i + 2])?.normalized_nonzero();
+        Self::try_from_frame(
+            Point3::try_new(result[0], result[1], result[2])?,
+            result[9],
+            direction(3)?,
+            direction(6)?,
+            tolerance,
+        )?
+        .try_reparameterized(self.domain())
+    }
 }

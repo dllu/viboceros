@@ -41,6 +41,8 @@ fn curve_pre_and_postselection_stage_numbers_and_commit_one_edit() {
                 object_id: Some(id),
                 mode: SelectionMode::Replace,
             });
+            assert!(app.picking_reparameterize());
+            enter(&mut app, "");
         }
         assert!(!app.picking_reparameterize());
         assert!(app.viewport_object_filter().is_none());
@@ -73,6 +75,7 @@ fn queued_automatic_and_partial_initial_values_use_the_picked_curve() {
         object_id: Some(id),
         mode: SelectionMode::Replace,
     });
+    enter(&mut app, "");
     assert!(app.reparameterize_prompt.is_none());
     assert_eq!(
         app.document
@@ -212,6 +215,7 @@ fn curve_over_surface_uses_overlap_choice_before_the_face_hit() {
         object_id: Some(curve),
         mode: SelectionMode::Replace,
     });
+    enter(&mut app, "");
     enter(&mut app, "-2 8");
     assert_eq!(
         app.document
@@ -228,7 +232,7 @@ fn curve_over_surface_uses_overlap_choice_before_the_face_hit() {
 
 #[test]
 fn actual_viewport_click_picks_the_front_face_without_selecting_the_whole_object() {
-    use crate::viewport::{FacePickMode, ViewKind, Viewport, ViewportInput};
+    use crate::viewport::{DisplayMode, ParametricPick, ViewKind, Viewport, ViewportInput};
     use viboceros_geometry::{Brep, NurbsSurface};
     fn frame(
         app: &VibocerosApp,
@@ -264,9 +268,7 @@ fn actual_viewport_click_picks_the_front_face_without_selecting_the_whole_object
                     ViewportInput {
                         object_filter: app.viewport_object_filter(),
                         selection_allowed_objects: allowed.as_ref(),
-                        face_pick: app
-                            .picking_reparameterize()
-                            .then_some(FacePickMode::SurfaceAndBrepAny),
+                        parametric_pick: app.picking_reparameterize(),
                         component_preselection: app.component_preselection_available(),
                         ..Default::default()
                     },
@@ -327,6 +329,7 @@ fn actual_viewport_click_picks_the_front_face_without_selecting_the_whole_object
         let before = app.document.object(id).unwrap().clone();
         enter(&mut app, "Reparameterize");
         let mut view = Viewport::new(ViewKind::Top);
+        view.display_mode = DisplayMode::Shaded;
         let context = egui::Context::default();
         let mut time = 0.;
         frame(&app, &mut view, &context, &mut time, vec![]);
@@ -361,17 +364,21 @@ fn actual_viewport_click_picks_the_front_face_without_selecting_the_whole_object
                 modifiers: Default::default(),
             }],
         );
-        assert_eq!(output.face_click, Some((id, 1)));
+        assert_eq!(
+            output.parametric_click,
+            Some(vec![ParametricPick {
+                object: id,
+                member: None,
+                face: Some(1)
+            }])
+        );
         assert!(app.handle_viewport_action(output));
+        assert!(app.picking_reparameterize());
+        enter(&mut app, "");
         assert!(!app.picking_reparameterize());
         assert_eq!(
-            app.reparameterize_prompt
-                .as_ref()
-                .unwrap()
-                .highlight()
-                .unwrap()
-                .index,
-            1
+            app.reparameterize_prompt.as_ref().unwrap().highlights()[0].face,
+            Some(1)
         );
         assert_eq!(app.document.object(id).unwrap(), &before);
         assert_eq!(app.document.is_selected(id), constrained);
@@ -490,6 +497,7 @@ fn recorded_surface_getters_preserve_the_command_results_and_history() {
                     }),
                     ..Default::default()
                 });
+                enter(&mut app, "");
             }
             assert!(!app.picking_reparameterize(), "{name}");
             for (i, value) in values.iter().enumerate() {
@@ -569,9 +577,10 @@ fn enter_defaults_and_mixed_values_replay_five_actual_rhino_getters() {
                     .as_ref()
                     .unwrap()
                     .hint()
-                    .contains("polysurface")
+                    .contains("chosen object")
             );
             app.accept_component_face_hit(id, face, None);
+            enter(&mut app, "");
         }
         for input in v["inputs"].as_array().unwrap() {
             assert_eq!(
@@ -634,5 +643,67 @@ fn enter_defaults_and_mixed_values_replay_five_actual_rhino_getters() {
             enter(&mut app, "Redo");
             assert_eq!(app.document.object(id).unwrap(), &after, "{name}: redo");
         }
+    }
+}
+
+mod blocks;
+
+#[test]
+fn multiple_curve_getters_share_values_and_require_matching_defaults() {
+    for preselected in [false, true] {
+        let (mut app, first) = curve_app();
+        app.execute_command("Line 10,0,0 13,4,0");
+        let second = app
+            .document
+            .objects()
+            .find(|o| o.id() != first)
+            .unwrap()
+            .id();
+        app.execute_command(&format!("Reparameterize Object={second} -4 9"));
+        app.document.clear_history().unwrap();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        if preselected {
+            app.document.select_all();
+        }
+        enter(&mut app, "Reparameterize");
+        if !preselected {
+            for id in [first, second] {
+                app.apply_selection_click(SelectionClick {
+                    object_id: Some(id),
+                    mode: SelectionMode::Replace,
+                });
+            }
+            assert!(app.picking_reparameterize());
+            enter(&mut app, "");
+        }
+        let hint = app
+            .reparameterize_prompt
+            .as_ref()
+            .unwrap()
+            .hint()
+            .to_owned();
+        assert!(!hint.contains('<'));
+        enter(&mut app, "");
+        assert_eq!(app.reparameterize_prompt.as_ref().unwrap().hint(), hint);
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "-2");
+        enter(&mut app, "8");
+        for id in [first, second] {
+            assert_eq!(
+                app.document
+                    .object(id)
+                    .unwrap()
+                    .geometry()
+                    .curve_ref()
+                    .unwrap()
+                    .domain(),
+                -2. ..=8.
+            );
+        }
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert!(!app.document.can_undo());
+        enter(&mut app, "Redo");
+        assert!(app.reparameterize_prompt.is_none());
     }
 }

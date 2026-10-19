@@ -263,7 +263,7 @@ pub(crate) fn mesh_face_outline(
         .collect()
 }
 
-fn face_edges(geometry: &Geometry, face: usize) -> Vec<usize> {
+pub(super) fn face_edges(geometry: &Geometry, face: usize) -> Vec<usize> {
     match geometry {
         Geometry::NurbsSurface(_) if face == 0 => (0..4).collect(),
         Geometry::Brep(brep) => brep.faces().get(face).map_or_else(Vec::new, |face| {

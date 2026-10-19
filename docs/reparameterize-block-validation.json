@@ -1,0 +1,301 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "c89acbab3fe7a208d66244c41ba331d08cd3143d",
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "change": "Reparameterize multiple curves or surface references with shared numeric getters; copy placed block geometry with fresh current-layer attributes, immutable definitions and one history step. Native analytic-circle and reflected-Brep policies are isolated from exact display geometry.",
+  "native_reference": {
+    "engine_version": "8.32.26160.13001",
+    "cases": 21,
+    "successful": 19,
+    "canceled": 1,
+    "mixed_rejected": 1,
+    "copies": 25,
+    "tolerance": 1e-08,
+    "maximum_domain_or_sample_error": 1.4210854715202004e-14,
+    "record": "tools/rhino_oracle/observations/reparameterize_blocks.json",
+    "request": "tools/rhino_oracle/observations/reparameterize_blocks.request.json",
+    "complete_response": "tools/rhino_oracle/observations/reparameterize_blocks.raw.json.gz",
+    "source_and_fixture_hashes": "Stored in the replay record provenance; verified against final capture sources and all 21 shared 3dm files."
+  },
+  "completed_runs": [
+    {
+      "name": "app-full",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-app-full.log.gz",
+      "test_targets": [
+        {
+          "passed": 1397,
+          "failed": 0,
+          "ignored": 19
+        }
+      ],
+      "source_scope": "Broad run before the final shared-default guard and native reflected-copy face-flag correction. Final-source focused UI, command replay and Clippy runs follow."
+    },
+    {
+      "name": "ui-portable-complete",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "reparameterize"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-ui-portable-complete.log.gz",
+      "test_targets": [
+        {
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "ui-native-final",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "reparameterize"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-ui-native-final.log.gz",
+      "test_targets": [
+        {
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "command-verified",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "reparameterize"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-command-verified.log.gz",
+      "test_targets": [
+        {
+          "passed": 13,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "native-circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-opennurbs",
+        "--lib",
+        "analytic_circle_transform"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-native-circle.log.gz",
+      "test_targets": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "picking-final",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::parametric_reference"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-picking-final.log.gz",
+      "test_targets": [
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "source_scope": "Picker source unchanged after this run; the later copy-orientation correction is exercised by both final integration replay runs."
+    },
+    {
+      "name": "portable-replay-complete",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "reparameterize_blocks",
+        "--test",
+        "reparameterize_faces",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-portable-replay-complete.log.gz",
+      "test_targets": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "native-replay-complete",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "reparameterize_blocks",
+        "--test",
+        "reparameterize_faces",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-native-replay-complete.log.gz",
+      "test_targets": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "python-final",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_worker",
+        "tools.rhino_oracle.test_reparameterize_block_probe",
+        "tools.rhino_oracle.test_structural_sdk",
+        "tools.rhino_oracle.test_worker_exit"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-python-final.log.gz",
+      "passed": 131
+    },
+    {
+      "name": "clippy-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-clippy-final.log.gz"
+    },
+    {
+      "name": "fmt-final",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-fmt-final.log.gz"
+    },
+    {
+      "name": "final-capture",
+      "command": [
+        "tools/rhino_oracle/run_headless.sh",
+        "exec",
+        "env",
+        "PYTHONPATH=.",
+        "python3",
+        "-m",
+        "tools.rhino_oracle.generate_reparameterize_blocks"
+      ],
+      "status": 0,
+      "log": "docs/reparameterize-block-final-capture.log.gz"
+    }
+  ],
+  "source_hashes": {
+    "README.md": "98311e27786414527b0d7b6896c7df71ea9beb6f8915a607814c34afc96d1d96",
+    "crates/viboceros-command/src/curve_domain.rs": "1847145ba85bd9172870de869bb1b12500a06f6d79123dd57e2d2b1aa39438a6",
+    "crates/viboceros-command/src/curve_domain/reparameterize.rs": "e189d541ef970d889756f6ce83dd89bd7cb65b85f626e8e0c7985414fb879344",
+    "crates/viboceros-command/src/curve_domain/reparameterize/tests.rs": "d8206c57809f4c3dbf49f2792ba1a462a4481aa28ff38fad490061fd0d9a67ee",
+    "crates/viboceros-command/src/lib.rs": "84dbf67175191a0e9cf513d98a75900d826f9007f22b41a1062613d42fd12978",
+    "crates/viboceros-command/tests/reparameterize_blocks.rs": "220a8f1a6d4ff33080f8626bd914be243b4209d400d559103805541c7817defa",
+    "crates/viboceros-geometry/src/circle_curve.rs": "84dc41fd0fdf689dacbfbaed75e5b6c4ac8a5035b1fed323599781d9d6e3e696",
+    "crates/viboceros-opennurbs/native/curve_queries.h": "c46509fb26fa91a801fe85e48289280c9f7763c3abe0262386c72b6833dfdbeb",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "a29b2f337c9a142dfe989bd4c11adb3395e36daac915ebf2e6365117a7d77c41",
+    "crates/viboceros-opennurbs/src/curve.rs": "9bb19dfcea4fbd29b8b0dc733c14aaf80bb91c67715d361241c87ca047492ff3",
+    "crates/viboceros-opennurbs/src/lib.rs": "cdeabdd4ba8743ec9ed70bf7fd9a65ccb7e02e567fc5c2b824d0da9685d5abd5",
+    "docs/commands/reparameterize.md": "6cc30da11a4ba2db8bc0a4f942a9acb33b34c26775e1475a568af4aede497cfb",
+    "src/app.rs": "41be91e7513571b9b7e95ba05c78b653f6c320a13a612c1b82a0e12b2556a6f7",
+    "src/app/reparameterize.rs": "653f6fd2f38e439145b20c1b5cee0dc7376a9cb1409d342b8e6c45fa8c28960c",
+    "src/app/tests/reparameterize.rs": "c6a09a9578a8cff02b96c886b2a8d586b81303091389b9f587e1a309bd5c5f8d",
+    "src/app/tests/reparameterize/blocks.rs": "aa4812396f6638349580899e9acf85e378b55b89d1a6c6af44f3e46d21684995",
+    "src/viewport.rs": "daca215745aba4bad02f9f094cfd1e865510dd5f5c0cdedb2e05e5d7a4327152",
+    "src/viewport/component_picking.rs": "feba8f435d8d668aa62dd69422dda79ecf04432bd7b29ecbc609bfaee7f379f3",
+    "src/viewport/parametric_reference.rs": "c79c9dafe845592ea314e00950035ecdcd0db3799a92b993434ff989862cd575",
+    "src/viewport/picking.rs": "ac8f950c219f39f4e06853c492de18939222ab152f955d8dcb89473f09e79278",
+    "src/viewport/selection.rs": "e0539b64fbd2ce8559f6f80d98c0adcbe76c67d1c566af937bc6caaeaf3f6179",
+    "tools/rhino_oracle/client.py": "6b828d31268da9d716001a303e8d500cf3441f915fe69cbf0ef64df51daa0251",
+    "tools/rhino_oracle/conic_getter_input.py": "480dc860b2ac789fc8a6d54c6192cf7a821d4cd8b8fd1421788ddd13ad686356",
+    "tools/rhino_oracle/generate_reparameterize_blocks.py": "530d99bd5fe4c4392491e7cc18472bee72154a04d800dabe2fca45a0967e7c49",
+    "tools/rhino_oracle/reparameterize_block_picker.py": "ce08509812782e01b4425a7dc0fcf038f6994a0b0cd9f59c47c8fa91029f97de",
+    "tools/rhino_oracle/reparameterize_block_probe.py": "e3e66e932371ea2f5748b4541948613b76b49a38010d50b38832e463163d6f04",
+    "tools/rhino_oracle/rhino_worker.py": "5473c23daaeef537083a56b9fa697da0b939607c197cfd5545e3052e169bfe03",
+    "tools/rhino_oracle/structural_sdk.py": "47dd2a49fcb567bd746987eeb9e7cd1f2218bac1ca19358d57aba94c35706d7e",
+    "tools/rhino_oracle/test_reparameterize_block_probe.py": "82dc92b6b5f5a063cdca8fdca8686e149300f42fbb1af090961bef12d259de84",
+    "tools/rhino_oracle/test_worker.py": "7be91fd2c6d4436fa97b534fbb334de702732956660e0be14facc11e43e0f299"
+  },
+  "scope": [
+    "No Wine, FEX, license, launcher or AGENTS.md changes. Only standard owned headless Rhino command captures.",
+    "The earlier 59 UI cases and 54 face command cases remain in the focused suites. The full application run precedes the two final compatibility guards; those are covered by final focused runs.",
+    "Copies preserve complete Breps, geometry user text and prototype face flags, use fresh attributes and no groups, and leave source instances/definitions intact.",
+    "The native approximation of nonuniform analytic circles is intentional compatibility behavior; ordinary geometry transforms retain the exact NURBS image."
+  ]
+}

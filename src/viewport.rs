@@ -81,7 +81,9 @@ mod raster_tests;
 #[cfg(test)]
 use camera::zoom_pan;
 mod component_picking;
+mod parametric_reference;
 pub(crate) use component_picking::mesh_face_outline;
+pub use parametric_reference::ParametricPick;
 mod control_points;
 mod grip_preview;
 pub use control_points::ControlPointSelection;
@@ -376,6 +378,8 @@ pub struct ViewportInput<'a> {
     pub taper_preview: Option<TaperPreview<'a>>,
     pub angle_plane: Option<Frame3>,
     pub face_pick: Option<FacePickMode>,
+    pub parametric_pick: bool,
+    pub parametric_highlights: &'a [ParametricPick],
     pub edge_pick: bool,
     /// Allow ordinary curve selection alongside edge hits in the source getter.
     pub curve_or_edge_pick: bool,
@@ -477,6 +481,8 @@ impl Default for ViewportInput<'_> {
             maelstrom_preview: None,
             angle_plane: None,
             face_pick: None,
+            parametric_pick: false,
+            parametric_highlights: &[],
             edge_pick: false,
             curve_or_edge_pick: false,
             component_preselection: false,
@@ -514,6 +520,7 @@ pub struct ViewportOutput {
     pub edge_parameter: Option<Real>,
     pub face_click: Option<(ObjectId, usize)>,
     pub face_hit_point: Option<Point3>,
+    pub parametric_click: Option<Vec<ParametricPick>>,
     pub component_click: Option<ComponentClick>,
     pub component_window: Option<ComponentWindow>,
     pub control_point_selection: Option<ControlPointSelection>,
@@ -1357,6 +1364,7 @@ impl Viewport {
             .or(component_hover_mode
                 .map(|(filter, preselection)| (filter, preselection, modifiers)));
         let component_input = component_mode.is_some()
+            || input.parametric_pick
             || input.face_pick.is_some()
             || (input.edge_pick && !input.curve_or_edge_pick)
             || input.edge_curve.is_some()
@@ -1957,6 +1965,7 @@ impl Viewport {
             object_preview,
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);
+        self.paint_parametric_highlights(&painter, rect, document, input.parametric_highlights);
         for &[a, b] in input.component_highlight_segments {
             if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
                 painter.line_segment([a, b], Stroke::new(3., Color32::from_rgb(245, 160, 20)));
@@ -2537,6 +2546,23 @@ impl Viewport {
         })
         .flatten();
         let face_click = face_hit.map(|(object, face, _)| (object, face));
+        let parametric_click = (input.parametric_pick
+            && component_mode.is_none()
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+            && response.clicked_by(PointerButton::Primary))
+        .then(|| {
+            response
+                .interact_pointer_pos()
+                .map_or_else(Vec::new, |pointer| {
+                    self.pick_parametric_references(
+                        pointer,
+                        rect,
+                        document,
+                        input.selection_allowed_objects,
+                    )
+                })
+        });
         let face_hit_point = face_hit.and_then(|(_, _, point)| point);
         let face_point_fallback = matches!(
             input.face_pick,
@@ -2590,15 +2616,18 @@ impl Viewport {
             .filter(|picks: &Vec<EdgePick>| !input.curve_or_edge_pick || !picks.is_empty()),
             face_click,
             face_hit_point,
+            parametric_click,
             component_click,
             component_window,
             control_point_selection,
             picked_point: (response.clicked_by(PointerButton::Primary)
+                && !input.parametric_pick
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
             picked_snap: (response.clicked_by(PointerButton::Primary)
+                && !input.parametric_pick
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| {

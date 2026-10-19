@@ -13530,6 +13530,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'reparameterize_face_command':
         from reparameterize_face_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'reparameterize_block_command':
+        from reparameterize_block_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'rail_revolve':
         from rail_revolve_probe import run
         return run(operation, globals(), iterations, tolerance)
@@ -17488,12 +17491,34 @@ def _response(request):
     return response
 
 
+def _publish_response(response, response_path):
+    temporary_path = response_path + ".tmp"
+    try:
+        with open(temporary_path, "w") as stream:
+            json.dump(response, stream, indent=2, allow_nan=False)
+            stream.write("\n")
+    except (TypeError, ValueError, OverflowError) as error:
+        # Streaming avoids duplicating large geometry records. If an SDK value
+        # escaped normalization, publish a terminal error instead of leaving the
+        # client waiting for an incomplete temporary file.
+        response = dict(response)
+        response["results"] = []
+        response["error"] = "%s serializing response at %s: %s" % (
+            type(error).__name__, LAST_PROGRESS_STAGE, error)
+        with open(temporary_path, "w") as stream:
+            json.dump(response, stream, indent=2, allow_nan=False)
+            stream.write("\n")
+    if os.path.exists(response_path):
+        os.remove(response_path)
+    os.rename(temporary_path, response_path)
+    _record_progress("worker: response published")
+
+
 def _main(at_idle=False):
     _record_progress("worker: started")
     job_directory = os.path.dirname(os.path.abspath(__file__))
     request_path = os.path.join(job_directory, "request.json")
     response_path = os.path.join(job_directory, "response.json")
-    temporary_path = response_path + ".tmp"
     request = {}
     try:
         with open(request_path, "r") as stream:
@@ -17506,7 +17531,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op') == 'reparameterize_face_command' for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('reparameterize_face_command','reparameterize_block_command') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
@@ -17555,13 +17580,7 @@ def _main(at_idle=False):
             "results": [],
             "error": "%s: %s" % (type(error).__name__, error),
         }
-    with open(temporary_path, "w") as stream:
-        json.dump(response, stream, indent=2, allow_nan=False)
-        stream.write("\n")
-    if os.path.exists(response_path):
-        os.remove(response_path)
-    os.rename(temporary_path, response_path)
-    _record_progress("worker: response published")
+    _publish_response(response, response_path)
     host_options = {}
     if isinstance(request, dict):
         host_options = request.get("_host") or {}

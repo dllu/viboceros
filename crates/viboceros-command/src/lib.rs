@@ -348,6 +348,9 @@ use fillet_edge::FilletEdgeCommand;
 pub use fillet_edge::{EdgeBlendSelection, FilletEdgeSelection};
 mod flip;
 mod shrink_trimmed;
+pub use curve_domain::reparameterize::{
+    ReparameterizeDomains, ReparameterizeReference, ReparameterizeSelection,
+};
 pub use extract_surface::ExtractSurfaceSelection;
 pub use shrink_trimmed::ShrinkTrimmedSelection;
 mod unjoin_edge;
@@ -16069,9 +16072,11 @@ pub enum CommandError {
     SurfaceSeamBothDirectionsRequireUv,
 
     #[error(
-        "Reparameterize requires exactly one curve or surface face, got {actual}; use Face=index for a polysurface"
+        "Reparameterize requires selectable curves or surface faces, got {actual}; use Face=index for a polysurface"
     )]
     ReparameterizeRequiresOneObject { actual: usize },
+    #[error("Can only reparameterize curves or surfaces, not both")]
+    ReparameterizeMixedGeometry,
 
     #[error("SubCrv requires exactly one selected curve, got {actual}")]
     SubcurveRequiresOneCurve { actual: usize },
@@ -21513,7 +21518,7 @@ mod tests {
         let history = document.undo_label().map(str::to_owned);
         assert!(matches!(
             registry.execute(&mut document, "Reparameterize Automatic"),
-            Err(CommandError::ReparameterizeRequiresOneObject { actual: 2 })
+            Err(CommandError::ReparameterizeMixedGeometry)
         ));
         assert_eq!(
             document.objects().collect::<Vec<_>>(),

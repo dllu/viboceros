@@ -363,7 +363,7 @@ fn parse_subcurve_options(
     })
 }
 
-mod reparameterize;
+pub(crate) mod reparameterize;
 #[cfg(test)]
 pub(super) use reparameterize::REPARAMETERIZE_USAGE;
 pub(super) use reparameterize::ReparameterizeCommand;

@@ -1,0 +1,1233 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "reparameterize_block_command",
+      "id": "line_explicit",
+      "family": "line",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            1.5,
+            2.0,
+            0.0
+          ]
+        },
+        -2.0,
+        8.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/line_explicit.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "circle_scaled_auto",
+      "family": "circle",
+      "placements": [
+        [
+          [
+            3.0,
+            0.0,
+            0.0,
+            8.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0,
+            4.0
+          ],
+          [
+            0.0,
+            0.0,
+            3.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            11.0,
+            9.196152422706632,
+            0.0
+          ]
+        },
+        "Automatic"
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/circle_scaled_auto.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "box_face_explicit",
+      "family": "box",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -3.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            2.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            -1.0,
+            5.0,
+            2.0
+          ]
+        },
+        -2.0,
+        8.0,
+        10.0,
+        30.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/box_face_explicit.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "box_wire_first",
+      "family": "box",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -3.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            2.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            -1.0,
+            5.0,
+            2.0
+          ]
+        },
+        -2.0,
+        8.0,
+        10.0,
+        30.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/box_wire_first.3dm",
+      "display": "Wireframe",
+      "selection_choice": 0
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "box_wire_second",
+      "family": "box",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -3.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            2.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            -1.0,
+            5.0,
+            2.0
+          ]
+        },
+        -2.0,
+        8.0,
+        10.0,
+        30.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/box_wire_second.3dm",
+      "display": "Wireframe",
+      "selection_choice": 1
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "nested_repeated_line",
+      "family": "line",
+      "placements": [
+        [
+          [
+            -2.0,
+            0.4,
+            0.0,
+            10.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0,
+            -5.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        [
+          [
+            0.5,
+            0.25,
+            0.0,
+            4.0
+          ],
+          [
+            0.0,
+            2.0,
+            0.0,
+            3.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        [
+          [
+            3.0,
+            0.0,
+            0.0,
+            -2.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        1,
+        0,
+        1
+      ],
+      "actions": [
+        {
+          "click": [
+            -168.4,
+            22.0,
+            0.0
+          ]
+        },
+        -2.0,
+        8.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/nested_repeated_line.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "nested_line_auto",
+      "family": "line",
+      "placements": [
+        [
+          [
+            -2.0,
+            0.4,
+            0.0,
+            10.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0,
+            -5.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        [
+          [
+            0.5,
+            0.25,
+            0.0,
+            4.0
+          ],
+          [
+            0.0,
+            2.0,
+            0.0,
+            3.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        [
+          [
+            3.0,
+            0.0,
+            0.0,
+            -2.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0,
+        1,
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            -38.4,
+            22.0,
+            0.0
+          ]
+        },
+        "Automatic"
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/nested_line_auto.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "reflected_ellipse_auto",
+      "family": "circle",
+      "placements": [
+        [
+          [
+            -2.0,
+            0.3,
+            0.0,
+            7.0
+          ],
+          [
+            0.0,
+            0.5,
+            0.0,
+            4.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            5.519615242270663,
+            4.866025403784438,
+            0.0
+          ]
+        },
+        "Automatic"
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/reflected_ellipse_auto.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "nurbs_shear_explicit",
+      "family": "nurbs",
+      "placements": [
+        [
+          [
+            1.5,
+            0.4,
+            0.0,
+            3.0
+          ],
+          [
+            0.0,
+            0.75,
+            0.0,
+            -2.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            6.5875,
+            -1.25,
+            0.0
+          ]
+        },
+        -3.0,
+        7.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/nurbs_shear_explicit.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "annulus_shear_auto",
+      "family": "annulus",
+      "placements": [
+        [
+          [
+            -2.0,
+            0.2,
+            0.0,
+            5.0
+          ],
+          [
+            0.0,
+            0.75,
+            0.0,
+            3.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            -1.0,
+            3.0,
+            0.0
+          ]
+        },
+        "Automatic"
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/annulus_shear_auto.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "sphere_scale_auto",
+      "family": "sphere",
+      "placements": [
+        [
+          [
+            3.0,
+            0.0,
+            0.0,
+            2.0
+          ],
+          [
+            0.0,
+            3.0,
+            0.0,
+            5.0
+          ],
+          [
+            0.0,
+            0.0,
+            3.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            2.0,
+            -0.19615242270663202,
+            4.0
+          ]
+        },
+        "Automatic"
+      ],
+      "view": "Front",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/sphere_scale_auto.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "cylinder_reflected_auto",
+      "family": "cylinder",
+      "placements": [
+        [
+          [
+            -2.0,
+            0.0,
+            0.0,
+            3.0
+          ],
+          [
+            0.0,
+            0.75,
+            0.0,
+            4.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.5,
+            2.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            3.0,
+            2.5,
+            4.25
+          ]
+        },
+        "Automatic"
+      ],
+      "view": "Front",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/cylinder_reflected_auto.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "multi_auto",
+      "family": "line",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            1.5,
+            2.0,
+            0.0
+          ]
+        },
+        {
+          "click": [
+            31.5,
+            2.0,
+            0.0
+          ]
+        },
+        "Automatic"
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/multi_auto.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "multi_explicit",
+      "family": "line",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            1.5,
+            2.0,
+            0.0
+          ]
+        },
+        {
+          "click": [
+            31.5,
+            2.0,
+            0.0
+          ]
+        },
+        -2.0,
+        8.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/multi_explicit.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "different_defaults",
+      "family": "line",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            1.5,
+            2.0,
+            0.0
+          ]
+        },
+        {
+          "click": [
+            31.5,
+            2.0,
+            0.0
+          ]
+        },
+        -2.0,
+        8.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/different_defaults.3dm",
+      "display": "Shaded",
+      "alternate_domain": [
+        -4.0,
+        9.0
+      ]
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "different_reverse_defaults",
+      "family": "line",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            31.5,
+            2.0,
+            0.0
+          ]
+        },
+        {
+          "click": [
+            1.5,
+            2.0,
+            0.0
+          ]
+        },
+        -2.0,
+        8.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/different_reverse_defaults.3dm",
+      "display": "Shaded",
+      "alternate_domain": [
+        -4.0,
+        9.0
+      ]
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "multi_surface",
+      "family": "box",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            2.0,
+            3.0,
+            2.0
+          ]
+        },
+        {
+          "click": [
+            32.0,
+            3.0,
+            2.0
+          ]
+        },
+        -2.0,
+        8.0,
+        10.0,
+        30.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/multi_surface.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "same_leaf_faces",
+      "family": "box",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            2.0,
+            3.0,
+            2.0
+          ]
+        },
+        {
+          "click": [
+            2.0,
+            3.0,
+            2.0
+          ]
+        },
+        -2.0,
+        8.0,
+        10.0,
+        30.0
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/same_leaf_faces.3dm",
+      "display": "Wireframe",
+      "selection_choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "block_noop",
+      "family": "line",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            1.5,
+            2.0,
+            0.0
+          ]
+        },
+        "Enter",
+        "Enter"
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/block_noop.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "block_cancel",
+      "family": "line",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            1.5,
+            2.0,
+            0.0
+          ]
+        },
+        "Cancel"
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/block_cancel.3dm",
+      "display": "Shaded"
+    },
+    {
+      "op": "reparameterize_block_command",
+      "id": "mixed_rejected",
+      "family": "line",
+      "placements": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "member_path": [
+        0
+      ],
+      "actions": [
+        {
+          "click": [
+            1.5,
+            2.0,
+            0.0
+          ]
+        },
+        {
+          "click": [
+            32.0,
+            3.0,
+            2.0
+          ]
+        }
+      ],
+      "view": "Top",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/reparameterize_blocks/mixed_rejected.3dm",
+      "display": "Shaded",
+      "alternate_family": "box"
+    }
+  ]
+}

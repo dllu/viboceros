@@ -471,6 +471,16 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='reparameterize_block_command' for op in request.get('operations',[])):
+            from .reparameterize_block_probe import validate
+            from .reparameterize_block_picker import BlockReferencePicker
+            operations=request['operations']
+            if (self.settings_scheme is None or type(request.get('iterations',1))is not int
+                    or request.get('iterations',1)!=1 or not 1<=len(operations)<=64
+                    or any(op.get('op')!='reparameterize_block_command' for op in operations)):
+                raise OracleProtocolError('Block reparameterization requires a private dedicated one-iteration capture')
+            for op in operations:validate(op)
+            interaction=BlockReferencePicker(request)
         if any(op.get('op')=='arc_command'for op in request.get('operations',[])):
             from .arc_command_probe import validate
             operations=request['operations']
@@ -833,7 +843,7 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('CreateUVCrv requires a private Rhino settings scheme')
             validate_request(request)
-        if any(op.get('op') == 'reparameterize_face_command' for op in request.get('operations', [])):
+        if any(op.get('op') in ('reparameterize_face_command','reparameterize_block_command') for op in request.get('operations', [])):
             if self.settings_scheme is None or request.get('iterations', 1) != 1:
                 raise OracleProtocolError('Face reparameterization commands require a private Rhino settings scheme and one iteration')
         if any(op.get('op') == 'uv_face_reference_command' for op in request.get('operations', [])):
@@ -1855,6 +1865,8 @@ Rhino.RhinoApp.Idle += execute_owned_controls
         if any(op.get('op') == 'smooth_workflow' for op in request.get('operations', [])):
             interaction.record_diagnostics(response)
         if block_controls:
+            interaction.record_diagnostics(response)
+        if any(op.get('op') == 'reparameterize_block_command' for op in request.get('operations', [])):
             interaction.record_diagnostics(response)
         return response
 

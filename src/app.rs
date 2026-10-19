@@ -9665,6 +9665,8 @@ impl VibocerosApp {
             // Escape dismisses the rename editor without canceling a modeling prompt.
         } else if self.selection_menu.take().is_some() {
             // Escape dismisses the choice without changing the selection.
+        } else if self.dismiss_reparameterize_menu() {
+            // Keep the reference selection active after dismissing its choices.
         } else if self.merge_face_prompt.take().is_some() {
             self.push_log("MergeCoplanarFace canceled".into());
         } else if self.shell_prompt.is_some() {
@@ -9787,6 +9789,10 @@ impl eframe::App for VibocerosApp {
             self.cancel_current_prompt_or_selection();
         }
         if self.selection_menu.is_none()
+            && self
+                .reparameterize_prompt
+                .as_ref()
+                .is_none_or(|p| !p.has_menu())
             && !ui.ctx().egui_wants_keyboard_input()
             && ui.input(|input| input.key_pressed(egui::Key::Enter))
         {
@@ -10044,8 +10050,7 @@ impl eframe::App for VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.merge_face_prompt.is_some() {
             Some(FacePickMode::MeshAndBrepAny)
-        } else if self.picking_reparameterize()
-            || self.picking_fillet_surface()
+        } else if self.picking_fillet_surface()
             || self.picking_orient_surface()
             || self.picking_flow_surface()
             || self.picking_surface_flow()
@@ -10223,11 +10228,12 @@ impl eframe::App for VibocerosApp {
             self.merge_face_highlight()
                 .filter(|p| p.kind != viboceros_command::ComponentSelectionKind::MeshFace),
         );
-        component_highlights.extend(
-            self.reparameterize_prompt
-                .as_ref()
-                .and_then(|p| p.highlight()),
-        );
+        let parametric_pick = model_input_active && self.picking_reparameterize();
+        let parametric_highlights = self
+            .reparameterize_prompt
+            .as_ref()
+            .map(|p| p.highlights())
+            .unwrap_or_default();
         let component_highlight_segments = self.merge_face_mesh_wires();
         let component_preselection = self.component_preselection_available();
         let control_point_pick = model_input_active && self.control_point_picking_available();
@@ -10708,6 +10714,8 @@ impl eframe::App for VibocerosApp {
                             orient_surface_preview: surface_session
                                 .and_then(|s| s.deformation(surface_normals[index])),
                             face_pick,
+                            parametric_pick,
+                            parametric_highlights: &parametric_highlights,
                             component_preselection,
                             control_point_pick,
                             component_pick,
@@ -10738,8 +10746,9 @@ impl eframe::App for VibocerosApp {
             }
             ui.advance_cursor_after_rect(available);
         });
+        let parametric_menu_consumed = self.show_reparameterize_menu(ui, &viewport_outputs);
         let menu_action = self.show_selection_menu(ui);
-        let mut menu_consumed = menu_action.is_some();
+        let mut menu_consumed = parametric_menu_consumed || menu_action.is_some();
         if let Some(object_id) = menu_action {
             let mode = self.selection_menu.take().unwrap().choice.mode;
             if let Some(object_id) = object_id {

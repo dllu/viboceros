@@ -4,6 +4,7 @@ import importlib.util
 import json
 import math
 import sys
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
@@ -11,6 +12,32 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_response_encoding_failures_publish_terminal_errors_without_partial_results(self):
+        for invalid in (object(), float('nan'), float('inf')):
+            with self.subTest(invalid=type(invalid)), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / 'response.json'
+                path.write_text('previous response')
+                response = dict(protocol_version=1, engine='rhino', engine_version='test',
+                                iterations=1, results=[dict(id='invalid', value=invalid)])
+                with patch.object(self.worker, '_record_progress') as progress:
+                    self.worker._publish_response(response, str(path))
+                actual = json.loads(path.read_text())
+                self.assertEqual(actual['results'], [])
+                self.assertIn('serializing response', actual['error'])
+                self.assertEqual(actual['engine_version'], 'test')
+                self.assertFalse(Path(str(path)+'.tmp').exists())
+                self.assertEqual(len(response['results']), 1)
+                progress.assert_called_once_with('worker: response published')
+
+    def test_valid_response_is_streamed_and_published_unchanged(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'response.json'
+            response = dict(results=[dict(id='curve', value=dict(domain=[-2., 8.]))])
+            with patch.object(self.worker, '_record_progress'):
+                self.worker._publish_response(response, str(path))
+            self.assertEqual(json.loads(path.read_text()), response)
+            self.assertFalse(Path(str(path)+'.tmp').exists())
+
     def test_loose_sdk_overloads_record_structure_and_dispose_on_failures(self):
         for kind in ('project_curve_surface','project_curve_mesh','pull_curve_surface_command','pull_curve_mesh'):
             for failure in (None,'sdk','sampling','record'):

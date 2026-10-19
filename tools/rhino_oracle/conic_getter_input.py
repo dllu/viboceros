@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
     if command in('Circle','Arc') and op.get('op')in('circle_tangent','arc_tangent','arc_extension') and 'construction_plane'in op:
@@ -41,7 +41,9 @@ def drive(op,host,guides,command="Conic"):
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
     if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
     if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Mid','Radius','Direction','Angle','Length','Distance')
+    if command=='Reparameterize':prefixes=('Select curve','Select surface','Select object','Domain start','Domain end','U domain start','U domain end','V domain start','V domain end')
     base=either([call(prompt,starts,[E.Constant(p)])for p in prefixes])
+    number_prompt=either([call(prompt,starts,[E.Constant(p)])for p in ('Domain start','Domain end','U domain start','U domain end','V domain start','V domain end')])if command=='Reparameterize'else base
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[];clicks=[]
@@ -64,6 +66,16 @@ def drive(op,host,guides,command="Conic"):
             request=pointer_request(i,marker,screen)
             ready=os.path.join(root,'catenary-click-ready-'+name+'.json')
             body=E.IfThen(base,request)
+            if command=='Reparameterize':
+                selected=os.path.join(root,'block-selection-ready-'+name+'.json')
+                accepted=E.AndAlso(call(None,exists,[E.Constant(selected)]),E.Equal(call(None,read,[E.Constant(selected)]),E.Constant(json.dumps(marker))))
+                confirm=E.AndAlso(E.Equal(item(counts,i),integer(9)),E.AndAlso(selection,accepted))
+                if i+1<len(actions)and isinstance(actions[i+1],dict)and'click'in actions[i+1]:
+                    body=block([body,E.IfThen(confirm,block([E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]))])
+                else:
+                    body=block([body,
+                        E.IfThen(E.AndAlso(E.GreaterThanOrEqual(item(counts,i),integer(9)),number_prompt),block([E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)])),
+                        E.IfThen(confirm,block([E.Assign(item(counts,i),integer(10)),E.Assign(item(last,0),now)]+([E.Assign(stage,integer(i+1))]if i+1==len(actions)else[])+[log('\nReparameterize accepts selection %s\n'%op['id']),send_token('')]))])
             mouse_steps.append((i,marker,pixel,ready,[],base))
             clicks.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]));tokens.append(None)
             if op.get('op')=='arc_command':
@@ -122,13 +134,17 @@ def drive(op,host,guides,command="Conic"):
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
             else:token=repr(float(a));gate=base
+            if command=='Reparameterize':
+                gate=number_prompt
+                if a=='Enter':token=''
             body=E.IfThen(gate,block(advance+[log('\n%s input %s %d: %s\n'%(command,op['id'],i,token)),send_token(token)]));tokens.append(token)
         branches.append(body)
     done=E.Label();body=[]
     for i,branch in enumerate(branches):body.append(E.IfThen(E.Equal(stage,integer(i)),block([branch,E.Goto(done)])))
     body.append(E.Label(done));ready=E.GreaterThan(elapsed(item(last,0)),E.Constant(.4))
     action=compile_delegate(S.Action,E.IfThen(E.AndAlso(active,ready),block(body)))
-    cancel=compile_delegate(S.Action,E.IfThen(E.AndAlso(active,E.GreaterThan(elapsed(E.Constant(started)),E.Constant(45.))),block([E.Assign(item(state,2),integer(1)),send_token('_Cancel')])))
+    cancel_input=send_token('_Cancel')
+    cancel=compile_delegate(S.Action,E.IfThen(E.AndAlso(active,E.GreaterThan(elapsed(E.Constant(started)),E.Constant(45.))),block([E.Assign(item(state,2),integer(1)),cancel_input])))
     invoke=method(R.RhinoApp,'InvokeOnUiThread',[S.Delegate,S.Array[S.Object]])
     def callback(action):
         parameter=E.Parameter(clr.GetClrType(S.Object),'state');body=call(None,invoke,[E.Constant(action,clr.GetClrType(S.Delegate)),E.Constant(S.Array[S.Object]([]))]);return compile_delegate(S.Threading.TimerCallback,block([body]),[parameter])
@@ -159,7 +175,9 @@ def drive(op,host,guides,command="Conic"):
             i=c['action'];x,y=c['pixel']
             near=E.AndAlso(E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'X'),integer(x-1)),E.LessThanOrEqual(E.Property(pixel,'X'),integer(x+1))),E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'Y'),integer(y-1)),E.LessThanOrEqual(E.Property(pixel,'Y'),integer(y+1))))
             condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.Equal(item(counts,i),integer(7)),E.AndAlso(same_view,E.AndAlso(base,E.AndAlso(near,E.AndAlso(left,E.Not(E.Property(event,'Cancel'))))))))
-            handlers.append(E.IfThen(condition,block([E.Assign(item(observed,i),prompt),E.Assign(item(counts,i),integer(9)),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)])))
+            advance=[E.Assign(item(observed,i),prompt),E.Assign(item(counts,i),integer(9)),E.Assign(item(last,0),now)]
+            if command!='Reparameterize':advance.append(E.Assign(stage,integer(i+1)))
+            handlers.append(E.IfThen(condition,block(advance)))
         return E.Lambda(delegate,E.IfThen(active,block(handlers)),S.Array[ParameterExpression]([event])).Compile()
     click_mouse=create(click_handler,host,'OnMouseDown')if clicks else None
     if click_mouse is not None:click_mouse.Enabled=True
@@ -180,7 +198,8 @@ def drive(op,host,guides,command="Conic"):
 
     if plan_view is not None:trace['aligned_construction_plane_view']=plan_view
     if clicks:
-        trace['clicks']=[dict(c,motion_acknowledged=counts[c['action']]>=7,click_acknowledged=counts[c['action']]==9)for c in clicks]
+        trace['clicks']=[dict(c,motion_acknowledged=counts[c['action']]>=7,click_acknowledged=counts[c['action']]>=9)for c in clicks]
+        if command=='Reparameterize':trace['selection_enter_sent']=any(counts[c['action']]==10 for c in clicks)
         trace['snap_settings']=snap_settings
         if op.get('op')=='arc_command':trace['pointer_path']=[dict(action=int(arc_pointer_path[3*i]),pixel=[int(arc_pointer_path[3*i+1]),int(arc_pointer_path[3*i+2])])for i in range(arc_pointer_count[0])]
         if op.get('op')in('arc_command','arc_extension'):

@@ -62,7 +62,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
   using [paired native isocurves](docs/native-isocurve-pairs.md)
 - [Surface fillets with trim/split, joining and previews](docs/commands/fillet-srf.md),
   preserving [original parent UV charts](docs/fillet-parent-charts.md)
-- [Reparameterize curves, trimmed surfaces and polysurface faces with viewport picks and numeric prompts](docs/commands/reparameterize.md),
+- [Reparameterize curves, trimmed surfaces and placed block geometry with viewport picks and shared numeric prompts](docs/commands/reparameterize.md),
   including [Automatic surface domains](docs/automatic-surface-domains.md)
 - [Sweep cross sections along two rails](docs/commands/sweep2.md)
 - [Revolve a profile along a rail](docs/commands/rail-revolve.md)
