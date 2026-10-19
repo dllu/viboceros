@@ -56,6 +56,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Point deviation analysis and distance display](docs/commands/point-deviation.md)
 - [Curve deviation reports, temporary portions, and compatibility limits](docs/commands/crv-deviation.md)
 - [Simplify curve representations while retaining domains and document identity](docs/commands/simplify-crv.md)
+- [Resize arcs and circles by radius, diameter, area or circumference](docs/commands/modify-radius.md)
 - [Persistent curvature graphs with adaptive outlines](docs/commands/curvature-graph.md) and [outline extraction](docs/commands/extract-curvature-graph.md)
 - [Native geometry checks and bad-object selection](docs/commands/check.md)
 - [Degenerate mesh face cleanup](docs/commands/cull-degenerate-mesh-faces.md)

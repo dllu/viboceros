@@ -1,0 +1,161 @@
+{
+  "feature": "ModifyRadius: radius, diameter, area, circumference and Copy",
+  "base_commit": "b46a49f101123d8ecd37e881dac33840c6e398c8",
+  "native_version": "8.32.26160.13001",
+  "native_command_cases": 40,
+  "native_results": {
+    "Success": 36,
+    "Nothing": 4
+  },
+  "comparison_epsilon": 1e-08,
+  "maximum_recorded_error": {
+    "portable-final-source": 9.092327295693865e-10,
+    "native-final-source": 9.092327295693865e-10
+  },
+  "comparison_scope": [
+    "curve representation and closure",
+    "native parameter domains",
+    "33 sampled curve positions",
+    "full NURBS degrees, controls, weights and knots",
+    "object attributes, geometry user text, groups and Copy output policy",
+    "selection on completion, Undo and Redo",
+    "atomic failure, invalid input, cancellation and redo retention"
+  ],
+  "implementation": [
+    "public OpenNURBS analytic recognition shared with SimplifyCrv",
+    "existing Rust affine transformations and transactional document edits",
+    "existing shared object selection and Copy preference workflow"
+  ],
+  "limits": [
+    "command-specific native captures cover the retained input matrix; not every possible curve or scale",
+    "no continuous approximation certificate is added",
+    "no native GUI rendering or viewport-pixel comparison is claimed",
+    "no kernel speedup benchmark is claimed",
+    "shared workflow regressions are focused; the complete application and workspace test suites were not rerun"
+  ],
+  "capture": "tools/rhino_oracle/observations/modify_radius.json",
+  "capture_sha256": "676976cdad6ef8510ece268ba5841f4e50dd87d07dcc2f3f0a091a0aaceb7061",
+  "source_sha256": {
+    "crates/viboceros-command/src/lib.rs": "2bb9e30830e92c1451bf7e9ad7cbdaeceac1e86578fefd167be1bb1cd1e225f4",
+    "crates/viboceros-command/src/modify_radius.rs": "45a45d8a866630989ee93028d9302fe5335e1ff8351ea5e0a044f91daf72ba4c",
+    "crates/viboceros-command/src/modify_radius/tests.rs": "47fa981869fc1aa1af8498198cfb1baa4e924f4f4873f0b1e980d16a5a3c532c",
+    "crates/viboceros-command/src/object_selection.rs": "049f1961f06fffc393f7fd8cc519411a1aba895ab56ec64e4cd4509ebf1efe21",
+    "crates/viboceros-command/tests/modify_radius.rs": "86bfdaa2cbaf0ae062853ffcc846366ac5716e43daa0a99a9b391b6e35a68252",
+    "crates/viboceros-command/tests/support/modify_radius.rs": "fe7610b3c4465bd950c2bf6d017e06c5da5c8eed284736735dbb9dc8f0343f32",
+    "crates/viboceros-geometry/src/curve_simplify.rs": "1a0eb372bbb2ab189da861fcedf9bb5ef30c0aed6a694154e53cddeba6d42313",
+    "crates/viboceros-geometry/src/curve_simplify/tests.rs": "d9b284e521fcfd727335972da97d750a94f52b8945b504a91c6ac90f09c61ceb",
+    "crates/viboceros-geometry/src/nurbs.rs": "3bcec55dc262d25c27b4d4947c0cc61005941378ef9d80980ef916d370f4e243",
+    "crates/viboceros-geometry/src/nurbs/analytic.rs": "26c36b92ea7f312fd9ff33ce0a78966ec8132bb78fff1b948f706b16c48d79ff",
+    "src/app.rs": "488dc3937ece018a24458fdf347c3be8c506ef95e86a9784bbe72976039d29e0",
+    "src/app/object_selection.rs": "8ed760a2580bff2e6107d3adbbad5ef35905819c3e935f9d1d9fda855d00695a",
+    "src/app/object_selection/modify_radius.rs": "929f11baf971f18a13095ce43b64e1554e3cb31628d53f96e725aa94c3552b18",
+    "src/app/tests/modify_radius.rs": "3e43ccfc39d45ae21c761b228365bafee6a9880d49579e78843924baf0c5b0ca",
+    "src/app/tests/simplify_curve.rs": "556f87d7d414b12ad4c2f6861cdac6b766780330be88c4c13734739ce8b69b89",
+    "src/app/transform_sources.rs": "a370491c0b035e7a8c96a11421ee18ef97e312c7168f0abea5ca55ac5a69d901",
+    "tools/rhino_oracle/generate_modify_radius.py": "1d356350a6c9cab804431e833bd21b85c1878315524a933fc9d233466eeae4bf",
+    "tools/rhino_oracle/modify_radius_probe.py": "2d54d0bc0efa9b041f787f3db0eb8c4de32f168b3a934f4198601de9d55b7a88",
+    "tools/rhino_oracle/rhino_worker.py": "42d875e47f058d370dd3bbbd68bb644a9850f31f1fcb9cde1d22daa75d10a7d9",
+    "tools/rhino_oracle/structural_sdk.py": "3c1daf7ed81f1acf2a40a0991eb5530024a51b4be4498fd03b3d5f0a6944c456",
+    "tools/rhino_oracle/test_modify_radius_probe.py": "ba435fd3654a6d6c49fdcf5f381fe3394f694c835331c5cd8b9571d9a0d5e109"
+  },
+  "runs": [
+    {
+      "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_modify_radius",
+      "status": "passed",
+      "log": "docs/modify-radius-capture-v3.log.gz",
+      "sha256": "ee0009c2ab5ab45780293d999bcb0f1b5030a5023ca0bfb7087eddfa7fc06ec4",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test modify_radius -- --nocapture",
+      "status": "passed",
+      "log": "docs/modify-radius-portable-final-source.log.gz",
+      "sha256": "bcf29ff1099d81c4e04348894a8096cc170d2d95e5c6e39015ec12cf463a5887",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --test modify_radius -- --nocapture",
+      "status": "passed",
+      "log": "docs/modify-radius-native-final-source.log.gz",
+      "sha256": "5d996bb16e259dc43a6479b016be8f1fae7da963cfecd3d814dbbad97ab97f5a",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::modify_radius -- --nocapture",
+      "status": "passed",
+      "log": "docs/modify-radius-ui-final-source.log.gz",
+      "sha256": "2085cc16b77c1140ea9e8cd88d0346d9327ce7c146e3ce5e8da83e56a560f32b",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::object_selection",
+      "status": "passed",
+      "log": "docs/modify-radius-selection-regression.log.gz",
+      "sha256": "4cbae04fce6c949865e7d1d662cc047b95a5513aab40da553d89741b3a256ca2",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::transform_copy",
+      "status": "passed",
+      "log": "docs/modify-radius-copy-regression.log.gz",
+      "sha256": "27c929cf786b5e362f24017e047dd178205e92986e59d90750a82ff65e52e683",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::simplify_curve",
+      "status": "passed",
+      "log": "docs/modify-radius-simplify-ui-regression.log.gz",
+      "sha256": "28a92a6ee95815f32ab4bed9f5cb37147c47fa0a2963d301293f024a29f8713c",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help",
+      "status": "passed",
+      "log": "docs/modify-radius-help.log.gz",
+      "sha256": "3c872061a0179076da41523ac16d136811a0db78a41a743af9de0898852ea1ce",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib curve_simplify",
+      "status": "passed",
+      "log": "docs/modify-radius-kernel-final-source.log.gz",
+      "sha256": "f0339493fe67a8ec41d910ca7d7207898d542d7a8f491cfb871a5cbe102557cb",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib modify_radius",
+      "status": "passed",
+      "log": "docs/modify-radius-unit-final-source.log.gz",
+      "sha256": "7362aa57ef7caeefc5ba1495f619c9b170ff831277e8093ded26dadd16a15c01",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test simplify_curves",
+      "status": "passed",
+      "log": "docs/modify-radius-simplify-final.log.gz",
+      "sha256": "6157281f2292559cefca60ac3e0942e4778e56533f611cc5e488657c1ee74bfc",
+      "source_scope": "geometry/command sources after recognition extraction; before final UI routing and test-helper edits"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_modify_radius_probe tools.rhino_oracle.test_worker tools.rhino_oracle.test_structural_sdk",
+      "status": "passed",
+      "log": "docs/modify-radius-python-final.log.gz",
+      "sha256": "653e322168debc54b426b4844271493d83fe5946250770479c42792b40778602",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "status": "passed",
+      "log": "docs/modify-radius-clippy-final.log.gz",
+      "sha256": "db3d1270c5c67cf3fcde49ceada951ba48e0e29be6228d21ef7115b4747eff13",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "status": "passed",
+      "log": "docs/modify-radius-fmt-final2.log.gz",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_scope": "final source"
+    }
+  ]
+}

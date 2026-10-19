@@ -1,8 +1,7 @@
+use super::native_curve_comparison as comparison;
 use super::*;
 use crate::viewport::SelectionClick;
 use viboceros_document::SelectionMode;
-#[path = "../../../crates/viboceros-command/tests/support/simplify_curves.rs"]
-mod comparison;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();

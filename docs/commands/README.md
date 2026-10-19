@@ -28,6 +28,7 @@ Rhino's complete command set is still a work in progress.
 - [Rectangle construction modes and numeric dimensions](rectangle.md)
 - [Curve creation and editing](curves.md)
 - [Simplify lines, arcs and rational curve structures](simplify-crv.md)
+- [Change arc and circle sizes](modify-radius.md)
 - [Standalone subcurves and numeric confirmation](subcurve.md)
 - [Analytic curve offsets](offset.md)
 - [Planar surface offsets](offset-srf.md)

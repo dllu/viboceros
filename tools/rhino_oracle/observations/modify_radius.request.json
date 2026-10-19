@@ -1,0 +1,375 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "modify_radius_command",
+      "id": "arc",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/arc.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "circle",
+      "family": "circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/circle.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "nurbs_arc",
+      "family": "nurbs_arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/nurbs_arc.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "nurbs_circle",
+      "family": "nurbs_circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/nurbs_circle.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "polycurve",
+      "family": "polycurve",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/polycurve.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "tilted",
+      "family": "tilted",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/tilted.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "reversed",
+      "family": "reversed",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/reversed.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "radius_copy",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/radius_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "radius_post",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/radius_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "radius_post_copy",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/radius_post_copy.3dm",
+      "preselect": false,
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "diameter_copy",
+      "family": "arc",
+      "mode": "Diameter",
+      "value": 8.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/diameter_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "diameter_post",
+      "family": "arc",
+      "mode": "Diameter",
+      "value": 8.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/diameter_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "diameter_post_copy",
+      "family": "arc",
+      "mode": "Diameter",
+      "value": 8.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/diameter_post_copy.3dm",
+      "preselect": false,
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "area_copy",
+      "family": "arc",
+      "mode": "Area",
+      "value": 50.26548245743669,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/area_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "area_post",
+      "family": "arc",
+      "mode": "Area",
+      "value": 50.26548245743669,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/area_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "area_post_copy",
+      "family": "arc",
+      "mode": "Area",
+      "value": 50.26548245743669,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/area_post_copy.3dm",
+      "preselect": false,
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "circumference_copy",
+      "family": "arc",
+      "mode": "Circumference",
+      "value": 25.132741228718345,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/circumference_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "circumference_post",
+      "family": "arc",
+      "mode": "Circumference",
+      "value": 25.132741228718345,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/circumference_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "circumference_post_copy",
+      "family": "arc",
+      "mode": "Circumference",
+      "value": 25.132741228718345,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/circumference_post_copy.3dm",
+      "preselect": false,
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "arc_domain",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/arc_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "arc_same",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 2.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/arc_same.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "arc_same_copy",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 2.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/arc_same_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "circle_domain",
+      "family": "circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/circle_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "circle_same",
+      "family": "circle",
+      "mode": "Radius",
+      "value": 2.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/circle_same.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "circle_same_copy",
+      "family": "circle",
+      "mode": "Radius",
+      "value": 2.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/circle_same_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "nurbs_arc_domain",
+      "family": "nurbs_arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/nurbs_arc_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "nurbs_arc_same",
+      "family": "nurbs_arc",
+      "mode": "Radius",
+      "value": 2.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/nurbs_arc_same.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "nurbs_arc_same_copy",
+      "family": "nurbs_arc",
+      "mode": "Radius",
+      "value": 2.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/nurbs_arc_same_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "nurbs_circle_domain",
+      "family": "nurbs_circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/nurbs_circle_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "nurbs_circle_same",
+      "family": "nurbs_circle",
+      "mode": "Radius",
+      "value": 2.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/nurbs_circle_same.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "nurbs_circle_same_copy",
+      "family": "nurbs_circle",
+      "mode": "Radius",
+      "value": 2.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/nurbs_circle_same_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "batch",
+      "family": "nurbs_circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/batch.3dm",
+      "copies": 3
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "batch_copy",
+      "family": "nurbs_arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/batch_copy.3dm",
+      "copies": 3,
+      "copy": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "mixed",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/mixed.3dm",
+      "mixed": true
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "tiny",
+      "family": "arc",
+      "mode": "Radius",
+      "value": 1e-08,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/tiny.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "large",
+      "family": "circle",
+      "mode": "Radius",
+      "value": 1000000.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/large.3dm"
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "near_tiny",
+      "family": "near_circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/near_tiny.3dm",
+      "delta": 1e-12
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "near_small",
+      "family": "near_circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/near_small.3dm",
+      "delta": 1e-08
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "near_model",
+      "family": "near_circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/near_model.3dm",
+      "delta": 1e-06
+    },
+    {
+      "op": "modify_radius_command",
+      "id": "near_outside",
+      "family": "near_circle",
+      "mode": "Radius",
+      "value": 4.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/modify_radius/near_outside.3dm",
+      "delta": 0.001
+    }
+  ]
+}

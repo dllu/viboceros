@@ -1,10 +1,9 @@
 //! Curve representation simplification through the public OpenNURBS predicates.
 use crate::{
-    Circle3, CircularArc3, Curve3, CurveSegment3, GeometryError, LineSegment, NurbsCurve, Point3,
-    PolyCurve3, Polyline3, Real, Tolerance, Vector3,
+    Curve3, CurveSegment3, GeometryError, LineSegment, NurbsCurve, PolyCurve3, Polyline3, Real,
+    Tolerance,
 };
 use std::ops::RangeInclusive;
-use viboceros_opennurbs::AnalyticCurve;
 const MAX_CONTROLS: usize = 1_000_000;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -213,7 +212,7 @@ fn decompose<E: From<GeometryError>>(
                 }
                 .into());
             }
-            if let Some(segment) = recognize(c, tolerance)? {
+            if let Some(segment) = c.analytic_form(tolerance)? {
                 push(
                     parts,
                     Part {
@@ -284,8 +283,9 @@ fn decompose<E: From<GeometryError>>(
                 let (left, right) = split(&remainder, t)?;
                 let d = left.domain();
                 let left = normalized_weights(left)?;
-                let segment =
-                    recognize(&left, tolerance)?.unwrap_or(CurveSegment3::NurbsCurve(left));
+                let segment = left
+                    .analytic_form(tolerance)?
+                    .unwrap_or(CurveSegment3::NurbsCurve(left));
                 push(
                     parts,
                     Part {
@@ -297,8 +297,9 @@ fn decompose<E: From<GeometryError>>(
             }
             let d = remainder.domain();
             let remainder = normalized_weights(remainder)?;
-            let segment =
-                recognize(&remainder, tolerance)?.unwrap_or(CurveSegment3::NurbsCurve(remainder));
+            let segment = remainder
+                .analytic_form(tolerance)?
+                .unwrap_or(CurveSegment3::NurbsCurve(remainder));
             push(
                 parts,
                 Part {
@@ -339,55 +340,6 @@ fn normalized_weights(curve: NurbsCurve) -> Result<NurbsCurve, GeometryError> {
     }
     Ok(curve)
 }
-fn recognize(
-    curve: &NurbsCurve,
-    tolerance: Tolerance,
-) -> Result<Option<CurveSegment3>, GeometryError> {
-    let controls = curve
-        .control_points()
-        .iter()
-        .map(|p| {
-            let [x, y, z] = p.point().to_array();
-            [x, y, z, p.weight()]
-        })
-        .collect::<Vec<_>>();
-    let result = viboceros_opennurbs::curve_analytic_form(
-        curve.degree(),
-        &controls,
-        curve.knots(),
-        tolerance.absolute(),
-    )?;
-    Ok(match result {
-        None => None,
-        Some(AnalyticCurve::Line { .. }) => Some(CurveSegment3::Line(
-            LineSegment::try_new(
-                curve.evaluate(*curve.domain().start())?,
-                curve.evaluate(*curve.domain().end())?,
-                Tolerance::NUMERICAL_VALIDATION,
-            )?
-            .try_reparameterized(curve.domain())?,
-        )),
-        Some(AnalyticCurve::Arc {
-            center,
-            x,
-            normal,
-            radius,
-            angles,
-        }) => {
-            let circle = Circle3::try_from_frame(
-                Point3::try_from(center)?,
-                radius,
-                Vector3::try_from(x)?.normalized_nonzero()?,
-                Vector3::try_from(normal)?.normalized_nonzero()?,
-                Tolerance::NUMERICAL_VALIDATION,
-            )?;
-            Some(CurveSegment3::Arc(
-                CircularArc3::try_from_circle_angles(circle, angles[0]..=angles[1])?
-                    .try_reparameterized(curve.domain())?,
-            ))
-        }
-    })
-}
 fn merge_pair(
     a: &CurveSegment3,
     b: &CurveSegment3,
@@ -402,7 +354,7 @@ fn merge_pair(
         return Ok(None);
     }
     let composite = PolyCurve3::try_new(vec![a.clone(), b.clone()])?;
-    let mut result = recognize(&composite.to_nurbs()?, tolerance)?;
+    let mut result = composite.to_nurbs()?.analytic_form(tolerance)?;
     if let Some(segment) = &mut result {
         *segment = segment.try_reparameterized(domain)?;
     }

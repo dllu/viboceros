@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
 use viboceros_document::{Geometry, ObjectId, SelectionMode};
 mod divide;
+mod modify_radius;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ObjectPromptPhase {
@@ -30,6 +31,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) cloud_action_target: Option<ObjectId>,
     pub(super) special_selection: Option<BTreeSet<ObjectId>>,
     pub(super) divide: Option<divide::Session>,
+    pub(super) modify_radius: Option<modify_radius::Session>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -62,6 +64,13 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "ModifyRadius" {
+            return if self.phase == ObjectPromptPhase::Selecting {
+                "Select arcs or circles; Enter specifies a radius, Esc cancels"
+            } else {
+                "Enter a positive size; Radius, Diameter, Area, Circumference, Copy=Yes|No; Esc cancels"
+            };
+        }
         if self.description.command == "CrvDeviation" {
             return "Select exactly two curves; SubCrv picks a portion; Enter measures, Esc cancels";
         }
@@ -425,6 +434,7 @@ impl VibocerosApp {
                 cloud_action_target: None,
                 special_selection: Some(BTreeSet::new()),
                 divide: None,
+                modify_radius: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -472,6 +482,7 @@ impl VibocerosApp {
                 cloud_action_target: Some(target),
                 special_selection: None,
                 divide: None,
+                modify_radius: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -504,6 +515,7 @@ impl VibocerosApp {
                 cloud_action_target: None,
                 special_selection: None,
                 divide: None,
+                modify_radius: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -541,6 +553,7 @@ impl VibocerosApp {
                 cloud_action_target: None,
                 special_selection: None,
                 divide: None,
+                modify_radius: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -610,6 +623,12 @@ impl VibocerosApp {
             return false;
         }
         if preselected {
+            if description.command == "ModifyRadius"
+                && viboceros_command::modify_radius::parse(&words[1..], Default::default())
+                    .is_ok_and(|i| i.value.is_some())
+            {
+                return false;
+            }
             if description.command == "Rebuild" && input.split_whitespace().nth(1).is_some() {
                 return false;
             }
@@ -647,6 +666,7 @@ impl VibocerosApp {
                         cloud_action_target: None,
                         special_selection: None,
                         divide: None,
+                        modify_radius: None,
                     });
                 }
                 Ok(None) => return false,
@@ -679,7 +699,8 @@ impl VibocerosApp {
             }
             let command_override = (matches!(
                 description.command,
-                "TweenSurfaces"
+                "ModifyRadius"
+                    | "TweenSurfaces"
                     | "OffsetSrf"
                     | "Rebuild"
                     | "ShowEdges"
@@ -710,12 +731,14 @@ impl VibocerosApp {
                 cloud_action_target: None,
                 special_selection: None,
                 divide: None,
+                modify_radius: None,
             });
         }
         self.command_input.clear();
         self.initialize_smooth_options(input, preselected);
         self.initialize_rebuild_options();
         self.initialize_divide_prompt();
+        self.initialize_modify_radius(input);
         self.push_log(format!("> {input}"));
         self.log_object_prompt();
         true
@@ -765,6 +788,9 @@ impl VibocerosApp {
             let command = format!("{} AllBlocks", pending.description.command_line());
             self.command_input.clear();
             self.execute_command(&command);
+            return true;
+        }
+        if self.continue_modify_radius(input) {
             return true;
         }
         if self.continue_rebuild_options(input) {

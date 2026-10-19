@@ -10987,8 +10987,11 @@ mod tests {
     mod merge_edge;
     mod mesh_face_prompt;
     mod mirror_preview;
+    mod modify_radius;
     mod named_cplane;
     mod named_view;
+    #[path = "../../../crates/viboceros-command/tests/support/simplify_curves.rs"]
+    mod native_curve_comparison;
     mod nurbs_selection;
     mod object_selection;
     #[cfg(feature = "native-smlib")]

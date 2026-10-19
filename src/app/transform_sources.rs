@@ -72,6 +72,7 @@ impl VibocerosApp {
             cloud_action_target: None,
             special_selection: None,
             divide: None,
+            modify_radius: None,
         });
         self.command_input.clear();
         self.push_log(format!(

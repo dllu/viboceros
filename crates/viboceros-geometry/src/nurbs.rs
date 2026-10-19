@@ -1,4 +1,5 @@
 use std::ops::RangeInclusive;
+mod analytic;
 mod arc_length;
 mod arc_length_from;
 mod boundary_extension;
