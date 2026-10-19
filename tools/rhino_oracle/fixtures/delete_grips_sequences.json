@@ -1,0 +1,1408 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_batch_0_6",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_seq_6_0",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          6
+        ],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_seq_0_0",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_seq_0_5",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0
+        ],
+        [
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_single_6",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_single_0",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_batch_0_5",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_seq_5_0",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          5
+        ],
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "circle_single_1",
+      "kind": "circle",
+      "selections": [
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "circle_single_2",
+      "kind": "circle",
+      "selections": [
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "circle_single_3",
+      "kind": "circle",
+      "selections": [
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "circle_single_5",
+      "kind": "circle",
+      "selections": [
+        [
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "circle_single_6",
+      "kind": "circle",
+      "selections": [
+        [
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_pair_1",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_pair_2",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_pair_3",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "closed_pair_4",
+      "kind": "closed_weighted",
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_2_4_1",
+      "kind": "closed_uniform",
+      "degree": 2,
+      "count": 4,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_2_4_2",
+      "kind": "closed_uniform",
+      "degree": 2,
+      "count": 4,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_2_4_3",
+      "kind": "closed_uniform",
+      "degree": 2,
+      "count": 4,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_7_1",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 7,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_7_2",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 7,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_7_3",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 7,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_7_4",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 7,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_7_5",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 7,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_7_6",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 7,
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_8_1",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_8_2",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_8_3",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_8_4",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_8_5",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_8_6",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_3_8_7",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_4_8_1",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_4_8_2",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_4_8_3",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_4_8_4",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_4_8_5",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_4_8_6",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_4_8_7",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_1",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_2",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_3",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_4",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_5",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_6",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_7",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_8",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_5_10_9",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_1",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_2",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_3",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_4",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_5",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_6",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_7",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_8",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_9",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_10",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          10
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "uniform_6_12_11",
+      "kind": "closed_uniform",
+      "degree": 6,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_6_0_1",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 6,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_6_0_2",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 6,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_6_0_3",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 6,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_6_0_4",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 6,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_6_0_5",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 6,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_9_0_1",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 9,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_9_0_2",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 9,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_9_0_3",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 9,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_9_0_4",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 9,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_9_0_5",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 9,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_9_0_6",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 9,
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_9_0_7",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 9,
+      "selections": [
+        [
+          0,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_9_0_8",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 9,
+      "selections": [
+        [
+          0,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_1",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_2",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_3",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_4",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_5",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_6",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_7",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_8",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_10_0_9",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_1",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_2",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_3",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_4",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_5",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_6",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_7",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_8",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_9",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_10",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          10
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_3_12_0_11",
+      "kind": "closed_uniform",
+      "degree": 3,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_2_6_0",
+      "kind": "closed_uniform",
+      "degree": 2,
+      "count": 6,
+      "selections": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_2_8_0",
+      "kind": "closed_uniform",
+      "degree": 2,
+      "count": 8,
+      "selections": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_4_8_0_1_2",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_4_8_0_1_7",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          1,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_4_8_0_3_7",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          3,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_4_8_0_4_5",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 8,
+      "selections": [
+        [
+          0,
+          4,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_4_10_0_1_2",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_4_10_0_1_9",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          1,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_4_10_0_3_9",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          3,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_4_10_0_4_5",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          4,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_5_10_0_1_2_3",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_5_10_0_1_2_9",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          1,
+          2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_5_10_0_3_5_9",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 10,
+      "selections": [
+        [
+          0,
+          3,
+          5,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_5_12_0_1_2_3",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_5_12_0_1_2_11",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          1,
+          2,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "basis_5_12_0_3_5_11",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          3,
+          5,
+          11
+        ]
+      ]
+    }
+  ]
+}

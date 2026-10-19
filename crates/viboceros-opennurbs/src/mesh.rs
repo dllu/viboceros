@@ -59,6 +59,14 @@ struct EditResult {
     removed_vertices: usize,
 }
 unsafe extern "C" {
+    fn vibo_mesh_dissolve_vertices(
+        input: *const MeshView,
+        indices: *const usize,
+        count: usize,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_mesh_cleanup_counts(
         result: *const NativeResult,
         removed: *mut usize,
@@ -106,6 +114,17 @@ pub fn merge_coplanar_mesh(
     angle: f64,
 ) -> Result<(MeshData, usize), MeshError> {
     edit(data, 1, distance, angle)
+}
+/// Dissolve selected vertices through OpenNURBS' face-set executive, retaining
+/// its n-gon overlays and vertex colors. An empty result has no faces or vertices.
+pub fn dissolve_mesh_vertices(data: &MeshData, vertices: &[usize]) -> Result<MeshData, MeshError> {
+    if vertices.len() > 4_000_000 || vertices.iter().any(|&i| i >= data.vertices.len()) {
+        return Err(MeshError("Invalid selected mesh vertices".into()));
+    }
+    if vertices.is_empty() {
+        return Ok(data.clone());
+    }
+    edit_selection(data, 5, 0., 0., Some((vertices, false))).map(|r| r.mesh)
 }
 /// Merge a selected pair of logical faces or the planar region at one seed.
 /// Raw face indices identify n-gons by any of their member facets.
@@ -215,7 +234,18 @@ fn edit_selection(
     };
     let mut error = [0u8; 512];
     let mut raw = std::ptr::null_mut();
-    let status = if let Some((faces, region)) = selection {
+    let status = if let Some((vertices, _)) = selection.filter(|_| op == 5) {
+        unsafe {
+            vibo_mesh_dissolve_vertices(
+                &view,
+                vertices.as_ptr(),
+                vertices.len(),
+                &mut raw,
+                error.as_mut_ptr().cast(),
+                error.len(),
+            )
+        }
+    } else if let Some((faces, region)) = selection {
         unsafe {
             vibo_mesh_merge_selected(
                 &view,

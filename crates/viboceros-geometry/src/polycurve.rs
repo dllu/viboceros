@@ -9,6 +9,7 @@ use crate::{
 };
 
 mod fillet;
+mod grip_deletion;
 mod grips;
 mod integration_frame;
 #[cfg(test)]

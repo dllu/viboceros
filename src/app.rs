@@ -9934,9 +9934,12 @@ impl eframe::App for VibocerosApp {
             && self.set_view_prompt.is_none()
             && !self.remember_copy_prompt
             && self.edge_zoom_prompt.is_none()
-            && self.document.selected_object_count() > 0
+            && (self.document.selected_object_count() > 0
+                || self.document.selected_control_points().next().is_some())
             && !ui.ctx().egui_wants_keyboard_input()
-            && ui.input(|input| input.key_pressed(egui::Key::Delete))
+            && ui.input(|input| {
+                input.key_pressed(egui::Key::Delete) || input.key_pressed(egui::Key::Backspace)
+            })
         {
             self.execute_command("Delete");
         }
@@ -11145,6 +11148,7 @@ mod tests {
     mod curvature_graph;
     mod curve_deviation;
     mod curve_rebuild_preview;
+    mod delete_grips;
     mod delete_subcurve;
     mod distance;
     mod distribute;

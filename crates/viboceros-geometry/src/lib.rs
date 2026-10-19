@@ -340,6 +340,8 @@ pub(crate) fn require_finite(
 }
 
 mod curve_simplify;
+#[cfg(test)]
+mod grip_deletion_tests;
 pub use curve_simplify::{CurveSimplification, simplify_curve, simplify_curve_with_split};
 
 /// Fixed coordinate coincidence used for curve seams and junctions.

@@ -14610,9 +14610,27 @@ impl Command for DeleteCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "Delete")?;
-        let selected: Vec<_> = document.selected_object_ids().collect();
-        document.delete_objects(selected.iter().copied())?;
-        Ok(format!("Deleted {} object(s)", selected.len()))
+        let grip_owners = document
+            .selected_logical_control_points()
+            .map(|(g, _)| g.object)
+            .collect::<BTreeSet<_>>();
+        let selected = document
+            .selected_object_ids()
+            .filter(|id| !grip_owners.contains(id))
+            .collect::<Vec<_>>();
+        let grips = document
+            .selected_control_points()
+            .map(|(g, _)| g)
+            .collect::<Vec<_>>();
+        let result = document.delete_objects_and_grips(selected, grips)?;
+        Ok(if result.modified_objects == 0 {
+            format!("Deleted {} object(s)", result.deleted_objects)
+        } else {
+            format!(
+                "Deleted {} control point(s) and {} object(s); updated {} grip owner(s)",
+                result.deleted_control_points, result.deleted_objects, result.modified_objects
+            )
+        })
     }
 }
 
@@ -15930,7 +15948,11 @@ impl Command for UndoCommand {
         Ok(match document.undo()? {
             Some(label) => format!("Undid {label}"),
             None => {
-                document.clear_selection();
+                // A grip no-op preserves its logical picks, including hidden
+                // navigation picks and their selected parent, on empty Undo.
+                if document.selected_logical_control_points().next().is_none() {
+                    document.clear_selection();
+                }
                 "Nothing to undo".to_owned()
             }
         })

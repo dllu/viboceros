@@ -17,6 +17,11 @@ the same picking and transform workflow. `PointsOn` switches back to control
 points; switching modes clears the owner's selected indices. `PointsOff` hides
 either mode. Grip mode is stored with the display snapshot and history.
 
+[`Delete`](commands/delete-grips.md) removes selected visible control or edit
+points. Complete surface rows can be removed in either parameter direction;
+mesh picks dissolve their incident face sets. Mixed grip and object deletion
+shares one Undo step. Selecting every grip removes its owner.
+
 The [point-selection commands](commands/point-selection.md) select, invert or
 step through displayed controls from the keyboard, including U/V rows and
 additive neighbors. They also work during grip-capable
@@ -61,8 +66,8 @@ postselection cleanup runs between them. Completed fits receive no trailing
 Escape tokens, which would otherwise interfere with display and selection.
 
 [Affine grip transforms](grip-transforms.md) add partial edits, copies and
-display-state history with bounded closed/periodic seam support. Delete grips,
-native overlap menus, complete periodic/closed/composite grip behavior,
+display-state history with bounded closed/periodic seam support. Native overlap
+menus, complete periodic/closed/composite grip behavior,
 idle Escape display cleanup, arbitrary source replacements, and large control-net display performance need
 further implementation or verification. Oriented Circle frames remain a
 [separate compatibility gap](circle-fit-input.md).

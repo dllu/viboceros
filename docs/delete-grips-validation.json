@@ -1,0 +1,207 @@
+{
+  "validated_at": "2026-10-19T20:01:42.086777+00:00",
+  "base_commit": "ea5826953e54df61bca55b244a3144637a94f027",
+  "feature": "Delete selected control/edit grips, complete surface rows and mesh vertex face sets; mixed object deletion with Undo/Redo",
+  "native": {
+    "engine_version": "8.32.26160.13001",
+    "cases": 397,
+    "command_steps": 1193,
+    "command_results": {
+      "Success": 1048,
+      "Nothing": 145
+    },
+    "request": {
+      "path": "tools/rhino_oracle/fixtures/delete_grips.json",
+      "sha256": "dcf4a562e82045353ac1f111d6c8dffae094f2c85c9572660aab1f8a1c933073"
+    },
+    "observation": {
+      "path": "tools/rhino_oracle/observations/delete_grips.json",
+      "sha256": "bc5a3f01c0ba8ca3e668e977d704db9a79ffab893cc5529787d182e5c69af1f2"
+    },
+    "capture_sources": {
+      "generate_delete_grips.py": "4d3303998f83de7bd9fd0c40e5e98816fc79c1a1078497bc1c57d12889cf9299",
+      "delete_grips_probe.py": "53fe388d359a5833c02aa4bda2f6ba8e9438d9e3c2a454dcf897ee302fe0dd68",
+      "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+      "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "be7583a7a9d0930757370a2c5ca8ba3da3d11d35d557f4a20498a61801771f34",
+      "structural_sdk.py": "7d8c8db7fa8e471bd022b2e899349b64eee22844592da904ba8628cd3e6da09b"
+    },
+    "capture_method": "Public SDK definitions/attributes/grips and public Delete, PointsOff, Undo and Redo EndCommand snapshots; isolated owned documents. 397 original .3dm source fixtures with hashes in the observation provenance."
+  },
+  "additional_cyclic_sequences": [
+    {
+      "request": "tools/rhino_oracle/fixtures/delete_grips_sequences.json",
+      "observation": "tools/rhino_oracle/observations/delete_grips_sequences.json",
+      "sha256": "7e2b2c9b12f1f97576b563605329cbd62c30a4a711d37437d3c6aedb4e9d11c8",
+      "cases": 109
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/delete_grips_sequences_extra.json",
+      "observation": "tools/rhino_oracle/observations/delete_grips_sequences_extra.json",
+      "sha256": "e51827c04790fe293bf4550eea433dbf738d119215f9cd6e1e6f8a90f5619104",
+      "cases": 6
+    }
+  ],
+  "kernel_coverage": {
+    "curve_definitions": 191,
+    "surface_tensors": 78,
+    "mesh_facets_ngons_colors": 60,
+    "cyclic_sequence_cases": 115,
+    "cyclic_delete_steps": 119
+  },
+  "comparisons": "Every main-workflow raw state field, object order/identity, names, RGB colors, group membership, selection, visibility, grip index/location/selection/hidden/selectable flags, curve/surface control net, weights, represented knots/domains, mesh vertices/facets/n-gons/colors and command result. Additional cyclic sequences compare full curve definitions.",
+  "protocol_representation": "Only two omitted OpenNURBS outer knot slots repeat their adjacent represented values. Mesh color alpha converts kernel transparency to public SDK opacity. No active knots, weights, controls or topology are projected or fitted for comparison.",
+  "checks": {
+    "libraries": {
+      "command": "cargo test -p viboceros-geometry -p viboceros-document -p viboceros-oracle --lib grip",
+      "passed": true,
+      "log": "docs/delete-grips-proof/libraries.log.gz",
+      "passed_tests_by_suite": [
+        16,
+        7,
+        12
+      ]
+    },
+    "targeted_kernel_history": {
+      "command": "cargo test -p viboceros-geometry -p viboceros-document -p viboceros-oracle --lib grip_deletion",
+      "passed": true,
+      "log": "docs/delete-grips-proof/targeted_kernel_history.log.gz",
+      "passed_tests_by_suite": [
+        1,
+        4,
+        0
+      ]
+    },
+    "targeted_oracle": {
+      "command": "cargo test -p viboceros-geometry -p viboceros-document -p viboceros-oracle --lib complete_native_delete_grips_and_history",
+      "passed": true,
+      "log": "docs/delete-grips-proof/targeted_oracle.log.gz",
+      "passed_tests_by_suite": [
+        0,
+        0,
+        1
+      ]
+    },
+    "application": {
+      "command": "cargo test -p viboceros --bin viboceros grip",
+      "passed": true,
+      "log": "docs/delete-grips-proof/application.log.gz",
+      "passed_tests_by_suite": [
+        44
+      ]
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_delete_grips tools.rhino_oracle.test_grip_visibility tools.rhino_oracle.test_grip_navigation tools.rhino_oracle.test_grip_transform tools.rhino_oracle.test_grip_alias",
+      "passed": true,
+      "log": "docs/delete-grips-proof/python.log.gz"
+    },
+    "clippy": {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "passed": true,
+      "log": "docs/delete-grips-proof/clippy.log.gz"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "passed": true,
+      "log": "docs/delete-grips-proof/format.log.gz"
+    },
+    "portable_build": {
+      "command": "cargo build --release -p viboceros-oracle",
+      "passed": true,
+      "log": "docs/delete-grips-proof/portable_build.log.gz"
+    },
+    "native_build": {
+      "command": "cargo build --release -p viboceros-oracle --features native-smlib",
+      "passed": true,
+      "log": "docs/delete-grips-proof/native_build.log.gz"
+    }
+  },
+  "replays": {
+    "portable": {
+      "command": "python3 -m tools.rhino_oracle.replay_delete_grips --output /tmp/viboceros-delete-grips-portable-replay.json",
+      "cases": 397,
+      "matched": 397,
+      "passed": true,
+      "absolute_epsilon": 1e-08,
+      "relative_epsilon": 1e-12,
+      "report": "docs/delete-grips-proof/portable-replay.json.gz",
+      "max_absolute_error": 1.8913637322981458e-10
+    },
+    "native": {
+      "command": "python3 -m tools.rhino_oracle.replay_delete_grips --native-smlib --output /tmp/viboceros-delete-grips-native-replay.json",
+      "cases": 397,
+      "matched": 397,
+      "passed": true,
+      "absolute_epsilon": 1e-08,
+      "relative_epsilon": 1e-12,
+      "report": "docs/delete-grips-proof/native-replay.json.gz",
+      "max_absolute_error": 1.8913637322981458e-10
+    }
+  },
+  "limits": [
+    "Nonlinear-to-nonlinear composite junctions, interior two-control composite leaves and arbitrary closed composite seams remain unsupported. Additional nonuniform clamped seam layouts remain unqualified.",
+    "Trimmed single-surface edits that change the trim parameter domain decline before mutation.",
+    "Large-net performance versus Rhino is unbenchmarked. Harness timings include model loading and serialization."
+  ],
+  "sources": {
+    "README.md": "f52ec25a531198a179ec333092a9882add50d064ff1405ecc132ffb6de303994",
+    "crates/viboceros-command/src/lib.rs": "f60f6b41bddd5622a42504a546b48f6ee7fa6253a8dd729f77d191b07854e797",
+    "crates/viboceros-document/src/control_points.rs": "c1462de4c3d39c8dbf5dc65eee6870d109a08f432c3edec462985c0948287603",
+    "crates/viboceros-document/src/control_points/deletion.rs": "8c68172b1357b46042f0f25fd5705954832c73080c11e1854626daae98cb821f",
+    "crates/viboceros-document/src/control_points/geometry.rs": "9ce2eef9a8099db9332bdcb4f8f658f329b7b6fb61a240f36307d9d6d6e034b2",
+    "crates/viboceros-document/src/history.rs": "912a45a5b610f12456ae720afa50c29501b44d57c3ed617caafe6a303a01bfdf",
+    "crates/viboceros-document/src/lib.rs": "194d21d945ff09cd89abb453dcb046a62ef686c9977711e8f131328bfb66a97a",
+    "crates/viboceros-geometry/src/grip_deletion_tests.rs": "60e4c379881deb46292494f9684b2529c4b13ea35be0c1e29e2159b75439275b",
+    "crates/viboceros-geometry/src/lib.rs": "46448abdb82bb869b2586f4ac2bda2ef401533184941bbfb6c2eda261a881b3b",
+    "crates/viboceros-geometry/src/mesh.rs": "c2cf0fa763ca6dae7b76f98b4a9b2ade1da0254c8d8a2bd271d7f04c5a5b665d",
+    "crates/viboceros-geometry/src/mesh/grip_deletion.rs": "2dd56c22753414b3a4aa73d2f03042d94b693dd75f201c463e3c477f5f1da75e",
+    "crates/viboceros-geometry/src/nurbs.rs": "11d48703e33f5bb7ba3692a81f08c407491c3483a0a2856626b3296d10198474",
+    "crates/viboceros-geometry/src/nurbs/grip_deletion.rs": "8b30fcaf48969488bafa4df7f0d021a62e9ba78a8a54704968e570db8811f6e5",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "dd2ed19ddf006fd6812ad8b2fa909d12c7fb00fab0067abf534dc592919657ef",
+    "crates/viboceros-geometry/src/nurbs_surface/grip_deletion.rs": "40c97e14f0fcf6ed6ff47da584c7806cd0ad05a0a09232af9104f552bae01443",
+    "crates/viboceros-geometry/src/polycurve.rs": "ac16d4faed72f327ac4d8aeb19d786964665d58427e95b2403e0cc65f261da70",
+    "crates/viboceros-geometry/src/polycurve/grip_deletion.rs": "b35bfa311740d9f6fba3d249b557b1fa8f72e3e74e469da02fd518f9b07edb62",
+    "crates/viboceros-geometry/src/polycurve/grips.rs": "d642021130985d198dbcb6d280295e9de2377b531b57142efe9b726e017cb6ab",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "997592479b0ec78e4ee6bb2478b34800323cc851cbf377784b4c006f0b29cf4c",
+    "crates/viboceros-opennurbs/native/mesh_modeling.h": "1ca858675bdd9d1a05065f89bec7f9c1d41dbf23d2f95a3a76041dfbd4d954d1",
+    "crates/viboceros-opennurbs/src/mesh.rs": "b8a91ef526f5da5c8d934cc0a2e7747c004c7b928db50e2ba7739190f5c769dd",
+    "crates/viboceros-oracle/src/delete_grips.rs": "11793171fa2482d3cee5a3dfe0ae349a21943c58ce87e6e3e37f5bcd3646a4d2",
+    "crates/viboceros-oracle/src/lib.rs": "37f3cf1300abf7f57e6d32eec9fe6b2b7884b6f6906fd26919e22331a69b5df5",
+    "docs/commands/README.md": "f78683ce0c2691bf4a0ef445b9aaacf776a7057fcee1ba7f406fa45326288787",
+    "docs/commands/delete-grips.md": "3ef2efa44786b049d48374b8861a9f6b47f2b8a409040388a1f9219bbff0c3e2",
+    "docs/control-points.md": "7f140b25c031324e3bcb828c19217d870943f92052e5e9d895cfa0347937182d",
+    "src/app.rs": "2b330670cc928f7ef188dc97d91f33d43edcd565312583b79133e22334a98e3d",
+    "src/app/tests/delete_grips.rs": "a374dc8309c1a7fa4b4b85170d9733e0981b274686d76c4c47e54f0f3de999a4",
+    "tools/rhino_oracle/delete_grips_probe.py": "53fe388d359a5833c02aa4bda2f6ba8e9438d9e3c2a454dcf897ee302fe0dd68",
+    "tools/rhino_oracle/generate_delete_grips.py": "4d3303998f83de7bd9fd0c40e5e98816fc79c1a1078497bc1c57d12889cf9299",
+    "tools/rhino_oracle/grip_delete_sequence_probe.py": "91d11601dfe37a58c58d48da724c8b7fa5d18f74aa363a62cba0e82052d4e2f8",
+    "tools/rhino_oracle/replay_delete_grips.py": "5b7e1d183bdeae188213c1efd1209df0892ca8ccc7bdcb28e3422874566524bb",
+    "tools/rhino_oracle/rhino_worker.py": "0a25b6e44ea8609daa1e8ca909aa95b231903942c24a672aaadc7e0c861fae3f",
+    "tools/rhino_oracle/structural_sdk.py": "06e2f5b1cdb22d07bcd3131e1574cdb126e62e91c069cb5628a699afffaa4054",
+    "tools/rhino_oracle/test_delete_grips.py": "5741b444ce2ec5fb36c0ffa8a72f338c7e506b4e5e5d26e2001a7d86f7274443"
+  },
+  "proofs": {
+    "docs/delete-grips-proof/application.log.gz": "3bd69b0fb443526c09064bc6efdb4af726f5d46d507bdcf6ef5e4a185146fbaf",
+    "docs/delete-grips-proof/clippy.log.gz": "37c590dc975e2d5ac09f1a0c771e92275bcd088fdacc938ff88af4b9ee318b63",
+    "docs/delete-grips-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/delete-grips-proof/libraries.log.gz": "f91f5ef26b56214fc916ee84e35b107bff77a25a385b4fd2bf47986e0d91de45",
+    "docs/delete-grips-proof/native-replay.json.gz": "41fc92603d7e14018f59dbbc1d3b3700964f2541affefced938bb4877fec050b",
+    "docs/delete-grips-proof/native-replay.log.gz": "b26f787ac5273de0e18ae94dbc63ea0810bb6cbad7d82021ff1eca199d271098",
+    "docs/delete-grips-proof/native_build.log.gz": "ed28615e62efaee65594c23361169202bbda27e6504a74280ba17e8c98a4b182",
+    "docs/delete-grips-proof/portable-replay.json.gz": "8524b46f63b242fa925deec72b7a7836fe609296fa92ffa9befc9944e9f88fe6",
+    "docs/delete-grips-proof/portable-replay.log.gz": "b26f787ac5273de0e18ae94dbc63ea0810bb6cbad7d82021ff1eca199d271098",
+    "docs/delete-grips-proof/portable_build.log.gz": "a2fd61d999680454138fe1aebd4da23c9dd34c3e1436066285d1684dbcae3a31",
+    "docs/delete-grips-proof/python.log.gz": "b3234f98c212301e5ad31cf61eba610b232f6154ad940dc3c61fb7531007b849",
+    "docs/delete-grips-proof/targeted_kernel_history.log.gz": "bf0b9d2b4f5ea5956b39b88864fb5c81c1df74c6bc490120135f14f9b442b673",
+    "docs/delete-grips-proof/targeted_oracle.log.gz": "5d3b559972653bd715b2f04b58954682c4bb1129dc9fd75d31e852dd0d90ec7d",
+    "docs/delete-grips-proof/optional-broad-sweep.log.gz": "d72033cc85115c700055a349351b093f4bc734b2e730592117a5ca71fb0ab8d4"
+  },
+  "optional_broad_sweep": {
+    "command": "cargo test -p viboceros-geometry -p viboceros-document -p viboceros-command -p viboceros-oracle --lib",
+    "status": "Interrupted during unrelated general geometry tests; not counted as a passed suite",
+    "completed_passed_tests": 1523,
+    "log": "docs/delete-grips-proof/optional-broad-sweep.log.gz"
+  }
+}

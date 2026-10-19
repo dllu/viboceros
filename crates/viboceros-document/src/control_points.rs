@@ -2,7 +2,9 @@
 use super::*;
 use std::sync::Arc;
 use viboceros_geometry::Point3;
+mod deletion;
 mod geometry;
+pub use deletion::GripDeletionReport;
 #[cfg(test)]
 mod morph_tests;
 mod transform;
@@ -31,6 +33,14 @@ pub(super) struct ControlPoints {
 }
 
 impl ControlPoints {
+    pub(super) fn reset_visibility(&mut self) {
+        self.hidden = Arc::default();
+    }
+    pub(super) fn reveal_hidden_selection(&mut self) {
+        if self.selected.iter().any(|i| self.hidden.contains(i)) {
+            self.reset_visibility();
+        }
+    }
     /// Point visibility is a live display setting, independent of geometry Undo.
     /// Restoring a selected hidden grip makes this owner's entire display visible.
     pub(super) fn retain_live_visibility(&mut self, current: &Self) {
@@ -68,6 +78,9 @@ impl Geometry {
     /// Source grip coordinates in the selected control/edit basis, independent of display overrides.
     pub fn grip_locations(&self, mode: GripMode) -> Result<Vec<Point3>, GeometryError> {
         if mode == GripMode::Edit {
+            if let Self::PolyCurve(curve) = self {
+                return curve.edit_point_locations();
+            }
             let curve = self
                 .curve_ref()
                 .ok_or(GeometryError::UnsupportedControlPointEdit {

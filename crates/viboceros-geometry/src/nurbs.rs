@@ -13,6 +13,7 @@ mod ellipticity;
 pub use ellipticity::ConicFoci;
 mod evaluate;
 pub(crate) mod exact;
+mod grip_deletion;
 mod grips;
 mod integration_frame;
 mod linear_trim;

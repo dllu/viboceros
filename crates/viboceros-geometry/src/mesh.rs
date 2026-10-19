@@ -38,6 +38,7 @@ mod smoothing;
 pub use nonplanar_quads::{NonPlanarQuadCriterion, QuadSplitMethod};
 mod coplanar_merge;
 mod degenerate_faces;
+mod grip_deletion;
 pub use degenerate_faces::MeshFaceCullResult;
 mod offset;
 mod planar_ngons;

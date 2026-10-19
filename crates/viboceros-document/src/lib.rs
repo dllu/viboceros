@@ -20,7 +20,7 @@ pub use blocks::{
 };
 mod control_points;
 mod duplicate;
-pub use control_points::{ControlPointId, GripMode};
+pub use control_points::{ControlPointId, GripDeletionReport, GripMode};
 mod geometry;
 mod geometry_snapshot;
 pub use geometry_snapshot::GeometrySnapshot;
@@ -1860,6 +1860,7 @@ impl Document {
             Edit::CommandAcceptedWithoutChanges
             | Edit::SelectionReleasedOnReplay { .. }
             | Edit::ControlPointsChanged { .. }
+            | Edit::ControlPointsDeleted { .. }
             | Edit::TransformSelectionReleasedOnReplay { .. }
             | Edit::ObjectInserted { .. }
             | Edit::ObjectRemoved { .. }

@@ -1,0 +1,93 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_delete_sequence",
+      "id": "extra_4_12_0_4_5",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          4,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "extra_4_12_0_5_7",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          5,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "extra_4_12_0_1_11",
+      "kind": "closed_uniform",
+      "degree": 4,
+      "count": 12,
+      "selections": [
+        [
+          0,
+          1,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "extra_5_16_0_1_2_3",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 16,
+      "selections": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "extra_5_16_0_4_6_15",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 16,
+      "selections": [
+        [
+          0,
+          4,
+          6,
+          15
+        ]
+      ]
+    },
+    {
+      "op": "grip_delete_sequence",
+      "id": "extra_5_16_0_6_7_8",
+      "kind": "closed_uniform",
+      "degree": 5,
+      "count": 16,
+      "selections": [
+        [
+          0,
+          6,
+          7,
+          8
+        ]
+      ]
+    }
+  ]
+}

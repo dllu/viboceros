@@ -160,6 +160,28 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
       ON_SimpleArray<unsigned> faces;for(int f=0;f<mesh.FaceCount();++f)faces.Append(static_cast<unsigned>(f));
       require(add_face_region_ngon(mesh,faces)>=0,"No valid outer boundary");
     }else if(operation==4)cull_degenerate_faces(mesh,*result);
+    else if(operation==5){
+      require(selected && selected_count && selected_count<=vertex_limit,"Invalid selected mesh vertices");
+      ON_SimpleArray<ON_COMPONENT_INDEX> components;
+      for(size_t i=0;i<selected_count;++i){
+        require(selected[i]<mesh.VertexUnsignedCount(),"Selected mesh vertex index is out of range");
+        components.Append(ON_COMPONENT_INDEX(ON_COMPONENT_INDEX::mesh_vertex,static_cast<int>(selected[i])));
+      }
+      mesh.DissolveOrDelete(components);
+      // Nonmanifold face sets can have no valid outer loop. Discard only the
+      // invalid overlay; the surviving native facets and vertices remain intact.
+      ON_SimpleArray<unsigned> workspace;
+      for(unsigned i=0;i<mesh.NgonUnsignedCount();++i){
+        const auto *ngon=mesh.Ngon(i);
+        if(ngon && !ON_MeshNgon::IsValid(ngon,i,nullptr,mesh.VertexUnsignedCount(),mesh.FaceUnsignedCount(),mesh.m_F.Array(),workspace))mesh.RemoveNgon(i);
+      }
+      mesh.RemoveEmptyNgons();
+      if(mesh.FaceCount() && !mesh.IsValid()){
+        ON_wString details;ON_TextLog log(details);mesh.IsValid(&log);
+        ON_String message(details);throw std::runtime_error(std::string("Invalid dissolved mesh: ")+message.Array());
+      }
+      require(mesh.FaceCount()?mesh.IsValid():mesh.VertexCount()==0,"Invalid dissolved mesh");
+    }
     else throw std::runtime_error("Unknown mesh operation");
     export_mesh(mesh,*result);*out=result.release();return 1;
   }catch(const std::exception &e){if(error && capacity){std::strncpy(error,e.what(),capacity-1);error[capacity-1]=0;}return 0;}
@@ -171,6 +193,9 @@ extern "C" int vibo_mesh_edit(const ViboMeshView *input,uint32_t operation,doubl
 extern "C" int vibo_mesh_merge_selected(const ViboMeshView *input,const size_t *selected,size_t count,int region,double distance,double angle,ViboMeshResult **out,char *error,size_t capacity){
   if(!selected || (region!=0 && region!=1) || count!=(region?1U:2U)){if(out)*out=nullptr;return 0;}
   return edit_mesh(input,1,distance,angle,out,error,capacity,selected,count,region!=0);
+}
+extern "C" int vibo_mesh_dissolve_vertices(const ViboMeshView *input,const size_t *selected,size_t count,ViboMeshResult **out,char *error,size_t capacity){
+  return edit_mesh(input,5,0.,0.,out,error,capacity,selected,count);
 }
 extern "C" int vibo_mesh_result_view(const ViboMeshResult *r,ViboMeshView *v,size_t *changed){
   if(!r || !v || !changed)return 0;

@@ -3,6 +3,66 @@ use super::*;
 use crate::{NurbsCurve, WeightedPoint3};
 use std::collections::BTreeSet;
 impl PolyCurve3 {
+    /// Greville stations belong to each native leaf, with one shared station
+    /// at a junction. Elevating a joined curve to one NURBS adds extra stations.
+    pub fn edit_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
+        let (mut points, mappings) = self.grip_layout()?;
+        for (segment, mapping) in self.segments.iter().zip(mappings) {
+            let stations = segment.to_nurbs()?.edit_points()?;
+            if stations.len() < mapping.len() {
+                return Err(invalid("composite edit-station layout"));
+            }
+            for (local, index) in mapping.into_iter().enumerate() {
+                points[index] = stations[local].point;
+            }
+        }
+        Ok(points)
+    }
+
+    /// Reconstruct only the affected leaf bases, retaining their parent charts.
+    pub fn with_mapped_edit_grips(
+        &self,
+        indices: &BTreeSet<usize>,
+        map: impl Fn(Point3) -> Result<Point3, GeometryError>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let (points, mappings) = self.grip_layout()?;
+        if let Some(&index) = indices.last().filter(|&&i| i >= points.len()) {
+            return Err(GeometryError::InvalidControlPointIndex {
+                index,
+                count: points.len(),
+            });
+        }
+        let mut segments = Vec::new();
+        for (segment, mapping) in self.segments.iter().zip(mappings) {
+            if !mapping.iter().any(|i| indices.contains(i)) {
+                segments.push(segment.clone());
+                continue;
+            }
+            let curve = segment.to_nurbs()?;
+            let mut stations = curve
+                .edit_points()?
+                .into_iter()
+                .map(|p| p.point)
+                .collect::<Vec<_>>();
+            for (local, index) in mapping.iter().enumerate() {
+                if indices.contains(index) {
+                    stations[local] = map(stations[local])?;
+                }
+            }
+            for i in mapping.len()..stations.len() {
+                stations[i] = stations[i % mapping.len()];
+            }
+            let result = curve.try_with_edit_points(&stations, tolerance)?;
+            segments.push(if result == curve {
+                segment.clone()
+            } else {
+                CurveSegment3::NurbsCurve(result)
+            });
+        }
+        Self::try_with_segment_domains(segments, self.parameters.clone())
+    }
+
     /// Owners of a logical grip, including both sides of a shared junction.
     pub fn control_point_owners(&self, index: usize) -> Result<Vec<(usize, usize)>, GeometryError> {
         let (points, mappings) = self.grip_layout()?;

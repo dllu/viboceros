@@ -1,0 +1,6435 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "delete_grips",
+      "id": "curve_first",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_middle",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_last",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_ends",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_adjacent",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_alternate",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_except_first",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_except_ends",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_all",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_empty",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_edit_first",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_edit_middle",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_edit_ends",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "curve_edit_all",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/curve_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_first",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_middle",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_last",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_ends",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_adjacent",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_alternate",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_except_first",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_except_ends",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_all",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_empty",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_edit_first",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_edit_middle",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_edit_ends",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "rational_edit_all",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/rational_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_first",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_middle",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_last",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_ends",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_adjacent",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_alternate",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_except_first",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_except_ends",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_all",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_empty",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_edit_first",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_edit_middle",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_edit_ends",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_edit_all",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_first",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_middle",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_last",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_ends",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_adjacent",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_alternate",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_except_first",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_except_ends",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_all",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_empty",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_edit_first",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_edit_middle",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_edit_ends",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_edit_all",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_first",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_middle",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_last",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_ends",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_adjacent",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_alternate",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_except_first",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_except_ends",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_all",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_empty",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_edit_first",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_edit_middle",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_edit_ends",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "line_edit_all",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/line_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_first",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_middle",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_last",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_ends",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_adjacent",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_alternate",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_except_first",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_except_ends",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_all",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_empty",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_edit_first",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_edit_middle",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_edit_ends",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polyline_edit_all",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polyline_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_first",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_middle",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_last",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_ends",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_adjacent",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_alternate",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_except_first",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_except_ends",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_all",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_empty",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_edit_first",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_edit_middle",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_edit_ends",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "circle_edit_all",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/circle_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_first",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_middle",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_last",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_ends",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_adjacent",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_alternate",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_except_first",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_except_ends",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_all",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_empty",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_edit_first",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_edit_middle",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_edit_ends",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "arc_edit_all",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/arc_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_first",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_middle",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_last",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_ends",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_adjacent",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_alternate",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_except_first",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_except_ends",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_all",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_empty",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_row_u",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_row_u.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_row_v",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "row_v",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_row_v.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_cross_rows",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "cross_rows",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_cross_rows.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_first",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_middle",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_last",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_ends",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_adjacent",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_alternate",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_except_first",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_except_ends",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_all",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_empty",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_row_u",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_row_u.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_row_v",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "row_v",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_row_v.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_closed_cross_rows",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "cross_rows",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_closed_cross_rows.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_first",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_middle",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_last",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ends",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_adjacent",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_alternate",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_except_first",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_except_ends",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_all",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_empty",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_first",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_middle",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_last",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_ends",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_adjacent",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_alternate",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_except_first",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_except_ends",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_all",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_empty",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_edit_first",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_edit_middle",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_edit_ends",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_edit_all",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_first",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_middle",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_last",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_ends",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_adjacent",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_alternate",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_except_first",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_except_ends",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_all",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_empty",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_row_u",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_row_u.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_row_v",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "row_v",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_row_v.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_u_cross_rows",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "cross_rows",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_u_cross_rows.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_first",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_middle",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_last",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_ends",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_adjacent",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_alternate",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_except_first",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_except_ends",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_all",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_empty",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_row_u",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_row_u.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_row_v",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "row_v",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_row_v.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_periodic_v_cross_rows",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "cross_rows",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_periodic_v_cross_rows.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_first",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_middle",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_last",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_ends",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_adjacent",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_alternate",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_except_first",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_except_ends",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_all",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_empty",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_edit_first",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_edit_middle",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_edit_ends",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "cubic_edit_all",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/cubic_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_first",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_middle",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_last",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_ends",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_adjacent",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_alternate",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_except_first",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_except_ends",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_all",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_empty",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_edit_first",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_edit_middle",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_edit_ends",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "quartic_edit_all",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/quartic_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_first",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_middle",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_last",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_ends",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_adjacent",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_alternate",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_except_first",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_except_ends",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_all",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_empty",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_edit_first",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_edit_middle",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_edit_ends",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "nonuniform_edit_all",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/nonuniform_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_first",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_middle",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_last",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_ends",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_adjacent",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_alternate",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_except_first",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_except_ends",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_all",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_empty",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_edit_first",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_edit_middle",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_edit_ends",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "weighted_edit_all",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/weighted_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_first",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_middle",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_last",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_ends",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_adjacent",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_alternate",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_except_first",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_except_ends",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_all",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_empty",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_edit_first",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_edit_middle",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_edit_ends",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_cubic_edit_all",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_cubic_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_first",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_middle",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_last",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_ends",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_adjacent",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_alternate",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_except_first",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_except_ends",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_all",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_empty",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_edit_first",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_edit_middle",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_edit_ends",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "closed_weighted_edit_all",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/closed_weighted_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_first",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_middle",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_last",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_ends",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_adjacent",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_alternate",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_except_first",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_except_ends",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_all",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_empty",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_row_u",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_row_u.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_row_v",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "row_v",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_row_v.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_wide_cross_rows",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "cross_rows",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_wide_cross_rows.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_first",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_middle",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_last",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_ends",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_adjacent",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_alternate",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_except_first",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_except_ends",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_all",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_empty",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_row_u",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_row_u.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_row_v",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "row_v",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_row_v.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_bicubic_cross_rows",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "cross_rows",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_bicubic_cross_rows.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_first",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_middle",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_last",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_ends",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_adjacent",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_alternate",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_except_first",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_except_ends",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_all",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_fan_empty",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_fan_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_first",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_middle",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_last",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_ends",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_adjacent",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_alternate",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_except_first",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_except_ends",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_all",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_grid_empty",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_grid_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_first",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_middle",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_last",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_ends",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_adjacent",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_alternate",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_except_first",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_except_ends",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_all",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_box_empty",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_box_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_first",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_middle",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_last",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_ends",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_adjacent",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_alternate",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_except_first",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_except_ends",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_all",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_empty",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_edit_first",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_edit_middle",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_edit_ends",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_edit_all",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_first",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_middle",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_last",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_ends",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_adjacent",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_alternate",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_except_first",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_except_ends",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_all",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_colored_empty",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_colored_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_first",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_middle",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_last",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_ends",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_adjacent",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_alternate",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_except_first",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_except_ends",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_all",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_ngon_empty",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_ngon_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_first",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_middle",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_last",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_ends",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_adjacent",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_adjacent.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_alternate",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "alternate",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_alternate.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_except_first",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "except_first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_except_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_except_ends",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "except_ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_except_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_all",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_empty",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_empty.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_edit_first",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_edit_first.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_edit_middle",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_edit_middle.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_edit_ends",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "ends",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_edit_ends.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "periodic_min_edit_all",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/periodic_min_edit_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mixed_10",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "surface",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "mesh",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mixed_10.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mixed_01",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        },
+        {
+          "kind": "surface",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        },
+        {
+          "kind": "mesh",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": true,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mixed_01.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mixed_11",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "surface",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "mesh",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        }
+      ],
+      "peer": true,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mixed_11.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "off_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/off_control.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "hidden_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/hidden_control.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "hidden_all_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "all"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/hidden_all_control.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "off_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/off_edit.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "hidden_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "first",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/hidden_edit.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "hidden_all_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "all",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "all"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/hidden_all_edit.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "logical_hidden",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "neighbor_hidden",
+          "mode": "control",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/logical_hidden.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mixed_noop",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "mesh_fan",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        },
+        {
+          "kind": "weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        },
+        {
+          "kind": "surface",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": true,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mixed_noop.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mixed_objects",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "surface",
+          "selected": "row_v",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        },
+        {
+          "kind": "mesh_grid",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": true,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mixed_objects.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "surface_hidden_row",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/surface_hidden_row.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "mesh_hidden",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "first"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/mesh_hidden.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "only_hidden",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "next_hidden",
+          "mode": "control",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/only_hidden.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "parent_only_hidden",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "next_hidden",
+          "mode": "control",
+          "parent": true,
+          "hidden": "middle"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/parent_only_hidden.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "parent_hidden_all",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": true,
+          "hidden": "all"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/parent_hidden_all.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_second",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "second",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_second.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_before_last",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "before_last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_before_last.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_second",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "second",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_second.3dm"
+    },
+    {
+      "op": "delete_grips",
+      "id": "polycurve_curved_before_last",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "before_last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "peer": false,
+      "off": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_grips/polycurve_curved_before_last.3dm"
+    }
+  ]
+}

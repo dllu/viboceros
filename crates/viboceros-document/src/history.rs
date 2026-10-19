@@ -72,6 +72,11 @@ pub(super) enum Edit {
         id: ObjectId,
         stored: Option<super::control_points::ControlPoints>,
     },
+    ControlPointsDeleted {
+        id: ObjectId,
+        stored: Option<super::control_points::ControlPoints>,
+        mesh: bool,
+    },
     /// Command-first picks are transient even for unchanged peers.
     SelectionReleasedOnReplay {
         ids: Vec<ObjectId>,
@@ -182,6 +187,9 @@ impl Edit {
             }
             Self::ControlPointsChanged { id, stored } => {
                 exchange_control_points(document, *id, stored)
+            }
+            Self::ControlPointsDeleted { id, stored, mesh } => {
+                exchange_deleted_control_points(document, *id, stored, true, *mesh)
             }
             Self::SelectionReleasedOnReplay { ids } => {
                 for id in ids {
@@ -319,6 +327,9 @@ impl Edit {
             Self::ControlPointsChanged { id, stored } => {
                 exchange_control_points(document, *id, stored)
             }
+            Self::ControlPointsDeleted { id, stored, mesh } => {
+                exchange_deleted_control_points(document, *id, stored, false, *mesh)
+            }
             Self::SelectionReleasedOnReplay { ids } => {
                 for id in ids {
                     document.selection.remove(id);
@@ -450,6 +461,29 @@ impl Edit {
 
 // Selection belongs to the stored object state. Exchange it on every replay:
 // users may change selection between Undo and Redo. Unrelated IDs are untouched.
+fn exchange_deleted_control_points(
+    document: &mut Document,
+    id: ObjectId,
+    stored: &mut Option<super::control_points::ControlPoints>,
+    undo: bool,
+    mesh: bool,
+) {
+    let current = document.control_points.remove(&id);
+    if let Some(mut state) = stored.take() {
+        if undo && mesh {
+            if let Some(current) = &current {
+                state.retain_live_visibility(current);
+            }
+        } else if undo {
+            state.reveal_hidden_selection();
+        } else if !undo {
+            state.reset_visibility();
+        }
+        document.control_points.insert(id, state);
+    }
+    *stored = current;
+}
+
 fn exchange_control_points(
     document: &mut Document,
     id: ObjectId,

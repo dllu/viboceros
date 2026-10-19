@@ -57,6 +57,11 @@ impl Geometry {
         identity: bool,
     ) -> Result<Self, GeometryError> {
         if mode == GripMode::Edit {
+            if let Self::PolyCurve(curve) = self {
+                return curve
+                    .with_mapped_edit_grips(indices, map_point, tolerance)
+                    .map(Self::PolyCurve);
+            }
             let curve = self
                 .curve_ref()
                 .ok_or(GeometryError::UnsupportedControlPointEdit {
