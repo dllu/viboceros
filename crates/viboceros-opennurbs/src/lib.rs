@@ -7,3 +7,5 @@ pub use curve::{
     ArcDefinition, CurveQueryError, arc_through_points, curve_plane_normal,
     transform_analytic_circle,
 };
+
+pub use curve::{AnalyticCurve, curve_analytic_form, polyline_simplify_indices};

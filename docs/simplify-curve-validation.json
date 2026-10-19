@@ -1,0 +1,291 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "e6fef8ba75086f260f44ca9fff355ee5f77902c3",
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "change": "Add whole-curve SimplifyCrv with OpenNURBS line/arc predicates, exact full-multiplicity splitting through existing Rust/usd-brep editors, constant-weight normalization and batched polyline cleanup. Preserve identity, object metadata, domains, native geometry-text and pre/post-selection policies, with atomic history.",
+  "native_reference": {
+    "engine_version": "8.32.26160.13001",
+    "cases": 41,
+    "changed_cases": 28,
+    "record": "tools/rhino_oracle/observations/simplify_curves.json",
+    "request": "tools/rhino_oracle/observations/simplify_curves.request.json",
+    "tolerance": 1e-08,
+    "source_and_fixture_hashes": "Stored in native provenance and verified against all final capture sources and the 41 shared native 3dm inputs."
+  },
+  "replay": {
+    "portable-final-source": {
+      "cases": 41,
+      "maximum_error": 7.105427357601002e-15
+    },
+    "native-final-source": {
+      "cases": 41,
+      "maximum_error": 7.105427357601002e-15
+    }
+  },
+  "polyline_batch_audit": {
+    "points": 4096,
+    "bulk_ns": 625905,
+    "scalar_ns": 10823129,
+    "scope": "One debug host run comparing the reused native polyline predicate buffer to the previous allocating scalar bridge calls. Not a Rhino command benchmark or a general performance guarantee."
+  },
+  "completed_runs": [
+    {
+      "name": "app-full",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-app-full.log.gz",
+      "test_targets": [
+        {
+          "passed": 1400,
+          "failed": 0,
+          "ignored": 19
+        }
+      ],
+      "source_scope": "Broad run before the final polyline batch and degree-one fast paths and their two additional native cases. Final-source focused geometry, command, UI and native replay checks follow."
+    },
+    {
+      "name": "portable-final-source",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "simplify_curves",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-portable-final-source.log.gz",
+      "test_targets": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "native-final-source",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "simplify_curves",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-native-final-source.log.gz",
+      "test_targets": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "ui-final-source",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::simplify_curve"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-ui-final-source.log.gz",
+      "test_targets": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "ui-native-final-source",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "app::tests::simplify_curve"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-ui-native-final-source.log.gz",
+      "test_targets": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "kernel-complete",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "curve_simplify"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-kernel-complete.log.gz",
+      "test_targets": [
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "command-complete",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "simplify_curve"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-command-complete.log.gz",
+      "test_targets": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "query-tests",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-opennurbs",
+        "--lib",
+        "curve::recognition",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-query-tests.log.gz",
+      "test_targets": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "python-final",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_simplify_curve_probe",
+        "tools.rhino_oracle.test_worker",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-python-final.log.gz",
+      "passed": 127
+    },
+    {
+      "name": "clippy-complete",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-clippy-complete.log.gz"
+    },
+    {
+      "name": "fmt-complete",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-fmt-complete.log.gz"
+    },
+    {
+      "name": "capture-complete",
+      "command": [
+        "tools/rhino_oracle/run_headless.sh",
+        "exec",
+        "env",
+        "PYTHONPATH=.",
+        "python3",
+        "-m",
+        "tools.rhino_oracle.generate_simplify_curves"
+      ],
+      "status": 0,
+      "log": "docs/simplify-curve-capture-complete.log.gz"
+    }
+  ],
+  "source_hashes": {
+    "README.md": "d7326119a777a38454aeed4fd0543a0f249521e8067e48069791a14576ca85a0",
+    "crates/viboceros-command/src/lib.rs": "31da073f732e0af0209c0850c9f040bae16a6e693d5190d60220c6850679e13c",
+    "crates/viboceros-command/src/simplify_curve.rs": "b448c4cfdb80431e749a5cabaf30a320cf73051b3339f6790db6ca91e16a4460",
+    "crates/viboceros-command/src/simplify_curve/tests.rs": "9393c8da83ee2e1289fb3bed6ff87f033cc914a429f4b67b5ad0df879e31fea0",
+    "crates/viboceros-command/tests/simplify_curves.rs": "0eb0681db7e7c634730bcf90f514bee71217752a18d4bdb8f811e5713c251e58",
+    "crates/viboceros-command/tests/support/simplify_curves.rs": "e34a646dd8af8aee14696cc6ff6f71257c6bd1b2189d4894eca69fe3bee9e48c",
+    "crates/viboceros-geometry/src/curve_simplify.rs": "ac621ccc8475d18e3a5c40b71d69f22dc014f774fe3dfefd2f27d8f7385e1d9e",
+    "crates/viboceros-geometry/src/curve_simplify/tests.rs": "f4e65ebc981ec82a9a254c9b56c56d59527997ea9bf2ce4ff9c73a1b1bd26f25",
+    "crates/viboceros-geometry/src/lib.rs": "9bae09eb577649dc522424ec841c1690467af757d6c217bf1237508c6ec04fc2",
+    "crates/viboceros-opennurbs/native/curve_queries.h": "433265b3dd1dad269db48214b9254447470f6f3c1e669ce7318f783431208eb2",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "372e249156ac8138aaf9c02fd55e5d468c503eb36acdfc540beadf3d5852fe57",
+    "crates/viboceros-opennurbs/src/curve.rs": "c083b036d706393e26a33a0aa2180ad445bca7197dc53f9b2cfd070e09a96512",
+    "crates/viboceros-opennurbs/src/curve/recognition.rs": "4217cb7ea95f8a3d57f523329f16cf4604d215d96d0998e7400540c932b0e03c",
+    "crates/viboceros-opennurbs/src/lib.rs": "25ad0165bee8c10fddeb81e1ffbc8183c8942693f1f4a7b314cff33086e30171",
+    "docs/commands/README.md": "7c199d152ab8df16f6bda7a9afb5b10e7ca239ad63a00cd65ddef693651e893e",
+    "docs/commands/simplify-crv.md": "3aad5d479141efe54c9e70237e16560058f1a4d0a35e586fb58753b89af090d6",
+    "src/app.rs": "2ee90ab69f1fca258332f43d1f948752c9e51c5250dea5e2d259f93b7ade5558",
+    "src/app/tests/simplify_curve.rs": "bfd54b67b27f9a0c52d3488c1ef770e04701aacfec2fca20685787d4c6bec44e",
+    "tools/rhino_oracle/generate_simplify_curves.py": "ea2045ab369bfbbf7cf49f4d8ca6c4b7474ce49067f8b9fb3ec4243cb1907ae9",
+    "tools/rhino_oracle/rhino_worker.py": "5f4b21208e9f5f29b2f4691947eb7b2966a8e429147e82c7bb89d7f3584971e7",
+    "tools/rhino_oracle/simplify_curve_probe.py": "abd9020896a31d297de6dc818754bcf4408f30fc88b8ad0a136a412ae6caeb19",
+    "tools/rhino_oracle/structural_sdk.py": "1ad0a28a14bcce665bb425b29d57c59ac232dc96546287c86477d106c6c27939",
+    "tools/rhino_oracle/test_simplify_curve_probe.py": "db6c3a7ecb64438f0900652a5dfd6ade87ec49f15b5c25b205d96ae98254b21d"
+  },
+  "qualification": [
+    "Full output classes, NURBS definitions, parent/child domains, polyline parameters, sampled geometry, metadata and history selection compare against actual public commands. SDK controls are retained separately.",
+    "Final kernel regressions include tiny/far-translated curves, extreme/common negative weight gauges, idempotence, backtracking, injected split failure, and a 20,000-control weighted degree-one fast path that must not invoke a splitter.",
+    "Temporary SubCrv inputs and general G1 join tuning are not implemented by this workflow. Near-tangent line/arc no-ops do not prove general tangent cleanup parity.",
+    "The broad application run precedes the two final performance paths; final dedicated replay/UI/kernel and all-target/all-feature lint checks validate their source.",
+    "No Wine, FEX, launcher, licensing or AGENTS.md changes. User package.json and package-lock.json remain unchanged and excluded."
+  ]
+}

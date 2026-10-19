@@ -338,3 +338,6 @@ pub(crate) fn require_finite(
         Err(GeometryError::NonFinite { context })
     }
 }
+
+mod curve_simplify;
+pub use curve_simplify::{CurveSimplification, simplify_curve, simplify_curve_with_split};

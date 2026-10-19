@@ -1,0 +1,287 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "simplify_curve_command",
+      "id": "line",
+      "family": "line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/line.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "nurbs_line",
+      "family": "nurbs_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/nurbs_line.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "near_line",
+      "family": "near_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/near_line.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "arc",
+      "family": "arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/arc.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "nurbs_arc",
+      "family": "nurbs_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/nurbs_arc.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "nurbs_circle",
+      "family": "nurbs_circle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/nurbs_circle.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "ellipse",
+      "family": "ellipse",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/ellipse.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polyline",
+      "family": "polyline",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polyline.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polyline_collinear",
+      "family": "polyline_collinear",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polyline_collinear.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polycurve_lines",
+      "family": "polycurve_lines",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polycurve_lines.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polycurve_arcs",
+      "family": "polycurve_arcs",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polycurve_arcs.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "mixed_polycurve",
+      "family": "mixed_polycurve",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/mixed_polycurve.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "rational_constant",
+      "family": "rational_constant",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/rational_constant.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "cubic",
+      "family": "cubic",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/cubic.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "fully_multiple",
+      "family": "fully_multiple",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/fully_multiple.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "nonfull_multiple",
+      "family": "nonfull_multiple",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/nonfull_multiple.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "near_tangent",
+      "family": "near_tangent",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/near_tangent.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polyline_line",
+      "family": "polyline_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polyline_line.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polyline_backtrack",
+      "family": "polyline_backtrack",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polyline_backtrack.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polyline_closed",
+      "family": "polyline_closed",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polyline_closed.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "mixed_arc_run",
+      "family": "mixed_arc_run",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/mixed_arc_run.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polycurve_nurbs_line",
+      "family": "polycurve_nurbs_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polycurve_nurbs_line.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "degree_one",
+      "family": "degree_one",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/degree_one.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "weighted_degree_one",
+      "family": "weighted_degree_one",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/weighted_degree_one.3dm"
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "nurbs_line_domain",
+      "family": "nurbs_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/nurbs_line_domain.3dm",
+      "domain": [
+        -2.0,
+        8.0
+      ]
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "nurbs_arc_domain",
+      "family": "nurbs_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/nurbs_arc_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polyline_collinear_domain",
+      "family": "polyline_collinear",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polyline_collinear_domain.3dm",
+      "domain": [
+        -5.0,
+        15.0
+      ]
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polycurve_arcs_domain",
+      "family": "polycurve_arcs",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polycurve_arcs_domain.3dm",
+      "domain": [
+        20.0,
+        40.0
+      ]
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "near_line_outside",
+      "family": "near_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/near_line_outside.3dm",
+      "delta": 1e-05
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "near_line_at",
+      "family": "near_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/near_line_at.3dm",
+      "delta": 1e-06
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "near_line_inside",
+      "family": "near_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/near_line_inside.3dm",
+      "delta": 5e-07
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "mixed_selection",
+      "family": "nurbs_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/mixed_selection.3dm",
+      "mixed": true
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "near_tangent_small",
+      "family": "near_tangent",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/near_tangent_small.3dm",
+      "delta": 1e-06
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "near_tangent_threshold",
+      "family": "near_tangent",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/near_tangent_threshold.3dm",
+      "delta": 2e-06
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "near_tangent_wide",
+      "family": "near_tangent",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/near_tangent_wide.3dm",
+      "delta": 1e-05
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "nurbs_line_post",
+      "family": "nurbs_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/nurbs_line_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "mixed_arc_run_post",
+      "family": "mixed_arc_run",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/mixed_arc_run_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "cubic_post",
+      "family": "cubic",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/cubic_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "polyline_collinear_post",
+      "family": "polyline_collinear",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/polyline_collinear_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "batch_simplification",
+      "family": "mixed_arc_run",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/batch_simplification.3dm",
+      "copies": 3
+    },
+    {
+      "op": "simplify_curve_command",
+      "id": "batch_post",
+      "family": "polyline_collinear",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/simplify_curves/batch_post.3dm",
+      "copies": 3,
+      "preselect": false
+    }
+  ]
+}

@@ -11027,6 +11027,7 @@ mod tests {
     mod shell;
     mod shrink_trimmed;
     mod silhouette;
+    mod simplify_curve;
     mod single_span_selection;
     mod smooth;
     mod sphere_fit_points;

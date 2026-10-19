@@ -166,6 +166,12 @@ int32_t vibo_curve_plane_normal(uint32_t degree, size_t control_count,
 
 // Construct an owned OpenNURBS three-point arc. No native pointer escapes.
 // found=0 means construction failed; result is center/X/Y/Z/radius/sweep.
+int32_t vibo_polyline_simplify_indices(size_t count, const double* points, double tolerance,
+    size_t* indices, size_t* retained, char* error, size_t capacity);
+
+int32_t vibo_curve_analytic_form(uint32_t degree, size_t count, const double* controls,
+    size_t knot_count, const double* knots, double tolerance, int32_t* kind, double* result, char* error, size_t capacity);
+
 int32_t vibo_arc_through_points(const double* points, int32_t* found,
     double* result, char* error, size_t capacity);
 int32_t vibo_transform_analytic_circle(const double* frame, const double* matrix,
