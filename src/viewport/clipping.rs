@@ -409,6 +409,45 @@ impl Viewport {
             _ => None,
         };
         let mut bounds = self.visible_document_bounds(document);
+        if let Some(super::object_preview::ObjectPreview::Instances(instances)) = preview {
+            let mut cache = self.display_cache.borrow_mut();
+            for id in instances.sources {
+                let Some(object) = document.object(*id).filter(|o| {
+                    o.attributes().is_visible()
+                        && document
+                            .layer(o.attributes().layer_id())
+                            .is_some_and(|l| l.is_visible())
+                }) else {
+                    continue;
+                };
+                let source = cache.get(object, document.tolerance()).bounds();
+                let lo = source.min().to_array();
+                let hi = source.max().to_array();
+                for map in instances.transforms {
+                    let corners = (0..8)
+                        .map(|mask| {
+                            map.transform_point(
+                                Point3::try_from(std::array::from_fn(|axis| {
+                                    if mask & (1 << axis) == 0 {
+                                        lo[axis]
+                                    } else {
+                                        hi[axis]
+                                    }
+                                }))
+                                .unwrap(),
+                            )
+                        })
+                        .collect::<Result<Vec<_>, _>>();
+                    if let Ok(corners) = corners
+                        && let Ok(posed) = BoundingBox3::from_points(corners)
+                        && self.gpu_position(posed.min()).is_some()
+                        && self.gpu_position(posed.max()).is_some()
+                    {
+                        bounds = Some(bounds.map_or(posed, |b| b.union(posed).unwrap()));
+                    }
+                }
+            }
+        }
         if let Some(transform) = transform {
             let mut cache = self.display_cache.borrow_mut();
             for id in transform

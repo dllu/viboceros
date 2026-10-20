@@ -15,6 +15,10 @@ pub(crate) use deformation_test_support::{grips as grip_fixtures, morph as morph
 #[path = "../crates/viboceros-command/tests/support/array_curve_surface.rs"]
 mod array_curve_surface_test_support;
 #[cfg(test)]
+#[allow(dead_code)]
+#[path = "../crates/viboceros-command/tests/support/array_surface.rs"]
+mod array_surface_test_support;
+#[cfg(test)]
 #[path = "../crates/viboceros-command/tests/support/splop_finish.rs"]
 mod splop_finish_test_support;
 #[cfg(test)]
@@ -36,6 +40,7 @@ mod splop_tangent_test_support;
 #[cfg(test)]
 #[path = "../crates/viboceros-oracle/src/test_json.rs"]
 mod test_json;
+
 mod viewport;
 mod viewport_gpu;
 

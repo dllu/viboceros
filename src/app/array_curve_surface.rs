@@ -491,6 +491,13 @@ impl VibocerosApp {
         }
     }
     pub(super) fn try_continue_array_curve_surface(&mut self, input: &str) -> bool {
+        let consumed = self.continue_array_curve_surface_input(input);
+        if consumed {
+            self.command_input.clear();
+        }
+        consumed
+    }
+    fn continue_array_curve_surface_input(&mut self, input: &str) -> bool {
         if self.array_curve_surface_session.is_none() {
             return false;
         }

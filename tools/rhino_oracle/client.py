@@ -511,6 +511,13 @@ class OracleClient:
             for op in operations:validate(op)
             click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in op['actions']])for op in operations])
             interaction=CatenaryPointPicker(click_request)
+        if any(op.get('op') == 'array_surface' for op in request.get('operations', [])):
+            from .array_surface_probe import validate
+            operations=request['operations']
+            if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')!='array_surface'for op in operations):raise OracleProtocolError('ArraySrf requires a private dedicated one-iteration capture')
+            names=[op.get('id')for op in operations]
+            if not 1<=len(names)<=64 or any(not isinstance(n,str)for n in names)or len(set(names))!=len(names):raise OracleProtocolError('ArraySrf requires 1 through 64 unique cases')
+            for op in operations:validate(op)
         if any(op.get('op') == 'array_curve_surface' for op in request.get('operations', [])):
             from .array_curve_surface_probe import validate
             operations=request['operations']

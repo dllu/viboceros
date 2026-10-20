@@ -17,6 +17,8 @@ pub enum GeometryError {
     OpenNurbsMesh(#[from] viboceros_opennurbs::MeshError),
     #[error(transparent)]
     OpenNurbsCurve(#[from] viboceros_opennurbs::CurveQueryError),
+    #[error(transparent)]
+    OpenNurbsSurface(#[from] viboceros_opennurbs::SurfaceQueryError),
     #[error("curve edit-point interpolation is unsupported: {context}")]
     UnsupportedCurveEditPoints { context: &'static str },
     #[error("curve edit-point interpolation did not meet absolute tolerance")]

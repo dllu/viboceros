@@ -17,6 +17,7 @@ fn main() {
     println!("cargo:rerun-if-changed=native/mesh_cleanup.h");
     println!("cargo:rerun-if-changed=native/geometry_check.h");
     println!("cargo:rerun-if-changed=native/curve_queries.h");
+    println!("cargo:rerun-if-changed=native/surface_queries.h");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.cpp");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.h");
     println!("cargo:rerun-if-changed=native/rational_coordinates.h");

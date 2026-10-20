@@ -370,13 +370,15 @@ impl Viewport {
         preview_ids: &[ObjectId],
         preview_transform: Option<ObjectPreview<'_>>,
     ) -> Arc<GpuViewportScene> {
-        let (transform, deformed) = match preview_transform {
-            Some(ObjectPreview::Affine(map)) => (Some(map), None),
-            Some(ObjectPreview::Deformed(objects)) => (None, Some(objects)),
-            None => (None, None),
+        let (transform, deformed, instances) = match preview_transform {
+            Some(ObjectPreview::Affine(map)) => (Some(map), None, None),
+            Some(ObjectPreview::Deformed(objects)) => (None, Some(objects), None),
+            Some(ObjectPreview::Instances(instances)) => (None, None, Some(instances)),
+            None => (None, None, None),
         };
         let mut objects = Vec::new();
         let mut visible = HashSet::new();
+        let instance_sources = instances.map(|p| p.sources.iter().copied().collect::<HashSet<_>>());
         let preview_ids = preview_ids.iter().copied().collect::<HashSet<_>>();
         let block_sources = preview == Some(ObjectSelectionFilter::BlockEditSources);
         let sources = transform.map(|preview| {
@@ -538,6 +540,33 @@ impl Viewport {
                     document,
                     self.display_mode,
                 );
+            } else if let Some(instances) = instances.filter(|_| {
+                instance_sources
+                    .as_ref()
+                    .is_some_and(|ids| ids.contains(&object.id()))
+            }) {
+                push_display_object(
+                    &mut objects,
+                    display.clone(),
+                    object,
+                    document,
+                    self.display_mode,
+                );
+                for map in instances.transforms {
+                    let mut posed = display.clone();
+                    posed.transform = Some(*map);
+                    posed.color = base_color;
+                    posed.highlighted = true;
+                    posed.member_colors_enabled = true;
+                    posed.width = match self.display_mode {
+                        DisplayMode::Wireframe => 1.5,
+                        DisplayMode::Shaded => 2.25,
+                        DisplayMode::Ghosted => 1.25,
+                    };
+                    posed.point_radius = 2.5;
+                    posed.reversing = map.orientation_reversing().unwrap_or(false);
+                    push_display_object(&mut objects, posed, object, document, self.display_mode);
+                }
             } else {
                 push_display_object(&mut objects, display, object, document, self.display_mode);
             }
@@ -881,6 +910,57 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn array_instances_share_tessellation_faces_clipping_and_leave_the_document_unchanged() {
+        let mut doc = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![point(0., 0., 0.), point(4., 0., 0.), point(0., 4., 0.)],
+            vec![[0, 1, 2]],
+            doc.tolerance(),
+        )
+        .unwrap();
+        let source = doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        doc.select_all();
+        doc.clear_history().unwrap();
+        let before = format!("{doc:?}");
+        let mut view = Viewport::new(ViewKind::Top);
+        view.display_mode = DisplayMode::Shaded;
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let maps = [
+            AffineTransform3::identity(),
+            AffineTransform3::from_translation(Vector3::try_new(6., 0., 1000.).unwrap()),
+            AffineTransform3::try_uniform_scale(point(0., 0., 0.), -1.).unwrap(),
+        ];
+        let sources = [source];
+        let preview = ObjectPreview::Instances(super::super::object_preview::InstancePreview {
+            sources: &sources,
+            transforms: &maps,
+        });
+        view.refresh_clipping_with_preview(&doc, rect, Some(preview))
+            .unwrap();
+        let first = view.object_scene_with_object_preview(rect, &doc, None, &[], Some(preview));
+        let second = view.object_scene_with_object_preview(rect, &doc, None, &[], Some(preview));
+        assert!(Arc::ptr_eq(&first, &second));
+        let geometry = {
+            let cache = view.cached_scene.borrow();
+            let objects = &cache.as_ref().unwrap().key.objects;
+            assert_eq!(objects.len(), 4);
+            assert!(objects.iter().all(|o| o.draw_faces));
+            assert!(
+                objects
+                    .iter()
+                    .all(|o| Rc::ptr_eq(&o.geometry, &objects[0].geometry))
+            );
+            Rc::clone(&objects[0].geometry)
+        };
+        view.object_scene_with_object_preview(rect, &doc, None, &[], None);
+        let cache = view.cached_scene.borrow();
+        let objects = &cache.as_ref().unwrap().key.objects;
+        assert_eq!(objects.len(), 1);
+        assert!(Rc::ptr_eq(&objects[0].geometry, &geometry));
+        assert_eq!(format!("{doc:?}"), before);
     }
 
     #[test]

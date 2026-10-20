@@ -55,6 +55,7 @@ pub(crate) mod twist_preview;
 pub(crate) use affine_preview::AffinePreview;
 pub(crate) use bend_preview::{BendPreview, BendPreviewCache};
 pub(crate) use maelstrom_preview::{MaelstromCursor, MaelstromPreview, MaelstromPreviewCache};
+pub(crate) use object_preview::InstancePreview;
 pub(crate) use stretch_preview::{StretchPreview, StretchPreviewCache};
 pub(crate) use taper_preview::{TaperPreview, TaperPreviewCache};
 pub(crate) use twist_preview::{TwistPreview, TwistPreviewCache};
@@ -363,6 +364,7 @@ pub struct ViewportInput<'a> {
     pub mirror_preview: Option<MirrorPreview<'a>>,
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
+    pub instance_preview: Option<InstancePreview<'a>>,
     pub surface_flow_preview: Option<SurfaceFlowPreview<'a>>,
     pub catenary_input: Option<viboceros_command::catenary_input::Input>,
     pub spiral_input: Option<&'a viboceros_command::spiral_input::Input>,
@@ -470,6 +472,7 @@ impl Default for ViewportInput<'_> {
             mirror_preview: None,
             translation_preview: None,
             affine_preview: None,
+            instance_preview: None,
             surface_flow_preview: None,
             catenary_input: None,
             spiral_input: None,
@@ -1266,6 +1269,11 @@ impl Viewport {
         let previous_preview = previous_preview
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
+                input
+                    .instance_preview
+                    .map(object_preview::ObjectPreview::Instances)
+            })
+            .or_else(|| {
                 surface_flow_image
                     .as_ref()
                     .or(flow_image.as_ref())
@@ -1874,6 +1882,11 @@ impl Viewport {
             .or(translation_preview)
             .or(affine_preview)
             .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                input
+                    .instance_preview
+                    .map(object_preview::ObjectPreview::Instances)
+            })
             .or_else(|| {
                 surface_flow_image
                     .as_ref()

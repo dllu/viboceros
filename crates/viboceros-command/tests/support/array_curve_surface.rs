@@ -72,8 +72,18 @@ pub fn setup(value: &Value) -> (Document, Scene) {
                     .unwrap(),
             ),
             "Brep" => {
-                let b =
-                    Brep::try_surface_face(morph::surface(&g["surface"]), doc.tolerance()).unwrap();
+                let surface = morph::surface(&g["surface"]);
+                let b = if let Some(range) = g["trim_range"].as_array() {
+                    Brep::try_rectangular_surface_face(
+                        surface,
+                        range[0][0].as_f64().unwrap()..=range[0][1].as_f64().unwrap(),
+                        range[1][0].as_f64().unwrap()..=range[1][1].as_f64().unwrap(),
+                        doc.tolerance(),
+                    )
+                    .unwrap()
+                } else {
+                    Brep::try_surface_face(surface, doc.tolerance()).unwrap()
+                };
                 Geometry::Brep(if g["reversed"] == true {
                     b.reversed()
                 } else {
@@ -123,7 +133,7 @@ pub fn setup(value: &Value) -> (Document, Scene) {
         doc,
         Scene {
             sources,
-            rail: rail.unwrap(),
+            rail: rail.unwrap_or(target.unwrap()),
             target: target.unwrap(),
             original,
         },

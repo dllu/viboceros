@@ -157,3 +157,26 @@ fn array_curve_surface_edges_faces_cancellation_and_numeric_defaults_preserve_hi
     app.document.undo().unwrap();
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
+#[test]
+fn accepted_array_curve_count_clears_text_so_enter_cannot_become_a_distance() {
+    let (_, value) = support::rows()
+        .into_iter()
+        .find(|(op, _)| op["id"] == "array_srf_32")
+        .unwrap();
+    let (doc, scene) = support::setup(&value);
+    let mut app = test_app();
+    app.document = doc;
+    enter(&mut app, "ArrayCrvOnSrf");
+    enter(&mut app, "w0,0,0");
+    app.pick_array_curve_at(Some(scene.rail), None, None);
+    app.accept_array_surface(scene.target, None);
+    enter(&mut app, "Divide");
+    assert!(app.command_input.is_empty());
+    enter(&mut app, "3");
+    assert!(app.command_input.is_empty());
+    let count = app.document.objects().count();
+    app.run_command();
+    assert_eq!(app.document.objects().count(), count);
+    assert!(app.active_command.is_some());
+    enter(&mut app, "Cancel");
+}

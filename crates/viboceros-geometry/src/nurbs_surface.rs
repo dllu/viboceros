@@ -9,6 +9,7 @@ mod closest_point;
 mod evaluate;
 mod grip_deletion;
 mod grips;
+mod limit_frames;
 mod parameter_frame;
 mod parameters;
 mod periodic;

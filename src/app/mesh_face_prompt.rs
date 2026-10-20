@@ -23,6 +23,10 @@ impl VibocerosApp {
         if self.accept_uv_reference_face(object, face) {
             return;
         }
+        if self.picking_surface_array() {
+            self.accept_surface_array_target(object, Some(face));
+            return;
+        }
         if self.picking_array_surface() {
             self.accept_array_surface(object, Some(face));
             return;

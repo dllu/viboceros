@@ -1,0 +1,947 @@
+{
+  "schema_version": 1,
+  "command": "ArraySrf",
+  "workflows": 46,
+  "native_engine": "rhino",
+  "native_engine_version": "8.32.26160.13001",
+  "capture": {
+    "request": "tools/rhino_oracle/fixtures/array_surface.json",
+    "request_sha256": "26771ec8dc8dbf531e6462ad9f94f14e8e16cc777a0a2f6513fa215117e72113",
+    "response": "tools/rhino_oracle/observations/array_surface.json",
+    "response_sha256": "b5453af3ecfa0ee664e8bb5eb48face8f97cdbbb111ce3e330d4bbf30e6d680b",
+    "sources": {
+      "generate_array_surface.py": "bb356f8e35d4fd8b358453a1cd7c6e60e95f5c9f718c1b98d1de1c4d322c6d85",
+      "array_surface_probe.py": "6d2d3b4de42d16ab3a3089bee8d0c2fcf7bb97cbf7509c30b2251656d84733f2",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "rhino_worker.py": "b1bc6ffbfc35007c82b7356cb670475614018a877b75dcc2827c06b031bd5c46",
+      "structural_sdk.py": "0741103db9a87f57fe9484c292a747378fba02611edcec002f4faa6b90cb32ef",
+      "client.py": "1d2d8e558436ef55ef1d85edfc3397d2190f54e1d38c27e21ca6ef88c16ee9a9",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "87336148b863db73208c5e610f20ddd056487902dc3aa7853cd3a8d7a8fd112e",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f"
+    },
+    "execution": "Public Rhino commands at idle in an owned empty document, using a private settings scheme and per-action getter prompt gates."
+  },
+  "comparison": {
+    "absolute_cloud_bound": 1e-06,
+    "maximum_observed_error": 1.4972502017257676e-07,
+    "points_per_cloud": 5,
+    "phases": [
+      "before",
+      "after_script",
+      "undo",
+      "redo"
+    ],
+    "exact_state": [
+      "object order and counts",
+      "object names and source/output selection",
+      "literal group definition names, including empty definitions",
+      "ordered memberships by literal group names",
+      "unchanged target geometry"
+    ],
+    "normalization": "Opaque identities map through source roles and exact group names; automatic numeric names are not normalized."
+  },
+  "coverage": [
+    "plane, tilted plane, cylinder, sphere, warped and doubly warped surfaces",
+    "trimmed rectangles retaining the complete underlying surface, swapped axes, reversed faces, and shifted/rescaled domains",
+    "default rotated construction planes and explicit tilted reference normals",
+    "UV grids, per-U isocurve length division, closed seams, one-cell directions and collapsed first-isocurve no-ops",
+    "preview count/mode edits, immediate acceptance, preview cancellation and cancellation at every initial getter",
+    "one to three sources, preselection and postselection, exact empty/copied group definitions, deleted group-name seeds and real Undo/Redo",
+    "empty command-field behavior after numeric acceptance, stale guides, invalid getters, unchanged Redo on cancellation/no-op",
+    "read-only display instances share cached tessellation, retain shaded source faces, update clipping and reuse the GPU scene"
+  ],
+  "kernel": {
+    "frames": "Batch public ON_Surface::FrameAt through one owned exact surface transfer; constructor and rational-coordinate policy shared with file I/O.",
+    "sampling": "Existing surface isocurve arc-length samplers; native builds retain the usd-brep evaluation path.",
+    "opennurbs_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce"
+  },
+  "implementation_sources": {
+    "README.md": "e066becb16c4740ca79c0a7814cddef38674edc25706fa7d25bc016c5fc0b0fa",
+    "crates/viboceros-command/src/array_surface.rs": "9191694de9373c95f7dde32517d7ee356a99af913f8d83dcaddc82f3338efcf4",
+    "crates/viboceros-command/src/lib.rs": "89c21b2fe74a9258102c7dd31da9be897c1b127da3da84ba4db7904b0f5317e9",
+    "crates/viboceros-command/tests/array_surface_native.rs": "6e50b98624f326446fb4919c69aec9820320cced6cd63eb35c254e02d7778be7",
+    "crates/viboceros-command/tests/support/array_curve_surface.rs": "b9a531c91a0a9eea2dd2072cbb03c68f9539c40923ea1cbccb73ac202e023516",
+    "crates/viboceros-command/tests/support/array_surface.rs": "80636a50363efe926f3ad14e133a669d9ebe7d10e7745339e10c8429d7f7688b",
+    "crates/viboceros-geometry/src/error.rs": "71622fa93dd8ab99b0e4291796d5a9cbaa2d1b8eea1dae1f1fa7f6a6b2408c17",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "76f8c6379d877492de7529733eb7d0ca48fdb96adec7ff1b654e8e94ab728cab",
+    "crates/viboceros-geometry/src/nurbs_surface/limit_frames.rs": "85693973d85804daaf5a4291a5e3dd8c295205106ce6f77afbde7197a325649b",
+    "crates/viboceros-opennurbs/build.rs": "a22aa1089159bb17f0c6289b90bf4207eb27cf465a3bebfa899c1283c59e52ab",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "e5ccc9ca0f1af545cec98a1ec343b7e9f8396346ec31e0cb1b58fecdb5ebbd71",
+    "crates/viboceros-opennurbs/native/rational_coordinates.h": "17e5de0eeca81533cbe324ad27d42f75af400eb1dec1b0c1b2827b676cc2e565",
+    "crates/viboceros-opennurbs/native/surface_queries.h": "619030f965e507367a89ddf821008743f2e8ae7921836dd50614ddbd18d41c76",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "88c21fa2a9282e120dc6f5612e85d79a9785a75de32b7172347930dfffd741c2",
+    "crates/viboceros-opennurbs/src/lib.rs": "5f0ab2bc7b76d43827e4b6f3f7082df3f8b82176f8e26baefc024dcc21d8c8c0",
+    "crates/viboceros-opennurbs/src/surface.rs": "13cade4114e8221f4c066bad1c54e8fbc5c44359b3e6287116de95d6f1fccd01",
+    "docs/commands/array-surface.md": "63e90258dc089dad445dca561863cc32594a431012085055a3439542a98332be",
+    "docs/commands/transforms.md": "88a58e3386f95320fa1d2dcc099dfec2dae2ea6d448e28ec2a510f49e59cb273",
+    "src/app.rs": "2c0b15af479ab290a95c907c7c332a06fc58d4909564c7d0dd709e4ef2b22a45",
+    "src/app/array_curve_surface.rs": "e8f552922278315b7eeae195d296f7ddc1d4b4de4654dc67ddf9f1047cf2b3a0",
+    "src/app/array_surface.rs": "98fc42258f31150d7823a3aeec688a44f7a157bc0276027e491d32104f1eba34",
+    "src/app/mesh_face_prompt.rs": "090975397d9ceeb8c279e575282ccca5a48686c39d4ef9e9f9562336a8548515",
+    "src/app/object_selection.rs": "fb79140767a7d68f6192ad164d6bfa0c1c232da86677a5696394ccc7aba3ab60",
+    "src/app/tests/array_curve_surface.rs": "6aeb3b923ee105907f118db321dac9ec4e539f89aca8f05d3ab7c7958f629e47",
+    "src/app/tests/array_surface.rs": "f7d1f54929e8d550a70fe151c61573e0ef129ab13653383e74648a39c634718a",
+    "src/main.rs": "fd3caa3c7ead98c3fdf9ec39f439cb4fa6828533e1fcc87e2f33ee5279ac8639",
+    "src/viewport.rs": "5b5dbf1c54e49166c9c0c934f5787215b2fdfdcd45c84b581a0316db07b802cf",
+    "src/viewport/clipping.rs": "75800c835882a20021f19e028712c63f61c62ce069034a930cbbc8f52e7e1647",
+    "src/viewport/object_preview.rs": "c2e62ec56d4d200dd296423a2e73733cbf3d94d5e028c8528afd2e2617e7af0c",
+    "src/viewport/scene.rs": "ea34a8e6feb454315e3c6ef7b1bee1bc43d2c355a14b693b70a3f933d09cfa68",
+    "third_party/opennurbs/opennurbs_surface.cpp": "5097405a81c3ded72bb44c6e8fc26e6d9a24fcbcb7b308b6d1baa879a320d303",
+    "tools/rhino_oracle/array_surface_probe.py": "6d2d3b4de42d16ab3a3089bee8d0c2fcf7bb97cbf7509c30b2251656d84733f2",
+    "tools/rhino_oracle/client.py": "1d2d8e558436ef55ef1d85edfc3397d2190f54e1d38c27e21ca6ef88c16ee9a9",
+    "tools/rhino_oracle/conic_getter_input.py": "87336148b863db73208c5e610f20ddd056487902dc3aa7853cd3a8d7a8fd112e",
+    "tools/rhino_oracle/fixtures/array_surface.json": "26771ec8dc8dbf531e6462ad9f94f14e8e16cc777a0a2f6513fa215117e72113",
+    "tools/rhino_oracle/generate_array_surface.py": "32638c36ec4d3c229f31316888f74d7f78ac90ddf6bc2e6cf936dbbdcdcf06b4",
+    "tools/rhino_oracle/observations/array_surface.json": "b5453af3ecfa0ee664e8bb5eb48face8f97cdbbb111ce3e330d4bbf30e6d680b",
+    "tools/rhino_oracle/rhino_worker.py": "b1bc6ffbfc35007c82b7356cb670475614018a877b75dcc2827c06b031bd5c46",
+    "tools/rhino_oracle/structural_sdk.py": "0741103db9a87f57fe9484c292a747378fba02611edcec002f4faa6b90cb32ef",
+    "tools/rhino_oracle/test_array_curve_surface.py": "f3d4a0a9cc7aa9e5db2821f88017240d73e9a17305a682108711149c23c928cd",
+    "tools/rhino_oracle/test_array_surface.py": "6465d32ac8165fda30bb65f4a42d8013adc6a41b5d540c9b5d6b8602efb6703d"
+  },
+  "replay_audits": {
+    "portable API": [
+      {
+        "id": "surface_0",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_1",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_2",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_3",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_4",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_5",
+        "maximum_error": 1.935279647925878e-09
+      },
+      {
+        "id": "surface_6",
+        "maximum_error": 4.440892098500626e-16
+      },
+      {
+        "id": "surface_7",
+        "maximum_error": 6.092985803220156e-08
+      },
+      {
+        "id": "surface_8",
+        "maximum_error": 1.1102230246251565e-16
+      },
+      {
+        "id": "surface_9",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_10",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_11",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "surface_12",
+        "maximum_error": 1.790180836524724e-15
+      },
+      {
+        "id": "surface_13",
+        "maximum_error": 1.0105711481127967e-07
+      },
+      {
+        "id": "surface_14",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_15",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_16",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_17",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_18",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_19",
+        "maximum_error": 8.95090418262362e-16
+      },
+      {
+        "id": "surface_20",
+        "maximum_error": 8.95090418262362e-16
+      },
+      {
+        "id": "surface_21",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_22",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_23",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_24",
+        "maximum_error": 2.0947646133377085e-15
+      },
+      {
+        "id": "surface_25",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_26",
+        "maximum_error": 6.971210516555962e-15
+      },
+      {
+        "id": "surface_27",
+        "maximum_error": 1.780792194218199e-15
+      },
+      {
+        "id": "surface_28",
+        "maximum_error": 1.4972502017257676e-07
+      },
+      {
+        "id": "surface_29",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_30",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_31",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_32",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_33",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_34",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_35",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_36",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_37",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_38",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_39",
+        "maximum_error": 1.9352769176712073e-09
+      },
+      {
+        "id": "surface_40",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_41",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_42",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_43",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_44",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_45",
+        "maximum_error": 1.497250117203103e-07
+      }
+    ],
+    "native API": [
+      {
+        "id": "surface_0",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_1",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_2",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_3",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_4",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_5",
+        "maximum_error": 1.935279647925878e-09
+      },
+      {
+        "id": "surface_6",
+        "maximum_error": 4.440892098500626e-16
+      },
+      {
+        "id": "surface_7",
+        "maximum_error": 6.092985803220156e-08
+      },
+      {
+        "id": "surface_8",
+        "maximum_error": 1.1102230246251565e-16
+      },
+      {
+        "id": "surface_9",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_10",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_11",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "surface_12",
+        "maximum_error": 1.790180836524724e-15
+      },
+      {
+        "id": "surface_13",
+        "maximum_error": 1.0105711481127967e-07
+      },
+      {
+        "id": "surface_14",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_15",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_16",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_17",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_18",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_19",
+        "maximum_error": 8.95090418262362e-16
+      },
+      {
+        "id": "surface_20",
+        "maximum_error": 8.95090418262362e-16
+      },
+      {
+        "id": "surface_21",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_22",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_23",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_24",
+        "maximum_error": 2.0947646133377085e-15
+      },
+      {
+        "id": "surface_25",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_26",
+        "maximum_error": 6.971210516555962e-15
+      },
+      {
+        "id": "surface_27",
+        "maximum_error": 1.780792194218199e-15
+      },
+      {
+        "id": "surface_28",
+        "maximum_error": 1.4972502017257676e-07
+      },
+      {
+        "id": "surface_29",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_30",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_31",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_32",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_33",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_34",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_35",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_36",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_37",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_38",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_39",
+        "maximum_error": 1.9352769176712073e-09
+      },
+      {
+        "id": "surface_40",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_41",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_42",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_43",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_44",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_45",
+        "maximum_error": 1.497250117203103e-07
+      }
+    ],
+    "portable UI": [
+      {
+        "id": "surface_0",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_1",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_2",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_3",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_4",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_5",
+        "maximum_error": 1.935279647925878e-09
+      },
+      {
+        "id": "surface_6",
+        "maximum_error": 4.440892098500626e-16
+      },
+      {
+        "id": "surface_7",
+        "maximum_error": 6.092985803220156e-08
+      },
+      {
+        "id": "surface_8",
+        "maximum_error": 1.1102230246251565e-16
+      },
+      {
+        "id": "surface_9",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_10",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_11",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "surface_12",
+        "maximum_error": 1.790180836524724e-15
+      },
+      {
+        "id": "surface_13",
+        "maximum_error": 1.0105711481127967e-07
+      },
+      {
+        "id": "surface_14",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_15",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_16",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_17",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_18",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_19",
+        "maximum_error": 8.95090418262362e-16
+      },
+      {
+        "id": "surface_20",
+        "maximum_error": 8.95090418262362e-16
+      },
+      {
+        "id": "surface_21",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_22",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_23",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_24",
+        "maximum_error": 2.0947646133377085e-15
+      },
+      {
+        "id": "surface_25",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_26",
+        "maximum_error": 6.971210516555962e-15
+      },
+      {
+        "id": "surface_27",
+        "maximum_error": 1.780792194218199e-15
+      },
+      {
+        "id": "surface_28",
+        "maximum_error": 1.4972502017257676e-07
+      },
+      {
+        "id": "surface_29",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_30",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_31",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_32",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_33",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_34",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_35",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_36",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_37",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_38",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_39",
+        "maximum_error": 1.9352769176712073e-09
+      },
+      {
+        "id": "surface_40",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_41",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_42",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_43",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_44",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_45",
+        "maximum_error": 1.497250117203103e-07
+      }
+    ],
+    "native UI": [
+      {
+        "id": "surface_0",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_1",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_2",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_3",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_4",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_5",
+        "maximum_error": 1.935279647925878e-09
+      },
+      {
+        "id": "surface_6",
+        "maximum_error": 4.440892098500626e-16
+      },
+      {
+        "id": "surface_7",
+        "maximum_error": 6.092985803220156e-08
+      },
+      {
+        "id": "surface_8",
+        "maximum_error": 1.1102230246251565e-16
+      },
+      {
+        "id": "surface_9",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_10",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_11",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "surface_12",
+        "maximum_error": 1.790180836524724e-15
+      },
+      {
+        "id": "surface_13",
+        "maximum_error": 1.0105711481127967e-07
+      },
+      {
+        "id": "surface_14",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_15",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_16",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_17",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_18",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_19",
+        "maximum_error": 8.95090418262362e-16
+      },
+      {
+        "id": "surface_20",
+        "maximum_error": 8.95090418262362e-16
+      },
+      {
+        "id": "surface_21",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_22",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_23",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_24",
+        "maximum_error": 2.0947646133377085e-15
+      },
+      {
+        "id": "surface_25",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_26",
+        "maximum_error": 6.971210516555962e-15
+      },
+      {
+        "id": "surface_27",
+        "maximum_error": 1.780792194218199e-15
+      },
+      {
+        "id": "surface_28",
+        "maximum_error": 1.4972502017257676e-07
+      },
+      {
+        "id": "surface_29",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_30",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_31",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_32",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_33",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_34",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_35",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_36",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_37",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_38",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_39",
+        "maximum_error": 1.9352769176712073e-09
+      },
+      {
+        "id": "surface_40",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_41",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_42",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_43",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_44",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_45",
+        "maximum_error": 1.497250117203103e-07
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "portable API and no-op history",
+      "status": "pass",
+      "results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s"
+      ]
+    },
+    {
+      "name": "native API and no-op history",
+      "status": "pass",
+      "results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s"
+      ]
+    },
+    {
+      "name": "portable array UI and renderer regressions",
+      "status": "pass",
+      "results": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1500 filtered out; finished in 1.50s"
+      ]
+    },
+    {
+      "name": "native array UI and renderer regressions",
+      "status": "pass",
+      "results": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1515 filtered out; finished in 1.49s"
+      ]
+    },
+    {
+      "name": "legacy surface array and invalid geometry regressions",
+      "status": "pass",
+      "results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1524 filtered out; finished in 0.03s"
+      ]
+    },
+    {
+      "name": "prior ArrayCrvOnSrf and Splop regressions",
+      "status": "pass",
+      "results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.04s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.54s"
+      ]
+    },
+    {
+      "name": "OpenNURBS batch frame and input guards",
+      "status": "pass",
+      "results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "name": "shared display instances, tessellation, faces and clipping",
+      "status": "pass",
+      "results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1510 filtered out; finished in 0.02s"
+      ]
+    },
+    {
+      "name": "portable strict workspace all-targets clippy",
+      "status": "pass"
+    },
+    {
+      "name": "native strict workspace all-targets clippy",
+      "status": "pass"
+    },
+    {
+      "name": "cargo fmt --all -- --check and git diff --check",
+      "status": "pass"
+    },
+    {
+      "name": "Python requests, staging, source closures, getter gates, native Undo/Redo and diagnostics",
+      "status": "pass"
+    }
+  ],
+  "diagnostics": [
+    {
+      "path": "docs/array-surface-input-pilot.json.gz",
+      "sha256": "d0bf5b04a4be90c703e693c6dbbda36fd9c62443fdcf98a64a0e2b266fae8fa2"
+    },
+    {
+      "path": "docs/array-surface-protocol-pilot.json.gz",
+      "sha256": "30d57a5e4c1b9b314f5c0153cbf0af9e646055dd94f75b63dd31aa80a6d618b6"
+    },
+    {
+      "path": "docs/array-surface-trim-input-diagnostic.json.gz",
+      "sha256": "7a421bce24ccc953c5b31bd81466bc7b5fa452d9611fd23cb12b0f97cfc8507b"
+    }
+  ],
+  "limits": [
+    "The native corpus uses five-point basis clouds rather than every source geometry type. Other copies use the established shared affine document path.",
+    "Trimmed rectangle geometry is reconstructed from the captured underlying definition and UV trim bounds; its edge encoding is not compared to native trim topology.",
+    "Physical face clicks, cross-viewport normal getters and live Rhino History dependency updates are not qualified by this corpus.",
+    "The failed 38-operation trim-construction attempt retains its request, producer bytes and exception; its discarded partial native response was unavailable.",
+    "No performance comparison with native x86 Rhino is claimed."
+  ]
+}

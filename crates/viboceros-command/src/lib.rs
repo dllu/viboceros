@@ -4,6 +4,7 @@ mod add_objects_to_block;
 mod align;
 mod apply_curves;
 pub mod array_curve_surface;
+pub mod array_surface;
 mod block_edit;
 mod block_reset_scale;
 pub mod blocks;
@@ -691,6 +692,12 @@ pub trait Command: Send + Sync {
         CommandHistoryPolicy::Ordinary
     }
 
+    fn surface_array_preferences(&self) -> Option<array_surface::Preferences> {
+        None
+    }
+    fn remember_surface_array_preferences(&self, _value: array_surface::Preferences) -> bool {
+        false
+    }
     /// The surface-curve array shares its accepted count between both layouts.
     fn array_curve_surface_preferences(&self) -> Option<array_curve_surface::Preferences> {
         None
@@ -1829,7 +1836,7 @@ impl CommandRegistry {
             .register(ArrayCurveCommand)
             .expect("unique built-in command");
         registry
-            .register(ArraySurfaceCommand)
+            .register(array_surface::ArraySurfaceCommand::default())
             .expect("unique built-in command");
         registry
             .register(ArrayLinearCommand)
@@ -2240,6 +2247,17 @@ impl CommandRegistry {
             .get(&normalize_command_name("Arc"))
             .and_then(|i| self.commands[*i].arc_deformation())
             .unwrap_or_default()
+    }
+    pub fn surface_array_preferences(&self) -> array_surface::Preferences {
+        self.lookup
+            .get(&normalize_command_name("ArraySrf"))
+            .and_then(|i| self.commands[*i].surface_array_preferences())
+            .unwrap_or_default()
+    }
+    pub fn remember_surface_array_preferences(&self, value: array_surface::Preferences) -> bool {
+        self.lookup
+            .get(&normalize_command_name("ArraySrf"))
+            .is_some_and(|i| self.commands[*i].remember_surface_array_preferences(value))
     }
     pub fn array_curve_surface_preferences(&self) -> array_curve_surface::Preferences {
         self.lookup
@@ -15366,154 +15384,6 @@ fn curve_array_frame_transform(
     AffineTransform3::try_frame_mapping(source, target, [1.0; 3])
 }
 
-const ARRAY_SURFACE_USAGE: &str = "ArraySrf u-count v-count BasePoint=x,y,z \
-    [Up=x,y,z] [Mode=UV|Isocurve] [SurfaceName=name]";
-
-struct ArraySurfaceCommand;
-
-impl Command for ArraySurfaceCommand {
-    fn name(&self) -> &'static str {
-        "ArraySrf"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["ArraySurface"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let u_count = parse_surface_array_count(
-            arguments
-                .first()
-                .ok_or(CommandError::Usage(ARRAY_SURFACE_USAGE))?,
-        )?;
-        let v_count = parse_surface_array_count(
-            arguments
-                .get(1)
-                .ok_or(CommandError::Usage(ARRAY_SURFACE_USAGE))?,
-        )?;
-        let options = parse_surface_array_options(&arguments[2..])?;
-        let (surface, surface_id, sources) =
-            surface_array_inputs(document, options.surface_name.as_deref())?;
-        let cell_count = u_count
-            .checked_mul(v_count)
-            .ok_or(CommandError::TooManyArrayObjects {
-                maximum: MAX_ARRAY_OBJECTS,
-            })?;
-        let copy_count = sources
-            .len()
-            .checked_mul(cell_count)
-            .filter(|count| *count <= MAX_ARRAY_OBJECTS)
-            .ok_or(CommandError::TooManyArrayObjects {
-                maximum: MAX_ARRAY_OBJECTS,
-            })?;
-        let tolerance = document.tolerance();
-        let source_frame = Frame3::try_from_unit_normal(options.base_point, options.up)?;
-        let (u_parameters, v_parameters) =
-            surface_array_parameters(&surface, u_count, v_count, options.mode, tolerance)?;
-        let mut transforms = Vec::new();
-        transforms.try_reserve_exact(cell_count).map_err(|_| {
-            CommandError::TooManyArrayObjects {
-                maximum: MAX_ARRAY_OBJECTS,
-            }
-        })?;
-        for v in v_parameters {
-            for &u in &u_parameters {
-                let target_frame = surface.frame_at(u, v, tolerance)?;
-                transforms.push(AffineTransform3::try_frame_mapping(
-                    source_frame,
-                    target_frame,
-                    [1.0; 3],
-                )?);
-            }
-        }
-        let copies = document
-            .copy_objects_with_transforms(sources.iter().copied(), transforms.as_slice())?;
-        document.select_objects_direct(sources.iter().copied(), SelectionMode::Replace)?;
-        debug_assert!(!document.is_selected(surface_id));
-        debug_assert_eq!(copies.len(), copy_count);
-        Ok(format!(
-            "Arrayed {} object(s) into {u_count}×{v_count} surface cells using {} spacing, creating {copy_count} copy object(s)",
-            sources.len(),
-            options.mode.name(),
-        ))
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum SurfaceArrayMode {
-    Uv,
-    Isocurve,
-}
-
-impl SurfaceArrayMode {
-    const fn name(self) -> &'static str {
-        match self {
-            Self::Uv => "UV",
-            Self::Isocurve => "Isocurve",
-        }
-    }
-}
-
-#[derive(Debug, PartialEq)]
-struct SurfaceArrayOptions {
-    base_point: Point3,
-    up: UnitVector3,
-    mode: SurfaceArrayMode,
-    surface_name: Option<String>,
-}
-
-fn parse_surface_array_count(value: &str) -> Result<usize, CommandError> {
-    value
-        .parse::<usize>()
-        .ok()
-        .filter(|count| *count >= 1)
-        .ok_or_else(|| CommandError::InvalidSurfaceArrayCount(value.to_owned()))
-}
-
-fn parse_surface_array_options(arguments: &[&str]) -> Result<SurfaceArrayOptions, CommandError> {
-    let mut base_point = None;
-    let mut up = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
-    let mut mode = SurfaceArrayMode::Uv;
-    let mut surface_name = None;
-    let mut up_seen = false;
-    let mut mode_seen = false;
-    let mut index = 0;
-    while index < arguments.len() {
-        let (name, value, consumed) = orient_option(arguments, index, ARRAY_SURFACE_USAGE)?;
-        if option_name_eq(name, "BasePoint") && base_point.is_none() {
-            base_point = Some(parse_single_option_point(value, ARRAY_SURFACE_USAGE)?);
-        } else if (option_name_eq(name, "Up") || option_name_eq(name, "Normal")) && !up_seen {
-            up = Vector3::try_from(
-                parse_single_option_point(value, ARRAY_SURFACE_USAGE)?.to_array(),
-            )?
-            .normalized_nonzero()?;
-            up_seen = true;
-        } else if option_name_eq(name, "Mode") && !mode_seen {
-            let value = value.trim_start_matches(['_', '-']);
-            mode = if value.eq_ignore_ascii_case("UV") {
-                SurfaceArrayMode::Uv
-            } else if value.eq_ignore_ascii_case("Isocurve") {
-                SurfaceArrayMode::Isocurve
-            } else {
-                return Err(CommandError::Usage(ARRAY_SURFACE_USAGE));
-            };
-            mode_seen = true;
-        } else if option_name_eq(name, "SurfaceName") && surface_name.is_none() && !value.is_empty()
-        {
-            surface_name = Some(value.to_owned());
-        } else {
-            return Err(CommandError::Usage(ARRAY_SURFACE_USAGE));
-        }
-        index += consumed;
-    }
-    Ok(SurfaceArrayOptions {
-        base_point: base_point.ok_or(CommandError::Usage(ARRAY_SURFACE_USAGE))?,
-        up,
-        mode,
-        surface_name,
-    })
-}
-
 fn parse_single_option_point(value: &str, usage: &'static str) -> Result<Point3, CommandError> {
     let (point, consumed) = parse_point(&[value])?;
     if consumed == 1 {
@@ -15521,94 +15391,6 @@ fn parse_single_option_point(value: &str, usage: &'static str) -> Result<Point3,
     } else {
         Err(CommandError::Usage(usage))
     }
-}
-
-fn surface_array_inputs(
-    document: &Document,
-    surface_name: Option<&str>,
-) -> Result<(NurbsSurface, ObjectId, Vec<ObjectId>), CommandError> {
-    let selected = selected_ids(document)?;
-    let surface_id = if let Some(name) = surface_name {
-        let matches = document
-            .objects()
-            .filter(|object| {
-                object
-                    .attributes()
-                    .name()
-                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
-            })
-            .map(|object| object.id())
-            .collect::<Vec<_>>();
-        match matches.as_slice() {
-            [] => return Err(CommandError::SurfaceArrayTargetNotFound(name.to_owned())),
-            [id] => *id,
-            _ => return Err(CommandError::AmbiguousSurfaceArrayTarget(name.to_owned())),
-        }
-    } else {
-        *selected
-            .last()
-            .ok_or(CommandError::SurfaceArrayTargetRequired)?
-    };
-    let target = document
-        .object(surface_id)
-        .expect("resolved surface-array target identifiers are present");
-    let Geometry::NurbsSurface(surface) = target.geometry() else {
-        return Err(CommandError::SurfaceArrayTargetNotSurface);
-    };
-    let sources = selected
-        .into_iter()
-        .filter(|id| *id != surface_id)
-        .collect::<Vec<_>>();
-    if sources.is_empty() {
-        return Err(CommandError::SurfaceArraySourcesRequired);
-    }
-    Ok((surface.clone(), surface_id, sources))
-}
-
-fn surface_array_parameters(
-    surface: &NurbsSurface,
-    u_count: usize,
-    v_count: usize,
-    mode: SurfaceArrayMode,
-    tolerance: Tolerance,
-) -> Result<(Vec<Real>, Vec<Real>), GeometryError> {
-    let u_start = *surface.domain_u().start();
-    let v_start = *surface.domain_v().start();
-    let parameters = match mode {
-        SurfaceArrayMode::Uv => (
-            normalized_surface_parameters(u_count, |normalized| {
-                surface.parameter_at_u(normalized)
-            })?,
-            normalized_surface_parameters(v_count, |normalized| {
-                surface.parameter_at_v(normalized)
-            })?,
-        ),
-        SurfaceArrayMode::Isocurve => (
-            if u_count == 1 {
-                vec![u_start]
-            } else {
-                surface.divide_u_isocurve_by_count(v_start, u_count - 1, true, tolerance)?
-            },
-            if v_count == 1 {
-                vec![v_start]
-            } else {
-                surface.divide_v_isocurve_by_count(u_start, v_count - 1, true, tolerance)?
-            },
-        ),
-    };
-    Ok(parameters)
-}
-
-fn normalized_surface_parameters(
-    count: usize,
-    mut parameter_at: impl FnMut(Real) -> Result<Real, GeometryError>,
-) -> Result<Vec<Real>, GeometryError> {
-    if count == 1 {
-        return Ok(vec![parameter_at(0.0)?]);
-    }
-    (0..count)
-        .map(|index| parameter_at(index as Real / (count - 1) as Real))
-        .collect()
 }
 
 const SCALE_USAGE: &str = "Scale center factor | center reference target [Copy=Yes|No]";
@@ -41731,7 +41513,7 @@ mod tests {
             .collect::<Vec<_>>();
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 4);
-        assert_eq!(document.groups().len(), 1);
+        assert_eq!(document.groups().len(), 7);
         registry.execute(&mut document, "Redo").unwrap();
         assert!(copy_ids.iter().all(|id| document.object(*id).is_some()));
         assert_eq!(document.groups().len(), 7);

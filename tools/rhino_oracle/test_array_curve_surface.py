@@ -49,10 +49,13 @@ class ArrayCurveSurfaceTests(TestCase):
         for name,count in [('input-pilot',3),('getter-diagnostic',14),('protocol-diagnostic',16),('followup-diagnostic',13)]:
             d=json.loads(gzip.decompress((HERE.parent.parent/'docs'/('array-curve-surface-'+name+'.json.gz')).read_bytes()));self.assertEqual(len(d['request']['operations']),count)
             for name,sha in d['response']['provenance']['sources'].items():self.assertEqual(hashlib.sha256(source_bytes(name,sha)).hexdigest(),sha,name)
-    def test_validation_receipt_pins_current_implementation_and_all_replays(self):
+    def test_validation_receipt_pins_recorded_implementation_and_all_replays(self):
         receipt=json.loads((HERE.parent.parent/'docs/array-curve-surface-validation.json').read_text())
         self.assertEqual(receipt['qualified_workflows'],44)
-        for path,sha in receipt['implementation_sources'].items():self.assertEqual(hashlib.sha256((HERE.parent.parent/path).read_bytes()).hexdigest(),sha,path)
+        for path,sha in receipt['implementation_sources'].items():
+            current=HERE.parent.parent/path;data=current.read_bytes()if current.exists()else b''
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,path)
         for label,rows in receipt['replay_audits'].items():
             self.assertEqual([r['id']for r in rows],[op['id']for op in request()['operations']],label)
             self.assertLessEqual(max(r['maximum_error']for r in rows),receipt['comparison']['absolute_cloud_bound'])

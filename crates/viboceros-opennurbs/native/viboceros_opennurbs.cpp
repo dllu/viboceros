@@ -1920,6 +1920,7 @@ bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttribut
 
 #include "geometry_check.h"
 #include "curve_queries.h"
+#include "surface_queries.h"
 
 struct ViboThreeDmModel {
   std::vector<BridgeDefinition> definitions;

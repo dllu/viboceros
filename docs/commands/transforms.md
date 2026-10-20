@@ -160,13 +160,13 @@ picks, single positions, relative distances, Divide and Multiple, temporary
 SubCrv guides and read-only previews. The construction plane defines the source
 orientation; the guide tangent and surface normal define each copy's frame.
 
-`ArraySrf` copies every selected source into a U-by-V grid over an untrimmed
-NURBS surface. `Mode=UV` divides normalized parameters; `Mode=Isocurve` divides
-the U and V domain-start isocurves by arc length before forming the grid. Counts
-of one use the corresponding domain start. `BasePoint=` is required, `Up=`
-defaults to world Z, and `SurfaceName=` can be omitted when the target is the
-last selected object. Surface normals determine orientation, while originals,
-attributes, selection, and one copied group topology per cell are preserved.
+[`ArraySrf`](array-surface.md) supports surface and B-rep face picks, base/normal
+getters and adjustable grid previews. UV mode divides parameters; Isocurve mode
+divides U at the start of V and then V separately at each U. Closed directions
+omit the duplicate seam. Underlying surfaces retain their trim-independent grid;
+reversed faces reflect the copied up axis. Scripts accept `Surface=`, `Face=` or
+`SurfaceName=` targets and explicit source sets. Group policy and one-step
+Undo/Redo match the native command.
 
 `ArrayPolar` uses the same total-item and preservation rules around the active
 plane's normal through its center. Exactly ±360 degrees omits a duplicate endpoint; other positive,

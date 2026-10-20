@@ -11,3 +11,6 @@ pub use curve::{
 pub use curve::{
     AnalyticCurve, curve_analytic_form, curve_polyline_vertices, polyline_simplify_indices,
 };
+
+mod surface;
+pub use surface::{SurfaceDefinition, SurfaceQueryError, surface_frames};

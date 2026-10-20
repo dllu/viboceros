@@ -14,7 +14,15 @@ pub(super) struct PreviewObject {
 #[derive(Clone, Copy)]
 pub(super) enum ObjectPreview<'a> {
     Affine(TransformedObjects<'a>),
+    Instances(InstancePreview<'a>),
     Deformed(&'a BTreeMap<ObjectId, PreviewObject>),
+}
+
+/// Read-only array cells reuse the original display geometry and tessellation.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct InstancePreview<'a> {
+    pub sources: &'a [ObjectId],
+    pub transforms: &'a [AffineTransform3],
 }
 
 #[derive(Clone, Copy, Debug)]
