@@ -2505,6 +2505,11 @@ impl Viewport {
                 self.paint_morph_radius_circle(&painter, rect, frame, radius);
             }
         }
+        if let Some(preview) = input.orient_surface_preview {
+            for (frame, radius) in preview.sphere_guides(drafting_cursor.map(|c| c.point)) {
+                self.paint_morph_radius_circle(&painter, rect, frame, radius);
+            }
+        }
         if let Some(preview) = input.stretch_preview {
             self.paint_stretch_guide(&painter, rect, preview, drafting_cursor.map(|c| c.point));
         }

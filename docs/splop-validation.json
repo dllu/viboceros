@@ -1,0 +1,284 @@
+{
+  "validated_at": "2026-10-20T03:39:19.153727+00:00",
+  "base_commit": "897b39ce80993025093f2978470faa0fd8d1dfba",
+  "feature": "Splop reference/destination spheres, independent normal-height policy, uniform rigid body scaling, copied groups, repeated placement, partial grips, history and cached previews",
+  "sources": {
+    "crates/viboceros-command/src/lib.rs": "9c3a5c2cc6374cd30051bdb3d00665d900f813142cf980281ccf60cb5d262d33",
+    "crates/viboceros-command/src/morph_edit.rs": "61def1f6cdce09c35e0c243bcabdb89cd486c9add053f57ffbcaf6372ec86458",
+    "crates/viboceros-command/src/morph_test_support.rs": "3e6a39456f8f2e7d3552059c064ad35f266d8ab97c7c7bc2b517bfba614e9085",
+    "crates/viboceros-command/src/orient_surface.rs": "3a1301c0890eaaa327adc423fdb15e36dad0c89af78ebd11c12d998f17633ee5",
+    "crates/viboceros-command/src/rigid_groups.rs": "65f16c8249a48df4acfef062061b815a5c0333001c93d402879d80d3126f1e2a",
+    "crates/viboceros-command/src/splop.rs": "8dc685abf48752cdc390c35337c54e1fb8b4deac07f62a80d7b2e423031a4a30",
+    "crates/viboceros-command/src/surface_reference.rs": "ad90798b8b4ecf197243e83c9ab3a4e2152e7af5542565249ea370305bfd5131",
+    "crates/viboceros-command/tests/splop_command.rs": "9eae1dbff3d72e17367953836f00cd6d6bed2953447abe62b1f385168933f769",
+    "crates/viboceros-command/tests/support/splop.rs": "dfe376eec4f4d30e6436b28ff26bde79a8fd6fefc590472d12caff27cfeafe5f",
+    "crates/viboceros-geometry/src/morph.rs": "94c3bb059c28368803449b971c273071ecd34c066849ee3b37d36cef6013d978",
+    "crates/viboceros-geometry/src/morph/rigid.rs": "f991aee484cd6a5fb1c2e61d27b6b73fd4df9c7f8c394aec3fad40796cf7edfe",
+    "src/app.rs": "eac7dc171c02f0fe14e7a6d530fa41ead885ea22ea5af469da8688854fcfbd8a",
+    "src/app/orient_surface.rs": "b8aa6043983237ff5667174f131e0bcf9177c78edb2211d72c869cf65a145667",
+    "src/app/orient_surface/sphere.rs": "ef1ffa315c275d3e6e6a17a87285a198f3c3fdd34c250c6b903d54ab0fda1173",
+    "src/app/tests/splop.rs": "4db040f27a44d357ede4907eabbf4a9e767a820a90105f5868e3021913b2be65",
+    "src/app/transform_sources.rs": "8a7dc061e53cc565ea894d1fa04a564f5b8bcdcac1a2cde27280cf13305e59e6",
+    "src/main.rs": "d31181c0d315c3206e3fdebdf126fb97bedcb4c442d73a043b3c240d03cc9efa",
+    "src/viewport.rs": "8b3ff8f3b10fc58d9303ea9097058b76cd3b0199a7fe6dcb5bd1e81ac1464d14",
+    "src/viewport/affine_preview.rs": "4160ca38d34399df9159ca6ac04665bc0f96a8d598f7fedb60a0ffbf582ee97e",
+    "src/viewport/morph_preview.rs": "c2eb579249510a2a517ee56d2aeeac613cf12d6e6ff181db5135e83262ac6625",
+    "src/viewport/orient_surface_preview.rs": "d6f4a564e9e5ee4cc60451dcba7b3554ffd3bf9cb4e8cdc5ac2aa71748a17238",
+    "tools/rhino_oracle/generate_splop.py": "7d838eb4dbe5065e33f9683da9190485006a41f042234d8df9b7fa630d23e490",
+    "tools/rhino_oracle/rhino_worker.py": "975c3e9fa2d86a79f6bfcc8ec64fd721712c6e751ec7b011e66737ffc3f88fa3",
+    "tools/rhino_oracle/splop_probe.py": "6a53e0480ea77a0f02ffb3c0571401a49fdf3c6fda1de74ae68c7aba79658289",
+    "tools/rhino_oracle/structural_sdk.py": "eb6c85eae9a84f6fc501d4c28af47d7f5c149d87f3d5f0ae0959ec2fc4ebbfe2",
+    "tools/rhino_oracle/test_splop.py": "4e2955aaa5144e1c8995e404da9f0dba68bab4a378305a21833f56dfa897a6b7"
+  },
+  "native": {
+    "engine_version": "8.32.26160.13001",
+    "driver": "Owned empty document, private Xvfb and settings scheme; commands scheduled at idle outside RunPythonScript undo recording",
+    "request": "tools/rhino_oracle/fixtures/splop.json",
+    "request_sha256": "09b9e3f82c1629eaec05d7fb418f6d484cbf275b69e4ab5f24d91407653de8b7",
+    "observation": "tools/rhino_oracle/observations/splop.json",
+    "observation_sha256": "5668863850455f12839181885cb413cfcdc578add087e626782554d188f6ec66",
+    "workflows": 134,
+    "successful_completions": 130,
+    "cancelled_after_accepted_copies": 4,
+    "guides_unchanged": 134,
+    "real_undo_redo_records": 134,
+    "provenance": {
+      "request_sha256": "09b9e3f82c1629eaec05d7fb418f6d484cbf275b69e4ab5f24d91407653de8b7",
+      "sources": {
+        "generate_splop.py": "7d838eb4dbe5065e33f9683da9190485006a41f042234d8df9b7fa630d23e490",
+        "splop_probe.py": "6a53e0480ea77a0f02ffb3c0571401a49fdf3c6fda1de74ae68c7aba79658289",
+        "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "975c3e9fa2d86a79f6bfcc8ec64fd721712c6e751ec7b011e66737ffc3f88fa3",
+        "structural_sdk.py": "eb6c85eae9a84f6fc501d4c28af47d7f5c149d87f3d5f0ae0959ec2fc4ebbfe2"
+      }
+    }
+  },
+  "audits": [
+    {
+      "consumer": "portable API",
+      "workflows": 134,
+      "maximum_native_sample_distance": 9.839969556369154e-06,
+      "maximum_off_grid_point_map_fit_error": 7.961544268352783e-07,
+      "by_shape": {
+        "Box": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 4.4220176446419614e-06
+        },
+        "Cloud": {
+          "workflows": 47,
+          "maximum_native_sample_distance": 7.209568599584235e-11
+        },
+        "Curve": {
+          "workflows": 14,
+          "maximum_native_sample_distance": 9.839969556369154e-06
+        },
+        "Line": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 8.068059026042929e-06
+        },
+        "Mesh": {
+          "workflows": 14,
+          "maximum_native_sample_distance": 1.8181596950499436e-06
+        },
+        "Points": {
+          "workflows": 23,
+          "maximum_native_sample_distance": 3.506193460661199e-10
+        },
+        "Surface": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 2.867204855491029e-06
+        }
+      }
+    },
+    {
+      "consumer": "native interpolation API",
+      "workflows": 134,
+      "maximum_native_sample_distance": 9.839969556369154e-06,
+      "maximum_off_grid_point_map_fit_error": 7.961544268352783e-07,
+      "by_shape": {
+        "Box": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 4.422017644776832e-06
+        },
+        "Cloud": {
+          "workflows": 47,
+          "maximum_native_sample_distance": 7.209568599584235e-11
+        },
+        "Curve": {
+          "workflows": 14,
+          "maximum_native_sample_distance": 9.839969556369154e-06
+        },
+        "Line": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 8.068059025179751e-06
+        },
+        "Mesh": {
+          "workflows": 14,
+          "maximum_native_sample_distance": 1.8181596950499436e-06
+        },
+        "Points": {
+          "workflows": 23,
+          "maximum_native_sample_distance": 3.506193460661199e-10
+        },
+        "Surface": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 2.8672048620799916e-06
+        }
+      }
+    },
+    {
+      "consumer": "interactive",
+      "workflows": 134,
+      "maximum_native_sample_distance": 9.839967604798157e-06,
+      "maximum_off_grid_point_map_fit_error": 7.961649584694171e-07,
+      "by_shape": {
+        "Box": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 4.42201760100566e-06
+        },
+        "Cloud": {
+          "workflows": 47,
+          "maximum_native_sample_distance": 8.266239265176375e-11
+        },
+        "Curve": {
+          "workflows": 14,
+          "maximum_native_sample_distance": 9.839967604798157e-06
+        },
+        "Line": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 8.068059013949917e-06
+        },
+        "Mesh": {
+          "workflows": 14,
+          "maximum_native_sample_distance": 1.8181597278684118e-06
+        },
+        "Points": {
+          "workflows": 23,
+          "maximum_native_sample_distance": 3.8741250029154537e-10
+        },
+        "Surface": {
+          "workflows": 12,
+          "maximum_native_sample_distance": 2.867204784163184e-06
+        }
+      }
+    }
+  ],
+  "bounds": {
+    "native_point_and_rigid_body_comparisons": 1e-07,
+    "native_fitted_geometry_comparisons": 2e-05,
+    "local_off_grid_fit_bound": 1.1e-06,
+    "fixture_document_absolute_tolerance": 1e-06,
+    "mesh_comparison": "Exact component bit equality after conversion to native binary32 vertex storage; reported Euclidean distances retain the original binary64 coordinates."
+  },
+  "behavior": {
+    "reference": "Center plus radius or radius point; CPlane normal and picked reference direction; empty radius accepts 1 as shown in all retained native prompts.",
+    "destination": "Surface/face point plus sphere size and direction, with optional numeric radius lock.",
+    "flip": "User Flip sets unit normal-height scale independently of the effective target face orientation.",
+    "rigid": "Uniform sphere scaling and the shared forward derivative frame at each object or selected top-group bounding-box center.",
+    "history": "Enter releases command source picks; Escape retains accepted copies and preselected picks; copied group definitions remain after Undo."
+  },
+  "diagnostic": {
+    "path": "docs/splop-dispatch-undo-diagnostic.json.gz",
+    "compressed_sha256": "8330d372b8f5e908d33b40beb1b133dc155228b4db42b84b03fae21d03f645c7",
+    "observation_sha256": "dd9fb69775b85795ce804b28a4c6e876658c12df07ddb5a9cbe4e3e71a7c9e66",
+    "status": "Excluded from compatibility replay: initial Splop-only requests were not registered for idle dispatch and had no Undo records.",
+    "provenance": {
+      "request_sha256": "09b9e3f82c1629eaec05d7fb418f6d484cbf275b69e4ab5f24d91407653de8b7",
+      "sources": {
+        "generate_splop.py": "7d838eb4dbe5065e33f9683da9190485006a41f042234d8df9b7fa630d23e490",
+        "splop_probe.py": "70a6f7b4e863e029c4dbe271e4da50d5c9e2012894d6a86dbb3777e9325b7360",
+        "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "623b39009e60f3f1df1e9007e99ba4f1cc62b857f71ee11995bb58fc41eda36b",
+        "structural_sdk.py": "eb6c85eae9a84f6fc501d4c28af47d7f5c149d87f3d5f0ae0959ec2fc4ebbfe2"
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "134 workflows, partial controls and atomic input failures with portable interpolation",
+      "log_path": "/tmp/viboceros-splop-portable-api-final-pass.log",
+      "log_sha256": "03f8aa9dd6cd26b17c5c10484b233eba008de826a19a7a16964d34f49c6d88dc",
+      "result": "test result: ok. 3 passed; 0 failed"
+    },
+    {
+      "check": "134 workflows, partial controls and atomic input failures with native interpolation",
+      "log_path": "/tmp/viboceros-splop-native-api-final-pass.log",
+      "log_sha256": "383f3181ae6c95b5ae39fe10274135e157881c9e7f6c6dae1340a8cb34105474",
+      "result": "test result: ok. 3 passed; 0 failed"
+    },
+    {
+      "check": "134 interactive workflows, unit radii, radius defaults, option recovery, stale guides and all-mode preview cages",
+      "log_path": "/tmp/viboceros-splop-ui-latest.log",
+      "log_sha256": "87b7504520f81993cfbd50632d267ae42c5933ef9b54236f1db3b278135008c1",
+      "result": "test result: ok. 5 passed; 0 failed"
+    },
+    {
+      "check": "Shared OrientOnSrf controller, native clouds/grips, trimming, normals, picking and previews",
+      "log_path": "/tmp/viboceros-splop-orient-ui-final-pass.log",
+      "log_sha256": "1a6c7fbd0acd07f08cc762ab04162ae5b8ae680ab963697b2354df69fe7dfac3",
+      "result": "test result: ok. 17 passed; 0 failed"
+    },
+    {
+      "check": "Existing affine previews",
+      "log_path": "/tmp/viboceros-splop-surface-affine-ui-final-pass.log",
+      "log_sha256": "c4ef2cfe4d9216083c5c932e54c5c0e1b3816131f8a8d8f174f1a309490d150b",
+      "result": "test result: ok. 13 passed; 0 failed; 1 ignored"
+    },
+    {
+      "check": "Existing Stretch API workflows",
+      "log_path": "/tmp/viboceros-splop-stretch-api-final-pass.log",
+      "log_sha256": "010c534f1120e71024c69343da91ae7b67da007dda69d2ee1809644539b2c03f",
+      "result": "test result: ok. 5 passed; 0 failed"
+    },
+    {
+      "check": "Sorted registered command list",
+      "log_path": "/tmp/viboceros-splop-help-final-pass.log",
+      "log_sha256": "db8e249d9608df8185116d2994aeea2b27e0331be9340e8087d5ba848ad7843f",
+      "result": "test result: ok. 1 passed; 0 failed"
+    },
+    {
+      "check": "Python native provenance, dispatcher diagnostic, validation and prior morph captures",
+      "log_path": "/tmp/viboceros-splop-python.log",
+      "log_sha256": "a77c6f1c970c36b07c5b39832eddb319e5b571360fe419764a40d8877e757269",
+      "result": "Ran 13 tests"
+    },
+    {
+      "check": "Strict complete workspace Clippy, portable and native-smlib, all targets",
+      "log_path": "/tmp/viboceros-splop-lint-final.log",
+      "log_sha256": "5795f5bbaac88c483a1336ede2c93b54a52c91c2d72810198194b8237606496b",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "qualifications": {
+    "partial_grips": "Local selected cubic control-point checks cover Copy and Rigid combinations, knots, weights, unchanged controls and exact Undo/Redo. Native Splop grip command captures remain open.",
+    "previews": "Native cloud point and rigid-body maps, cache identity/invalidation, source immutability, sphere guides and wireframe/shaded/ghosted object transforms are checked. Pixel matching remains open.",
+    "reference_sphere": "Center/radius and picked radius direction only; advanced native sphere construction modes remain in progress.",
+    "geometry": "Off-grid and native locus comparisons are sampled. No continuous Hausdorff or general performance claim. Existing bounded adaptive fitting and its explicit failures remain applicable."
+  },
+  "references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/splop.htm",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.morphs.splopspacemorph/splopspacemorph"
+  ]
+}

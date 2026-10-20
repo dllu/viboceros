@@ -61,6 +61,7 @@ Rhino's complete command set is still a work in progress.
 - [Weight: rational curve and surface controls with a live preview](weight.md)
 - [InsertEditPoint: shape-preserving edit-point insertion and SubCrv](insert-edit-point.md)
 - [SoftEditCrv: local curve falloff and repeated copies](soft-edit-curve.md)
+- [Splop: sphere-sized surface wrapping and repeated copies](splop.md)
 - [SetPt coordinate alignment for objects and grips](set-point.md)
 - [Object conversion to NURBS](to-nurbs.md)
 - [Bézier conversion](beziers.md)

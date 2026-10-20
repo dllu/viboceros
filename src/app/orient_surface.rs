@@ -1,6 +1,7 @@
 //! Surface picking, scale/angle getters, and repeated rigid or deformable placement.
 use super::*;
 mod option_input;
+mod sphere;
 use std::cell::RefCell;
 use viboceros_command::orient_surface::{
     self as solver, Options, Placement, Pose, PreviewPhase, Target,
@@ -14,7 +15,28 @@ enum Phase {
     OnSurfaceBase,
     Placement(PreviewPhase),
 }
+#[derive(Clone, Copy, PartialEq)]
+enum Kind {
+    Orient,
+    Splop,
+}
+impl Kind {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Orient => "OrientOnSrf",
+            Self::Splop => "Splop",
+        }
+    }
+    fn command(self, last: Option<Point3>) -> InteractiveCommand {
+        match self {
+            Self::Orient => InteractiveCommand::OrientOnSurface { last },
+            Self::Splop => InteractiveCommand::Splop { last },
+        }
+    }
+}
 pub(super) struct Session {
+    kind: Kind,
+    toggle: Option<&'static str>,
     group: viboceros_document::HistoryGroup,
     sources: Vec<ObjectId>,
     grips: Vec<viboceros_document::ControlPointId>,
@@ -43,7 +65,7 @@ impl Session {
         }
     }
     pub(super) fn preview(&self) -> Option<crate::viewport::AffinePreview<'_>> {
-        if !self.options.rigid {
+        if !self.options.rigid || self.kind == Kind::Splop {
             return None;
         }
         Some(crate::viewport::AffinePreview {
@@ -63,11 +85,12 @@ impl Session {
         &self,
         normal: Vector3,
     ) -> Option<crate::viewport::OrientSurfacePreview<'_>> {
-        if self.options.rigid {
+        if self.options.rigid && self.kind != Kind::Splop {
             return None;
         }
         let phase = self.preview_phase()?;
         Some(crate::viewport::OrientSurfacePreview {
+            sphere: self.kind == Kind::Splop,
             sources: &self.sources,
             grips: &self.grips,
             placement: self.placement.as_ref()?,
@@ -84,7 +107,7 @@ impl Session {
     }
     pub(super) fn angle_plane(&self) -> Option<Frame3> {
         match self.preview_phase()? {
-            PreviewPhase::Scale(p) | PreviewPhase::Rotation(p) => {
+            PreviewPhase::Scale(p) | PreviewPhase::Rotation(p) | PreviewPhase::Sphere(p, _) => {
                 self.placement.as_ref()?.rotation_plane(p).ok()
             }
             _ => None,
@@ -153,7 +176,7 @@ impl VibocerosApp {
             s.reference = None;
         }
         if !self.document.history_group_is_current(&s.group) {
-            match self.document.begin_history_group("OrientOnSrf") {
+            match self.document.begin_history_group(s.kind.name()) {
                 Ok(g) => s.group = g,
                 Err(e) => {
                     self.push_log(format!("Error: {e}"));
@@ -177,19 +200,52 @@ impl VibocerosApp {
         let Some(name) = tokens.next() else {
             return false;
         };
-        if !["orientonsrf", "orientonsurface"].contains(
-            &name
-                .trim_start_matches(['_', '-'])
-                .to_ascii_lowercase()
-                .as_str(),
-        ) {
+        let splop = name
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("Splop");
+        let kind = if splop { Kind::Splop } else { Kind::Orient };
+        if !splop
+            && !["orientonsrf", "orientonsurface"].contains(
+                &name
+                    .trim_start_matches(['_', '-'])
+                    .to_ascii_lowercase()
+                    .as_str(),
+            )
+        {
             return false;
         }
         let args = tokens.collect::<Vec<_>>();
-        let mut defaults = self.commands.orient_surface_options();
-        if name.trim_start_matches('_').starts_with('-') {
+        let mut defaults = if splop {
+            Options {
+                rigid: false,
+                scale_prompt: true,
+                ..Options::default()
+            }
+        } else {
+            self.commands.orient_surface_options()
+        };
+        if !splop && name.trim_start_matches('_').starts_with('-') {
             defaults.scale_prompt = true;
             defaults.rotation_prompt = true;
+        }
+        if splop {
+            let mut i = 0;
+            while i < args.len() {
+                let (key, has_value) = args[i]
+                    .split_once('=')
+                    .map_or((args[i], false), |(key, _)| (key, true));
+                if !["copy", "rigid", "flip"].contains(
+                    &key.trim_start_matches(['_', '-'])
+                        .to_ascii_lowercase()
+                        .as_str(),
+                ) {
+                    return false;
+                }
+                i += if has_value { 1 } else { 2 };
+                if i > args.len() {
+                    return false;
+                }
+            }
         }
         let Ok((rest, mut options, r)) = solver::options(&args, defaults) else {
             return false;
@@ -198,7 +254,7 @@ impl VibocerosApp {
             return false;
         }
         self.cancel_interactive_command(false);
-        let copy = self.commands.begin_copy_options("OrientOnSrf").unwrap();
+        let copy = self.commands.begin_copy_options(kind.name()).unwrap();
         if !args.iter().any(|a| {
             a.split('=').next().is_some_and(|a| {
                 a.trim_start_matches(['_', '-'])
@@ -221,11 +277,11 @@ impl VibocerosApp {
             .map(|(id, _)| id)
             .collect::<Vec<_>>();
         if sources.is_empty() && grips.is_empty() {
-            self.start_transform_source_prompt("OrientOnSrf");
+            self.start_transform_source_prompt(kind.name());
             self.object_prompt.as_mut().unwrap().command_override = Some(input.into());
             return true;
         }
-        let group = match self.document.begin_history_group("OrientOnSrf") {
+        let group = match self.document.begin_history_group(kind.name()) {
             Ok(g) => g,
             Err(e) => {
                 self.push_log(format!("Error: {e}"));
@@ -234,6 +290,8 @@ impl VibocerosApp {
         };
         let plane = self.viewports[self.active_viewport].construction_plane();
         self.orient_surface_session = Some(Session {
+            kind,
+            toggle: None,
             group,
             sources,
             grips,
@@ -257,8 +315,10 @@ impl VibocerosApp {
             cache: Default::default(),
             applied: false,
         });
-        self.commands.remember_orient_surface_options(options);
-        self.active_command = Some(InteractiveCommand::OrientOnSurface { last: None });
+        if !splop {
+            self.commands.remember_orient_surface_options(options);
+        }
+        self.active_command = Some(kind.command(None));
         self.orient_surface_prompt();
         true
     }
@@ -268,6 +328,10 @@ impl VibocerosApp {
         }
         let s = self.orient_surface_session.as_ref().unwrap();
         let prompt = match s.phase {
+            Phase::Base if s.kind == Kind::Splop => "pick the reference sphere center",
+            Phase::Reference if s.kind == Kind::Splop => {
+                "reference sphere radius <1> or direction point"
+            }
             Phase::Base => "pick the source base point (OnSurface=Yes)",
             Phase::Reference => "pick the source reference point",
             Phase::Guide => "select a destination surface or face (Surface=id Face=index)",
@@ -278,13 +342,26 @@ impl VibocerosApp {
             Phase::Placement(PreviewPhase::Scale(_)) => {
                 "scale factor or reference point; Enter keeps the current scale"
             }
+            Phase::Placement(PreviewPhase::Sphere(_, _)) => {
+                "pick the sphere size and direction; a number locks its radius"
+            }
             Phase::Placement(PreviewPhase::Rotation(_)) => {
                 "rotation angle or direction point; Enter keeps the current angle"
             }
         };
         self.push_log(format!(
-            "OrientOnSrf: {prompt}; {}; Esc finishes",
-            s.options.arguments()
+            "{}: {prompt}; {}; Esc finishes",
+            s.kind.name(),
+            if s.kind == Kind::Splop {
+                viboceros_command::splop::Options {
+                    copy: s.options.copy,
+                    rigid: s.options.rigid,
+                    flip: s.options.flip,
+                }
+                .arguments()
+            } else {
+                s.options.arguments()
+            }
         ));
     }
     pub(super) fn accept_orient_surface(&mut self, id: ObjectId, face: Option<usize>) -> bool {
@@ -346,7 +423,7 @@ impl VibocerosApp {
         if self
             .orient_surface_session
             .as_ref()
-            .is_some_and(|s| s.value_prompt.is_some())
+            .is_some_and(|s| s.value_prompt.is_some() || s.toggle.is_some())
         {
             self.push_log("Error: enter a numeric preset value".into());
             return Some(false);
@@ -413,26 +490,36 @@ impl VibocerosApp {
                     }
                 }
             }
-            Phase::Placement(phase @ (PreviewPhase::Scale(_) | PreviewPhase::Rotation(_))) => {
-                match s.placement.as_ref().unwrap().preview_pose(phase, point) {
-                    Ok((p, o)) => {
-                        s.options = o;
-                        s.sync();
+            Phase::Placement(
+                phase @ (PreviewPhase::Scale(_)
+                | PreviewPhase::Rotation(_)
+                | PreviewPhase::Sphere(_, _)),
+            ) => match s.placement.as_ref().unwrap().preview_pose(phase, point) {
+                Ok((p, o)) => {
+                    s.options = o;
+                    s.sync();
+                    if s.kind == Kind::Orient {
                         self.commands.remember_orient_surface_options(o);
-                        match phase {
-                            PreviewPhase::Scale(_) => self.advance_orient_surface_pose(p, false),
-                            _ => self.commit_orient_surface(p),
-                        }
                     }
-                    Err(e) => {
-                        self.push_log(format!("Error: {e}"));
-                        false
+                    match phase {
+                        PreviewPhase::Scale(_) => self.advance_orient_surface_pose(p, false),
+                        _ => self.commit_orient_surface(p),
                     }
                 }
-            }
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            },
         };
         if result && self.orient_surface_session.is_some() {
-            self.active_command = Some(InteractiveCommand::OrientOnSurface { last: Some(point) });
+            self.active_command = Some(
+                self.orient_surface_session
+                    .as_ref()
+                    .unwrap()
+                    .kind
+                    .command(Some(point)),
+            );
             self.orient_surface_prompt();
         }
         Some(result)
@@ -440,7 +527,10 @@ impl VibocerosApp {
     fn advance_orient_surface_pose(&mut self, pose: Pose, scale: bool) -> bool {
         let s = self.orient_surface_session.as_mut().unwrap();
         s.clear_preview();
-        if scale && s.options.scale_prompt {
+        if s.kind == Kind::Splop {
+            s.phase = Phase::Placement(PreviewPhase::Sphere(pose, None));
+            true
+        } else if scale && s.options.scale_prompt {
             s.phase = Phase::Placement(PreviewPhase::Scale(pose));
             true
         } else if s.options.rotation_prompt {
@@ -457,26 +547,53 @@ impl VibocerosApp {
         if options.constrain_normal {
             options.destination_normal = Some(options.destination_normal.unwrap_or(s.normal));
         }
-        let input = format!(
-            "OrientOnSrf {} {} {} Surface={} Face={} {} {}={} {}",
-            format_model_point(s.base.unwrap()),
-            format_model_point(s.reference.unwrap()),
-            format_model_point(pose.point),
-            t.id,
-            t.face,
-            options.arguments(),
-            if s.postselected {
-                "PickedSources"
-            } else {
-                "Sources"
-            },
-            s.sources
-                .iter()
-                .map(ToString::to_string)
-                .collect::<Vec<_>>()
-                .join(","),
-            super::transform_sources::grip_argument(&s.grips, s.postselected)
-        );
+        let input = if s.kind == Kind::Splop {
+            format!(
+                "Splop {} {} {} {} Angle={} Surface={} Face={} Copy={} Rigid={} Flip={} Finish=No {}={} {}",
+                format_model_point(s.base.unwrap()),
+                format_model_point(s.reference.unwrap()),
+                format_model_point(pose.point),
+                s.placement.as_ref().unwrap().reference_length * options.scale,
+                options.rotation,
+                t.id,
+                t.face,
+                if options.copy { "Yes" } else { "No" },
+                if options.rigid { "Yes" } else { "No" },
+                if options.flip { "Yes" } else { "No" },
+                if s.postselected {
+                    "PickedSources"
+                } else {
+                    "Sources"
+                },
+                s.sources
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(","),
+                super::transform_sources::grip_argument(&s.grips, s.postselected)
+            )
+        } else {
+            format!(
+                "OrientOnSrf {} {} {} Surface={} Face={} {} {}={} {}",
+                format_model_point(s.base.unwrap()),
+                format_model_point(s.reference.unwrap()),
+                format_model_point(pose.point),
+                t.id,
+                t.face,
+                options.arguments(),
+                if s.postselected {
+                    "PickedSources"
+                } else {
+                    "Sources"
+                },
+                s.sources
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(","),
+                super::transform_sources::grip_argument(&s.grips, s.postselected)
+            )
+        };
         match self.commands.execute_in_history_group(
             &mut self.document,
             &input,
@@ -505,6 +622,16 @@ impl VibocerosApp {
     pub(super) fn try_continue_orient_surface(&mut self, input: &str) -> bool {
         if self.orient_surface_session.is_some() && !self.validate_orient_surface() {
             return true;
+        }
+        if self.continue_splop_sphere_input(input) {
+            return true;
+        }
+        if self
+            .orient_surface_session
+            .as_ref()
+            .is_some_and(|s| s.kind == Kind::Splop)
+        {
+            return false;
         }
         if self.continue_orient_surface_option_input(input) {
             return true;

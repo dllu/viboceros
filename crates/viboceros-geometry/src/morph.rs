@@ -339,6 +339,15 @@ impl<'a> SurfacePointMorph<'a> {
         })
     }
 
+    /// Scale source height independently of tangential size and direction.
+    /// Sphere placement distinguishes the user's Flip option from a reversed
+    /// target face, even when both affect the resulting normal orientation.
+    pub fn with_normal_height_scale(mut self, scale: Real) -> Result<Self, GeometryError> {
+        require_finite([scale], "surface point morph height scale")?;
+        self.normal_scale = scale;
+        Ok(self)
+    }
+
     /// Uses a fixed placement construction-plane normal instead of the
     /// varying target surface normal.
     pub fn with_constrained_normal(mut self, normal: Vector3) -> Result<Self, GeometryError> {
@@ -410,6 +419,15 @@ impl<'a> SurfacePointMorph<'a> {
     #[inline]
     pub const fn target_parameters(&self) -> (Real, Real) {
         (self.target_u, self.target_v)
+    }
+
+    /// Place an undeformed body at its mapped center, sharing the derivative
+    /// frame policy used by the other nonlinear deformation commands.
+    pub fn rigid_transform(
+        &self,
+        center: Point3,
+    ) -> Result<crate::AffineTransform3, GeometryError> {
+        rigid_transform(self, center)
     }
 }
 

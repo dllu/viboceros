@@ -5,6 +5,12 @@ mod app;
 mod deformation_test_support;
 mod sidebar;
 #[cfg(test)]
+#[allow(dead_code)]
+#[path = "../crates/viboceros-command/tests/support/splop.rs"]
+mod splop_test_support;
+#[cfg(test)]
+pub(crate) use deformation_test_support::morph as morph_fixtures;
+#[cfg(test)]
 #[path = "../crates/viboceros-oracle/src/test_json.rs"]
 mod test_json;
 mod viewport;

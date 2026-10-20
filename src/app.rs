@@ -358,6 +358,9 @@ enum InteractiveCommand {
     OrientOnSurface {
         last: Option<Point3>,
     },
+    Splop {
+        last: Option<Point3>,
+    },
     OrientPoints {
         kind: viboceros_command::orient_points::Kind,
         last: Option<Point3>,
@@ -852,6 +855,7 @@ impl InteractiveCommand {
             Self::SurfaceFlow { .. } => "FlowAlongSrf",
             Self::Flow { .. } => "Flow",
             Self::OrientOnSurface { .. } => "OrientOnSrf",
+            Self::Splop { .. } => "Splop",
             Self::OrientPoints { kind, .. } => kind.name(),
             Self::ProjectDirection { .. } => "Project",
             Self::ProjectPlane { command, .. } => command,
@@ -1002,6 +1006,9 @@ impl InteractiveCommand {
             }
             Self::OrientOnSurface { .. } => {
                 "OrientOnSrf: follow the surface placement prompt (Esc finishes)"
+            }
+            Self::Splop { .. } => {
+                "Splop: draw a reference sphere, pick a surface, then size the destination sphere"
             }
             Self::OrientPoints { .. } => {
                 "Pick the next orientation reference or target point (Esc cancels)"
@@ -1859,7 +1866,9 @@ impl InteractiveCommand {
             Self::ProjectDirection { start }
             | Self::SurfaceFlow { start }
             | Self::Flow { start } => start,
-            Self::OrientPoints { last, .. } | Self::OrientOnSurface { last } => last,
+            Self::OrientPoints { last, .. }
+            | Self::OrientOnSurface { last }
+            | Self::Splop { last } => last,
             Self::ProjectPlane { anchor, .. } => anchor,
             Self::Section { start, .. } => start,
             Self::Contour {
@@ -6127,6 +6136,7 @@ impl VibocerosApp {
             | InteractiveCommand::SurfaceFlow { .. }
             | InteractiveCommand::Flow { .. }
             | InteractiveCommand::OrientOnSurface { .. }
+            | InteractiveCommand::Splop { .. }
             | InteractiveCommand::Section { .. }
             | InteractiveCommand::Contour { .. } => {
                 return false;
@@ -11323,6 +11333,7 @@ mod tests {
     mod spiral;
     mod spiral_rail;
     mod split_edge;
+    mod splop;
     mod standalone_subcurve;
     mod stretch;
     mod subcurve_direction;

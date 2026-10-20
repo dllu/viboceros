@@ -11,6 +11,7 @@ pub(crate) struct Key {
     pose: Pose,
     options: Options,
     normal: Vector3,
+    sphere: bool,
 }
 impl PartialEq for Key {
     fn eq(&self, other: &Self) -> bool {
@@ -21,28 +22,43 @@ impl PartialEq for Key {
             && self.pose == other.pose
             && self.options == other.options
             && self.normal == other.normal
+            && self.sphere == other.sphere
     }
 }
 impl MorphPreviewKey for Key {
     type Morph = SurfacePointMorph<'static>;
     fn morph(&self, _: Tolerance) -> Result<Self::Morph, GeometryError> {
-        self.placement
+        let morph = self
+            .placement
             .morph_at_pose(self.pose, self.options, self.normal)
             .map_err(|_| GeometryError::Degenerate {
                 context: "surface orientation preview",
+            })?;
+        if self.sphere {
+            morph.with_normal_height_scale(if self.options.flip {
+                1.
+            } else {
+                self.options.scale
             })
+        } else {
+            Ok(morph)
+        }
     }
     fn rigid(&self) -> bool {
-        false
+        self.sphere && self.options.rigid
     }
     fn preserve(&self) -> bool {
         false
     }
     fn rigid_transform(
         &self,
-        _: &Self::Morph,
-        _: Point3,
+        morph: &Self::Morph,
+        center: Point3,
     ) -> Result<AffineTransform3, GeometryError> {
+        if self.sphere {
+            return AffineTransform3::try_uniform_scale(center, self.options.scale)?
+                .then(morph.rigid_transform(center)?);
+        }
         self.placement
             .transform_at_pose(self.pose, self.options)
             .map_err(|_| GeometryError::Degenerate {
@@ -56,6 +72,7 @@ impl MorphPreviewKey for Key {
 pub(crate) type OrientSurfacePreviewCache = MorphPreviewCache<Key>;
 #[derive(Clone, Copy)]
 pub(crate) struct OrientSurfacePreview<'a> {
+    pub sphere: bool,
     pub sources: &'a [ObjectId],
     pub grips: &'a [viboceros_document::ControlPointId],
     pub placement: &'a Placement,
@@ -74,6 +91,36 @@ impl std::fmt::Debug for OrientSurfacePreview<'_> {
     }
 }
 impl OrientSurfacePreview<'_> {
+    pub(super) fn sphere_guides(self, cursor: Option<Point3>) -> Vec<(Frame3, Real)> {
+        if !self.sphere {
+            return Vec::new();
+        }
+        let Some(cursor) = cursor.or(self.last_point) else {
+            return Vec::new();
+        };
+        let Ok((pose, options)) = self.placement.preview_pose(self.phase, cursor) else {
+            return Vec::new();
+        };
+        let radius = self.placement.reference_length;
+        let mut guides = Vec::with_capacity(6);
+        for (frame, radius) in [
+            (self.placement.source, radius),
+            (pose.frame, radius * options.scale),
+        ] {
+            let [x, y, z] = frame.axes();
+            for [a, b] in [[x, y], [y, z], [z, x]] {
+                if let Ok(frame) = Frame3::try_from_unit_directions(
+                    frame.origin(),
+                    a,
+                    b,
+                    Tolerance::NUMERICAL_VALIDATION,
+                ) {
+                    guides.push((frame, radius));
+                }
+            }
+        }
+        guides
+    }
     pub(super) fn resolve(
         self,
         cursor: Option<Point3>,
@@ -91,6 +138,7 @@ impl OrientSurfacePreview<'_> {
                     self.sources,
                     self.grips,
                     Key {
+                        sphere: self.sphere,
                         placement: self.placement.clone(),
                         pose,
                         options,
@@ -151,6 +199,7 @@ mod tests {
         let display = RefCell::new(DisplayCache::default());
         let normal = Vector3::try_new(0., 0., 1.).unwrap();
         let p = OrientSurfacePreview {
+            sphere: false,
             sources: &ids,
             grips: &[],
             placement: &placement,
@@ -178,6 +227,7 @@ mod tests {
         ));
         let tangent = Vector3::try_new(10.8, 0., 3.2).unwrap();
         let invalid = OrientSurfacePreview {
+            sphere: false,
             normal: tangent,
             ..p
         };
@@ -205,6 +255,7 @@ mod tests {
                 // A fixed normal isolates target picking from the separate per-view normal policy.
                 let normal = Vector3::try_new(0., 0., 1.).unwrap();
                 let preview = OrientSurfacePreview {
+                    sphere: false,
                     sources: &ids,
                     grips: &[],
                     placement: &placement,
@@ -327,6 +378,7 @@ mod grip_tests {
             let cache = RefCell::new(OrientSurfacePreviewCache::default());
             let display = RefCell::new(DisplayCache::default());
             let preview = OrientSurfacePreview {
+                sphere: false,
                 sources: &ids,
                 grips: &picks,
                 placement: &placement,
@@ -390,6 +442,7 @@ mod grip_tests {
                 index: 1,
             }];
             let changed_picks = OrientSurfacePreview {
+                sphere: false,
                 grips: &different,
                 ..preview
             };
@@ -402,6 +455,7 @@ mod grip_tests {
             }];
             assert!(
                 OrientSurfacePreview {
+                    sphere: false,
                     grips: &invalid,
                     ..preview
                 }
@@ -452,6 +506,7 @@ mod grip_tests {
             let normal = Vector3::try_new(0., 0., 1.).unwrap();
             let cache = RefCell::new(OrientSurfacePreviewCache::default());
             let preview = OrientSurfacePreview {
+                sphere: false,
                 sources: &[],
                 grips: &picks,
                 placement: &placement,
@@ -501,6 +556,113 @@ mod grip_tests {
                 "{kind:?} missing destination grip marker"
             );
             assert!(doc.undo_label().is_none());
+        }
+    }
+}
+
+#[cfg(test)]
+mod sphere_tests {
+    use super::*;
+    use viboceros_geometry::{Point3, Tolerance};
+    #[test]
+    fn splop_sphere_cages_match_native_points_and_rigid_scale_without_document_edits() {
+        for id in ["splop_42", "splop_44", "splop_45"] {
+            let (op, value) = crate::splop_test_support::rows()
+                .into_iter()
+                .find(|(op, _)| op["id"] == id)
+                .unwrap();
+            let (doc, sources) = crate::splop_test_support::setup(&op, &value);
+            let target =
+                viboceros_command::orient_surface::Target::capture(&doc, sources.guide, None)
+                    .unwrap();
+            let options = Options {
+                copy: false,
+                rigid: op["rigid"] == true,
+                flip: op["flip"] == true,
+                scale_prompt: true,
+                ..Options::default()
+            };
+            let placement = Placement::try_new(
+                Point3::try_from([0.; 3]).unwrap(),
+                sources.reference,
+                target,
+                options,
+                sources.plane,
+                doc.tolerance(),
+            )
+            .unwrap();
+            let phase = PreviewPhase::Sphere(placement.locate(sources.target).unwrap(), None);
+            let cache = RefCell::new(OrientSurfacePreviewCache::default());
+            let display = RefCell::new(DisplayCache::default());
+            let preview = OrientSurfacePreview {
+                sphere: true,
+                sources: &sources.ids,
+                grips: &[],
+                placement: &placement,
+                phase,
+                normal: sources.plane.z_axis().as_vector(),
+                last_normal: sources.plane.z_axis().as_vector(),
+                last_point: None,
+                cache: &cache,
+            };
+            let cursor = sources.direction(4., 0.);
+            let before = doc.objects().cloned().collect::<Vec<_>>();
+            let image = preview.resolve(Some(cursor), &doc, &display).0.unwrap();
+            assert!(Rc::ptr_eq(
+                &image,
+                &preview.resolve(Some(cursor), &doc, &display).0.unwrap()
+            ));
+            for mode in [
+                DisplayMode::Wireframe,
+                DisplayMode::Shaded,
+                DisplayMode::Ghosted,
+            ] {
+                let object = &image.objects_for_mode(mode)[&sources.ids[0]];
+                let geometry = &*object.geometry.geometry;
+                let Geometry::PointCloud(cloud) = geometry else {
+                    panic!()
+                };
+                for (a, b) in cloud.points().iter().zip(
+                    value["after_script"]["objects"][0]["geometry"]["points"]
+                        .as_array()
+                        .unwrap(),
+                ) {
+                    let a = object
+                        .transform
+                        .map_or(Ok(*a), |t| t.transform_point(*a))
+                        .unwrap();
+                    assert!(
+                        a.distance_to(crate::splop_test_support::morph::p(b))
+                            .unwrap()
+                            < 1e-7
+                    );
+                }
+            }
+            let guides = preview.sphere_guides(Some(cursor));
+            assert_eq!(guides.len(), 6);
+            for (_, radius) in &guides[..3] {
+                assert!((radius - 2.).abs() < 1e-12);
+            }
+            let PreviewPhase::Sphere(pose, _) = phase else {
+                unreachable!()
+            };
+            let expected_radius = pose.point.distance_to(cursor).unwrap();
+            for (_, radius) in &guides[3..] {
+                assert_eq!(*radius, expected_radius);
+            }
+            let changed = preview
+                .resolve(Some(sources.direction(3., 45.)), &doc, &display)
+                .0
+                .unwrap();
+            assert!(!Rc::ptr_eq(&image, &changed));
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+            assert!(doc.undo_label().is_none());
+            let invalid = preview.resolve(Some(pose.point), &doc, &display);
+            assert!(invalid.0.is_none());
+            assert_eq!(
+                doc.tolerance(),
+                Tolerance::try_new(1e-6, 1e-12, 1e-9).unwrap()
+            );
         }
     }
 }

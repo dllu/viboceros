@@ -12,6 +12,7 @@ pub(super) fn allows_grips(command: &str) -> bool {
             | "FlowAlongSurface"
             | "Flow"
             | "OrientOnSrf"
+            | "Splop"
             | "Orient"
             | "Orient3Pt"
             | "Move"

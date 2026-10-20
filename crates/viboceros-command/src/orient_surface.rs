@@ -451,6 +451,24 @@ impl Placement {
                 }
                 pose
             }
+            PreviewPhase::Sphere(pose, locked_radius) => {
+                options.scale = locked_radius.unwrap_or(pose.point.distance_to(cursor)?)
+                    / self.reference_length;
+                if !options.scale.is_finite() || options.scale <= 0. {
+                    return Err(CommandError::InvalidScaleFactor(options.scale.to_string()));
+                }
+                let frame = self.rotation_plane(pose)?;
+                let delta = pose.point.vector_to(cursor)?;
+                let x = delta.dot(frame.x_axis().as_vector())?;
+                let y = delta.dot(frame.y_axis().as_vector())?;
+                if x == 0. && y == 0. {
+                    return Err(CommandError::Usage(
+                        "Pick the sphere direction away from its center",
+                    ));
+                }
+                options.rotation = y.atan2(x).to_degrees();
+                pose
+            }
             PreviewPhase::Rotation(pose) => {
                 let frame = self.rotation_plane(pose)?;
                 let delta = pose.point.vector_to(cursor)?;
@@ -479,6 +497,8 @@ pub enum PreviewPhase {
     Target,
     Scale(Pose),
     Rotation(Pose),
+    /// A destination sphere simultaneously chooses size and in-plane rotation.
+    Sphere(Pose, Option<Real>),
 }
 
 fn target_frame(

@@ -74,7 +74,8 @@ impl Mapping<'_> {
             placement,
             phase:
                 viboceros_command::orient_surface::PreviewPhase::Scale(pose)
-                | viboceros_command::orient_surface::PreviewPhase::Rotation(pose),
+                | viboceros_command::orient_surface::PreviewPhase::Rotation(pose)
+                | viboceros_command::orient_surface::PreviewPhase::Sphere(pose, _),
         } = self
         {
             let plane = placement.rotation_plane(pose).ok()?;
