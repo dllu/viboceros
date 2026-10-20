@@ -150,6 +150,38 @@ Unsupported sections fail before model edits. This policy is inferred from
 public SDK captures; it does not inspect proprietary code. Explicit UV span
 continuation remains available as a separate geometry operation.
 
+With `native-smlib`, endpoint continuation can use the existing usd-brep
+surface intersector for general NURBS patches. The portable analytic producer
+runs first; its specific restrictions keep their measured policies. Native
+trace candidates use the shared arc-length sampler and constrained spline
+fitter. Complete source-surface image bounds and exact rational plane-band
+checks admit the result, including its stored controls after degree elevation
+and joining. Raw intermediate trace endpoints must reach a natural boundary;
+a partial component cannot silently become a completed continuation.
+
+A conservative UV bound can reject a physical boundary contact already within
+the numerical allowance. These cases now use an exact stored-curve endpoint
+distance bound before requesting a tiny section. The original document source
+remains unchanged.
+
+Four further native scenes cover a degree-2-by-2 patch, reversed input, an
+isocurve and a rational patch. Both command and source-extension comparisons
+retain the `1e-6` gate. Two command cases qualify, with maximum differences of
+about `8.7e-7` and `5.2e-7`. The reversed command remains unqualified at
+`1.04e-6`; the isocurve differs by `2.15e-5`. Every source-extension endpoint
+pair agrees within `1.6e-15`, while three captured SDK continuation curves
+leave their surface by `8.5e-6` or `2.03e-5`. Their complete comparisons remain
+unqualified.
+
+The independent [graph-metric calculation](../tools/numerics/check_general_surface_geodesic.py)
+integrates the isocurve's normal geodesic without the Rust NURBS evaluator.
+A fresh [SDK query](../tools/rhino_oracle/observations/surface_curve_offset_general_verify.json)
+places that point `1.19e-5` from the SDK offset of the extended source, versus
+`2.83e-7` from its offset of the original straight source. The Rust result
+passes through the independent point within model tolerance. These sampled
+checks do not certify complete offset topology or global cut loci. The replay
+constructs documents with the captured `1e-6` model tolerance; the default for a new document is `1e-9`.
+
 Certified pullbacks retain separate UV limits across exact periodic seams,
 including crossings inside a rational span, multiple laps, and simultaneous
 torus seams. Every assembled periodic pullback receives a complete image
@@ -220,6 +252,8 @@ and the [command workflow](https://docs.mcneel.com/rhino/8/help/en-us/commands/o
 ```sh
 cargo test -p viboceros-geometry --lib surface_geodesic
 cargo test -p viboceros-geometry --lib surface_curve_offset
+cargo test -p viboceros-command --features native-smlib --lib surface_curve_offset
+cargo test -p viboceros --features native-smlib --bin viboceros surface_curve_offset
 cargo test -p viboceros-geometry --lib cash_karp
 cargo test -p viboceros-geometry --test surface_geodesic_native -- --nocapture
 python3 -m unittest tools.rhino_oracle.test_surface_curve_offset
@@ -233,5 +267,18 @@ tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_s
 
 To refresh the independent query points, save the Rust replay output and pass
 it to the capture generator with `--candidate-report path/to/replay.log`.
-Append the command replay output to that log, then regenerate the qualification report with
+Append the command replay, the native command-library replay, and the native
+UI replay to that log, each run with `-- --nocapture`. Then regenerate the
+qualification report with
 `python3 -m tools.rhino_oracle.report_surface_geodesic path/to/replay.log`.
+
+The additional fixed scenes and independent graph witness can be reproduced with:
+
+```sh
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --general-extensions
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --general-ends
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --general-verify
+python3 tools/numerics/check_general_surface_geodesic.py
+```
+
+The final calculation requires SciPy; the Rust and oracle replay tests do not.

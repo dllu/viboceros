@@ -7,6 +7,24 @@ from .surface_offset_command_probe import request,through_request,select_request
 from .structural_sdk import stage_helpers
 HERE=Path(__file__).resolve().parent
 class SurfaceOffsetCommandTests(TestCase):
+    def test_general_surface_commands_preserve_owned_parents_and_one_history_step(self):
+        from .surface_offset_command_probe import general_request
+        path=HERE/'fixtures/surface_offset_general_ends.json';q=json.loads(path.read_text())
+        self.assertEqual(q,general_request());validate_request(q)
+        r=json.loads((HERE/'observations/surface_offset_general_ends.json').read_text())
+        self.assertEqual(len(r['results']),4)
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+        for name,sha in r['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,name)
+        for op,row in zip(q['operations'],r['results']):
+            self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
+            v=row['value'];self.assertTrue(v['success']);self.assertEqual(v['input_trace']['errors'],[])
+            self.assertEqual(v['input_trace']['completed'],len(op['actions']))
+            self.assertEqual(v['before'],v['undo']);self.assertEqual(v['after_script'],v['redo'])
+            self.assertEqual(v['after_script'][:2],v['before']);self.assertEqual(len(v['after_script']),3)
+            self.assertFalse(v['after_script'][2]['selected']);self.assertEqual(v['after_script'][2]['layer'],'Surface offset output');self.assertIsNone(v['after_script'][2]['name'])
     def test_curved_end_command_evidence_and_source_closure(self):
         path=HERE/'fixtures/surface_offset_curved_ends.json';q=json.loads(path.read_text())
         self.assertEqual(q,curved_request());validate_request(q)

@@ -11,7 +11,9 @@ const MAX_QUERIES: usize = 65_536;
 mod clip;
 mod extend;
 mod normal_extend;
-pub use normal_extend::try_extend_curve_normally_on_surface;
+pub use normal_extend::{
+    try_extend_curve_normally_on_surface, try_extend_curve_normally_on_surface_with_operation,
+};
 mod through_point;
 pub use clip::{
     SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions, SurfaceCurveOffsetPieces,

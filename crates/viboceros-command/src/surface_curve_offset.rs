@@ -13,6 +13,28 @@ pub const MAX_NUMBER: usize = 1024;
 pub const MAX_POINTS: usize = 1024;
 const MAX_OUTPUTS: usize = 8192;
 
+fn extend_on_surface(
+    surface: &NurbsSurface,
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<viboceros_geometry::SurfaceCurveExtension, GeometryError> {
+    viboceros_geometry::try_extend_curve_normally_on_surface_with_operation(
+        surface,
+        curve,
+        CurveExtensionSide::Both,
+        tolerance,
+        morph_interpolation_solver(),
+        &mut |a, b, tol| {
+            curve_intersections::surface_pair_events(a, b, tol).map_err(|error| match error {
+                CommandError::Geometry(error) => error,
+                error => GeometryError::SurfaceIntersectionBackendFailed {
+                    message: error.to_string(),
+                },
+            })
+        },
+    )
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub distance: Real,
@@ -211,14 +233,8 @@ impl Source {
         // including failures. Other targets/tolerances compute independently;
         // one retained entry keeps memory bounded for programmatic reuse.
         let prepare = || {
-            viboceros_geometry::try_extend_curve_normally_on_surface(
-                surface,
-                self.curve(),
-                CurveExtensionSide::Both,
-                tolerance,
-                morph_interpolation_solver(),
-            )
-            .map(|extension| Arc::new(extension.curve))
+            extend_on_surface(surface, self.curve(), tolerance)
+                .map(|extension| Arc::new(extension.curve))
         };
         let cached = self.prepared.get_or_init(|| PreparedSource {
             surface: surface.clone(),
@@ -353,13 +369,7 @@ impl Plan {
                         let parts = vec![c.clone()];
                         (c, parts)
                     } else {
-                        let extension = viboceros_geometry::try_extend_curve_normally_on_surface(
-                            &target.surface,
-                            &c,
-                            CurveExtensionSide::Both,
-                            tolerance,
-                            morph_interpolation_solver(),
-                        )?;
+                        let extension = extend_on_surface(&target.surface, &c, tolerance)?;
                         if extension.seam_parameters().len() >= MAX_OUTPUTS {
                             return Err(CommandError::Usage("Too many surface chart portions"));
                         }

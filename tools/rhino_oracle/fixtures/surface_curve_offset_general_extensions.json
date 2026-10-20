@@ -1,0 +1,35 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_curve_offset",
+      "id": "general_diagonal",
+      "case": "general_diagonal",
+      "distance": 0.05
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "general_reversed",
+      "case": "general_reversed",
+      "distance": 0.05
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "general_iso",
+      "case": "general_iso",
+      "distance": -0.05
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "general_rational",
+      "case": "general_rational",
+      "distance": 0.05
+    }
+  ]
+}

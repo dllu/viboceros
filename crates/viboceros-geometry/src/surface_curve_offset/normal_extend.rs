@@ -1,8 +1,10 @@
 //! Endpoint normal sections reuse the exact surface/plane intersection layer.
 use super::*;
 use crate::{
-    CurveExtensionSide, Frame3, Point3, SurfaceSurfaceIntersectionEvent, Vector3, WeightedPoint3,
+    CurveExtensionSide, Frame3, Plane, Point3, SurfaceSurfaceIntersectionEvent, Vector3,
+    WeightedPoint3,
 };
+mod compact;
 #[cfg(test)]
 mod tests;
 
@@ -17,6 +19,33 @@ pub fn try_extend_curve_normally_on_surface(
     side: CurveExtensionSide,
     tolerance: Tolerance,
     solver: Option<MorphInterpolationSolver>,
+) -> Result<SurfaceCurveExtension, GeometryError> {
+    try_extend_curve_normally_on_surface_with_operation(
+        original_surface,
+        original_source,
+        side,
+        tolerance,
+        solver,
+        &mut crate::surface_surface_intersection_events,
+    )
+}
+
+/// Use a shared surface intersection producer when the portable dispatcher
+/// has no implementation for a normal section.
+/// Source admission, branch orientation, section limits and complete image
+/// checks remain in the geometry core. Each retained section must also prove
+/// its complete image in the cutting plane; a supplied producer is not trusted.
+pub fn try_extend_curve_normally_on_surface_with_operation(
+    original_surface: &NurbsSurface,
+    original_source: &NurbsCurve,
+    side: CurveExtensionSide,
+    tolerance: Tolerance,
+    solver: Option<MorphInterpolationSolver>,
+    intersect: &mut impl FnMut(
+        &NurbsSurface,
+        &NurbsSurface,
+        Tolerance,
+    ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError>,
 ) -> Result<SurfaceCurveExtension, GeometryError> {
     let (surface, mut source, numerical) =
         normalized_sources(original_surface, original_source, 0., tolerance)?;
@@ -59,6 +88,39 @@ pub fn try_extend_curve_normally_on_surface(
         }) {
             continue;
         }
+        // A global UV derivative bound can be much more conservative than
+        // this endpoint's physical metric. Prove a nearby outward boundary
+        // contact before asking an intersector for a sub-budget sliver.
+        let mut leaving = false;
+        let endpoint = original.evaluate(t)?;
+        for axis in 0..2 {
+            if motion[axis] == 0. {
+                continue;
+            }
+            let mut edge = p;
+            edge[axis] = if motion[axis] < 0. { 0. } else { 1. };
+            let edge = surface.evaluate(edge[0], edge[1])?;
+            if endpoint.distance_to(edge)? <= numerical.absolute()
+                && original.positions_within_distance(
+                    &[(
+                        t,
+                        if at_start {
+                            ParameterSide::Right
+                        } else {
+                            ParameterSide::Left
+                        },
+                        edge,
+                    )],
+                    numerical.absolute() * 0.9,
+                )?
+            {
+                leaving = true;
+                break;
+            }
+        }
+        if leaving {
+            continue;
+        }
         let point = surface.evaluate(q.x(), q.y())?;
         let normal = surface.normal_at(q.x(), q.y())?.as_vector();
         let tangent = original.derivative_at(t)?;
@@ -69,7 +131,9 @@ pub fn try_extend_curve_normally_on_surface(
         let forward = binormal.cross(normal)?.normalized_nonzero()?.as_vector();
         let outward = forward.scaled(if at_start { -1. } else { 1. })?;
         let mut chosen = None;
-        for section in sections(&surface, point, outward, normal, numerical)? {
+        for section in sections(
+            &surface, point, outward, normal, numerical, solver, intersect,
+        )? {
             let mut section = section.try_reparameterized(0. ..=1.)?;
             // The intersection layer treats a periodic seam as interior. The
             // endpoint extension policy stops at its first rectangle contact.
@@ -120,11 +184,18 @@ pub fn try_extend_curve_normally_on_surface(
         let degree = source.degree().max(section.degree());
         source = source.try_change_degree(degree, false)?;
         section = section.try_change_degree(degree, false)?;
+        let interval = section.domain();
         source = if at_start {
             section.try_append_clamped(&source)?
         } else {
             source.try_append_clamped(&section)?
         };
+        let plane = Plane::new(point, outward.cross(normal)?.normalized_nonzero()?);
+        if !in_plane(&source.try_trimmed(interval)?, plane, numerical.absolute()) {
+            return Err(invalid(
+                "normal section encoding exceeded its plane tolerance",
+            ));
+        }
     }
     let uv = surface.try_pullback_curve_certified(&source, numerical)?;
     let domain = [
@@ -153,6 +224,12 @@ fn sections(
     outward: Vector3,
     normal: Vector3,
     tolerance: Tolerance,
+    solver: Option<MorphInterpolationSolver>,
+    intersect: &mut impl FnMut(
+        &NurbsSurface,
+        &NurbsSurface,
+        Tolerance,
+    ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError>,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
     // Solve sections near the endpoint at unit physical scale. General
     // intersections have coordinate-relative budgets and primitive predicates;
@@ -195,9 +272,18 @@ fn sections(
     )?;
     let zero = Point3::try_new(0., 0., 0.)?;
     let frame = Frame3::try_from_directions(zero, outward, normal, tolerance)?;
+    let plane = Plane::new(zero, frame.z_axis());
     let cutter = cutter(&local, frame, tolerance)?;
     let mut result = Vec::new();
-    for event in crate::surface_surface_intersection_events(&local, &cutter, tolerance)? {
+    let (events, external) =
+        match crate::surface_surface_intersection_events(&local, &cutter, tolerance) {
+            Ok(events) => (events, false),
+            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                context: "non-planar surfaces",
+            }) => (intersect(&local, &cutter, tolerance)?, true),
+            Err(error) => return Err(error),
+        };
+    for event in events {
         let SurfaceSurfaceIntersectionEvent::Curve(section) = event else {
             continue;
         };
@@ -218,7 +304,8 @@ fn sections(
             section
         };
         let anchor = section.closest_parameter(zero, tolerance)?;
-        let section = if section.is_closed()? {
+        let capped = section.is_closed()?;
+        let section = if capped {
             let section = section.try_change_closed_seam(anchor)?;
             let stop = section
                 .parameter_at_arc_length_from(
@@ -238,6 +325,28 @@ fn sections(
             }
             section.try_trimmed(anchor..=*section.domain().end())?
         };
+        if !capped {
+            let end = section.evaluate(*section.domain().end())?;
+            let (u, v) = local.closest_parameters(end, tolerance)?;
+            let allowed = clip::uv_tolerance(&local, [false; 2], tolerance)?.absolute();
+            if end.distance_to(local.evaluate(u, v)?)? > tolerance.absolute()
+                || u.min(1. - u).min(v.min(1. - v)) > allowed
+            {
+                return Err(invalid("normal section ended before a natural boundary"));
+            }
+        }
+        // The source-surface proof follows after reconstruction. Independently
+        // reject a candidate that wanders out of the endpoint normal plane.
+        if !in_plane(&section, plane, tolerance.absolute()) {
+            return Err(invalid(
+                "normal section exceeded its cutting plane tolerance",
+            ));
+        }
+        let section = if external && section.control_points().len() > 8 {
+            compact::section(&local, plane, &section, outward, tolerance, solver)?
+        } else {
+            section
+        };
         let controls = section
             .control_points()
             .iter()
@@ -256,6 +365,38 @@ fn sections(
         )?);
     }
     Ok(result)
+}
+
+fn in_plane(curve: &NurbsCurve, plane: Plane, limit: Real) -> bool {
+    use crate::exact_scalar::rational;
+    use num_traits::Zero;
+    let weight = curve.control_points()[0].weight();
+    if weight == 0.
+        || curve
+            .control_points()
+            .iter()
+            .any(|p| p.weight() == 0. || p.weight().is_sign_positive() != weight.is_sign_positive())
+    {
+        return false;
+    }
+    let n = plane.normal().as_vector().to_array().map(rational);
+    let o = plane.origin().to_array().map(rational);
+    let squared = rational(limit)
+        * rational(limit)
+        * n.iter()
+            .map(|q| q * q)
+            .sum::<crate::exact_scalar::Rational>();
+    // Same-sign weights put the complete rational curve in its Euclidean
+    // control hull. An exact linear-functional band proves plane distance
+    // without discovering a second UV curve on an almost-affine cutter.
+    curve.control_points().iter().all(|c| {
+        let p = c.point().to_array();
+        let mut d = crate::exact_scalar::Rational::zero();
+        for i in 0..3 {
+            d += (rational(p[i]) - &o[i]) * &n[i];
+        }
+        &d * &d <= squared
+    })
 }
 
 fn cutter(

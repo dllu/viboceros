@@ -66,6 +66,24 @@ surface/plane intersection producers supply the sections; unresolved or
 unsupported cases fail without model edits. Complete surface-image bounds
 check each extension and the restored native knot times.
 
+Build with `--features native-smlib` to continue endpoints on general NURBS
+patches. The existing usd-brep surface intersector supplies candidates after
+the portable analytic dispatcher declines. Arc-length fitting removes trace
+parameter scaffolding; complete surface-image bounds and exact control-hull
+plane bands verify each retained section. Endpoint tangents follow the normal
+plane's intersection with the surface tangent plane. Incomplete traces fail
+before model edits. Endpoints already within the physical numerical budget
+use an exact distance check instead of requesting a tiny intersection.
+
+Four further native command scenes exercise a higher-degree patch, reversal,
+a straight isocurve and a rational patch. All produce geometry with source
+immutability and one Undo/Redo entry. The diagonal and rational cases meet
+the unchanged `1e-6` gate; their measured differences are about `8.7e-7` and
+`5.2e-7`. The reversed case remains unqualified at `1.04e-6`, and the isocurve
+at `2.15e-5`. Independent graph-metric integration and a public SDK
+closest-point query confirm the latter discrepancy. Rational-patch viewport
+previews use the same producer and cached confirmation.
+
 Periodic pullbacks retain independent UV limits at a common spatial seam.
 The command emits separate chart portions and advances one complete curve
 for each Number copy. Sources share preparation across point picks and option
@@ -129,6 +147,8 @@ limits preclude a claim of complete Rhino compatibility.
 cargo test -p viboceros-command --lib surface_curve_offset
 cargo test -p viboceros-command --test surface_curve_offset_native -- --nocapture
 cargo test -p viboceros-command --features native-smlib --test surface_curve_offset_native
+cargo test -p viboceros-command --features native-smlib --lib surface_curve_offset
+cargo test -p viboceros --features native-smlib --bin viboceros surface_curve_offset
 cargo test -p viboceros --bin viboceros surface_curve_offset
 python3 -m unittest tools.rhino_oracle.test_surface_offset_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command

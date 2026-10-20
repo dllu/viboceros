@@ -2,6 +2,28 @@
 import re
 CASES={'distance':[], 'flip_number':['Number=3','Flip'], 'negative':[], 'nurbs_line':['Number=1'], 'bezier':[], 'trimmed_line':[], 'postselect':['Number=1'], 'trimmed_number':['Number=3']}
 CURVED_CASES={'curved_axis':1.,'curved_axis_negative':-1.,'curved_ring':1.,'curved_ring_negative':-1.,'curved_diagonal':1.,'curved_warped':.25,'curved_warped_negative':-.25,'curved_warped_diagonal':.25}
+GENERAL_CASES={'general_diagonal':.05,'general_reversed':.05,'general_iso':-.05,'general_rational':.05}
+def general_source(host,case):
+    G=host['Rhino'].Geometry
+    definition=dict(type='surface',degree_u=2,degree_v=2,control_point_count_u=3,control_point_count_v=3,
+        knots_u=[0.,0.,0.,1.,1.,1.],knots_v=[0.,0.,0.,1.,1.,1.],
+        control_points=[dict(point=[float(u),float(v),.2*u*v*v],weight=1.1 if case=='general_rational'and u==v==1 else 1.)for v in range(3)for u in range(3)])
+    basis=host['_object_source'](definition,1e-9)
+    try:
+        if case=='general_iso':
+            iso=basis.IsoCurve(0,.5)
+            try:source=iso.Trim(G.Interval(.3,.7))
+            finally:iso.Dispose()
+        else:
+            uv=G.LineCurve(G.Point3d(.3,.3,0),G.Point3d(.7,.7,0))
+            try:source=basis.Pushup(uv,1e-9)
+            finally:uv.Dispose()
+        if source is None or not source.IsValid:raise ValueError('invalid owned general surface curve')
+        if case=='general_reversed'and not source.Reverse():
+            source.Dispose();raise ValueError('owned source reversal failed')
+        return basis,source
+    except BaseException:
+        basis.Dispose();raise
 def curved_source(G,case):
     warped=case.startswith('curved_warped')
     basis=G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in[[-5,-5,0],[5,-5,0],[5,5,3],[-5,5,-1]]])if warped else G.Cylinder(G.Circle(G.Plane.WorldXY,3.),6.).ToNurbsSurface()
@@ -50,6 +72,8 @@ SELECT_CASES={
     'through_select_same_offset':[[0.,2.,0.],[1.,2.,0.]],
 }
 def recipe(case):
+    if case in GENERAL_CASES:
+        return [dict(curve=1),'Number=1',GENERAL_CASES[case]],[['Select base surface'],['Offset distance'],['Offset distance']]
     if case in CURVED_CASES:
         return [dict(curve=1),'Number=1',CURVED_CASES[case]],[['Select base surface'],['Offset distance'],['Offset distance']]
     if case in SELECT_CASES:
@@ -66,7 +90,7 @@ def recipe(case):
     return actions,gates
 def validate(op):
     if not isinstance(op,dict)or set(op)!={'op','id','case','actions','action_prompts'}or op['op']not in('surface_offset_command','surface_offset_through_point'):raise ValueError('invalid surface offset command recipe')
-    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(dict(CASES,**CURVED_CASES)if op['op']=='surface_offset_command'else dict(THROUGH_CASES,**SELECT_CASES)):raise ValueError('invalid owned surface offset command case')
+    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(dict(dict(CASES,**CURVED_CASES),**GENERAL_CASES)if op['op']=='surface_offset_command'else dict(THROUGH_CASES,**SELECT_CASES)):raise ValueError('invalid owned surface offset command case')
     actions,gates=recipe(op['case'])
     import json
     if json.dumps(op['actions'],sort_keys=True)!=json.dumps(actions,sort_keys=True)or op['action_prompts']!=gates:raise ValueError('only fixed surface offset getters are allowed')
@@ -85,6 +109,12 @@ def through_request():
 def curved_request():
     q=request();q['operations']=[]
     for case in CURVED_CASES:
+        actions,gates=recipe(case)
+        q['operations'].append(dict(op='surface_offset_command',id=case,case=case,actions=actions,action_prompts=gates))
+    return q
+def general_request():
+    q=request();q['operations']=[]
+    for case in GENERAL_CASES:
         actions,gates=recipe(case)
         q['operations'].append(dict(op='surface_offset_command',id=case,case=case,actions=actions,action_prompts=gates))
     return q
@@ -132,7 +162,12 @@ def run(op,host,iterations,tolerance):
             source=basis.IsoCurve(1,.6)if op['case']=='through_cylinder'else basis.IsoCurve(0,.2)
             surface=basis.ToBrep()
         finally:basis.Dispose()
-    if op['case']in CURVED_CASES:
+    if op['case']in GENERAL_CASES:
+        source.Dispose();surface.Dispose()
+        basis,source=general_source(host,op['case'])
+        try:surface=basis.ToBrep()
+        finally:basis.Dispose()
+    elif op['case']in CURVED_CASES:
         source.Dispose();surface.Dispose()
         basis,source=curved_source(G,op['case'])
         try:surface=basis.ToBrep()

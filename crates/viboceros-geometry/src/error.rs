@@ -39,6 +39,8 @@ pub enum GeometryError {
     UnrepresentableMeshProjection,
     #[error("interpolation backend failed: {message}")]
     InterpolationBackendFailed { message: String },
+    #[error("surface intersection backend failed: {message}")]
+    SurfaceIntersectionBackendFailed { message: String },
     #[error("endpoint interpolation failed: {context}")]
     InvalidEndpointInterpolation { context: &'static str },
     #[error("surface blend failed: {context}")]

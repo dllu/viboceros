@@ -1,0 +1,24 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_curve_offset",
+      "id": "general_iso_verify",
+      "case": "general_iso",
+      "distance": -0.05,
+      "samples": [
+        [
+          1.005111040029211,
+          0.9532700196247835,
+          0.2829652695384036
+        ]
+      ]
+    }
+  ]
+}

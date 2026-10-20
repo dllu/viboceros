@@ -117,6 +117,7 @@ pub fn setup(op: &Value, v: &Value) -> (Document, Scene) {
         Geometry::Brep(Brep::try_planar_face_with_holes(&outer, &[hole], doc.tolerance()).unwrap())
     } else if op["op"] == "surface_offset_through_point"
         || op["case"].as_str().unwrap().starts_with("curved_")
+        || op["case"].as_str().unwrap().starts_with("general_")
     {
         Geometry::Brep(
             Brep::try_surface_face(morph::surface(&v["surface_definition"]), doc.tolerance())

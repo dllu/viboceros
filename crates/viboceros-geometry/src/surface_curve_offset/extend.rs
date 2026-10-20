@@ -308,7 +308,7 @@ pub fn try_extend_curve_on_surface_with_seams(
     extension(surface, uv, restored, closed)
 }
 
-fn direction_gap(a: crate::Vector3, b: crate::Vector3) -> Result<Real, GeometryError> {
+pub(super) fn direction_gap(a: crate::Vector3, b: crate::Vector3) -> Result<Real, GeometryError> {
     let a = a.normalized_nonzero()?.as_vector().to_array();
     let b = b.normalized_nonzero()?.as_vector().to_array();
     Ok((0..3).map(|i| (a[i] - b[i]).powi(2)).sum::<Real>().sqrt())

@@ -73,10 +73,11 @@ pub use surface_curve_offset::{
     SurfaceCurveExtension, SurfaceCurveOffset, SurfaceCurveOffsetGapStyle,
     SurfaceCurveOffsetOptions, SurfaceCurveOffsetPieces, SurfaceCurveOffsetThroughPoint,
     surface_curve_offset_distance_through_point, try_extend_curve_normally_on_surface,
-    try_extend_curve_on_surface, try_extend_curve_on_surface_with_seams,
-    try_extend_curve_on_surface_with_solver, try_offset_curve_on_surface,
-    try_offset_curve_on_surface_with_solver, try_offset_curves_on_surface,
-    try_offset_curves_on_surface_with_options, try_offset_curves_on_surface_with_solver,
+    try_extend_curve_normally_on_surface_with_operation, try_extend_curve_on_surface,
+    try_extend_curve_on_surface_with_seams, try_extend_curve_on_surface_with_solver,
+    try_offset_curve_on_surface, try_offset_curve_on_surface_with_solver,
+    try_offset_curves_on_surface, try_offset_curves_on_surface_with_options,
+    try_offset_curves_on_surface_with_solver,
 };
 mod surface_rebuild;
 pub use surface_geodesic::{PreparedSurfaceGeodesic, SurfaceGeodesicPoint};

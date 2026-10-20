@@ -84,6 +84,67 @@ fn curved_surface_offset_getters_extend_generators_and_rings_with_cached_confirm
 }
 
 #[test]
+#[cfg(feature = "native-smlib")]
+fn rational_surface_offset_preview_uses_general_sections_and_cached_confirmation() {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/surface_offset_general_ends.json"
+    ))
+    .unwrap();
+    let response: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/surface_offset_general_ends.json"
+    ))
+    .unwrap();
+    let (op, row) = request["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(response["results"].as_array().unwrap())
+        .find(|(op, _)| op["id"] == "general_rational")
+        .unwrap();
+    let value = &row["value"];
+    let mut app = test_app();
+    let (doc, scene) = native::setup(op, value);
+    app.document = doc;
+    app.surface_offset_defaults = viboceros_command::surface_curve_offset::Options {
+        distance: 0.05,
+        number: 1,
+        flip: false,
+    };
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "OffsetCrvOnSrf");
+    app.pick_surface_offset_face(Some(scene.target), Some(0), None);
+    assert_eq!(format!("{:?}", app.document), before);
+    let preview = app
+        .surface_offset_session
+        .as_ref()
+        .unwrap()
+        .preview_curves();
+    assert_eq!(preview.len(), 1, "{:?}", app.command_log);
+    let pointer = preview.as_ptr();
+    enter(&mut app, "Number=1");
+    assert_eq!(
+        app.surface_offset_session
+            .as_ref()
+            .unwrap()
+            .preview_curves()
+            .as_ptr(),
+        pointer
+    );
+    enter(&mut app, "0.05");
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    let mut maximum = native::check(&app.document, &scene, value, "after_script");
+    app.document.undo().unwrap();
+    maximum = maximum.max(native::check(&app.document, &scene, value, "undo"));
+    app.document.redo().unwrap();
+    maximum = maximum.max(native::check(&app.document, &scene, value, "redo"));
+    println!(
+        "SURFACE_OFFSET_GENERAL_GETTER {}",
+        serde_json::json!({"id":"general_rational","maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6})
+    );
+    assert!(maximum < 1e-6, "rational surface getter {maximum:e}");
+}
+
+#[test]
 fn surface_offset_point_selection_windows_toggles_and_escape_preserve_redo() {
     let mut app = test_app();
     let (source, surface) = scene(&mut app);

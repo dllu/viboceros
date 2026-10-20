@@ -1207,13 +1207,131 @@
     "limits": [
       "Seven source continuations meet the unchanged 1e-6 sampled gate; all eight endpoint pairs agree within 1e-7.",
       "The captured cylinder diagonal continuation is itself off the exact cylinder by about 2.9e-6. Its SDK offset begins about 2.45e-3 before the analytic normal-family endpoint.",
-      "Section orientation and half-section limits are inferred from public SDK evidence. General section support and full native parity remain pending."
+      "Section orientation and half-section limits are inferred from public SDK evidence. Complete section support and full native parity remain pending."
+    ]
+  },
+  "general_section_cases": {
+    "recipes": 4,
+    "requires_native_smlib": true,
+    "qualified_recipes": 2,
+    "unqualified_recipes": [
+      "general_reversed",
+      "general_iso"
+    ],
+    "maximum_sample_difference": 2.150973104323417e-05,
+    "bidirectional_samples_per_curve": 258,
+    "cases": [
+      {
+        "id": "general_diagonal",
+        "independent_geodesic": null,
+        "maximum_bidirectional_sample_error": 8.654753481998338e-07,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "general_reversed",
+        "independent_geodesic": null,
+        "maximum_bidirectional_sample_error": 1.0424790669400762e-06,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": false
+      },
+      {
+        "id": "general_iso",
+        "independent_geodesic": {
+          "current_distance": 1.5700924586837752e-16,
+          "native_sdk_distance": 1.1912606872239079e-05,
+          "point": [
+            1.005111040029211,
+            0.9532700196247835,
+            0.2829652695384036
+          ],
+          "sdk_closest_solver_difference": 5.785912656104675e-17
+        },
+        "maximum_bidirectional_sample_error": 2.150973104323417e-05,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": false
+      },
+      {
+        "id": "general_rational",
+        "independent_geodesic": null,
+        "maximum_bidirectional_sample_error": 5.153970525663822e-07,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": true
+      }
+    ],
+    "getter_cases": [
+      {
+        "id": "general_rational",
+        "maximum_bidirectional_sample_error": 5.153970525663822e-07,
+        "qualified": true
+      }
+    ],
+    "limits": [
+      "General NURBS endpoint sections use the existing usd-brep surface intersector after the portable analytic dispatcher declines.",
+      "Arc-length fitting removes native trace parameter scaffolding; complete source-image certificates and exact same-sign control-hull plane bands gate accepted candidates.",
+      "Premature trace endpoints fail; outward endpoints already within the physical numerical budget avoid sub-budget intersection requests.",
+      "The reversed command and isocurve remain unqualified at the unchanged 1e-6 gate. Independent graph-metric integration and public SDK closest-point queries confirm the isocurve discrepancy.",
+      "These image bounds do not certify complete offset-locus topology, general intersection completeness or cut loci."
+    ]
+  },
+  "general_source_extension_cases": {
+    "recipes": 4,
+    "qualified_recipes": 1,
+    "unqualified_recipes": [
+      "general_diagonal",
+      "general_reversed",
+      "general_rational"
+    ],
+    "maximum_sample_difference": 2.0272464290279388e-05,
+    "maximum_endpoint_difference": 1.5700924586837751e-15,
+    "bidirectional_samples_per_curve": 258,
+    "cases": [
+      {
+        "controls": 43,
+        "id": "general_diagonal",
+        "maximum_bidirectional_sample_error": 8.495889455877235e-06,
+        "maximum_endpoint_difference": 1.0725875277184486e-15,
+        "native_maximum_sample_surface_distance": 8.491577746095437e-06,
+        "qualified": false
+      },
+      {
+        "controls": 43,
+        "id": "general_reversed",
+        "maximum_bidirectional_sample_error": 8.495889455917482e-06,
+        "maximum_endpoint_difference": 1.0725875277184486e-15,
+        "native_maximum_sample_surface_distance": 8.491577746342262e-06,
+        "qualified": false
+      },
+      {
+        "controls": 10,
+        "id": "general_iso",
+        "maximum_bidirectional_sample_error": 5.774017299554773e-16,
+        "maximum_endpoint_difference": 5.774017299554773e-16,
+        "native_maximum_sample_surface_distance": 5.978733960281817e-16,
+        "qualified": true
+      },
+      {
+        "controls": 112,
+        "id": "general_rational",
+        "maximum_bidirectional_sample_error": 2.0272464290279388e-05,
+        "maximum_endpoint_difference": 1.5700924586837751e-15,
+        "native_maximum_sample_surface_distance": 2.0271578614646467e-05,
+        "qualified": false
+      }
+    ],
+    "limits": [
+      "All source-extension endpoints meet the model gate. Only the straight isocurve continuation meets the complete sampled SDK comparison.",
+      "The three other public SDK source continuations themselves leave the target surface by about 8.5e-6 or 2.03e-5; these numerical gaps remain unqualified."
     ]
   },
   "sha256": {
     "crates/viboceros-geometry/src/surface_geodesic.rs": "442b5d6c177e9ab9de2a9990e6361bfd7cda648d8300f2ad3da819623cd84f54",
     "crates/viboceros-geometry/src/surface_geodesic/tests.rs": "ce2834aceb31ea886ddd751aa674af095b5bf5fe5d5258b5323507a0a1a2cf5d",
-    "crates/viboceros-geometry/src/surface_curve_offset.rs": "9868c00b65f7c3946d90850837a2023175ab8e4fa15d50d8558621f8d4e1edf3",
+    "crates/viboceros-geometry/src/surface_curve_offset.rs": "b54debd0920132d6345d4b466174933162fad0637bebcb290c39481535fee856",
     "crates/viboceros-geometry/src/surface_curve_offset/tests.rs": "bca306ce17b3546442ebe6c895097eccb589767af9a0512ccd63b0f55d62959d",
     "crates/viboceros-geometry/src/surface_curve_offset/clip.rs": "d1423fc9de5cfd89a7263d14183702f177607f118170754b4c78431b6025929f",
     "crates/viboceros-geometry/src/surface_curve_offset/clip/tests.rs": "1ca625e6bb0fdd24d8f031a126729defca7849a46a10fa149e62ce24d22c4be1",
@@ -1228,13 +1346,13 @@
     "tools/rhino_oracle/observations/surface_curve_offset_verify.json": "4726447786c4a155b1830f1c979471bfc00a45250f1987321d34b8f2dc6cef3a",
     "tools/rhino_oracle/fixtures/surface_curve_offset_clipping.json": "4163d8d8874ec2e80cf95e9b7a5ada572260c201bcb590da09af82b6df266eb3",
     "tools/rhino_oracle/observations/surface_curve_offset_clipping.json": "ad761cf4aa7802f5cccecb439ac2257d0bf125e07fe1a3c3f04273b986d654fa",
-    "tools/rhino_oracle/report_surface_geodesic.py": "2ec3340f465d9dd159b99f3fb6abc8175cb3cfb64e9be5bc0e74108cb6b0443a",
-    "crates/viboceros-command/src/surface_curve_offset.rs": "01e0fdd2442fd9038bd87f71df7a3b225e571b0f2b76e48c702ab5135cd7600e",
-    "crates/viboceros-command/src/surface_curve_offset/tests.rs": "e8efae355bf31185fc09afd29d9cd4d22f2c26160b9d2e8c274396560aae3b5a",
-    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "9669fe1245a23626bcc6b8015ada47f747461e11c19e90bac8b9d1abab4697ad",
+    "tools/rhino_oracle/report_surface_geodesic.py": "27d15444e88bcf9ac2909434573694b17a90837fb36bef6d42e85872da45d1fc",
+    "crates/viboceros-command/src/surface_curve_offset.rs": "f6e73aa695fce6b6fe88294f2db38cf7f0b9b9f3eb6276d3ebd7de9d137e7ba2",
+    "crates/viboceros-command/src/surface_curve_offset/tests.rs": "7240ca82a17ce982d05af0285c05662cd31effde22cb8c87c52dd08f50318b4a",
+    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "7b68e2ecbbbcd13978ff008d4da8adff91b796003c1f1126c9b7a738902c0c78",
     "crates/viboceros-command/tests/surface_curve_offset_native.rs": "92bf53cac65a1a9be4ed0c44d2e154b4c39a6d082abcd089ed581322d9622e83",
     "src/app/surface_curve_offset.rs": "8ed93dc31d5eb75f455cebd43bbd633ef1bc3d8c5a85677d2169a1d3af159b84",
-    "src/app/tests/surface_curve_offset.rs": "9ab32a58aea860927839b407b018ce2137039c5364d81cd0f0e9599d082caa88",
+    "src/app/tests/surface_curve_offset.rs": "06d75dce700d6263d4b0b7ec0052b6d9495f8522e8cd580846edb1423c446f03",
     "tools/rhino_oracle/fixtures/surface_offset_command.json": "46009c237a6d61e528daaad14015834e6d209024ea0d276cbbbdd257f86dfd3d",
     "tools/rhino_oracle/observations/surface_offset_command.json": "6f500ba92c42f9725b11974da615c4d82c61ebf63318293b457b58d1e43fdf50",
     "crates/viboceros-geometry/src/surface_curve_offset/through_point.rs": "94732f4ae46c8d3a04d5f0e7d34981bf943128a62a0b127cc74aef29f7c17c07",
@@ -1250,24 +1368,37 @@
     "src/app.rs": "33308ddd1ae9c99ba9a36dba621ea3601eff82b11240422d6e32a8d0c6bf0f79",
     "tools/rhino_oracle/fixtures/surface_offset_select_point.json": "1b60ec1a229929b338f20ed89f42130792096d7e367016862a707cad50b34338",
     "tools/rhino_oracle/observations/surface_offset_select_point.json": "37eb6310b9cde04c1463f9d06fe08136ff4f88a86f253780bcb49544c43841cb",
-    "tools/rhino_oracle/surface_offset_command_probe.py": "298b743be13f45cf093a3add5fd592ec688860786d9139c8facba5f3111a2607",
-    "tools/rhino_oracle/generate_surface_offset_command.py": "a063148083da6428dcda7c7a7279d0ec6403a7d085a56c94d2be3a2683e2523c",
-    "tools/rhino_oracle/test_surface_offset_command.py": "76222f0de247b3c00c02a24d6c926e5ac8567395693c6868e9137407e82d79f0",
-    "crates/viboceros-geometry/src/lib.rs": "d84262afb46051c8cb2b2d4ff02903b90835f1544b732d7a1970c6ed069fcd63",
-    "crates/viboceros-geometry/src/surface_curve_offset/extend.rs": "9f01e2133160fc27cbe8b3b6737c5a2ddf1b0a082adafd27a70f7d03a1373568",
+    "tools/rhino_oracle/surface_offset_command_probe.py": "7a804dc69e4f4b973e1c2c0c5cf796bf17fe375ef6835f27e0c5e0bd256da430",
+    "tools/rhino_oracle/generate_surface_offset_command.py": "2c75090765a05203b39a239852cc1b35257a9172bb53ed986d62820c12177340",
+    "tools/rhino_oracle/test_surface_offset_command.py": "c8062df195a5d4a69bef8dd6ddaf6488eb6b617b5429ae7fcd0246aa6ebb7ea0",
+    "crates/viboceros-geometry/src/lib.rs": "1efe428791cc484c087edb905b5e81a0f9e751f949d75b99765d6aa137fde144",
+    "crates/viboceros-geometry/src/surface_curve_offset/extend.rs": "f07988d2281a37d91dd984c17cd79e3ffa04a47a84d7449d1b3d47d4d64c63d8",
     "tools/rhino_oracle/fixtures/surface_offset_curved_ends.json": "6d4d5acb82926ff850fc6bc6e379722359713c803702f6a488aab5bb3034f44b",
     "tools/rhino_oracle/observations/surface_offset_curved_ends.json": "0810accf301942547274067cf800c3d5e8bcd12b63ebc5a449d6122207b0b406",
     "tools/rhino_oracle/fixtures/surface_curve_offset_extensions.json": "8dd4563ac4d7ac03cfa30d7ec7c412129723a64e715cf46bbff391aaccca83ad",
     "tools/rhino_oracle/observations/surface_curve_offset_extensions.json": "c6fa4257f16f3c3b0487b1f5c80aac595b4527a333547a480b0416004f71529b",
-    "tools/rhino_oracle/surface_curve_offset_probe.py": "657f76cf1b295a6f76a4fe21639dc88621358bc5c61a1f17819de51c679e13f8",
-    "tools/rhino_oracle/generate_surface_curve_offset.py": "20963594dcd07d9a41176be35747be8c324dfa710b13e7e1c2711de59e7a2738",
+    "tools/rhino_oracle/surface_curve_offset_probe.py": "449eb405e2a77603d5e070a9146c40823f86a4b40980874f22c77e343d1f948d",
+    "tools/rhino_oracle/generate_surface_curve_offset.py": "a3060625bc5a9fe8e86e19c15623d96cc93f3fe2da67520930091a28cda890f0",
     "tools/rhino_oracle/structural_sdk.py": "271520269c38e86c117d79bbf3b0d372bb78f9dce8ece1ce7ed8fd2a963b0319",
     "crates/viboceros-geometry/src/surface_pullback.rs": "ea0109223b6a1b4fd4345f8cfe373b8d29ad1642aea6d42e0cafa353072b330b",
     "crates/viboceros-geometry/src/surface_pullback/interpolation.rs": "8face7abec9239440c795b6052cd8ceda3a507aa59bab8c0189e6b9b59c4db17",
     "crates/viboceros-geometry/src/surface_pullback/periodic.rs": "cadc58c1bd761c68b6de40b858fd6c2f9192ab1bbdf494b2a48e7dcdc9dd3804",
     "crates/viboceros-geometry/src/surface_pullback/periodic/tests.rs": "3f5caca40dd07396b5bf0bbccbe00454933ef7300c321b5609f1f7b4621aa5b3",
-    "crates/viboceros-geometry/src/surface_curve_offset/normal_extend.rs": "e01d7dc3fab3a347f81448f804818d693ca768efb594c23394c808b586532fd8",
-    "crates/viboceros-geometry/src/surface_curve_offset/normal_extend/tests.rs": "c9b38c969963c5fc6ae7acc50004092add047603f038f1944af483a5eeb5477b",
-    "tools/rhino_oracle/test_surface_curve_offset.py": "56e738f18efbd0adc8e601d948523a1b4e9216d5c0493303d422d6e96367f2ad"
+    "crates/viboceros-geometry/src/surface_curve_offset/normal_extend.rs": "70de0233d8e5f31618b62dc97dfae80f922ebb3bb2798ba74fd386793c9b515f",
+    "crates/viboceros-geometry/src/surface_curve_offset/normal_extend/tests.rs": "dd07b3f3ad3f2d0af72fe89ff2ebcce2464b7b0704028ff6e9e80f46f85b7a5d",
+    "tools/rhino_oracle/test_surface_curve_offset.py": "a097af5f4e98801060409521fc38dfa63c79cb9b9772512612d649cc56e6d770",
+    "crates/viboceros-geometry/src/error.rs": "629dacc0e1e0ca0a48d41d26244853e43820b5b08a8a9d20cb1f21f3b6d10663",
+    "crates/viboceros-geometry/src/surface_curve_offset/normal_extend/compact.rs": "bf6772a94696eb7485b639b8ce72f1e22c69ebe16beb5822084718087ecc17e4",
+    "crates/viboceros-command/src/curve_intersections.rs": "0c78fad06179d1af400daa751fe2bc009059e4e9594de1a015aec4041907b817",
+    "crates/viboceros-command/src/surface_curve_offset/tests/general.rs": "7c0a2fb4692eed83d14e1ce24cecae4e23f65b2fc57e521637ffdd87dc6597a7",
+    "crates/viboceros-smlib/src/native/surface_intersections.rs": "00b029d3a57ff98e8e41db27dca4f1e9d5000fc649dd1c899dec9413431bdd4b",
+    "crates/viboceros-smlib/native/bridge.cpp": "2d1aa7ca77c6d47c10077d1e427fbd77d672debd2dd03b04b682a92004a9a50f",
+    "tools/rhino_oracle/fixtures/surface_curve_offset_general_extensions.json": "9748fc8a4602fd3ea017872c257774e42a600085fdcdc3677042329ce3c75cb0",
+    "tools/rhino_oracle/observations/surface_curve_offset_general_extensions.json": "6e76bc1af060b3f1c9663189ef184bdd12b596813b229a4421a35f14b8adc879",
+    "tools/rhino_oracle/fixtures/surface_offset_general_ends.json": "23e7f6031cbd535e5243f471410a9d72cdeb9d8cf2d5c2caf05a15716c38dfc6",
+    "tools/rhino_oracle/observations/surface_offset_general_ends.json": "eb46a9600f731bff6973d0f2a23bb18d19e1ed2723772b19db57356fa329459b",
+    "tools/rhino_oracle/fixtures/surface_curve_offset_general_verify.json": "aa27e4998b6d7ebc816e4312b469782a2413d897b63da76c96935bf2c3eb3049",
+    "tools/rhino_oracle/observations/surface_curve_offset_general_verify.json": "5eab5f8e22abd267fb2d975b55b63cdf2c62d6b88a8fcbded82e9bc1be97b6cb",
+    "tools/numerics/check_general_surface_geodesic.py": "876e2ca5ac79a10a64c7fdee01f1ae2a789aa0ae026585c479ae41493c261640"
   }
 }
