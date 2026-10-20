@@ -85,7 +85,8 @@ pub fn options<'a>(
 /// The curve and its picked endpoint remain fixed across repeated placements.
 #[derive(Clone, Debug)]
 pub struct Source {
-    pub curve: CapturedCurve,
+    curve: CapturedCurve,
+    references: [Option<Vector3>; 2],
     pub at_end: bool,
 }
 impl Source {
@@ -108,12 +109,33 @@ impl Source {
             })
             .transpose()?
             .unwrap_or(false);
-        Ok(Self { curve, at_end })
+        let references = [*d.start(), *d.end()].map(|t| {
+            c.evaluate_with_derivative(t)
+                .ok()
+                .and_then(|(_, v)| reference_direction(v))
+        });
+        Ok(Self {
+            curve,
+            at_end,
+            references,
+        })
+    }
+    pub fn curve(&self) -> &CapturedCurve {
+        &self.curve
     }
     pub fn base(&self) -> Result<CurveSample, GeometryError> {
         let c = self.curve.curve_ref();
         let d = c.domain();
         c.evaluate_with_tangent(if self.at_end { *d.end() } else { *d.start() })
+    }
+    pub fn picked_end(&self) -> Result<CurveSample, GeometryError> {
+        let c = self.curve.curve_ref();
+        let d = c.domain();
+        c.evaluate_with_tangent(if self.at_end { *d.start() } else { *d.end() })
+    }
+    fn reference_tangent(&self, sample: CurveSample) -> Vector3 {
+        let end = sample.parameter() == *self.curve.curve_ref().domain().end();
+        self.references[usize::from(end)].unwrap_or_else(|| sample.tangent().as_vector())
     }
 }
 
@@ -249,18 +271,47 @@ impl Placement {
         {
             self.edge_frame(nearest)?.with_origin(source.point())
         } else {
-            let tangent =
-                source
-                    .tangent()
-                    .as_vector()
-                    .scaled(if self.source.at_end { 1. } else { -1. })?;
-            let up = self.plane.z_axis().as_vector().scaled(-1.)?;
-            if tangent.dot(up)?.abs() > self.tolerance.angular() {
-                return Err(CommandError::Usage(
-                    "This placement requires a source tangent in the CPlane, or a source endpoint on the target edge",
-                ));
+            let mut tangent = source.tangent();
+            let mut reference_tangent = self.source.reference_tangent(source);
+            if !self.source.at_end {
+                tangent = tangent.opposite();
+                reference_tangent = reference_tangent.scaled(-1.)?;
             }
-            Frame3::try_from_x_and_normal(
+            // Seed the up direction at the picked end before orthogonalizing
+            // it at the opposite endpoint retained as the placement anchor.
+            let pick = self.source.picked_end()?;
+            let reference_pick = self.source.reference_tangent(pick);
+            let up = self.plane.z_axis().opposite();
+            let (up, reference_up) = if parallel(reference_pick, up.as_vector()) {
+                (up, up.as_vector())
+            } else {
+                let frame = Frame3::try_from_unit_x_and_normal(
+                    pick.point(),
+                    pick.tangent(),
+                    up,
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?;
+                let dot = reference_dot(reference_pick, up.as_vector());
+                let p = up.as_vector().to_array();
+                let t = reference_pick.to_array();
+                let projected = Vector3::try_from(std::array::from_fn(|i| p[i] - dot * t[i]))?;
+                (
+                    frame.z_axis(),
+                    reference_direction(projected).unwrap_or_else(|| frame.z_axis().as_vector()),
+                )
+            };
+            if parallel(reference_tangent, reference_up) {
+                tangent = pick.tangent();
+                reference_tangent = reference_pick;
+                if self.source.at_end {
+                    tangent = tangent.opposite();
+                    reference_tangent = reference_tangent.scaled(-1.)?;
+                }
+                if parallel(reference_tangent, reference_up) {
+                    tangent = self.plane.x_axis().opposite();
+                }
+            }
+            Frame3::try_from_unit_x_and_normal(
                 source.point(),
                 tangent,
                 up,
@@ -276,6 +327,36 @@ impl Placement {
             [1.; 3],
         )?)
     }
+}
+
+// The public command uses this inclusive cutoff at both projection stages,
+// independently of the document angle tolerance.
+fn parallel(a: Vector3, b: Vector3) -> bool {
+    reference_dot(a, b).abs() >= 0.99
+}
+fn reference_dot(a: Vector3, b: Vector3) -> Real {
+    a.x() * b.x() + a.y() * b.y() + a.z() * b.z()
+}
+/// Preserve ON_Length3d/ON_3dVector::Unitize rounding for the reference
+/// predicate only. See third_party/opennurbs/opennurbs_point.cpp. The geometry
+/// kernel's range-safe limiting tangents and orthogonal frames remain separate.
+fn reference_direction(v: Vector3) -> Option<Vector3> {
+    let mut a = v.to_array().map(Real::abs);
+    if a[1] >= a[0] && a[1] >= a[2] {
+        a.swap(0, 1);
+    } else if a[2] >= a[0] && a[2] >= a[1] {
+        a.swap(0, 2);
+    }
+    if a[0] <= Real::MIN_POSITIVE {
+        return None;
+    }
+    let y = a[1] / a[0];
+    let z = a[2] / a[0];
+    let length = a[0] * (1. + y * y + z * z).sqrt();
+    if !length.is_finite() || length <= Real::MIN_POSITIVE {
+        return None;
+    }
+    Vector3::try_from(v.to_array().map(|c| c / length)).ok()
 }
 
 pub(super) struct OrientCurveEdgeCommand;

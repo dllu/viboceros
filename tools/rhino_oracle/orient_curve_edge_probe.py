@@ -4,7 +4,8 @@ STR=(str,type(u''))
 
 def validate(op):
     required={'op','id','points','corners','reversed','kind','grouped','cplane','actions','action_prompts'}
-    if not isinstance(op,dict)or set(op)!=required or op['op']!='orient_curve_edge':raise ValueError('invalid curve to edge recipe')
+    if not isinstance(op,dict)or set(op)-{'angle_tolerance'}!=required or op['op']!='orient_curve_edge':raise ValueError('invalid curve to edge recipe')
+    if 'angle_tolerance'in op and(type(op['angle_tolerance'])not in(int,float)or not 0<op['angle_tolerance']<=1):raise ValueError('invalid owned angle tolerance')
     if not isinstance(op['id'],STR)or re.match(r'\A[A-Za-z0-9_][A-Za-z0-9_-]{0,79}\Z',op['id'])is None:raise ValueError('invalid case identifier')
     def point(p):return isinstance(p,list)and len(p)==3 and all(type(v)in(int,float)and not math.isnan(v)and not math.isinf(v)and abs(v)<=1000 for v in p)
     if type(op['grouped'])is not bool:raise ValueError('invalid source group')
@@ -28,7 +29,7 @@ def run(op,host,iterations,tolerance):
     from conic_getter_input import drive
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;vp=doc.Views.ActiveView.ActiveViewport
     if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:raise ValueError('curve to edge requires an empty owned document at idle')
-    old_plane=vp.GetConstructionPlane();old_view=R.DocObjects.ViewportInfo(vp);old_tol=doc.ModelAbsoluteTolerance
+    old_plane=vp.GetConstructionPlane();old_view=R.DocObjects.ViewportInfo(vp);old_tol=doc.ModelAbsoluteTolerance;old_angle=doc.ModelAngleToleranceRadians
     source=G.PolylineCurve([G.Point3d(*p)for p in op['points']])if op['kind']=='Polyline'else G.LineCurve(G.Point3d(*op['points'][0]),G.Point3d(*op['points'][-1]))if op['kind']=='Line'else G.Curve.CreateControlPointCurve([G.Point3d(*p)for p in op['points']],min(3,len(op['points'])-1));surface=G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in op['corners']]).ToBrep()
     if op['reversed']:surface.Flip()
     ids=[]
@@ -41,7 +42,9 @@ def run(op,host,iterations,tolerance):
         return rows
     def groups():return [dict(index=g.Index,name=g.Name)for g in doc.Groups if not g.IsDeleted]
     try:
-        doc.ModelAbsoluteTolerance=1e-6;o,x,y=op['cplane'];vp.SetConstructionPlane(G.Plane(G.Point3d(*o),G.Vector3d(*x),G.Vector3d(*y)))
+        doc.ModelAbsoluteTolerance=1e-6
+        if 'angle_tolerance'in op:doc.ModelAngleToleranceRadians=op['angle_tolerance']
+        o,x,y=op['cplane'];vp.SetConstructionPlane(G.Plane(G.Point3d(*o),G.Vector3d(*x),G.Vector3d(*y)))
         record=doc.BeginUndoRecord('Owned curve to edge scene')
         try:
             for name,g in[('Source',source),('Target',surface)]:
@@ -59,9 +62,9 @@ def run(op,host,iterations,tolerance):
             for method in ['FrameAt','PerpendicularFrameAt']:
                 ok,f=getattr(source,method)(t);frame_audit.append(dict(parameter=float(t),method=method,ok=bool(ok),origin=host['_xyz'](f.Origin),x=host['_xyz'](f.XAxis),y=host['_xyz'](f.YAxis),z=host['_xyz'](f.ZAxis)))
         active_plane=vp.GetConstructionPlane().Plane
-        return dict(groups=dict(before=groups_before,after_script=groups_after,undo=groups_undo,redo=groups_redo),frame_audit=frame_audit,actual_cplane=dict(x=host['_xyz'](active_plane.XAxis),y=host['_xyz'](active_plane.YAxis),z=host['_xyz'](active_plane.ZAxis)),target_definition=host['_nurbs_surface_definition'](surface.Surfaces[0]),target_reversed=bool(surface.Faces[0].OrientationIsReversed),edges=[host['_nurbs_curve_definition'](e)for e in surface.Edges],normal=host['_xyz'](surface.Faces[0].NormalAt(surface.Faces[0].Domain(0).Mid,surface.Faces[0].Domain(1).Mid)),success=success,input_trace=traces[0],before=before,after=after,after_script=after_script,undo=undo,redo=redo,events=events,history=history),0
+        return dict(actual_tolerance=dict(absolute=doc.ModelAbsoluteTolerance,angular=doc.ModelAngleToleranceRadians),groups=dict(before=groups_before,after_script=groups_after,undo=groups_undo,redo=groups_redo),frame_audit=frame_audit,actual_cplane=dict(x=host['_xyz'](active_plane.XAxis),y=host['_xyz'](active_plane.YAxis),z=host['_xyz'](active_plane.ZAxis)),target_definition=host['_nurbs_surface_definition'](surface.Surfaces[0]),target_reversed=bool(surface.Faces[0].OrientationIsReversed),edges=[host['_nurbs_curve_definition'](e)for e in surface.Edges],normal=host['_xyz'](surface.Faces[0].NormalAt(surface.Faces[0].Domain(0).Mid,surface.Faces[0].Domain(1).Mid)),success=success,input_trace=traces[0],before=before,after=after,after_script=after_script,undo=undo,redo=redo,events=events,history=history),0
     finally:
         for o in list(doc.Objects):doc.Objects.Delete(o.Id,True)
         for group in list(doc.Groups):
             if not group.IsDeleted:doc.Groups.Delete(group.Index)
-        source.Dispose();surface.Dispose();vp.SetViewProjection(old_view,False);old_view.Dispose();vp.SetConstructionPlane(old_plane);doc.ModelAbsoluteTolerance=old_tol
+        source.Dispose();surface.Dispose();vp.SetViewProjection(old_view,False);old_view.Dispose();vp.SetConstructionPlane(old_plane);doc.ModelAbsoluteTolerance=old_tol;doc.ModelAngleToleranceRadians=old_angle

@@ -128,7 +128,7 @@ impl VibocerosApp {
         };
         if s.source
             .as_ref()
-            .is_some_and(|c| !c.curve.current(&self.document))
+            .is_some_and(|c| !c.curve().current(&self.document))
         {
             self.push_log(
                 "Source curve changed or became unavailable; restart OrientCrvToEdge".into(),

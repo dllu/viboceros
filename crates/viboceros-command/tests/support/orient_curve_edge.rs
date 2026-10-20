@@ -15,6 +15,44 @@ pub fn rows() -> Vec<(Value, Value)> {
                 "../../../../tools/rhino_oracle/observations/orient_curve_edge_options.json"
             ),
         ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/orient_curve_edge_spatial.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/orient_curve_edge_spatial.json"
+            ),
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/orient_curve_edge_parallel.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/orient_curve_edge_parallel.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/orient_curve_edge_threshold.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/orient_curve_edge_threshold.json"
+            ),
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/orient_curve_edge_cutoff.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/orient_curve_edge_cutoff.json"
+            ),
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/orient_curve_edge_boundary.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/orient_curve_edge_boundary.json"
+            ),
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/orient_curve_edge_angle.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/orient_curve_edge_angle.json"
+            ),
+        ),
     ];
     pairs
         .into_iter()
@@ -60,7 +98,12 @@ pub struct Scene {
     pub target_snapshot: viboceros_document::GeometrySnapshot,
 }
 pub fn setup(op: &Value, v: &Value) -> (Document, Scene) {
-    let mut doc = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap());
+    let absolute = v["actual_tolerance"]["absolute"].as_f64().unwrap_or(1e-6);
+    let angular = v["actual_tolerance"]["angular"]
+        .as_f64()
+        .or_else(|| op["angle_tolerance"].as_f64())
+        .unwrap_or(1e-6);
+    let mut doc = Document::new(Tolerance::try_new(absolute, 1e-12, angular).unwrap());
     let original = Geometry::NurbsCurve(morph::curve(&v["before"][0]["geometry"]["curve"]));
     let source = doc.add_geometry(original.clone()).unwrap();
     let b =

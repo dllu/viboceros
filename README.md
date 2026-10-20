@@ -35,7 +35,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Orient and Orient3Pt point placement](docs/commands/orient.md), plus
   [curve, edge, and temporary-portion placement](docs/commands/orient-on-curve.md)
   and [surface placement, XYZ presets and per-placement getters](docs/commands/orient-on-surface.md)
-- [Orient curves to surface boundaries](docs/commands/orient-curve-to-edge.md), with previews, repeated copies, and grouped Undo
+- [Orient curves to surface boundaries](docs/commands/orient-curve-to-edge.md), with spatial frames, previews, repeated copies, and grouped Undo
 - [Remap objects between construction planes](docs/commands/remap-cplane.md), with viewport, world and saved-plane targets and Python replay
 - [Flow objects between curves](docs/commands/flow.md), with TargetSurface orientation, Local falloff, spatial Roadlike axes and grip previews
 - [Conic curves](docs/commands/conic.md), with tangent/perpendicular endpoints, surface edges and direction-locked temporary portions

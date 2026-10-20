@@ -75,7 +75,7 @@ fn curve_edge_placement_is_rigid_and_rejects_nonadjacent_faces() {
             .unwrap();
         let edge = Edge::capture(&doc, target, index, Some(face)).unwrap();
         let source = Source::capture(&doc, source, Some(p(0., -3., 1.))).unwrap();
-        let geometry = source.curve.curve_ref().to_nurbs().unwrap();
+        let geometry = source.curve().curve_ref().to_nurbs().unwrap();
         let placement = Placement::new(
             source,
             edge,
@@ -122,7 +122,7 @@ fn curve_edge_placement_is_rigid_and_rejects_nonadjacent_faces() {
 }
 
 #[test]
-fn unqualified_off_plane_tangents_preserve_redo() {
+fn spatial_endpoint_tangents_keep_rigid_geometry_and_replay() {
     let (mut doc, source, target) = setup();
     let commands = CommandRegistry::with_builtins();
     doc.replace_object_geometries([(
@@ -152,16 +152,28 @@ fn unqualified_off_plane_tangents_preserve_redo() {
                 .any(|l| l.trims().iter().any(|t| t.edge() == Some(0)))
         })
         .unwrap();
-    let before = format!("{doc:?}");
-    let error = commands
+    let before = doc.object(source).unwrap().geometry().clone();
+    let target_before = doc.object(target).unwrap().geometry_snapshot().clone();
+    commands
         .execute(
             &mut doc,
-            &format!("OrientCrvToEdge 2,0,0 Edge={target},0 Face={face} PickPoint=0,-3,1 Copy=Yes"),
+            &format!("OrientCrvToEdge 2,0,0 Edge={target},0 Face={face} PickPoint=0,-3,1 Copy=No"),
         )
-        .unwrap_err();
+        .unwrap();
+    let after = doc.object(source).unwrap().geometry().clone();
+    let a = before.curve_ref().unwrap();
+    let b = after.curve_ref().unwrap();
+    assert!((a.length(doc.tolerance()).unwrap() - b.length(doc.tolerance()).unwrap()).abs() < 1e-9);
     assert!(
-        error.to_string().contains("tangent in the CPlane"),
-        "{error}"
+        b.evaluate(*b.domain().end())
+            .unwrap()
+            .distance_to(p(2., 0., 0.))
+            .unwrap()
+            < 1e-12
     );
-    assert_eq!(format!("{doc:?}"), before);
+    assert!(target_before.shares_storage_with(doc.object(target).unwrap().geometry_snapshot()));
+    assert_eq!(doc.undo().unwrap().as_deref(), Some("OrientCrvToEdge"));
+    assert_eq!(doc.object(source).unwrap().geometry(), &before);
+    doc.redo().unwrap();
+    assert_eq!(doc.object(source).unwrap().geometry(), &after);
 }
