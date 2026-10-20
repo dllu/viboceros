@@ -291,6 +291,61 @@ fn through_points_stage_once_ignore_number_and_keep_earlier_steps_after_a_failed
 }
 
 #[test]
+fn curved_source_preparation_is_shared_across_point_plans_and_option_changes() {
+    let (mut doc, source, target) = scene();
+    let frame = Frame3::try_from_unit_normal(
+        p(0., 0., 0.),
+        viboceros_geometry::UnitVector3::try_new(0., 0., 1., doc.tolerance()).unwrap(),
+    )
+    .unwrap();
+    let surface = NurbsSurface::try_cylinder(frame, 3., 0., 6.).unwrap();
+    let guide = surface
+        .isocurve_v(0.6)
+        .unwrap()
+        .try_trimmed(1.5..=4.5)
+        .unwrap();
+    doc.replace_object_geometries([
+        (source, Geometry::NurbsCurve(guide)),
+        (target, Geometry::NurbsSurface(surface)),
+    ])
+    .unwrap();
+    let source = Source::capture(&doc, source, None, None).unwrap();
+    let target = Target::capture(&doc, target, None).unwrap();
+    let before = format!("{doc:?}");
+    let first = source
+        .extended_on_surface(&target.surface, doc.tolerance())
+        .unwrap();
+    let second = source
+        .clone()
+        .extended_on_surface(&target.clone().surface, doc.tolerance())
+        .unwrap();
+    assert!(Arc::ptr_eq(&first, &second));
+    let plan = Plan::prepare_through_point(
+        &doc,
+        source.clone(),
+        target.clone(),
+        p(3., 0., 5.5),
+        Options::default(),
+    )
+    .unwrap();
+    assert_eq!(plan.curves.len(), 1);
+    let c = &plan.curves[0];
+    let t = c
+        .closest_parameter(p(3., 0., 5.5), doc.tolerance())
+        .unwrap();
+    assert!(
+        c.evaluate(t).unwrap().distance_to(p(3., 0., 5.5)).unwrap() <= doc.tolerance().absolute()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    assert!(Arc::ptr_eq(
+        &first,
+        &source
+            .extended_on_surface(&target.surface, doc.tolerance())
+            .unwrap()
+    ));
+}
+
+#[test]
 fn selected_points_validate_before_editing_and_reject_stale_point_captures() {
     let (mut doc, source, surface) = scene();
     let first = doc.add_geometry(Geometry::Point(p(0., 2., 5.))).unwrap();

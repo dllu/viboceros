@@ -4,6 +4,56 @@ mod morph_fixtures;
 #[path = "support/surface_curve_offset.rs"]
 mod support;
 #[test]
+fn native_curved_surface_offsets_extend_shortened_sources_to_boundaries() {
+    let registry = viboceros_command::CommandRegistry::with_builtins();
+    for (op, value) in support::curved_rows() {
+        let (mut doc, scene) = support::setup(&op, &value);
+        let distance = op["actions"]
+            .as_array()
+            .unwrap()
+            .last()
+            .unwrap()
+            .as_f64()
+            .unwrap();
+        let before = format!("{doc:?}");
+        let result = registry.execute(
+            &mut doc,
+            &format!(
+                "OffsetCrvOnSrf {distance} Source={} Surface={}",
+                scene.source, scene.target
+            ),
+        );
+        if let Err(error) = result {
+            // This seam-crossing case is recorded as unqualified, never as
+            // parity. Preserve the model when the pullback cannot be proved.
+            assert_eq!(op["case"], "curved_diagonal");
+            assert!(matches!(
+                error,
+                viboceros_command::CommandError::Geometry(
+                    viboceros_geometry::GeometryError::SurfacePullbackDidNotConverge { .. }
+                )
+            ));
+            assert_eq!(format!("{doc:?}"), before);
+            println!(
+                "SURFACE_OFFSET_CURVED_ENDS {}",
+                serde_json::json!({"id":op["id"],"status":"rejected","error":error.to_string(),"maximum_bidirectional_sample_error":null,"qualified":false,"outputs":0,"native_outputs":value["after_script"].as_array().unwrap().len()-2})
+            );
+            continue;
+        }
+        let mut maximum = support::check(&doc, &scene, &value, "after_script");
+        doc.undo().unwrap();
+        maximum = maximum.max(support::check(&doc, &scene, &value, "undo"));
+        assert!(doc.undo().unwrap().is_none());
+        doc.redo().unwrap();
+        maximum = maximum.max(support::check(&doc, &scene, &value, "redo"));
+        println!(
+            "SURFACE_OFFSET_CURVED_ENDS {}",
+            serde_json::json!({"id":op["id"],"status":"curve","maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6,"outputs":value["after_script"].as_array().unwrap().len()-2,"native_outputs":value["after_script"].as_array().unwrap().len()-2})
+        );
+        support::qualify(&op, maximum);
+    }
+}
+#[test]
 fn native_through_point_selected_objects_order_projection_and_history() {
     let registry = viboceros_command::CommandRegistry::with_builtins();
     for (op, value) in support::select_rows() {

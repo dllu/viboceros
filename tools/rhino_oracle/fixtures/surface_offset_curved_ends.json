@@ -1,0 +1,195 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_offset_command",
+      "id": "curved_axis",
+      "case": "curved_axis",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "curved_axis_negative",
+      "case": "curved_axis_negative",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        -1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "curved_ring",
+      "case": "curved_ring",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "curved_ring_negative",
+      "case": "curved_ring_negative",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        -1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "curved_diagonal",
+      "case": "curved_diagonal",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "curved_warped",
+      "case": "curved_warped",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        0.25
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "curved_warped_negative",
+      "case": "curved_warped_negative",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        -0.25
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "curved_warped_diagonal",
+      "case": "curved_warped_diagonal",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        0.25
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    }
+  ]
+}

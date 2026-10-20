@@ -3,10 +3,29 @@ import gzip,hashlib,json,os,subprocess,sys,tempfile
 from pathlib import Path
 from unittest import TestCase,mock
 from .client import OracleClient,OracleProtocolError
-from .surface_offset_command_probe import request,through_request,select_request,validate,validate_request
+from .surface_offset_command_probe import request,through_request,select_request,curved_request,validate,validate_request
 from .structural_sdk import stage_helpers
 HERE=Path(__file__).resolve().parent
 class SurfaceOffsetCommandTests(TestCase):
+    def test_curved_end_command_evidence_and_source_closure(self):
+        path=HERE/'fixtures/surface_offset_curved_ends.json';q=json.loads(path.read_text())
+        self.assertEqual(q,curved_request());validate_request(q)
+        r=json.loads((HERE/'observations/surface_offset_curved_ends.json').read_text())
+        self.assertEqual(len(r['results']),8)
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+        for name,sha in r['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,name)
+        for op,row in zip(q['operations'],r['results']):
+            self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
+            v=row['value'];self.assertTrue(v['success']);self.assertEqual(v['input_trace']['errors'],[])
+            self.assertEqual(v['input_trace']['completed'],len(op['actions']))
+            self.assertEqual(v['before'],v['undo']);self.assertEqual(v['after_script'],v['redo'])
+            for phase in ['after_script','undo','redo']:self.assertEqual(v[phase][:2],v['before'])
+            self.assertEqual(len(v['after_script'])-2,2 if op['case']=='curved_diagonal'else 1)
+        for patch in [dict(actions=['Delete']),dict(action_prompts=[['Command']]),dict(case='curved_unknown')]:
+            with self.assertRaises(ValueError):validate(dict(q['operations'][0],**patch))
     def test_selected_points_evidence_order_cancellation_and_source_closure(self):
         path=HERE/'fixtures/surface_offset_select_point.json';q=json.loads(path.read_text())
         self.assertEqual(q,select_request());validate_request(q)

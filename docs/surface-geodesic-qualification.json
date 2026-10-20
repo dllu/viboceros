@@ -775,7 +775,7 @@
       "Planar open curves extend along endpoint tangents to natural boundaries, then clip against face loops.",
       "Number advances the complete curve before trimming each copy; hole splits do not duplicate later copies.",
       "Source selection survives; outputs use the current layer and remain unselected.",
-      "General curved-surface open-end extension and full native parity remain pending."
+      "Full curved-surface endpoint-continuation parity remains pending."
     ]
   },
   "through_point_cases": {
@@ -889,7 +889,7 @@
       "Point input constrains to the selected trimmed face; its final curve must pass through that constrained point within model tolerance.",
       "Repeated points offset the original source once; Number and Flip are ignored. Accepted points share one history entry and survive cancellation.",
       "Captured B-rep topology is preserved. Distinct-edge nearest-point ties follow topology index rather than world axes.",
-      "The bounded normal-family inverse has no global cut-locus or root-completeness certificate. General curved-surface open-end extension remains pending."
+      "The bounded normal-family inverse has no global cut-locus or root-completeness certificate. Full curved-surface endpoint-continuation parity remains pending."
     ]
   },
   "through_point_sdk_queries": [
@@ -992,15 +992,154 @@
       "On-source points are skipped; distinct point objects at the same offset are retained.",
       "Selection is released; cancellation, empty selection and all-on-source batches create no geometry.",
       "All nonzero results are prepared before one atomic commit; unresolved geometry does not commit a partial batch.",
-      "Curved-surface open-end extension and full native parity remain pending."
+      "Full curved-surface endpoint-continuation parity remains pending."
     ]
   },
+  "curved_end_cases": {
+    "recipes": 8,
+    "qualified_recipes": 4,
+    "unqualified_recipes": [
+      "curved_diagonal",
+      "curved_warped",
+      "curved_warped_negative",
+      "curved_warped_diagonal"
+    ],
+    "rejected_recipes": [
+      "curved_diagonal"
+    ],
+    "maximum_sample_difference": 0.2820925314142448,
+    "bidirectional_samples_per_curve": 258,
+    "cases": [
+      {
+        "id": "curved_axis",
+        "maximum_bidirectional_sample_error": 5.963072430421376e-07,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": true,
+        "status": "curve"
+      },
+      {
+        "id": "curved_axis_negative",
+        "maximum_bidirectional_sample_error": 4.656831014437592e-07,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": true,
+        "status": "curve"
+      },
+      {
+        "id": "curved_ring",
+        "maximum_bidirectional_sample_error": 1.1758915683475393e-14,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": true,
+        "status": "curve"
+      },
+      {
+        "id": "curved_ring_negative",
+        "maximum_bidirectional_sample_error": 1.158894167359027e-14,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": true,
+        "status": "curve"
+      },
+      {
+        "error": "surface pullback did not converge at absolute model tolerance 0.00000025",
+        "id": "curved_diagonal",
+        "maximum_bidirectional_sample_error": null,
+        "native_outputs": 2,
+        "outputs": 0,
+        "qualified": false,
+        "status": "rejected"
+      },
+      {
+        "id": "curved_warped",
+        "maximum_bidirectional_sample_error": 2.6234573996338507e-05,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": false,
+        "status": "curve"
+      },
+      {
+        "id": "curved_warped_negative",
+        "maximum_bidirectional_sample_error": 2.6286312002141813e-05,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": false,
+        "status": "curve"
+      },
+      {
+        "id": "curved_warped_diagonal",
+        "maximum_bidirectional_sample_error": 0.2820925314142448,
+        "native_outputs": 1,
+        "outputs": 1,
+        "qualified": false,
+        "status": "curve"
+      }
+    ],
+    "limits": [
+      "Natural UV endpoint spans continue to the surface rectangle; complete image bounds verify proposed and restored spatial curves.",
+      "Smooth image portions use C1 collocation and analytic endpoint derivatives; each candidate retains its independent image certificate.",
+      "Captured sources share preparation across point picks and option changes.",
+      "Warped isocurves and the warped diagonal remain unqualified; the periodic cylinder diagonal is rejected before document edits.",
+      "UV continuation does not establish complete native extension policy or periodic-branch parity."
+    ]
+  },
+  "extension_sdk_cases": [
+    {
+      "id": "curved_axis",
+      "extended_source_controls": 4,
+      "offsets_after_source_extension": 1,
+      "extended_offset_results": 1
+    },
+    {
+      "id": "curved_axis_negative",
+      "extended_source_controls": 4,
+      "offsets_after_source_extension": 1,
+      "extended_offset_results": 1
+    },
+    {
+      "id": "curved_ring",
+      "extended_source_controls": 11,
+      "offsets_after_source_extension": 1,
+      "extended_offset_results": 1
+    },
+    {
+      "id": "curved_ring_negative",
+      "extended_source_controls": 11,
+      "offsets_after_source_extension": 1,
+      "extended_offset_results": 1
+    },
+    {
+      "id": "curved_diagonal",
+      "extended_source_controls": 149,
+      "offsets_after_source_extension": 2,
+      "extended_offset_results": 1
+    },
+    {
+      "id": "curved_warped",
+      "extended_source_controls": 4,
+      "offsets_after_source_extension": 1,
+      "extended_offset_results": 1
+    },
+    {
+      "id": "curved_warped_negative",
+      "extended_source_controls": 4,
+      "offsets_after_source_extension": 1,
+      "extended_offset_results": 1
+    },
+    {
+      "id": "curved_warped_diagonal",
+      "extended_source_controls": 12,
+      "offsets_after_source_extension": 1,
+      "extended_offset_results": 1
+    }
+  ],
   "sha256": {
     "crates/viboceros-geometry/src/surface_geodesic.rs": "442b5d6c177e9ab9de2a9990e6361bfd7cda648d8300f2ad3da819623cd84f54",
     "crates/viboceros-geometry/src/surface_geodesic/tests.rs": "ce2834aceb31ea886ddd751aa674af095b5bf5fe5d5258b5323507a0a1a2cf5d",
-    "crates/viboceros-geometry/src/surface_curve_offset.rs": "437ae3c645d4b0dc9a5c7081f202b84812d4bf2c0c7d35266e458b236994df19",
+    "crates/viboceros-geometry/src/surface_curve_offset.rs": "eb57f0b137abbf725a4c5cf3bde6ba135a6ea89f673b2aa63c4ae4e85e501600",
     "crates/viboceros-geometry/src/surface_curve_offset/tests.rs": "fd668b9359f18bf194e7dda325d507aa667a779edb106996f9ac1a30f74355dd",
-    "crates/viboceros-geometry/src/surface_curve_offset/clip.rs": "a71f3523e16ab70551c83736f1c03e330cdea1702643ad6f0b189a338cae6114",
+    "crates/viboceros-geometry/src/surface_curve_offset/clip.rs": "d1423fc9de5cfd89a7263d14183702f177607f118170754b4c78431b6025929f",
     "crates/viboceros-geometry/src/surface_curve_offset/clip/tests.rs": "1ca625e6bb0fdd24d8f031a126729defca7849a46a10fa149e62ce24d22c4be1",
     "crates/viboceros-geometry/src/surface_curve_offset/clip/closed_gap.rs": "ee1ce06993291fb6dc958bc549659be2b2b38911d15dc7141a2c84416de18fef",
     "crates/viboceros-geometry/src/nurbs_surface/offset_extension.rs": "2e91a26d92077322bc3bf9e9221a3fa0d0075291a1af47c2398896d5762f640b",
@@ -1013,17 +1152,17 @@
     "tools/rhino_oracle/observations/surface_curve_offset_verify.json": "4726447786c4a155b1830f1c979471bfc00a45250f1987321d34b8f2dc6cef3a",
     "tools/rhino_oracle/fixtures/surface_curve_offset_clipping.json": "4163d8d8874ec2e80cf95e9b7a5ada572260c201bcb590da09af82b6df266eb3",
     "tools/rhino_oracle/observations/surface_curve_offset_clipping.json": "ad761cf4aa7802f5cccecb439ac2257d0bf125e07fe1a3c3f04273b986d654fa",
-    "tools/rhino_oracle/report_surface_geodesic.py": "02608762ac7dbe780c087429aa27f04de8ece1eb6c1c5d93d1f494c334e387fe",
-    "crates/viboceros-command/src/surface_curve_offset.rs": "377360e0940be2257afd578d3d292d8cb46d7b82a8b2ea01c77402e67b33ba1f",
-    "crates/viboceros-command/src/surface_curve_offset/tests.rs": "fd4a0bcf32866c815746fa122faff077018583b831e047c09faf0bf778d9cca3",
-    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "c497e8aa726fb42fb416d1a913b4e98eb58f1b260d1117a5bbe25e3d660eee14",
-    "crates/viboceros-command/tests/surface_curve_offset_native.rs": "bd9bfb4a1665ec2c9206bfc14e5e6c3229e3bc6214f3004e06c0c7d304e678a9",
-    "src/app/surface_curve_offset.rs": "234be5309b1ad250d35dac38cf1825ff2317aa2482e99f164de327eb871a7fe5",
-    "src/app/tests/surface_curve_offset.rs": "ae1b40f8c651f823406969c84e5b95eb95bd5f037cc423dc9a56cabf2242ace0",
+    "tools/rhino_oracle/report_surface_geodesic.py": "d3836f035acb2826ebc7613ef1de017e037b1dc9519e8a9d27b20ddd20a34e50",
+    "crates/viboceros-command/src/surface_curve_offset.rs": "ed4f7ece59a94b7d44cd6335778f49a7fea47ce1dc95a79bae6093718bc4ce1f",
+    "crates/viboceros-command/src/surface_curve_offset/tests.rs": "e8efae355bf31185fc09afd29d9cd4d22f2c26160b9d2e8c274396560aae3b5a",
+    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "689af201b7a2578f2ac2c8cc5f054d2bfca7304b137edcda63373131e7e6a23d",
+    "crates/viboceros-command/tests/surface_curve_offset_native.rs": "6b18817b4c8660fbe4cae692af8a2fb1b7394237fcc7c2ead876d0ba525c14c7",
+    "src/app/surface_curve_offset.rs": "8ed93dc31d5eb75f455cebd43bbd633ef1bc3d8c5a85677d2169a1d3af159b84",
+    "src/app/tests/surface_curve_offset.rs": "9ab32a58aea860927839b407b018ce2137039c5364d81cd0f0e9599d082caa88",
     "tools/rhino_oracle/fixtures/surface_offset_command.json": "46009c237a6d61e528daaad14015834e6d209024ea0d276cbbbdd257f86dfd3d",
     "tools/rhino_oracle/observations/surface_offset_command.json": "6f500ba92c42f9725b11974da615c4d82c61ebf63318293b457b58d1e43fdf50",
     "crates/viboceros-geometry/src/surface_curve_offset/through_point.rs": "94732f4ae46c8d3a04d5f0e7d34981bf943128a62a0b127cc74aef29f7c17c07",
-    "crates/viboceros-command/src/surface_curve_offset/through_point.rs": "4391df4f107810406bc4dbf3fbcc3a7a6da18560784ef1903c7d5ca0016d4348",
+    "crates/viboceros-command/src/surface_curve_offset/through_point.rs": "4537ec9146abd1d042841a93c157dc9fb8180b2190cda5dec0c3ffeb3eb3ad4c",
     "crates/viboceros-geometry/src/brep.rs": "c8b417cdb1da87f116ec337737c955c97f7c7de36d8c3f8dc3587af3a6b38c1a",
     "tools/rhino_oracle/fixtures/surface_offset_through_point.json": "7e20f4d1fc017ad8dd49aa480ece20ce37843aee7b2022bf22b5ac2df0f72ef6",
     "tools/rhino_oracle/observations/surface_offset_through_point.json": "20ca1ca59397d1c2f5770cd30f0b982ad62db25195ceb0abeb7b048094f877f5",
@@ -1035,8 +1174,17 @@
     "src/app.rs": "33308ddd1ae9c99ba9a36dba621ea3601eff82b11240422d6e32a8d0c6bf0f79",
     "tools/rhino_oracle/fixtures/surface_offset_select_point.json": "1b60ec1a229929b338f20ed89f42130792096d7e367016862a707cad50b34338",
     "tools/rhino_oracle/observations/surface_offset_select_point.json": "37eb6310b9cde04c1463f9d06fe08136ff4f88a86f253780bcb49544c43841cb",
-    "tools/rhino_oracle/surface_offset_command_probe.py": "20d85737ccc0a1bdff5196fdcbf435b53a8644c37482e1e1a91e23df4586fde4",
-    "tools/rhino_oracle/generate_surface_offset_command.py": "7210bfa7215c60d66462c1c58062c877e7777205cbd1c0c82312c1939ec9a927",
-    "tools/rhino_oracle/test_surface_offset_command.py": "7534fca815fe57901cc3c3d61bda30bce5085baa5e8893b15e31c23762564e41"
+    "tools/rhino_oracle/surface_offset_command_probe.py": "298b743be13f45cf093a3add5fd592ec688860786d9139c8facba5f3111a2607",
+    "tools/rhino_oracle/generate_surface_offset_command.py": "a063148083da6428dcda7c7a7279d0ec6403a7d085a56c94d2be3a2683e2523c",
+    "tools/rhino_oracle/test_surface_offset_command.py": "76222f0de247b3c00c02a24d6c926e5ac8567395693c6868e9137407e82d79f0",
+    "crates/viboceros-geometry/src/lib.rs": "18efd1f4a3dce84d9c0d105968788844f92f8d6e7d4a89c3db9bfcb8f7b04b99",
+    "crates/viboceros-geometry/src/surface_curve_offset/extend.rs": "98bd44d95c485ebc6194603a710fe4ed561fc19204e478ca3cc19fedd7df7d94",
+    "tools/rhino_oracle/fixtures/surface_offset_curved_ends.json": "6d4d5acb82926ff850fc6bc6e379722359713c803702f6a488aab5bb3034f44b",
+    "tools/rhino_oracle/observations/surface_offset_curved_ends.json": "0810accf301942547274067cf800c3d5e8bcd12b63ebc5a449d6122207b0b406",
+    "tools/rhino_oracle/fixtures/surface_curve_offset_extensions.json": "8dd4563ac4d7ac03cfa30d7ec7c412129723a64e715cf46bbff391aaccca83ad",
+    "tools/rhino_oracle/observations/surface_curve_offset_extensions.json": "c6fa4257f16f3c3b0487b1f5c80aac595b4527a333547a480b0416004f71529b",
+    "tools/rhino_oracle/surface_curve_offset_probe.py": "657f76cf1b295a6f76a4fe21639dc88621358bc5c61a1f17819de51c679e13f8",
+    "tools/rhino_oracle/generate_surface_curve_offset.py": "20963594dcd07d9a41176be35747be8c324dfa710b13e7e1c2711de59e7a2738",
+    "tools/rhino_oracle/structural_sdk.py": "271520269c38e86c117d79bbf3b0d372bb78f9dce8ece1ce7ed8fd2a963b0319"
   }
 }

@@ -9,12 +9,14 @@ use crate::{
 
 const MAX_QUERIES: usize = 65_536;
 mod clip;
+mod extend;
 mod through_point;
 pub use clip::{
     SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions, SurfaceCurveOffsetPieces,
     try_offset_curves_on_surface, try_offset_curves_on_surface_with_options,
     try_offset_curves_on_surface_with_solver,
 };
+pub use extend::{try_extend_curve_on_surface, try_extend_curve_on_surface_with_solver};
 pub use through_point::{
     SurfaceCurveOffsetThroughPoint, surface_curve_offset_distance_through_point,
 };

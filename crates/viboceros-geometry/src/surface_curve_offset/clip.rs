@@ -181,7 +181,7 @@ fn clipped(
 /// Same-sign weights give |S'| <= 3 B p/(min_span * min_weight),
 /// after max_weight=1 and centering controls in a radius-B ball. This bound
 /// selects a model-scaled UV fit budget; contacts still get model-space checks.
-fn uv_tolerance(
+pub(super) fn uv_tolerance(
     surface: &NurbsSurface,
     closed: [bool; 2],
     tolerance: Tolerance,

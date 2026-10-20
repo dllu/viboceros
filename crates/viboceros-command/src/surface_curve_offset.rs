@@ -1,7 +1,7 @@
 //! Captured curve-on-face offsets, shared by scripted execution and previews.
 use super::*;
 use crate::{curve_reference::CapturedCurve, orient_surface::Target};
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 use viboceros_geometry::{
     CurveExtensionSide, CurveExtensionStyle, SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions,
 };
@@ -173,6 +173,13 @@ pub struct Source {
     pub reference: CapturedCurve,
     pub range: Option<[Real; 2]>,
     curve: Arc<NurbsCurve>,
+    prepared: Arc<OnceLock<PreparedSource>>,
+}
+#[derive(Debug)]
+struct PreparedSource {
+    surface: Arc<NurbsSurface>,
+    tolerance: Tolerance,
+    curve: Result<Arc<NurbsCurve>, GeometryError>,
 }
 impl Source {
     pub fn capture(
@@ -189,10 +196,40 @@ impl Source {
             reference,
             range,
             curve: Arc::new(curve),
+            prepared: Arc::new(OnceLock::new()),
         })
     }
     pub fn curve(&self) -> &NurbsCurve {
         &self.curve
+    }
+    fn extended_on_surface(
+        &self,
+        surface: &Arc<NurbsSurface>,
+        tolerance: Tolerance,
+    ) -> Result<Arc<NurbsCurve>, GeometryError> {
+        // Cloned captures in a repeated getter share one target preparation,
+        // including failures. Other targets/tolerances compute independently;
+        // one retained entry keeps memory bounded for programmatic reuse.
+        let prepare = || {
+            viboceros_geometry::try_extend_curve_on_surface_with_solver(
+                surface,
+                self.curve(),
+                CurveExtensionSide::Both,
+                tolerance,
+                morph_interpolation_solver(),
+            )
+            .map(Arc::new)
+        };
+        let cached = self.prepared.get_or_init(|| PreparedSource {
+            surface: surface.clone(),
+            tolerance,
+            curve: prepare(),
+        });
+        if Arc::ptr_eq(surface, &cached.surface) && tolerance == cached.tolerance {
+            cached.curve.clone()
+        } else {
+            prepare()
+        }
     }
     pub fn current(&self, doc: &Document) -> bool {
         self.reference.current(doc)
@@ -282,7 +319,11 @@ impl Plan {
         } else {
             None
         };
-        let mut current = vec![source.curve().clone()];
+        let mut current = vec![if planar_boundaries.is_none() {
+            (*source.extended_on_surface(&target.surface, tolerance)?).clone()
+        } else {
+            source.curve().clone()
+        }];
         let mut outputs = Vec::new();
         for _ in 0..options.number {
             let mut next = Vec::new();
@@ -311,7 +352,13 @@ impl Plan {
                         }
                         c
                     } else {
-                        c
+                        viboceros_geometry::try_extend_curve_on_surface_with_solver(
+                            &target.surface,
+                            &c,
+                            CurveExtensionSide::Both,
+                            tolerance,
+                            morph_interpolation_solver(),
+                        )?
                     };
                     if trimmed {
                         let uv = target.surface.try_pullback_curve_certified(&c, tolerance)?;

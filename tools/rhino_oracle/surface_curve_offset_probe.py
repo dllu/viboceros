@@ -1,7 +1,9 @@
 """Read-only public OffsetOnSurface SDK observations on fixed source scenes."""
 import re
+if __package__:from .surface_offset_command_probe import CURVED_CASES,curved_source
+else:from surface_offset_command_probe import CURVED_CASES,curved_source
 STANDARD_CASES=('plane_line','plane_curve','cylinder_axis','cylinder_ring','sphere_latitude','warped_iso')
-CASES=STANDARD_CASES+('plane_circle','plane_seam','plane_bound')
+CASES=STANDARD_CASES+('plane_circle','plane_seam','plane_bound')+tuple(CURVED_CASES)
 def validate(op):
     if not isinstance(op,dict)or set(op)-{'samples'}!={'op','id','case','distance'}or op['op']!='surface_curve_offset':raise ValueError('invalid surface curve offset recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or op['case']not in CASES:raise ValueError('invalid surface curve offset case')
@@ -12,6 +14,8 @@ def request():
 def clipping_request():
     q=request();q['operations']=[dict(op='surface_curve_offset',id=name,case=case,distance=distance)for name,case,distance in [('four_arcs','plane_circle',-.25),('tangent_circle','plane_circle',-.2),('seam_arc','plane_seam',-.25),('line_ends','plane_bound',.25),('empty_circle','plane_circle',-1.)]]
     return q
+def extension_request():
+    q=request();q['operations']=[dict(op='surface_curve_offset',id=case,case=case,distance=d)for case,d in CURVED_CASES.items()];return q
 def validate_request(q):
     if type(q.get('iterations',1))is not int or q.get('iterations',1)!=1 or not isinstance(q.get('operations'),list)or not 1<=len(q['operations'])<=64:raise ValueError('bounded one-iteration surface offset SDK request required')
     names=[]
@@ -26,7 +30,9 @@ def run(op,host,iterations,tolerance):
         owned.append(g);return g
     try:
         case=op['case']
-        if case in('plane_circle','plane_seam','plane_bound'):
+        if case in CURVED_CASES:
+            surface,source=curved_source(G,case);keep(surface);keep(source)
+        elif case in('plane_circle','plane_seam','plane_bound'):
             corners=[[0,0,0],[1,0,0],[1,1,0],[0,1,0]]if case=='plane_bound'else[[-1,-1,0],[1,-1,0],[1,1,0],[-1,1,0]]
             surface=keep(G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in corners]))
             source=keep(G.LineCurve(G.Point3d(0,.2,0),G.Point3d(1,.8,0)))if case=='plane_bound'else keep(G.Circle(G.Point3d(0,.3 if case=='plane_seam'else 0,0),.6 if case=='plane_seam'else .8).ToNurbsCurve())
@@ -46,9 +52,25 @@ def run(op,host,iterations,tolerance):
         curves=list(source.OffsetOnSurface(face,float(op['distance']),1e-8)or[])
         owned.extend(curves)
         outputs=[]
+        def definition(curve):
+            if curve is None:return None
+            n=curve.ToNurbsCurve()
+            try:return host['_nurbs_curve_definition'](n)
+            finally:n.Dispose()
+        extensions=[];extended_source=None;source_first=[]
+        if case in CURVED_CASES:
+            extended=source.ExtendOnSurface(G.CurveEnd.Both,surface)
+            if extended is not None:
+                owned.append(extended);extended_source=definition(extended)
+                further=list(extended.OffsetOnSurface(face,float(op['distance']),1e-8)or[]);owned.extend(further)
+                source_first=[definition(c)for c in further]
         for curve in curves:
             if not curve.IsValid:raise ValueError('invalid offset result')
             outputs.append(dict(definition=host['_nurbs_curve_definition'](curve),samples=[host['_xyz'](curve.PointAt(curve.Domain.ParameterAt(i/64.)))for i in range(65)],length=float(curve.GetLength())))
+            if case in CURVED_CASES:
+                extended=curve.ExtendOnSurface(G.CurveEnd.Both,surface)
+                if extended is not None:owned.append(extended)
+                extensions.append(definition(extended))
         if before!=[int(source.DataCRC(0)),int(surface.DataCRC(0))]:raise ValueError('SDK mutated offset inputs')
         distances=[]
         for p in op.get('samples',[]):
@@ -58,6 +80,6 @@ def run(op,host,iterations,tolerance):
                 if not ok:raise ValueError('SDK closest point failed')
                 found.append(float(point.DistanceTo(curve.PointAt(t))))
             distances.append(min(found)if found else None)
-        return dict(surface=host['_nurbs_surface_definition'](surface),curve=host['_nurbs_curve_definition'](source),outputs=outputs,source_unchanged=True,sample_distances=distances),0
+        return dict(surface=host['_nurbs_surface_definition'](surface),curve=host['_nurbs_curve_definition'](source),outputs=outputs,source_unchanged=True,sample_distances=distances,extended_offsets=extensions,extended_source=extended_source,offset_extended_source=source_first),0
     finally:
         for g in reversed(owned):g.Dispose()

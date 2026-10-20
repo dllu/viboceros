@@ -1,0 +1,59 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_curve_offset",
+      "id": "curved_axis",
+      "case": "curved_axis",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "curved_axis_negative",
+      "case": "curved_axis_negative",
+      "distance": -1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "curved_ring",
+      "case": "curved_ring",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "curved_ring_negative",
+      "case": "curved_ring_negative",
+      "distance": -1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "curved_diagonal",
+      "case": "curved_diagonal",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "curved_warped",
+      "case": "curved_warped",
+      "distance": 0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "curved_warped_negative",
+      "case": "curved_warped_negative",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "curved_warped_diagonal",
+      "case": "curved_warped_diagonal",
+      "distance": 0.25
+    }
+  ]
+}

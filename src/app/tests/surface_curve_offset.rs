@@ -33,6 +33,57 @@ fn scene(app: &mut VibocerosApp) -> (ObjectId, ObjectId) {
 }
 
 #[test]
+fn curved_surface_offset_getters_extend_generators_and_rings_with_cached_confirmation() {
+    for (op, value) in native::curved_rows().into_iter().filter(|(op, _)| {
+        let case = op["case"].as_str().unwrap();
+        case.starts_with("curved_axis") || case.starts_with("curved_ring")
+    }) {
+        let mut app = test_app();
+        let (doc, scene) = native::setup(&op, &value);
+        app.document = doc;
+        let before = format!("{:?}", app.document);
+        enter(&mut app, "OffsetCrvOnSrf Number=1");
+        app.pick_surface_offset_face(Some(scene.target), Some(0), None);
+        assert_eq!(format!("{:?}", app.document), before);
+        let preview = app
+            .surface_offset_session
+            .as_ref()
+            .unwrap()
+            .preview_curves()
+            .as_ptr();
+        enter(&mut app, "Number=1");
+        assert_eq!(
+            app.surface_offset_session
+                .as_ref()
+                .unwrap()
+                .preview_curves()
+                .as_ptr(),
+            preview
+        );
+        let distance = op["actions"]
+            .as_array()
+            .unwrap()
+            .last()
+            .unwrap()
+            .as_f64()
+            .unwrap();
+        enter(&mut app, &distance.to_string());
+        assert!(
+            app.active_command.is_none(),
+            "{} {:?}",
+            op["id"],
+            app.command_log
+        );
+        let mut maximum = native::check(&app.document, &scene, &value, "after_script");
+        app.document.undo().unwrap();
+        maximum = maximum.max(native::check(&app.document, &scene, &value, "undo"));
+        app.document.redo().unwrap();
+        maximum = maximum.max(native::check(&app.document, &scene, &value, "redo"));
+        assert!(maximum < 1e-6, "{} {maximum:e}", op["id"]);
+    }
+}
+
+#[test]
 fn surface_offset_point_selection_windows_toggles_and_escape_preserve_redo() {
     let mut app = test_app();
     let (source, surface) = scene(&mut app);

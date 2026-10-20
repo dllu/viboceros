@@ -576,9 +576,12 @@ impl VibocerosApp {
         if s.number_prompt {
             match input.parse::<usize>() {
                 Ok(n) if (1..=solver::MAX_NUMBER).contains(&n) => {
+                    let changed = s.options.number != n || s.plan.is_none();
                     s.options.number = n;
                     s.number_prompt = false;
-                    self.prepare_surface_offset();
+                    if changed {
+                        self.prepare_surface_offset();
+                    }
                     self.surface_offset_prompt();
                 }
                 _ => self.push_log(format!("Enter a number from 1 to {}", solver::MAX_NUMBER)),
@@ -612,8 +615,11 @@ impl VibocerosApp {
         {
             match length {
                 Ok(v) if v != 0. => {
+                    let changed = s.options.distance != v || s.plan.is_none();
                     s.options.distance = v;
-                    self.prepare_surface_offset();
+                    if changed {
+                        self.prepare_surface_offset();
+                    }
                     self.commit_surface_offset();
                 }
                 Ok(_) => self.push_log("Enter a nonzero offset distance".into()),
@@ -633,8 +639,11 @@ impl VibocerosApp {
             && !refs.through_mode
             && refs.points.is_none()
         {
+            let changed = s.options != options || s.plan.is_none();
             s.options = options;
-            self.prepare_surface_offset();
+            if changed {
+                self.prepare_surface_offset();
+            }
             self.surface_offset_prompt();
             return true;
         }

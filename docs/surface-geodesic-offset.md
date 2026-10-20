@@ -127,7 +127,7 @@ names and Undo/Redo through both command and UI paths. Seven qualify within
 `1e-6`. The extended Bézier offset remains unqualified at approximately
 `4.24e-6`, alongside the five existing SDK discrepancies. These are sampled
 comparisons, not continuous geometric certificates. Curved-surface
-open-end extension, general closed-gap reconnection, corners, cut-locus
+endpoint-continuation parity, general closed-gap reconnection, corners, cut-locus
 handling and full native parity remain pending.
 
 ThroughPoint inverts the same normal-geodesic family in source-parameter and
@@ -140,6 +140,25 @@ normal branches and exhausted work fail explicitly. The resulting fitted and
 face-clipped curve must independently pass through the constrained point within
 model tolerance. Global root completeness and cut-locus certification remain
 unproven. Repeated UI points retain accepted curves in one history entry.
+
+Curved open inputs now use bounded continuation of their certified UV endpoint
+spans. The existing boundary-extension solver locates the natural rectangle;
+pushup certificates check the complete proposed image. Where independent
+image spans introduce tangent jumps, shared collocation fits C1 joins on smooth
+UV portions and verifies the result again. Endpoint derivatives come from the
+surface/UV chain rule. A final image proof covers the returned native curve
+parameterization. Inputs remain immutable and unresolved proofs fail before
+model edits. ThroughPoint can address locations beyond the original finite
+source, and source captures share the continued geometry across repeated picks.
+
+Eight public command captures qualify four cylinder generator/ring cases at
+`1e-6`. Warped isocurves differ by about `2.63e-5`; a warped diagonal differs
+by about `0.282`. A cylinder diagonal crossing the periodic seam is rejected
+by the pullback certificate. Diagnostic ceilings remain separate from the
+unchanged parity gate. Eight additional public SDK scenes record source-first
+and result-first [surface extension](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/extendonsurface?overload=2)
+as independent evidence. The continuation policy and periodic branches still
+need further work for complete native parity.
 
 The first ThroughPoint getter also accepts `Select` for ordered point objects.
 The same inverse and fitting path prepares the complete batch before one atomic

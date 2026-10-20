@@ -1,6 +1,26 @@
 """Bounded public OffsetCrvOnSrf getters on an empty owned document."""
 import re
 CASES={'distance':[], 'flip_number':['Number=3','Flip'], 'negative':[], 'nurbs_line':['Number=1'], 'bezier':[], 'trimmed_line':[], 'postselect':['Number=1'], 'trimmed_number':['Number=3']}
+CURVED_CASES={'curved_axis':1.,'curved_axis_negative':-1.,'curved_ring':1.,'curved_ring_negative':-1.,'curved_diagonal':1.,'curved_warped':.25,'curved_warped_negative':-.25,'curved_warped_diagonal':.25}
+def curved_source(G,case):
+    warped=case.startswith('curved_warped')
+    basis=G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in[[-5,-5,0],[5,-5,0],[5,5,3],[-5,5,-1]]])if warped else G.Cylinder(G.Circle(G.Plane.WorldXY,3.),6.).ToNurbsSurface()
+    try:
+        if 'diagonal'in case:
+            uv=G.LineCurve(G.Point3d(.25,.3,0),G.Point3d(.7,.8,0))if warped else G.LineCurve(G.Point3d(.2,1.5,0),G.Point3d(1.8,4.5,0))
+            try:source=basis.Pushup(uv,1e-9)
+            finally:uv.Dispose()
+        else:
+            iso=basis.IsoCurve(0,.5 if warped else 3.)if warped or 'ring'in case else basis.IsoCurve(1,.6)
+            try:
+                a,b=(.25,.75)if warped else(.3,1.3)if 'ring'in case else(1.5,4.5)
+                source=iso.Trim(G.Interval(a,b))
+            finally:iso.Dispose()
+        if source is None or not source.IsValid:raise ValueError('invalid owned shortened surface curve')
+        return basis,source
+    except BaseException:
+        basis.Dispose();raise
+
 THROUGH_CASES={
     'through_repeat':[[0.,2.,0.],[1.,-1.,0.]],
     'through_number':[[0.,2.,0.]],
@@ -30,6 +50,8 @@ SELECT_CASES={
     'through_select_same_offset':[[0.,2.,0.],[1.,2.,0.]],
 }
 def recipe(case):
+    if case in CURVED_CASES:
+        return [dict(curve=1),'Number=1',CURVED_CASES[case]],[['Select base surface'],['Offset distance'],['Offset distance']]
     if case in SELECT_CASES:
         indices=list(range(2,2+len(SELECT_CASES[case])))
         if case=='through_select_reverse':indices.reverse()
@@ -44,7 +66,7 @@ def recipe(case):
     return actions,gates
 def validate(op):
     if not isinstance(op,dict)or set(op)!={'op','id','case','actions','action_prompts'}or op['op']not in('surface_offset_command','surface_offset_through_point'):raise ValueError('invalid surface offset command recipe')
-    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(CASES if op['op']=='surface_offset_command'else dict(THROUGH_CASES,**SELECT_CASES)):raise ValueError('invalid owned surface offset command case')
+    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(dict(CASES,**CURVED_CASES)if op['op']=='surface_offset_command'else dict(THROUGH_CASES,**SELECT_CASES)):raise ValueError('invalid owned surface offset command case')
     actions,gates=recipe(op['case'])
     import json
     if json.dumps(op['actions'],sort_keys=True)!=json.dumps(actions,sort_keys=True)or op['action_prompts']!=gates:raise ValueError('only fixed surface offset getters are allowed')
@@ -59,6 +81,12 @@ def through_request():
     for case in THROUGH_CASES:
         actions,gates=recipe(case)
         q['operations'].append(dict(op='surface_offset_through_point',id=case,case=case,actions=actions,action_prompts=gates))
+    return q
+def curved_request():
+    q=request();q['operations']=[]
+    for case in CURVED_CASES:
+        actions,gates=recipe(case)
+        q['operations'].append(dict(op='surface_offset_command',id=case,case=case,actions=actions,action_prompts=gates))
     return q
 def select_request():
     q=request();q['operations']=[]
@@ -103,6 +131,11 @@ def run(op,host,iterations,tolerance):
         try:
             source=basis.IsoCurve(1,.6)if op['case']=='through_cylinder'else basis.IsoCurve(0,.2)
             surface=basis.ToBrep()
+        finally:basis.Dispose()
+    if op['case']in CURVED_CASES:
+        source.Dispose();surface.Dispose()
+        basis,source=curved_source(G,op['case'])
+        try:surface=basis.ToBrep()
         finally:basis.Dispose()
     ids=[];layers=[];old_layer=doc.Layers.CurrentLayerIndex
     def snapshot():

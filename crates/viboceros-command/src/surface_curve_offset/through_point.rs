@@ -34,7 +34,7 @@ impl Plan {
                 .collect::<Vec<_>>();
             extend_planar_offset(source.curve().clone(), &boundaries, doc.tolerance())?
         } else {
-            source.curve().clone()
+            (*source.extended_on_surface(&target.surface, doc.tolerance())?).clone()
         };
         let inverse = viboceros_geometry::surface_curve_offset_distance_through_point(
             &target.surface,
