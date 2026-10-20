@@ -133,8 +133,8 @@ pub fn setup(value: &Value) -> (Document, Scene) {
         doc,
         Scene {
             sources,
-            rail: rail.unwrap_or(target.unwrap()),
-            target: target.unwrap(),
+            rail: rail.or(target).unwrap(),
+            target: target.or(rail).unwrap(),
             original,
         },
     )
@@ -286,6 +286,11 @@ impl Scene {
         }
     }
     pub fn check(&self, doc: &Document, value: &Value, phase: &str, label: &str) -> f64 {
+        let max = self.audit(doc, value, phase, label);
+        assert!(max <= 1e-6, "{label} {phase} cloud error {max}");
+        max
+    }
+    pub fn audit(&self, doc: &Document, value: &Value, phase: &str, label: &str) -> f64 {
         let expected = &value[phase];
         let rows = expected["objects"].as_array().unwrap();
         assert_eq!(doc.objects().count(), rows.len(), "{label} {phase} count");
@@ -357,7 +362,6 @@ impl Scene {
                 );
             }
         }
-        assert!(max <= 1e-6, "{label} {phase} cloud error {max}");
         max
     }
 }

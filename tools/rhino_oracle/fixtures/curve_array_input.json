@@ -1,0 +1,2374 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_0"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_1"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_2"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_3"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineZ",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_4"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineZ",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_5"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineZ",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_6"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineZ",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_7"
+    },
+    {
+      "op": "curve_array",
+      "path": "Arc",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_8"
+    },
+    {
+      "op": "curve_array",
+      "path": "Arc",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_9"
+    },
+    {
+      "op": "curve_array",
+      "path": "Arc",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_10"
+    },
+    {
+      "op": "curve_array",
+      "path": "Arc",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_11"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_12"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_13"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_14"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_15"
+    },
+    {
+      "op": "curve_array",
+      "path": "Nurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_16"
+    },
+    {
+      "op": "curve_array",
+      "path": "Nurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_17"
+    },
+    {
+      "op": "curve_array",
+      "path": "Nurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_18"
+    },
+    {
+      "op": "curve_array",
+      "path": "Nurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_19"
+    },
+    {
+      "op": "curve_array",
+      "path": "ClosedNurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_20"
+    },
+    {
+      "op": "curve_array",
+      "path": "ClosedNurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_21"
+    },
+    {
+      "op": "curve_array",
+      "path": "ClosedNurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_22"
+    },
+    {
+      "op": "curve_array",
+      "path": "ClosedNurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_23"
+    },
+    {
+      "op": "curve_array",
+      "path": "Arc",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_24"
+    },
+    {
+      "op": "curve_array",
+      "path": "Arc",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_25"
+    },
+    {
+      "op": "curve_array",
+      "path": "Nurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_26"
+    },
+    {
+      "op": "curve_array",
+      "path": "Nurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_27"
+    },
+    {
+      "op": "curve_array",
+      "path": "Nurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_28"
+    },
+    {
+      "op": "curve_array",
+      "path": "Nurbs",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_29"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineY",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": [
+        0.0,
+        9.0,
+        0.0
+      ],
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_30"
+    },
+    {
+      "op": "curve_array",
+      "path": "Folded",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": [
+        10.0,
+        2.0,
+        0.0
+      ],
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_31"
+    },
+    {
+      "op": "curve_array",
+      "path": "Edge",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": [
+        8.0,
+        -2.0,
+        0.0
+      ],
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_32"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": [
+        0.0,
+        4.0,
+        -3.0
+      ],
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_33"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": [
+        20.0,
+        3.0,
+        1.0
+      ],
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_34"
+    },
+    {
+      "op": "curve_array",
+      "path": "Arc",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": [
+        2.0,
+        1.0,
+        3.0
+      ],
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_35"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Distance",
+      "value": 3.0,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_36"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Distance",
+      "value": 6.0,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_37"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Distance",
+      "value": 20.0,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "CancelAfterValue",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_38"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_39"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": true,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": [
+        0.8,
+        0.2
+      ],
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_40"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [
+        {
+          "Items": 6
+        },
+        {
+          "Orientation": "Roadlike"
+        }
+      ],
+      "input": "Option",
+      "id": "curve_41"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Distance",
+      "value": 2.0,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [
+        {
+          "Items": 4
+        },
+        {
+          "Distance": 2.5
+        }
+      ],
+      "input": "Number",
+      "id": "curve_42"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "CancelAfterValue",
+      "seed_names": [],
+      "edits": [],
+      "input": "Option",
+      "id": "curve_43"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": true,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "CancelGuide",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_44"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": [
+        2.0,
+        1.0,
+        3.0
+      ],
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": true,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "CancelBase",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_45"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": true,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "CancelSpacing",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_46"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": true,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [
+        "Group03",
+        "group02"
+      ],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_47"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": true,
+      "source_count": 2,
+      "grouped": true,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [
+        "Group03",
+        "group02"
+      ],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_48"
+    },
+    {
+      "op": "curve_array",
+      "path": "LineX",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 3,
+      "grouped": true,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [
+        "Group03",
+        "group02"
+      ],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_49"
+    },
+    {
+      "op": "curve_array",
+      "path": "Polyline",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_50"
+    },
+    {
+      "op": "curve_array",
+      "path": "Polyline",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_51"
+    },
+    {
+      "op": "curve_array",
+      "path": "Uneven",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": [
+        90.0,
+        0.0,
+        0.0
+      ],
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_52"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": [
+        -5.0,
+        0.0,
+        0.0
+      ],
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_53"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": [
+        20.0,
+        3.0,
+        1.0
+      ],
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_54"
+    },
+    {
+      "op": "curve_array",
+      "path": "Circle",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "NoRotation",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 2,
+      "grouped": true,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_55"
+    },
+    {
+      "op": "curve_array",
+      "path": "PlanarPolyline",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_56"
+    },
+    {
+      "op": "curve_array",
+      "path": "PlanarPolyline",
+      "representation": "Nurbs",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_57"
+    },
+    {
+      "op": "curve_array",
+      "path": "PlanarPolyline",
+      "representation": "Polycurve",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Roadlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_58"
+    },
+    {
+      "op": "curve_array",
+      "path": "PlanarPolyline",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_59"
+    },
+    {
+      "op": "curve_array",
+      "path": "PlanarPolyline",
+      "representation": "Nurbs",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_60"
+    },
+    {
+      "op": "curve_array",
+      "path": "PlanarPolyline",
+      "representation": "Polycurve",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Stairlike",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "curve_61"
+    }
+  ]
+}

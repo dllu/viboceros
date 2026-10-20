@@ -254,10 +254,11 @@ fn curve_arrays_keep_rigid_pose_spacing_groups_and_history_across_model_units() 
                                 let after_groups = doc.groups().cloned().collect::<Vec<_>>();
                                 doc.undo().unwrap();
                                 assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
-                                assert_eq!(
-                                    doc.groups().cloned().collect::<Vec<_>>(),
-                                    before_groups
-                                );
+                                // Rhino retains allocated definitions after Undo.
+                                for group in &before_groups {
+                                    assert_eq!(doc.group(group.id()), Some(group));
+                                }
+                                assert_eq!(doc.groups().count(), after_groups.len());
                                 doc.redo().unwrap();
                                 assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after);
                                 assert_eq!(doc.groups().cloned().collect::<Vec<_>>(), after_groups);

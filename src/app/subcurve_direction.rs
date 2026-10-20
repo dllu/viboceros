@@ -5,6 +5,7 @@ impl VibocerosApp {
         if self.continue_conic_subcurve_direction(input)
             || self.continue_orient_subcurve_direction(input)
             || self.continue_array_subcurve_direction(input)
+            || self.continue_curve_array_subcurve_direction(input)
         {
             return true;
         }
@@ -89,6 +90,7 @@ impl VibocerosApp {
             || self.update_conic_subcurve_hover(point)
             || self.update_orient_subcurve_hover(point)
             || self.update_array_subcurve_hover(point)
+            || self.update_curve_array_subcurve_hover(point)
         {
             return;
         }

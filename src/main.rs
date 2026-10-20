@@ -19,6 +19,10 @@ mod array_curve_surface_test_support;
 #[path = "../crates/viboceros-command/tests/support/array_surface.rs"]
 mod array_surface_test_support;
 #[cfg(test)]
+#[allow(dead_code)]
+#[path = "../crates/viboceros-command/tests/support/curve_array.rs"]
+mod curve_array_test_support;
+#[cfg(test)]
 #[path = "../crates/viboceros-command/tests/support/splop_finish.rs"]
 mod splop_finish_test_support;
 #[cfg(test)]

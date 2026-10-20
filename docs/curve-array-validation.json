@@ -1,0 +1,1327 @@
+{
+  "schema_version": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "workflows": 62,
+  "qualified_geometry_workflows": 57,
+  "geometry_epsilon": 1e-06,
+  "maximum_qualified_witness_error": 1.8507975810338467e-07,
+  "artifacts": {
+    "tools/rhino_oracle/fixtures/curve_array_input.json": "de39f167e7481aa12167d0cb30bf8a0d43a3322a85f5307a7f62d837f8419b94",
+    "tools/rhino_oracle/observations/curve_array_input.json": "542051364513bfc4ac4ab7e8c700556ebabab375c697be30bf0ad93151944dd4",
+    "docs/curve-array-validation.log.gz": "374831faebc9168a3123ef71cc5b5d79e712576228fdb13d49e98c6ac2b4ef9c",
+    "docs/curve-array-input-pilot.json.gz": "d781205b7fd848c47ef354759dc0521d235a457b42397655e4b57a2e9901782c",
+    "docs/curve-array-option-pilot.json.gz": "d7c1f37958e2b52aeb9a5c2454d36aaeb9c0f7c586170f247842dfa08fe5622e",
+    "docs/curve-array-protocol-pilot.json.gz": "b4fabe917806a1995cbdbdd83e759157ccb2298e6c576ac4b0d0671a0507c763",
+    "docs/curve-array-placement-pilot.json.gz": "4bc29a9c140f9e2e1f1d6654a1ce701375375591e3028fc5df2c09fff6f6125e"
+  },
+  "implementation_sources": {
+    "crates/viboceros-command/src/lib.rs": "b194c413a5d28cc75908fea108bf98e32235c5a64f9a4585996c4f7116245c2a",
+    "crates/viboceros-command/src/curve_array.rs": "c400d50133c0f096e4afd2c7fd21dda2654c13be84158725f2e7568ae7baa225",
+    "crates/viboceros-command/src/arrays.rs": "13af2f2649912177547bbfecf340c7e47367ff4706b888077e3813f1452c936c",
+    "crates/viboceros-command/src/curve_reference.rs": "47d7e8fadb36a2d50517c32b23eef15dfec8b777e06967068e44b09f52e9159d",
+    "crates/viboceros-command/src/curve_segments.rs": "380d7d899cbe5e73b444938d816f723d0216521f67784a6be4d1ea452fe7b143",
+    "crates/viboceros-command/src/orient_curve.rs": "698e1999d424f88b05245a943a3478e98f7fcab14f1e39b4ab71a465b9717e8c",
+    "crates/viboceros-command/src/history_policy.rs": "e7cfb57b1ebdffa51ef3f60af92a202b9b6183b773b5ebf968e384e676918681",
+    "crates/viboceros-geometry/src/curve_frame.rs": "9e87c383139ecf6244b9892507d052805133fe86cab114cd44a7acdbb3097b10",
+    "crates/viboceros-geometry/src/curve_trim.rs": "978eb43b305e6024bdf65151d2e07eaffb51256e99d677f08d4d766acd3af249",
+    "src/app/curve_array.rs": "6022c99c6c3d8d41e59c93fd92b337917ee4d13d4063c30ff6e6788265097d9b",
+    "src/app/curve_array/subcurve.rs": "eea8a9a8958b2efb61f44e0d0a75a47a2ba77f2a0cba5c8bae1afd9ca161027b",
+    "src/app.rs": "36873261c29aec580017252148ebc94d5500b6725fff2b660ef1d8f0c1a9398a",
+    "src/main.rs": "2ad68cc5504948af6e365787f380f32f1e3fc59c11136262a1280366a49c41d7",
+    "src/app/component_selection.rs": "0f2bf94a12171bf5e966e69ba46f59ed01cc493e79ed4174f7cf6dfedcddd2fd",
+    "src/app/object_selection.rs": "708dfd7e27db8510cc5888e869aeba9bde1d5947fb5398421deb67897ddb8bff",
+    "src/app/subcurve_direction.rs": "c64e0a35b38a4134be7cdc993c7cdcf175882ed954e2a934e861fed1575d17ae",
+    "src/app/subcurve_preview.rs": "67536074fd2f3f9bef7ec460836818f796950e40f1fb53ed66e07f2f8cfbcc27",
+    "src/viewport/object_preview.rs": "c2e62ec56d4d200dd296423a2e73733cbf3d94d5e028c8528afd2e2617e7af0c",
+    "src/app/tests/curve_array.rs": "0ab3d8c3c7a22c0fcb4790423769172fb36a1a7744943ed03095824154c55569",
+    "crates/viboceros-command/tests/curve_array_native.rs": "690f5614c2408cbb3b854fe106f227c14ee555035b7a218cdf48ba454cb13683",
+    "crates/viboceros-command/tests/curve_array_units.rs": "56341ddfaa8fac9189889f5535ba5e8ce4056c315a9a6979e0455027037b4174",
+    "crates/viboceros-command/tests/support/curve_array.rs": "0f38f66b75abf96c1c56d484ceca2e0fa39ce0e8273e5050596da7d3b879e29f",
+    "crates/viboceros-command/tests/support/array_curve_surface.rs": "9ad0736be5097cf1f1693b5ce2e30f6b1791c90ce283f1293d59b4ccc84468d2",
+    "tools/rhino_oracle/test_curve_array.py": "a620bbb858dffbb2a84a40e1606eaee0e1df7c9ba0f2faf660967ce14e463d62"
+  },
+  "replay_audits": {
+    "portable_api": [
+      {
+        "id": "curve_0",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_1",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_2",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_3",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_4",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_5",
+        "maximum_error": 11.726983216846945,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_6",
+        "maximum_error": 10.488088481701515,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_7",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_8",
+        "maximum_error": 1.2385748431682126e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_9",
+        "maximum_error": 1.7454062674507594e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_10",
+        "maximum_error": 1.7916517101322855e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_11",
+        "maximum_error": 2.7695380731052206e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_12",
+        "maximum_error": 3.302053315240205e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_13",
+        "maximum_error": 5.523306353722329e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_14",
+        "maximum_error": 4.827873790998124e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_15",
+        "maximum_error": 8.000366948227619e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_16",
+        "maximum_error": 1.8507975810338467e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_17",
+        "maximum_error": 1.454278525833922e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_18",
+        "maximum_error": 1.0944577857085761e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_19",
+        "maximum_error": 1.094456315197794e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_20",
+        "maximum_error": 2.7023098824418953e-05,
+        "qualification": "native_frame_approximation"
+      },
+      {
+        "id": "curve_21",
+        "maximum_error": 1.6854053567288134e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_22",
+        "maximum_error": 1.5608992532989847e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_23",
+        "maximum_error": 2.6363916229727833e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_24",
+        "maximum_error": 1.7798152727969338e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_25",
+        "maximum_error": 1.4644607122319757e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_26",
+        "maximum_error": 1.0430067449443178e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_27",
+        "maximum_error": 1.3366340186980552e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_28",
+        "maximum_error": 1.2790512646025527e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_29",
+        "maximum_error": 1.274934060107427e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_30",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_31",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_32",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_33",
+        "maximum_error": 8.000366948227619e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_34",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_35",
+        "maximum_error": 2.9828838953657504e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_36",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_37",
+        "maximum_error": 3.79900216908985e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_38",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_39",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_40",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_41",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_42",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_43",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_44",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_45",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_46",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_47",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_48",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_49",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_50",
+        "maximum_error": 2.23606797749979,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_51",
+        "maximum_error": 5.196152422706631,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_52",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_53",
+        "maximum_error": 8.000366948227619e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_54",
+        "maximum_error": 1.6700551339288317e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_55",
+        "maximum_error": 5.306721752590508e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_56",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_57",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_58",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_59",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_60",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_61",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      }
+    ],
+    "portable_ui": [
+      {
+        "id": "curve_0",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_1",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_2",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_3",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_4",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_5",
+        "maximum_error": 11.726983216846945,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_6",
+        "maximum_error": 10.488088481701515,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_7",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_8",
+        "maximum_error": 1.2385748431682126e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_9",
+        "maximum_error": 1.7454062674507594e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_10",
+        "maximum_error": 1.7916517101322855e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_11",
+        "maximum_error": 2.7695380731052206e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_12",
+        "maximum_error": 3.302053315240205e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_13",
+        "maximum_error": 5.523306353722329e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_14",
+        "maximum_error": 4.827873790998124e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_15",
+        "maximum_error": 8.000366948227619e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_16",
+        "maximum_error": 1.8507975810338467e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_17",
+        "maximum_error": 1.454278525833922e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_18",
+        "maximum_error": 1.0944577857085761e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_19",
+        "maximum_error": 1.094456315197794e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_20",
+        "maximum_error": 2.7023098824418953e-05,
+        "qualification": "native_frame_approximation"
+      },
+      {
+        "id": "curve_21",
+        "maximum_error": 1.6854053567288134e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_22",
+        "maximum_error": 1.5608992532989847e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_23",
+        "maximum_error": 2.6363916229727833e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_24",
+        "maximum_error": 1.7798152727969338e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_25",
+        "maximum_error": 1.4644607122319757e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_26",
+        "maximum_error": 1.0430067449443178e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_27",
+        "maximum_error": 1.3366340186980552e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_28",
+        "maximum_error": 1.2790512646025527e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_29",
+        "maximum_error": 1.274934060107427e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_30",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_31",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_32",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_33",
+        "maximum_error": 8.000366948227619e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_34",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_35",
+        "maximum_error": 2.9828838953657504e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_36",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_37",
+        "maximum_error": 3.79900216908985e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_38",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_39",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_40",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_41",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_42",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_43",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_44",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_45",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_46",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_47",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_48",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_49",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_50",
+        "maximum_error": 2.23606797749979,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_51",
+        "maximum_error": 5.196152422706631,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_52",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_53",
+        "maximum_error": 8.000366948227619e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_54",
+        "maximum_error": 1.6700551339288317e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_55",
+        "maximum_error": 5.306721752590508e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_56",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_57",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_58",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_59",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_60",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_61",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      }
+    ],
+    "usd_brep_api": [
+      {
+        "id": "curve_0",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_1",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_2",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_3",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_4",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_5",
+        "maximum_error": 11.726983216846945,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_6",
+        "maximum_error": 10.488088481701515,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_7",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_8",
+        "maximum_error": 1.2385748431682126e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_9",
+        "maximum_error": 1.7454062674507594e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_10",
+        "maximum_error": 1.7916517101322855e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_11",
+        "maximum_error": 2.7695380731052206e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_12",
+        "maximum_error": 3.3020460449868766e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_13",
+        "maximum_error": 5.523299064106845e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_14",
+        "maximum_error": 4.827873949881067e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_15",
+        "maximum_error": 8.000360762478626e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_16",
+        "maximum_error": 1.8507975810338467e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_17",
+        "maximum_error": 1.454278525833922e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_18",
+        "maximum_error": 1.0944577857085761e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_19",
+        "maximum_error": 1.094456315197794e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_20",
+        "maximum_error": 2.7023098831814984e-05,
+        "qualification": "native_frame_approximation"
+      },
+      {
+        "id": "curve_21",
+        "maximum_error": 1.6854030280827066e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_22",
+        "maximum_error": 1.560897259025633e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_23",
+        "maximum_error": 2.636389886429662e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_24",
+        "maximum_error": 1.7798152727969338e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_25",
+        "maximum_error": 1.4644607122319757e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_26",
+        "maximum_error": 1.0430067449443178e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_27",
+        "maximum_error": 1.3366340186980552e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_28",
+        "maximum_error": 1.2790512646025527e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_29",
+        "maximum_error": 1.274934060107427e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_30",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_31",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_32",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_33",
+        "maximum_error": 8.000360762478626e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_34",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_35",
+        "maximum_error": 2.9828838953657504e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_36",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_37",
+        "maximum_error": 3.799002122312406e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_38",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_39",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_40",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_41",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_42",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_43",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_44",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_45",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_46",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_47",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_48",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_49",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_50",
+        "maximum_error": 2.23606797749979,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_51",
+        "maximum_error": 5.196152422706631,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_52",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_53",
+        "maximum_error": 8.000360762478626e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_54",
+        "maximum_error": 1.670055169551795e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_55",
+        "maximum_error": 5.306721752590508e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_56",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_57",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_58",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_59",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_60",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_61",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      }
+    ],
+    "usd_brep_ui": [
+      {
+        "id": "curve_0",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_1",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_2",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_3",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_4",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_5",
+        "maximum_error": 11.726983216846945,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_6",
+        "maximum_error": 10.488088481701515,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_7",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_8",
+        "maximum_error": 1.2385748431682126e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_9",
+        "maximum_error": 1.7454062674507594e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_10",
+        "maximum_error": 1.7916517101322855e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_11",
+        "maximum_error": 2.7695380731052206e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_12",
+        "maximum_error": 3.3020460449868766e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_13",
+        "maximum_error": 5.523299064106845e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_14",
+        "maximum_error": 4.827873949881067e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_15",
+        "maximum_error": 8.000360762478626e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_16",
+        "maximum_error": 1.8507975810338467e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_17",
+        "maximum_error": 1.454278525833922e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_18",
+        "maximum_error": 1.0944577857085761e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_19",
+        "maximum_error": 1.094456315197794e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_20",
+        "maximum_error": 2.7023098831814984e-05,
+        "qualification": "native_frame_approximation"
+      },
+      {
+        "id": "curve_21",
+        "maximum_error": 1.6854030280827066e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_22",
+        "maximum_error": 1.560897259025633e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_23",
+        "maximum_error": 2.636389886429662e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_24",
+        "maximum_error": 1.7798152727969338e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_25",
+        "maximum_error": 1.4644607122319757e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_26",
+        "maximum_error": 1.0430067449443178e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_27",
+        "maximum_error": 1.3366340186980552e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_28",
+        "maximum_error": 1.2790512646025527e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_29",
+        "maximum_error": 1.274934060107427e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_30",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_31",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_32",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_33",
+        "maximum_error": 8.000360762478626e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_34",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_35",
+        "maximum_error": 2.9828838953657504e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_36",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_37",
+        "maximum_error": 3.799002122312406e-08,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_38",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_39",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_40",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_41",
+        "maximum_error": 8.881784197001252e-16,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_42",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_43",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_44",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_45",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_46",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_47",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_48",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_49",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_50",
+        "maximum_error": 2.23606797749979,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_51",
+        "maximum_error": 5.196152422706631,
+        "qualification": "native_vertical_degeneracy"
+      },
+      {
+        "id": "curve_52",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_53",
+        "maximum_error": 8.000360762478626e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_54",
+        "maximum_error": 1.670055169551795e-07,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_55",
+        "maximum_error": 5.306721752590508e-09,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_56",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_57",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_58",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_59",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_60",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      },
+      {
+        "id": "curve_61",
+        "maximum_error": 0.0,
+        "qualification": "qualified"
+      }
+    ]
+  },
+  "additional_checks": [
+    "480 rigid-pose/spacing/group/history combinations across five model scales",
+    "25 atomic error and single-item no-op/Redo cases",
+    "component edge routing, stale source/guide invalidation and read-only preview cancellation",
+    "existing ArrayCrvOnSrf and ArraySrf API/native regression suites",
+    "workspace all-target Clippy with warnings denied, portable and native-smlib",
+    "frozen producer closure, every getter gate, motion/click acknowledgement, dedicated private capture bounds and old array receipts"
+  ],
+  "diagnostics": [
+    {
+      "ids": [
+        "curve_5",
+        "curve_6",
+        "curve_50",
+        "curve_51"
+      ],
+      "qualification": "native_vertical_degeneracy",
+      "reason": "Rhino capture returns collapsed/indeterminate coordinates at vertical Roadlike/Stairlike singularities. State/history replay is checked; these outputs do not qualify geometry. Viboceros rigid-frame behavior is checked independently across model scales."
+    },
+    {
+      "ids": [
+        "curve_20"
+      ],
+      "qualification": "native_frame_approximation",
+      "reason": "Smooth closed Freeform frames differ by approximately 2.7e-5 model units, consistent with existing independent curve-frame integration diagnostics. State/history checked, diagnostic bound 5e-5; not counted at 1e-6."
+    }
+  ],
+  "limitations": [
+    "Sharp spatial Freeform corner query-dependent twist remains different; all pilot frame audits and failed input attempts are retained.",
+    "General trimmed-edge topology, source grips, exact ties for automatic closed seams and defaults carried to shorter rails are outside this capture.",
+    "Controller and component routing are replayed. GPU screenshots/native dynamic preview pixels are not compared.",
+    "Native captures are untimed public-command observations, not performance benchmarks."
+  ]
+}

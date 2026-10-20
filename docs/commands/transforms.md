@@ -139,13 +139,15 @@ step. Array, ArrayLinear, and ArrayPolar omit copied groups for a single source
 object, while still allocating corresponding empty definitions; multiple-source
 arrays recreate selected memberships per copy.
 
-`ArrayCrv` places the selected sources at equal arc-length positions on a line,
+[`ArrayCrv`](curve-array.md) supports interactive curve and edge picks, adjustable
+read-only instances and temporary SubCrv guides. It places the selected sources
+at equal arc-length positions on a line,
 analytic curve, polyline, or NURBS rail. Name a unique rail with the single-token
 `PathName=` option, or omit it and make the rail the last selected object.
 An item count includes both endpoints of an open rail and omits a duplicate
 closed seam; `Distance=` uses a fixed spacing and leaves any shorter remainder.
 `Freeform` is the default rotation-minimizing orientation. `Roadlike` keeps its
-Y axis parallel to the world XY construction plane, `Stairlike` applies yaw
+Y axis parallel to the picked viewport construction plane, `Stairlike` applies yaw
 only, and `NoRotation` translates without rotating. `BasePoint=` uses an
 explicit source anchor and, as in Rhino, retains the originals in addition to
 all requested rail items. Without it, the originals are the first item. Use

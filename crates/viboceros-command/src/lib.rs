@@ -5,6 +5,8 @@ mod align;
 mod apply_curves;
 pub mod array_curve_surface;
 pub mod array_surface;
+pub mod curve_array;
+use curve_array::{ArrayCurveCommand, CurveArraySpacing, curve_array_samples};
 mod block_edit;
 mod block_reset_scale;
 pub mod blocks;
@@ -692,6 +694,12 @@ pub trait Command: Send + Sync {
         CommandHistoryPolicy::Ordinary
     }
 
+    fn curve_array_preferences(&self) -> Option<curve_array::Preferences> {
+        None
+    }
+    fn remember_curve_array_preferences(&self, _p: curve_array::Preferences) -> bool {
+        false
+    }
     fn surface_array_preferences(&self) -> Option<array_surface::Preferences> {
         None
     }
@@ -1833,7 +1841,7 @@ impl CommandRegistry {
             .register(array_curve_surface::ArrayCurveSurfaceCommand::default())
             .expect("unique built-in command");
         registry
-            .register(ArrayCurveCommand)
+            .register(ArrayCurveCommand::default())
             .expect("unique built-in command");
         registry
             .register(array_surface::ArraySurfaceCommand::default())
@@ -2247,6 +2255,17 @@ impl CommandRegistry {
             .get(&normalize_command_name("Arc"))
             .and_then(|i| self.commands[*i].arc_deformation())
             .unwrap_or_default()
+    }
+    pub fn curve_array_preferences(&self) -> curve_array::Preferences {
+        self.lookup
+            .get(&normalize_command_name("ArrayCrv"))
+            .and_then(|i| self.commands[*i].curve_array_preferences())
+            .unwrap_or_default()
+    }
+    pub fn remember_curve_array_preferences(&self, p: curve_array::Preferences) -> bool {
+        self.lookup
+            .get(&normalize_command_name("ArrayCrv"))
+            .is_some_and(|i| self.commands[*i].remember_curve_array_preferences(p))
     }
     pub fn surface_array_preferences(&self) -> array_surface::Preferences {
         self.lookup
@@ -14944,372 +14963,10 @@ fn apply_transform_or_copy(
     }
 }
 
-const ARRAY_CURVE_USAGE: &str = "ArrayCrv item-count | ArrayCrv Items item-count | \
-    ArrayCrv Distance spacing [Orientation=Freeform|Roadlike|Stairlike|NoRotation] \
-    [BasePoint=x,y,z] [PathName=name]";
-
-struct ArrayCurveCommand;
-
-impl Command for ArrayCurveCommand {
-    fn name(&self) -> &'static str {
-        "ArrayCrv"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["ArrayCurve"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_curve_array_options(arguments)?;
-        let (path_geometry, path_id, sources) =
-            curve_array_inputs(document, options.path_name.as_deref())?;
-        let tolerance = document.tolerance();
-        let curve = geometry_curve_ref(&path_geometry)
-            .expect("curve-array input resolution validates the path geometry");
-        let samples = curve_array_samples(curve, options.spacing, tolerance)?;
-        let retained_source_instance = usize::from(options.base_point.is_none());
-        let copy_instance_count = samples.len() - retained_source_instance;
-        let copy_count = sources
-            .len()
-            .checked_mul(copy_instance_count)
-            .filter(|count| *count <= MAX_ARRAY_OBJECTS)
-            .ok_or(CommandError::TooManyArrayObjects {
-                maximum: MAX_ARRAY_OBJECTS,
-            })?;
-        let base_point = options.base_point.unwrap_or_else(|| samples[0].point());
-        let transforms = curve_array_transforms(
-            curve,
-            &samples,
-            base_point,
-            options.orientation,
-            retained_source_instance,
-            tolerance,
-        )?;
-        debug_assert_eq!(transforms.len(), copy_instance_count);
-        let copies = document
-            .copy_objects_with_transforms(sources.iter().copied(), transforms.as_slice())?;
-        document.select_objects_direct(sources.iter().copied(), SelectionMode::Replace)?;
-        debug_assert!(!document.is_selected(path_id));
-        debug_assert_eq!(copies.len(), copy_count);
-        Ok(format!(
-            "Arrayed {} object(s) at {} {} location(s) with {} orientation, creating {copy_count} copy object(s)",
-            sources.len(),
-            samples.len(),
-            options.spacing.name(),
-            options.orientation.name(),
-        ))
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum CurveArraySpacing {
-    Items(usize),
-    Distance(Real),
-}
-
-impl CurveArraySpacing {
-    const fn name(self) -> &'static str {
-        match self {
-            Self::Items(_) => "item",
-            Self::Distance(_) => "distance",
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum CurveArrayOrientation {
-    Freeform,
-    Roadlike,
-    Stairlike,
-    NoRotation,
-}
-
-impl CurveArrayOrientation {
-    const fn name(self) -> &'static str {
-        match self {
-            Self::Freeform => "Freeform",
-            Self::Roadlike => "Roadlike",
-            Self::Stairlike => "Stairlike",
-            Self::NoRotation => "NoRotation",
-        }
-    }
-}
-
-#[derive(Debug, PartialEq)]
-struct CurveArrayOptions {
-    spacing: CurveArraySpacing,
-    orientation: CurveArrayOrientation,
-    base_point: Option<Point3>,
-    path_name: Option<String>,
-}
-
-fn parse_curve_array_options(arguments: &[&str]) -> Result<CurveArrayOptions, CommandError> {
-    let first = arguments
-        .first()
-        .ok_or(CommandError::Usage(ARRAY_CURVE_USAGE))?;
-    let (spacing, mut index) = if let Some((name, value)) = first.split_once('=') {
-        (parse_curve_array_spacing(name, value)?, 1)
-    } else if option_name_eq(first, "Items") || option_name_eq(first, "Distance") {
-        let value = arguments
-            .get(1)
-            .ok_or(CommandError::Usage(ARRAY_CURVE_USAGE))?;
-        (parse_curve_array_spacing(first, value)?, 2)
-    } else {
-        (
-            CurveArraySpacing::Items(parse_curve_array_item_count(first)?),
-            1,
-        )
-    };
-    let mut orientation = CurveArrayOrientation::Freeform;
-    let mut base_point = None;
-    let mut path_name = None;
-    let mut orientation_seen = false;
-    while index < arguments.len() {
-        let argument = arguments[index];
-        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
-            (name, value, 1)
-        } else {
-            let value = arguments
-                .get(index + 1)
-                .ok_or(CommandError::Usage(ARRAY_CURVE_USAGE))?;
-            (argument, *value, 2)
-        };
-        if option_name_eq(name, "Orientation") && !orientation_seen {
-            orientation = parse_curve_array_orientation(value)?;
-            orientation_seen = true;
-        } else if option_name_eq(name, "BasePoint") && base_point.is_none() {
-            let (point, point_consumed) = parse_point(&[value])?;
-            if point_consumed != 1 {
-                return Err(CommandError::Usage(ARRAY_CURVE_USAGE));
-            }
-            base_point = Some(point);
-        } else if option_name_eq(name, "PathName") && path_name.is_none() && !value.is_empty() {
-            path_name = Some(value.to_owned());
-        } else {
-            return Err(CommandError::Usage(ARRAY_CURVE_USAGE));
-        }
-        index += consumed;
-    }
-    Ok(CurveArrayOptions {
-        spacing,
-        orientation,
-        base_point,
-        path_name,
-    })
-}
-
 fn option_name_eq(actual: &str, expected: &str) -> bool {
     actual
         .trim_start_matches(['_', '-'])
         .eq_ignore_ascii_case(expected)
-}
-
-fn parse_curve_array_spacing(name: &str, value: &str) -> Result<CurveArraySpacing, CommandError> {
-    if option_name_eq(name, "Items") {
-        Ok(CurveArraySpacing::Items(parse_curve_array_item_count(
-            value,
-        )?))
-    } else if option_name_eq(name, "Distance") {
-        let distance = parse_finite_real(value)?;
-        if distance <= 0.0 {
-            return Err(CommandError::InvalidCurveArrayDistance(value.to_owned()));
-        }
-        Ok(CurveArraySpacing::Distance(distance))
-    } else {
-        Err(CommandError::Usage(ARRAY_CURVE_USAGE))
-    }
-}
-
-fn parse_curve_array_item_count(value: &str) -> Result<usize, CommandError> {
-    value
-        .parse::<usize>()
-        .ok()
-        .filter(|count| *count >= 1)
-        .ok_or_else(|| CommandError::InvalidCurveArrayItemCount(value.to_owned()))
-}
-
-fn parse_curve_array_orientation(value: &str) -> Result<CurveArrayOrientation, CommandError> {
-    let value = value.trim_start_matches(['_', '-']);
-    if value.eq_ignore_ascii_case("Freeform") {
-        Ok(CurveArrayOrientation::Freeform)
-    } else if value.eq_ignore_ascii_case("Roadlike") {
-        Ok(CurveArrayOrientation::Roadlike)
-    } else if value.eq_ignore_ascii_case("Stairlike") {
-        Ok(CurveArrayOrientation::Stairlike)
-    } else if value.eq_ignore_ascii_case("NoRotation") {
-        Ok(CurveArrayOrientation::NoRotation)
-    } else {
-        Err(CommandError::Usage(ARRAY_CURVE_USAGE))
-    }
-}
-
-fn curve_array_inputs(
-    document: &Document,
-    path_name: Option<&str>,
-) -> Result<(Geometry, ObjectId, Vec<ObjectId>), CommandError> {
-    let selected = selected_ids(document)?;
-    let path_id = if let Some(name) = path_name {
-        let matches = document
-            .objects()
-            .filter(|object| {
-                object
-                    .attributes()
-                    .name()
-                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
-            })
-            .map(|object| object.id())
-            .collect::<Vec<_>>();
-        match matches.as_slice() {
-            [] => return Err(CommandError::CurveArrayPathNotFound(name.to_owned())),
-            [id] => *id,
-            _ => return Err(CommandError::AmbiguousCurveArrayPath(name.to_owned())),
-        }
-    } else {
-        *selected
-            .last()
-            .ok_or(CommandError::CurveArrayPathRequired)?
-    };
-    let path = document
-        .object(path_id)
-        .expect("resolved curve-array path identifiers are present");
-    if geometry_curve_ref(path.geometry()).is_none() {
-        return Err(CommandError::CurveArrayPathNotCurve);
-    }
-    let sources = selected
-        .into_iter()
-        .filter(|id| *id != path_id)
-        .collect::<Vec<_>>();
-    if sources.is_empty() {
-        return Err(CommandError::CurveArraySourcesRequired);
-    }
-    Ok((path.geometry().clone(), path_id, sources))
-}
-
-fn curve_array_samples(
-    curve: CurveRef<'_>,
-    spacing: CurveArraySpacing,
-    tolerance: Tolerance,
-) -> Result<Vec<CurveSample>, CommandError> {
-    let closed = curve.is_closed()?;
-    let mut samples = match spacing {
-        CurveArraySpacing::Items(1) => vec![curve.start_sample(tolerance)?],
-        CurveArraySpacing::Items(item_count) if closed => {
-            let mut samples = curve.divide_by_count_samples(item_count, true, tolerance)?;
-            samples.pop();
-            samples
-        }
-        CurveArraySpacing::Items(item_count) => {
-            curve.divide_by_count_samples(item_count - 1, true, tolerance)?
-        }
-        CurveArraySpacing::Distance(distance) => {
-            let mut samples = curve.divide_by_length_samples(distance, true, tolerance)?;
-            if closed
-                && samples.len() > 1
-                && samples[0].point().is_near(
-                    samples.last().expect("the start sample is present").point(),
-                    tolerance,
-                )
-            {
-                samples.pop();
-            }
-            samples
-        }
-    };
-    if samples.is_empty() {
-        samples.push(curve.start_sample(tolerance)?);
-    }
-    Ok(samples)
-}
-
-fn curve_array_transforms(
-    curve: CurveRef<'_>,
-    samples: &[CurveSample],
-    base_point: Point3,
-    orientation: CurveArrayOrientation,
-    skip: usize,
-    tolerance: Tolerance,
-) -> Result<Vec<AffineTransform3>, GeometryError> {
-    if orientation == CurveArrayOrientation::NoRotation {
-        return samples[skip..]
-            .iter()
-            .map(|sample| {
-                base_point
-                    .vector_to(sample.point())
-                    .map(AffineTransform3::from_translation)
-            })
-            .collect();
-    }
-    let frames = curve_array_frames(curve, samples, orientation, tolerance)?;
-    let source_frame = frames[0];
-    samples[skip..]
-        .iter()
-        .zip(&frames[skip..])
-        .map(|(sample, frame)| {
-            curve_array_frame_transform(base_point, source_frame, sample.point(), *frame, tolerance)
-        })
-        .collect()
-}
-
-#[derive(Clone, Copy, Debug)]
-struct CurveArrayFrame {
-    x: UnitVector3,
-    y: UnitVector3,
-}
-
-fn curve_array_frames(
-    curve: CurveRef<'_>,
-    samples: &[CurveSample],
-    orientation: CurveArrayOrientation,
-    tolerance: Tolerance,
-) -> Result<Vec<CurveArrayFrame>, GeometryError> {
-    match orientation {
-        CurveArrayOrientation::Freeform => freeform_curve_array_frames(curve, samples),
-        CurveArrayOrientation::Roadlike => {
-            let mut previous = None;
-            samples
-                .iter()
-                .map(|sample| {
-                    let frame = roadlike_curve_array_frame(sample.tangent(), previous, tolerance)?;
-                    previous = Some(frame);
-                    Ok(frame)
-                })
-                .collect()
-        }
-        CurveArrayOrientation::Stairlike => {
-            let mut previous = None;
-            samples
-                .iter()
-                .map(|sample| {
-                    let frame = stairlike_curve_array_frame(sample.tangent(), previous, tolerance)?;
-                    previous = Some(frame);
-                    Ok(frame)
-                })
-                .collect()
-        }
-        CurveArrayOrientation::NoRotation => unreachable!("handled before frame construction"),
-    }
-}
-
-fn freeform_curve_array_frames(
-    curve: CurveRef<'_>,
-    samples: &[CurveSample],
-) -> Result<Vec<CurveArrayFrame>, GeometryError> {
-    let parameters = samples.iter().map(|s| s.parameter()).collect::<Vec<_>>();
-    Ok(curve
-        .rotation_minimizing_frames(
-            &parameters,
-            None,
-            viboceros_geometry::FrameTransportOptions {
-                side: viboceros_geometry::ParameterSide::Left,
-                ..Default::default()
-            },
-        )?
-        .into_iter()
-        .map(|f| CurveArrayFrame {
-            x: f.x_axis(),
-            y: f.y_axis(),
-        })
-        .collect())
 }
 
 fn subtract_vectors(left: Vector3, right: Vector3) -> Result<Vector3, GeometryError> {
@@ -15318,70 +14975,6 @@ fn subtract_vectors(left: Vector3, right: Vector3) -> Result<Vector3, GeometryEr
         left.y() - right.y(),
         left.z() - right.z(),
     )
-}
-
-fn roadlike_curve_array_frame(
-    tangent: UnitVector3,
-    previous: Option<CurveArrayFrame>,
-    tolerance: Tolerance,
-) -> Result<CurveArrayFrame, GeometryError> {
-    let up = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
-    let horizontal_y = up.as_vector().cross(tangent.as_vector())?;
-    let provisional_y = if horizontal_y.length()? > tolerance.angular() {
-        horizontal_y.normalized_nonzero()?
-    } else if let Some(frame) = previous {
-        frame.y
-    } else {
-        Vector3::try_new(0.0, 1.0, 0.0)?.normalized_nonzero()?
-    };
-    let frame_x = provisional_y
-        .as_vector()
-        .cross(tangent.as_vector())?
-        .normalized_nonzero()?;
-    let frame_y = tangent
-        .as_vector()
-        .cross(frame_x.as_vector())?
-        .normalized_nonzero()?;
-    Ok(CurveArrayFrame {
-        x: frame_x,
-        y: frame_y,
-    })
-}
-
-fn stairlike_curve_array_frame(
-    tangent: UnitVector3,
-    previous: Option<CurveArrayFrame>,
-    tolerance: Tolerance,
-) -> Result<CurveArrayFrame, GeometryError> {
-    let up = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
-    let horizontal_tangent = Vector3::try_new(tangent.x(), tangent.y(), 0.0)?;
-    let frame_x = if horizontal_tangent.length()? > tolerance.angular() {
-        horizontal_tangent.normalized_nonzero()?
-    } else if let Some(frame) = previous {
-        frame.x
-    } else {
-        Vector3::try_new(1.0, 0.0, 0.0)?.normalized_nonzero()?
-    };
-    let frame_y = up
-        .as_vector()
-        .cross(frame_x.as_vector())?
-        .normalized_nonzero()?;
-    Ok(CurveArrayFrame {
-        x: frame_x,
-        y: frame_y,
-    })
-}
-
-fn curve_array_frame_transform(
-    base_point: Point3,
-    source: CurveArrayFrame,
-    target_point: Point3,
-    target: CurveArrayFrame,
-    tolerance: Tolerance,
-) -> Result<AffineTransform3, GeometryError> {
-    let source = Frame3::try_from_unit_directions(base_point, source.x, source.y, tolerance)?;
-    let target = Frame3::try_from_unit_directions(target_point, target.x, target.y, tolerance)?;
-    AffineTransform3::try_frame_mapping(source, target, [1.0; 3])
 }
 
 fn parse_single_option_point(value: &str, usage: &'static str) -> Result<Point3, CommandError> {
@@ -41137,7 +40730,8 @@ mod tests {
             .collect::<Vec<_>>();
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 3);
-        assert_eq!(document.groups().len(), 1);
+        // Native Undo retains copied group definitions, without copied members.
+        assert_eq!(document.groups().len(), 4);
         registry.execute(&mut document, "Redo").unwrap();
         assert!(copy_ids.iter().all(|id| document.object(*id).is_some()));
         assert_eq!(document.groups().len(), 4);
@@ -41420,9 +41014,7 @@ mod tests {
                 &mut document,
                 "ArrayCrv 1000002 Orientation=NoRotation PathName=Rail"
             ),
-            Err(CommandError::Geometry(
-                GeometryError::TooManyCurveDivisionPoints { .. }
-            ))
+            Err(CommandError::TooManyArrayObjects { .. })
         ));
         assert_eq!(document.objects().len(), object_count);
         assert_eq!(document.undo_label(), history.as_deref());
