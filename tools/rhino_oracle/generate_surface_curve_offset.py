@@ -1,19 +1,20 @@
 """Capture public OffsetOnSurface geometry independently of the native backend."""
 import argparse,gzip,hashlib,json,re
 from pathlib import Path
-from .surface_curve_offset_probe import request,clipping_request,extension_request,general_extension_request,general_verify_request,validate_request
+from .surface_curve_offset_probe import request,clipping_request,extension_request,general_extension_request,general_verify_request,corner_request,validate_request
 HERE=Path(__file__).resolve().parent
 def main():
     from .client import OracleClient
     parser=argparse.ArgumentParser(description=__doc__);group=parser.add_mutually_exclusive_group()
-    group.add_argument('--verify',action='store_true');group.add_argument('--candidate-report',type=Path);group.add_argument('--clipping',action='store_true');group.add_argument('--extensions',action='store_true');group.add_argument('--general-extensions',action='store_true');group.add_argument('--general-verify',action='store_true')
-    args=parser.parse_args();label='surface_curve_offset_general_verify'if args.general_verify else'surface_curve_offset_general_extensions'if args.general_extensions else'surface_curve_offset_extensions'if args.extensions else'surface_curve_offset_clipping'if args.clipping else'surface_curve_offset_verify'if args.verify or args.candidate_report else'surface_curve_offset'
+    group.add_argument('--verify',action='store_true');group.add_argument('--candidate-report',type=Path);group.add_argument('--clipping',action='store_true');group.add_argument('--extensions',action='store_true');group.add_argument('--general-extensions',action='store_true');group.add_argument('--general-verify',action='store_true');group.add_argument('--corners',action='store_true')
+    args=parser.parse_args();label='surface_curve_offset_corners'if args.corners else'surface_curve_offset_general_verify'if args.general_verify else'surface_curve_offset_general_extensions'if args.general_extensions else'surface_curve_offset_extensions'if args.extensions else'surface_curve_offset_clipping'if args.clipping else'surface_curve_offset_verify'if args.verify or args.candidate_report else'surface_curve_offset'
     path=HERE/('fixtures/'+label+'.json')
     if args.verify:q=json.loads(path.read_text())
     elif args.candidate_report:
         rows={r['id']:r for r in [json.loads(s)for s in re.findall(r'SURFACE_GEODESIC (\{[^\n]+\})',args.candidate_report.read_text())]}
         cases={'plane_curve_0','plane_curve_2','warped_iso_0','warped_iso_1','warped_iso_2','cylinder_axis_2'}
         q=request();q['operations']=[dict(op,id=op['id']+'_verify',samples=[p['point']for p in rows[op['id']]['candidates']])for op in q['operations']if op['id']in cases]
+    elif args.corners:q=corner_request()
     elif args.clipping:q=clipping_request()
     elif args.extensions:q=extension_request()
     elif args.general_extensions:q=general_extension_request()

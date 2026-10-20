@@ -7,6 +7,42 @@ from .surface_offset_command_probe import request,through_request,select_request
 from .structural_sdk import stage_helpers
 HERE=Path(__file__).resolve().parent
 class SurfaceOffsetCommandTests(TestCase):
+    def test_independent_corner_bridge_queries_preserve_capture_provenance(self):
+        from .generate_surface_corner_verify import request,CAPTURES
+        path=HERE/'fixtures/surface_offset_corner_verify.json';q=json.loads(path.read_text())
+        self.assertEqual(q,request());self.assertEqual(len(q['operations']),2)
+        self.assertTrue(all(x['target']==[.4296875,-2.3046875,0.]for x in q['operations']))
+        r=json.loads((HERE/'observations/surface_offset_corner_verify.json').read_text())
+        self.assertEqual(len(r['results']),2)
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+        for name in CAPTURES:self.assertEqual(hashlib.sha256((HERE/'observations'/name).read_bytes()).hexdigest(),r['provenance']['captures'][name])
+        for name,sha in r['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,name)
+        distances={x['id']:x['value']['distance']for x in r['results']}
+        self.assertLess(distances['sdk_bridge'],2e-7)
+        self.assertGreater(distances['command_bridge'],3.1e-5);self.assertLess(distances['command_bridge'],3.2e-5)
+
+    def test_planar_corner_commands_preserve_inputs_and_one_history_step(self):
+        from .surface_offset_command_probe import corner_request
+        path=HERE/'fixtures/surface_offset_corners.json';q=json.loads(path.read_text())
+        self.assertEqual(q,corner_request());validate_request(q)
+        r=json.loads((HERE/'observations/surface_offset_corners.json').read_text())
+        self.assertEqual(len(r['results']),9)
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+        for name,sha in r['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,name)
+        for op,row in zip(q['operations'],r['results']):
+            self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
+            v=row['value'];self.assertTrue(v['success']);self.assertEqual(v['input_trace']['errors'],[])
+            self.assertEqual(v['input_trace']['completed'],len(op['actions']))
+            self.assertEqual(v['before'],v['undo']);self.assertEqual(v['after_script'],v['redo'])
+            self.assertEqual(v['after_script'][:2],v['before']);self.assertEqual(len(v['after_script']),3)
+            output=v['after_script'][2];self.assertFalse(output['selected']);self.assertEqual(output['layer'],'Surface offset output');self.assertIsNone(output['name'])
+
     def test_general_surface_commands_preserve_owned_parents_and_one_history_step(self):
         from .surface_offset_command_probe import general_request
         path=HERE/'fixtures/surface_offset_general_ends.json';q=json.loads(path.read_text())

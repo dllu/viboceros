@@ -84,6 +84,25 @@ at `2.15e-5`. Independent graph-metric integration and a public SDK
 closest-point query confirm the latter discrepancy. Rational-patch viewport
 previews use the same producer and cached confirmation.
 
+On affine planar patches, tangent-discontinuous sources use the shared planar
+offset producer. Inside corners trim to their intersection; outside corners
+use a polynomial quadratic between the offset endpoints and tangent apex,
+as in the captured public SDK. These spans are parabolic conics. Their
+midpoints differ from circular fillets even for a right-angle source.
+Open and closed polylines, alternating turns, reversal, a tilted plane and a
+mixed line/Bézier source are covered by nine SDK captures. Their maximum
+sampled difference is `2.2e-7`. Open straight outputs use chord-length parameters
+after endpoint extension; closed inward polygons retain the durations of
+surviving source intervals. Natural-boundary clipping retains complete
+surface-image checks, including an offset split into four surviving corners.
+Eight command/getter scenes also meet `1e-6`, including their native
+linear parameter domains, metadata and history. The mixed curve command
+remains unqualified at `3.18e-5`. An exact Bernstein point at `s=5/8` lies on
+Viboceros's bridge; a separate public SDK closest-point query confirms that
+the captured command bridge misses it by the same amount. This diagnostic
+ceiling does not change the qualification gate. Curved-surface corner joins
+and general collapsed/self-intersecting cases remain unresolved.
+
 Periodic pullbacks retain independent UV limits at a common spatial seam.
 The command emits separate chart portions and advances one complete curve
 for each Number copy. Sources share preparation across point picks and option
@@ -139,7 +158,7 @@ attributes and Undo/Redo. The five output cases meet the `1e-6` sampled gate wit
 difference of about `2.2e-14`; the other three create no output. Captured point
 objects, the source, and the target remain geometrically unchanged.
 
-General closed-gap reconnection, corner joins, cut-locus removal,
+General closed-gap reconnection, curved-surface corner joins, cut-locus removal,
 pole crossings and complete topology certification remain pending. These
 limits preclude a claim of complete Rhino compatibility.
 
@@ -151,6 +170,9 @@ cargo test -p viboceros-command --features native-smlib --lib surface_curve_offs
 cargo test -p viboceros --features native-smlib --bin viboceros surface_curve_offset
 cargo test -p viboceros --bin viboceros surface_curve_offset
 python3 -m unittest tools.rhino_oracle.test_surface_offset_command
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --corners
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --corners
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_corner_verify
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --through-point
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --select-point

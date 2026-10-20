@@ -3,6 +3,20 @@ import re
 CASES={'distance':[], 'flip_number':['Number=3','Flip'], 'negative':[], 'nurbs_line':['Number=1'], 'bezier':[], 'trimmed_line':[], 'postselect':['Number=1'], 'trimmed_number':['Number=3']}
 CURVED_CASES={'curved_axis':1.,'curved_axis_negative':-1.,'curved_ring':1.,'curved_ring_negative':-1.,'curved_diagonal':1.,'curved_warped':.25,'curved_warped_negative':-.25,'curved_warped_diagonal':.25}
 GENERAL_CASES={'general_diagonal':.05,'general_reversed':.05,'general_iso':-.05,'general_rational':.05}
+CORNER_CASES={'corner_open_inner':.5,'corner_open_outer':-.5,'corner_closed_inner':.5,'corner_closed_outer':-.5,'corner_zigzag_inner':.5,'corner_zigzag_outer':-.5,'corner_reverse':.5,'corner_tilted':-.5,'corner_polycurve':-.5}
+def corner_source(G,case):
+    if case=='corner_polycurve':
+        source=G.PolyCurve()
+        a=G.LineCurve(G.Point3d(-4,-2,0),G.Point3d(0,-2,0))
+        b=G.Curve.CreateControlPointCurve([G.Point3d(*p)for p in[[0,-2,0],[0,-1,0],[2,2,0],[3,3,0]]],3)
+        try:
+            if not source.Append(a)or not source.Append(b):raise ValueError('owned polycurve construction failed')
+        finally:a.Dispose();b.Dispose()
+    else:
+        points=[[-2,-2,0],[2,-2,0],[2,2,0],[-2,2,0],[-2,-2,0]]if 'closed'in case else[[-4,-2,0],[0,-2,0],[0,1,0],[4,1,0]]if 'zigzag'in case else[[-4,-2,0],[0,-2,0],[0,4,0]]
+        source=G.PolylineCurve([G.Point3d(*p)for p in points])
+        if case=='corner_reverse':source.Reverse()
+    return source
 def general_source(host,case):
     G=host['Rhino'].Geometry
     definition=dict(type='surface',degree_u=2,degree_v=2,control_point_count_u=3,control_point_count_v=3,
@@ -72,6 +86,8 @@ SELECT_CASES={
     'through_select_same_offset':[[0.,2.,0.],[1.,2.,0.]],
 }
 def recipe(case):
+    if case in CORNER_CASES:
+        return [dict(curve=1),'Number=1',CORNER_CASES[case]],[['Select base surface'],['Offset distance'],['Offset distance']]
     if case in GENERAL_CASES:
         return [dict(curve=1),'Number=1',GENERAL_CASES[case]],[['Select base surface'],['Offset distance'],['Offset distance']]
     if case in CURVED_CASES:
@@ -90,7 +106,7 @@ def recipe(case):
     return actions,gates
 def validate(op):
     if not isinstance(op,dict)or set(op)!={'op','id','case','actions','action_prompts'}or op['op']not in('surface_offset_command','surface_offset_through_point'):raise ValueError('invalid surface offset command recipe')
-    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(dict(dict(CASES,**CURVED_CASES),**GENERAL_CASES)if op['op']=='surface_offset_command'else dict(THROUGH_CASES,**SELECT_CASES)):raise ValueError('invalid owned surface offset command case')
+    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(dict(dict(dict(CASES,**CURVED_CASES),**GENERAL_CASES),**CORNER_CASES)if op['op']=='surface_offset_command'else dict(THROUGH_CASES,**SELECT_CASES)):raise ValueError('invalid owned surface offset command case')
     actions,gates=recipe(op['case'])
     import json
     if json.dumps(op['actions'],sort_keys=True)!=json.dumps(actions,sort_keys=True)or op['action_prompts']!=gates:raise ValueError('only fixed surface offset getters are allowed')
@@ -118,6 +134,12 @@ def general_request():
         actions,gates=recipe(case)
         q['operations'].append(dict(op='surface_offset_command',id=case,case=case,actions=actions,action_prompts=gates))
     return q
+def corner_request():
+    q=request();q['operations']=[]
+    for case in CORNER_CASES:
+        actions,gates=recipe(case)
+        q['operations'].append(dict(op='surface_offset_command',id=case,case=case,actions=actions,action_prompts=gates))
+    return q
 def select_request():
     q=request();q['operations']=[]
     for case in SELECT_CASES:
@@ -135,6 +157,10 @@ def run(op,host,iterations,tolerance):
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
     if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:raise ValueError('an empty owned idle document is required')
     source=G.LineCurve(G.Point3d(-4,0,0),G.Point3d(4,0,0));surface=G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in[[-10,-10,0],[10,-10,0],[10,10,0],[-10,10,0]]]).ToBrep()
+    if op['case']in CORNER_CASES:
+        source.Dispose();source=corner_source(G,op['case'])
+        if op['case']=='corner_tilted':
+            rotation=G.Transform.Rotation(.6,G.Vector3d.XAxis,G.Point3d.Origin);source.Transform(rotation);surface.Transform(rotation)
     if op['case']=='nurbs_line':
         converted=source.ToNurbsCurve();source.Dispose();source=converted
     if op['case']in('bezier','through_bezier'):

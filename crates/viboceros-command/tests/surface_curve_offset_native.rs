@@ -201,3 +201,109 @@ fn native_through_point_repeats_projected_locations_and_preserves_accepted_histo
         support::qualify(&op, maximum);
     }
 }
+
+#[test]
+fn planar_surface_corners_replay_native_commands_and_one_history_step() {
+    let registry = viboceros_command::CommandRegistry::with_builtins();
+    for (op, value) in support::corner_rows() {
+        let (mut doc, scene) = support::setup(&op, &value);
+        let distance = op["actions"]
+            .as_array()
+            .unwrap()
+            .last()
+            .unwrap()
+            .as_f64()
+            .unwrap();
+        registry
+            .execute(
+                &mut doc,
+                &format!(
+                    "OffsetCrvOnSrf {distance} Source={} Surface={}",
+                    scene.source, scene.target
+                ),
+            )
+            .unwrap_or_else(|e| panic!("{}: {e}", op["id"]));
+        let analytic_bridge_distance = if op["id"] == "corner_polycurve" {
+            let c = doc
+                .objects()
+                .last()
+                .unwrap()
+                .geometry()
+                .curve_ref()
+                .unwrap()
+                .to_nurbs()
+                .unwrap();
+            let point = viboceros_geometry::Point3::try_new(0.4296875, -2.3046875, 0.).unwrap();
+            let parameter = c
+                .closest_parameter(
+                    point,
+                    viboceros_geometry::Tolerance::try_new(1e-10, 1e-12, 1e-9).unwrap(),
+                )
+                .unwrap();
+            let error = point.distance_to(c.evaluate(parameter).unwrap()).unwrap();
+            assert!(
+                error < 1e-9,
+                "independent quadratic corner witness {error:e}"
+            );
+            Some(error)
+        } else {
+            None
+        };
+        let mut maximum = support::check(&doc, &scene, &value, "after_script");
+        doc.undo().unwrap();
+        maximum = maximum.max(support::check(&doc, &scene, &value, "undo"));
+        assert!(doc.undo().unwrap().is_none());
+        doc.redo().unwrap();
+        maximum = maximum.max(support::check(&doc, &scene, &value, "redo"));
+        println!(
+            "SURFACE_OFFSET_CORNER_COMMAND {}",
+            serde_json::json!({"id":op["id"],"maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6,"outputs":value["after_script"].as_array().unwrap().len()-2,"analytic_bridge_distance":analytic_bridge_distance})
+        );
+        support::qualify(&op, maximum);
+    }
+}
+
+#[test]
+fn independent_sdk_queries_confirm_the_mixed_corner_bridge_discrepancy() {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/surface_offset_corner_verify.json"
+    ))
+    .unwrap();
+    let response: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/surface_offset_corner_verify.json"
+    ))
+    .unwrap();
+    assert_eq!(request["operations"].as_array().unwrap().len(), 2);
+    assert_eq!(response["results"].as_array().unwrap().len(), 2);
+    for (op, row) in request["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(response["results"].as_array().unwrap())
+    {
+        assert_eq!(op["id"], row["id"]);
+        assert!(row["error"].is_null());
+        let curve = morph_fixtures::curve(op);
+        let point = morph_fixtures::p(&op["target"]);
+        let parameter = curve
+            .closest_parameter(
+                point,
+                viboceros_geometry::Tolerance::try_new(1e-10, 1e-12, 1e-9).unwrap(),
+            )
+            .unwrap();
+        let distance = point
+            .distance_to(curve.evaluate(parameter).unwrap())
+            .unwrap();
+        let native = row["value"]["distance"].as_f64().unwrap();
+        assert!(
+            (distance - native).abs() < 1e-10,
+            "{}: {distance:e} != {native:e}",
+            op["id"]
+        );
+        if op["id"] == "command_bridge" {
+            assert!(native > 3.1e-5 && native < 3.2e-5);
+        } else {
+            assert!(native < 2e-7);
+        }
+    }
+}

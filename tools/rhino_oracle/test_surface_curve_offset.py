@@ -7,6 +7,26 @@ from .surface_curve_offset_probe import request,clipping_request,extension_reque
 from .structural_sdk import stage_helpers
 HERE=Path(__file__).resolve().parent
 class SurfaceCurveOffsetTests(TestCase):
+    def test_planar_corner_sdk_captures_and_fixed_quadratic_bridge(self):
+        from .surface_curve_offset_probe import corner_request
+        path=HERE/'fixtures/surface_curve_offset_corners.json';q=json.loads(path.read_text())
+        self.assertEqual(q,corner_request());validate_request(q)
+        r=json.loads((HERE/'observations/surface_curve_offset_corners.json').read_text())
+        self.assertEqual(len(r['results']),9)
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+        for name,sha in r['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,name)
+        for op,row in zip(q['operations'],r['results']):
+            self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
+            self.assertTrue(row['value']['source_unchanged']);self.assertEqual(len(row['value']['outputs']),1)
+        outer=next(row['value']['outputs'][0]['definition']for row in r['results']if row['id']=='corner_open_outer')
+        self.assertEqual(outer['degree'],2)
+        self.assertTrue(all(c['weight']==1. for c in outer['control_points']))
+        self.assertEqual(len(outer['control_points']),7)
+        for actual,expected in zip(outer['control_points'][3]['point'],[.5,-2.5,0.]):self.assertAlmostEqual(actual,expected,places=10)
+
     def test_general_isocurve_independent_sdk_distance(self):
         from .surface_curve_offset_probe import general_verify_request
         path=HERE/'fixtures/surface_curve_offset_general_verify.json';q=json.loads(path.read_text())
@@ -67,6 +87,7 @@ class SurfaceCurveOffsetTests(TestCase):
         general=r['general_section_cases'];self.assertEqual(general['recipes'],4);self.assertTrue(general['requires_native_smlib']);self.assertEqual(general['qualified_recipes'],2);self.assertEqual(general['unqualified_recipes'],['general_reversed','general_iso']);self.assertEqual(len(general['getter_cases']),1)
         sources=r['general_source_extension_cases'];self.assertEqual(sources['recipes'],4);self.assertEqual(sources['qualified_recipes'],1);self.assertLess(sources['maximum_endpoint_difference'],1e-6)
         diagonal=next(x for x in normal['cases']if x['id']=='curved_diagonal');self.assertGreater(diagonal['native_maximum_cylinder_residual'],2e-6);self.assertGreater(diagonal['native_offset_start_difference'],2.4e-3)
+        corners=r['planar_corner_cases'];self.assertEqual(corners['recipes'],9);self.assertEqual(corners['qualified_sdk_recipes'],9);self.assertEqual(corners['qualified_command_recipes'],8);self.assertEqual(corners['unqualified_command_recipes'],['corner_polycurve']);self.assertLess(corners['maximum_sample_difference'],3.2e-5);self.assertEqual(len(corners['getter_cases']),9)
         for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
         self.assertTrue(all(x['maximum_closest_solver_difference']<1e-10 for x in r['independent_closest_points']))
     def test_fixed_sdk_evidence_and_source_closure(self):

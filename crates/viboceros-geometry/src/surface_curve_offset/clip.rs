@@ -5,6 +5,7 @@ use crate::{Point3, surface_geodesic::chart_closes};
 const MAX_EXTENSION_ATTEMPTS: usize = 8;
 const MAX_CLIP_CONTACTS: usize = 8192;
 mod closed_gap;
+mod corners;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 /// How retained portions of a closed source are returned after clipping.
@@ -18,14 +19,17 @@ pub enum SurfaceCurveOffsetGapStyle {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-/// Clipping output policy and an optional shared interpolation producer.
+/// Clipping policy and optional shared interpolation/planar-offset producers.
 pub struct SurfaceCurveOffsetOptions {
     pub closed_gaps: SurfaceCurveOffsetGapStyle,
     pub interpolation_solver: Option<MorphInterpolationSolver>,
+    /// Shared planar offset producers for tangent-discontinuous sources.
+    pub curve_offset_operations: Option<crate::CurveOffsetOperations>,
 }
 
-/// Offset pieces in source traversal order. Open pieces retain source
-/// intervals; a seam-crossing piece ends in the following period. Reconnection
+/// Offset pieces in source traversal order. Smooth-source pieces retain source
+/// intervals; planar corner construction redistributes its clock over the
+/// source domain. A seam-crossing piece ends in the following period. Reconnection
 /// shifts intervals and inserts unit bridge spans, using source-period spans
 /// if unit spans cannot represent all retained geometry accurately.
 /// Empty output means the fitted locus lies outside the natural boundaries.
@@ -40,10 +44,11 @@ pub struct SurfaceCurveOffsetPieces {
     pub connectors: usize,
 }
 
-/// Construct and clip all smooth offset portions to the surface's natural
+/// Construct and clip offset portions to the surface's natural
 /// rectangle. Exact periodic seams are not borders. This shares the strict
 /// offset's sampled fitting policy; it does not certify topology of the true
-/// geodesic locus. Trims and cut-locus/corner handling remain separate work.
+/// geodesic locus. Affine planar corners share curve-offset construction;
+/// general curved corners, trims and cut-locus handling remain separate work.
 pub fn try_offset_curves_on_surface(
     surface: &NurbsSurface,
     source: &NurbsCurve,
@@ -112,6 +117,23 @@ fn clipped(
     };
     if distance == 0. {
         result.curves.push(original_source.clone());
+        return Ok(result);
+    }
+    if corners::has_corners(&source, tolerance)?
+        && surface.try_affine_patch_corners(numerical).is_ok()
+    {
+        let (curves, connectors) =
+            corners::offset(&surface, &source, distance, tolerance, options)?;
+        result.curves = curves
+            .iter()
+            .map(|c| restore_domain(c, original_source, tolerance))
+            .collect::<Result<Vec<_>, _>>()?;
+        result.connectors = connectors;
+        if connectors == 0 {
+            for curve in &result.curves {
+                surface.try_pullback_curve_certified(curve, numerical)?;
+            }
+        }
         return Ok(result);
     }
     let closed = [chart_closes(&surface, 0)?, chart_closes(&surface, 1)?];
@@ -379,7 +401,6 @@ fn clip_curve(
             }
         }
     }
-    let mut pieces = Vec::new();
     for &[a, b] in &intervals {
         for (lo, hi) in fitted.spans() {
             let (lo, hi) = (lo.max(a), hi.min(b));
@@ -406,6 +427,14 @@ fn clip_curve(
             }
         }
     }
+    trim_intervals(fitted, intervals)
+}
+
+fn trim_intervals(
+    fitted: &NurbsCurve,
+    mut intervals: Vec<[Real; 2]>,
+) -> Result<Vec<NurbsCurve>, GeometryError> {
+    let mut pieces = Vec::new();
     let cyclic = fitted.evaluate(0.)? == fitted.evaluate(1.)?;
     if cyclic && intervals.len() > 1 && intervals[0][0] == 0. && intervals.last().unwrap()[1] == 1.
     {

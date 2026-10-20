@@ -596,3 +596,61 @@ fn failed_through_points_preserve_redo_and_external_history_edits_end_the_getter
     assert!(app.active_command.is_none());
     assert_eq!(app.document.objects().count(), 4);
 }
+
+#[test]
+fn planar_surface_corner_getters_preview_and_confirm_cached_native_geometry() {
+    for (op, value) in native::corner_rows() {
+        let mut app = test_app();
+        let (doc, scene) = native::setup(&op, &value);
+        app.document = doc;
+        let distance = op["actions"]
+            .as_array()
+            .unwrap()
+            .last()
+            .unwrap()
+            .as_f64()
+            .unwrap();
+        app.surface_offset_defaults = viboceros_command::surface_curve_offset::Options {
+            distance,
+            number: 1,
+            flip: false,
+        };
+        let before = format!("{:?}", app.document);
+        enter(&mut app, "OffsetCrvOnSrf");
+        app.pick_surface_offset_face(Some(scene.target), Some(0), None);
+        assert_eq!(format!("{:?}", app.document), before);
+        let preview = app
+            .surface_offset_session
+            .as_ref()
+            .unwrap()
+            .preview_curves();
+        assert_eq!(preview.len(), 1, "{}: {:?}", op["id"], app.command_log);
+        let pointer = preview.as_ptr();
+        enter(&mut app, "Number=1");
+        assert_eq!(
+            app.surface_offset_session
+                .as_ref()
+                .unwrap()
+                .preview_curves()
+                .as_ptr(),
+            pointer
+        );
+        enter(&mut app, &distance.to_string());
+        assert!(
+            app.active_command.is_none(),
+            "{}: {:?}",
+            op["id"],
+            app.command_log
+        );
+        let mut maximum = native::check(&app.document, &scene, &value, "after_script");
+        app.document.undo().unwrap();
+        maximum = maximum.max(native::check(&app.document, &scene, &value, "undo"));
+        app.document.redo().unwrap();
+        maximum = maximum.max(native::check(&app.document, &scene, &value, "redo"));
+        println!(
+            "SURFACE_OFFSET_CORNER_GETTER {}",
+            serde_json::json!({"id":op["id"],"maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6})
+        );
+        native::qualify(&op, maximum);
+    }
+}

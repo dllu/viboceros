@@ -9,7 +9,7 @@ mod tests;
 
 const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset ThroughPoint=point [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input]";
 
-fn offset_operations() -> Option<viboceros_geometry::CurveOffsetOperations> {
+pub(super) fn offset_operations() -> Option<viboceros_geometry::CurveOffsetOperations> {
     #[cfg(feature = "native-smlib")]
     {
         Some(viboceros_smlib::curve_offset_operations())

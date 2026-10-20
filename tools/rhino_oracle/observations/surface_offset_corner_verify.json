@@ -1,0 +1,47 @@
+{
+  "protocol_version": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "elapsed_ns": 13504028,
+      "id": "sdk_bridge",
+      "value": {
+        "parameter": 4.624999844812269,
+        "point": [
+          0.42968766165385675,
+          -2.304687596992317,
+          0.0
+        ],
+        "distance": 1.8851917389875393e-07
+      }
+    },
+    {
+      "elapsed_ns": 1846313,
+      "id": "command_bridge",
+      "value": {
+        "parameter": 4.624973848352483,
+        "point": [
+          0.42971474055998704,
+          -2.304703844437741,
+          0.0
+        ],
+        "distance": 3.1767731324055306e-05
+      }
+    }
+  ],
+  "iterations": 1,
+  "engine_version": "8.32.26160.13001",
+  "provenance": {
+    "request_sha256": "c4fea9b08f45d4f7421b0fe630333e89482abc1d5e94625be764087c1105db58",
+    "captures": {
+      "surface_curve_offset_corners.json": "e29e0247714b60e34b0d1962b9c6bdf002803776c8ef02cf0c47f38ed692603c",
+      "surface_offset_corners.json": "c509f363de0a4fd8883f054919599670541dd61668a96eb686d83782d551b6d5"
+    },
+    "sources": {
+      "generate_surface_corner_verify.py": "0a71f229a422463ec93670b33829af2dcca08ca37ac0336f8b5205f3eb320960",
+      "client.py": "d92dc94013b5d08d49370242093a4dde2bc7e829242734bc96c8814a7a95b6e1",
+      "rhino_worker.py": "f83e873ca728b794cddd1aa50616914e2635879c362b11a9675fb3e28ef7db97",
+      "structural_sdk.py": "271520269c38e86c117d79bbf3b0d372bb78f9dce8ece1ce7ed8fd2a963b0319"
+    }
+  }
+}

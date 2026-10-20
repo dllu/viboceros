@@ -353,14 +353,21 @@ impl Plan {
                     SurfaceCurveOffsetOptions {
                         closed_gaps: SurfaceCurveOffsetGapStyle::ConnectClosed,
                         interpolation_solver: morph_interpolation_solver(),
+                        curve_offset_operations: offset_curve::offset_operations(),
                     },
                 )?;
+                let parameter_source = c;
                 for c in result.curves {
                     // The public command extends planar open offsets along
                     // their endpoint tangents. The SDK producer keeps source
                     // endpoints; share its geometry and add command policy here.
                     let (c, parts) = if let Some(boundaries) = &planar_boundaries {
                         let c = extend_planar_offset(c, boundaries, tolerance)?;
+                        let c = if parameter_source.has_full_multiplicity_kink(tolerance)? {
+                            planar_corner_parameters(parameter_source, c, tolerance)?
+                        } else {
+                            c
+                        };
                         if !c.is_closed()? {
                             // A surface planar only within tolerance still has
                             // to admit the complete tangent extension.
@@ -517,6 +524,61 @@ fn extend_planar_offset(
         boundaries,
         tolerance,
     )?)
+}
+
+fn planar_corner_parameters(
+    source: &NurbsCurve,
+    curve: NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    if curve.degree() != 1
+        || curve
+            .control_points()
+            .iter()
+            .any(|c| c.weight() != curve.control_points()[0].weight())
+    {
+        return Ok(curve);
+    }
+    let points = curve
+        .control_points()
+        .iter()
+        .map(|c| c.point())
+        .collect::<Vec<_>>();
+    let polyline = viboceros_geometry::Polyline3::try_new(points.clone(), tolerance)?;
+    if !curve.is_closed()? {
+        // The command joins open straight portions into a fresh length clock
+        // after tangent extension, rather than retaining pre-extension times.
+        return polyline.to_nurbs();
+    }
+    if !source.is_closed()?
+        || source.degree() != 1
+        || source
+            .control_points()
+            .iter()
+            .any(|c| c.weight() != source.control_points()[0].weight())
+        || source.spans().count() + 1 != points.len()
+    {
+        return Ok(curve);
+    }
+    // A closed inward polygon keeps the surviving source-interval durations.
+    // The first contact can start inside the old first span; discarded corner
+    // intervals do not leave holes in the assembled clock.
+    let mut parameters = Vec::with_capacity(points.len());
+    for (i, (a, b)) in source.spans().enumerate() {
+        let start = source.evaluate_on_side(a, viboceros_geometry::ParameterSide::Right)?;
+        let end = source.evaluate_on_side(b, viboceros_geometry::ParameterSide::Left)?;
+        let length = start.distance_to(end)?;
+        if i == 0 {
+            let advance = start
+                .vector_to(points[0])?
+                .dot(start.direction_to(end)?.as_vector())?;
+            parameters.push(a + (b - a) * (advance / length));
+        }
+        let duration = (b - a) * (points[i].distance_to(points[i + 1])? / length);
+        parameters.push(parameters[i] + duration);
+    }
+    viboceros_geometry::Polyline3::try_with_parameters(points, parameters, tolerance)?
+        .to_native_nurbs()
 }
 
 pub(super) struct OffsetCurveOnSurfaceCommand;

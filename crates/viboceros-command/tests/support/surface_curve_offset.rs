@@ -39,6 +39,13 @@ pub fn curved_rows() -> Vec<(Value, Value)> {
         8,
     )
 }
+pub fn corner_rows() -> Vec<(Value, Value)> {
+    captured(
+        include_str!("../../../../tools/rhino_oracle/fixtures/surface_offset_corners.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/surface_offset_corners.json"),
+        9,
+    )
+}
 fn captured(request: &str, response: &str, count: usize) -> Vec<(Value, Value)> {
     let q: Value = serde_json::from_str(request).unwrap();
     let r: Value = serde_json::from_str(response).unwrap();
@@ -118,6 +125,7 @@ pub fn setup(op: &Value, v: &Value) -> (Document, Scene) {
     } else if op["op"] == "surface_offset_through_point"
         || op["case"].as_str().unwrap().starts_with("curved_")
         || op["case"].as_str().unwrap().starts_with("general_")
+        || op["case"].as_str().unwrap().starts_with("corner_")
     {
         Geometry::Brep(
             Brep::try_surface_face(morph::surface(&v["surface_definition"]), doc.tolerance())
@@ -368,6 +376,9 @@ pub fn qualify(op: &Value, maximum: f64) {
     // A diagnostic ceiling does not qualify the captured Bézier offset.
     let ceiling = match op["case"].as_str().unwrap() {
         "bezier" => 4.5e-6,
+        // The public command's mixed-curve bridge leaves the ideal quadratic
+        // by 3.18e-5; independent SDK closest-point queries retain this gap.
+        "corner_polycurve" => 3.2e-5,
         "through_cylinder" => 4e-5,
         // Independent SDK queries confirm a 3.89e-3 normal-family discrepancy
         // in this captured native curve near its fold. This is diagnostic;

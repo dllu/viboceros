@@ -1,0 +1,218 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_offset_command",
+      "id": "corner_open_inner",
+      "case": "corner_open_inner",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "corner_open_outer",
+      "case": "corner_open_outer",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        -0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "corner_closed_inner",
+      "case": "corner_closed_inner",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "corner_closed_outer",
+      "case": "corner_closed_outer",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        -0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "corner_zigzag_inner",
+      "case": "corner_zigzag_inner",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "corner_zigzag_outer",
+      "case": "corner_zigzag_outer",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        -0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "corner_reverse",
+      "case": "corner_reverse",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "corner_tilted",
+      "case": "corner_tilted",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        -0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "corner_polycurve",
+      "case": "corner_polycurve",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        -0.5
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    }
+  ]
+}

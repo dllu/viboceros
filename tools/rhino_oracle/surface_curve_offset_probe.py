@@ -1,9 +1,9 @@
 """Read-only public OffsetOnSurface SDK observations on fixed source scenes."""
 import re
-if __package__:from .surface_offset_command_probe import CURVED_CASES,GENERAL_CASES,curved_source,general_source
-else:from surface_offset_command_probe import CURVED_CASES,GENERAL_CASES,curved_source,general_source
+if __package__:from .surface_offset_command_probe import CURVED_CASES,GENERAL_CASES,CORNER_CASES,curved_source,general_source,corner_source
+else:from surface_offset_command_probe import CURVED_CASES,GENERAL_CASES,CORNER_CASES,curved_source,general_source,corner_source
 STANDARD_CASES=('plane_line','plane_curve','cylinder_axis','cylinder_ring','sphere_latitude','warped_iso')
-CASES=STANDARD_CASES+('plane_circle','plane_seam','plane_bound')+tuple(CURVED_CASES)+tuple(GENERAL_CASES)
+CASES=STANDARD_CASES+('plane_circle','plane_seam','plane_bound')+tuple(CURVED_CASES)+tuple(GENERAL_CASES)+tuple(CORNER_CASES)
 def validate(op):
     if not isinstance(op,dict)or set(op)-{'samples'}!={'op','id','case','distance'}or op['op']!='surface_curve_offset':raise ValueError('invalid surface curve offset recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or op['case']not in CASES:raise ValueError('invalid surface curve offset case')
@@ -16,6 +16,8 @@ def clipping_request():
     return q
 def extension_request():
     q=request();q['operations']=[dict(op='surface_curve_offset',id=case,case=case,distance=d)for case,d in CURVED_CASES.items()];return q
+def corner_request():
+    q=request();q['operations']=[dict(op='surface_curve_offset',id=case,case=case,distance=d)for case,d in CORNER_CASES.items()];return q
 def general_extension_request():
     q=request();q['operations']=[dict(op='surface_curve_offset',id=case,case=case,distance=d)for case,d in GENERAL_CASES.items()];return q
 def general_verify_request():
@@ -35,7 +37,12 @@ def run(op,host,iterations,tolerance):
         owned.append(g);return g
     try:
         case=op['case']
-        if case in GENERAL_CASES:
+        if case in CORNER_CASES:
+            surface=keep(G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in[[-10,-10,0],[10,-10,0],[10,10,0],[-10,10,0]]]))
+            source=keep(corner_source(G,case))
+            if case=='corner_tilted':
+                rotation=G.Transform.Rotation(.6,G.Vector3d.XAxis,G.Point3d.Origin);source.Transform(rotation);surface.Transform(rotation)
+        elif case in GENERAL_CASES:
             surface,source=general_source(host,case);keep(surface);keep(source)
         elif case in CURVED_CASES:
             surface,source=curved_source(G,case);keep(surface);keep(source)

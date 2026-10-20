@@ -54,7 +54,7 @@ pub type CurveOffsetIntersections =
 
 /// Optional producers for smooth NURBS offsets and structural edits.
 /// Admission, pointwise fit validation and corner/region policies remain shared.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct CurveOffsetOperations {
     /// `None` retains the shared fitter for a basis the backend cannot import.
     /// The final argument requests closure; pieces at a closed source's kink

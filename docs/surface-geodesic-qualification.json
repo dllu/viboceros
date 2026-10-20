@@ -720,7 +720,7 @@
       "bezier"
     ],
     "bidirectional_samples_per_curve": 258,
-    "maximum_sample_difference": 4.240891874580156e-06,
+    "maximum_sample_difference": 4.24089187364717e-06,
     "cases": [
       {
         "id": "distance",
@@ -748,7 +748,7 @@
       },
       {
         "id": "bezier",
-        "maximum_bidirectional_sample_error": 4.240891874580156e-06,
+        "maximum_bidirectional_sample_error": 4.24089187364717e-06,
         "outputs": 1,
         "qualified": false
       },
@@ -786,7 +786,7 @@
       "through_bezier"
     ],
     "bidirectional_samples_per_curve": 258,
-    "maximum_sample_difference": 0.0037746923575852753,
+    "maximum_sample_difference": 0.0037746923575850064,
     "cases": [
       {
         "id": "through_repeat",
@@ -832,13 +832,13 @@
       },
       {
         "id": "through_sphere",
-        "maximum_bidirectional_sample_error": 4.080918815365859e-07,
+        "maximum_bidirectional_sample_error": 4.0809188153658583e-07,
         "outputs": 1,
         "qualified": true
       },
       {
         "id": "through_bezier",
-        "maximum_bidirectional_sample_error": 0.0037746923575852753,
+        "maximum_bidirectional_sample_error": 0.0037746923575850064,
         "outputs": 1,
         "qualified": false
       },
@@ -1004,7 +1004,7 @@
       "curved_warped_negative"
     ],
     "rejected_recipes": [],
-    "maximum_sample_difference": 0.0024515741895099336,
+    "maximum_sample_difference": 0.0024515741895110295,
     "bidirectional_samples_per_curve": 258,
     "cases": [
       {
@@ -1041,7 +1041,7 @@
       },
       {
         "id": "curved_diagonal",
-        "maximum_bidirectional_sample_error": 0.0024515741895099336,
+        "maximum_bidirectional_sample_error": 0.0024515741895110295,
         "native_outputs": 2,
         "outputs": 2,
         "qualified": false,
@@ -1049,7 +1049,7 @@
       },
       {
         "id": "curved_warped",
-        "maximum_bidirectional_sample_error": 2.6236628410882522e-05,
+        "maximum_bidirectional_sample_error": 2.6236628410889e-05,
         "native_outputs": 1,
         "outputs": 1,
         "qualified": false,
@@ -1057,7 +1057,7 @@
       },
       {
         "id": "curved_warped_negative",
-        "maximum_bidirectional_sample_error": 2.6288381657032122e-05,
+        "maximum_bidirectional_sample_error": 2.628838165619643e-05,
         "native_outputs": 1,
         "outputs": 1,
         "qualified": false,
@@ -1065,7 +1065,7 @@
       },
       {
         "id": "curved_warped_diagonal",
-        "maximum_bidirectional_sample_error": 3.756658323369727e-07,
+        "maximum_bidirectional_sample_error": 3.75665832326544e-07,
         "native_outputs": 1,
         "outputs": 1,
         "qualified": true,
@@ -1328,31 +1328,223 @@
       "The three other public SDK source continuations themselves leave the target surface by about 8.5e-6 or 2.03e-5; these numerical gaps remain unqualified."
     ]
   },
+  "planar_corner_sdk_queries": {
+    "sdk_bridge": 1.8851917389875393e-07,
+    "command_bridge": 3.1767731324055306e-05
+  },
+  "planar_corner_cases": {
+    "recipes": 9,
+    "qualified_sdk_recipes": 9,
+    "qualified_command_recipes": 8,
+    "qualified_getter_recipes": 8,
+    "unqualified_command_recipes": [
+      "corner_polycurve"
+    ],
+    "bidirectional_samples_per_curve": 258,
+    "maximum_sample_difference": 3.176518719234493e-05,
+    "sdk_cases": [
+      {
+        "id": "corner_open_inner",
+        "maximum_bidirectional_sample_error": 5.573850342261825e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "corner_open_outer",
+        "maximum_bidirectional_sample_error": 4.002966042486721e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "corner_closed_inner",
+        "maximum_bidirectional_sample_error": 5.463921756219537e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "corner_closed_outer",
+        "maximum_bidirectional_sample_error": 4.1493239517358224e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "corner_zigzag_inner",
+        "maximum_bidirectional_sample_error": 4.0946765102822863e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "corner_zigzag_outer",
+        "maximum_bidirectional_sample_error": 4.1748076463764376e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "corner_reverse",
+        "maximum_bidirectional_sample_error": 3.9970495972640295e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "corner_tilted",
+        "maximum_bidirectional_sample_error": 4.0055555858011714e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "corner_polycurve",
+        "maximum_bidirectional_sample_error": 2.1505486564066624e-07,
+        "outputs": 1,
+        "qualified": true
+      }
+    ],
+    "command_cases": [
+      {
+        "analytic_bridge_distance": null,
+        "id": "corner_open_inner",
+        "maximum_bidirectional_sample_error": 4.0417607837339735e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "analytic_bridge_distance": null,
+        "id": "corner_open_outer",
+        "maximum_bidirectional_sample_error": 4.0007484008538116e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "analytic_bridge_distance": null,
+        "id": "corner_closed_inner",
+        "maximum_bidirectional_sample_error": 5.463921756219537e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "analytic_bridge_distance": null,
+        "id": "corner_closed_outer",
+        "maximum_bidirectional_sample_error": 4.1493239517358224e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "analytic_bridge_distance": null,
+        "id": "corner_zigzag_inner",
+        "maximum_bidirectional_sample_error": 4.0827234693669837e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "analytic_bridge_distance": null,
+        "id": "corner_zigzag_outer",
+        "maximum_bidirectional_sample_error": 4.169257022652903e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "analytic_bridge_distance": null,
+        "id": "corner_reverse",
+        "maximum_bidirectional_sample_error": 4.0007484008538116e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "analytic_bridge_distance": null,
+        "id": "corner_tilted",
+        "maximum_bidirectional_sample_error": 3.998544942361321e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "analytic_bridge_distance": 0.0,
+        "id": "corner_polycurve",
+        "maximum_bidirectional_sample_error": 3.176518719234493e-05,
+        "outputs": 1,
+        "qualified": false
+      }
+    ],
+    "getter_cases": [
+      {
+        "id": "corner_open_inner",
+        "maximum_bidirectional_sample_error": 4.0417607837339735e-14,
+        "qualified": true
+      },
+      {
+        "id": "corner_open_outer",
+        "maximum_bidirectional_sample_error": 4.0007484008538116e-14,
+        "qualified": true
+      },
+      {
+        "id": "corner_closed_inner",
+        "maximum_bidirectional_sample_error": 5.463921756219537e-14,
+        "qualified": true
+      },
+      {
+        "id": "corner_closed_outer",
+        "maximum_bidirectional_sample_error": 4.1493239517358224e-14,
+        "qualified": true
+      },
+      {
+        "id": "corner_zigzag_inner",
+        "maximum_bidirectional_sample_error": 4.0827234693669837e-14,
+        "qualified": true
+      },
+      {
+        "id": "corner_zigzag_outer",
+        "maximum_bidirectional_sample_error": 4.169257022652903e-14,
+        "qualified": true
+      },
+      {
+        "id": "corner_reverse",
+        "maximum_bidirectional_sample_error": 4.0007484008538116e-14,
+        "qualified": true
+      },
+      {
+        "id": "corner_tilted",
+        "maximum_bidirectional_sample_error": 3.998544942361321e-14,
+        "qualified": true
+      },
+      {
+        "id": "corner_polycurve",
+        "maximum_bidirectional_sample_error": 3.176518719234493e-05,
+        "qualified": false
+      }
+    ],
+    "limits": [
+      "Affine planar corner construction reuses the shared planar curve-offset producer and optional usd-brep operations.",
+      "Inside corners trim at their intersection; outside bridges are polynomial quadratics through endpoint tangent apices, matching independent public SDK and command captures.",
+      "Open straight outputs use a fresh chord-length clock after tangent extension. Closed inward polygons retain surviving source-interval durations.",
+      "Natural-boundary clipping shares interval/seam assembly; retained stored portions receive complete original-surface image checks.",
+      "The fixed scenes cover open/closed polylines, alternating turns, source reversal, a tilted plane and a mixed line/Bezier source, with immutable parents, native metadata, preview reuse and grouped Undo/Redo.",
+      "The mixed line/Bezier command bridge remains unqualified at about 3.18e-5. Its independent polynomial witness lies on the current result; a fresh public SDK query confirms the native-command distance.",
+      "General curved-surface corners, collapse and complete self-intersection topology remain unresolved."
+    ]
+  },
   "sha256": {
     "crates/viboceros-geometry/src/surface_geodesic.rs": "442b5d6c177e9ab9de2a9990e6361bfd7cda648d8300f2ad3da819623cd84f54",
     "crates/viboceros-geometry/src/surface_geodesic/tests.rs": "ce2834aceb31ea886ddd751aa674af095b5bf5fe5d5258b5323507a0a1a2cf5d",
     "crates/viboceros-geometry/src/surface_curve_offset.rs": "b54debd0920132d6345d4b466174933162fad0637bebcb290c39481535fee856",
     "crates/viboceros-geometry/src/surface_curve_offset/tests.rs": "bca306ce17b3546442ebe6c895097eccb589767af9a0512ccd63b0f55d62959d",
-    "crates/viboceros-geometry/src/surface_curve_offset/clip.rs": "d1423fc9de5cfd89a7263d14183702f177607f118170754b4c78431b6025929f",
+    "crates/viboceros-geometry/src/surface_curve_offset/clip.rs": "f5afd54eeffbee8631eb845325f55eb03a091b8a31fc7b0247c0025ad4a8a766",
     "crates/viboceros-geometry/src/surface_curve_offset/clip/tests.rs": "1ca625e6bb0fdd24d8f031a126729defca7849a46a10fa149e62ce24d22c4be1",
     "crates/viboceros-geometry/src/surface_curve_offset/clip/closed_gap.rs": "ee1ce06993291fb6dc958bc549659be2b2b38911d15dc7141a2c84416de18fef",
     "crates/viboceros-geometry/src/nurbs_surface/offset_extension.rs": "2e91a26d92077322bc3bf9e9221a3fa0d0075291a1af47c2398896d5762f640b",
     "crates/viboceros-geometry/src/morph/curve_fit.rs": "0951184a8d2b58d049ec5488462da802208f96571ff92888acbc60bcbb3c662d",
     "crates/viboceros-geometry/src/integration/cash_karp.rs": "ab8524e4b80a486f4ed39fdd430e1b853a15ed124065e8dff9a0a4a3a705a558",
-    "crates/viboceros-geometry/tests/surface_geodesic_native.rs": "797b4128401153218ad8e2038043058a28729396fcf3c5f7d5082a2eadfeeac7",
+    "crates/viboceros-geometry/tests/surface_geodesic_native.rs": "b9f8d0eefef9ee9fb80899c4cadc80490487c6c78832e7582eeb40164082d633",
     "tools/rhino_oracle/fixtures/surface_curve_offset.json": "dad3fd6513fcae2773f306adc5ca9f4cc31f7ab55f381e8f290534e95e20dd40",
     "tools/rhino_oracle/observations/surface_curve_offset.json": "4a62830ab84a41d33a4348c6a67282b022fa97eeb6f552a086ba9ae6e6e07d4f",
     "tools/rhino_oracle/fixtures/surface_curve_offset_verify.json": "28583370224971ce8a9f2601917b0dbf4d9bc7340c2a8cf20cf20ac6be622553",
     "tools/rhino_oracle/observations/surface_curve_offset_verify.json": "4726447786c4a155b1830f1c979471bfc00a45250f1987321d34b8f2dc6cef3a",
     "tools/rhino_oracle/fixtures/surface_curve_offset_clipping.json": "4163d8d8874ec2e80cf95e9b7a5ada572260c201bcb590da09af82b6df266eb3",
     "tools/rhino_oracle/observations/surface_curve_offset_clipping.json": "ad761cf4aa7802f5cccecb439ac2257d0bf125e07fe1a3c3f04273b986d654fa",
-    "tools/rhino_oracle/report_surface_geodesic.py": "27d15444e88bcf9ac2909434573694b17a90837fb36bef6d42e85872da45d1fc",
-    "crates/viboceros-command/src/surface_curve_offset.rs": "f6e73aa695fce6b6fe88294f2db38cf7f0b9b9f3eb6276d3ebd7de9d137e7ba2",
+    "tools/rhino_oracle/report_surface_geodesic.py": "8cf3d9344456ba92482aa46628eef58735fbe0af76c096b8fe30cf9a3d0bfff3",
+    "crates/viboceros-command/src/surface_curve_offset.rs": "1984ea973edcb5d1ad7aee1f6c34d240ecf9a1367ae8fb851d152ebe672ead1e",
     "crates/viboceros-command/src/surface_curve_offset/tests.rs": "7240ca82a17ce982d05af0285c05662cd31effde22cb8c87c52dd08f50318b4a",
-    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "7b68e2ecbbbcd13978ff008d4da8adff91b796003c1f1126c9b7a738902c0c78",
-    "crates/viboceros-command/tests/surface_curve_offset_native.rs": "92bf53cac65a1a9be4ed0c44d2e154b4c39a6d082abcd089ed581322d9622e83",
+    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "3a011a4e2dafe1d1f46cbdce3d96554b09ac538389211a44530d79a902f54d0e",
+    "crates/viboceros-command/tests/surface_curve_offset_native.rs": "c49cea1821a1584f65778aa2d1d9d9e493a82286faea9527a190d5b233fd1f65",
     "src/app/surface_curve_offset.rs": "8ed93dc31d5eb75f455cebd43bbd633ef1bc3d8c5a85677d2169a1d3af159b84",
-    "src/app/tests/surface_curve_offset.rs": "06d75dce700d6263d4b0b7ec0052b6d9495f8522e8cd580846edb1423c446f03",
+    "src/app/tests/surface_curve_offset.rs": "f065fe918f6251f8f246a6ae4d9b965f605867b707214733189c18d92e762c5a",
     "tools/rhino_oracle/fixtures/surface_offset_command.json": "46009c237a6d61e528daaad14015834e6d209024ea0d276cbbbdd257f86dfd3d",
     "tools/rhino_oracle/observations/surface_offset_command.json": "6f500ba92c42f9725b11974da615c4d82c61ebf63318293b457b58d1e43fdf50",
     "crates/viboceros-geometry/src/surface_curve_offset/through_point.rs": "94732f4ae46c8d3a04d5f0e7d34981bf943128a62a0b127cc74aef29f7c17c07",
@@ -1368,17 +1560,17 @@
     "src/app.rs": "33308ddd1ae9c99ba9a36dba621ea3601eff82b11240422d6e32a8d0c6bf0f79",
     "tools/rhino_oracle/fixtures/surface_offset_select_point.json": "1b60ec1a229929b338f20ed89f42130792096d7e367016862a707cad50b34338",
     "tools/rhino_oracle/observations/surface_offset_select_point.json": "37eb6310b9cde04c1463f9d06fe08136ff4f88a86f253780bcb49544c43841cb",
-    "tools/rhino_oracle/surface_offset_command_probe.py": "7a804dc69e4f4b973e1c2c0c5cf796bf17fe375ef6835f27e0c5e0bd256da430",
-    "tools/rhino_oracle/generate_surface_offset_command.py": "2c75090765a05203b39a239852cc1b35257a9172bb53ed986d62820c12177340",
-    "tools/rhino_oracle/test_surface_offset_command.py": "c8062df195a5d4a69bef8dd6ddaf6488eb6b617b5429ae7fcd0246aa6ebb7ea0",
+    "tools/rhino_oracle/surface_offset_command_probe.py": "842343edb5bb8e63173b455983419a34810071d5ba616f160efdde3221bad89f",
+    "tools/rhino_oracle/generate_surface_offset_command.py": "f2f24d93543dbd1a656858a051881d7f77464c9af9c6a20d1a48b51b65851200",
+    "tools/rhino_oracle/test_surface_offset_command.py": "be1c24f3df8f7acefafb055817da2f9e6b17122b2a1ed8cfa1906e1a0da9df72",
     "crates/viboceros-geometry/src/lib.rs": "1efe428791cc484c087edb905b5e81a0f9e751f949d75b99765d6aa137fde144",
     "crates/viboceros-geometry/src/surface_curve_offset/extend.rs": "f07988d2281a37d91dd984c17cd79e3ffa04a47a84d7449d1b3d47d4d64c63d8",
     "tools/rhino_oracle/fixtures/surface_offset_curved_ends.json": "6d4d5acb82926ff850fc6bc6e379722359713c803702f6a488aab5bb3034f44b",
     "tools/rhino_oracle/observations/surface_offset_curved_ends.json": "0810accf301942547274067cf800c3d5e8bcd12b63ebc5a449d6122207b0b406",
     "tools/rhino_oracle/fixtures/surface_curve_offset_extensions.json": "8dd4563ac4d7ac03cfa30d7ec7c412129723a64e715cf46bbff391aaccca83ad",
     "tools/rhino_oracle/observations/surface_curve_offset_extensions.json": "c6fa4257f16f3c3b0487b1f5c80aac595b4527a333547a480b0416004f71529b",
-    "tools/rhino_oracle/surface_curve_offset_probe.py": "449eb405e2a77603d5e070a9146c40823f86a4b40980874f22c77e343d1f948d",
-    "tools/rhino_oracle/generate_surface_curve_offset.py": "a3060625bc5a9fe8e86e19c15623d96cc93f3fe2da67520930091a28cda890f0",
+    "tools/rhino_oracle/surface_curve_offset_probe.py": "d3a4d6c6bf17208af450f42627c8c162650a886f9cb1023eddc84908a509dbd9",
+    "tools/rhino_oracle/generate_surface_curve_offset.py": "1a55cd5e0562040ae8b38f5d6cb854c84de6ab5f10dd0cd3ea144ed2921b8920",
     "tools/rhino_oracle/structural_sdk.py": "271520269c38e86c117d79bbf3b0d372bb78f9dce8ece1ce7ed8fd2a963b0319",
     "crates/viboceros-geometry/src/surface_pullback.rs": "ea0109223b6a1b4fd4345f8cfe373b8d29ad1642aea6d42e0cafa353072b330b",
     "crates/viboceros-geometry/src/surface_pullback/interpolation.rs": "8face7abec9239440c795b6052cd8ceda3a507aa59bab8c0189e6b9b59c4db17",
@@ -1386,7 +1578,7 @@
     "crates/viboceros-geometry/src/surface_pullback/periodic/tests.rs": "3f5caca40dd07396b5bf0bbccbe00454933ef7300c321b5609f1f7b4621aa5b3",
     "crates/viboceros-geometry/src/surface_curve_offset/normal_extend.rs": "70de0233d8e5f31618b62dc97dfae80f922ebb3bb2798ba74fd386793c9b515f",
     "crates/viboceros-geometry/src/surface_curve_offset/normal_extend/tests.rs": "dd07b3f3ad3f2d0af72fe89ff2ebcce2464b7b0704028ff6e9e80f46f85b7a5d",
-    "tools/rhino_oracle/test_surface_curve_offset.py": "a097af5f4e98801060409521fc38dfa63c79cb9b9772512612d649cc56e6d770",
+    "tools/rhino_oracle/test_surface_curve_offset.py": "b4ccf6cef17cfda0c737395cd111887dbdf648ffbcff97c1258992f1ff60576b",
     "crates/viboceros-geometry/src/error.rs": "629dacc0e1e0ca0a48d41d26244853e43820b5b08a8a9d20cb1f21f3b6d10663",
     "crates/viboceros-geometry/src/surface_curve_offset/normal_extend/compact.rs": "bf6772a94696eb7485b639b8ce72f1e22c69ebe16beb5822084718087ecc17e4",
     "crates/viboceros-command/src/curve_intersections.rs": "0c78fad06179d1af400daa751fe2bc009059e4e9594de1a015aec4041907b817",
@@ -1399,6 +1591,17 @@
     "tools/rhino_oracle/observations/surface_offset_general_ends.json": "eb46a9600f731bff6973d0f2a23bb18d19e1ed2723772b19db57356fa329459b",
     "tools/rhino_oracle/fixtures/surface_curve_offset_general_verify.json": "aa27e4998b6d7ebc816e4312b469782a2413d897b63da76c96935bf2c3eb3049",
     "tools/rhino_oracle/observations/surface_curve_offset_general_verify.json": "5eab5f8e22abd267fb2d975b55b63cdf2c62d6b88a8fcbded82e9bc1be97b6cb",
-    "tools/numerics/check_general_surface_geodesic.py": "876e2ca5ac79a10a64c7fdee01f1ae2a789aa0ae026585c479ae41493c261640"
+    "tools/numerics/check_general_surface_geodesic.py": "876e2ca5ac79a10a64c7fdee01f1ae2a789aa0ae026585c479ae41493c261640",
+    "crates/viboceros-geometry/src/curve_offset.rs": "ce6481d9d4e86b36188a9d8cb2792babc23900a901bfcec5857c2aa3a6f80574",
+    "crates/viboceros-command/src/offset_curve.rs": "2beebdd36e06a4e42d0cbf714c8ee37c71f34a957264d63ece94bc27613c7f01",
+    "crates/viboceros-geometry/src/surface_curve_offset/clip/corners.rs": "77dff679f1ebec4c16ab845021d6f65e5da8d96a78afcd449d99b06ad3f84925",
+    "crates/viboceros-geometry/src/surface_curve_offset/clip/corners/tests.rs": "1fc903d3009d4e6e898df0d4cec6fd3ce5d5b3533dd04b2729aa92df13ff778c",
+    "tools/rhino_oracle/fixtures/surface_curve_offset_corners.json": "ed745302a857d2ce3e5cc54778671fbb932cf577f0dcc70e6ffd0b4e4a3fdcbc",
+    "tools/rhino_oracle/observations/surface_curve_offset_corners.json": "e29e0247714b60e34b0d1962b9c6bdf002803776c8ef02cf0c47f38ed692603c",
+    "tools/rhino_oracle/fixtures/surface_offset_corners.json": "d7835ed57f906fb3c5beb7dc3e9c0f9bb35791d52202d38467246735501ba6cb",
+    "tools/rhino_oracle/observations/surface_offset_corners.json": "c509f363de0a4fd8883f054919599670541dd61668a96eb686d83782d551b6d5",
+    "tools/rhino_oracle/generate_surface_corner_verify.py": "0a71f229a422463ec93670b33829af2dcca08ca37ac0336f8b5205f3eb320960",
+    "tools/rhino_oracle/fixtures/surface_offset_corner_verify.json": "c4fea9b08f45d4f7421b0fe630333e89482abc1d5e94625be764087c1105db58",
+    "tools/rhino_oracle/observations/surface_offset_corner_verify.json": "a4e4a7e25d2eb77dfe58775e3d29acb119eccca33f9d15b4965e4161e9255e54"
   }
 }

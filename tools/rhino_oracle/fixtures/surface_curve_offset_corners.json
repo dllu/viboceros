@@ -1,0 +1,65 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_open_inner",
+      "case": "corner_open_inner",
+      "distance": 0.5
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_open_outer",
+      "case": "corner_open_outer",
+      "distance": -0.5
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_closed_inner",
+      "case": "corner_closed_inner",
+      "distance": 0.5
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_closed_outer",
+      "case": "corner_closed_outer",
+      "distance": -0.5
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_zigzag_inner",
+      "case": "corner_zigzag_inner",
+      "distance": 0.5
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_zigzag_outer",
+      "case": "corner_zigzag_outer",
+      "distance": -0.5
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_reverse",
+      "case": "corner_reverse",
+      "distance": 0.5
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_tilted",
+      "case": "corner_tilted",
+      "distance": -0.5
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "corner_polycurve",
+      "case": "corner_polycurve",
+      "distance": -0.5
+    }
+  ]
+}

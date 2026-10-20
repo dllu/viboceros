@@ -182,6 +182,30 @@ passes through the independent point within model tolerance. These sampled
 checks do not certify complete offset topology or global cut loci. The replay
 constructs documents with the captured `1e-6` model tolerance; the default for a new document is `1e-9`.
 
+Tangent-discontinuous sources on affine planar patches reuse the planar
+curve-offset producer, including optional usd-brep structural operations.
+Inside corners retain its intersection/trim policy. Outside connectors replace
+its identified circular bridges with polynomial quadratics through their
+tangent apex. Nine public SDK scenes demonstrate this policy: a right-angle
+bridge at distance `0.5` differs from a quarter-circle by about `0.03033`.
+Eight polyline scenes agree within `6e-14`; the mixed line/Bézier scene agrees
+within `2.2e-7`. Original source admission precedes this branch, and admitted
+normal displacements are projected through the certified UV witness. The
+constructed locus has its own parameter clock; boundary contacts therefore
+intersect that locus, independently of the smooth-source geodesic sampler.
+Open straight command results use chord-length parameterization after endpoint
+extension; closed inward polygons retain surviving source-interval durations.
+Shared interval assembly retains closed seams, and every retained portion
+must pass a complete image bound on the original surface. Eight command/getter
+scenes meet the unchanged `1e-6` gate. The mixed curve command remains
+unqualified at `3.18e-5`. An independent Bernstein point at `s=5/8` is exactly
+`(0.4296875, -2.3046875, 0)`; fresh public SDK queries place this point about
+`1.89e-7` from the SDK bridge and `3.18e-5` from the command bridge. The
+current bridge passes through it within `1e-9`. This separates the native
+command discrepancy from the unchanged model gate. Corner continuation
+on curved surfaces, offset collapse and general self-intersection topology
+remain open.
+
 Certified pullbacks retain separate UV limits across exact periodic seams,
 including crossings inside a rational span, multiple laps, and simultaneous
 torus seams. Every assembled periodic pullback receives a complete image
@@ -279,6 +303,9 @@ tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_s
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --general-ends
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --general-verify
 python3 tools/numerics/check_general_surface_geodesic.py
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --corners
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --corners
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_corner_verify
 ```
 
-The final calculation requires SciPy; the Rust and oracle replay tests do not.
+The independent graph calculation requires SciPy; the Rust and oracle replay tests do not.

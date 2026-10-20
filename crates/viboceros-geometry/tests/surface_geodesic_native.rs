@@ -516,3 +516,69 @@ fn independently_captured_clipping_and_closed_gap_policies_match_the_sdk() {
     }
     assert_eq!(count, 5);
 }
+
+#[test]
+fn planar_surface_corners_match_public_sdk_quadratic_joins() {
+    let request: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/surface_curve_offset_corners.json"
+    ))
+    .unwrap();
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/surface_curve_offset_corners.json"
+    ))
+    .unwrap();
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap();
+    assert_eq!(response["results"].as_array().unwrap().len(), 9);
+    for (op, row) in request["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(response["results"].as_array().unwrap())
+    {
+        assert_eq!(op["id"], row["id"]);
+        assert!(row["error"].is_null());
+        let v = &row["value"];
+        assert_eq!(v["source_unchanged"], true);
+        let source = curve(&v["curve"]);
+        let surface = surface(&v["surface"]);
+        let before = (surface.clone(), source.clone());
+        let result = viboceros_geometry::try_offset_curves_on_surface(
+            &surface,
+            &source,
+            op["distance"].as_f64().unwrap(),
+            tolerance,
+        )
+        .unwrap_or_else(|e| panic!("{}: {e}", op["id"]));
+        let native = v["outputs"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|c| curve(&c["definition"]))
+            .collect::<Vec<_>>();
+        assert_eq!(result.curves.len(), native.len(), "{}", op["id"]);
+        let mut maximum = 0_f64;
+        for (sources, targets) in [(&result.curves, &native), (&native, &result.curves)] {
+            for c in sources {
+                for i in 0..=128 {
+                    let p = c
+                        .evaluate(c.parameter_at(i as f64 / 128.).unwrap())
+                        .unwrap();
+                    let d = targets
+                        .iter()
+                        .map(|c| {
+                            let t = c.closest_parameter(p, tolerance).unwrap();
+                            p.distance_to(c.evaluate(t).unwrap()).unwrap()
+                        })
+                        .fold(f64::INFINITY, f64::min);
+                    maximum = maximum.max(d);
+                }
+            }
+        }
+        println!(
+            "SURFACE_OFFSET_CORNER_SDK {}",
+            serde_json::json!({"id":op["id"],"maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6,"outputs":result.curves.len()})
+        );
+        assert!(maximum < 1e-6, "{}: {maximum:e}", op["id"]);
+        assert_eq!((surface, source), before);
+    }
+}
