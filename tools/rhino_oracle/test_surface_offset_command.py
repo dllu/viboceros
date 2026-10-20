@@ -3,10 +3,51 @@ import gzip,hashlib,json,os,subprocess,sys,tempfile
 from pathlib import Path
 from unittest import TestCase,mock
 from .client import OracleClient,OracleProtocolError
-from .surface_offset_command_probe import request,validate,validate_request
+from .surface_offset_command_probe import request,through_request,validate,validate_request
 from .structural_sdk import stage_helpers
 HERE=Path(__file__).resolve().parent
 class SurfaceOffsetCommandTests(TestCase):
+    def test_independent_sdk_queries_preserve_the_captured_geometry(self):
+        from .generate_surface_through_verify import request as verify_request
+        path=HERE/'fixtures/surface_offset_through_verify.json';q=json.loads(path.read_text())
+        self.assertEqual(q,verify_request())
+        r=json.loads((HERE/'observations/surface_offset_through_verify.json').read_text())
+        self.assertEqual(len(r['results']),9)
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+        self.assertEqual(hashlib.sha256((HERE/'observations/surface_offset_through_point.json').read_bytes()).hexdigest(),r['provenance']['capture_sha256'])
+        for name,sha in r['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,name)
+        for op,row in zip(q['operations'],r['results']):self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
+        distances={r['id']:r['value']['distance']for r in r['results']}
+        self.assertGreater(distances['bezier_normal_2'],.0038)
+        self.assertGreater(distances['cylinder_pick_1'],3e-5)
+        self.assertLess(distances['bezier_picked_point'],1e-6)
+        self.assertLess(distances['sphere_pick'],1e-6)
+    def test_through_point_evidence_and_source_closure(self):
+        path=HERE/'fixtures/surface_offset_through_point.json';q=json.loads(path.read_text())
+        self.assertEqual(q,through_request());validate_request(q)
+        r=json.loads((HERE/'observations/surface_offset_through_point.json').read_text())
+        self.assertEqual(len(r['results']),16)
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+        for name,sha in r['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,name)
+        for op,row in zip(q['operations'],r['results']):
+            self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
+            v=row['value'];self.assertEqual(v['success'],op['case']!='through_cancel')
+            self.assertEqual(v['input_trace']['errors'],[]);self.assertEqual(v['input_trace']['completed'],len(op['actions']))
+            for phase in ['after_script','undo','redo']:self.assertEqual(v[phase][:2],v['before'])
+            self.assertEqual(v['after_script'],v['redo']);self.assertEqual(v['before'],v['undo'])
+            outputs=v['after_script'][2:]
+            if op['case']=='through_on_source':self.assertEqual(outputs,[])
+            else:self.assertGreater(len(outputs),0)
+            if op['case']=='through_number':self.assertEqual(len(outputs),1)
+            for output in outputs:
+                self.assertFalse(output['selected']);self.assertEqual(output['layer'],'Surface offset output');self.assertIsNone(output['name'])
+            self.assertIn('surface_definition',v)
     def test_command_evidence_and_complete_source_closure(self):
         path=HERE/'fixtures/surface_offset_command.json';q=json.loads(path.read_text())
         self.assertEqual(q,request());validate_request(q)

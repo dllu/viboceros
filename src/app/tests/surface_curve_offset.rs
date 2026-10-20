@@ -217,3 +217,109 @@ fn surface_curve_offset_native_getters_keep_selection_layers_and_grouped_history
         native::qualify(&op, maximum);
     }
 }
+
+#[test]
+fn surface_curve_offset_through_point_native_repeats_previews_and_cancel() {
+    for (op, value) in native::through_rows() {
+        let mut app = test_app();
+        let (doc, scene) = native::setup(&op, &value);
+        app.document = doc;
+        enter(&mut app, "OffsetCrvOnSrf");
+        for action in op["actions"].as_array().unwrap() {
+            if action["curve"].as_u64().is_some() {
+                app.pick_surface_offset_face(Some(scene.target), Some(0), None);
+            } else if let Some(text) = action.as_str() {
+                enter(&mut app, text);
+            } else {
+                let [x, y, z]: [f64; 3] = serde_json::from_value(action.clone()).unwrap();
+                let before = format!("{:?}", app.document);
+                let point = point(x, y, z);
+                app.update_surface_offset_hover(point);
+                let preview = app
+                    .surface_offset_session
+                    .as_ref()
+                    .unwrap()
+                    .preview_curves()
+                    .as_ptr();
+                app.update_surface_offset_hover(point);
+                assert_eq!(
+                    preview,
+                    app.surface_offset_session
+                        .as_ref()
+                        .unwrap()
+                        .preview_curves()
+                        .as_ptr()
+                );
+                assert_eq!(format!("{:?}", app.document), before);
+                assert_eq!(
+                    app.surface_offset_session
+                        .as_ref()
+                        .unwrap()
+                        .cursor_surface(),
+                    Some((scene.target, Some(0), false))
+                );
+                enter(&mut app, &format!("w{x},{y},{z}"));
+                assert!(
+                    app.active_command.is_some(),
+                    "{} {:?}",
+                    op["id"],
+                    app.command_log
+                );
+                if op["case"] == "through_on_source" {
+                    assert_eq!(format!("{:?}", app.document), before);
+                }
+            }
+        }
+        assert!(
+            app.active_command.is_none(),
+            "{} {:?}",
+            op["id"],
+            app.command_log
+        );
+        let mut maximum = native::check(&app.document, &scene, &value, "after_script");
+        if value["after_script"].as_array().unwrap().len() > 2 {
+            app.document.undo().unwrap();
+            maximum = maximum.max(native::check(&app.document, &scene, &value, "undo"));
+            assert!(app.document.undo().unwrap().is_none());
+            app.document.redo().unwrap();
+            maximum = maximum.max(native::check(&app.document, &scene, &value, "redo"));
+        } else {
+            assert!(app.document.undo_label().is_none());
+        }
+        native::qualify(&op, maximum);
+    }
+}
+
+#[test]
+fn failed_through_points_preserve_redo_and_external_history_edits_end_the_getter() {
+    let mut app = test_app();
+    let (source, surface) = scene(&mut app);
+    app.document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Move 0,0,0 1,0,0");
+    app.document.undo().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "OffsetCrvOnSrf ThroughPoint");
+    app.pick_surface_offset_face(Some(surface), None, None);
+    assert_eq!(
+        app.accept_surface_offset_point(point(0., 0., 0.)),
+        Some(false)
+    );
+    app.cancel_current_prompt_or_selection();
+    assert_eq!(format!("{:?}", app.document), before);
+    app.document.redo().unwrap();
+    app.document.undo().unwrap();
+    enter(&mut app, "OffsetCrvOnSrf ThroughPoint");
+    app.pick_surface_offset_face(Some(surface), None, None);
+    assert_eq!(
+        app.accept_surface_offset_point(point(0., 2., 0.)),
+        Some(true)
+    );
+    app.document
+        .add_geometry(Geometry::Point(point(0., 0., 3.)))
+        .unwrap();
+    assert!(!app.validate_surface_offset());
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.objects().count(), 4);
+}

@@ -125,10 +125,39 @@ clipping each copy against face loops.
 Eight additional public command captures replay geometry, selection, layers,
 names and Undo/Redo through both command and UI paths. Seven qualify within
 `1e-6`. The extended Bézier offset remains unqualified at approximately
-`1.23e-5`, alongside the five existing SDK discrepancies. These are sampled
-comparisons, not continuous geometric certificates. ThroughPoint, curved-surface
+`4.24e-6`, alongside the five existing SDK discrepancies. These are sampled
+comparisons, not continuous geometric certificates. Curved-surface
 open-end extension, general closed-gap reconnection, corners, cut-locus
 handling and full native parity remain pending.
+
+ThroughPoint inverts the same normal-geodesic family in source-parameter and
+signed-distance coordinates. It reuses the shooting preparation, source-image
+admission and thin QR solve. A bounded search starts at the Euclidean closest
+foot, then checks parameter cells; same-sign control hulls exclude cells whose
+chord lower bound exceeds an accepted intrinsic distance. Backtracking never
+accepts partial shots at boundaries. Singular target charts, ambiguous equal
+normal branches and exhausted work fail explicitly. The resulting fitted and
+face-clipped curve must independently pass through the constrained point within
+model tolerance. Global root completeness and cut-locus certification remain
+unproven. Repeated UI points retain accepted curves in one history entry.
+
+Sixteen native ThroughPoint scenes compare repeated picks, constraints,
+selection, layers and grouped history through both command and viewport
+getters. Fourteen qualify at `1e-6`. Bézier and cylinder cases remain
+unqualified. Nine [independent SDK closest queries](../tools/rhino_oracle/fixtures/surface_offset_through_verify.json)
+measure the captured Bézier curve `3.89e-3` away from an analytic normal-family
+point near a fold, and cylinder outputs up to `3.49e-5` from their requested
+points. The model gate remains unchanged. These measurements establish the
+discrepancy in the saved curves without assuming Rhino's approximation method.
+Trimmed-face ties retain captured topology and prefer the higher edge index;
+rotation, U/V reversal and splitting one tied edge qualify this behavior.
+
+Open affine-planar fits now impose analytic endpoint derivatives through
+fixed control rows in the shared collocation layer. An exact affine lift of
+the admitted UV source supplies its projected tangent and curvature, including
+spatial sources admitted slightly off the plane. Rational candidates must also
+match these endpoint derivatives. Position validation and refinement retain
+their existing gates; other morphs keep their original interpolation policy.
 
 The existing usd-brep `SmBSplineSurface::OffsetCurveAlongSurface` producer
 intersects Euclidean offset circles with the surface. That metric differs from

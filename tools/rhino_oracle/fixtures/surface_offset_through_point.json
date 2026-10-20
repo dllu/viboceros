@@ -1,0 +1,662 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_repeat",
+      "case": "through_repeat",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          1.0,
+          -1.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_number",
+      "case": "through_number",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=3",
+        "ThroughPoint",
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_off_surface",
+      "case": "through_off_surface",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          2.0,
+          5.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_on_source",
+      "case": "through_on_source",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_cancel",
+      "case": "through_cancel",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        "Cancel"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_trimmed",
+      "case": "through_trimmed",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_cylinder",
+      "case": "through_cylinder",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          3.0,
+          0.0,
+          3.0
+        ],
+        [
+          0.0,
+          3.0,
+          3.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_sphere",
+      "case": "through_sphere",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          4.0,
+          0.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_bezier",
+      "case": "through_bezier",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_extension",
+      "case": "through_extension",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          8.0,
+          2.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_trimmed_tie_first",
+      "case": "through_trimmed_tie_first",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_trimmed_tie_below",
+      "case": "through_trimmed_tie_below",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          -2.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_trimmed_rotated",
+      "case": "through_trimmed_rotated",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_trimmed_reverse_u",
+      "case": "through_trimmed_reverse_u",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_trimmed_reverse_v",
+      "case": "through_trimmed_reverse_v",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_trimmed_split_bottom",
+      "case": "through_trimmed_split_bottom",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ],
+        [
+          "Point",
+          "Select point",
+          "Through point",
+          "Offset point"
+        ]
+      ]
+    }
+  ]
+}

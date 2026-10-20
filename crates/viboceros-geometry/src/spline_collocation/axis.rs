@@ -18,6 +18,12 @@ pub(crate) struct Axis {
 }
 
 impl Axis {
+    pub(crate) fn fix_control(&mut self, row: usize) {
+        self.stations[row].fixed = true;
+        if let Some(bands) = &mut self.bands {
+            bands[row] = [0., 0., 1., 0., 0.];
+        }
+    }
     pub fn for_solver(
         degree: usize,
         knots: Vec<Real>,

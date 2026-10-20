@@ -5,8 +5,9 @@ use std::sync::Arc;
 use viboceros_geometry::{
     CurveExtensionSide, CurveExtensionStyle, SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions,
 };
+mod through_point;
 
-pub const USAGE: &str = "OffsetCrvOnSrf distance Surface=id [Source=id|Edge=id,index] [Face=index] [SidePoint=x,y,z] [Flip=Yes|No] [Number=count] [SubCrv=start,end]";
+pub const USAGE: &str = "OffsetCrvOnSrf distance|ThroughPoint=x,y,z Surface=id [Source=id|Edge=id,index] [Face=index] [SidePoint=x,y,z] [Flip=Yes|No] [Number=count] [SubCrv=start,end]";
 pub const MAX_NUMBER: usize = 1024;
 const MAX_OUTPUTS: usize = 8192;
 
@@ -53,6 +54,8 @@ pub struct References {
     pub face: Option<usize>,
     pub side: Option<Point3>,
     pub range: Option<[Real; 2]>,
+    pub through: Option<Point3>,
+    pub through_mode: bool,
 }
 
 pub fn options(
@@ -82,6 +85,16 @@ pub fn options(
         let key = token.split('=').next().unwrap().to_ascii_lowercase();
         if !seen.insert(key.clone()) {
             return Err(CommandError::Usage(USAGE));
+        }
+        if key == "throughpoint"
+            && !token.contains('=')
+            && args
+                .get(i + 1)
+                .is_none_or(|v| parse_single_option_point(v, USAGE).is_err())
+        {
+            refs.through_mode = true;
+            i += 1;
+            continue;
         }
         if key == "flip"
             && !token.contains('=')
@@ -114,6 +127,10 @@ pub fn options(
             }
             "face" => refs.face = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?),
             "sidepoint" => refs.side = Some(parse_single_option_point(value, USAGE)?),
+            "throughpoint" => {
+                refs.through = Some(parse_single_option_point(value, USAGE)?);
+                refs.through_mode = true;
+            }
             "subcrv" => {
                 let values = value
                     .split(',')
@@ -126,6 +143,9 @@ pub fn options(
         i += n;
     }
     if seen.contains("source") && seen.contains("edge") {
+        return Err(CommandError::Usage(USAGE));
+    }
+    if distance && refs.through_mode {
         return Err(CommandError::Usage(USAGE));
     }
     options.validate()?;
@@ -183,6 +203,7 @@ pub struct Plan {
     pub side: Option<Point3>,
     pub signed_distance: Real,
     pub curves: Vec<NurbsCurve>,
+    pub through: Option<Point3>,
 }
 impl Plan {
     pub fn prepare(
@@ -316,6 +337,7 @@ impl Plan {
             side,
             signed_distance: distance,
             curves: outputs,
+            through: None,
         })
     }
     pub fn current(&self, doc: &Document) -> bool {
@@ -326,9 +348,15 @@ impl Plan {
             let [x, y, z] = p.to_array();
             format!(" SidePoint={x},{y},{z}")
         });
+        let mode = if let Some(point) = self.through {
+            let [x, y, z] = point.to_array();
+            format!("ThroughPoint={x},{y},{z} Number={}", self.options.number)
+        } else {
+            self.options.arguments()
+        };
         format!(
             "OffsetCrvOnSrf {} Surface={} Face={} {}{side}",
-            self.options.arguments(),
+            mode,
             self.target.id,
             self.target.face,
             self.source.arguments()
@@ -414,7 +442,7 @@ impl Command for OffsetCurveOnSurfaceCommand {
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let (options, mut refs, has_distance) = options(args, Options::default())?;
-        if !has_distance {
+        if !has_distance && refs.through.is_none() {
             return Err(CommandError::Usage(USAGE));
         }
         if refs.source.is_none() {
@@ -434,7 +462,12 @@ impl Command for OffsetCurveOnSurfaceCommand {
             refs.surface.ok_or(CommandError::Usage(USAGE))?,
             refs.face,
         )?;
-        Plan::prepare(doc, source, target, refs.side, options)?.apply(doc)
+        let plan = if let Some(point) = refs.through {
+            Plan::prepare_through_point(doc, source, target, point, options)?
+        } else {
+            Plan::prepare(doc, source, target, refs.side, options)?
+        };
+        plan.apply(doc)
     }
 }
 

@@ -3,16 +3,20 @@ use crate::{
     CurveRef, GeometryError, MAX_CURVE_FIT_CONTROL_POINTS, MorphInterpolationSolver, NurbsCurve,
     NurbsCurve2, NurbsSurface, ParameterSide, PreparedSurfaceGeodesic, Real, SurfaceGeodesicPoint,
     Tolerance,
-    morph::fit_parameterized_curve,
+    morph::{fit_parameterized_curve, fit_parameterized_curve_with_derivatives},
     spline_collocation::{error_fractions, seed_breaks, stable_lerp},
 };
 
 const MAX_QUERIES: usize = 65_536;
 mod clip;
+mod through_point;
 pub use clip::{
     SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions, SurfaceCurveOffsetPieces,
     try_offset_curves_on_surface, try_offset_curves_on_surface_with_options,
     try_offset_curves_on_surface_with_solver,
+};
+pub use through_point::{
+    SurfaceCurveOffsetThroughPoint, surface_curve_offset_distance_through_point,
 };
 
 /// A fitted geodesic offset and diagnostics. Source admission has a continuous
@@ -231,6 +235,50 @@ fn fit_complete(
             false
         }
     });
+    let closed = source.evaluate(0.)? == source.evaluate(1.)?;
+    let derivatives = if !closed && sampler.prepared.is_affine() {
+        // Lift the admitted UV curve through the exact affine chart. This
+        // retains the projected tangent even when an admitted spatial source
+        // lies slightly off the surface within model tolerance.
+        let controls = sampler
+            .uv
+            .control_points()
+            .iter()
+            .map(|c| {
+                crate::WeightedPoint3::try_new(
+                    sampler
+                        .surface
+                        .evaluate_extended(c.point().x(), c.point().y())?,
+                    c.weight(),
+                )
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        let projected = NurbsCurve::try_new_rational(
+            sampler.uv.degree(),
+            controls,
+            sampler.uv.knots().to_vec(),
+        )?;
+        let mut derivatives = [crate::Vector3::try_new(0., 0., 0.)?; 2];
+        for (index, t) in [0., 1.].into_iter().enumerate() {
+            let sample = CurveRef::NurbsCurve(&projected).evaluate_with_tangent(t)?;
+            let uv = sampler.uv.evaluate(t)?;
+            let left = sampler
+                .surface
+                .normal_at(uv.x(), uv.y())?
+                .as_vector()
+                .cross(sample.tangent().as_vector())?
+                .normalized_nonzero()?;
+            let curvature = CurveRef::NurbsCurve(&projected)
+                .curvature_vector(t)?
+                .dot(left.as_vector())?;
+            derivatives[index] = projected
+                .derivative_at(t)?
+                .scaled((-sampler.distance).mul_add(curvature, 1.))?;
+        }
+        Some(derivatives)
+    } else {
+        None
+    };
     let numerical = sampler.numerical;
     let mut evaluate = |t, side| sampler.sample(t, side).map(|p| p.point);
     let count = breaks.len();
@@ -246,7 +294,6 @@ fn fit_complete(
     }
     let first = evaluate(0., ParameterSide::Right)?;
     let last = evaluate(1., ParameterSide::Left)?;
-    let closed = source.evaluate(0.)? == source.evaluate(1.)?;
     if closed && first.distance_to(last)? > numerical.absolute() {
         return Err(invalid("source offset is discontinuous at the closed seam"));
     }
@@ -255,12 +302,13 @@ fn fit_complete(
         tolerance.relative(),
         tolerance.angular(),
     )?;
-    let fitted = fit_parameterized_curve(
+    let fitted = fit_parameterized_curve_with_derivatives(
         source,
         breaks,
         fit_tolerance,
         MAX_CURVE_FIT_CONTROL_POINTS,
         solver,
+        derivatives,
         |t, side| {
             if t == 0. || closed && t == 1. {
                 Ok(first)

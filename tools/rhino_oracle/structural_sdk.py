@@ -7,6 +7,7 @@ import shutil
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
     'surface_offset_command': ('surface_offset_command_probe', ('join_probe','merge_edges_probe','conic_getter_input','number_token','managed_mouse_callback','snap_environment')),
+    'surface_offset_through_point': ('surface_offset_command_probe', ('join_probe','merge_edges_probe','conic_getter_input','number_token','managed_mouse_callback','snap_environment')),
     'surface_curve_offset': ('surface_curve_offset_probe', ()),
     'orient_curve_edge': ('orient_curve_edge_probe', ('join_probe','merge_edges_probe','number_token','conic_getter_input','managed_mouse_callback','snap_environment')),
     'curve_frame_boundary': ('curve_frame_boundary_probe', ()),

@@ -18,8 +18,14 @@ pub(super) struct Session {
     subcurve: Option<super::uv_subcurve_input::PendingSubcurve>,
     subcurve_source: Option<CapturedCurve>,
     draft: Vec<NurbsCurve>,
+    through: bool,
+    through_cursor: Option<Point3>,
 }
 impl Session {
+    pub(super) fn cursor_surface(&self) -> Option<(ObjectId, Option<usize>, bool)> {
+        let target = self.target.as_ref().filter(|_| self.through)?;
+        Some((target.id, Some(target.face), false))
+    }
     pub(super) fn preview_curves(&self) -> &[NurbsCurve] {
         self.plan
             .as_ref()
@@ -29,7 +35,8 @@ impl Session {
         self.subcurve_source.as_ref().map(CapturedCurve::curve)
     }
     fn current(&self, doc: &Document) -> bool {
-        self.source.as_ref().is_none_or(|s| s.current(doc))
+        doc.history_group_is_current(&self.group)
+            && self.source.as_ref().is_none_or(|s| s.current(doc))
             && self.target.as_ref().is_none_or(|t| t.current(doc))
             && self.subcurve_source.as_ref().is_none_or(|s| s.current(doc))
     }
@@ -62,7 +69,7 @@ impl VibocerosApp {
         ) else {
             return false;
         };
-        if distance && refs.surface.is_some() {
+        if refs.through.is_some() || distance && refs.surface.is_some() {
             return false;
         }
         let selected = refs.source.or_else(|| {
@@ -113,6 +120,8 @@ impl VibocerosApp {
                     subcurve: None,
                     subcurve_source: None,
                     draft: Vec::new(),
+                    through: refs.through_mode,
+                    through_cursor: refs.through,
                 });
                 self.active_command = Some(InteractiveCommand::OffsetCurveOnSurface);
                 self.prepare_surface_offset();
@@ -140,11 +149,13 @@ impl VibocerosApp {
             "Select one curve or surface edge (SubCrv)".into()
         } else if s.target.is_none() {
             "Select the base surface on the offset side".into()
+        } else if s.through {
+            "Through point on the surface; Enter finishes (accepted curves are retained)".into()
         } else if s.number_prompt {
             format!("Number of curves <{}>", s.options.number)
         } else {
             format!(
-                "Offset distance <{}> (Flip={} Number={})",
+                "Offset distance <{}> (ThroughPoint Flip={} Number={})",
                 s.options.distance,
                 if s.options.flip { "Yes" } else { "No" },
                 s.options.number
@@ -153,6 +164,9 @@ impl VibocerosApp {
         self.push_log(format!("OffsetCrvOnSrf: {message}"));
     }
     fn prepare_surface_offset(&mut self) {
+        self.prepare_surface_offset_with_log(true);
+    }
+    fn prepare_surface_offset_with_log(&mut self, announce: bool) {
         let Some(s) = self.surface_offset_session.as_mut() else {
             return;
         };
@@ -160,15 +174,30 @@ impl VibocerosApp {
         let (Some(source), Some(target)) = (&s.source, &s.target) else {
             return;
         };
-        match Plan::prepare(
-            &self.document,
-            source.clone(),
-            target.clone(),
-            s.side,
-            s.options,
-        ) {
+        let result = if s.through {
+            let Some(point) = s.through_cursor else {
+                return;
+            };
+            Plan::prepare_through_point(
+                &self.document,
+                source.clone(),
+                target.clone(),
+                point,
+                s.options,
+            )
+        } else {
+            Plan::prepare(
+                &self.document,
+                source.clone(),
+                target.clone(),
+                s.side,
+                s.options,
+            )
+        };
+        match result {
             Ok(plan) => s.plan = Some(plan),
-            Err(e) => self.push_log(format!("Error: {e}")),
+            Err(e) if announce => self.push_log(format!("Error: {e}")),
+            Err(_) => {}
         }
     }
     pub(super) fn validate_surface_offset(&mut self) -> bool {
@@ -179,7 +208,9 @@ impl VibocerosApp {
             return true;
         }
         self.cancel_interactive_command(false);
-        self.push_log("Source curve or surface changed; select them again".into());
+        self.push_log(
+            "Source, surface, or command history changed; start OffsetCrvOnSrf again".into(),
+        );
         false
     }
     pub(super) fn pick_surface_offset_curve(
@@ -257,8 +288,14 @@ impl VibocerosApp {
         match plan.commit(&mut self.document, &mut s.group) {
             Ok(message) => {
                 self.surface_offset_defaults = s.options;
+                let through = s.through;
+                s.plan = None;
                 self.push_log(message);
-                self.cancel_interactive_command(false);
+                if through {
+                    self.surface_offset_prompt();
+                } else {
+                    self.cancel_interactive_command(false);
+                }
                 true
             }
             Err(e) => {
@@ -267,8 +304,10 @@ impl VibocerosApp {
             }
         }
     }
-    pub(super) fn finish_surface_offset(&mut self) {
-        self.surface_offset_session = None;
+    pub(super) fn finish_surface_offset(&mut self) -> bool {
+        self.surface_offset_session
+            .take()
+            .is_some_and(|s| s.group.can_undo())
     }
     pub(super) fn discard_surface_offset_subcurve(&mut self) -> bool {
         let Some(s) = self
@@ -309,13 +348,25 @@ impl VibocerosApp {
                 s.number_prompt = false;
                 self.surface_offset_prompt();
             } else if s.target.is_some() {
-                self.commit_surface_offset();
+                if s.through {
+                    self.cancel_interactive_command(false);
+                } else {
+                    self.commit_surface_offset();
+                }
             } else {
                 self.cancel_interactive_command(false);
             }
             return true;
         }
         let s = self.surface_offset_session.as_mut().unwrap();
+        if word.eq_ignore_ascii_case("ThroughPoint") && s.subcurve.is_none() {
+            s.through = true;
+            s.through_cursor = None;
+            s.plan = None;
+            s.number_prompt = false;
+            self.surface_offset_prompt();
+            return true;
+        }
         if word.eq_ignore_ascii_case("SubCrv") && s.target.is_none() {
             s.source = None;
             s.subcurve = Some(Default::default());
@@ -412,7 +463,7 @@ impl VibocerosApp {
             }
             return true;
         }
-        if word.eq_ignore_ascii_case("Number") && s.target.is_some() {
+        if word.eq_ignore_ascii_case("Number") && s.target.is_some() && !s.through {
             s.number_prompt = true;
             self.surface_offset_prompt();
             return true;
@@ -431,6 +482,7 @@ impl VibocerosApp {
             return true;
         }
         if s.target.is_some()
+            && !s.through
             && let Some(length) = viboceros_drafting::PointInput::parse_length_with_units(
                 input,
                 self.document.units(),
@@ -448,13 +500,15 @@ impl VibocerosApp {
             return true;
         }
         let words = input.split_whitespace().collect::<Vec<_>>();
-        if let Ok((options, refs, _)) = solver::options(&words, s.options)
+        if !s.through
+            && let Ok((options, refs, _)) = solver::options(&words, s.options)
             && refs.source.is_none()
             && refs.surface.is_none()
             && refs.range.is_none()
             && refs.face.is_none()
             && refs.side.is_none()
             && refs.edge.is_none()
+            && !refs.through_mode
         {
             s.options = options;
             self.prepare_surface_offset();
@@ -477,6 +531,18 @@ impl VibocerosApp {
         self.surface_offset_session.as_ref()?;
         if !self.validate_surface_offset() {
             return Some(false);
+        }
+        if self
+            .surface_offset_session
+            .as_ref()
+            .is_some_and(|s| s.through && s.target.is_some())
+        {
+            let s = self.surface_offset_session.as_mut().unwrap();
+            if s.through_cursor != Some(point) || s.plan.is_none() {
+                s.through_cursor = Some(point);
+                self.prepare_surface_offset();
+            }
+            return Some(self.commit_surface_offset());
         }
         let s = self.surface_offset_session.as_mut()?;
         if let Some(c) = &s.subcurve_source {
@@ -577,6 +643,17 @@ impl VibocerosApp {
         true
     }
     pub(super) fn update_surface_offset_hover(&mut self, point: Point3) {
+        if let Some(s) = self
+            .surface_offset_session
+            .as_mut()
+            .filter(|s| s.through && s.target.is_some())
+        {
+            if s.through_cursor != Some(point) {
+                s.through_cursor = Some(point);
+                self.prepare_surface_offset_with_log(false);
+            }
+            return;
+        }
         let Some(s) = self.surface_offset_session.as_mut() else {
             return;
         };

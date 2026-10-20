@@ -1,0 +1,135 @@
+{
+  "iterations": 1,
+  "protocol_version": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "value": {
+        "distance": 0.0018747127087720312,
+        "point": [
+          2.509550172793828,
+          0.9340531792085962,
+          0.0
+        ],
+        "parameter": 7.423091815627215
+      },
+      "elapsed_ns": 10047913,
+      "id": "bezier_normal_0"
+    },
+    {
+      "value": {
+        "distance": 2.7043497976511066e-05,
+        "point": [
+          2.5015766020656587,
+          0.9303814445536321,
+          0.0
+        ],
+        "parameter": 7.527815610358312
+      },
+      "elapsed_ns": 4493713,
+      "id": "bezier_normal_1"
+    },
+    {
+      "value": {
+        "distance": 0.00389023901982375,
+        "point": [
+          2.4637384671519778,
+          0.9137247375254675,
+          0.0
+        ],
+        "parameter": 7.844964189281409
+      },
+      "elapsed_ns": 137329,
+      "id": "bezier_normal_2"
+    },
+    {
+      "value": {
+        "distance": 0.0018581299688072241,
+        "point": [
+          2.4227974022677294,
+          0.8976825329337964,
+          0.0
+        ],
+        "parameter": 8.238562949514963
+      },
+      "elapsed_ns": 282288,
+      "id": "bezier_normal_3"
+    },
+    {
+      "value": {
+        "distance": 0.00024078038801614136,
+        "point": [
+          2.447938571625769,
+          0.9219916941617926,
+          0.0
+        ],
+        "parameter": 8.693021293197289
+      },
+      "elapsed_ns": 167847,
+      "id": "bezier_normal_4"
+    },
+    {
+      "value": {
+        "distance": 9.767729404984262e-07,
+        "point": [
+          4.096191652371363e-07,
+          2.000000886734186,
+          0.0
+        ],
+        "parameter": 3.727509966436433
+      },
+      "elapsed_ns": 137329,
+      "id": "bezier_picked_point"
+    },
+    {
+      "value": {
+        "distance": 5.851692584752078e-06,
+        "point": [
+          2.9999999999942917,
+          5.851692584749293e-06,
+          3.0
+        ],
+        "parameter": 3.0000000000000013
+      },
+      "elapsed_ns": 167847,
+      "id": "cylinder_pick_0"
+    },
+    {
+      "value": {
+        "distance": 3.492555163387005e-05,
+        "point": [
+          3.492555163327835e-05,
+          2.999999999796701,
+          3.0
+        ],
+        "parameter": 3.000000000000001
+      },
+      "elapsed_ns": 91553,
+      "id": "cylinder_pick_1"
+    },
+    {
+      "value": {
+        "distance": 4.089298323453778e-07,
+        "point": [
+          3.999999999999979,
+          0.0,
+          4.089298323453773e-07
+        ],
+        "parameter": 0.0
+      },
+      "elapsed_ns": 76294,
+      "id": "sphere_pick"
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "provenance": {
+    "request_sha256": "298695886dbfc1c7fa3fc2356621b3a5acba36f3d09525abfe7ba30f056a3eba",
+    "capture_sha256": "20ca1ca59397d1c2f5770cd30f0b982ad62db25195ceb0abeb7b048094f877f5",
+    "sources": {
+      "generate_surface_through_verify.py": "110fae6e1809f1c060ff92eb4997ec2696d0d57ea5c1e5ff3adaa177e514259e",
+      "client.py": "d92dc94013b5d08d49370242093a4dde2bc7e829242734bc96c8814a7a95b6e1",
+      "rhino_worker.py": "f83e873ca728b794cddd1aa50616914e2635879c362b11a9675fb3e28ef7db97",
+      "structural_sdk.py": "463b38e560ee15cbf18580b193aebeacf401bb9a273b0aede4205e2fc746e7eb"
+    }
+  }
+}

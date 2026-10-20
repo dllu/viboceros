@@ -249,3 +249,43 @@ fn a_trimmed_planar_face_keeps_its_hole_and_can_return_two_offset_pieces() {
         assert!(q.x().abs() > 1.);
     }
 }
+
+#[test]
+fn through_points_stage_once_ignore_number_and_keep_earlier_steps_after_a_failed_pick() {
+    let (mut doc, source, surface) = scene();
+    doc.select_object(source, SelectionMode::Replace).unwrap();
+    let original = format!("{doc:?}");
+    let source = Source::capture(&doc, source, None, None).unwrap();
+    let target = Target::capture(&doc, surface, None).unwrap();
+    let options = Options {
+        number: 3,
+        flip: true,
+        ..Options::default()
+    };
+    let plan =
+        Plan::prepare_through_point(&doc, source.clone(), target.clone(), p(0., 2., 5.), options)
+            .unwrap();
+    assert_eq!(format!("{doc:?}"), original);
+    assert_eq!(plan.curves.len(), 1);
+    let mut group = doc.begin_history_group("OffsetCrvOnSrf").unwrap();
+    plan.commit(&mut doc, &mut group).unwrap();
+    let before = format!("{doc:?}");
+    assert!(
+        Plan::prepare_through_point(&doc, source.clone(), target.clone(), p(0., 0., 0.), options)
+            .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    Plan::prepare_through_point(&doc, source, target, p(1., -1., 0.), options)
+        .unwrap()
+        .commit(&mut doc, &mut group)
+        .unwrap();
+    let mut ys = samples(&doc).iter().map(|p| p.y()).collect::<Vec<_>>();
+    ys.sort_by(Real::total_cmp);
+    assert_eq!(ys.len(), 2);
+    assert!((ys[0] + 1.).abs() < 1e-7);
+    assert!((ys[1] - 2.).abs() < 1e-7);
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().count(), 2);
+    doc.redo().unwrap();
+    assert_eq!(doc.objects().count(), 4);
+}

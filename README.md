@@ -78,7 +78,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Infinite-plane projection and input](docs/commands/project-infinite-plane.md)
 - [IPlane intersections and shared plane picking](docs/commands/iplane.md)
 - [Pull curves and points toward surfaces and meshes](docs/commands/pull.md)
-- [Offset curves on surfaces with previews, Flip, Number and temporary subcurves](docs/commands/offset-crv-on-srf.md)
+- [Offset curves on surfaces with previews, ThroughPoint, Flip, Number and temporary subcurves](docs/commands/offset-crv-on-srf.md)
 - [Loose projection and pulling through edit points](docs/commands/projection-loose.md)
 - [InsertKink on curves and surfaces with staged picks, temporary lengths, direction locks and previews](docs/commands/insert-kink.md)
 - [InsertKnot repeated point/parameter input, Automatic refinement and staged Undo](docs/commands/insert-knot.md)

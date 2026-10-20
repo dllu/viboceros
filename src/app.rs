@@ -1020,7 +1020,7 @@ impl InteractiveCommand {
                 "OrientCrvToEdge: select a curve near an end, then a surface edge"
             }
             Self::OffsetCurveOnSurface => {
-                "OffsetCrvOnSrf: select a curve and surface, then enter distance (Flip, Number, SubCrv)"
+                "OffsetCrvOnSrf: select a curve and surface, then enter distance (ThroughPoint, Flip, Number, SubCrv)"
             }
             Self::OrientOnCurve => "OrientOnCrv: follow the curve placement prompt (Esc finishes)",
             Self::SurfaceArray { .. } => "ArraySrf: follow the surface array prompt (Esc cancels)",
@@ -5994,9 +5994,9 @@ impl VibocerosApp {
         }
         self.cancel_surface_array();
         self.cancel_curve_array();
-        self.finish_surface_offset();
         let transform_applied = self.finish_orient_surface_session()
             | self.finish_orient_points_session()
+            | self.finish_surface_offset()
             | self.finish_orient_edge()
             | self.finish_orient_curve_session()
             | self.finish_array_curve_surface_session()
@@ -10751,6 +10751,7 @@ impl eframe::App for VibocerosApp {
         let normal_surface = model_input_active
             .then(|| {
                 self.orient_surface_location()
+                    .or_else(|| self.surface_offset_session.as_ref()?.cursor_surface())
                     .or_else(|| self.select_uv_prompt.as_ref().and_then(|p| p.surface()))
                     .or_else(|| self.move_normal_surface())
                     .or_else(|| {

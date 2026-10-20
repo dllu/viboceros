@@ -15,7 +15,8 @@ class SurfaceCurveOffsetTests(TestCase):
         self.assertEqual(r['unqualified_recipes'],['plane_curve_2','plane_curve_3','warped_iso_0','warped_iso_1','warped_iso_2'])
         fits=r['fitted_curves'];self.assertEqual(fits['recipes'],24);self.assertEqual(fits['curves'],23);self.assertEqual(fits['empty_recipes'],1);self.assertEqual(fits['natural_domain_rejections'],0);self.assertEqual(fits['qualified_recipes'],19);self.assertEqual(fits['unqualified_recipes'],r['unqualified_recipes']);self.assertEqual(fits['bidirectional_samples_per_curve'],130)
         clips=r['closed_gap_cases'];self.assertEqual(clips['recipes'],5);self.assertEqual(clips['qualified_recipes'],5);self.assertLess(clips['maximum_sample_difference'],1e-6)
-        commands=r['command_cases'];self.assertEqual(commands['recipes'],8);self.assertEqual(commands['qualified_recipes'],7);self.assertEqual(commands['unqualified_recipes'],['bezier']);self.assertLess(commands['maximum_sample_difference'],1.3e-5)
+        commands=r['command_cases'];self.assertEqual(commands['recipes'],8);self.assertEqual(commands['qualified_recipes'],7);self.assertEqual(commands['unqualified_recipes'],['bezier']);self.assertLess(commands['maximum_sample_difference'],4.5e-6)
+        through=r['through_point_cases'];self.assertEqual(through['recipes'],16);self.assertEqual(through['qualified_recipes'],14);self.assertEqual(through['unqualified_recipes'],['through_cylinder','through_bezier'])
         for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
         self.assertTrue(all(x['maximum_closest_solver_difference']<1e-10 for x in r['independent_closest_points']))
     def test_fixed_sdk_evidence_and_source_closure(self):

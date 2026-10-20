@@ -1,5 +1,6 @@
 mod curve_fit;
 pub(crate) use curve_fit::fit_parameterized as fit_parameterized_curve;
+pub(crate) use curve_fit::fit_parameterized_with_derivatives as fit_parameterized_curve_with_derivatives;
 mod surface_flow;
 pub use surface_flow::{SurfaceFlowFrame, SurfaceFlowOptions, SurfaceFlowPointMorph};
 mod flow;

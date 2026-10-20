@@ -3389,6 +3389,8 @@ impl Brep {
 
     /// Nearest point on a particular trimmed face. A pick over a hole or
     /// outside the outer loop is projected onto the nearest trim boundary.
+    /// Distinct-edge distance ties prefer the higher topology index, matching
+    /// the captured SDK even after rotation, UV reversal and edge splitting.
     pub fn closest_parameters_on_face(
         &self,
         face_index: usize,
@@ -3402,7 +3404,7 @@ impl Brep {
         if face.contains_parameters(u, v, tolerance)? {
             return Ok(Some((u, v)));
         }
-        let mut best: Option<(Real, Point3, Real, Real)> = None;
+        let mut best: Option<(Real, Point3, usize, Real, Real)> = None;
         for face_loop in face.loops() {
             for trim in face_loop.trims() {
                 let Some(edge_index) = trim.edge() else {
@@ -3427,22 +3429,29 @@ impl Brep {
                 }
                 for candidate in candidates {
                     let distance = candidate.distance_to(target)?;
-                    let tie_epsilon = best.as_ref().map_or(0.0, |(d, _, _, _)| {
-                        16.0 * Real::EPSILON * distance.max(*d).max(1.0)
+                    let tie_epsilon = best.as_ref().map_or(0.0, |(d, _, _, _, _)| {
+                        16.0 * Real::EPSILON * distance.max(*d)
                     });
                     let tie = best
                         .as_ref()
-                        .is_some_and(|(d, _, _, _)| (distance - *d).abs() <= tie_epsilon);
-                    if best.as_ref().is_none_or(|(d, previous, _, _)| {
-                        distance < *d - tie_epsilon || (tie && candidate.x() > previous.x())
-                    }) {
+                        .is_some_and(|(d, _, _, _, _)| (distance - *d).abs() <= tie_epsilon);
+                    if best
+                        .as_ref()
+                        .is_none_or(|(d, previous, previous_edge, _, _)| {
+                            distance < *d - tie_epsilon
+                                || (tie
+                                    && (edge_index > *previous_edge
+                                        || edge_index == *previous_edge
+                                            && candidate.x() > previous.x()))
+                        })
+                    {
                         let (u, v) = face.surface.closest_parameters(candidate, tolerance)?;
-                        best = Some((distance, candidate, u, v));
+                        best = Some((distance, candidate, edge_index, u, v));
                     }
                 }
             }
         }
-        Ok(best.map(|(_, _, u, v)| (u, v)))
+        Ok(best.map(|(_, _, _, u, v)| (u, v)))
     }
 
     /// Finds the model-space point's nearest parameters on any underlying face
@@ -14646,7 +14655,8 @@ mod tests {
         ]);
         for (pick, expected) in [
             (point(2., 3., 3.), point(2., 3., 3.)),
-            (point(5., 5., 3.), point(6., 5., 3.)),
+            // This manually authored face numbers its bottom hole edge last.
+            (point(5., 5., 3.), point(5., 4., 3.)),
             (point(12., 5., 3.), point(10., 5., 3.)),
         ] {
             let (u, v) = brep
@@ -14664,6 +14674,26 @@ mod tests {
                 .unwrap(),
             None
         );
+        // A roundoff tie must scale with distance. An absolute unit floor
+        // would turn all boundaries of a tiny face into equally close picks.
+        for scale in [2f64.powi(-100), 2f64.powi(100)] {
+            let tolerance =
+                Tolerance::try_new(Tolerance::DEFAULT.absolute() * scale, 1e-12, 1e-8).unwrap();
+            let map = AffineTransform3::try_uniform_scale(point(0., 0., 0.), scale).unwrap();
+            let scaled = brep.transformed(map, tolerance).unwrap();
+            let pick = point(5. * scale, 5.1 * scale, 3. * scale);
+            let (u, v) = scaled
+                .closest_parameters_on_face(0, pick, tolerance)
+                .unwrap()
+                .unwrap();
+            let actual = scaled.faces()[0].surface().evaluate(u, v).unwrap();
+            assert!(
+                actual
+                    .distance_to(point(5. * scale, 6. * scale, 3. * scale))
+                    .unwrap()
+                    < tolerance.absolute()
+            );
+        }
     }
 
     #[test]

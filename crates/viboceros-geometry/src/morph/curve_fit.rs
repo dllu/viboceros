@@ -92,6 +92,7 @@ pub(super) fn fit_with_stations(
         maximum,
         stations,
         morph.interpolation_solver(),
+        None,
     )
 }
 
@@ -104,6 +105,18 @@ pub(crate) fn fit_parameterized(
     tolerance: Tolerance,
     maximum: usize,
     solver: Option<MorphInterpolationSolver>,
+    evaluate: impl FnMut(Real, ParameterSide) -> Result<Point3, GeometryError>,
+) -> Result<NurbsCurve, GeometryError> {
+    fit_parameterized_with_derivatives(source, breaks, tolerance, maximum, solver, None, evaluate)
+}
+
+pub(crate) fn fit_parameterized_with_derivatives(
+    source: &NurbsCurve,
+    breaks: Vec<Break>,
+    tolerance: Tolerance,
+    maximum: usize,
+    solver: Option<MorphInterpolationSolver>,
+    derivatives: Option<[crate::Vector3; 2]>,
     mut evaluate: impl FnMut(Real, ParameterSide) -> Result<Point3, GeometryError>,
 ) -> Result<NurbsCurve, GeometryError> {
     let mut cache = HashMap::new();
@@ -119,6 +132,7 @@ pub(crate) fn fit_parameterized(
     if source.is_rational() && source.degree() <= 3 {
         let fractions = error_fractions(ERROR_SAMPLES);
         if let Some(candidate) = rational::candidate(&mut point_at, source, maximum, solver)?
+            && derivatives.is_none_or(|d| endpoint_derivatives_match(&candidate, d))
             && validate::errors(
                 &mut point_at,
                 &candidate,
@@ -132,7 +146,15 @@ pub(crate) fn fit_parameterized(
             return Ok(candidate);
         }
     }
-    fit_samples(&mut point_at, breaks, tolerance, maximum, &[], solver)
+    fit_samples(
+        &mut point_at,
+        breaks,
+        tolerance,
+        maximum,
+        &[],
+        solver,
+        derivatives,
+    )
 }
 
 fn fit_samples(
@@ -142,6 +164,7 @@ fn fit_samples(
     maximum: usize,
     stations: &[Real],
     solver: Option<MorphInterpolationSolver>,
+    derivatives: Option<[crate::Vector3; 2]>,
 ) -> Result<NurbsCurve, GeometryError> {
     let fractions = error_fractions(ERROR_SAMPLES);
     loop {
@@ -150,7 +173,7 @@ fn fit_samples(
             return Err(GeometryError::TooManyMorphCurveControlPoints { maximum });
         }
         let knots = knots(&breaks);
-        let approximation = interpolate(point_at, knots, solver)?;
+        let approximation = interpolate(point_at, knots, solver, derivatives)?;
         let validate::Errors {
             deviation,
             mut refinements,
@@ -222,12 +245,21 @@ fn interpolate(
     point_at: &mut impl FnMut(Real, ParameterSide) -> Result<Point3, GeometryError>,
     knots: Vec<Real>,
     solver: Option<MorphInterpolationSolver>,
+    derivatives: Option<[crate::Vector3; 2]>,
 ) -> Result<NurbsCurve, GeometryError> {
-    let axis = Axis::for_solver(3, knots, solver)?;
+    let mut axis = Axis::for_solver(3, knots, solver)?;
     let count = axis.stations.len();
     let mut targets = Vec::with_capacity(count);
     for station in &axis.stations {
         targets.push(point_at(station.parameter, station.side)?);
+    }
+    if let Some([first, last]) = derivatives {
+        let span = axis.knots[4] - axis.knots[3];
+        targets[1] = targets[0].translated(first.scaled(span / 3.)?)?;
+        let span = axis.knots[count] - axis.knots[count - 1];
+        targets[count - 2] = targets[count - 1].translated(last.scaled(-span / 3.)?)?;
+        axis.fix_control(1);
+        axis.fix_control(count - 2);
     }
     let candidate = targets[0].to_array();
     let origin = if targets.iter().all(|p| {
@@ -256,4 +288,22 @@ fn interpolate(
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
     NurbsCurve::try_new(axis.degree, controls, axis.knots)
+}
+
+fn endpoint_derivatives_match(curve: &NurbsCurve, expected: [crate::Vector3; 2]) -> bool {
+    [*curve.domain().start(), *curve.domain().end()]
+        .into_iter()
+        .zip(expected)
+        .all(|(t, expected)| {
+            curve
+                .derivative_at(t)
+                .and_then(|actual| {
+                    let gap = crate::Vector3::try_from(std::array::from_fn(|i| {
+                        actual.to_array()[i] - expected.to_array()[i]
+                    }))?
+                    .length()?;
+                    Ok(gap <= 2048. * Real::EPSILON * expected.length()?)
+                })
+                .unwrap_or(false)
+        })
 }

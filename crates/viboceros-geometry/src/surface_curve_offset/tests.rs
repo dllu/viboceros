@@ -51,11 +51,30 @@ fn complete_planar_profiles_keep_signed_distance_and_the_source_parameter() {
     let s = plane();
     let c = profile();
     let original = (s.clone(), c.clone());
-    for distance in [-1., -0.25, 0.25, 1.] {
+    for distance in [-1., -0.25, 0.25, 1., 1.7982112232921417] {
         let result = try_offset_curve_on_surface(&s, &c, distance, tolerance()).unwrap();
         assert_eq!(result.curve.domain(), c.domain());
         assert!(result.geodesic_queries > 16);
         assert!(result.maximum_integration_estimate < tolerance().absolute());
+        for t in [0., 1.] {
+            let actual = result
+                .curve
+                .derivative_at(t)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap();
+            let expected = c.derivative_at(t).unwrap().normalized_nonzero().unwrap();
+            assert!(
+                actual
+                    .as_vector()
+                    .cross(expected.as_vector())
+                    .unwrap()
+                    .length()
+                    .unwrap()
+                    < 2e-12
+            );
+            assert!(actual.as_vector().dot(expected.as_vector()).unwrap() > 0.);
+        }
         for i in 0..=1024 {
             let t = i as Real / 1024.;
             let expected = plane_offset(&c, t, distance);

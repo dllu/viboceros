@@ -90,19 +90,26 @@ pub(crate) fn chart_closes(surface: &NurbsSurface, axis: usize) -> Result<bool, 
 
 /// A thin QR solve avoids squaring the surface metric's condition number.
 fn solve(jet: SurfaceJet2, target: Vector3) -> Result<[Real; 2], GeometryError> {
-    let x = jet.derivative_u.normalized_nonzero()?;
+    solve_tangent(jet.derivative_u, jet.derivative_v, target)
+}
+
+pub(crate) fn solve_tangent(
+    first: Vector3,
+    second: Vector3,
+    target: Vector3,
+) -> Result<[Real; 2], GeometryError> {
+    let x = first.normalized_nonzero()?;
     let n = x
         .as_vector()
-        .cross(jet.derivative_v.normalized_nonzero()?.as_vector())?
+        .cross(second.normalized_nonzero()?.as_vector())?
         .normalized_nonzero()?;
     let y = n.as_vector().cross(x.as_vector())?;
-    let c = jet.derivative_v.dot(y)?;
+    let c = second.dot(y)?;
     if c == 0. {
         return Err(invalid("singular surface metric"));
     }
     let dv = target.dot(y)? / c;
-    let du = (target.dot(x.as_vector())? - jet.derivative_v.dot(x.as_vector())? * dv)
-        / jet.derivative_u.length()?;
+    let du = (target.dot(x.as_vector())? - second.dot(x.as_vector())? * dv) / first.length()?;
     if !du.is_finite() || !dv.is_finite() {
         return Err(invalid("surface metric solve overflow"));
     }
@@ -110,6 +117,9 @@ fn solve(jet: SurfaceJet2, target: Vector3) -> Result<[Real; 2], GeometryError> 
 }
 
 impl<'a> PreparedSurfaceGeodesic<'a> {
+    pub(crate) fn is_affine(&self) -> bool {
+        self.affine
+    }
     pub fn new(original: &'a NurbsSurface) -> Result<Self, GeometryError> {
         let chart = original.try_reparameterized(0.0..=1.0, 0.0..=1.0)?;
         for (old, new) in [
