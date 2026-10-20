@@ -1,6 +1,8 @@
 use serde_json::Value;
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectId, SelectionMode};
-use viboceros_geometry::{NurbsCurve, NurbsSurface, Point3, Tolerance, WeightedPoint3};
+use viboceros_geometry::{
+    Brep, NurbsCurve, NurbsSurface, Point3, Polyline3, Tolerance, WeightedPoint3,
+};
 pub fn rows() -> Vec<(Value, Value)> {
     let q: Value = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/short_path_command.json"
@@ -21,6 +23,62 @@ pub fn rows() -> Vec<(Value, Value)> {
             (op.clone(), row["value"].clone())
         })
         .collect()
+}
+pub fn boundary_rows() -> Vec<(Value, Value)> {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/short_path_boundaries.json"
+    ))
+    .unwrap();
+    let r: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/short_path_boundaries.json"
+    ))
+    .unwrap();
+    assert_eq!(q["operations"].as_array().unwrap().len(), 8);
+    assert_eq!(r["results"].as_array().unwrap().len(), 8);
+    q["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(r["results"].as_array().unwrap())
+        .map(|(op, row)| {
+            assert_eq!(op["id"], row["id"]);
+            assert_eq!(row["value"]["input_trace"]["errors"], serde_json::json!([]));
+            assert_eq!(row["value"]["success"], true);
+            (op.clone(), row["value"].clone())
+        })
+        .collect()
+}
+pub fn setup_boundary(op: &Value, v: &Value) -> (Document, ObjectId) {
+    let (mut doc, id) = setup(v);
+    let polygons = v["boundaries"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|loop_| {
+            let points = loop_
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|p| {
+                    Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
+                        .unwrap()
+                })
+                .collect();
+            Polyline3::try_new(points, doc.tolerance())
+                .unwrap()
+                .to_nurbs()
+                .unwrap()
+        })
+        .collect::<Vec<_>>();
+    let mut brep =
+        Brep::try_planar_face_with_holes(&polygons[0], &polygons[1..], doc.tolerance()).unwrap();
+    if op["case"] == "hole_reversed" {
+        brep.reverse_orientation();
+    }
+    doc.replace_object_geometries([(id, Geometry::Brep(brep))])
+        .unwrap();
+    doc.clear_history().unwrap();
+    (doc, id)
 }
 fn controls(v: &Value) -> Vec<WeightedPoint3> {
     v.as_array()

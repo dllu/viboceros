@@ -61,8 +61,8 @@ impl Plan {
         if !target.current(doc) {
             return Err(CommandError::Usage("Select the ShortPath surface again"));
         }
-        let a = target.location(start, false)?;
-        let b = target.location(end, false)?;
+        let a = target.location(start, true)?;
+        let b = target.location(end, true)?;
         let path = try_short_path_on_surface(
             &target.surface,
             Point2::try_from(a.uv)?,
@@ -70,31 +70,8 @@ impl Plan {
             doc.tolerance(),
             morph_interpolation_solver(),
         )?;
-        // Natural-surface paths must not silently cross a trimmed-out region.
-        // Use the shared complete curve/face admission, including hole loops.
-        if let Some(object) = doc.object(target.id)
-            && let Geometry::Brep(brep) = object.geometry()
-        {
-            let face = &brep.faces()[target.face];
-            if !face.is_untrimmed(doc.tolerance())? {
-                let uv = target
-                    .surface
-                    .try_pullback_curve_certified(&path.curve, doc.tolerance())?;
-                let events = viboceros_geometry::clip_surface_curve_to_face_with_operation(
-                    &path.curve,
-                    &uv,
-                    face,
-                    doc.tolerance(),
-                    &mut curve_intersections::events,
-                )?;
-                let complete = matches!(events.as_slice(), [viboceros_geometry::SurfaceSurfaceIntersectionEvent::Curve(c)] if c.domain() == path.curve.domain());
-                if !complete {
-                    return Err(CommandError::Usage(
-                        "ShortPath crosses a face trim; boundary detours are not supported yet",
-                    ));
-                }
-            }
-        }
+        // Rhino ShortPath constrains points and the path to the underlying
+        // surface. Face trims do not constrain this command's domain.
         Ok(Self { target, path })
     }
     pub fn current(&self, doc: &Document) -> bool {
@@ -225,7 +202,7 @@ mod tests {
         assert_eq!(doc.objects().count(), 1);
     }
     #[test]
-    fn trimmed_face_holes_reject_crossing_paths_and_keep_complete_ones() {
+    fn trimmed_face_holes_do_not_clip_paths_or_project_points_to_the_rim() {
         let (mut doc, id) = scene();
         let polygon = |radius: Real| {
             Polyline3::try_new(
@@ -246,17 +223,39 @@ mod tests {
             .unwrap();
         doc.replace_object_geometries([(id, Geometry::Brep(face))])
             .unwrap();
-        let before = format!("{doc:?}");
+        let original = doc.object(id).unwrap().geometry_snapshot().clone();
         let registry = CommandRegistry::with_builtins();
-        assert!(
-            registry
-                .execute(&mut doc, &format!("ShortPath -4,0,0 4,0,0 Surface={id}"))
-                .is_err()
-        );
-        assert_eq!(format!("{doc:?}"), before);
+        for (a, b) in [
+            (p(-4., 0., 0.), p(4., 0., 0.)),
+            (p(0., 0., 0.), p(4., 0., 0.)),
+            (p(-4., 2., 0.), p(4., 2., 0.)),
+        ] {
+            let target = Target::capture(&doc, id, None).unwrap();
+            let plan = Plan::prepare(&doc, target, a, b).unwrap();
+            assert!(
+                plan.path
+                    .curve
+                    .evaluate(*plan.path.curve.domain().start())
+                    .unwrap()
+                    .distance_to(a)
+                    .unwrap()
+                    < 1e-8
+            );
+            assert!(
+                plan.path
+                    .curve
+                    .evaluate(*plan.path.curve.domain().end())
+                    .unwrap()
+                    .distance_to(b)
+                    .unwrap()
+                    < 1e-8
+            );
+            plan.apply(&mut doc).unwrap();
+        }
         registry
-            .execute(&mut doc, &format!("ShortPath -4,2,0 4,2,0 Surface={id}"))
+            .execute(&mut doc, &format!("ShortPath 0,0,0 4,0,0 Surface={id}"))
             .unwrap();
-        assert_eq!(doc.objects().count(), 2);
+        assert!(original.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+        assert_eq!(doc.objects().count(), 5);
     }
 }

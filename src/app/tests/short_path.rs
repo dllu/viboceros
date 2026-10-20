@@ -193,3 +193,109 @@ fn short_path_native_getters_keep_layers_selection_and_history() {
         assert!(maximum < 0.001);
     }
 }
+
+#[test]
+fn short_path_trim_boundary_getters_match_native_previews_and_undo() {
+    for (op, v) in native::boundary_rows() {
+        for postselect in [false, true] {
+            let mut app = test_app();
+            let (doc, target) = native::setup_boundary(&op, &v);
+            app.document = doc;
+            if postselect {
+                app.document.clear_selection();
+            }
+            let parent = app
+                .document
+                .object(target)
+                .unwrap()
+                .geometry_snapshot()
+                .clone();
+            enter(&mut app, "ShortPath");
+            if postselect {
+                app.accept_component_face_hit(target, 0, None);
+            }
+            assert_eq!(
+                app.short_path_session.as_ref().unwrap().cursor_surface(),
+                Some((target, Some(0), true))
+            );
+            let point = |i: usize| {
+                Point3::try_from(
+                    serde_json::from_value::<[f64; 3]>(op["actions"][i].clone()).unwrap(),
+                )
+                .unwrap()
+            };
+            let view = crate::viewport::Viewport::new(crate::viewport::ViewKind::Top);
+            let rect = egui::Rect::from_min_size(egui::Pos2::ZERO, egui::Vec2::new(800., 600.));
+            let cursor_surface = app
+                .short_path_session
+                .as_ref()
+                .unwrap()
+                .cursor_surface()
+                .unwrap();
+            let pointer = view.project(point(0), rect).unwrap();
+            let cursor = view
+                .normal_surface_point(pointer, rect, &app.document, cursor_surface)
+                .unwrap();
+            assert!(cursor.distance_to(point(0)).unwrap() < 1e-5);
+            assert!(app.apply_drafting_point(point(0)));
+            assert!(
+                app.active_command
+                    .unwrap()
+                    .anchor()
+                    .unwrap()
+                    .distance_to(point(0))
+                    .unwrap()
+                    < 1e-5
+            );
+            let before = format!("{:?}", app.document);
+            app.update_short_path_hover(point(1));
+            let expected = app.short_path_session.as_ref().unwrap().preview_curves()[0].clone();
+            assert_eq!(format!("{:?}", app.document), before);
+            assert!(app.apply_drafting_point(point(1)));
+            assert!(app.short_path_session.is_none());
+            assert_eq!(
+                app.document.objects().last().unwrap().geometry(),
+                &Geometry::NurbsCurve(expected)
+            );
+            assert!(
+                parent
+                    .shares_storage_with(app.document.object(target).unwrap().geometry_snapshot())
+            );
+            // Native scenes are preselected. For the independent postselected
+            // getter regression, retain the original empty selection through
+            // commit, Undo and Redo as well.
+            let mut expected_value = v.clone();
+            if postselect {
+                for phase in ["after_script", "undo", "redo"] {
+                    for object in expected_value[phase].as_array_mut().unwrap() {
+                        if object["role"] == "target" {
+                            object["selected"] = serde_json::json!(false);
+                        }
+                    }
+                }
+            }
+            let mut maximum = native::check(&app.document, target, &expected_value, "after_script");
+            app.document.undo().unwrap();
+            maximum = maximum.max(native::check(
+                &app.document,
+                target,
+                &expected_value,
+                "undo",
+            ));
+            app.document.redo().unwrap();
+            maximum = maximum.max(native::check(
+                &app.document,
+                target,
+                &expected_value,
+                "redo",
+            ));
+            if !postselect {
+                println!(
+                    "SHORT_PATH_BOUNDARY_GETTER {}",
+                    serde_json::json!({"id":op["id"],"maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6})
+                );
+            }
+            assert!(maximum < 1e-6);
+        }
+    }
+}

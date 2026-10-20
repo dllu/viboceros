@@ -11,9 +11,9 @@ class ShortPathTests(TestCase):
         self.check_capture('surface_short_path',sdk,14)
     def test_fixed_command_inputs_and_provenance(self):
         self.check_capture('short_path_command',command,4)
-    def check_capture(self,label,module,count):
+    def check_capture(self,label,module,count,factory=None):
         path=HERE/'fixtures'/(label+'.json');q=json.loads(path.read_text())
-        self.assertEqual(q,module.request());module.validate_request(q)
+        self.assertEqual(q,(factory or module.request)());module.validate_request(q)
         r=json.loads((HERE/'observations'/(label+'.json')).read_text())
         self.assertEqual(len(r['results']),count)
         self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
@@ -32,6 +32,23 @@ class ShortPathTests(TestCase):
                 output=[o for o in v['after_script']if o['role']=='output']
                 self.assertEqual(len(output),0 if op['case']=='cancel'else 1)
                 for o in output:self.assertEqual(o['layer'],'ShortPath output')
+    def test_trim_boundaries_and_native_point_constraints(self):
+        self.check_capture('short_path_boundaries',command,8,command.boundary_request)
+        q=command.boundary_request();command.validate_request(q)
+        r=json.loads((HERE/'observations/short_path_boundaries.json').read_text())
+        for row in r['results']:
+            v=row['value'];self.assertTrue(v['success']);self.assertTrue(v['boundaries'])
+            target=next(o for o in v['before']if o['role']=='target')
+            for phase in ['after','after_script','undo','redo']:
+                current=next(o for o in v[phase]if o['role']=='target');self.assertEqual(current,target)
+            if row['id']=='hole_start_in_hole':
+                curve=next(o['curve']for o in v['after_script']if o['role']=='output')
+                self.assertEqual(curve['control_points'][0]['point'],[0.,0.,0.])
+        q['operations'].append(copy.deepcopy(q['operations'][0]))
+        with self.assertRaises(ValueError):command.validate_request(q)
+        changed=command.boundary_request();changed['operations'][0]['actions'][0][0]+=0.1
+        with self.assertRaises(ValueError):command.validate_request(changed)
+        self.assertEqual(command.boundary_request(),json.loads((HERE/'fixtures/short_path_boundaries.json').read_text()))
     def test_nonfixed_endpoints_and_unbounded_requests_are_rejected(self):
         for module in [sdk,command]:
             for mutation in ['iterations','endpoint','case','duplicate','extra']:
@@ -68,5 +85,7 @@ class ShortPathTests(TestCase):
         self.assertEqual(r['sdk_cases']['recipes'],14);self.assertEqual(r['sdk_cases']['qualified_recipes'],4)
         self.assertEqual(r['command_cases']['recipes'],3);self.assertEqual(r['command_cases']['qualified_recipes'],1)
         self.assertEqual(r['getter_cases']['recipes'],4);self.assertEqual(r['getter_cases']['qualified_recipes'],2)
+        self.assertEqual(r['trim_boundary_cases']['recipes'],8);self.assertEqual(r['trim_boundary_cases']['qualified_recipes'],8)
+        self.assertEqual(r['trim_boundary_getter_cases']['recipes'],8);self.assertEqual(r['trim_boundary_getter_cases']['qualified_recipes'],8)
         self.assertLessEqual(r['maximum_surface_image_bound'],5e-7);self.assertGreater(r['native_cylinder_same_height_witness'],5e-4)
         for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)

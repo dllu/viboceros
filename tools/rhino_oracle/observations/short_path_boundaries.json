@@ -1,0 +1,3551 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "boundaries": [
+          [
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ]
+          ],
+          [
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ]
+          ]
+        ],
+        "success": true,
+        "input_trace": {
+          "edge_picks": [],
+          "expected": 2,
+          "completed": 2,
+          "sent": [
+            {
+              "prompt": "Start of Curve",
+              "action": 0,
+              "token": "w-4.0,0.0,0.0"
+            },
+            {
+              "prompt": "End of Curve",
+              "action": 1,
+              "token": "w4.0,0.0,0.0"
+            }
+          ],
+          "prompts": [
+            "Start of Curve",
+            "End of Curve"
+          ],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": [],
+          "motion": []
+        },
+        "before": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "events": [
+          {
+            "name": "ShortPath",
+            "objects": [
+              {
+                "name": "Target",
+                "layer": "ShortPath source",
+                "crc": 1391809911,
+                "selected": true,
+                "role": "target"
+              },
+              {
+                "name": null,
+                "layer": "ShortPath output",
+                "crc": 2453167082,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "degree": 3,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0,
+                    8.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -1.3333333333333326,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        1.3333333333333328,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ]
+                },
+                "selected": false,
+                "role": "output"
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "history": "Command: _ShortPath\nCommand: _Pause\nStart of Curve: w-4.0,0.0,0.0\nEnd of Curve: w4.0,0.0,0.0",
+        "undo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "redo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "surface": {
+          "degree": [
+            1,
+            1
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "domain_u": [
+            0.0,
+            10.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            10.0
+          ]
+        }
+      },
+      "id": "hole_horizontal"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 442700041,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.75,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.7499999999999998,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.7499999999999998,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.75,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "boundaries": [
+          [
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ]
+          ],
+          [
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ]
+          ]
+        ],
+        "success": true,
+        "input_trace": {
+          "edge_picks": [],
+          "expected": 2,
+          "completed": 2,
+          "sent": [
+            {
+              "prompt": "Start of Curve",
+              "action": 0,
+              "token": "w-4.0,0.75,0.0"
+            },
+            {
+              "prompt": "End of Curve",
+              "action": 1,
+              "token": "w4.0,0.75,0.0"
+            }
+          ],
+          "prompts": [
+            "Start of Curve",
+            "End of Curve"
+          ],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": [],
+          "motion": []
+        },
+        "before": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "events": [
+          {
+            "name": "ShortPath",
+            "objects": [
+              {
+                "name": "Target",
+                "layer": "ShortPath source",
+                "crc": 1391809911,
+                "selected": true,
+                "role": "target"
+              },
+              {
+                "name": null,
+                "layer": "ShortPath output",
+                "crc": 442700041,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "degree": 3,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0,
+                    8.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.75,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -1.3333333333333326,
+                        0.7499999999999998,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        1.3333333333333328,
+                        0.7499999999999998,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.75,
+                        0.0
+                      ]
+                    }
+                  ]
+                },
+                "selected": false,
+                "role": "output"
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 442700041,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.75,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.7499999999999998,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.7499999999999998,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.75,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "history": "Command: _ShortPath\nCommand: _Pause\nStart of Curve: w-4.0,0.75,0.0\nEnd of Curve: w4.0,0.75,0.0",
+        "undo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "redo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 442700041,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.75,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.7499999999999998,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.7499999999999998,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.75,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "surface": {
+          "degree": [
+            1,
+            1
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "domain_u": [
+            0.0,
+            10.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            10.0
+          ]
+        }
+      },
+      "id": "hole_upper"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 132966625,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    3.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    2.999999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    2.999999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    3.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "boundaries": [
+          [
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ]
+          ],
+          [
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ]
+          ]
+        ],
+        "success": true,
+        "input_trace": {
+          "edge_picks": [],
+          "expected": 2,
+          "completed": 2,
+          "sent": [
+            {
+              "prompt": "Start of Curve",
+              "action": 0,
+              "token": "w-4.0,3.0,0.0"
+            },
+            {
+              "prompt": "End of Curve",
+              "action": 1,
+              "token": "w4.0,3.0,0.0"
+            }
+          ],
+          "prompts": [
+            "Start of Curve",
+            "End of Curve"
+          ],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": [],
+          "motion": []
+        },
+        "before": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "events": [
+          {
+            "name": "ShortPath",
+            "objects": [
+              {
+                "name": "Target",
+                "layer": "ShortPath source",
+                "crc": 1391809911,
+                "selected": true,
+                "role": "target"
+              },
+              {
+                "name": null,
+                "layer": "ShortPath output",
+                "crc": 132966625,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "degree": 3,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0,
+                    8.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        3.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -1.3333333333333326,
+                        2.999999999999999,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        1.3333333333333328,
+                        2.999999999999999,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        3.0,
+                        0.0
+                      ]
+                    }
+                  ]
+                },
+                "selected": false,
+                "role": "output"
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 132966625,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    3.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    2.999999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    2.999999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    3.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "history": "Command: _ShortPath\nCommand: _Pause\nStart of Curve: w-4.0,3.0,0.0\nEnd of Curve: w4.0,3.0,0.0",
+        "undo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "redo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 132966625,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    3.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    2.999999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    2.999999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    3.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "surface": {
+          "degree": [
+            1,
+            1
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "domain_u": [
+            0.0,
+            10.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            10.0
+          ]
+        }
+      },
+      "id": "hole_clear"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2351148255,
+            "curve": {
+              "domain": [
+                0.0,
+                4.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.333333333333331,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.666666666666666,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "boundaries": [
+          [
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ]
+          ],
+          [
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ]
+          ]
+        ],
+        "success": true,
+        "input_trace": {
+          "edge_picks": [],
+          "expected": 2,
+          "completed": 2,
+          "sent": [
+            {
+              "prompt": "Start of Curve",
+              "action": 0,
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "prompt": "End of Curve",
+              "action": 1,
+              "token": "w4.0,0.0,0.0"
+            }
+          ],
+          "prompts": [
+            "Start of Curve",
+            "End of Curve"
+          ],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": [],
+          "motion": []
+        },
+        "before": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "events": [
+          {
+            "name": "ShortPath",
+            "objects": [
+              {
+                "name": "Target",
+                "layer": "ShortPath source",
+                "crc": 1391809911,
+                "selected": true,
+                "role": "target"
+              },
+              {
+                "name": null,
+                "layer": "ShortPath output",
+                "crc": 2351148255,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    4.0
+                  ],
+                  "degree": 3,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    4.0,
+                    4.0,
+                    4.0,
+                    4.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        1.333333333333331,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        2.666666666666666,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ]
+                },
+                "selected": false,
+                "role": "output"
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2351148255,
+            "curve": {
+              "domain": [
+                0.0,
+                4.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.333333333333331,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.666666666666666,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "history": "Command: _ShortPath\nCommand: _Pause\nStart of Curve: w0.0,0.0,0.0\nEnd of Curve: w4.0,0.0,0.0",
+        "undo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "redo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1391809911,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2351148255,
+            "curve": {
+              "domain": [
+                0.0,
+                4.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.333333333333331,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.666666666666666,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "surface": {
+          "degree": [
+            1,
+            1
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "domain_u": [
+            0.0,
+            10.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            10.0
+          ]
+        }
+      },
+      "id": "hole_start_in_hole"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2558171005,
+            "curve": {
+              "domain": [
+                0.0,
+                4.2426406871192786
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.5,
+                    3.5,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.4999999999999987,
+                    2.4999999999999982,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.499999999999999,
+                    1.4999999999999991,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    3.5,
+                    0.5,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "boundaries": [
+          [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              4.0,
+              0.0
+            ],
+            [
+              0.0,
+              4.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        ],
+        "success": true,
+        "input_trace": {
+          "edge_picks": [],
+          "expected": 2,
+          "completed": 2,
+          "sent": [
+            {
+              "prompt": "Start of Curve",
+              "action": 0,
+              "token": "w0.5,3.5,0.0"
+            },
+            {
+              "prompt": "End of Curve",
+              "action": 1,
+              "token": "w3.5,0.5,0.0"
+            }
+          ],
+          "prompts": [
+            "Start of Curve",
+            "End of Curve"
+          ],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": [],
+          "motion": []
+        },
+        "before": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "events": [
+          {
+            "name": "ShortPath",
+            "objects": [
+              {
+                "name": "Target",
+                "layer": "ShortPath source",
+                "crc": 2600462438,
+                "selected": true,
+                "role": "target"
+              },
+              {
+                "name": null,
+                "layer": "ShortPath output",
+                "crc": 2558171005,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    4.2426406871192786
+                  ],
+                  "degree": 3,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    4.2426406871192786,
+                    4.2426406871192786,
+                    4.2426406871192786,
+                    4.2426406871192786
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        0.5,
+                        3.5,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        1.4999999999999987,
+                        2.4999999999999982,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        2.499999999999999,
+                        1.4999999999999991,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        3.5,
+                        0.5,
+                        0.0
+                      ]
+                    }
+                  ]
+                },
+                "selected": false,
+                "role": "output"
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2558171005,
+            "curve": {
+              "domain": [
+                0.0,
+                4.2426406871192786
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.5,
+                    3.5,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.4999999999999987,
+                    2.4999999999999982,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.499999999999999,
+                    1.4999999999999991,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    3.5,
+                    0.5,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "history": "Command: _ShortPath\nCommand: _Pause\nStart of Curve: w0.5,3.5,0.0\nEnd of Curve: w3.5,0.5,0.0",
+        "undo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "redo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2558171005,
+            "curve": {
+              "domain": [
+                0.0,
+                4.2426406871192786
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.5,
+                    3.5,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.4999999999999987,
+                    2.4999999999999982,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.499999999999999,
+                    1.4999999999999991,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    3.5,
+                    0.5,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "surface": {
+          "degree": [
+            1,
+            1
+          ],
+          "knots_v": [
+            -0.04,
+            -0.04,
+            4.04,
+            4.04
+          ],
+          "domain_u": [
+            -0.04,
+            4.04
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_u": [
+            -0.04,
+            -0.04,
+            4.04,
+            4.04
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -0.04,
+                -0.04,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4.04,
+                -0.04,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -0.04,
+                4.04,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4.04,
+                4.04,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            -0.04,
+            4.04
+          ]
+        }
+      },
+      "id": "concave"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 3795574976,
+            "curve": {
+              "domain": [
+                0.0,
+                4.2426406871192786
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    3.5,
+                    0.5,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.4999999999999982,
+                    1.4999999999999987,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.4999999999999991,
+                    2.499999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.5,
+                    3.5,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "boundaries": [
+          [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              4.0,
+              0.0
+            ],
+            [
+              0.0,
+              4.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        ],
+        "success": true,
+        "input_trace": {
+          "edge_picks": [],
+          "expected": 2,
+          "completed": 2,
+          "sent": [
+            {
+              "prompt": "Start of Curve",
+              "action": 0,
+              "token": "w3.5,0.5,0.0"
+            },
+            {
+              "prompt": "End of Curve",
+              "action": 1,
+              "token": "w0.5,3.5,0.0"
+            }
+          ],
+          "prompts": [
+            "Start of Curve",
+            "End of Curve"
+          ],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": [],
+          "motion": []
+        },
+        "before": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "events": [
+          {
+            "name": "ShortPath",
+            "objects": [
+              {
+                "name": "Target",
+                "layer": "ShortPath source",
+                "crc": 2600462438,
+                "selected": true,
+                "role": "target"
+              },
+              {
+                "name": null,
+                "layer": "ShortPath output",
+                "crc": 3795574976,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    4.2426406871192786
+                  ],
+                  "degree": 3,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    4.2426406871192786,
+                    4.2426406871192786,
+                    4.2426406871192786,
+                    4.2426406871192786
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        3.5,
+                        0.5,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        2.4999999999999982,
+                        1.4999999999999987,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        1.4999999999999991,
+                        2.499999999999999,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        0.5,
+                        3.5,
+                        0.0
+                      ]
+                    }
+                  ]
+                },
+                "selected": false,
+                "role": "output"
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 3795574976,
+            "curve": {
+              "domain": [
+                0.0,
+                4.2426406871192786
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    3.5,
+                    0.5,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.4999999999999982,
+                    1.4999999999999987,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.4999999999999991,
+                    2.499999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.5,
+                    3.5,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "history": "Command: _ShortPath\nCommand: _Pause\nStart of Curve: w3.5,0.5,0.0\nEnd of Curve: w0.5,3.5,0.0",
+        "undo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "redo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2600462438,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 3795574976,
+            "curve": {
+              "domain": [
+                0.0,
+                4.2426406871192786
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786,
+                4.2426406871192786
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    3.5,
+                    0.5,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    2.4999999999999982,
+                    1.4999999999999987,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.4999999999999991,
+                    2.499999999999999,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    0.5,
+                    3.5,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "surface": {
+          "degree": [
+            1,
+            1
+          ],
+          "knots_v": [
+            -0.04,
+            -0.04,
+            4.04,
+            4.04
+          ],
+          "domain_u": [
+            -0.04,
+            4.04
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_u": [
+            -0.04,
+            -0.04,
+            4.04,
+            4.04
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -0.04,
+                -0.04,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4.04,
+                -0.04,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -0.04,
+                4.04,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4.04,
+                4.04,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            -0.04,
+            4.04
+          ]
+        }
+      },
+      "id": "concave_reverse"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2111496426,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "boundaries": [
+          [
+            [
+              -5.0,
+              -4.1266780745483915,
+              -2.8232123669751767
+            ],
+            [
+              5.0,
+              -4.1266780745483915,
+              -2.8232123669751767
+            ],
+            [
+              5.0,
+              4.1266780745483915,
+              2.8232123669751767
+            ],
+            [
+              -5.0,
+              4.1266780745483915,
+              2.8232123669751767
+            ],
+            [
+              -5.0,
+              -4.1266780745483915,
+              -2.8232123669751767
+            ]
+          ],
+          [
+            [
+              -1.0,
+              -0.8253356149096783,
+              -0.5646424733950354
+            ],
+            [
+              -1.0,
+              0.8253356149096783,
+              0.5646424733950354
+            ],
+            [
+              1.0,
+              0.8253356149096783,
+              0.5646424733950354
+            ],
+            [
+              1.0,
+              -0.8253356149096783,
+              -0.5646424733950354
+            ],
+            [
+              -1.0,
+              -0.8253356149096783,
+              -0.5646424733950354
+            ]
+          ]
+        ],
+        "success": true,
+        "input_trace": {
+          "edge_picks": [],
+          "expected": 2,
+          "completed": 2,
+          "sent": [
+            {
+              "prompt": "Start of Curve",
+              "action": 0,
+              "token": "w-4.0,0.0,0.0"
+            },
+            {
+              "prompt": "End of Curve",
+              "action": 1,
+              "token": "w4.0,0.0,0.0"
+            }
+          ],
+          "prompts": [
+            "Start of Curve",
+            "End of Curve"
+          ],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": [],
+          "motion": []
+        },
+        "before": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2111496426,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "events": [
+          {
+            "name": "ShortPath",
+            "objects": [
+              {
+                "name": "Target",
+                "layer": "ShortPath source",
+                "crc": 2111496426,
+                "selected": true,
+                "role": "target"
+              },
+              {
+                "name": null,
+                "layer": "ShortPath output",
+                "crc": 2453167082,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "degree": 3,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0,
+                    8.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -1.3333333333333326,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        1.3333333333333328,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ]
+                },
+                "selected": false,
+                "role": "output"
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2111496426,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "history": "Command: _ShortPath\nCommand: _Pause\nStart of Curve: w-4.0,0.0,0.0\nEnd of Curve: w4.0,0.0,0.0",
+        "undo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2111496426,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "redo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 2111496426,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "surface": {
+          "degree": [
+            1,
+            1
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "domain_u": [
+            0.0,
+            10.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                -4.1266780745483915,
+                -2.8232123669751767
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                -4.1266780745483915,
+                -2.8232123669751767
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                4.1266780745483915,
+                2.8232123669751767
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                4.1266780745483915,
+                2.8232123669751767
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            10.0
+          ]
+        }
+      },
+      "id": "hole_tilted"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1166950708,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "boundaries": [
+          [
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              -5.0,
+              0.0
+            ],
+            [
+              5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              5.0,
+              0.0
+            ],
+            [
+              -5.0,
+              -5.0,
+              0.0
+            ]
+          ],
+          [
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ]
+          ]
+        ],
+        "success": true,
+        "input_trace": {
+          "edge_picks": [],
+          "expected": 2,
+          "completed": 2,
+          "sent": [
+            {
+              "prompt": "Start of Curve",
+              "action": 0,
+              "token": "w-4.0,0.0,0.0"
+            },
+            {
+              "prompt": "End of Curve",
+              "action": 1,
+              "token": "w4.0,0.0,0.0"
+            }
+          ],
+          "prompts": [
+            "Start of Curve",
+            "End of Curve"
+          ],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": [],
+          "motion": []
+        },
+        "before": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1166950708,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "events": [
+          {
+            "name": "ShortPath",
+            "objects": [
+              {
+                "name": "Target",
+                "layer": "ShortPath source",
+                "crc": 1166950708,
+                "selected": true,
+                "role": "target"
+              },
+              {
+                "name": null,
+                "layer": "ShortPath output",
+                "crc": 2453167082,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "degree": 3,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0,
+                    8.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -1.3333333333333326,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        1.3333333333333328,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ]
+                },
+                "selected": false,
+                "role": "output"
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1166950708,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "history": "Command: _ShortPath\nCommand: _Pause\nStart of Curve: w-4.0,0.0,0.0\nEnd of Curve: w4.0,0.0,0.0",
+        "undo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1166950708,
+            "selected": true,
+            "role": "target"
+          }
+        ],
+        "redo": [
+          {
+            "name": "Target",
+            "layer": "ShortPath source",
+            "crc": 1166950708,
+            "selected": true,
+            "role": "target"
+          },
+          {
+            "name": null,
+            "layer": "ShortPath output",
+            "crc": 2453167082,
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "degree": 3,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -1.3333333333333326,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    1.3333333333333328,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "selected": false,
+            "role": "output"
+          }
+        ],
+        "surface": {
+          "degree": [
+            1,
+            1
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "domain_u": [
+            0.0,
+            10.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            10.0,
+            10.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                -5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -5.0,
+                5.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            10.0
+          ]
+        }
+      },
+      "id": "hole_reversed"
+    }
+  ],
+  "provenance": {
+    "request_sha256": "2c18bcc0eedcbeca168e99fe8b579507ab6a9fab54e0be0061fe44eb9723ef90",
+    "sources": {
+      "generate_short_path_boundaries.py": "b17ae726a0521a53992d2d10de0a48073f74d568d98473ded5602daaf4fb3af9",
+      "short_path_command_probe.py": "1c24571118c97d979fa374662fd3dc36ed7686ebbbf5e7314c697deec9427dd0",
+      "surface_short_path_probe.py": "010b561268855ab68a60cbbfc763acd50165afce323edcde3ea4baaee45c72b0",
+      "conic_getter_input.py": "73ceaba6f997449396daae306cb0ea75e25a9a1b2e61f8c5564d10e00e083a74",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "client.py": "9b623b733b76fb4b1371015b25ca19cd9b66294cded207a9ffbe8cf0733c9f07",
+      "rhino_worker.py": "74f467e4505802a19020da4b19b26c97994e063a110606432b24a504383ae418",
+      "structural_sdk.py": "7fd0adf927c3d8c5e99710e2ec566236a084d9c2819ad5fb832b403ead697434"
+    }
+  }
+}

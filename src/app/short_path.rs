@@ -16,7 +16,7 @@ pub(super) struct Session {
 impl Session {
     pub(super) fn cursor_surface(&self) -> Option<(ObjectId, Option<usize>, bool)> {
         let t = self.target.as_ref()?;
-        Some((t.id, Some(t.face), false))
+        Some((t.id, Some(t.face), true))
     }
     pub(super) fn preview_curves(&self) -> &[NurbsCurve] {
         self.plan
@@ -179,7 +179,7 @@ impl VibocerosApp {
             return Some(false);
         };
         if s.start.is_none() {
-            match target.location(point, false) {
+            match target.location(point, true) {
                 Ok(location) => {
                     s.start = Some(location.point);
                     self.active_command = Some(InteractiveCommand::ShortPath { start: s.start });

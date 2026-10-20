@@ -14,7 +14,9 @@ ShortPath 0,0,0 3,4,0 Surface=<object-id>
 ShortPath 0,0,0 3,4,0 Surface=<brep-id> Face=2
 ```
 
-Points project to the selected surface or face. The output uses the current
+Points project to the selected surface or the underlying surface of a face.
+Face trim boundaries and holes do not constrain the points or the path, matching
+the captured native command. The output uses the current
 layer and has no name; it is unselected and the source selection remains.
 Sources stay immutable. One Undo removes the output, and Redo restores it.
 Changes to the captured source, tolerance, visibility/selectability or history
@@ -37,14 +39,17 @@ return an error before editing the document.
 
 This implementation finds the shortest converged candidate on a general patch.
 It does not find every global branch, arbitrary pole crossing, or shortest route
-that follows a natural boundary or detours around a trim hole. A trimmed face
-admits a path only when the complete curve survives the shared trim clipper;
-a crossing path is rejected. The `InfinitePlane` (`IP`) point option is not
+that follows a natural surface boundary. Face trims are ignored; these are
+separate from the natural boundaries of the underlying surface. The
+`InfinitePlane` (`IP`) point option is not
 implemented. These are limitations relative to the
 [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/shortpath.htm).
 
 The source-pinned oracle corpus has 14 public `Surface.ShortPath` SDK cases and
-four public command getter scenes, including cancellation. Native agreement
+four public command getter scenes, including cancellation, plus eight trimmed-face
+scenes covering holes, concave outlines, tilted planes and reversed faces.
+All eight trim cases agree within 1e-6 in command and getter replays; a start
+inside a trim hole remains at its underlying-surface location. Native agreement
 keeps the existing 1e-6 model gate. Curved native outputs can differ from the
 analytic/numerical geodesic beyond that gate, so these are reported as
 unqualified rather than treated as full compatibility. A separate unrolling
