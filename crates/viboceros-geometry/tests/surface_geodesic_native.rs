@@ -38,6 +38,122 @@ fn surface(v: &Value) -> NurbsSurface {
     .unwrap()
 }
 #[test]
+fn normal_sections_match_independently_captured_source_extensions() {
+    let capture: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/surface_curve_offset_extensions.json"
+    ))
+    .unwrap();
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-9).unwrap();
+    for row in capture["results"].as_array().unwrap() {
+        let value = &row["value"];
+        let surface = surface(&value["surface"]);
+        let source = curve(&value["curve"]);
+        let before = (surface.clone(), source.clone());
+        let native = curve(&value["extended_source"]);
+        let result = viboceros_geometry::try_extend_curve_normally_on_surface(
+            &surface,
+            &source,
+            viboceros_geometry::CurveExtensionSide::Both,
+            tolerance,
+            None,
+        )
+        .unwrap_or_else(|e| panic!("{}: {e}", row["id"]));
+        let endpoint_error = [
+            (*result.curve.domain().start(), *native.domain().start()),
+            (*result.curve.domain().end(), *native.domain().end()),
+        ]
+        .into_iter()
+        .map(|(a, b)| {
+            result
+                .curve
+                .evaluate(a)
+                .unwrap()
+                .distance_to(native.evaluate(b).unwrap())
+                .unwrap()
+        })
+        .fold(0_f64, f64::max);
+        assert!(
+            endpoint_error < 1e-7,
+            "{}: endpoints {endpoint_error:e}",
+            row["id"]
+        );
+        let mut native_offset_start_difference = None;
+        let native_cylinder_residual = if row["id"] == "curved_diagonal" {
+            let (frame, radius, _) = surface.canonical_cylinder(tolerance).unwrap().unwrap();
+            let residual = (0..=512)
+                .map(|i| {
+                    let p = native
+                        .evaluate(native.parameter_at(i as f64 / 512.).unwrap())
+                        .unwrap();
+                    let q = frame.coordinates_of(p).unwrap();
+                    (q[0].hypot(q[1]) - radius).abs()
+                })
+                .fold(0_f64, f64::max);
+            // The independently captured native continuation is itself off
+            // the exact cylinder beyond the model gate. Keep it unqualified.
+            assert!(residual > 2e-6 && residual < 4e-6);
+            // Independently unroll this radius-3 cylinder. The captured SDK
+            // offset begins before the exact normal-family endpoint even
+            // though both curves use the same starting native parameter.
+            let t = *native.domain().start();
+            let q = frame.coordinates_of(native.evaluate(t).unwrap()).unwrap();
+            let d = native
+                .derivative_at(t)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap()
+                .as_vector();
+            let theta = q[1].atan2(q[0]);
+            let dx = d.dot(frame.x_axis().as_vector()).unwrap();
+            let dy = d.dot(frame.y_axis().as_vector()).unwrap();
+            let dz = d.dot(frame.z_axis().as_vector()).unwrap();
+            let circumferential = -theta.sin() * dx + theta.cos() * dy;
+            let phi = theta - dz / radius; // captured distance is +1
+            let expected = frame
+                .point_at([
+                    radius * phi.cos(),
+                    radius * phi.sin(),
+                    q[2] + circumferential,
+                ])
+                .unwrap();
+            let offset = curve(&value["offset_extended_source"][0]);
+            let difference = expected
+                .distance_to(offset.evaluate(*offset.domain().start()).unwrap())
+                .unwrap();
+            assert!(difference > 2.4e-3 && difference < 2.5e-3);
+            native_offset_start_difference = Some(difference);
+            Some(residual)
+        } else {
+            None
+        };
+        let mut maximum: f64 = 0.;
+        for (a, b) in [(&result.curve, &native), (&native, &result.curve)] {
+            for i in 0..=64 {
+                let p = a.evaluate(a.parameter_at(i as f64 / 64.).unwrap()).unwrap();
+                let t = b
+                    .closest_parameter(p, Tolerance::try_new(1e-10, 1e-12, 1e-9).unwrap())
+                    .unwrap();
+                maximum = maximum.max(p.distance_to(b.evaluate(t).unwrap()).unwrap());
+            }
+        }
+        assert_eq!((&surface, &source), (&before.0, &before.1));
+        println!(
+            "SURFACE_NORMAL_EXTENSION {}",
+            serde_json::json!({"id":row["id"],"maximum_bidirectional_sample_error":maximum,"maximum_endpoint_difference":endpoint_error,"native_maximum_cylinder_residual":native_cylinder_residual,"native_offset_start_difference":native_offset_start_difference,"qualified":maximum<1e-6})
+        );
+        assert!(
+            maximum
+                < if row["id"] == "curved_diagonal" {
+                    4e-6
+                } else {
+                    1e-6
+                },
+            "{}: {maximum:e}",
+            row["id"]
+        );
+    }
+}
+#[test]
 fn offset_qualification_keeps_known_native_differences_explicit() {
     let q: Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/surface_curve_offset.json"

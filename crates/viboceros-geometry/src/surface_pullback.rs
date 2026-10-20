@@ -10,6 +10,7 @@ pub(crate) use certificate::edit_point_bounds;
 pub(crate) mod certified_tests;
 mod interpolation;
 mod linear;
+mod periodic;
 
 const PULLBACK_DEGREE: usize = 3;
 const PULLBACK_SAMPLES_PER_SPAN: usize = 16;
@@ -22,6 +23,7 @@ struct PullbackNode {
     point: Point2,
     // Model-space derivative with respect to this original span's fraction.
     derivative: Vector3,
+    constrained: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -29,6 +31,7 @@ struct PullbackSegment {
     start: Real,
     end: Real,
     controls: [Point2; 4],
+    disjoint: bool,
 }
 
 struct PullbackFitter<'a> {
@@ -39,6 +42,8 @@ struct PullbackFitter<'a> {
     numerical_tolerance: Tolerance,
     segments: Vec<PullbackSegment>,
     certificate: Option<certificate::PullbackCertificate>,
+    closed: [bool; 2],
+    seam_split: bool,
 }
 
 fn model_points_near(
@@ -132,6 +137,7 @@ fn pullback_node(
         parameter: fraction,
         point,
         derivative,
+        constrained: false,
     })
 }
 
@@ -185,6 +191,7 @@ fn hermite_segment(
             Point2::try_new(end.point.x() + last[0], end.point.y() + last[1])?,
             end.point,
         ],
+        disjoint: false,
     })
 }
 
@@ -209,6 +216,7 @@ fn fixed_pullback_node(
         parameter: fraction,
         point,
         derivative,
+        constrained: true,
     })
 }
 
@@ -282,11 +290,69 @@ fn segment_matches_curve(
 impl PullbackFitter<'_> {
     fn append_span(
         &mut self,
-        start: PullbackNode,
-        end: PullbackNode,
+        mut start: PullbackNode,
+        mut end: PullbackNode,
         depth: usize,
     ) -> Result<(), GeometryError> {
-        let candidate = hermite_segment(
+        if self.closed.into_iter().any(|v| v) {
+            let interval = [start.parameter, end.parameter];
+            let periodic = periodic::Context::new(
+                self.surface,
+                self.closed,
+                self.numerical_tolerance,
+                self.tolerance,
+            );
+            for (node, fraction) in [(&mut start, 0.125), (&mut end, 0.875)] {
+                if !node.constrained {
+                    let model = self.span.evaluate(node.parameter)?;
+                    if !periodic.near_seam(node.point, model)? {
+                        continue;
+                    }
+                    let t = interval[0].mul_add(1. - fraction, interval[1] * fraction);
+                    let interior = pullback_node(
+                        self.surface,
+                        self.span,
+                        t,
+                        self.tolerance,
+                        self.numerical_tolerance,
+                    )?;
+                    let point = periodic.endpoint_branch(node.point, interior.point, model)?;
+                    if point != node.point {
+                        *node = fixed_pullback_node(
+                            self.surface,
+                            self.span,
+                            node.parameter,
+                            point,
+                            self.tolerance,
+                        )?;
+                    }
+                }
+            }
+            if depth < MAX_PULLBACK_SUBDIVISION_DEPTH
+                && let Some(cut) = periodic.cut(interval, [start.point, end.point], |t| {
+                    self.span.evaluate(t)
+                })?
+            {
+                let left = fixed_pullback_node(
+                    self.surface,
+                    self.span,
+                    cut.parameter,
+                    cut.points[0],
+                    self.tolerance,
+                )?;
+                let right = fixed_pullback_node(
+                    self.surface,
+                    self.span,
+                    cut.parameter,
+                    cut.points[1],
+                    self.tolerance,
+                )?;
+                self.seam_split = true;
+                self.append_span(start, left, depth + 1)?;
+                return self.append_span(right, end, depth + 1);
+            }
+        }
+        let mut candidate = hermite_segment(
             self.surface,
             start,
             end,
@@ -318,6 +384,15 @@ impl PullbackFitter<'_> {
                 return Err(GeometryError::TooManySurfacePullbackControlPoints {
                     maximum: MAX_CURVE_DIVISION_POINTS,
                 });
+            }
+            if let Some(previous) = self.segments.last() {
+                candidate.disjoint = periodic::changes_branch(
+                    self.surface,
+                    previous.controls[3],
+                    candidate.controls[0],
+                    self.closed,
+                )?;
+                self.seam_split |= candidate.disjoint;
             }
             self.segments.push(candidate);
             return Ok(());
@@ -358,9 +433,11 @@ fn piecewise_cubic(segments: &[PullbackSegment]) -> Result<NurbsCurve2, Geometry
         .last()
         .expect("a first segment implies a last segment");
     let control_count = segments
-        .len()
-        .checked_mul(PULLBACK_DEGREE)
-        .and_then(|count| count.checked_add(1))
+        .iter()
+        .skip(1)
+        .try_fold(PULLBACK_DEGREE + 1, |n, s| {
+            n.checked_add(PULLBACK_DEGREE + usize::from(s.disjoint))
+        })
         .filter(|count| *count <= MAX_CURVE_DIVISION_POINTS)
         .ok_or(GeometryError::TooManySurfacePullbackControlPoints {
             maximum: MAX_CURVE_DIVISION_POINTS,
@@ -375,8 +452,11 @@ fn piecewise_cubic(segments: &[PullbackSegment]) -> Result<NurbsCurve2, Geometry
     knots.extend(std::iter::repeat_n(first.start, PULLBACK_DEGREE + 1));
     controls.extend(first.controls);
     for segment in &segments[1..] {
-        knots.extend(std::iter::repeat_n(segment.start, PULLBACK_DEGREE));
-        controls.extend_from_slice(&segment.controls[1..]);
+        knots.extend(std::iter::repeat_n(
+            segment.start,
+            PULLBACK_DEGREE + usize::from(segment.disjoint),
+        ));
+        controls.extend_from_slice(&segment.controls[usize::from(!segment.disjoint)..]);
     }
     knots.extend(std::iter::repeat_n(last.end, PULLBACK_DEGREE + 1));
     NurbsCurve2::try_new(PULLBACK_DEGREE, controls, knots)
@@ -495,7 +575,13 @@ impl NurbsSurface {
         {
             return Ok((result.0, Some(result.1)));
         }
-        match self.hermite_pullback(curve, fitting_endpoints, tolerance, certified) {
+        match self.hermite_pullback(
+            curve,
+            fitting_endpoints,
+            tolerance,
+            certified,
+            endpoints.is_some(),
+        ) {
             Ok(result) => Ok(result),
             Err(
                 GeometryError::Degenerate { .. }
@@ -514,6 +600,7 @@ impl NurbsSurface {
         fitting_endpoints: Option<[Point2; 2]>,
         tolerance: Tolerance,
         certified: bool,
+        explicit_endpoints: bool,
     ) -> Result<(NurbsCurve2, Option<Real>), GeometryError> {
         let certificate = if certified {
             Some(certificate::PullbackCertificate::new(self, curve)?.ok_or(
@@ -540,22 +627,29 @@ impl NurbsSurface {
             numerical_tolerance: numerical_pullback_tolerance(tolerance)?,
             segments: Vec::new(),
             certificate,
+            closed: [
+                crate::surface_geodesic::chart_closes(self, 0)?,
+                crate::surface_geodesic::chart_closes(self, 1)?,
+            ],
+            seam_split: false,
         };
         for ((span_start, span_end), span) in spans {
             fitter.span = span;
             fitter.native_domain = [span_start, span_end];
-            let start =
+            let mut start =
                 if let Some(points) = fitting_endpoints.filter(|_| span_start == *domain.start()) {
                     fixed_pullback_node(self, span, 0., points[0], tolerance)?
                 } else {
                     pullback_node(self, span, 0., tolerance, fitter.numerical_tolerance)?
                 };
-            let end = if let Some(points) = fitting_endpoints.filter(|_| span_end == *domain.end())
-            {
-                fixed_pullback_node(self, span, 1., points[1], tolerance)?
-            } else {
-                pullback_node(self, span, 1., tolerance, fitter.numerical_tolerance)?
-            };
+            let mut end =
+                if let Some(points) = fitting_endpoints.filter(|_| span_end == *domain.end()) {
+                    fixed_pullback_node(self, span, 1., points[1], tolerance)?
+                } else {
+                    pullback_node(self, span, 1., tolerance, fitter.numerical_tolerance)?
+                };
+            start.constrained &= explicit_endpoints;
+            end.constrained &= explicit_endpoints;
             fitter.append_span(start, end, 0)?;
         }
         let parameter_curve = piecewise_cubic(&fitter.segments)?;
@@ -564,7 +658,21 @@ impl NurbsSurface {
                 tolerance: tolerance.absolute(),
             });
         }
-        Ok((parameter_curve, None))
+        let bound = if fitter.seam_split {
+            Some(
+                self.parameter_curve_deviation_bound(
+                    &parameter_curve,
+                    curve,
+                    tolerance.absolute(),
+                )?
+                .ok_or(GeometryError::SurfacePullbackDidNotConverge {
+                    tolerance: tolerance.absolute(),
+                })?,
+            )
+        } else {
+            None
+        };
+        Ok((parameter_curve, bound))
     }
 }
 

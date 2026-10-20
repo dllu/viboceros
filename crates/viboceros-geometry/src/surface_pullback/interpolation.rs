@@ -153,6 +153,7 @@ impl Fitter<'_> {
                         start: self.source.parameter_at(start)?,
                         end: self.source.parameter_at(end)?,
                         controls: native,
+                        disjoint: false,
                     });
                     return Ok(());
                 }

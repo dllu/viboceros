@@ -47,6 +47,52 @@ fn plane_offset(source: &NurbsCurve, t: Real, distance: Real) -> Point3 {
 }
 
 #[test]
+fn curved_endpoint_tangents_agree_with_parallel_curves_in_the_developed_cylinder() {
+    let surface = NurbsSurface::try_cylinder(frame(), 3., 0., 6.).unwrap();
+    let arc = surface
+        .isocurve_u(3.)
+        .unwrap()
+        .try_trimmed(0.2..=1.2)
+        .unwrap();
+    let source = NurbsCurve::try_new_rational(
+        arc.degree(),
+        arc.control_points()
+            .iter()
+            .enumerate()
+            .map(|(i, c)| {
+                crate::WeightedPoint3::try_new(
+                    p(c.point().x(), c.point().y(), 2. + i as Real),
+                    c.weight(),
+                )
+                .unwrap()
+            })
+            .collect(),
+        arc.knots().to_vec(),
+    )
+    .unwrap();
+    for source in [source.clone(), source.reversed().unwrap()] {
+        for distance in [-0.2, 0.2] {
+            let offset = try_offset_curve_on_surface(&surface, &source, distance, tolerance())
+                .unwrap()
+                .curve;
+            for t in [*source.domain().start(), *source.domain().end()] {
+                let (p, d) = source.evaluate_with_derivative(t).unwrap();
+                let (q, e) = offset.evaluate_with_derivative(t).unwrap();
+                // Unrolling a cylinder is an isometry. A regular planar
+                // parallel curve has the source tangent direction, at the
+                // shifted angle, even when its parameter speed differs.
+                let circumferential = (-p.y() * d.x() + p.x() * d.y()) / 3.;
+                let actual = (-q.y() * e.x() + q.x() * e.y()) / 3.;
+                let scale = (circumferential.hypot(d.z())) * (actual.hypot(e.z()));
+                assert!((circumferential * e.z() - d.z() * actual).abs() / scale < 1e-10);
+                assert!((q.x() * e.x() + q.y() * e.y()).abs() / (3. * e.length().unwrap()) < 1e-10);
+                assert!(circumferential * actual + d.z() * e.z() > 0.);
+            }
+        }
+    }
+}
+
+#[test]
 fn complete_planar_profiles_keep_signed_distance_and_the_source_parameter() {
     let s = plane();
     let c = profile();

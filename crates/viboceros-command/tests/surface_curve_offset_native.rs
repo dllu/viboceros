@@ -15,31 +15,15 @@ fn native_curved_surface_offsets_extend_shortened_sources_to_boundaries() {
             .unwrap()
             .as_f64()
             .unwrap();
-        let before = format!("{doc:?}");
-        let result = registry.execute(
-            &mut doc,
-            &format!(
-                "OffsetCrvOnSrf {distance} Source={} Surface={}",
-                scene.source, scene.target
-            ),
-        );
-        if let Err(error) = result {
-            // This seam-crossing case is recorded as unqualified, never as
-            // parity. Preserve the model when the pullback cannot be proved.
-            assert_eq!(op["case"], "curved_diagonal");
-            assert!(matches!(
-                error,
-                viboceros_command::CommandError::Geometry(
-                    viboceros_geometry::GeometryError::SurfacePullbackDidNotConverge { .. }
-                )
-            ));
-            assert_eq!(format!("{doc:?}"), before);
-            println!(
-                "SURFACE_OFFSET_CURVED_ENDS {}",
-                serde_json::json!({"id":op["id"],"status":"rejected","error":error.to_string(),"maximum_bidirectional_sample_error":null,"qualified":false,"outputs":0,"native_outputs":value["after_script"].as_array().unwrap().len()-2})
-            );
-            continue;
-        }
+        registry
+            .execute(
+                &mut doc,
+                &format!(
+                    "OffsetCrvOnSrf {distance} Source={} Surface={}",
+                    scene.source, scene.target
+                ),
+            )
+            .unwrap_or_else(|e| panic!("{}: {e}", op["id"]));
         let mut maximum = support::check(&doc, &scene, &value, "after_script");
         doc.undo().unwrap();
         maximum = maximum.max(support::check(&doc, &scene, &value, "undo"));

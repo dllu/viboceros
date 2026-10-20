@@ -4,6 +4,87 @@ use crate::{
     CurveExtensionSide, CurveExtensionStyle, Point2, Point3, WeightedPoint2, WeightedPoint3,
 };
 
+/// One continued spatial curve and the native times of its open chart breaks.
+#[derive(Clone, Debug)]
+pub struct SurfaceCurveExtension {
+    pub curve: NurbsCurve,
+    cuts: Vec<(Real, Real)>,
+    chart: Option<(NurbsSurface, NurbsCurve2)>,
+}
+impl SurfaceCurveExtension {
+    pub fn seam_parameters(&self) -> impl ExactSizeIterator<Item = Real> + '_ {
+        self.cuts.iter().map(|p| p.0)
+    }
+    /// Keep the complete curve for subsequent geometry operations; emit its
+    /// chart portions independently. Every trimmed representation is proved.
+    pub fn parts(&self, tolerance: Tolerance) -> Result<Vec<NurbsCurve>, GeometryError> {
+        if self.cuts.is_empty() {
+            return Ok(vec![self.curve.clone()]);
+        }
+        let (surface, uv) = self
+            .chart
+            .as_ref()
+            .ok_or_else(|| invalid("chart portions require an image reference"))?;
+        let mut cuts = vec![(*self.curve.domain().start(), *uv.domain().start())];
+        cuts.extend(&self.cuts);
+        cuts.push((*self.curve.domain().end(), *uv.domain().end()));
+        if cuts.len() > crate::MAX_CURVE_DIVISION_POINTS {
+            return Err(GeometryError::TooManySurfacePullbackControlPoints {
+                maximum: crate::MAX_CURVE_DIVISION_POINTS,
+            });
+        }
+        cuts.windows(2)
+            .map(|p| {
+                let curve = self.curve.try_trimmed(p[0].0..=p[1].0)?;
+                let image = uv.try_trimmed(p[0].1..=p[1].1)?;
+                if surface
+                    .parameter_curve_deviation_bound(&image, &curve, tolerance.absolute())?
+                    .is_none()
+                {
+                    return Err(invalid("trimmed chart portion exceeded image tolerance"));
+                }
+                Ok(curve)
+            })
+            .collect()
+    }
+}
+
+pub(super) fn extension(
+    surface: NurbsSurface,
+    uv: NurbsCurve2,
+    curve: NurbsCurve,
+    closed: [bool; 2],
+) -> Result<SurfaceCurveExtension, GeometryError> {
+    let mut cuts = Vec::new();
+    for group in uv.knots().chunk_by(|a, b| a == b) {
+        let t = group[0];
+        if group.len() != uv.degree() + 1 || t <= *uv.domain().start() || t >= *uv.domain().end() {
+            continue;
+        }
+        let a = uv.evaluate_on_side(t, ParameterSide::Left)?;
+        let b = uv.evaluate_on_side(t, ParameterSide::Right)?;
+        if !(closed[0] && (a.x() - b.x()).abs() > 0.5 || closed[1] && (a.y() - b.y()).abs() > 0.5) {
+            continue;
+        }
+        let native = crate::remap_scalar(
+            t,
+            [*uv.domain().start(), *uv.domain().end()],
+            [*curve.domain().start(), *curve.domain().end()],
+        )?;
+        let previous = cuts
+            .last()
+            .map_or(*curve.domain().start(), |p: &(Real, Real)| p.0);
+        if native <= previous || native >= *curve.domain().end() {
+            return Err(invalid(
+                "chart event cannot be represented in the native curve domain",
+            ));
+        }
+        cuts.push((native, t));
+    }
+    let chart = (!cuts.is_empty()).then_some((surface, uv));
+    Ok(SurfaceCurveExtension { curve, cuts, chart })
+}
+
 /// Continue an open surface curve to the natural parameter rectangle.
 ///
 /// The certified pullback supplies the endpoint spans to extrapolate. Each
@@ -36,8 +117,31 @@ pub fn try_extend_curve_on_surface_with_solver(
     tolerance: Tolerance,
     solver: Option<MorphInterpolationSolver>,
 ) -> Result<NurbsCurve, GeometryError> {
+    try_extend_curve_on_surface_with_seams(
+        original_surface,
+        original_source,
+        side,
+        tolerance,
+        solver,
+    )
+    .map(|result| result.curve)
+}
+
+/// Continue and retain the certified UV chart events for independent output
+/// portions, while preserving one complete spatial curve for later offsets.
+pub fn try_extend_curve_on_surface_with_seams(
+    original_surface: &NurbsSurface,
+    original_source: &NurbsCurve,
+    side: CurveExtensionSide,
+    tolerance: Tolerance,
+    solver: Option<MorphInterpolationSolver>,
+) -> Result<SurfaceCurveExtension, GeometryError> {
     if original_source.is_closed()? {
-        return Ok(original_source.clone());
+        return Ok(SurfaceCurveExtension {
+            curve: original_source.clone(),
+            cuts: Vec::new(),
+            chart: None,
+        });
     }
     let (surface, source, numerical) =
         normalized_sources(original_surface, original_source, 0., tolerance)?;
@@ -160,7 +264,7 @@ pub fn try_extend_curve_on_surface_with_solver(
         )?;
     }
     if lifted.domain() == source.domain() {
-        return Ok(original_source.clone());
+        return extension(surface, uv, original_source.clone(), closed);
     }
     let last = lifted.control_points().len() - 1;
     let controls = lifted
@@ -201,7 +305,7 @@ pub fn try_extend_curve_on_surface_with_solver(
             "extension parameter restoration exceeded tolerance",
         ));
     }
-    Ok(restored)
+    extension(surface, uv, restored, closed)
 }
 
 fn direction_gap(a: crate::Vector3, b: crate::Vector3) -> Result<Real, GeometryError> {
@@ -210,7 +314,7 @@ fn direction_gap(a: crate::Vector3, b: crate::Vector3) -> Result<Real, GeometryE
     Ok((0..3).map(|i| (a[i] - b[i]).powi(2)).sum::<Real>().sqrt())
 }
 
-fn smooth_image(
+pub(super) fn smooth_image(
     surface: &NurbsSurface,
     uv: &NurbsCurve2,
     tolerance: Tolerance,

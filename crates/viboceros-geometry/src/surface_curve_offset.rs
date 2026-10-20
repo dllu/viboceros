@@ -10,13 +10,18 @@ use crate::{
 const MAX_QUERIES: usize = 65_536;
 mod clip;
 mod extend;
+mod normal_extend;
+pub use normal_extend::try_extend_curve_normally_on_surface;
 mod through_point;
 pub use clip::{
     SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions, SurfaceCurveOffsetPieces,
     try_offset_curves_on_surface, try_offset_curves_on_surface_with_options,
     try_offset_curves_on_surface_with_solver,
 };
-pub use extend::{try_extend_curve_on_surface, try_extend_curve_on_surface_with_solver};
+pub use extend::{
+    SurfaceCurveExtension, try_extend_curve_on_surface, try_extend_curve_on_surface_with_seams,
+    try_extend_curve_on_surface_with_solver,
+};
 pub use through_point::{
     SurfaceCurveOffsetThroughPoint, surface_curve_offset_distance_through_point,
 };
@@ -276,6 +281,45 @@ fn fit_complete(
             derivatives[index] = projected
                 .derivative_at(t)?
                 .scaled((-sampler.distance).mul_add(curvature, 1.))?;
+        }
+        Some(derivatives)
+    } else if !closed {
+        // A normal geodesic family has a transverse Jacobi field. Its
+        // direction is perpendicular to the arriving travel tangent within
+        // the destination tangent plane. Retain that direction exactly: a
+        // small free-fit endpoint tangent error grows over a long subsequent
+        // normal section. Only the signed speed uses a one-sided estimate,
+        // so focal-point reversals are retained rather than forced positive.
+        let mut derivatives = [crate::Vector3::try_new(0., 0., 0.)?; 2];
+        for (i, t, side) in [(0, 0., ParameterSide::Right), (1, 1., ParameterSide::Left)] {
+            let span = source
+                .knots()
+                .iter()
+                .copied()
+                .filter(|k| if i == 0 { *k > 0. } else { *k < 1. })
+                .map(|k| (k - t).abs())
+                .fold(1., Real::min);
+            let h = (span * 0.1).min(1e-4);
+            let sign = if i == 0 { 1. } else { -1. };
+            if h == 0. || t + sign * h == t {
+                return Err(invalid(
+                    "offset endpoint derivative has no representable interval",
+                ));
+            }
+            let shot = sampler.sample(t, side)?;
+            let normal = sampler.surface.normal_at(shot.uv.x(), shot.uv.y())?;
+            let direction = shot
+                .tangent
+                .as_vector()
+                .cross(normal.as_vector())?
+                .normalized_nonzero()?
+                .as_vector()
+                .scaled(sampler.distance.signum())?;
+            let p1 = sampler.sample(t + sign * h, side)?.point;
+            let p2 = sampler.sample(t + sign * 2. * h, side)?.point;
+            let a = shot.point.vector_to(p1)?.dot(direction)?;
+            let b = shot.point.vector_to(p2)?.dot(direction)?;
+            derivatives[i] = direction.scaled(sign * (4. * a - b) / (2. * h))?;
         }
         Some(derivatives)
     } else {

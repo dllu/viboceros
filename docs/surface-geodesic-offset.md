@@ -141,24 +141,42 @@ face-clipped curve must independently pass through the constrained point within
 model tolerance. Global root completeness and cut-locus certification remain
 unproven. Repeated UI points retain accepted curves in one history entry.
 
-Curved open inputs now use bounded continuation of their certified UV endpoint
-spans. The existing boundary-extension solver locates the natural rectangle;
-pushup certificates check the complete proposed image. Where independent
-image spans introduce tangent jumps, shared collocation fits C1 joins on smooth
-UV portions and verifies the result again. Endpoint derivatives come from the
-surface/UV chain rule. A final image proof covers the returned native curve
-parameterization. Inputs remain immutable and unresolved proofs fail before
-model edits. ThroughPoint can address locations beyond the original finite
-source, and source captures share the continued geometry across repeated picks.
+Curved open inputs continue along the endpoint normal section: the plane
+spanned by the source tangent and surface normal. The implementation reuses
+existing exact surface/plane intersections, selects the local oriented branch,
+and stops at the first natural rectangle edge or half of a closed section.
+Intersection queries normalize physical coordinates as well as UV domains.
+Unsupported sections fail before model edits. This policy is inferred from
+public SDK captures; it does not inspect proprietary code. Explicit UV span
+continuation remains available as a separate geometry operation.
 
-Eight public command captures qualify four cylinder generator/ring cases at
-`1e-6`. Warped isocurves differ by about `2.63e-5`; a warped diagonal differs
-by about `0.282`. A cylinder diagonal crossing the periodic seam is rejected
-by the pullback certificate. Diagnostic ceilings remain separate from the
-unchanged parity gate. Eight additional public SDK scenes record source-first
-and result-first [surface extension](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/extendonsurface?overload=2)
-as independent evidence. The continuation policy and periodic branches still
-need further work for complete native parity.
+Certified pullbacks retain separate UV limits across exact periodic seams,
+including crossings inside a rational span, multiple laps, and simultaneous
+torus seams. Every assembled periodic pullback receives a complete image
+proof. Surface closure requires matching boundary control nets; a small open
+gap does not become periodic through model tolerance. The command emits seam
+portions independently while retaining the complete curve for Number and
+subsequent geometry operations. Each returned portion and restored native
+parameterization retains an independent surface-image proof.
+
+Eight public SDK source-extension scenes now replay against this policy.
+Seven meet the unchanged `1e-6` sampled gate. The diagonal cylinder source
+matches both endpoints, but its captured native continuation drifts about
+`2.9e-6` off the exact cylinder. Independent cylinder unrolling also shows
+that the captured SDK offset starts about `2.45e-3` before the exact
+normal-family endpoint; the command's following extension inherits that gap.
+These observations remain separate from the parity gate. The command replay
+checks all eight scenes, including the two periodic diagonal portions,
+attributes, source immutability and Undo/Redo. Five command scenes qualify; the
+warped diagonal improved from about `0.282` to less than `4e-7`. Detailed
+current measurements are in the [qualification report](surface-geodesic-qualification.json).
+
+Open curved offset fits constrain endpoint tangent directions using the
+arriving geodesic direction and surface normal. A one-sided estimate supplies
+the signed speed, preserving reversals at focal points. Analytic cylinder
+unrolling checks these directions independently. This prevents a free-fit
+tangent error from growing over a long normal section. ThroughPoint shares
+source preparation across picks and unchanged options.
 
 The first ThroughPoint getter also accepts `Select` for ordered point objects.
 The same inverse and fitting path prepares the complete batch before one atomic

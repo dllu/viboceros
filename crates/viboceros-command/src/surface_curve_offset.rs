@@ -211,14 +211,14 @@ impl Source {
         // including failures. Other targets/tolerances compute independently;
         // one retained entry keeps memory bounded for programmatic reuse.
         let prepare = || {
-            viboceros_geometry::try_extend_curve_on_surface_with_solver(
+            viboceros_geometry::try_extend_curve_normally_on_surface(
                 surface,
                 self.curve(),
                 CurveExtensionSide::Both,
                 tolerance,
                 morph_interpolation_solver(),
             )
-            .map(Arc::new)
+            .map(|extension| Arc::new(extension.curve))
         };
         let cached = self.prepared.get_or_init(|| PreparedSource {
             surface: surface.clone(),
@@ -343,40 +343,51 @@ impl Plan {
                     // The public command extends planar open offsets along
                     // their endpoint tangents. The SDK producer keeps source
                     // endpoints; share its geometry and add command policy here.
-                    let c = if let Some(boundaries) = &planar_boundaries {
+                    let (c, parts) = if let Some(boundaries) = &planar_boundaries {
                         let c = extend_planar_offset(c, boundaries, tolerance)?;
                         if !c.is_closed()? {
                             // A surface planar only within tolerance still has
                             // to admit the complete tangent extension.
                             target.surface.try_pullback_curve_certified(&c, tolerance)?;
                         }
-                        c
+                        let parts = vec![c.clone()];
+                        (c, parts)
                     } else {
-                        viboceros_geometry::try_extend_curve_on_surface_with_solver(
+                        let extension = viboceros_geometry::try_extend_curve_normally_on_surface(
                             &target.surface,
                             &c,
                             CurveExtensionSide::Both,
                             tolerance,
                             morph_interpolation_solver(),
-                        )?
-                    };
-                    if trimmed {
-                        let uv = target.surface.try_pullback_curve_certified(&c, tolerance)?;
-                        for event in viboceros_geometry::clip_surface_curve_to_face_with_operation(
-                            &c,
-                            &uv,
-                            face.unwrap(),
-                            tolerance,
-                            &mut curve_intersections::events,
-                        )? {
-                            if let viboceros_geometry::SurfaceSurfaceIntersectionEvent::Curve(c) =
-                                event
-                            {
-                                visible.push(c);
-                            }
+                        )?;
+                        if extension.seam_parameters().len() >= MAX_OUTPUTS {
+                            return Err(CommandError::Usage("Too many surface chart portions"));
                         }
-                    } else {
-                        visible.push(c.clone());
+                        let parts = extension.parts(tolerance)?;
+                        (extension.curve, parts)
+                    };
+                    for c in parts {
+                        if trimmed {
+                            let uv = target.surface.try_pullback_curve_certified(&c, tolerance)?;
+                            for event in
+                                viboceros_geometry::clip_surface_curve_to_face_with_operation(
+                                    &c,
+                                    &uv,
+                                    face.unwrap(),
+                                    tolerance,
+                                    &mut curve_intersections::events,
+                                )?
+                            {
+                                if let viboceros_geometry::SurfaceSurfaceIntersectionEvent::Curve(
+                                    c,
+                                ) = event
+                                {
+                                    visible.push(c);
+                                }
+                            }
+                        } else {
+                            visible.push(c);
+                        }
                     }
                     // Number advances the complete offset before face trimming.
                     // A hole can split one copy and disappear from the next;
