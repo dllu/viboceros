@@ -17,6 +17,10 @@ fn native_splop_grips_match_owner_nets_display_selection_groups_and_history() {
             let id = op["id"].as_str().unwrap();
             sources.check(&doc, &value, "before", id);
             sources.execute(&mut doc, &op, &CommandRegistry::with_builtins());
+            // Replay the captured idle Cancel after Enter separately from Splop completion.
+            if op["copy"] == true && op["finish"] != "Cancel" {
+                doc.clear_selection();
+            }
             let mut maximum = sources.check(&doc, &value, "after_script", id);
             assert!(doc.undo().unwrap().is_some());
             maximum = maximum.max(sources.check(&doc, &value, "undo", id));

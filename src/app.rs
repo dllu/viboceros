@@ -8841,6 +8841,9 @@ impl VibocerosApp {
         if self.pick_tangent_curve(click.object_id, None) {
             return;
         }
+        if self.pick_splop_reference_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_circle_around_curve(click.object_id, None) {
             return;
         }
@@ -9636,6 +9639,7 @@ impl VibocerosApp {
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
                 || self.picking_circle_around_curve()
+                || self.picking_splop_reference_curve()
             {
                 self.accept_component_click(crate::viewport::ComponentClick {
                     picks: picks
@@ -9660,6 +9664,7 @@ impl VibocerosApp {
             if self.accept_conic_parameter(parameter)
                 || self.accept_rectangle_parameter(parameter)
                 || self.accept_ellipse_parameter(parameter)
+                || self.accept_splop_reference_parameter(parameter)
                 || self.accept_circle_around_parameter(parameter)
                 || self.accept_orient_curve_parameter(parameter)
             {
@@ -10038,6 +10043,7 @@ impl eframe::App for VibocerosApp {
                     .as_ref()
                     .is_none_or(tangent::Session::wants_point)
                 && !self.picking_circle_around_curve()
+                && !self.picking_splop_reference_curve()
                 && !self.picking_orient_curve()
                 && (self.surface_flow_session.is_none() || self.drawing_surface_flow())
                 && (self.flow_session.is_none()
@@ -10321,7 +10327,8 @@ impl eframe::App for VibocerosApp {
             || self.picking_ellipse_curve()
             || self.picking_arc_extension_curve()
             || self.picking_tangent_curve()
-            || self.picking_circle_around_curve())
+            || self.picking_circle_around_curve()
+            || self.picking_splop_reference_curve())
             && self.plane_prompt.is_none()
             && model_input_active
             && !end_analysis_picking;
@@ -10375,6 +10382,11 @@ impl eframe::App for VibocerosApp {
                     .filter(|_| self.point_filter.is_none() && self.point_constraint.is_none())
                     .and_then(orient_curve::Session::cursor_curve)
             });
+        let edge_curve = edge_curve.or_else(|| {
+            self.orient_surface_session
+                .as_ref()
+                .and_then(orient_surface::Session::sphere_cursor_curve)
+        });
         let edge_parameters =
             split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
         let edge_distance_parameters =
@@ -10545,7 +10557,8 @@ impl eframe::App for VibocerosApp {
                 || self.picking_ellipse_curve()
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
-                || self.picking_circle_around_curve());
+                || self.picking_circle_around_curve()
+                || self.picking_splop_reference_curve());
         let document = surface_rebuild::viewport_document(
             &self.document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
@@ -11334,7 +11347,9 @@ mod tests {
     mod spiral_rail;
     mod split_edge;
     mod splop;
+    mod splop_finish;
     mod splop_grips;
+    mod splop_guided;
     mod splop_reference;
     mod standalone_subcurve;
     mod stretch;

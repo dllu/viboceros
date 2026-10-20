@@ -2,6 +2,7 @@
 use super::*;
 mod option_input;
 mod sphere;
+mod sphere_guides;
 use std::cell::RefCell;
 use viboceros_command::orient_surface::{
     self as solver, Options, Placement, Pose, PreviewPhase, Target,
@@ -38,6 +39,8 @@ pub(super) struct Session {
     kind: Kind,
     toggle: Option<&'static str>,
     sphere_input: Option<viboceros_command::splop::ReferenceInput>,
+    sphere_guide: Option<sphere_guides::Guide>,
+    guided_reference: bool,
     group: viboceros_document::HistoryGroup,
     sources: Vec<ObjectId>,
     grips: Vec<viboceros_document::ControlPointId>,
@@ -107,6 +110,9 @@ impl Session {
         })
     }
     pub(super) fn angle_plane(&self) -> Option<Frame3> {
+        if let Some(plane) = self.sphere_input.and_then(|input| input.mouse_plane()) {
+            return Some(plane);
+        }
         match self.preview_phase()? {
             PreviewPhase::Scale(p) | PreviewPhase::Rotation(p) | PreviewPhase::Sphere(p, _) => {
                 self.placement.as_ref()?.rotation_plane(p).ok()
@@ -151,6 +157,9 @@ impl VibocerosApp {
         &self,
         point: Point3,
     ) -> Result<Point3, viboceros_command::CommandError> {
+        if let Some(frame) = self.splop_reference_curve_frame(point)? {
+            return Ok(frame.origin());
+        }
         if self.orient_surface_location().is_none() {
             return Ok(point);
         }
@@ -294,6 +303,8 @@ impl VibocerosApp {
             kind,
             toggle: None,
             sphere_input: splop.then(|| viboceros_command::splop::ReferenceInput::new(plane)),
+            sphere_guide: None,
+            guided_reference: false,
             group,
             sources,
             grips,
@@ -325,6 +336,9 @@ impl VibocerosApp {
         true
     }
     fn orient_surface_prompt(&mut self) {
+        if self.splop_reference_guide_prompt() {
+            return;
+        }
         if self.orient_surface_option_prompt() {
             return;
         }
@@ -576,7 +590,11 @@ impl VibocerosApp {
                     .map(ToString::to_string)
                     .collect::<Vec<_>>()
                     .join(","),
-                super::transform_sources::grip_argument(&s.grips, s.postselected)
+                if s.grips.is_empty() {
+                    "GripSources=".into()
+                } else {
+                    super::transform_sources::grip_argument(&s.grips, s.postselected)
+                }
             )
         } else {
             format!(
@@ -787,6 +805,9 @@ impl VibocerosApp {
         let Some(s) = self.orient_surface_session.take() else {
             return false;
         };
+        if s.guided_reference {
+            self.document.clear_selection();
+        }
         if s.applied && s.postselected {
             if s.options.rigid && !s.grips.is_empty() {
                 let _ = self.document.select_command_results([]);

@@ -44,6 +44,24 @@ pub(super) struct PendingCloudRemoval {
 }
 
 impl PendingObjectCommand {
+    pub(super) fn selecting(description: ObjectSelectionPrompt) -> Self {
+        Self {
+            description,
+            phase: ObjectPromptPhase::Selecting,
+            postselected: true,
+            subcurve_measurement: false,
+            measurement_display_units: None,
+            command_override: None,
+            excluded_object: None,
+            selection_before: None,
+            cloud_removal: None,
+            cloud_action_target: None,
+            special_selection: None,
+            divide: None,
+            modify_radius: None,
+            reduce_polyline: None,
+        }
+    }
     pub(super) fn selection_filter(&self) -> Option<ObjectSelectionFilter> {
         (self.phase == ObjectPromptPhase::Selecting
             && self.cloud_removal.is_none()
@@ -299,6 +317,12 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.picking_splop_fit_points() {
+            return Some(ObjectSelectionFilter::Points);
+        }
+        if self.picking_splop_reference_curve() {
+            return Some(ObjectSelectionFilter::Curves);
+        }
         if let Some(prompt) = &self.refinement_prompt {
             return prompt
                 .selecting()
@@ -836,6 +860,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_select_prompt_points(input) {
+            return true;
+        }
+        if self.continue_splop_fit_points(input) {
             return true;
         }
         if self

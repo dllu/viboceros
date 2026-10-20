@@ -205,7 +205,7 @@ impl Sources {
                 .unwrap();
         }
         if options.copy && op["finish"] != "Cancel" {
-            viboceros_command::splop::finish_copies(doc, &mut group, &self.ids).unwrap();
+            viboceros_command::splop::finish_copies(doc, &mut group, &self.ids, false).unwrap();
         }
     }
     pub fn mode(&self, doc: &Document) -> GripMode {

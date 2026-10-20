@@ -11,9 +11,16 @@ mod splop_test_support;
 #[cfg(test)]
 pub(crate) use deformation_test_support::{grips as grip_fixtures, morph as morph_fixtures};
 #[cfg(test)]
+#[path = "../crates/viboceros-command/tests/support/splop_finish.rs"]
+mod splop_finish_test_support;
+#[cfg(test)]
 #[allow(dead_code)]
 #[path = "../crates/viboceros-command/tests/support/splop_grips.rs"]
 mod splop_grips_test_support;
+#[cfg(test)]
+#[allow(dead_code)]
+#[path = "../crates/viboceros-command/tests/support/splop_guided.rs"]
+mod splop_guided_test_support;
 #[cfg(test)]
 #[allow(dead_code)]
 #[path = "../crates/viboceros-command/tests/support/splop_reference.rs"]

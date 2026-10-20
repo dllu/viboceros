@@ -61,6 +61,9 @@ fn source_arguments<'a>(
             }
             let picks = value
                 .split(',')
+                // An explicit empty set keeps later guide picks out of an
+                // already captured transform source list.
+                .filter(|_| !value.is_empty())
                 .map(|value| {
                     let (id, index) = value.rsplit_once(':').ok_or(CommandError::Usage(usage))?;
                     let pick = ControlPointId {
@@ -76,7 +79,8 @@ fn source_arguments<'a>(
                     Ok(pick)
                 })
                 .collect::<Result<std::collections::BTreeSet<_>, CommandError>>()?;
-            grips_postselected = super::option_name_eq(name, "PickedGripSources");
+            grips_postselected =
+                !picks.is_empty() && super::option_name_eq(name, "PickedGripSources");
             grips = Some(picks.into_iter().collect::<Vec<_>>());
             continue;
         }

@@ -1,0 +1,2972 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "splop_guided",
+      "id": "guided_0",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_1",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_2",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_3",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_4",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_5",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_6",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_7",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_8",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_9",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_10",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_11",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_12",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_13",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_14",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_15",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_16",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_17",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_18",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_19",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_20",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_21",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_22",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_23",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_24",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_25",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_26",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_27",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_28",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_29",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_30",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_31",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_32",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_33",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_34",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_35",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_36",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_37",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_38",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_39",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_40",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_41",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_42",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_43",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_44",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_45",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_46",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_47",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_48",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_49",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_50",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_51",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_52",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_53",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_54",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_55",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_56",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_57",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_58",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_59",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_60",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_61",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_62",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_63",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_64",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_65",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_66",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_67",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_68",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_69",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_70",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_71",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_72",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_73",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_74",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_75",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_76",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_77",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_78",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_79",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_80",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_81",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_82",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_83",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_84",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_85",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_86",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_87",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_88",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_89",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_90",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_91",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_92",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_93",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_94",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_95",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_96",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_97",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_98",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_99",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_100",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_101",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_102",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_103",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_104",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_105",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_106",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_107",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_108",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_109",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_110",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_111",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_112",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_113",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_114",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_115",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_116",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_117",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_118",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_119",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_120",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_121",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_122",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_123",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_124",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_125",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_126",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_127",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_128",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_129",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_130",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_131",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_132",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_133",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_134",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_135",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_136",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldXY",
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_137",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_138",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_139",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldXY",
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_140",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_141",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_142",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldXY",
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_143",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_144",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldXY",
+      "surface": "Plane",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_145",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldXY",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_146",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_147",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_148",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldXY",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_149",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_150",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_151",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldXY",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_152",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_153",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldXY",
+      "surface": "Cylinder",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_154",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_155",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_156",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_157",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_158",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_159",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_160",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_161",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_162",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_163",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_164",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_165",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_166",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_167",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_168",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_169",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_170",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_171",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_172",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_173",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_174",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_175",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_176",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_177",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_178",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_179",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_180",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_181",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_182",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_183",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_184",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_185",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_186",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_187",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_188",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_189",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_190",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_191",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_192",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_193",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_194",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_195",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_196",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_197",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_198",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_199",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_200",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_201",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_202",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_203",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_204",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_205",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_206",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_207",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_208",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_209",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_210",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_211",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_212",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_213",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_214",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_215",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_216",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_217",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_218",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_219",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_220",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_221",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_222",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_223",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_224",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_225",
+      "mode": "Fit",
+      "kind": "Axes",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_226",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_227",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_228",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_229",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_230",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_231",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_232",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_233",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_234",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_235",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_236",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_237",
+      "mode": "Fit",
+      "kind": "Planar",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_238",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_239",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_240",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_241",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "Points",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_242",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_243",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_244",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_245",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "CurveGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_246",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_247",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_248",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_249",
+      "mode": "Fit",
+      "kind": "Noisy",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "source": "MeshGrips",
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_250",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldZX",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_251",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldZX",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_252",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldZX",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_253",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldZX",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_254",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldZX",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_255",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldZX",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_256",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldZX",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_257",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_258",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldZX",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_259",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldZX",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_260",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldZX",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_261",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldZX",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_262",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldZX",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_263",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldZX",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_264",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldZX",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_265",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_266",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldZX",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_267",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldZX",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_268",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldZX",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_269",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldZX",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_270",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldZX",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_271",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldZX",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_272",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldZX",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_273",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_274",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldZX",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_275",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldZX",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_276",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldZX",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_277",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldZX",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_278",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldZX",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_279",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldZX",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_280",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldZX",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_281",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_282",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldZX",
+      "size": "Radius"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_283",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldZX",
+      "size": "Diameter"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_284",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldZX",
+      "size": "Circumference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_285",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldZX",
+      "size": "Area"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_286",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldZX",
+      "size": "Point"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_287",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldZX",
+      "size": "Radius",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_288",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldZX",
+      "size": "Point",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_289",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_290",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldZX",
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_291",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_292",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_293",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldZX",
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_294",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_295",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_296",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldZX",
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_297",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_298",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldZX",
+      "surface": "Plane",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_299",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldZX",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_300",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_301",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_302",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldZX",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_303",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_304",
+      "mode": "FourRadius",
+      "kind": "FourthBelow",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_305",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldZX",
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_306",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "copy": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_307",
+      "mode": "FourRadius",
+      "kind": "Third",
+      "plane": "WorldZX",
+      "surface": "Cylinder",
+      "flip": true,
+      "rigid": true
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_308",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "source": "Points",
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_309",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "source": "CurveGrips",
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_310",
+      "mode": "Fit",
+      "kind": "Tetra",
+      "plane": "WorldXY",
+      "source": "MeshGrips",
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_311",
+      "mode": "Around",
+      "kind": "LineZ",
+      "plane": "WorldXY",
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_312",
+      "mode": "Around",
+      "kind": "LineX",
+      "plane": "WorldXY",
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_313",
+      "mode": "Around",
+      "kind": "LineSkew",
+      "plane": "WorldXY",
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_314",
+      "mode": "Around",
+      "kind": "Circle",
+      "plane": "WorldXY",
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_315",
+      "mode": "Around",
+      "kind": "Cubic",
+      "plane": "WorldXY",
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_guided",
+      "id": "guided_316",
+      "mode": "FourRadius",
+      "kind": "FourthAbove",
+      "plane": "WorldXY",
+      "finish": "CancelReference"
+    }
+  ]
+}

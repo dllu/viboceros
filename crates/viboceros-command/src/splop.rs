@@ -343,6 +343,7 @@ impl Command for SplopCommand {
         }
         let morph = placement.morph(destination_radius, angle, options, doc.tolerance())?;
         let staged = deformed_geometries(doc, &sources.ids, &sources.grips, &morph, options)?;
+        let selection_before = doc.selected_object_ids().collect::<Vec<_>>();
         let ids = staged.iter().map(|(id, _)| *id).collect::<Vec<_>>();
         let count = ids.len()
             + sources
@@ -354,7 +355,7 @@ impl Command for SplopCommand {
         if options.copy {
             doc.retain_created_group_definitions_on_undo()?;
         }
-        if sources.release_on_replay || options.copy && finish {
+        if sources.release_on_replay {
             doc.release_command_selection_on_history_replay(sources.ids.iter().copied())?;
         }
         if !sources.grips.is_empty() {
@@ -374,10 +375,12 @@ impl Command for SplopCommand {
             )?;
             doc.move_objects_to_end_in_order(ids)?;
         }
-        if sources.postselected || options.copy && finish {
+        if sources.postselected && (!options.copy || finish) {
             doc.clear_selection();
         } else if options.copy {
-            doc.select_command_results(sources.ids.iter().copied())?;
+            // Ordinary copy insertion selects its outputs. Splop retains the
+            // live source/reference picks until its outer getters finish.
+            doc.select_command_results(selection_before)?;
         }
         Ok(format!(
             "Splopped {count} object(s){}",
@@ -391,14 +394,22 @@ impl Command for SplopCommand {
 }
 
 /// Finish an interactive copy batch while retaining its single Undo entry.
-/// An escaped batch keeps its accepted copies and captured source selection.
+/// Preselected source picks survive Enter. Command-first picks are temporary.
+/// Escape keeps accepted copies; the UI releases its command-first picks.
 pub fn finish_copies(
     doc: &mut Document,
     group: &mut viboceros_document::HistoryGroup,
     sources: &[ObjectId],
+    postselected: bool,
 ) -> Result<bool, DocumentError> {
     if !group.can_undo() {
         return Ok(false);
+    }
+    if !doc.history_group_is_current(group) {
+        return Err(DocumentError::HistoryGroupStale);
+    }
+    if !postselected {
+        return Ok(true);
     }
     doc.begin_group_transaction(group)?;
     if let Err(error) = doc.release_command_selection_on_history_replay(sources.iter().copied()) {

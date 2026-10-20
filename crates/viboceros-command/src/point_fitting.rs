@@ -60,6 +60,17 @@ impl PointFitKind {
                     .count(),
             )
     }
+    /// Read the selected point objects and current grip basis without editing
+    /// the document, so nested construction getters share the same sources.
+    pub fn selected_points(self, document: &Document) -> Vec<Point3> {
+        document
+            .selected_objects()
+            .flat_map(|o| self.source_points(o.geometry()))
+            .copied()
+            .chain(document.selected_control_points().map(|(_, p)| p))
+            .take(viboceros_geometry::MAX_PLANE_FIT_POINTS + 1)
+            .collect()
+    }
 }
 
 pub(crate) struct PointFitCommand(pub PointFitKind);
@@ -86,7 +97,7 @@ impl Command for PointFitCommand {
         run(self.0, document, args, true)
     }
 }
-pub(super) fn selection_prompt(kind: PointFitKind) -> ObjectSelectionPrompt {
+pub fn selection_prompt(kind: PointFitKind) -> ObjectSelectionPrompt {
     ObjectSelectionPrompt {
         command: kind.name(),
         filter: match kind {
@@ -107,14 +118,7 @@ pub(super) fn run(
     postselected: bool,
 ) -> Result<String, CommandError> {
     require_consumed(args, 0, kind.usage())?;
-    let maximum = viboceros_geometry::MAX_PLANE_FIT_POINTS;
-    let points = document
-        .selected_objects()
-        .flat_map(|o| kind.source_points(o.geometry()))
-        .copied()
-        .chain(document.selected_control_points().map(|(_, p)| p))
-        .take(maximum + 1)
-        .collect::<Vec<_>>();
+    let points = kind.selected_points(document);
     let geometry = match kind {
         PointFitKind::Line => LineSegment::try_fit_to_points(&points)?.map(Geometry::Line),
         PointFitKind::Plane => NurbsSurface::try_fit_plane(&points)?.map(Geometry::NurbsSurface),

@@ -28,6 +28,10 @@ fn splop_grip_prompts_replay_native_nets_display_selection_groups_and_history() 
                     assert!(app.try_continue_orient_surface("Enter"));
                 }
             }
+            // The retained macro sends a second Cancel after Splop has ended.
+            if op["copy"] == true && op["finish"] != "Cancel" {
+                app.cancel_current_prompt_or_selection();
+            }
             assert!(app.active_command.is_none());
             assert!(app.orient_surface_session.is_none());
             let mut gap = sources.check(&app.document, &value, "after_script", id);

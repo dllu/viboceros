@@ -202,6 +202,7 @@ impl VibocerosApp {
             && !self.picking_arc_extension_curve()
             && !self.picking_tangent_curve()
             && !self.picking_circle_around_curve()
+            && !self.picking_splop_reference_curve()
         {
             if self
                 .hole_prompt
@@ -250,6 +251,7 @@ impl VibocerosApp {
             || self.picking_arc_extension_curve()
             || self.picking_tangent_curve()
             || self.picking_circle_around_curve()
+            || self.picking_splop_reference_curve()
         {
             click
                 .picks
@@ -337,6 +339,12 @@ impl VibocerosApp {
         if self.picking_tangent_curve() {
             if let [pick] = picks.as_slice() {
                 self.pick_tangent_curve(Some(pick.object), Some(pick.index));
+            }
+            return;
+        }
+        if self.picking_splop_reference_curve() {
+            if let [pick] = picks.as_slice() {
+                self.pick_splop_reference_curve(Some(pick.object), Some(pick.index));
             }
             return;
         }

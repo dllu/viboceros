@@ -3,17 +3,34 @@
 Select objects or visible control/edit grips and run `Splop`. Pick the reference
 sphere center, then enter its radius or pick a radius point. Enter accepts radius
 1. Reference spheres also accept `2Point`, `3Point` (including a radius
-constraint), `4Point`, and `Orientation`. After picking a center, use `Diameter`,
+constraint), `4Point` (including radius constraints), `Orientation`,
+`AroundCurve`, and `FitPoints`. After picking a center, use `Diameter`,
 `Circumference`, or `Area` to enter size. Area measures the reference circle,
 so an area of `4*pi` gives radius 2. The construction plane supplies the default
-normal; a picked radius supplies the source X direction. Select a destination surface or face, pick its drop point,
-then drag the destination sphere to set size and rotation together.
+normal; a picked radius supplies the source X direction. Select a destination
+surface or face, pick its drop point, then drag the destination sphere to set
+size and rotation together.
+
+`FitPoints` accepts at least three point objects or visible curve/surface controls
+and mesh vertex grips. `AroundCurve` asks for a curve or surface edge, projects
+the center pick onto it, and builds the reference circle perpendicular to its
+tangent. Both reuse the existing fit and circle-size getters and preserve the
+guide geometry. The original transform sources stay fixed while guides are
+picked. Unavailable curve guides return to curve selection.
+
+In `4Point`, `Radius` after the second point completes a constrained base circle.
+After the third point it constrains the sphere radius and asks which side of the
+section plane contains its center. The radius must be at least the section
+circle radius. Area input is a scalar in squared model units.
 
 A numeric destination radius locks size while you continue picking direction.
 Model-unit input is accepted in both radius prompts. `Copy=Yes` accepts repeated
-placements from the original sources. Enter finishes the batch and clears object
-and grip selection; Escape retains accepted copies and preselected source picks. All
-placements belong to one Undo entry. Copy defaults to Yes and uses the shared
+placements from the original sources. Enter and Escape retain accepted copies
+and preselected object/grip picks. Command-first picks are released. `FitPoints`
+and `AroundCurve` clear the original selection when guide selection starts and
+release guide picks when Splop ends. All accepted placements belong to one Undo
+entry; cancelled reference input creates no edit and preserves Redo.
+Copy defaults to Yes and uses the shared
 `RememberCopyOptions` preference. Rigid and Flip start at No.
 
 `Rigid=Yes` retains each object's shape while applying uniform sphere scaling
@@ -41,7 +58,9 @@ effective target frame and is available with numeric destination radii. A final
 point supplies both radius and direction. The target is excluded from source
 edits. Invalid radii, unavailable references and failed fits leave geometry and
 history intact. The Rust batch API can use `Finish=No` for accepted placements,
-then `splop::finish_copies` to finish their shared history group.
+then `splop::finish_copies(doc, group, sources, postselected)` to finish their
+shared history group. An explicit empty `GripSources=` excludes grips selected
+for a reference getter from the captured transform sources.
 
 The interactive controller shares surface/face picking and prepared display
 cages with OrientOnSrf. Wrapped and rigid previews work in wireframe, shaded and
@@ -71,19 +90,34 @@ selection, groups and Undo/Redo. Grip numeric differences stay below `1e-9`;
 reference-sphere cloud distances stay below `1e-9`. All 148 grip cases also check
 preview owner controls against accepted geometry in the three display modes.
 
-Tangent, AroundCurve, FitPoints and four-point radius constraints remain in
-progress for the reference-sphere prompt. Pixel comparisons, continuous deviation
-certificates and Splop performance measurements remain unqualified.
+The [guided-reference and completion receipt](../splop-guided-validation.json)
+adds 317 fitting, curve-guided and radius-constrained workflows and 48 true
+Enter/Escape completion workflows. The current API and UI replay all 668 retained
+workflows. Guided cloud comparisons use the `1e-6` document tolerance; unchanged
+guides, grip bases and metadata use `1e-9` numeric comparisons. Noisy sphere fits
+can differ slightly between the independent solvers.
+
+The earlier copy captures sent an idle Cancel after Enter. Their selection
+clearing reflects that second command, so the replay performs both actions.
+The new completion captures omit the idle Cancel and verify that Enter preserves
+preselected objects and grips. The earlier receipts are retained as historical
+records. A separate input diagnostic retains the unsuccessful typed edge pick
+and trailing-Cancel investigation.
+
+Tangent remains in progress for the reference-sphere prompt. Native edge-input
+and viewport pixel comparisons, continuous deviation certificates and Splop
+performance measurements remain unqualified.
 
 The retained dispatch diagnostic ran inside `RunPythonScript` and reported no
 Undo records. It is separate from the validated corpus: Splop now runs at idle,
 like the other owned command probes, and rejects a capture inside an active Undo
-record. Every validated workflow records `Undoing Splop` and `Redoing Splop`.
+record. Every workflow with an accepted placement records `Undoing Splop` and
+`Redoing Splop`; cancellation before placement has no Undo entry.
 
 ```sh
-cargo test -p viboceros-command --test splop_command --test splop_grips --test splop_reference --config 'profile.test.package.viboceros-geometry.opt-level=2'
+cargo test -p viboceros-command --test splop_command --test splop_grips --test splop_reference --test splop_guided --test splop_finish --config 'profile.test.package.viboceros-geometry.opt-level=2'
 cargo test --bin viboceros splop --config 'profile.test.package.viboceros-geometry.opt-level=2'
-python3 -m unittest tools.rhino_oracle.test_splop tools.rhino_oracle.test_splop_extensions
+python3 -m unittest tools.rhino_oracle.test_splop tools.rhino_oracle.test_splop_extensions tools.rhino_oracle.test_splop_guided
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_splop
 ```
 

@@ -318,7 +318,7 @@ impl Sources {
                 .unwrap();
         }
         if op["copy"] == true && op["finish"] != "Cancel" {
-            splop::finish_copies(doc, &mut group, &self.ids).unwrap();
+            splop::finish_copies(doc, &mut group, &self.ids, op["postselect"] == true).unwrap();
         }
     }
     pub fn options(&self, op: &Value) -> splop::Options {

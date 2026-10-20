@@ -2,13 +2,18 @@
 use super::*;
 impl VibocerosApp {
     pub(super) fn continue_splop_sphere_input(&mut self, input: &str) -> bool {
-        let Some(s) = self
+        let Some(_) = self
             .orient_surface_session
             .as_ref()
             .filter(|s| s.kind == Kind::Splop)
         else {
             return false;
         };
+        if !self.validate_splop_reference_curve() {
+            self.command_input.clear();
+            return true;
+        }
+        let s = self.orient_surface_session.as_ref().unwrap();
         let word = input.trim().trim_start_matches(['_', '-']);
         if word.eq_ignore_ascii_case("Cancel") {
             return false;
@@ -16,8 +21,11 @@ impl VibocerosApp {
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
             match s.phase {
                 Phase::Reference if s.sphere_input.is_some_and(|input| input.requests_size()) => {
-                    let size = s.sphere_input.unwrap().default_size().unwrap();
-                    self.continue_splop_sphere_input(&size.to_string());
+                    if let Some(size) = s.sphere_input.unwrap().default_size() {
+                        self.continue_splop_sphere_input(&size.to_string());
+                    } else {
+                        self.push_log("Enter a sphere radius and choose its orientation".into());
+                    }
                 }
                 Phase::Placement(PreviewPhase::Sphere(_, _)) => {
                     if let Some(point) = s.cursor {
@@ -34,6 +42,7 @@ impl VibocerosApp {
                             &mut self.document,
                             &mut s.group,
                             &s.sources,
+                            s.postselected,
                         )
                     {
                         self.push_log(format!("Error: {e}"));
@@ -70,6 +79,11 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
+        if self.start_splop_reference_guide(word) || self.continue_splop_reference_curve_pick(word)
+        {
+            return true;
+        }
+        let s = self.orient_surface_session.as_ref().unwrap();
         if input.contains('=') {
             let args = input.split_whitespace().collect::<Vec<_>>();
             let allowed = args.iter().all(|word| {
@@ -114,14 +128,21 @@ impl VibocerosApp {
             return true;
         }
         let s = self.orient_surface_session.as_ref().unwrap();
-        let value = if let Ok(number) = input.parse::<f64>() {
-            Some(number)
-        } else if let Some(Ok(viboceros_drafting::PointConstraintInput::Distance(number))) =
-            viboceros_drafting::PointConstraintInput::parse_with_units(input, self.document.units())
-        {
-            Some(number)
+        let units = if s.sphere_input.is_some_and(|input| {
+            input.size_mode() == viboceros_command::circle_input::CircleSizeMode::Area
+        }) {
+            &viboceros_geometry::LengthUnitSystem::Unset
         } else {
-            None
+            self.document.units()
+        };
+        let value = match viboceros_drafting::PointInput::parse_length_with_units(input, units) {
+            Some(Ok(value)) => Some(value),
+            Some(Err(error)) => {
+                self.push_log(format!("Error: {error}"));
+                self.command_input.clear();
+                return true;
+            }
+            None => None,
         };
         if let Some(radius) = value {
             if !radius.is_finite() || radius <= 0. {
@@ -158,6 +179,15 @@ impl VibocerosApp {
 
 impl VibocerosApp {
     pub(super) fn accept_splop_reference_point(&mut self, point: Point3) -> bool {
+        if !self.validate_splop_reference_curve()
+            || self.picking_splop_reference_curve()
+            || self.picking_splop_fit_points()
+        {
+            return false;
+        }
+        if let Some(result) = self.accept_splop_reference_curve_center(point) {
+            return result;
+        }
         let result = self
             .orient_surface_session
             .as_mut()
@@ -168,7 +198,7 @@ impl VibocerosApp {
             .point(point);
         self.accept_splop_reference_result(result)
     }
-    fn accept_splop_reference_result(
+    pub(super) fn accept_splop_reference_result(
         &mut self,
         result: Result<
             Option<viboceros_command::circle_input::CircleDefinition>,
@@ -197,6 +227,10 @@ impl VibocerosApp {
             s.base = Some(definition.frame.origin());
             s.reference = Some(point);
             s.sphere_input = None;
+            s.sphere_guide = None;
+            self.drafting_plane = None;
+            self.point_filter = None;
+            self.point_constraint = None;
             s.phase = Phase::Guide;
         } else {
             let anchor = s.sphere_input.unwrap().anchor();

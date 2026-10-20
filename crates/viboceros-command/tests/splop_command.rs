@@ -14,6 +14,10 @@ fn native_splop_geometry_groups_selection_and_history() {
             let (mut doc, sources) = support::setup(op, value);
             sources.check(&doc, op, value, "before");
             sources.execute(&mut doc, op, &CommandRegistry::with_builtins());
+            // Replay the captured idle Cancel after Enter separately from Splop completion.
+            if op["copy"] == true && op["finish"] != "Cancel" {
+                doc.clear_selection();
+            }
             let fit = sources.check_fit(&doc, op);
             println!(
                 "SPLOP_FIT_AUDIT {}",
