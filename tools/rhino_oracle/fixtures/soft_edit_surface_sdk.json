@@ -1,0 +1,144 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_edit_surface_sdk",
+      "id": "flat_small",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_shapes/flat_small.3dm",
+      "reference": [
+        1.0499999999999996,
+        2.1600000000000006,
+        0.0
+      ],
+      "target": [
+        1.0499999999999996,
+        2.1600000000000006,
+        0.1
+      ],
+      "distance": [
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "op": "soft_edit_surface_sdk",
+      "id": "periodic_small",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_shapes/periodic_small.3dm",
+      "reference": [
+        2.8120000000000003,
+        -0.00400000000000004,
+        2.0999999999999996
+      ],
+      "target": [
+        2.8120000000000003,
+        -0.00400000000000004,
+        2.1999999999999997
+      ],
+      "distance": [
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "op": "soft_edit_surface_sdk",
+      "id": "cylinder_transpose",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_shapes/cylinder_transpose.3dm",
+      "reference": [
+        -2.441478108153226,
+        -1.7433257433447569,
+        2.0999999999999996
+      ],
+      "target": [
+        -2.141478108153226,
+        -1.9433257433447568,
+        4.1
+      ],
+      "distance": [
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "op": "soft_edit_surface_sdk",
+      "id": "sphere_transpose",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_shapes/sphere_transpose.3dm",
+      "reference": [
+        -2.190923004253473,
+        -1.5644180720876668,
+        -1.3238022832577534
+      ],
+      "target": [
+        -1.8909230042534728,
+        -1.7644180720876668,
+        0.6761977167422466
+      ],
+      "distance": [
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "op": "soft_edit_surface_sdk",
+      "id": "torus_small",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_shapes/torus_small.3dm",
+      "reference": [
+        -2.196160965948566,
+        3.075660954823467,
+        -0.8716628716723784
+      ],
+      "target": [
+        -2.196160965948566,
+        3.075660954823467,
+        -0.7716628716723785
+      ],
+      "distance": [
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "op": "soft_edit_surface_sdk",
+      "id": "periodic_start",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_shapes/periodic_start.3dm",
+      "reference": [
+        1.1666666666666667,
+        1.8333333333333337,
+        0.0
+      ],
+      "target": [
+        1.4666666666666668,
+        1.6333333333333337,
+        2.0
+      ],
+      "distance": [
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "op": "soft_edit_surface_sdk",
+      "id": "torus_start",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_shapes/torus_start.3dm",
+      "reference": [
+        6.5,
+        0.0,
+        0.0
+      ],
+      "target": [
+        6.8,
+        -0.2,
+        2.0
+      ],
+      "distance": [
+        4.0,
+        4.0
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1280 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_small",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.1
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_small.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_large",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        8.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_large.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_negative",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        -1.0,
+        0.5,
+        -2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_negative.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_fixed",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_fixed.3dm",
+      "fix_edges": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_copy",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_normal",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_normal.3dm",
+      "constraint": "SrfNormal"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_u_tangent",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_u_tangent.3dm",
+      "constraint": "UTangent"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_v_tangent",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_v_tangent.3dm",
+      "constraint": "VTangent"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_domains",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_domains.3dm",
+      "domains": [
+        [
+          -5.0,
+          17.0
+        ],
+        [
+          2.0,
+          9.0
+        ]
+      ]
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_reverse",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_reverse.3dm",
+      "reverse_u": true,
+      "reverse_v": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "cylinder_transpose",
+      "shape": "cylinder",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/cylinder_transpose.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "sphere_transpose",
+      "shape": "sphere",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/sphere_transpose.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_small",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.1
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_small.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_large",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        8.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_large.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_negative",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        -1.0,
+        0.5,
+        -2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_negative.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_fixed",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_fixed.3dm",
+      "fix_edges": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_copy",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_normal",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_normal.3dm",
+      "constraint": "SrfNormal"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_u_tangent",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_u_tangent.3dm",
+      "constraint": "UTangent"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_v_tangent",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_v_tangent.3dm",
+      "constraint": "VTangent"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_domains",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_domains.3dm",
+      "domains": [
+        [
+          -5.0,
+          17.0
+        ],
+        [
+          2.0,
+          9.0
+        ]
+      ]
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_transpose",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_transpose.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_reverse",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_reverse.3dm",
+      "reverse_u": true,
+      "reverse_v": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_start",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_start.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_end",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_end.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_middle",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_middle.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_near_seam",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.999
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_near_seam.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_start",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_start.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_end",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_end.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_middle",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_middle.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_near_seam",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.999
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_near_seam.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_v_0_125",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.125,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_v_0_125.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_v_0_25",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.25,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_v_0_25.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_v_0_375",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.375,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_v_0_375.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_v_0_499",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.499,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_v_0_499.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_v_0_501",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.501,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_v_0_501.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_v_0_75",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.75,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_v_0_75.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_v_0_875",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.875,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_v_0_875.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_u_0_125",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.125
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_u_0_125.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_u_0_625",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.625
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_u_0_625.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_u_0_875",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.875
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_u_0_875.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_wide",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        10.0,
+        100.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_wide.3dm"
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_degree",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_degree.3dm",
+      "degree_u": 5,
+      "degree_v": 4
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_u_fixed_0",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_u_fixed_0.3dm",
+      "degree_u": 5,
+      "transpose": true,
+      "fix_edges": false
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "cylinder_v_fixed_0",
+      "shape": "cylinder",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/cylinder_v_fixed_0.3dm",
+      "degree_v": 5,
+      "transpose": true,
+      "fix_edges": false
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "periodic_u_fixed_1",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/periodic_u_fixed_1.3dm",
+      "degree_u": 5,
+      "transpose": true,
+      "fix_edges": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "cylinder_v_fixed_1",
+      "shape": "cylinder",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/cylinder_v_fixed_1.3dm",
+      "degree_v": 5,
+      "transpose": true,
+      "fix_edges": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "sphere_pole_0_0_0_0",
+      "shape": "sphere",
+      "family": "surface_rational",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/sphere_pole_0_0_0_0.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "sphere_pole_1_0_1_0",
+      "shape": "sphere",
+      "family": "surface_rational",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/sphere_pole_1_0_1_0.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "sphere_pole_0_0_0_6",
+      "shape": "sphere",
+      "family": "surface_rational",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/sphere_pole_0_0_0_6.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "sphere_pole_1_0_0_4",
+      "shape": "sphere",
+      "family": "surface_rational",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 0.4,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/sphere_pole_1_0_0_4.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_skew_0_6",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_skew_0_6.3dm",
+      "skew_v": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_skew_0_7",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_skew_0_7.3dm",
+      "skew_v": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_skew_0_85",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.85,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_skew_0_85.3dm",
+      "skew_v": true
+    },
+    {
+      "op": "soft_edit_surface_seams",
+      "id": "torus_wide_fixed",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        10.0,
+        100.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_seams/torus_wide_fixed.3dm",
+      "fix_edges": true
+    }
+  ]
+}

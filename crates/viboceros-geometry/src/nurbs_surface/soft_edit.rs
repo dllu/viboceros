@@ -8,74 +8,82 @@ pub struct SurfaceSoftEdit {
     distances: [Real; 2],
     fix_edges: bool,
     v_falloff: Vec<Real>,
+    site_parameters: Vec<Real>,
+    v_unique: usize,
+    periodic_v: bool,
     tolerance: Tolerance,
 }
 impl SurfaceSoftEdit {
     pub fn anchor(&self) -> Result<Point3, GeometryError> {
         self.source.evaluate(self.parameter[0], self.parameter[1])
     }
-    /// V rows are updated in order. Each U metric uses the evolving tensor,
-    /// so intermediate isocurves retain the effects of earlier row edits.
+    /// Visit each stored V site, starting with its own row and then its seam
+    /// aliases. Every row visit measures U on the evolving surface. Both
+    /// contributions at a repeated seam remain distinct operations.
     pub fn apply(&self, delta: Vector3) -> Result<NurbsSurface, GeometryError> {
         if delta.x() == 0. && delta.y() == 0. && delta.z() == 0. {
             return Ok(self.source.clone());
         }
         let mut result = self.source.clone();
-        let [unique_u, _] = self.source.grip_dimensions();
-        for (v, &factor) in self.v_falloff.iter().enumerate() {
+        for (site, &factor) in self.v_falloff.iter().enumerate() {
             if factor == 0.
-                || (self.fix_edges && (v == 0 || v + 1 == self.source.control_point_count_v))
+                || self.fix_edges
+                    && !self.periodic_v
+                    && (site == 0 || site + 1 == self.source.control_point_count_v)
             {
                 continue;
             }
-            let t = stable_knot_mean(&self.source.knots_v[v + 1..v + self.source.degree_v + 1])?;
-            let t = t.clamp(
-                *self.source.domain_v().start(),
-                *self.source.domain_v().end(),
+            let aliases = std::iter::once(site).chain(
+                (site % self.v_unique..self.source.control_point_count_v)
+                    .step_by(self.v_unique)
+                    .filter(|&v| v != site),
             );
-            let row = result.isocurve_u(t)?;
-            let collapsed = collapsed_controls(row.control_points(), self.tolerance)?;
-            let canonical_pole = collapsed
-                && (v == 0 || v + 1 == result.control_point_count_v)
-                && collapsed_controls(
-                    &self.source.control_points[v * self.source.control_point_count_u
-                        ..(v + 1) * self.source.control_point_count_u],
-                    self.tolerance,
-                )?;
-            let influence = if collapsed {
-                vec![1.; self.source.control_point_count_u]
-            } else {
-                row.prepare_soft_edit(
-                    self.parameter[0],
-                    self.distances[0],
-                    self.fix_edges,
-                    self.tolerance,
-                )?
-                .influences()
-                .to_vec()
-            };
-            for u in 0..result.control_point_count_u {
-                if self.fix_edges && (u == 0 || u + 1 == result.control_point_count_u) {
-                    continue;
-                }
-                let influence = factor * influence[u % unique_u];
-                if influence == 0. {
-                    continue;
-                }
-                let i = result.control_index(u, v);
-                let control = result.control_points[i];
-                // A numerically collapsed boundary has one physical pole.
-                // Keep its controls coincident rather than introducing tiny
-                // boundary edges after degree elevation or rational rounding.
-                let base = if canonical_pole {
-                    self.source.control_points[self.source.control_index(0, v)].point()
+            for v in aliases {
+                let row = result.isocurve_u(self.site_parameters[site])?;
+                let collapsed = collapsed_controls(row.control_points(), self.tolerance)?;
+                let influence = if collapsed {
+                    let mut factors = vec![1.; self.source.control_point_count_u];
+                    if self.fix_edges && !row.is_periodic() {
+                        factors[0] = 0.;
+                        let last = factors.len() - 1;
+                        factors[last] = 0.;
+                    }
+                    factors
                 } else {
-                    control.point()
+                    row.prepare_soft_edit(
+                        self.parameter[0],
+                        self.distances[0],
+                        self.fix_edges,
+                        self.tolerance,
+                    )?
+                    .influences()
+                    .to_vec()
                 };
-                result.control_points[i] = WeightedPoint3::try_new(
-                    base.translated(delta.scaled(influence)?)?,
-                    control.weight(),
-                )?;
+                let canonical_pole = collapsed
+                    && (v == 0 || v + 1 == result.control_point_count_v)
+                    && collapsed_controls(
+                        &result.control_points[v * self.source.control_point_count_u
+                            ..(v + 1) * self.source.control_point_count_u],
+                        self.tolerance,
+                    )?;
+                let pole = result.control_points[result.control_index(0, v)].point();
+                for (u, &u_factor) in influence.iter().enumerate() {
+                    let amount = factor * u_factor;
+                    if amount == 0. {
+                        continue;
+                    }
+                    let i = result.control_index(u, v);
+                    let control = result.control_points[i];
+                    let base = if canonical_pole {
+                        pole
+                    } else {
+                        control.point()
+                    };
+                    result.control_points[i] = WeightedPoint3::try_new(
+                        base.translated(delta.scaled(amount)?)?,
+                        control.weight(),
+                    )?;
+                }
             }
         }
         Ok(result)
@@ -110,11 +118,6 @@ impl NurbsSurface {
         tolerance: Tolerance,
     ) -> Result<SurfaceSoftEdit, GeometryError> {
         self.evaluate(parameter[0], parameter[1])?;
-        if self.is_closed_v()? {
-            return Err(GeometryError::Degenerate {
-                context: "surface soft edit currently requires an open V direction",
-            });
-        }
         require_finite(distances, "surface soft edit distances")?;
         if distances.iter().any(|&d| d <= 0.) {
             return Err(GeometryError::Degenerate {
@@ -122,20 +125,37 @@ impl NurbsSurface {
             });
         }
         let v_curve = self.isocurve_v(parameter[0])?;
-        let v_falloff = if collapsed_controls(v_curve.control_points(), tolerance)? {
+        let collapsed_v = collapsed_controls(v_curve.control_points(), tolerance)?;
+        let v_falloff = if collapsed_v {
             vec![1.; self.control_point_count_v]
         } else {
-            v_curve
-                .prepare_soft_edit(parameter[1], distances[1], false, tolerance)?
-                .influences()
-                .to_vec()
+            v_curve.soft_edit_site_falloff(parameter[1], distances[1], tolerance)?
         };
+        // Alias layout belongs to the selected V isocurve, not to the
+        // complete tensor. After a seam-opening edit another isocurve can
+        // remain closed or periodic, and must retain its own local aliases.
+        let periodic_v = v_curve.is_periodic();
+        let v_unique = if collapsed_v {
+            self.control_point_count_v
+        } else {
+            v_curve.grip_count()?
+        };
+        let domain = self.domain_v();
+        let site_parameters = (0..self.control_point_count_v)
+            .map(|v| {
+                stable_knot_mean(&self.knots_v[v + 1..v + self.degree_v + 1])
+                    .map(|t| t.clamp(*domain.start(), *domain.end()))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
         Ok(SurfaceSoftEdit {
             source: self.clone(),
             parameter,
             distances,
             fix_edges,
             v_falloff,
+            site_parameters,
+            v_unique,
+            periodic_v,
             tolerance,
         })
     }
@@ -246,17 +266,19 @@ mod tests {
         );
     }
     #[test]
-    fn closed_v_plans_decline_without_mutating_the_source() {
+    fn closed_v_keeps_unfolded_sites_and_visits_both_aliases() {
         let s = NurbsSurface::try_new(
             1,
             1,
             2,
-            3,
+            4,
             [
                 [0., 0., 0.],
                 [1., 0., 0.],
                 [0., 1., 0.],
-                [1., 1., 1.],
+                [1., 1., 0.],
+                [0., 0., 1.],
+                [1., 0., 1.],
                 [0., 0., 0.],
                 [1., 0., 0.],
             ]
@@ -264,16 +286,82 @@ mod tests {
             .map(|p| Point3::try_from(p).unwrap())
             .collect(),
             vec![0., 0., 1., 1.],
-            vec![0., 0., 1., 2., 2.],
+            vec![0., 0., 1., 2., 3., 3.],
         )
         .unwrap();
         assert!(s.is_closed_v().unwrap());
         let original = s.clone();
-        assert!(
-            s.prepare_soft_edit([0.5, 1.], [2., 2.], false, Tolerance::DEFAULT)
-                .is_err()
+        let start = s
+            .prepare_soft_edit([0.5, 0.25], [2., 2.], false, Tolerance::DEFAULT)
+            .unwrap();
+        // Both U controls translate equally, so every evolving U isocurve
+        // keeps length one. The closing V rows must each receive the two
+        // distinct endpoint Gaussian contributions around the triangular path.
+        let u_factor = (-4.5_f64 * (0.5_f64 / 2.).powi(2)).exp();
+        let start_factor = (-4.5_f64 * (0.25_f64 / 2.).powi(2)).exp();
+        let end_gap = 2. + 2_f64.sqrt() - 0.25;
+        let end_factor = (-4.5 * (end_gap / 2.).powi(2)).exp();
+        let expected_z = u_factor * (start_factor + end_factor);
+        let edited = start.apply(Vector3::try_new(0., 0., 1.).unwrap()).unwrap();
+        for u in 0..2 {
+            for v in [0, 3] {
+                let p = edited.control_point(u, v).unwrap().point();
+                assert!((p.z() - expected_z).abs() < 1e-13);
+                assert_eq!(p.x(), u as Real);
+                assert_eq!(p.y(), 0.);
+            }
+        }
+        assert_eq!(
+            start.apply(Vector3::try_new(0., 0., 0.).unwrap()).unwrap(),
+            original
         );
         assert_eq!(s, original);
+    }
+    #[test]
+    fn periodic_alias_visits_follow_the_selected_isocurve_after_a_seam_opens() {
+        let points = [
+            [0., 0., 0.],
+            [1., 3., 0.],
+            [3., -1., 0.],
+            [5., 0., 0.],
+            [0., 0., 0.],
+            [1., 3., 0.],
+            [3., -1., 0.],
+        ];
+        let s = NurbsSurface::try_new(
+            1,
+            3,
+            2,
+            7,
+            points
+                .into_iter()
+                .flat_map(|p| {
+                    [
+                        Point3::try_from(p).unwrap(),
+                        Point3::try_new(p[0], p[1], 6.).unwrap(),
+                    ]
+                })
+                .collect(),
+            vec![0., 0., 6., 6.],
+            (-3..=7).map(|x| x as Real).collect(),
+        )
+        .unwrap();
+        let original = s.clone();
+        assert!(s.is_periodic_v());
+        let q = s
+            .prepare_soft_edit([0., 2.], [4., 4.], false, Tolerance::DEFAULT)
+            .unwrap()
+            .apply(Vector3::try_new(-1., 0.2, 2.2).unwrap())
+            .unwrap();
+        assert_eq!(s, original);
+        assert_eq!(q.control_point(0, 0), q.control_point(0, 4));
+        assert_ne!(q.control_point(1, 0), q.control_point(1, 4));
+        assert!(!q.is_periodic_v());
+        let next = q
+            .prepare_soft_edit([0., 2.], [4., 4.], false, Tolerance::DEFAULT)
+            .unwrap();
+        assert!(next.periodic_v);
+        assert_eq!(next.v_unique, 4);
     }
     #[test]
     fn collapsed_isocurves_at_poles_have_finite_falloff() {

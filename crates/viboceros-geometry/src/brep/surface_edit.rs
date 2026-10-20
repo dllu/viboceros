@@ -1,6 +1,7 @@
 //! Rebuild model-space boundaries after an underlying control-net edit.
 use super::*;
 use crate::PointMorph;
+mod topology;
 const MAX_TRIM_IMAGE_CONTROLS: usize = 4096;
 const MAX_EDIT_CERTIFICATE_WORK: usize = 16_000_000;
 struct SurfaceImage<'a>(&'a NurbsSurface);

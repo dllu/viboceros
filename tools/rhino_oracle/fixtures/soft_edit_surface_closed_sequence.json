@@ -1,0 +1,617 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "torus_repeat",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": false,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/torus_repeat.3dm",
+      "unfinished": [
+        0.4,
+        0.7
+      ]
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "torus_copy",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": true,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/torus_copy.3dm"
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "torus_toggle",
+      "shape": "torus",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": true,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "copy": false
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ],
+          "copy": true
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/torus_toggle.3dm"
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "periodic_repeat",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": false,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/periodic_repeat.3dm",
+      "unfinished": [
+        0.4,
+        0.7
+      ]
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "periodic_copy",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": true,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/periodic_copy.3dm"
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "periodic_toggle",
+      "shape": "periodic",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": true,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "copy": false
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ],
+          "copy": true
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/periodic_toggle.3dm"
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "sphere_repeat",
+      "shape": "sphere",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": false,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/sphere_repeat.3dm",
+      "transpose": true,
+      "unfinished": [
+        0.4,
+        0.7
+      ]
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "sphere_copy",
+      "shape": "sphere",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": true,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/sphere_copy.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "sphere_toggle",
+      "shape": "sphere",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": true,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "copy": false
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ],
+          "copy": true
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/sphere_toggle.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "cylinder_repeat",
+      "shape": "cylinder",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": false,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/cylinder_repeat.3dm",
+      "transpose": true,
+      "unfinished": [
+        0.4,
+        0.7
+      ]
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "cylinder_copy",
+      "shape": "cylinder",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": true,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/cylinder_copy.3dm",
+      "transpose": true
+    },
+    {
+      "op": "soft_edit_surface_closed_sequence",
+      "id": "cylinder_toggle",
+      "shape": "cylinder",
+      "family": "surface_rational",
+      "stations": [
+        0.35
+      ],
+      "v_fraction": 0.6,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.3,
+        -0.2,
+        2.0
+      ],
+      "constraint": "None",
+      "copy": true,
+      "moves": [
+        {
+          "uv": [
+            0.2,
+            0.3
+          ],
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "copy": false
+        },
+        {
+          "uv": [
+            0.7,
+            0.8
+          ],
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ],
+          "copy": true
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_closed_sequence/cylinder_toggle.3dm",
+      "transpose": true
+    }
+  ]
+}

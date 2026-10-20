@@ -6,6 +6,10 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'soft_edit_surface_closed_sequence': ('soft_edit_surface_closed_sequence_probe', ('soft_edit_surface_seams_probe','soft_edit_surface_shapes_probe','soft_edit_surface_probe','soft_edit_curve_probe','insert_kink_probe','join_probe','merge_edges_probe')),
+    'soft_edit_surface_seams': ('soft_edit_surface_seams_probe', ('soft_edit_surface_shapes_probe','soft_edit_surface_probe','soft_edit_curve_probe','insert_kink_probe','join_probe','merge_edges_probe')),
+    'soft_edit_surface_repeat_sdk': ('soft_edit_surface_repeat_sdk_probe', ()),
+    'soft_edit_surface_sdk': ('soft_edit_surface_sdk_probe', ()),
     'soft_edit_surface_sequence': ('soft_edit_surface_sequence_probe', ('soft_edit_surface_probe','soft_edit_curve_probe','insert_kink_probe','join_probe','merge_edges_probe')),
     'soft_edit_surface_shapes': ('soft_edit_surface_shapes_probe', ('soft_edit_surface_probe','soft_edit_curve_probe','insert_kink_probe','join_probe','merge_edges_probe')),
     'soft_edit_surface_command': ('soft_edit_surface_probe', ('soft_edit_curve_probe','insert_kink_probe','join_probe','merge_edges_probe')),

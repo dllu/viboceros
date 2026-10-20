@@ -44,16 +44,7 @@ impl NurbsCurve {
         fix_ends: bool,
         tolerance: Tolerance,
     ) -> Result<CurveSoftEdit, GeometryError> {
-        self.validate_parameter(parameter)?;
-        require_finite([distance], "soft edit distance")?;
-        if distance <= 0. {
-            return Err(GeometryError::Degenerate {
-                context: "soft edit distance must be positive",
-            });
-        }
-        let lengths = ArcLengthSampler::try_new(CurveRef::NurbsCurve(self), tolerance)?;
-        let center = lengths.distance_at_parameter(parameter)?;
-        let domain = self.domain();
+        let sites = self.soft_edit_site_falloff(parameter, distance, tolerance)?;
         let count = self.control_points.len();
         let mut influence = vec![0.; count];
         let periodic = self.is_periodic();
@@ -69,14 +60,11 @@ impl NurbsCurve {
         } else {
             count
         };
-        for i in 0..count {
-            let t = self.control_greville_parameter(i)?;
-            if !domain.contains(&t) || (fix_ends && !periodic && (i == 0 || i + 1 == count)) {
+        for (i, factor) in sites.into_iter().enumerate() {
+            if fix_ends && !periodic && (i == 0 || i + 1 == count) {
                 continue;
             }
-            let gap = (lengths.distance_at_parameter(t)? - center).abs();
-            let ratio = gap / distance;
-            influence[i % unique] += (-4.5 * ratio * ratio).exp();
+            influence[i % unique] += factor;
         }
         for i in unique..count {
             influence[i] = influence[i % unique];
@@ -86,6 +74,35 @@ impl NurbsCurve {
             influence,
             anchor: self.evaluate(parameter)?,
         })
+    }
+    /// Unfolded stored-site factors. Surface edits visit each site's aliases
+    /// separately and recompute the other directional metric after every visit.
+    pub(crate) fn soft_edit_site_falloff(
+        &self,
+        parameter: Real,
+        distance: Real,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Real>, GeometryError> {
+        self.validate_parameter(parameter)?;
+        require_finite([distance], "soft edit distance")?;
+        if distance <= 0. {
+            return Err(GeometryError::Degenerate {
+                context: "soft edit distance must be positive",
+            });
+        }
+        let lengths = ArcLengthSampler::try_new(CurveRef::NurbsCurve(self), tolerance)?;
+        let center = lengths.distance_at_parameter(parameter)?;
+        let domain = self.domain();
+        let count = self.control_points.len();
+        let mut influence = vec![0.; count];
+        for (i, factor) in influence.iter_mut().enumerate() {
+            let t = self.control_greville_parameter(i)?;
+            if domain.contains(&t) {
+                let ratio = (lengths.distance_at_parameter(t)? - center).abs() / distance;
+                *factor = (-4.5 * ratio * ratio).exp();
+            }
+        }
+        Ok(influence)
     }
 }
 

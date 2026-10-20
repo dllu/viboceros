@@ -17,6 +17,7 @@ fn native_surface_soft_edit_application_previews_cancel_selection_and_history() 
     for (dataset, count) in [
         ("soft_edit_surface_command", 108),
         ("soft_edit_surface_shapes", 105),
+        ("soft_edit_surface_seams", 55),
     ] {
         let capture: Value = serde_json::from_str(
             &std::fs::read_to_string(root.join(format!("observations/{dataset}.json"))).unwrap(),
@@ -50,23 +51,6 @@ fn native_surface_soft_edit_application_previews_cancel_selection_and_history() 
                 }
                 app.document.clear_history().unwrap();
                 let before = app.document.objects().cloned().collect::<Vec<_>>();
-                if viboceros_command::surface_reference::surface(
-                    app.document.object(id).unwrap().geometry(),
-                    None,
-                )
-                .unwrap()
-                .0
-                .is_closed_v()
-                .unwrap()
-                {
-                    enter(&mut app, "SoftEditSrf");
-                    app.pick_refinement_object(Some(id));
-                    assert!(app.refinement_prompt.as_ref().unwrap().selecting());
-                    app.cancel_current_prompt_or_selection();
-                    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
-                    eprintln!("SOFT_EDIT_SURFACE_UI_DEFERRED {name}: closed V");
-                    return;
-                }
 
                 enter(&mut app, "SoftEditSrf");
                 assert!(app.refinement_prompt.is_some(), "{name}: prompt");
@@ -133,6 +117,12 @@ fn native_surface_soft_edit_application_previews_cancel_selection_and_history() 
                 }
                 assert!(app.refinement_prompt.is_none(), "{name}: ended");
                 let mut gap = surface_comparison::check(&app.document, &v["after"], id, name);
+                gap = gap.max(surface_comparison::check_boundaries(
+                    &app.document,
+                    v,
+                    id,
+                    name,
+                ));
                 if v["undo"].is_array() {
                     assert_eq!(app.document.undo_label(), Some("SoftEditSrf"));
                     enter(&mut app, "Undo");
@@ -154,7 +144,16 @@ fn native_surface_soft_edit_application_previews_cancel_selection_and_history() 
                     "SOFT_EDIT_SURFACE_UI_AUDIT {}",
                     serde_json::json!({"dataset":dataset,"id":name,"maximum_error":gap})
                 );
-                assert!(gap <= 5e-8, "{name}: difference {gap}");
+                let closed_v =
+                    viboceros_command::surface_reference::surface(before[0].geometry(), None)
+                        .unwrap()
+                        .0
+                        .is_closed_v()
+                        .unwrap();
+                assert!(
+                    gap <= if closed_v { 1e-7 } else { 5e-8 },
+                    "{name}: difference {gap}"
+                );
             }));
             if result.is_err() {
                 failures.push(name.to_owned());
@@ -169,20 +168,28 @@ fn native_surface_soft_edit_application_previews_cancel_selection_and_history() 
 
 #[test]
 fn native_repeated_surface_getters_copy_toggles_and_atomic_history() {
+    assert_repeated_surface_workflows("soft_edit_surface_sequence", 16);
+}
+
+#[test]
+fn native_repeated_closed_surface_workflows() {
+    assert_repeated_surface_workflows("soft_edit_surface_closed_sequence", 12);
+}
+
+fn assert_repeated_surface_workflows(stem: &str, count: usize) {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tools/rhino_oracle");
     let capture: Value = serde_json::from_str(
-        &std::fs::read_to_string(root.join("observations/soft_edit_surface_sequence.json"))
-            .unwrap(),
+        &std::fs::read_to_string(root.join(format!("observations/{stem}.json"))).unwrap(),
     )
     .unwrap();
-    assert_eq!(capture["results"].as_array().unwrap().len(), 16);
+    assert_eq!(capture["results"].as_array().unwrap().len(), count);
     for row in capture["results"].as_array().unwrap() {
         let name = row["id"].as_str().unwrap();
         let v = &row["value"];
         let recipe = &v["recipe"];
         let mut app = test_app();
         app.document = viboceros_command::open_3dm_with_views(
-            root.join(format!("fixtures/soft_edit_surface_sequence/{name}.3dm"))
+            root.join(format!("fixtures/{stem}/{name}.3dm"))
                 .to_str()
                 .unwrap(),
         )
@@ -237,6 +244,14 @@ fn native_repeated_surface_getters_copy_toggles_and_atomic_history() {
                 &format!("w{}", format_model_point(point(&pair[1]))),
             );
         }
+        if let Some(last) = v["all_points"]
+            .as_array()
+            .unwrap()
+            .last()
+            .filter(|_| v["all_points"].as_array().unwrap().len() % 2 == 1)
+        {
+            enter(&mut app, &format!("w{}", format_model_point(point(last))));
+        }
         if recipe["cancel"] == true {
             app.cancel_current_prompt_or_selection();
         } else {
@@ -244,24 +259,41 @@ fn native_repeated_surface_getters_copy_toggles_and_atomic_history() {
         }
         assert!(app.refinement_prompt.is_none());
         let mut gap = surface_comparison::check(&app.document, &v["after"], id, name);
-        enter(&mut app, "Undo");
-        gap = gap.max(surface_comparison::check(
+        gap = gap.max(surface_comparison::check_boundaries(
             &app.document,
-            &v["undo"],
+            v,
             id,
             name,
         ));
-        enter(&mut app, "Redo");
-        gap = gap.max(surface_comparison::check(
-            &app.document,
-            &v["redo"],
-            id,
-            name,
-        ));
+        if v["undo"].is_array() {
+            enter(&mut app, "Undo");
+            gap = gap.max(surface_comparison::check(
+                &app.document,
+                &v["undo"],
+                id,
+                name,
+            ));
+            enter(&mut app, "Redo");
+            gap = gap.max(surface_comparison::check(
+                &app.document,
+                &v["redo"],
+                id,
+                name,
+            ));
+        } else {
+            assert!(app.document.undo_label().is_none());
+        }
         eprintln!(
             "SOFT_EDIT_SURFACE_SEQUENCE_UI_AUDIT {}",
-            serde_json::json!({"id":name,"maximum_error":gap})
+            serde_json::json!({"dataset":stem,"id":name,"maximum_error":gap})
         );
-        assert!(gap <= 1e-7, "{name}: difference {gap}");
+        assert!(
+            gap <= if stem == "soft_edit_surface_closed_sequence" {
+                2e-7
+            } else {
+                1e-7
+            },
+            "{name}: difference {gap}"
+        );
     }
 }

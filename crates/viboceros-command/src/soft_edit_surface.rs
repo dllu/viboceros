@@ -188,11 +188,6 @@ impl Draft {
             .ok_or(CommandError::Usage(USAGE))?
             .0
             .clone();
-        if surface.is_closed_v()? {
-            return Err(CommandError::Usage(
-                "SoftEditSrf currently requires an open V direction",
-            ));
-        }
         Ok(Self {
             state: crate::soft_edit_state::SoftEditState::new(state),
             surface,
@@ -281,9 +276,9 @@ impl Draft {
     fn edited_geometry(&self, surface: NurbsSurface) -> Result<Geometry, CommandError> {
         Ok(match self.state.working_geometry() {
             Geometry::NurbsSurface(_) => Geometry::NurbsSurface(surface),
-            Geometry::Brep(b) => {
-                Geometry::Brep(b.try_with_edited_single_surface(surface, self.state.tolerance)?)
-            }
+            Geometry::Brep(b) => Geometry::Brep(
+                b.try_with_topology_preserving_surface_edit(surface, self.state.tolerance)?,
+            ),
             _ => return Err(CommandError::Usage(USAGE)),
         })
     }
@@ -297,6 +292,27 @@ impl Draft {
             }
             let surface = self.prepared.as_ref().unwrap().apply(delta)?;
             let result = self.edited_geometry(surface.clone())?;
+            // Native insertion declines a copy whose single-vertex edge is
+            // geometrically open, even when its component tolerance covers it.
+            let rejected_copy = if self.options.copy {
+                if let Geometry::Brep(b) = &result {
+                    let mut rejected = false;
+                    for e in b.edges() {
+                        if e.vertices()[0] == e.vertices()[1] && !e.curve().is_closed()? {
+                            rejected = true;
+                        }
+                    }
+                    rejected
+                } else {
+                    false
+                }
+            } else {
+                false
+            };
+            if rejected_copy || (!self.options.copy && &result == self.state.working_geometry()) {
+                self.cancel_offset();
+                return Ok(());
+            }
             if !self.options.copy {
                 self.surface = surface;
             }
@@ -312,6 +328,15 @@ impl Draft {
             )?
             .ok_or(CommandError::Usage(USAGE))?
             .uv;
+            let mut raw = raw;
+            // The public native closest-point chart represents a periodic
+            // seam by its upper endpoint. Keep ordinary clamped seams distinct.
+            if self.surface.is_periodic_u() && raw[0] == *self.surface.domain_u().start() {
+                raw[0] = *self.surface.domain_u().end();
+            }
+            if self.surface.is_periodic_v() && raw[1] == *self.surface.domain_v().start() {
+                raw[1] = *self.surface.domain_v().end();
+            }
             let stations = self.surface.soft_edit_parameters()?;
             let uv = std::array::from_fn(|axis| {
                 *stations[axis]
@@ -346,6 +371,10 @@ impl Draft {
     }
     pub fn commit(&self, doc: &mut Document, post: bool) -> Result<String, CommandError> {
         let retain = matches!(&*self.state.source,Geometry::Brep(b)if !b.faces()[0].is_untrimmed(self.state.tolerance)?);
-        self.state.commit(doc, post, retain)
+        let message = self.state.commit(doc, post, retain)?;
+        if post && self.picks() == 0 {
+            doc.clear_selection();
+        }
+        Ok(message)
     }
 }
