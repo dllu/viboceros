@@ -1,0 +1,65 @@
+{
+  "protocol_version": 1,
+  "iterations": 5,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Reverse_Curve",
+      "shape": "Curve",
+      "axis": "Reverse"
+    },
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Reverse_Surface",
+      "shape": "Surface",
+      "axis": "Reverse"
+    },
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Reverse_Box",
+      "shape": "Box",
+      "axis": "Reverse"
+    },
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Spatial_Curve",
+      "shape": "Curve",
+      "axis": "Spatial"
+    },
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Spatial_Surface",
+      "shape": "Surface",
+      "axis": "Spatial"
+    },
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Spatial_Box",
+      "shape": "Box",
+      "axis": "Spatial"
+    },
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Skew_Curve",
+      "shape": "Curve",
+      "axis": "Skew"
+    },
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Skew_Surface",
+      "shape": "Surface",
+      "axis": "Skew"
+    },
+    {
+      "op": "morph_fit_benchmark",
+      "id": "axis_Skew_Box",
+      "shape": "Box",
+      "axis": "Skew"
+    }
+  ]
+}

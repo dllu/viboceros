@@ -72,6 +72,9 @@ impl StretchPointMorph {
     pub fn new_length(self) -> Real {
         self.new_length
     }
+    pub(crate) fn axis(self) -> (Point3, UnitVector3) {
+        (self.start, self.direction)
+    }
     pub fn rigid_transform(self, center: Point3) -> Result<AffineTransform3, GeometryError> {
         if self.is_identity() {
             Ok(AffineTransform3::identity())
@@ -202,6 +205,11 @@ impl PointMorph for StretchPointMorph {
         if self.is_identity() {
             Ok(brep.clone())
         } else {
+            if !self.preserve_structure
+                && let Ok(Some(result)) = brep.try_stretch_affine_faces(self, tolerance)
+            {
+                return Ok(result);
+            }
             brep.morphed(
                 &self.with_preserve_structure(self.preserve_structure && brep.faces().len() == 1),
                 tolerance,

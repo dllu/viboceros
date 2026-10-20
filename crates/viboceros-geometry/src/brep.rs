@@ -66,6 +66,7 @@ mod tolerance;
 use tolerance::scaled_tolerance;
 mod reparameterize;
 mod retrim;
+mod stretch;
 mod surface_cut_pullback;
 mod surface_edit;
 mod surface_refine;

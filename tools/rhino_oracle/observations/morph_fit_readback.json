@@ -1,0 +1,166 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": null,
+        "maximum_inverse_distance": 3.053643372921965e-06,
+        "valid": true,
+        "maximum_forward_distance": 2.807843771371036e-06,
+        "solid": null,
+        "forward_samples": 257,
+        "reverse_samples": 257,
+        "geometry_type": "NurbsCurve",
+        "diagnostics": ""
+      },
+      "id": "axis_Reverse_Curve"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": 1,
+        "maximum_inverse_distance": 7.105427357601002e-15,
+        "valid": true,
+        "maximum_forward_distance": 5.4930801582266845e-15,
+        "solid": false,
+        "forward_samples": 625,
+        "reverse_samples": 625,
+        "geometry_type": "Brep",
+        "diagnostics": ""
+      },
+      "id": "axis_Reverse_Surface"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": 6,
+        "maximum_inverse_distance": 3.5596458096434965e-15,
+        "valid": true,
+        "maximum_forward_distance": 7.108895957933346e-15,
+        "solid": true,
+        "forward_samples": 3750,
+        "reverse_samples": 3750,
+        "geometry_type": "Brep",
+        "diagnostics": ""
+      },
+      "id": "axis_Reverse_Box"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": null,
+        "maximum_inverse_distance": 7.2359323323530285e-06,
+        "valid": true,
+        "maximum_forward_distance": 3.2478221277637984e-06,
+        "solid": null,
+        "forward_samples": 257,
+        "reverse_samples": 257,
+        "geometry_type": "NurbsCurve",
+        "diagnostics": ""
+      },
+      "id": "axis_Spatial_Curve"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": 1,
+        "maximum_inverse_distance": 4.788138475230814e-15,
+        "valid": true,
+        "maximum_forward_distance": 5.881301029635769e-15,
+        "solid": false,
+        "forward_samples": 625,
+        "reverse_samples": 559,
+        "geometry_type": "Brep",
+        "diagnostics": ""
+      },
+      "id": "axis_Spatial_Surface"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": 6,
+        "maximum_inverse_distance": 1.2139566625567828e-14,
+        "valid": true,
+        "maximum_forward_distance": 6.335327934766282e-15,
+        "solid": true,
+        "forward_samples": 3750,
+        "reverse_samples": 2814,
+        "geometry_type": "Brep",
+        "diagnostics": ""
+      },
+      "id": "axis_Spatial_Box"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": null,
+        "maximum_inverse_distance": 1.3384254231575302e-05,
+        "valid": true,
+        "maximum_forward_distance": 6.972396323927963e-06,
+        "solid": null,
+        "forward_samples": 257,
+        "reverse_samples": 257,
+        "geometry_type": "NurbsCurve",
+        "diagnostics": ""
+      },
+      "id": "axis_Skew_Curve"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": 1,
+        "maximum_inverse_distance": 3.580361673049448e-15,
+        "valid": true,
+        "maximum_forward_distance": 4.463041323674983e-15,
+        "solid": false,
+        "forward_samples": 625,
+        "reverse_samples": 567,
+        "geometry_type": "Brep",
+        "diagnostics": ""
+      },
+      "id": "axis_Skew_Surface"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "faces": 6,
+        "maximum_inverse_distance": 7.105427357601002e-15,
+        "valid": true,
+        "maximum_forward_distance": 5.582114810376975e-15,
+        "solid": true,
+        "forward_samples": 3750,
+        "reverse_samples": 2902,
+        "geometry_type": "Brep",
+        "diagnostics": ""
+      },
+      "id": "axis_Skew_Box"
+    }
+  ],
+  "engine": "rhino",
+  "iterations": 1,
+  "provenance": {
+    "request_sha256": "49f7f3e8057fe17c4721c8e43ca21e06155d5ecf1369cb7fe3f119cf9d7c36e9",
+    "sources": {
+      "generate_morph_fit_readback.py": "1520cd192d58ac911edc2679a31276f8f1ee20dbd392fb5ac91eeca893adf758",
+      "morph_fit_readback_probe.py": "057a4d22137b7c8e179b9a26c6a9267721658883713899375b8738e56337c702",
+      "generate_morph_fit_benchmark.py": "f389ec1b4adf80839992962f8ae187895d3823c4b4a8474768a46efbb04f76be",
+      "morph_fit_benchmark_probe.py": "86cd3bff6ac2c4d228b6a18c04dddad5d2a5f8ffe94a43e554c21406a7b16d13",
+      "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+      "rhino_worker.py": "a3763a19a6d1ee19d6b9048689c0fb12a8c45123a61e18dd6068666497b48248",
+      "structural_sdk.py": "2fea5bce97d0f69dbff79c4feeb8540b3916ff0c7000d70339c32106bd04a432"
+    },
+    "fixtures": {
+      "axis_Reverse_Curve.3dm": "c430c6cfa8e63357afe7a3e910f455bebfd7605d1673a13097d32c45f03654a0",
+      "axis_Reverse_Surface.3dm": "fbd562a3a9a785669c0a3a48d0f88721218871f5eebb04625ce66973a379d782",
+      "axis_Reverse_Box.3dm": "4c4cb3929793f8e56991725c197a8a7ac9ebddadb1b43c656ff3a76b6fa3795a",
+      "axis_Spatial_Curve.3dm": "d0d3c5e0581f779b2d16c4b0da983a1fcd0d5b447879c231668f9a26891b449b",
+      "axis_Spatial_Surface.3dm": "bc373eb9b0f877ce0632fd36498b7b1de8a80c0fdc9fee7918ba23e9654ea7a8",
+      "axis_Spatial_Box.3dm": "878a15cfb850e00ea6f40da094c907897dc61094dbf96aaf8dc59f1a04013f9c",
+      "axis_Skew_Curve.3dm": "65770f8e4b119a03c2d26dc52186d3d9ec3269582345bd55887c4aaf73eb91f4",
+      "axis_Skew_Surface.3dm": "e32fdf7f6b3a89f02db1b2ba07da39242bb5999606e50907e280d11992fbe89c",
+      "axis_Skew_Box.3dm": "f68850828eb07874a5b6f9b5211d94307ffadf90fa53db60018695161c229141"
+    }
+  }
+}

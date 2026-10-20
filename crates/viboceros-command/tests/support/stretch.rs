@@ -245,6 +245,7 @@ fn check_fit(actual: &Geometry, source: &Geometry, map: &impl PointMorph, label:
             .chain(std::iter::once(1.))
             .collect::<Vec<_>>();
         for (a, s) in a.faces().iter().zip(s.faces()) {
+            let correspondence = morph::face_parameter_correspondence(s, a);
             let sample = |surface: &viboceros_geometry::NurbsSurface, u: Real, v: Real| {
                 let du = surface.domain_u();
                 let dv = surface.domain_v();
@@ -257,7 +258,14 @@ fn check_fit(actual: &Geometry, source: &Geometry, map: &impl PointMorph, label:
             };
             for &v in &stations {
                 for &u in &stations {
-                    near(sample(a.surface(), u, v), sample(s.surface(), u, v));
+                    let (mapped_u, mapped_v) = correspondence(
+                        s.surface().parameter_at_u(u).unwrap(),
+                        s.surface().parameter_at_v(v).unwrap(),
+                    );
+                    near(
+                        a.surface().evaluate(mapped_u, mapped_v).unwrap(),
+                        sample(s.surface(), u, v),
+                    );
                 }
             }
         }

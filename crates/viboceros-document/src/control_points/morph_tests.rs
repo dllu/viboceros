@@ -1,6 +1,70 @@
 use super::*;
 use viboceros_geometry::{NurbsCurve, PointMorph, WeightedPoint3};
 struct Warp;
+
+#[test]
+fn control_grips_on_an_axially_reparameterized_face_rebuild_boundaries_and_history() {
+    use viboceros_geometry::{AffineTransform3, Brep, NurbsSurface, StretchPointMorph, Vector3};
+    let t = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+    let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let surface = NurbsSurface::try_new(
+        1,
+        1,
+        2,
+        2,
+        vec![
+            p(1., -1., 0.),
+            p(3., -1., 0.),
+            p(1., -1., 10.),
+            p(3., -1., 10.),
+        ],
+        vec![0., 0., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let source = Brep::try_surface_face(surface, t).unwrap();
+    let a = p(1., 2., 3.);
+    let b = p(4., -2., 11.);
+    let morph = StretchPointMorph::try_new(a, b, a.distance_to(b).unwrap() * 0.5).unwrap();
+    let shape = morph
+        .morph_brep(&source, Tolerance::try_new(4e-5, 1e-12, 1e-10).unwrap())
+        .unwrap();
+    assert!(
+        shape.faces()[0]
+            .rectangular_trim_bounds(t)
+            .unwrap()
+            .is_none()
+    );
+    let mut doc = Document::new(t);
+    let id = doc.add_geometry(Geometry::Brep(shape)).unwrap();
+    doc.enable_control_points([id]).unwrap();
+    let grip = ControlPointId {
+        object: id,
+        index: 0,
+    };
+    doc.select_control_points([grip], SelectionMode::Replace)
+        .unwrap();
+    doc.clear_history().unwrap();
+    let original = doc.object(id).unwrap().geometry().clone();
+    let locations = original.grip_locations(GripMode::Control).unwrap();
+    let offset = Vector3::try_new(0., 0.25, 0.).unwrap();
+    doc.transform_objects_and_grips(
+        [],
+        [grip],
+        AffineTransform3::from_translation(offset),
+        false,
+        CopyGroupPolicy::Preserve,
+    )
+    .unwrap();
+    let edited = doc.object(id).unwrap().geometry().clone();
+    let changed = edited.grip_locations(GripMode::Control).unwrap();
+    assert_eq!(changed[0], locations[0].translated(offset).unwrap());
+    assert_eq!(changed[1..], locations[1..]);
+    assert!(doc.undo().unwrap().is_some());
+    assert_eq!(doc.object(id).unwrap().geometry(), &original);
+    assert!(doc.redo().unwrap().is_some());
+    assert_eq!(doc.object(id).unwrap().geometry(), &edited);
+}
 impl PointMorph for Warp {
     fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
         Point3::try_new(p.x(), p.y(), p.z() + p.x() * p.y() + 1.)

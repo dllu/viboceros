@@ -1,0 +1,608 @@
+{
+  "validated_at": "2026-10-20T02:50:18.343082+00:00",
+  "base_commit": "35f98847e9fc8cde3855a8aa102219821a0d63de",
+  "feature": "Ruled cubic Stretch charts for exactly affine B-rep faces and scalar-equivalent batched surface-fit validation",
+  "sources": {
+    "crates/viboceros-command/examples/profile_morph_fits.rs": "78fa3655fb3b3883b5a5b40a29b686314e17093180f716c86f2b33e827f2e98b",
+    "crates/viboceros-command/src/morph_test_support.rs": "3e6a39456f8f2e7d3552059c064ad35f266d8ab97c7c7bc2b517bfba614e9085",
+    "crates/viboceros-command/src/stretch.rs": "695b97cbf174ff0cfccf9a6d9baf462e14327b56b55bb3effaea20f845d3d1f9",
+    "crates/viboceros-command/tests/stretch_command.rs": "2f1d234cc0ed05c7da538ca42d6e5ac0ba435b5a8a8413fb5332b978bcd8f36e",
+    "crates/viboceros-command/tests/support/stretch.rs": "57a03652b0451ff9e7e8c05b36fa49331c1c48a681b0569d50e610f59dd178a0",
+    "crates/viboceros-document/src/control_points/geometry.rs": "2042dd44e22b9d58aad3617ae861229b9fc332c1f4a64ab85a68e6eb81ba9843",
+    "crates/viboceros-document/src/control_points/morph_tests.rs": "f5d7f7c2234a5a20ab0dd6aafedb9fd43e8312e2150552767de795ac250cb692",
+    "crates/viboceros-geometry/src/brep.rs": "92077a8ba797530de845c2baf3e55152eb697da21475827e38866ae3196f0c02",
+    "crates/viboceros-geometry/src/brep/stretch.rs": "aed17c27fa7925fba1c5c141077eb56b28cd030fdc4b1e98e3c4c90290ce0d4a",
+    "crates/viboceros-geometry/src/brep/stretch/tests.rs": "459ed8de4e5243d910300e2ad5661642d9ede18bb0bfa8a91bdf5c0d1812e118",
+    "crates/viboceros-geometry/src/brep/surface_edit.rs": "bb3ee0a5b37432036ac76182cc989782f2ce4dbe4e2c8a1b80bb83bfddb5554e",
+    "crates/viboceros-geometry/src/morph/surface_fit/validate.rs": "5b8170321001c9e6f9dce6093d4dd891a23c2fbe43ac9bef5cf0389258e71890",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/affine.rs": "665d65cd2bc664e4e0cf816e8b082550dd5b28607776c5afe8b54f741e8c56eb",
+    "crates/viboceros-geometry/src/nurbs_surface/evaluate/grid.rs": "82c149d282752f1667e0df519354614c1b4fa3b877a147341bf6d96b53b5ef4a",
+    "crates/viboceros-geometry/src/nurbs_surface/evaluate/grid/tests.rs": "923d4c628c0824542955e22b35e35d58bf1ca323e915e707b0be359ffaf4d4b3",
+    "crates/viboceros-geometry/src/stretch.rs": "4ea7ba10c21c4514d9fe07b0f5e3987c5c4ea00749cc197c246ab7cc270c98c2",
+    "src/app/tests/grip_transform.rs": "98c624e135a8c585133dfa8b20813c16365c6b5dc3602479285bf58ac49a50ba",
+    "src/app/tests/stretch.rs": "7144df6f0035f2ce9dfd9fa789fe6c273f3b47d560148f1e57467b857b87e5a6",
+    "tools/rhino_oracle/generate_morph_fit_benchmark.py": "f389ec1b4adf80839992962f8ae187895d3823c4b4a8474768a46efbb04f76be",
+    "tools/rhino_oracle/generate_morph_fit_readback.py": "1520cd192d58ac911edc2679a31276f8f1ee20dbd392fb5ac91eeca893adf758",
+    "tools/rhino_oracle/morph_fit_benchmark_probe.py": "86cd3bff6ac2c4d228b6a18c04dddad5d2a5f8ffe94a43e554c21406a7b16d13",
+    "tools/rhino_oracle/morph_fit_readback_probe.py": "057a4d22137b7c8e179b9a26c6a9267721658883713899375b8738e56337c702",
+    "tools/rhino_oracle/rhino_worker.py": "a3763a19a6d1ee19d6b9048689c0fb12a8c45123a61e18dd6068666497b48248",
+    "tools/rhino_oracle/structural_sdk.py": "2fea5bce97d0f69dbff79c4feeb8540b3916ff0c7000d70339c32106bd04a432",
+    "tools/rhino_oracle/test_morph_fit_performance.py": "bb4dfdbb3fc4424db020302c70b55fba2f65b5c8af008c7709c5afe7c3ae776f",
+    "tools/rhino_oracle/twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf"
+  },
+  "environment": {
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "host": "Linux pupspark 7.0.0-1019-nvidia #19~24.04.2-Ubuntu SMP PREEMPT_DYNAMIC Sun Sep  6 18:35:11 UTC 2 aarch64 aarch64 aarch64 GNU/Linux",
+    "rhino_version": "8.32.26160.13001",
+    "rhino_execution": "amd64 Rhino via FEX/Wine on aarch64"
+  },
+  "benchmark": {
+    "before_binary_sha256": "7391300f5080997123945a35284d0a41c34cf09c67cfdb221e28b2c0140def7a",
+    "after_binary_sha256": "4a4b5ad8e8d9a21478a39f829a80924835d412eba977616bd42e17f1ec5c85a4",
+    "build_command": [
+      "cargo",
+      "build",
+      "--release",
+      "-p",
+      "viboceros-command",
+      "--features",
+      "native-smlib",
+      "--example",
+      "profile_morph_fits"
+    ],
+    "invocation": "profile_morph_fits <case-id> 3",
+    "before_note": "Production geometry at base_commit; an added profiler calls the same deformed_geometries API. The final profiler also supports optional export and updated UV-aware validation outside the timer.",
+    "rust_retained_statistics": "Minimum and median of three calls; per-iteration timings were not retained. No explicit warm-up.",
+    "timed_rust": "deformed_geometries including geometry fitting and B-rep assembly; excludes source setup, document mutation, oracle checks, export and destruction of prior results",
+    "timed_native": "Public StretchSpaceMorph.Morph plus Python bool/list status conversion; excludes duplication and readback; five calls after one warm-up",
+    "tolerance_note": "Native SDK 1e-6; existing Viboceros curve/surface component floor 1e-5 and four B-rep component budgets; representations and approximation errors differ",
+    "limitation": "Nine selected fixed fixtures; not a general cross-kernel benchmark. Rust validation/export changes are outside the measured geometry stage.",
+    "before_log_sha256": "98209a1aa2e3fd70170df441aa6c51a1406a8f40053427922997bbad95be9312",
+    "after_log_sha256": "1a2ac17ba260c4aaefda003fc62e7b63196e5c71e376b675268518ef13247e70",
+    "measurements": [
+      {
+        "id": "axis_Reverse_Curve",
+        "before": {
+          "id": "axis_Reverse_Curve",
+          "iterations": 3,
+          "maximum_native_error": 5.4037190382940445e-15,
+          "median_ns": 1376047,
+          "minimum_ns": 1372447,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Reverse_Curve",
+          "iterations": 3,
+          "maximum_native_error": 5.4037190382940445e-15,
+          "median_ns": 1492858,
+          "minimum_ns": 1397081,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            2834500,
+            2494900,
+            2132000,
+            2123500,
+            2120800
+          ],
+          "median_ns": 2132000,
+          "minimum_ns": 2120800,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 0.92175344205544
+      },
+      {
+        "id": "axis_Reverse_Surface",
+        "before": {
+          "id": "axis_Reverse_Surface",
+          "iterations": 3,
+          "maximum_native_error": 1.4604673026581438e-10,
+          "median_ns": 29056410,
+          "minimum_ns": 28942154,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Reverse_Surface",
+          "iterations": 3,
+          "maximum_native_error": 1.4608136922338088e-10,
+          "median_ns": 3845817,
+          "minimum_ns": 3841240,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            8183700,
+            6789700,
+            6334600,
+            6156500,
+            6143900
+          ],
+          "median_ns": 6334600,
+          "minimum_ns": 6143900,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 7.555328295652133
+      },
+      {
+        "id": "axis_Reverse_Box",
+        "before": {
+          "id": "axis_Reverse_Box",
+          "iterations": 3,
+          "maximum_native_error": 3.6687789788066426e-15,
+          "median_ns": 1494223,
+          "minimum_ns": 1486958,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Reverse_Box",
+          "iterations": 3,
+          "maximum_native_error": 3.6637359812630166e-15,
+          "median_ns": 958566,
+          "minimum_ns": 942102,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            2569000,
+            2674000,
+            2037800,
+            2660100,
+            2790300
+          ],
+          "median_ns": 2660100,
+          "minimum_ns": 2037800,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 1.5588107652472547
+      },
+      {
+        "id": "axis_Spatial_Curve",
+        "before": {
+          "id": "axis_Spatial_Curve",
+          "iterations": 3,
+          "maximum_native_error": 9.141636515828963e-06,
+          "median_ns": 2806814,
+          "minimum_ns": 2787182,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Spatial_Curve",
+          "iterations": 3,
+          "maximum_native_error": 9.141636515828963e-06,
+          "median_ns": 2879763,
+          "minimum_ns": 2870770,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            1504300,
+            1345400,
+            2037400,
+            2364400,
+            1340300
+          ],
+          "median_ns": 1504300,
+          "minimum_ns": 1340300,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 0.9746684015316538
+      },
+      {
+        "id": "axis_Spatial_Surface",
+        "before": {
+          "id": "axis_Spatial_Surface",
+          "iterations": 3,
+          "maximum_native_error": 0.00022503473729111207,
+          "median_ns": 4744043027,
+          "minimum_ns": 4734440664,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Spatial_Surface",
+          "iterations": 3,
+          "maximum_native_error": 0.0002250347372928344,
+          "median_ns": 5478948,
+          "minimum_ns": 5420578,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            6179400,
+            8410700,
+            8009700,
+            10843000,
+            34621400
+          ],
+          "median_ns": 8410700,
+          "minimum_ns": 6179400,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 865.8675035791542
+      },
+      {
+        "id": "axis_Spatial_Box",
+        "before": {
+          "id": "axis_Spatial_Box",
+          "iterations": 3,
+          "maximum_native_error": 5.652949731940433e-05,
+          "median_ns": 18322749183,
+          "minimum_ns": 18312765346,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Spatial_Box",
+          "iterations": 3,
+          "maximum_native_error": 5.3741177708639395e-05,
+          "median_ns": 16409593,
+          "minimum_ns": 16329305,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            49088000,
+            51935100,
+            51000300,
+            49472600,
+            55307100
+          ],
+          "median_ns": 51000300,
+          "minimum_ns": 49088000,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 1116.5876681402153
+      },
+      {
+        "id": "axis_Skew_Curve",
+        "before": {
+          "id": "axis_Skew_Curve",
+          "iterations": 3,
+          "maximum_native_error": 8.439084155320464e-06,
+          "median_ns": 1124879,
+          "minimum_ns": 1110271,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Skew_Curve",
+          "iterations": 3,
+          "maximum_native_error": 8.439084155320464e-06,
+          "median_ns": 1132279,
+          "minimum_ns": 1117751,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            2620600,
+            2323900,
+            2599800,
+            1872600,
+            1746100
+          ],
+          "median_ns": 2323900,
+          "minimum_ns": 1746100,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 0.9934645083058151
+      },
+      {
+        "id": "axis_Skew_Surface",
+        "before": {
+          "id": "axis_Skew_Surface",
+          "iterations": 3,
+          "maximum_native_error": 0.00011681350636345226,
+          "median_ns": 15163648122,
+          "minimum_ns": 14614270973,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Skew_Surface",
+          "iterations": 3,
+          "maximum_native_error": 0.00011681350636248727,
+          "median_ns": 13957561,
+          "minimum_ns": 13931002,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            10749600,
+            10880600,
+            12527000,
+            12219800,
+            10199700
+          ],
+          "median_ns": 10880600,
+          "minimum_ns": 10199700,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 1086.4110228140862
+      },
+      {
+        "id": "axis_Skew_Box",
+        "before": {
+          "id": "axis_Skew_Box",
+          "iterations": 3,
+          "maximum_native_error": 0.0003070569701565429,
+          "median_ns": 26156494848,
+          "minimum_ns": 24885373793,
+          "native_smlib": true
+        },
+        "after": {
+          "id": "axis_Skew_Box",
+          "iterations": 3,
+          "maximum_native_error": 0.00030705697015684884,
+          "median_ns": 22338335,
+          "minimum_ns": 22282575,
+          "native_smlib": true
+        },
+        "native": {
+          "times_ns": [
+            26886300,
+            26762200,
+            31701000,
+            33917900,
+            29460900
+          ],
+          "median_ns": 29460900,
+          "minimum_ns": 26762200,
+          "fit_tolerance": 1e-06
+        },
+        "before_after_ratio": 1170.924101908222
+      }
+    ]
+  },
+  "representation_limit": "Eligible faces change UV domains and control grids. Physical points and transformed trims are checked; raw UV parameters and later control-net edits are not claimed identical to Rhino. PreserveStructure bypasses the new chart.",
+  "audits": [
+    {
+      "consumer": "portable API",
+      "workflows": 119,
+      "maximum_native_error": 0.00030705697015684884,
+      "exact_map_samples": {
+        "records": 550,
+        "maximum_error": 7.874712564314333e-06
+      }
+    },
+    {
+      "consumer": "native API",
+      "workflows": 119,
+      "maximum_native_error": 0.00030705697015684884,
+      "exact_map_samples": {
+        "records": 550,
+        "maximum_error": 7.874712563490547e-06
+      }
+    },
+    {
+      "consumer": "interactive",
+      "workflows": 119,
+      "maximum_native_error": 0.00030705697015684884,
+      "exact_map_samples": {
+        "records": 550,
+        "maximum_error": 7.874712564314333e-06
+      }
+    }
+  ],
+  "captures": [
+    {
+      "request": "tools/rhino_oracle/fixtures/stretch.json",
+      "request_sha256": "3fba5f33f5643fcb028dd4e957e7be8e340732c41ea9646ac6bd0af4f5b4d885",
+      "observation": "tools/rhino_oracle/observations/stretch.json",
+      "observation_sha256": "0bce19464f6793302e7b68afd0c14d5524262f3edbb9056d8c809a1dd008b524",
+      "results": 142,
+      "provenance": {
+        "request_sha256": "3fba5f33f5643fcb028dd4e957e7be8e340732c41ea9646ac6bd0af4f5b4d885",
+        "sources": {
+          "generate_stretch.py": "241c7f309e3ea0898ae8b5f6e87d979cf2cf3fed09331ce64b44d60ba7564767",
+          "stretch_probe.py": "8900fde7d260a5937e538906180d3886a7baaf53b3cb4b667741ba32aaac4f31",
+          "stretch_geometry_probe.py": "be78ae8ed35c9e8eafabc328bf2f50405fcbf6696a9ff790eaf78da3f146bd59",
+          "stretch_grips_probe.py": "d629e41f12dbed563f7de8db7583587a3560147f785854295dd0fca5828343ae",
+          "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+          "taper_command_probe.py": "869a6ef84d6b51d386a950104c39c68bd929a58bad55e529e6fe98ee7a20caab",
+          "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+          "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "rhino_worker.py": "43ed7c521c71a05062156e413aa7439752f6ad3426be91440f386f678fdb63e8",
+          "structural_sdk.py": "b0648a678967b1b3739793042515e3e030afb316282d2f9e3e73a06e3835f865"
+        }
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/stretch_preferences.json",
+      "request_sha256": "37436b3729b68077921ec5f4c3fdb530b7fe8ac01995b944457fd8f67b551fb8",
+      "observation": "tools/rhino_oracle/observations/stretch_preferences.json",
+      "observation_sha256": "f6ebb8be9031ac0897ffc08ecf8e016de7a612ac9e829247e7b8fa792d5ea990",
+      "results": 4,
+      "provenance": {
+        "request_sha256": "37436b3729b68077921ec5f4c3fdb530b7fe8ac01995b944457fd8f67b551fb8",
+        "sources": {
+          "generate_stretch_preferences.py": "6f92eb1141bc6d4e1be5e3d1a596492174c242e8d6bdb6cabfca72d1e994110f",
+          "stretch_probe.py": "8900fde7d260a5937e538906180d3886a7baaf53b3cb4b667741ba32aaac4f31",
+          "stretch_geometry_probe.py": "be78ae8ed35c9e8eafabc328bf2f50405fcbf6696a9ff790eaf78da3f146bd59",
+          "taper_command_probe.py": "869a6ef84d6b51d386a950104c39c68bd929a58bad55e529e6fe98ee7a20caab",
+          "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+          "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "rhino_worker.py": "43ed7c521c71a05062156e413aa7439752f6ad3426be91440f386f678fdb63e8",
+          "structural_sdk.py": "b0648a678967b1b3739793042515e3e030afb316282d2f9e3e73a06e3835f865"
+        }
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/morph_fit_benchmark.json",
+      "request_sha256": "4b8ea8197394f77d64fc45087c92c7da8ee12dabf9dd38f47a1a7a7bc901a9d8",
+      "observation": "tools/rhino_oracle/observations/morph_fit_benchmark.json",
+      "observation_sha256": "1660cb6c4a8205bb214b15ab3965bda45ff37736689f21d1e8addc98b77f07c0",
+      "results": 9,
+      "provenance": {
+        "request_sha256": "4b8ea8197394f77d64fc45087c92c7da8ee12dabf9dd38f47a1a7a7bc901a9d8",
+        "sources": {
+          "generate_morph_fit_benchmark.py": "f389ec1b4adf80839992962f8ae187895d3823c4b4a8474768a46efbb04f76be",
+          "morph_fit_benchmark_probe.py": "86cd3bff6ac2c4d228b6a18c04dddad5d2a5f8ffe94a43e554c21406a7b16d13",
+          "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+          "rhino_worker.py": "56dec24a5d53ca07310de5e9ddaf377612369b0bcde67328f031ac034e8e8a83",
+          "structural_sdk.py": "32de9adadd057a8c7cc0583e2ec8357d3057c1d5b6e64a4a3b66f5d1ef7ff842"
+        }
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/morph_fit_readback.json",
+      "request_sha256": "49f7f3e8057fe17c4721c8e43ca21e06155d5ecf1369cb7fe3f119cf9d7c36e9",
+      "observation": "tools/rhino_oracle/observations/morph_fit_readback.json",
+      "observation_sha256": "5346255b2d903373d4402d2df7174115c7d4447bb69d57fa6fef3e7be2cad8dc",
+      "results": 9,
+      "provenance": {
+        "request_sha256": "49f7f3e8057fe17c4721c8e43ca21e06155d5ecf1369cb7fe3f119cf9d7c36e9",
+        "sources": {
+          "generate_morph_fit_readback.py": "1520cd192d58ac911edc2679a31276f8f1ee20dbd392fb5ac91eeca893adf758",
+          "morph_fit_readback_probe.py": "057a4d22137b7c8e179b9a26c6a9267721658883713899375b8738e56337c702",
+          "generate_morph_fit_benchmark.py": "f389ec1b4adf80839992962f8ae187895d3823c4b4a8474768a46efbb04f76be",
+          "morph_fit_benchmark_probe.py": "86cd3bff6ac2c4d228b6a18c04dddad5d2a5f8ffe94a43e554c21406a7b16d13",
+          "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+          "rhino_worker.py": "a3763a19a6d1ee19d6b9048689c0fb12a8c45123a61e18dd6068666497b48248",
+          "structural_sdk.py": "2fea5bce97d0f69dbff79c4feeb8540b3916ff0c7000d70339c32106bd04a432"
+        },
+        "fixtures": {
+          "axis_Reverse_Curve.3dm": "c430c6cfa8e63357afe7a3e910f455bebfd7605d1673a13097d32c45f03654a0",
+          "axis_Reverse_Surface.3dm": "fbd562a3a9a785669c0a3a48d0f88721218871f5eebb04625ce66973a379d782",
+          "axis_Reverse_Box.3dm": "4c4cb3929793f8e56991725c197a8a7ac9ebddadb1b43c656ff3a76b6fa3795a",
+          "axis_Spatial_Curve.3dm": "d0d3c5e0581f779b2d16c4b0da983a1fcd0d5b447879c231668f9a26891b449b",
+          "axis_Spatial_Surface.3dm": "bc373eb9b0f877ce0632fd36498b7b1de8a80c0fdc9fee7918ba23e9654ea7a8",
+          "axis_Spatial_Box.3dm": "878a15cfb850e00ea6f40da094c907897dc61094dbf96aaf8dc59f1a04013f9c",
+          "axis_Skew_Curve.3dm": "65770f8e4b119a03c2d26dc52186d3d9ec3269582345bd55887c4aaf73eb91f4",
+          "axis_Skew_Surface.3dm": "e32fdf7f6b3a89f02db1b2ba07da39242bb5999606e50907e280d11992fbe89c",
+          "axis_Skew_Box.3dm": "f68850828eb07874a5b6f9b5211d94307ffadf90fa53db60018695161c229141"
+        }
+      }
+    }
+  ],
+  "native_readback": {
+    "valid_files": 9,
+    "solid_boxes": 3,
+    "summary": {
+      "Curve": {
+        "files": 3,
+        "forward_samples": 771,
+        "inverse_samples": 771,
+        "maximum_forward_distance": 6.972396323927963e-06,
+        "maximum_inverse_distance": 1.3384254231575302e-05
+      },
+      "Brep": {
+        "files": 6,
+        "forward_samples": 13125,
+        "inverse_samples": 11217,
+        "maximum_forward_distance": 7.108895957933346e-15,
+        "maximum_inverse_distance": 1.2139566625567828e-14
+      }
+    },
+    "export_note": "Retained files were generated before the final document grip-transform adapter change; the geometry specialization and general fitter were unchanged. Native readback used the byte hashes in the capture provenance."
+  },
+  "checks": [
+    {
+      "name": "B-rep cubic charts, normals, trims, volume and bounds",
+      "log_path": "/tmp/viboceros-stretch-affine-bounds-tests.log",
+      "log_sha256": "f0d9a0c9547ec191ecca7339a992a9ab4daf9c062b32b01bfc5ce27f78d1be51",
+      "result": "test result: ok. 4 passed; 0 failed"
+    },
+    {
+      "name": "Tensor grids and scalar parity",
+      "log_path": "/tmp/viboceros-morph-grid-verified.log",
+      "log_sha256": "e7b44fd7b86cd308821320be8aa9f0ff1005de8a1464155e2241fcf872bbddd6",
+      "result": "test result: ok. 46 passed; 0 failed; 1 ignored"
+    },
+    {
+      "name": "General surface fitting",
+      "log_path": "/tmp/viboceros-morph-fit-core-v2.log",
+      "log_sha256": "15b182ce2096c339a65e56cfad06e2915103ca7bf24d6b947f2049c5880b441f",
+      "result": "test result: ok. 20 passed; 0 failed"
+    },
+    {
+      "name": "Existing affine closest points",
+      "log_path": "/tmp/viboceros-morph-fit-affine-closest-tests.log",
+      "log_sha256": "84fa6dfbe534904d7f06773e4d60c3d17f146d47289e5386856fee4e7083fe17",
+      "result": "test result: ok. 8 passed; 0 failed"
+    },
+    {
+      "name": "Document grip edits and history",
+      "log_path": "/tmp/viboceros-morph-fit-document-final.log",
+      "log_sha256": "051a7136a5748140acc423fbd9dfd0bf983a95dfdd86baee454752bb14aa6bd3",
+      "result": "test result: ok. 23 passed; 0 failed"
+    },
+    {
+      "name": "Portable command API",
+      "log_path": "/tmp/viboceros-morph-fit-api-portable-final.log",
+      "log_sha256": "a1c07d4ec76599e032eb75aad5aef060af088053f59747f5132b592873a70ad9",
+      "result": "test result: ok. 5 passed; 0 failed"
+    },
+    {
+      "name": "Native interpolation command API",
+      "log_path": "/tmp/viboceros-morph-fit-api-native-final.log",
+      "log_sha256": "ccb30dd60d7c50aff4f9453723eb27c9f207e65aff5217dc71a1c5133205d84a",
+      "result": "test result: ok. 5 passed; 0 failed"
+    },
+    {
+      "name": "Interactive Stretch and previews",
+      "log_path": "/tmp/viboceros-morph-fit-ui-final.log",
+      "log_sha256": "5f26c98d3c71045eb469bb0941d486728d82ef0c262838553325f033feba1ea1",
+      "result": "test result: ok. 9 passed; 0 failed"
+    },
+    {
+      "name": "Interactive affine grip transforms",
+      "log_path": "/tmp/viboceros-morph-fit-grip-ui-final.log",
+      "log_sha256": "31a4c192d6cfa79fc59cd3237591ded8e155a6246017950f8b0a70ef7c7c8dc2",
+      "result": "test result: ok. 4 passed; 0 failed"
+    },
+    {
+      "name": "Taper command regression",
+      "log_path": "/tmp/viboceros-morph-fit-neighbor-tests.log",
+      "log_sha256": "7a62ae409336e20dd3deaa9513c7ce616da4ec5ce51778e2f2711d1353d2b410",
+      "result": "test result: ok. 1 passed; 0 failed"
+    },
+    {
+      "name": "Twist, Bend and Maelstrom regressions",
+      "log_path": "/tmp/viboceros-morph-fit-other-command-tests.log",
+      "log_sha256": "8b6f68f27a50f902232e9c76777e50de5891213252de5998222bc3c7584bd3b3",
+      "result": "test result: ok. 5 passed; 0 failed"
+    },
+    {
+      "name": "Python provenance, Stretch, closed SoftEditSrf and grip visibility",
+      "log_path": "/tmp/viboceros-morph-fit-provenance-final.log",
+      "log_sha256": "f7fe7a140a306b122d372c96bc62d56732daf01930827a4e4f7c8382bbf8c6ee",
+      "result": "Ran 18 tests"
+    },
+    {
+      "name": "Strict portable workspace Clippy",
+      "log_path": "/tmp/viboceros-morph-fit-clippy-portable-final.log",
+      "log_sha256": "750266bd60aae3b256549d02f47edfbad96e5931938ba8a26121b69e8ad96b8a",
+      "result": "Finished `dev` profile"
+    },
+    {
+      "name": "Strict native workspace Clippy",
+      "log_path": "/tmp/viboceros-morph-fit-clippy-native-final.log",
+      "log_sha256": "71662c4c1d83b0a689796220d296bb03221f9cbe63dcd901aca672ed8335ca30",
+      "result": "Finished `dev` profile"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "limits": [
+    "Off-grid and closest-point checks are sampled, not continuous Hausdorff certificates.",
+    "General fitting work limits and tolerances are unchanged.",
+    "Exactly affine input eligibility does not flatten nearly planar surfaces. Ill-conditioned or rejected candidates use the existing general fitter."
+  ]
+}

@@ -43,6 +43,10 @@ component fitting tolerance of `1e-5` model units. B-reps reserve four component
 budgets for assembly and boundary validation. Larger document tolerances remain
 applicable; the document setting itself is retained. The portable and optional
 usd-brep interpolation producers share the point map and fitting policy.
+Exactly affine degree-one B-rep faces can instead use a ruled cubic surface
+with transformed trims. This preserves physical shape while changing the UV
+chart and control net; later control-net edits can differ from Rhino's fits.
+See [fitting performance and representation limits](../stretch-performance.md).
 Arbitrary large or ill-conditioned nets may exceed the bounded fitter and
 return an error before changing the document. General deformations can fold
 geometry; an axis stretch is not guaranteed to preserve injectivity.

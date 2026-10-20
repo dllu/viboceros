@@ -1,6 +1,6 @@
 //! Exact source control edits, independent of document display or history.
 use super::*;
-use viboceros_geometry::{Brep, Polyline3};
+use viboceros_geometry::Polyline3;
 
 impl Geometry {
     pub fn with_transformed_grips(
@@ -172,16 +172,8 @@ impl Geometry {
             }
             Self::Brep(brep) if brep.faces().len() == 1 => {
                 let face = &brep.faces()[0];
-                let bounds = face.rectangular_trim_bounds(tolerance)?.ok_or(
-                    GeometryError::UnsupportedControlPointEdit {
-                        context: "nonrectangular trimmed surfaces",
-                    },
-                )?;
-                Self::Brep(Brep::try_rectangular_surface_face_with_orientation(
+                Self::Brep(brep.try_with_edited_single_surface(
                     face.surface().with_mapped_grips(indices, &map_point)?,
-                    bounds[0][0]..=bounds[0][1],
-                    bounds[1][0]..=bounds[1][1],
-                    face.is_reversed(),
                     tolerance,
                 )?)
             }

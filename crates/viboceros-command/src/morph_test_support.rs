@@ -3,8 +3,8 @@ use serde_json::Value;
 use viboceros_document::{Document, Geometry};
 use viboceros_document::{ObjectId, SelectionMode};
 use viboceros_geometry::{
-    Brep, Frame3, LineSegment, NurbsCurve, NurbsSurface, Point3, Real, Tolerance, TriangleMesh,
-    Vector3,
+    Brep, BrepFace, Frame3, LineSegment, NurbsCurve, NurbsSurface, Point2, Point3, Real, Tolerance,
+    TriangleMesh, Vector3,
 };
 use viboceros_geometry::{MeshFace, WeightedPoint3};
 
@@ -297,6 +297,7 @@ pub(crate) fn compare_geometry_error(
                 }
                 let (k, swap, flip_u, flip_v) =
                     correspondence.expect("native box face has a matching source patch");
+                let chart = face_parameter_correspondence(&original.faces()[k], &brep.faces()[k]);
                 for j in 0..9 {
                     for i in 0..9 {
                         let (mut u, mut v) = (i as Real / 8., j as Real / 8.);
@@ -309,8 +310,12 @@ pub(crate) fn compare_geometry_error(
                         if flip_v {
                             v = 1. - v;
                         }
+                        let (u, v) = chart(
+                            original.faces()[k].surface().parameter_at_u(u).unwrap(),
+                            original.faces()[k].surface().parameter_at_v(v).unwrap(),
+                        );
                         near(
-                            sample(brep.faces()[k].surface(), u, v),
+                            brep.faces()[k].surface().evaluate(u, v).unwrap(),
                             p(&expected["samples"][face_index * 81 + j * 9 + i]),
                             epsilon,
                             label,
@@ -342,6 +347,103 @@ pub(crate) fn compare_geometry_error(
         }
     }
     maximum.get()
+}
+
+/// Recover an affine UV correspondence from the complete paired trim control
+/// nets. Interior checks then compare physical points across differing charts.
+/// This is independent of the deformation's axis or chart construction.
+pub(crate) fn face_parameter_correspondence(
+    source: &BrepFace,
+    actual: &BrepFace,
+) -> impl Fn(Real, Real) -> (Real, Real) {
+    assert_eq!(source.loops().len(), actual.loops().len());
+    let mut pairs = Vec::new();
+    for (a, b) in source.loops().iter().zip(actual.loops()) {
+        assert_eq!(a.trims().len(), b.trims().len());
+        for (a, b) in a.trims().iter().zip(b.trims()) {
+            assert_eq!(a.vertices(), b.vertices());
+            assert_eq!(a.edge(), b.edge());
+            assert_eq!(a.curve().degree(), b.curve().degree());
+            assert_eq!(a.curve().knots(), b.curve().knots());
+            assert_eq!(
+                a.curve().control_points().len(),
+                b.curve().control_points().len()
+            );
+            for (a, b) in a
+                .curve()
+                .control_points()
+                .iter()
+                .zip(b.curve().control_points())
+            {
+                assert_eq!(a.weight(), b.weight());
+                pairs.push((a.point(), b.point()));
+            }
+        }
+    }
+    let origin = pairs[0];
+    let difference = |a: Point2, b: Point2| [a.x() - b.x(), a.y() - b.y()];
+    let mut basis = None;
+    for &a in &pairs {
+        for &b in &pairs {
+            let x = difference(a.0, origin.0);
+            let y = difference(b.0, origin.0);
+            let det = x[0] * y[1] - x[1] * y[0];
+            if det != 0.
+                && basis.as_ref().is_none_or(
+                    |(_, _, _, _, d): &([Real; 2], [Real; 2], [Real; 2], [Real; 2], Real)| {
+                        det.abs() > d.abs()
+                    },
+                )
+            {
+                basis = Some((
+                    x,
+                    y,
+                    difference(a.1, origin.1),
+                    difference(b.1, origin.1),
+                    det,
+                ));
+            }
+        }
+    }
+    let (x, y, a, b, det) = basis.expect("trim region spans a UV chart");
+    let bounds =
+        [actual.surface().domain_u(), actual.surface().domain_v()].map(|d| [*d.start(), *d.end()]);
+    let source_bounds =
+        [source.surface().domain_u(), source.surface().domain_v()].map(|d| [*d.start(), *d.end()]);
+    let map = move |u: Real, v: Real| {
+        let interior = (source_bounds[0][0]..=source_bounds[0][1]).contains(&u)
+            && (source_bounds[1][0]..=source_bounds[1][1]).contains(&v);
+        let [u, v] = [u - origin.0.x(), v - origin.0.y()];
+        let s = (u * y[1] - v * y[0]) / det;
+        let t = (x[0] * v - x[1] * u) / det;
+        let p = [
+            origin.1.x() + s * a[0] + t * b[0],
+            origin.1.y() + s * a[1] + t * b[1],
+        ];
+        let p = [0, 1].map(|i| {
+            if !interior {
+                return p[i];
+            }
+            let clamped = p[i].clamp(bounds[i][0], bounds[i][1]);
+            let scale = bounds[i][0].abs().max(bounds[i][1].abs());
+            assert!(
+                (p[i] - clamped).abs()
+                    <= (64. * Real::EPSILON * scale).max(64. * Real::from_bits(1)),
+                "UV correspondence exceeds surface domain"
+            );
+            clamped
+        });
+        (p[0], p[1])
+    };
+    for (old, new) in pairs {
+        let (u, v) = map(old.x(), old.y());
+        let scale = new.x().abs().max(new.y().abs()).max(1.);
+        assert!(
+            (u - new.x()).abs().max((v - new.y()).abs()) <= scale * 1e-12,
+            "non-affine trim correspondence"
+        );
+    }
+    map
 }
 pub(crate) fn assert_metadata(doc: &Document, expected: &Value, label: &str) {
     let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();

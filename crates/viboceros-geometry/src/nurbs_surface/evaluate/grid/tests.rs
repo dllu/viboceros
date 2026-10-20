@@ -54,6 +54,106 @@ fn assert_grid(surface: &NurbsSurface, us: &[Real], vs: &[Real]) -> usize {
 }
 
 #[test]
+fn sided_grid_preserves_discontinuous_limits_exact_recovery_and_error_order() {
+    let parameters = [
+        (0.5, ParameterSide::Left),
+        (0.5, ParameterSide::Right),
+        (1., ParameterSide::Right),
+        (0., ParameterSide::Left),
+        (0.25, ParameterSide::Left),
+        (0.5, ParameterSide::Left),
+        (Real::NAN, ParameterSide::Left),
+        (-1., ParameterSide::Right),
+    ];
+    let mut count = 0;
+    for scale in [1., 2_f64.powi(-600), 2_f64.powi(600)] {
+        for signed in [false, true] {
+            let surface = NurbsSurface::try_new_rational(
+                1,
+                1,
+                4,
+                4,
+                (0..16)
+                    .map(|i| {
+                        WeightedPoint3::try_new(
+                            point([
+                                (i % 4) as f64 * scale,
+                                (i / 4) as f64 * scale,
+                                (i % 3) as f64 * scale,
+                            ]),
+                            if signed && i % 3 == 0 { -0.5 } else { 1. },
+                        )
+                        .unwrap()
+                    })
+                    .collect(),
+                vec![0., 0., 0.5, 0.5, 1., 1.],
+                vec![0., 0., 0.5, 0.5, 1., 1.],
+            )
+            .unwrap();
+            let before = surface.clone();
+            let mut visited = 0;
+            surface
+                .try_for_each_grid_point_on_sides(&parameters, &parameters, |i, j, actual| {
+                    assert_eq!(
+                        (i, j),
+                        (visited % parameters.len(), visited / parameters.len())
+                    );
+                    let (u, su) = parameters[i];
+                    let (v, sv) = parameters[j];
+                    match (actual, surface.evaluate_on_sides(u, v, su, sv)) {
+                        (Ok(a), Ok(b)) => assert_eq!(
+                            a.to_array().map(Real::to_bits),
+                            b.to_array().map(Real::to_bits)
+                        ),
+                        (Err(a), Err(b)) => assert_eq!(format!("{a:?}"), format!("{b:?}")),
+                        (a, b) => panic!("{u} {v}: {a:?} != {b:?}"),
+                    }
+                    visited += 1;
+                    Ok::<(), GeometryError>(())
+                })
+                .unwrap();
+            assert_eq!(surface, before);
+            assert_eq!(visited, 64);
+            count += visited;
+        }
+    }
+    assert_eq!(count, 384);
+}
+
+#[test]
+fn sided_grid_stops_on_visitor_failure_and_accepts_empty_axes() {
+    let surface = rational_patch();
+    let parameters = [
+        (0., ParameterSide::Left),
+        (0.5, ParameterSide::Right),
+        (1., ParameterSide::Left),
+    ];
+    let mut visits = 0;
+    let error = surface
+        .try_for_each_grid_point_on_sides(&parameters, &parameters, |i, j, p| {
+            p.unwrap();
+            visits += 1;
+            if (i, j) == (1, 1) {
+                Err((i, j))
+            } else {
+                Ok(())
+            }
+        })
+        .unwrap_err();
+    assert_eq!(error, (1, 1));
+    assert_eq!(visits, 5);
+    for (u, v) in [(&parameters[..], &[][..]), (&[][..], &parameters[..])] {
+        surface
+            .try_for_each_grid_point_on_sides(u, v, |_, _, _| {
+                visits += 1;
+                Ok::<(), ()>(())
+            })
+            .unwrap();
+    }
+    assert_eq!(visits, 5);
+}
+
+#[test]
 fn grid_points_match_scalar_bits_across_degrees_spans_scales_and_weight_signs() {
     let mut state = 29_u64;
     let mut next = || {
@@ -213,7 +313,7 @@ fn grid_points_retain_scalar_fallback_for_signed_weight_overflow_and_poles() {
         );
     }
     let signed = make([1e308, 5e307], [1., -1.]);
-    let columns = signed.grid_columns(&[0.58], 1);
+    let columns = signed.grid_columns(&[(0.58, ParameterSide::Right)], 1);
     // Signed nets now bypass rounded contractions before projection, including
     // cases where a cached projection would have returned a false finite pole.
     assert!(matches!(

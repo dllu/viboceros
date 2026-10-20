@@ -6,9 +6,9 @@ use crate::FiniteSum;
 mod tests;
 
 impl NurbsSurface {
-    /// An exact representation guard, followed by a floating-point convex solve.
-    /// Unsupported representations or unrepresentable intermediates fall back.
-    pub(super) fn closest_affine_parameters(&self, target: Point3) -> Option<(Real, Real)> {
+    /// Exact affine representation guard; axes span normalized U/V intervals.
+    /// Coordinate differences retain ordinary floating-point rounding.
+    pub(crate) fn affine_axes(&self) -> Option<(Point3, Vector3, Vector3)> {
         if self.degree_u != 1
             || self.degree_v != 1
             || self.control_point_count_u != 2
@@ -41,6 +41,13 @@ impl NurbsSurface {
 
         let u_axis = origin.vector_to(east).ok()?;
         let v_axis = origin.vector_to(north).ok()?;
+        Some((origin, u_axis, v_axis))
+    }
+
+    pub(super) fn closest_affine_parameters(&self, target: Point3) -> Option<(Real, Real)> {
+        let (origin, u_axis, v_axis) = self.affine_axes()?;
+        let east = self.control_points[1].point();
+        let north = self.control_points[2].point();
         let u_length = u_axis.length().ok()?;
         let v_length = v_axis.length().ok()?;
         let x = u_axis.normalized_nonzero().ok()?.as_vector();

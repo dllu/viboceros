@@ -6392,6 +6392,12 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get('op') == 'morph_fit_readback':
+        import morph_fit_readback_probe
+        return morph_fit_readback_probe.run(operation, globals(), iterations, tolerance)
+    if operation.get('op') == 'morph_fit_benchmark':
+        import morph_fit_benchmark_probe
+        return morph_fit_benchmark_probe.run(operation, globals(), iterations, tolerance)
     if operation.get('op') == 'stretch_details':
         import stretch_details_probe
         return stretch_details_probe.run(operation, globals(), iterations, tolerance)

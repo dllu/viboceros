@@ -36,21 +36,51 @@ impl NurbsSurface {
         parameters_v: &[Real],
         mut visit: impl FnMut(usize, usize, Result<Point3, GeometryError>),
     ) {
+        let us = parameters_u
+            .iter()
+            .map(|&u| (u, ParameterSide::Right))
+            .collect::<Vec<_>>();
+        let vs = parameters_v
+            .iter()
+            .map(|&v| (v, ParameterSide::Right))
+            .collect::<Vec<_>>();
+        self.try_for_each_grid_point_on_sides(&us, &vs, |i, j, p| {
+            visit(i, j, p);
+            Ok::<(), std::convert::Infallible>(())
+        })
+        .expect("infallible grid visitor");
+    }
+
+    /// Reuse tensor contractions while retaining each station's requested knot
+    /// side, scalar evaluation order and recovery. Visitor errors stop at that
+    /// exact cell; failures in evaluation remain values passed to the visitor.
+    pub(crate) fn try_for_each_grid_point_on_sides<E>(
+        &self,
+        parameters_u: &[(Real, ParameterSide)],
+        parameters_v: &[(Real, ParameterSide)],
+        mut visit: impl FnMut(usize, usize, Result<Point3, GeometryError>) -> Result<(), E>,
+    ) -> Result<(), E> {
         if parameters_u.is_empty() || parameters_v.is_empty() {
-            return;
+            return Ok(());
         }
         let mut span = None;
         let mut columns: Vec<Option<Column>> = Vec::new();
         let mut work = vec![[0.; 4]; self.degree_v + 1];
-        for (j, &v) in parameters_v.iter().enumerate() {
-            let next_span =
-                checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v).ok();
+        for (j, &(v, side_v)) in parameters_v.iter().enumerate() {
+            let next_span = sided_span(
+                self.degree_v,
+                self.control_point_count_v,
+                &self.knots_v,
+                v,
+                side_v,
+            )
+            .ok();
             if next_span != span {
                 columns =
                     next_span.map_or_else(Vec::new, |span| self.grid_columns(parameters_u, span));
                 span = next_span;
             }
-            for (i, &u) in parameters_u.iter().enumerate() {
+            for (i, &(u, side_u)) in parameters_u.iter().enumerate() {
                 let cached =
                     columns
                         .get(i)
@@ -90,24 +120,38 @@ impl NurbsSurface {
                                         local,
                                     )
                                 })
-                                .or_else(|_| self.evaluate(u, v))
+                                .or_else(|_| self.evaluate_on_sides(u, v, side_u, side_v))
                             }
                         });
                 // Invalid cells preserve the scalar path's validation precedence.
-                visit(i, j, cached.unwrap_or_else(|| self.evaluate(u, v)));
+                visit(
+                    i,
+                    j,
+                    cached.unwrap_or_else(|| self.evaluate_on_sides(u, v, side_u, side_v)),
+                )?;
             }
         }
+        Ok(())
     }
 
-    fn grid_columns(&self, parameters_u: &[Real], span_v: usize) -> Vec<Option<Column>> {
+    fn grid_columns(
+        &self,
+        parameters_u: &[(Real, ParameterSide)],
+        span_v: usize,
+    ) -> Vec<Option<Column>> {
         let mut active: Option<(usize, Controls)> = None;
         let mut work = vec![[0.; 4]; self.degree_u + 1];
         parameters_u
             .iter()
-            .map(|&u| {
-                let span_u =
-                    checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)
-                        .ok()?;
+            .map(|&(u, side)| {
+                let span_u = sided_span(
+                    self.degree_u,
+                    self.control_point_count_u,
+                    &self.knots_u,
+                    u,
+                    side,
+                )
+                .ok()?;
                 if active.as_ref().is_none_or(|(span, _)| *span != span_u) {
                     let controls = match self.evaluation_controls([span_u, span_v]) {
                         Ok(controls) if !controls.needs_exact => Controls::Float(controls),
@@ -159,4 +203,21 @@ impl NurbsSurface {
             })
             .collect()
     }
+}
+
+fn sided_span(
+    degree: usize,
+    count: usize,
+    knots: &[Real],
+    t: Real,
+    side: ParameterSide,
+) -> Result<usize, GeometryError> {
+    let span = checked_span(degree, count, knots, t)?;
+    Ok(
+        if side == ParameterSide::Left && t > knots[degree] && t < knots[count] {
+            knots.partition_point(|k| *k < t) - 1
+        } else {
+            span
+        },
+    )
 }

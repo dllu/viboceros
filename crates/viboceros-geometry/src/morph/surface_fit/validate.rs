@@ -52,27 +52,34 @@ fn errors_on_grid(
         for (i, span_u) in breaks[0].windows(2).enumerate() {
             residuals.clear();
             let mut deviation: Real = 0.0;
-            for &fv in fractions {
-                let v = stable_lerp(span_v[0].parameter, span_v[1].parameter, fv)?;
-                let side_v = if v == span_v[1].parameter {
-                    ParameterSide::Left
-                } else {
-                    ParameterSide::Right
-                };
-                for &fu in fractions {
-                    let u = stable_lerp(span_u[0].parameter, span_u[1].parameter, fu)?;
-                    let side_u = if u == span_u[1].parameter {
-                        ParameterSide::Left
-                    } else {
-                        ParameterSide::Right
-                    };
-                    let exact = point_at([u, v], [side_u, side_v])?;
-                    let actual = fitted.evaluate_on_sides(u, v, side_u, side_v)?;
-                    let residual = actual.vector_to(exact)?;
-                    deviation = deviation.max(residual.length()?);
-                    residuals.push(residual.to_array());
-                }
-            }
+            let stations = |span: &[Break]| {
+                fractions
+                    .iter()
+                    .map(|&f| {
+                        let t = stable_lerp(span[0].parameter, span[1].parameter, f)?;
+                        Ok((
+                            t,
+                            if t == span[1].parameter {
+                                ParameterSide::Left
+                            } else {
+                                ParameterSide::Right
+                            },
+                        ))
+                    })
+                    .collect::<Result<Vec<_>, GeometryError>>()
+            };
+            let us = stations(span_u)?;
+            let vs = stations(span_v)?;
+            fitted.try_for_each_grid_point_on_sides(&us, &vs, |i, j, actual| {
+                let (u, side_u) = us[i];
+                let (v, side_v) = vs[j];
+                // Preserve source-map failure precedence at every station.
+                let exact = point_at([u, v], [side_u, side_v])?;
+                let residual = actual?.vector_to(exact)?;
+                deviation = deviation.max(residual.length()?);
+                residuals.push(residual.to_array());
+                Ok::<(), GeometryError>(())
+            })?;
             result.deviation = result.deviation.max(deviation);
             if deviation > threshold {
                 // Cubic residual variation in V can be entirely caused by a
