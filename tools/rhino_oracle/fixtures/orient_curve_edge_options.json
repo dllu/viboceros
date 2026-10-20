@@ -1,0 +1,701 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "orient_curve_edge",
+      "id": "xy_000_bare_10",
+      "kind": "Nurbs",
+      "grouped": false,
+      "points": [
+        [
+          0,
+          -6,
+          0
+        ],
+        [
+          2,
+          -6,
+          0
+        ],
+        [
+          2,
+          -5,
+          0
+        ],
+        [
+          3,
+          -5,
+          0
+        ]
+      ],
+      "corners": [
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          12,
+          -2,
+          0
+        ],
+        [
+          12,
+          6,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ],
+      "reversed": false,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "actions": [
+        {
+          "curve": 0,
+          "pick": [
+            0,
+            -6,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "edge": 0,
+          "pick": [
+            8,
+            -2,
+            0
+          ]
+        },
+        "Copy=No",
+        "FlipSurface",
+        "ReverseCurve=No",
+        [
+          6,
+          -2,
+          0
+        ]
+      ],
+      "action_prompts": [
+        [
+          "Select curve to orient"
+        ],
+        [
+          "Select target surface edge"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ]
+      ]
+    },
+    {
+      "op": "orient_curve_edge",
+      "id": "xy_000_bare_01",
+      "kind": "Nurbs",
+      "grouped": false,
+      "points": [
+        [
+          0,
+          -6,
+          0
+        ],
+        [
+          2,
+          -6,
+          0
+        ],
+        [
+          2,
+          -5,
+          0
+        ],
+        [
+          3,
+          -5,
+          0
+        ]
+      ],
+      "corners": [
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          12,
+          -2,
+          0
+        ],
+        [
+          12,
+          6,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ],
+      "reversed": false,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "actions": [
+        {
+          "curve": 0,
+          "pick": [
+            0,
+            -6,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "edge": 0,
+          "pick": [
+            8,
+            -2,
+            0
+          ]
+        },
+        "Copy=No",
+        "FlipSurface=No",
+        "ReverseCurve",
+        [
+          6,
+          -2,
+          0
+        ]
+      ],
+      "action_prompts": [
+        [
+          "Select curve to orient"
+        ],
+        [
+          "Select target surface edge"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ]
+      ]
+    },
+    {
+      "op": "orient_curve_edge",
+      "id": "xy_000_bare_11",
+      "kind": "Nurbs",
+      "grouped": false,
+      "points": [
+        [
+          0,
+          -6,
+          0
+        ],
+        [
+          2,
+          -6,
+          0
+        ],
+        [
+          2,
+          -5,
+          0
+        ],
+        [
+          3,
+          -5,
+          0
+        ]
+      ],
+      "corners": [
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          12,
+          -2,
+          0
+        ],
+        [
+          12,
+          6,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ],
+      "reversed": false,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "actions": [
+        {
+          "curve": 0,
+          "pick": [
+            0,
+            -6,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "edge": 0,
+          "pick": [
+            8,
+            -2,
+            0
+          ]
+        },
+        "Copy=No",
+        "FlipSurface",
+        "ReverseCurve",
+        [
+          6,
+          -2,
+          0
+        ]
+      ],
+      "action_prompts": [
+        [
+          "Select curve to orient"
+        ],
+        [
+          "Select target surface edge"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ]
+      ]
+    },
+    {
+      "op": "orient_curve_edge",
+      "id": "on_edge_oblique_bare_10",
+      "kind": "Nurbs",
+      "grouped": false,
+      "points": [
+        [
+          2,
+          -6,
+          -1
+        ],
+        [
+          1,
+          -6,
+          -2
+        ],
+        [
+          1,
+          -4,
+          -1
+        ],
+        [
+          1,
+          -2,
+          0
+        ]
+      ],
+      "corners": [
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          12,
+          -2,
+          0
+        ],
+        [
+          12,
+          6,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ],
+      "reversed": false,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "actions": [
+        {
+          "curve": 0,
+          "pick": [
+            2,
+            -6,
+            -1
+          ]
+        },
+        {
+          "curve": 1,
+          "edge": 0,
+          "pick": [
+            8,
+            -2,
+            0
+          ]
+        },
+        "Copy=No",
+        "FlipSurface",
+        "ReverseCurve=No",
+        [
+          6,
+          -2,
+          0
+        ]
+      ],
+      "action_prompts": [
+        [
+          "Select curve to orient"
+        ],
+        [
+          "Select target surface edge"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ]
+      ]
+    },
+    {
+      "op": "orient_curve_edge",
+      "id": "on_edge_oblique_bare_01",
+      "kind": "Nurbs",
+      "grouped": false,
+      "points": [
+        [
+          2,
+          -6,
+          -1
+        ],
+        [
+          1,
+          -6,
+          -2
+        ],
+        [
+          1,
+          -4,
+          -1
+        ],
+        [
+          1,
+          -2,
+          0
+        ]
+      ],
+      "corners": [
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          12,
+          -2,
+          0
+        ],
+        [
+          12,
+          6,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ],
+      "reversed": false,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "actions": [
+        {
+          "curve": 0,
+          "pick": [
+            2,
+            -6,
+            -1
+          ]
+        },
+        {
+          "curve": 1,
+          "edge": 0,
+          "pick": [
+            8,
+            -2,
+            0
+          ]
+        },
+        "Copy=No",
+        "FlipSurface=No",
+        "ReverseCurve",
+        [
+          6,
+          -2,
+          0
+        ]
+      ],
+      "action_prompts": [
+        [
+          "Select curve to orient"
+        ],
+        [
+          "Select target surface edge"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ]
+      ]
+    },
+    {
+      "op": "orient_curve_edge",
+      "id": "on_edge_oblique_bare_11",
+      "kind": "Nurbs",
+      "grouped": false,
+      "points": [
+        [
+          2,
+          -6,
+          -1
+        ],
+        [
+          1,
+          -6,
+          -2
+        ],
+        [
+          1,
+          -4,
+          -1
+        ],
+        [
+          1,
+          -2,
+          0
+        ]
+      ],
+      "corners": [
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          12,
+          -2,
+          0
+        ],
+        [
+          12,
+          6,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ],
+      "reversed": false,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "actions": [
+        {
+          "curve": 0,
+          "pick": [
+            2,
+            -6,
+            -1
+          ]
+        },
+        {
+          "curve": 1,
+          "edge": 0,
+          "pick": [
+            8,
+            -2,
+            0
+          ]
+        },
+        "Copy=No",
+        "FlipSurface",
+        "ReverseCurve",
+        [
+          6,
+          -2,
+          0
+        ]
+      ],
+      "action_prompts": [
+        [
+          "Select curve to orient"
+        ],
+        [
+          "Select target surface edge"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ],
+        [
+          "Pick target edge point"
+        ]
+      ]
+    }
+  ]
+}

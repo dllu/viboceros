@@ -8,6 +8,7 @@ use viboceros_geometry::{AffineTransform3, UnitVector3};
 #[derive(Clone, Copy, Debug)]
 pub(crate) enum Mapping<'a> {
     Point(PointTransform),
+    CurveEdge(&'a viboceros_command::orient_curve_edge::Placement),
     Curve(&'a viboceros_command::orient_curve::Placement),
     SurfaceCurveArray(&'a viboceros_command::array_curve_surface::Placement),
     Orient(viboceros_command::orient_points::Preview),
@@ -44,6 +45,7 @@ impl Mapping<'_> {
         match self {
             Self::Point(p) => p.transform_at(frame, point, tolerance),
             Self::Curve(p) => p.transform_at(point),
+            Self::CurveEdge(p) => p.transform_at(point),
             Self::SurfaceCurveArray(p) => p.transform_at(point),
             Self::Orient(p) => p.transform_at(point, tolerance),
             Self::Surface { placement, phase } => {
@@ -92,7 +94,10 @@ impl Mapping<'_> {
         self.point().is_none() || matches!(self.point(), Some(PointTransform::SetPoint(_)))
     }
     pub(super) fn follows_curve(self) -> bool {
-        matches!(self, Self::Curve(_) | Self::SurfaceCurveArray(_))
+        matches!(
+            self,
+            Self::Curve(_) | Self::CurveEdge(_) | Self::SurfaceCurveArray(_)
+        )
     }
 }
 

@@ -1,0 +1,5216 @@
+{
+  "engine": "rhino",
+  "iterations": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "xy_000_bare_10",
+      "value": {
+        "input_trace": {
+          "expected": 6,
+          "completed": 6,
+          "clicks": [
+            {
+              "aim": [
+                0,
+                -6,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 0.0,
+              "projected_point": [
+                0.0,
+                -6.0,
+                0.0
+              ],
+              "curve": 0,
+              "action": 0,
+              "marker": "@catenary-click:xy_000_bare_10-0",
+              "edge": null,
+              "click_acknowledged": true,
+              "pixel": [
+                37,
+                271
+              ]
+            },
+            {
+              "aim": [
+                8,
+                -2,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 7.967989346121063,
+              "projected_point": [
+                7.967989346121063,
+                -2.0,
+                0.0
+              ],
+              "curve": 1,
+              "action": 1,
+              "marker": "@catenary-click:xy_000_bare_10-1",
+              "edge": 0,
+              "click_acknowledged": true,
+              "pixel": [
+                382,
+                283
+              ]
+            }
+          ],
+          "edge_picks": [],
+          "prompts": [
+            "Select curve to orient",
+            "Select target surface edge",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )"
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "snap_settings": {
+            "project_to_cplane": false,
+            "enabled": true,
+            "modes": 0,
+            "capture_radius": 12
+          },
+          "sent": [
+            {
+              "action": 2,
+              "token": "_Copy=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 3,
+              "token": "_FlipSurface",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 4,
+              "token": "_ReverseCurve=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )"
+            },
+            {
+              "action": 5,
+              "token": "w60000000000000000e-16,-20000000000000000e-16,0",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )"
+            }
+          ],
+          "motion": [],
+          "errors": []
+        },
+        "undo": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      0.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      3.0,
+                      -5.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "groups": {
+          "after_script": [],
+          "undo": [],
+          "before": [],
+          "redo": []
+        },
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "edges": [
+          {
+            "knots": [
+              0.0,
+              0.0,
+              12.0,
+              12.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              12.0
+            ]
+          },
+          {
+            "knots": [
+              0.0,
+              0.0,
+              8.0,
+              8.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              8.0
+            ]
+          },
+          {
+            "knots": [
+              -12.0,
+              -12.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -12.0,
+              -0.0
+            ]
+          },
+          {
+            "knots": [
+              -8.0,
+              -8.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -8.0,
+              -0.0
+            ]
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "target_definition": {
+          "domain_u": [
+            0.0,
+            12.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            8.0,
+            8.0
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                6.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            8.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            12.0,
+            12.0
+          ]
+        },
+        "target_reversed": false,
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "objects": [
+              {
+                "geometry": {
+                  "crc": 3729868612,
+                  "kind": "Brep"
+                },
+                "groups": [],
+                "name": "Target",
+                "selected": false,
+                "role": "target"
+              },
+              {
+                "geometry": {
+                  "kind": "NurbsCurve",
+                  "curve": {
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      3.228513859014692,
+                      3.228513859014692,
+                      3.228513859014692,
+                      3.228513859014692
+                    ],
+                    "degree": 3,
+                    "control_points": [
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          5.0,
+                          -5.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          5.0,
+                          -3.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -3.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -2.0,
+                          0.0
+                        ]
+                      }
+                    ],
+                    "domain": [
+                      0.0,
+                      3.228513859014692
+                    ]
+                  }
+                },
+                "groups": [],
+                "name": "Source",
+                "selected": false,
+                "role": "source"
+              }
+            ],
+            "name": "OrientCrvToEdge",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _OrientCrvToEdge\nSelect curve to orient: _Pause\nSelect curve to orient\nSelect target surface edge\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _Copy=No\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _FlipSurface\nPick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No ): _ReverseCurve=No\nPick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No ): w60000000000000000e-16,-20000000000000000e-16,0",
+        "redo": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "before": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      0.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      3.0,
+                      -5.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "actual_cplane": {
+          "y": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "z": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "frame_audit": [
+          {
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "origin": [
+              0.0,
+              -6.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "origin": [
+              0.0,
+              -6.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              -0.0,
+              -0.0
+            ],
+            "parameter": 3.228513859014692,
+            "z": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "origin": [
+              3.0,
+              -5.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "parameter": 3.228513859014692,
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ],
+            "origin": [
+              3.0,
+              -5.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          }
+        ],
+        "after": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "xy_000_bare_01",
+      "value": {
+        "input_trace": {
+          "expected": 6,
+          "completed": 6,
+          "clicks": [
+            {
+              "aim": [
+                0,
+                -6,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 0.0,
+              "projected_point": [
+                0.0,
+                -6.0,
+                0.0
+              ],
+              "curve": 0,
+              "action": 0,
+              "marker": "@catenary-click:xy_000_bare_01-0",
+              "edge": null,
+              "click_acknowledged": true,
+              "pixel": [
+                37,
+                271
+              ]
+            },
+            {
+              "aim": [
+                8,
+                -2,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 7.967989346121069,
+              "projected_point": [
+                7.967989346121068,
+                -2.0,
+                0.0
+              ],
+              "curve": 1,
+              "action": 1,
+              "marker": "@catenary-click:xy_000_bare_01-1",
+              "edge": 0,
+              "click_acknowledged": true,
+              "pixel": [
+                382,
+                283
+              ]
+            }
+          ],
+          "edge_picks": [],
+          "prompts": [
+            "Select curve to orient",
+            "Select target surface edge",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=Yes )"
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "snap_settings": {
+            "project_to_cplane": false,
+            "enabled": true,
+            "modes": 0,
+            "capture_radius": 12
+          },
+          "sent": [
+            {
+              "action": 2,
+              "token": "_Copy=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 3,
+              "token": "_FlipSurface=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 4,
+              "token": "_ReverseCurve",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 5,
+              "token": "w60000000000000000e-16,-20000000000000000e-16,0",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=Yes )"
+            }
+          ],
+          "motion": [],
+          "errors": []
+        },
+        "undo": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      0.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      3.0,
+                      -5.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "groups": {
+          "after_script": [],
+          "undo": [],
+          "before": [],
+          "redo": []
+        },
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "edges": [
+          {
+            "knots": [
+              0.0,
+              0.0,
+              12.0,
+              12.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              12.0
+            ]
+          },
+          {
+            "knots": [
+              0.0,
+              0.0,
+              8.0,
+              8.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              8.0
+            ]
+          },
+          {
+            "knots": [
+              -12.0,
+              -12.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -12.0,
+              -0.0
+            ]
+          },
+          {
+            "knots": [
+              -8.0,
+              -8.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -8.0,
+              -0.0
+            ]
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "target_definition": {
+          "domain_u": [
+            0.0,
+            12.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            8.0,
+            8.0
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                6.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            8.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            12.0,
+            12.0
+          ]
+        },
+        "target_reversed": false,
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "objects": [
+              {
+                "geometry": {
+                  "crc": 3729868612,
+                  "kind": "Brep"
+                },
+                "groups": [],
+                "name": "Target",
+                "selected": false,
+                "role": "target"
+              },
+              {
+                "geometry": {
+                  "kind": "NurbsCurve",
+                  "curve": {
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      3.228513859014692,
+                      3.228513859014692,
+                      3.228513859014692,
+                      3.228513859014692
+                    ],
+                    "degree": 3,
+                    "control_points": [
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          5.0,
+                          -5.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          5.0,
+                          -3.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -3.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -2.0,
+                          0.0
+                        ]
+                      }
+                    ],
+                    "domain": [
+                      0.0,
+                      3.228513859014692
+                    ]
+                  }
+                },
+                "groups": [],
+                "name": "Source",
+                "selected": false,
+                "role": "source"
+              }
+            ],
+            "name": "OrientCrvToEdge",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _OrientCrvToEdge\nSelect curve to orient: _Pause\nSelect curve to orient\nSelect target surface edge\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _Copy=No\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _FlipSurface=No\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _ReverseCurve\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=Yes ): w60000000000000000e-16,-20000000000000000e-16,0",
+        "redo": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "before": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      0.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      3.0,
+                      -5.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "actual_cplane": {
+          "y": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "z": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "frame_audit": [
+          {
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "origin": [
+              0.0,
+              -6.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "origin": [
+              0.0,
+              -6.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              -0.0,
+              -0.0
+            ],
+            "parameter": 3.228513859014692,
+            "z": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "origin": [
+              3.0,
+              -5.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "parameter": 3.228513859014692,
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ],
+            "origin": [
+              3.0,
+              -5.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          }
+        ],
+        "after": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "xy_000_bare_11",
+      "value": {
+        "input_trace": {
+          "expected": 6,
+          "completed": 6,
+          "clicks": [
+            {
+              "aim": [
+                0,
+                -6,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 0.0,
+              "projected_point": [
+                0.0,
+                -6.0,
+                0.0
+              ],
+              "curve": 0,
+              "action": 0,
+              "marker": "@catenary-click:xy_000_bare_11-0",
+              "edge": null,
+              "click_acknowledged": true,
+              "pixel": [
+                37,
+                271
+              ]
+            },
+            {
+              "aim": [
+                8,
+                -2,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 7.967989346121069,
+              "projected_point": [
+                7.967989346121068,
+                -2.0,
+                0.0
+              ],
+              "curve": 1,
+              "action": 1,
+              "marker": "@catenary-click:xy_000_bare_11-1",
+              "edge": 0,
+              "click_acknowledged": true,
+              "pixel": [
+                382,
+                283
+              ]
+            }
+          ],
+          "edge_picks": [],
+          "prompts": [
+            "Select curve to orient",
+            "Select target surface edge",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=Yes )"
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "snap_settings": {
+            "project_to_cplane": false,
+            "enabled": true,
+            "modes": 0,
+            "capture_radius": 12
+          },
+          "sent": [
+            {
+              "action": 2,
+              "token": "_Copy=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 3,
+              "token": "_FlipSurface",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 4,
+              "token": "_ReverseCurve",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )"
+            },
+            {
+              "action": 5,
+              "token": "w60000000000000000e-16,-20000000000000000e-16,0",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=Yes )"
+            }
+          ],
+          "motion": [],
+          "errors": []
+        },
+        "undo": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      0.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      3.0,
+                      -5.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "groups": {
+          "after_script": [],
+          "undo": [],
+          "before": [],
+          "redo": []
+        },
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "edges": [
+          {
+            "knots": [
+              0.0,
+              0.0,
+              12.0,
+              12.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              12.0
+            ]
+          },
+          {
+            "knots": [
+              0.0,
+              0.0,
+              8.0,
+              8.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              8.0
+            ]
+          },
+          {
+            "knots": [
+              -12.0,
+              -12.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -12.0,
+              -0.0
+            ]
+          },
+          {
+            "knots": [
+              -8.0,
+              -8.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -8.0,
+              -0.0
+            ]
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "target_definition": {
+          "domain_u": [
+            0.0,
+            12.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            8.0,
+            8.0
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                6.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            8.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            12.0,
+            12.0
+          ]
+        },
+        "target_reversed": false,
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "objects": [
+              {
+                "geometry": {
+                  "crc": 3729868612,
+                  "kind": "Brep"
+                },
+                "groups": [],
+                "name": "Target",
+                "selected": false,
+                "role": "target"
+              },
+              {
+                "geometry": {
+                  "kind": "NurbsCurve",
+                  "curve": {
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      3.228513859014692,
+                      3.228513859014692,
+                      3.228513859014692,
+                      3.228513859014692
+                    ],
+                    "degree": 3,
+                    "control_points": [
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          5.0,
+                          -5.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          5.0,
+                          -3.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -3.0,
+                          0.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -2.0,
+                          0.0
+                        ]
+                      }
+                    ],
+                    "domain": [
+                      0.0,
+                      3.228513859014692
+                    ]
+                  }
+                },
+                "groups": [],
+                "name": "Source",
+                "selected": false,
+                "role": "source"
+              }
+            ],
+            "name": "OrientCrvToEdge",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _OrientCrvToEdge\nSelect curve to orient: _Pause\nSelect curve to orient\nSelect target surface edge\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _Copy=No\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _FlipSurface\nPick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No ): _ReverseCurve\nPick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=Yes ): w60000000000000000e-16,-20000000000000000e-16,0",
+        "redo": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "before": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      0.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      3.0,
+                      -5.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "actual_cplane": {
+          "y": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "z": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "frame_audit": [
+          {
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "origin": [
+              0.0,
+              -6.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "origin": [
+              0.0,
+              -6.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              -0.0,
+              -0.0
+            ],
+            "parameter": 3.228513859014692,
+            "z": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "origin": [
+              3.0,
+              -5.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "parameter": 3.228513859014692,
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ],
+            "origin": [
+              3.0,
+              -5.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          }
+        ],
+        "after": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692,
+                  3.228513859014692
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -5.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      5.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -3.0,
+                      0.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  3.228513859014692
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "on_edge_oblique_bare_10",
+      "value": {
+        "input_trace": {
+          "expected": 6,
+          "completed": 6,
+          "clicks": [
+            {
+              "aim": [
+                2,
+                -6,
+                -1
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 0.0,
+              "projected_point": [
+                2.0,
+                -6.0,
+                -1.0
+              ],
+              "curve": 0,
+              "action": 0,
+              "marker": "@catenary-click:on_edge_oblique_bare_10-0",
+              "edge": null,
+              "click_acknowledged": true,
+              "pixel": [
+                48,
+                332
+              ]
+            },
+            {
+              "aim": [
+                8,
+                -2,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 7.9882589341877175,
+              "projected_point": [
+                7.9882589341877175,
+                -2.0,
+                0.0
+              ],
+              "curve": 1,
+              "action": 1,
+              "marker": "@catenary-click:on_edge_oblique_bare_10-1",
+              "edge": 0,
+              "click_acknowledged": true,
+              "pixel": [
+                355,
+                286
+              ]
+            }
+          ],
+          "edge_picks": [],
+          "prompts": [
+            "Select curve to orient",
+            "Select target surface edge",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )"
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "snap_settings": {
+            "project_to_cplane": false,
+            "enabled": true,
+            "modes": 0,
+            "capture_radius": 12
+          },
+          "sent": [
+            {
+              "action": 2,
+              "token": "_Copy=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 3,
+              "token": "_FlipSurface",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 4,
+              "token": "_ReverseCurve=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )"
+            },
+            {
+              "action": 5,
+              "token": "w60000000000000000e-16,-20000000000000000e-16,0",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )"
+            }
+          ],
+          "motion": [],
+          "errors": []
+        },
+        "undo": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "groups": {
+          "after_script": [],
+          "undo": [],
+          "before": [],
+          "redo": []
+        },
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "edges": [
+          {
+            "knots": [
+              0.0,
+              0.0,
+              12.0,
+              12.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              12.0
+            ]
+          },
+          {
+            "knots": [
+              0.0,
+              0.0,
+              8.0,
+              8.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              8.0
+            ]
+          },
+          {
+            "knots": [
+              -12.0,
+              -12.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -12.0,
+              -0.0
+            ]
+          },
+          {
+            "knots": [
+              -8.0,
+              -8.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -8.0,
+              -0.0
+            ]
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "target_definition": {
+          "domain_u": [
+            0.0,
+            12.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            8.0,
+            8.0
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                6.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            8.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            12.0,
+            12.0
+          ]
+        },
+        "target_reversed": false,
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "objects": [
+              {
+                "geometry": {
+                  "crc": 3729868612,
+                  "kind": "Brep"
+                },
+                "groups": [],
+                "name": "Target",
+                "selected": false,
+                "role": "target"
+              },
+              {
+                "geometry": {
+                  "kind": "NurbsCurve",
+                  "curve": {
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      4.838742005982848,
+                      4.838742005982848,
+                      4.838742005982848,
+                      4.838742005982848
+                    ],
+                    "degree": 3,
+                    "control_points": [
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          7.0,
+                          -6.0,
+                          -1.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -6.0,
+                          -2.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -4.0,
+                          -1.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -2.0,
+                          0.0
+                        ]
+                      }
+                    ],
+                    "domain": [
+                      0.0,
+                      4.838742005982848
+                    ]
+                  }
+                },
+                "groups": [],
+                "name": "Source",
+                "selected": false,
+                "role": "source"
+              }
+            ],
+            "name": "OrientCrvToEdge",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _OrientCrvToEdge\nSelect curve to orient: _Pause\nSelect curve to orient\nSelect target surface edge\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _Copy=No\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _FlipSurface\nPick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No ): _ReverseCurve=No\nPick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No ): w60000000000000000e-16,-20000000000000000e-16,0",
+        "redo": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "before": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "actual_cplane": {
+          "y": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "z": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "frame_audit": [
+          {
+            "y": [
+              -0.2357022603955157,
+              0.9428090415820634,
+              0.235702260395516
+            ],
+            "x": [
+              -0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ],
+            "parameter": 0.0,
+            "z": [
+              0.6666666666666666,
+              0.3333333333333333,
+              -0.6666666666666666
+            ],
+            "origin": [
+              2.0,
+              -6.0,
+              -1.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              -0.7071067811865475,
+              0.0,
+              0.7071067811865475
+            ],
+            "x": [
+              -0.0,
+              -1.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              -0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ],
+            "origin": [
+              2.0,
+              -6.0,
+              -1.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -0.4472135954999579,
+              0.8944271909999159
+            ],
+            "x": [
+              -0.0,
+              0.8944271909999157,
+              0.44721359549995787
+            ],
+            "parameter": 4.838742005982848,
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "origin": [
+              1.0,
+              -2.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              -0.38008760487772236,
+              -0.41365043517886363,
+              0.8273008703577273
+            ],
+            "x": [
+              -0.9249504919823096,
+              0.16998034438233361,
+              -0.33996068876466723
+            ],
+            "parameter": 4.838742005982848,
+            "z": [
+              0.0,
+              0.8944271909999157,
+              0.44721359549995787
+            ],
+            "origin": [
+              1.0,
+              -2.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          }
+        ],
+        "after": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "on_edge_oblique_bare_01",
+      "value": {
+        "input_trace": {
+          "expected": 6,
+          "completed": 6,
+          "clicks": [
+            {
+              "aim": [
+                2,
+                -6,
+                -1
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 0.0,
+              "projected_point": [
+                2.0,
+                -6.0,
+                -1.0
+              ],
+              "curve": 0,
+              "action": 0,
+              "marker": "@catenary-click:on_edge_oblique_bare_01-0",
+              "edge": null,
+              "click_acknowledged": true,
+              "pixel": [
+                48,
+                332
+              ]
+            },
+            {
+              "aim": [
+                8,
+                -2,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 7.988258934187712,
+              "projected_point": [
+                7.988258934187712,
+                -2.0,
+                0.0
+              ],
+              "curve": 1,
+              "action": 1,
+              "marker": "@catenary-click:on_edge_oblique_bare_01-1",
+              "edge": 0,
+              "click_acknowledged": true,
+              "pixel": [
+                355,
+                286
+              ]
+            }
+          ],
+          "edge_picks": [],
+          "prompts": [
+            "Select curve to orient",
+            "Select target surface edge",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=Yes )"
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "snap_settings": {
+            "project_to_cplane": false,
+            "enabled": true,
+            "modes": 0,
+            "capture_radius": 12
+          },
+          "sent": [
+            {
+              "action": 2,
+              "token": "_Copy=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 3,
+              "token": "_FlipSurface=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 4,
+              "token": "_ReverseCurve",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 5,
+              "token": "w60000000000000000e-16,-20000000000000000e-16,0",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=Yes )"
+            }
+          ],
+          "motion": [],
+          "errors": []
+        },
+        "undo": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "groups": {
+          "after_script": [],
+          "undo": [],
+          "before": [],
+          "redo": []
+        },
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "edges": [
+          {
+            "knots": [
+              0.0,
+              0.0,
+              12.0,
+              12.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              12.0
+            ]
+          },
+          {
+            "knots": [
+              0.0,
+              0.0,
+              8.0,
+              8.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              8.0
+            ]
+          },
+          {
+            "knots": [
+              -12.0,
+              -12.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -12.0,
+              -0.0
+            ]
+          },
+          {
+            "knots": [
+              -8.0,
+              -8.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -8.0,
+              -0.0
+            ]
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "target_definition": {
+          "domain_u": [
+            0.0,
+            12.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            8.0,
+            8.0
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                6.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            8.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            12.0,
+            12.0
+          ]
+        },
+        "target_reversed": false,
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "objects": [
+              {
+                "geometry": {
+                  "crc": 3729868612,
+                  "kind": "Brep"
+                },
+                "groups": [],
+                "name": "Target",
+                "selected": false,
+                "role": "target"
+              },
+              {
+                "geometry": {
+                  "kind": "NurbsCurve",
+                  "curve": {
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      4.838742005982848,
+                      4.838742005982848,
+                      4.838742005982848,
+                      4.838742005982848
+                    ],
+                    "degree": 3,
+                    "control_points": [
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          7.0,
+                          -6.0,
+                          -1.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -6.0,
+                          -2.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -4.0,
+                          -1.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -2.0,
+                          0.0
+                        ]
+                      }
+                    ],
+                    "domain": [
+                      0.0,
+                      4.838742005982848
+                    ]
+                  }
+                },
+                "groups": [],
+                "name": "Source",
+                "selected": false,
+                "role": "source"
+              }
+            ],
+            "name": "OrientCrvToEdge",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _OrientCrvToEdge\nSelect curve to orient: _Pause\nSelect curve to orient\nSelect target surface edge\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _Copy=No\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _FlipSurface=No\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _ReverseCurve\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=Yes ): w60000000000000000e-16,-20000000000000000e-16,0",
+        "redo": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "before": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "actual_cplane": {
+          "y": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "z": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "frame_audit": [
+          {
+            "y": [
+              -0.2357022603955157,
+              0.9428090415820634,
+              0.235702260395516
+            ],
+            "x": [
+              -0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ],
+            "parameter": 0.0,
+            "z": [
+              0.6666666666666666,
+              0.3333333333333333,
+              -0.6666666666666666
+            ],
+            "origin": [
+              2.0,
+              -6.0,
+              -1.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              -0.7071067811865475,
+              0.0,
+              0.7071067811865475
+            ],
+            "x": [
+              -0.0,
+              -1.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              -0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ],
+            "origin": [
+              2.0,
+              -6.0,
+              -1.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -0.4472135954999579,
+              0.8944271909999159
+            ],
+            "x": [
+              -0.0,
+              0.8944271909999157,
+              0.44721359549995787
+            ],
+            "parameter": 4.838742005982848,
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "origin": [
+              1.0,
+              -2.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              -0.38008760487772236,
+              -0.41365043517886363,
+              0.8273008703577273
+            ],
+            "x": [
+              -0.9249504919823096,
+              0.16998034438233361,
+              -0.33996068876466723
+            ],
+            "parameter": 4.838742005982848,
+            "z": [
+              0.0,
+              0.8944271909999157,
+              0.44721359549995787
+            ],
+            "origin": [
+              1.0,
+              -2.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          }
+        ],
+        "after": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "on_edge_oblique_bare_11",
+      "value": {
+        "input_trace": {
+          "expected": 6,
+          "completed": 6,
+          "clicks": [
+            {
+              "aim": [
+                2,
+                -6,
+                -1
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 0.0,
+              "projected_point": [
+                2.0,
+                -6.0,
+                -1.0
+              ],
+              "curve": 0,
+              "action": 0,
+              "marker": "@catenary-click:on_edge_oblique_bare_11-0",
+              "edge": null,
+              "click_acknowledged": true,
+              "pixel": [
+                48,
+                332
+              ]
+            },
+            {
+              "aim": [
+                8,
+                -2,
+                0
+              ],
+              "motion_acknowledged": true,
+              "projected_parameter": 7.9882589341877175,
+              "projected_point": [
+                7.9882589341877175,
+                -2.0,
+                0.0
+              ],
+              "curve": 1,
+              "action": 1,
+              "marker": "@catenary-click:on_edge_oblique_bare_11-1",
+              "edge": 0,
+              "click_acknowledged": true,
+              "pixel": [
+                355,
+                286
+              ]
+            }
+          ],
+          "edge_picks": [],
+          "prompts": [
+            "Select curve to orient",
+            "Select target surface edge",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )",
+            "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=Yes )"
+          ],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "snap_settings": {
+            "project_to_cplane": false,
+            "enabled": true,
+            "modes": 0,
+            "capture_radius": 12
+          },
+          "sent": [
+            {
+              "action": 2,
+              "token": "_Copy=No",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 3,
+              "token": "_FlipSurface",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No )"
+            },
+            {
+              "action": 4,
+              "token": "_ReverseCurve",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No )"
+            },
+            {
+              "action": 5,
+              "token": "w60000000000000000e-16,-20000000000000000e-16,0",
+              "prompt": "Pick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=Yes )"
+            }
+          ],
+          "motion": [],
+          "errors": []
+        },
+        "undo": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "groups": {
+          "after_script": [],
+          "undo": [],
+          "before": [],
+          "redo": []
+        },
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "edges": [
+          {
+            "knots": [
+              0.0,
+              0.0,
+              12.0,
+              12.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              12.0
+            ]
+          },
+          {
+            "knots": [
+              0.0,
+              0.0,
+              8.0,
+              8.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  -2.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              0.0,
+              8.0
+            ]
+          },
+          {
+            "knots": [
+              -12.0,
+              -12.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  12.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -12.0,
+              -0.0
+            ]
+          },
+          {
+            "knots": [
+              -8.0,
+              -8.0,
+              -0.0,
+              -0.0
+            ],
+            "degree": 1,
+            "control_points": [
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              },
+              {
+                "weight": 1.0,
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ]
+              }
+            ],
+            "domain": [
+              -8.0,
+              -0.0
+            ]
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "target_definition": {
+          "domain_u": [
+            0.0,
+            12.0
+          ],
+          "control_count": [
+            2,
+            2
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            8.0,
+            8.0
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                -2.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                12.0,
+                6.0,
+                0.0
+              ]
+            }
+          ],
+          "domain_v": [
+            0.0,
+            8.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            12.0,
+            12.0
+          ]
+        },
+        "target_reversed": false,
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "objects": [
+              {
+                "geometry": {
+                  "crc": 3729868612,
+                  "kind": "Brep"
+                },
+                "groups": [],
+                "name": "Target",
+                "selected": false,
+                "role": "target"
+              },
+              {
+                "geometry": {
+                  "kind": "NurbsCurve",
+                  "curve": {
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      4.838742005982848,
+                      4.838742005982848,
+                      4.838742005982848,
+                      4.838742005982848
+                    ],
+                    "degree": 3,
+                    "control_points": [
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          7.0,
+                          -6.0,
+                          -1.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -6.0,
+                          -2.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -4.0,
+                          -1.0
+                        ]
+                      },
+                      {
+                        "weight": 1.0,
+                        "point": [
+                          6.0,
+                          -2.0,
+                          0.0
+                        ]
+                      }
+                    ],
+                    "domain": [
+                      0.0,
+                      4.838742005982848
+                    ]
+                  }
+                },
+                "groups": [],
+                "name": "Source",
+                "selected": false,
+                "role": "source"
+              }
+            ],
+            "name": "OrientCrvToEdge",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _OrientCrvToEdge\nSelect curve to orient: _Pause\nSelect curve to orient\nSelect target surface edge\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _Copy=No\nPick target edge point ( Copy=No  FlipSurface=No  ReverseCurve=No ): _FlipSurface\nPick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=No ): _ReverseCurve\nPick target edge point ( Copy=No  FlipSurface=Yes  ReverseCurve=Yes ): w60000000000000000e-16,-20000000000000000e-16,0",
+        "redo": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ],
+        "before": [
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      2.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      1.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          },
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          }
+        ],
+        "actual_cplane": {
+          "y": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "z": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "x": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "frame_audit": [
+          {
+            "y": [
+              -0.2357022603955157,
+              0.9428090415820634,
+              0.235702260395516
+            ],
+            "x": [
+              -0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ],
+            "parameter": 0.0,
+            "z": [
+              0.6666666666666666,
+              0.3333333333333333,
+              -0.6666666666666666
+            ],
+            "origin": [
+              2.0,
+              -6.0,
+              -1.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              -0.7071067811865475,
+              0.0,
+              0.7071067811865475
+            ],
+            "x": [
+              -0.0,
+              -1.0,
+              0.0
+            ],
+            "parameter": 0.0,
+            "z": [
+              -0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ],
+            "origin": [
+              2.0,
+              -6.0,
+              -1.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          },
+          {
+            "y": [
+              0.0,
+              -0.4472135954999579,
+              0.8944271909999159
+            ],
+            "x": [
+              -0.0,
+              0.8944271909999157,
+              0.44721359549995787
+            ],
+            "parameter": 4.838742005982848,
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "origin": [
+              1.0,
+              -2.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "FrameAt"
+          },
+          {
+            "y": [
+              -0.38008760487772236,
+              -0.41365043517886363,
+              0.8273008703577273
+            ],
+            "x": [
+              -0.9249504919823096,
+              0.16998034438233361,
+              -0.33996068876466723
+            ],
+            "parameter": 4.838742005982848,
+            "z": [
+              0.0,
+              0.8944271909999157,
+              0.44721359549995787
+            ],
+            "origin": [
+              1.0,
+              -2.0,
+              0.0
+            ],
+            "ok": true,
+            "method": "PerpendicularFrameAt"
+          }
+        ],
+        "after": [
+          {
+            "geometry": {
+              "crc": 3729868612,
+              "kind": "Brep"
+            },
+            "groups": [],
+            "name": "Target",
+            "selected": false,
+            "role": "target"
+          },
+          {
+            "geometry": {
+              "kind": "NurbsCurve",
+              "curve": {
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848,
+                  4.838742005982848
+                ],
+                "degree": 3,
+                "control_points": [
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      7.0,
+                      -6.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -6.0,
+                      -2.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -4.0,
+                      -1.0
+                    ]
+                  },
+                  {
+                    "weight": 1.0,
+                    "point": [
+                      6.0,
+                      -2.0,
+                      0.0
+                    ]
+                  }
+                ],
+                "domain": [
+                  0.0,
+                  4.838742005982848
+                ]
+              }
+            },
+            "groups": [],
+            "name": "Source",
+            "selected": false,
+            "role": "source"
+          }
+        ]
+      }
+    }
+  ],
+  "protocol_version": 1,
+  "engine_version": "8.32.26160.13001",
+  "provenance": {
+    "request_sha256": "cbe4bf4b133872886a8fef4edbcff152032512af725f94a88f161b12309f87be",
+    "sources": {
+      "generate_orient_curve_edge.py": "b549ca682cd920546cd4ceb399e8524d3168bc18a7faea7447242bd06329b4c4",
+      "orient_curve_edge_probe.py": "f951a11feb8c3b594eca8cf9b87b398ce4e25ac55f2d61b88fc309aaa65c867d",
+      "client.py": "fe7b1b7339d87f5c3d86b34c686594f910f7a249675dd7a04606dd215a76cdcb",
+      "structural_sdk.py": "59c5d617e7183e49c6d9f6cbf3970e677b3ff8ddc1c8a9dbcb75386d5c05fa6d",
+      "rhino_worker.py": "117a918011d148ff3291afd88d0e851723209d9504b254232e190d5e5b261c14",
+      "conic_getter_input.py": "404277f9f4190a735c12aca9f857264ee99cf38cd65117aa98980729a7e0b1f4",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+      "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa"
+    }
+  }
+}

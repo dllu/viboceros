@@ -236,6 +236,13 @@ impl VibocerosApp {
                 return false;
             }
         };
+        let point = match self.resolve_orient_edge_point(point) {
+            Ok(p) => p,
+            Err(e) => {
+                self.push_log(format!("Error: {e}"));
+                return false;
+            }
+        };
         let point = match self.resolve_orient_curve_point(point) {
             Ok(point) => point,
             Err(error) => {

@@ -377,6 +377,11 @@ impl VibocerosApp {
                     .then_some(ObjectSelectionFilter::Curves)
             };
         }
+        if self.orient_edge_session.is_some() {
+            return self
+                .picking_orient_edge()
+                .then_some(ObjectSelectionFilter::Curves);
+        }
         if self.picking_orient_curve() {
             return Some(ObjectSelectionFilter::Curves);
         }

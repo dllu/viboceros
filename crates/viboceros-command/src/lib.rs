@@ -22,6 +22,7 @@ pub mod flow;
 mod iplane;
 mod morph_edit;
 pub mod orient_curve;
+pub mod orient_curve_edge;
 pub mod orient_points;
 pub mod orient_surface;
 pub mod point_deviation;
@@ -1829,6 +1830,9 @@ impl CommandRegistry {
         registry
             .register(flow::FlowCommand::default())
             .expect("unique built-in command");
+        registry
+            .register(orient_curve_edge::OrientCurveEdgeCommand)
+            .expect("built-in curve edge orientation command is unique");
         registry
             .register(orient_surface::OrientSurfaceCommand::default())
             .expect("unique built-in command");
