@@ -476,7 +476,13 @@ impl Viewport {
                     }
                     continue;
                 }
-                let source = cache.get(object, document.tolerance()).bounds();
+                let source = if let Some(geometry) = transform.source_geometry {
+                    cache
+                        .temporary_source(object, geometry, document.tolerance())
+                        .bounds()
+                } else {
+                    cache.get(object, document.tolerance()).bounds()
+                };
                 let min = source.min().to_array();
                 let max = source.max().to_array();
                 let corners = (0..8)

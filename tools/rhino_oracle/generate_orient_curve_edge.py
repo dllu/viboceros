@@ -149,15 +149,61 @@ def angle_request():
                 op['actions'][0]['pick']=op['points'][0];rows.append(op)
     return dict(q,operations=rows)
 
+def subcurve_request():
+    import copy
+    q=request();base=q['operations'][0];rows=[]
+    def add(name,kind='Nurbs',reverse=False,end=False,grouped=False,copies=False,points=None,scene=None,span=None):
+        op=copy.deepcopy(next(x for x in q['operations']if x['id']==scene)if scene else base)
+        op.update(id='subcurve_'+name,kind=kind,grouped=grouped)
+        if points is not None:op['points']=points
+        if kind=='Line':op['points']=[op['points'][0],op['points'][-1]]
+        p=op['points']
+        def at(f):
+            if kind=='Line':return [(1-f)*p[0][j]+f*p[-1][j]for j in range(3)]
+            if kind=='Polyline':
+                t=f*(len(p)-1);i=min(int(t),len(p)-2);u=t-i
+                return [(1-u)*p[i][j]+u*p[i+1][j]for j in range(3)]
+            return [(1-f)**3*p[0][j]+3*(1-f)**2*f*p[1][j]+3*(1-f)*f*f*p[2][j]+f**3*p[3][j]for j in range(3)]
+        a,b=span or((.8,.2)if reverse else(.2,.8))
+        actions=['SubCrv',dict(curve=0,pick=p[-1]if end else p[0]),at(a),at(b),op['actions'][1],'Copy='+('Yes'if copies else'No'),op['actions'][5]]
+        gates=[['Select curve to orient'],['Select curve to temporarily shorten'],['Start of curve'],['Current length'],['Select target surface edge'],['Pick target edge point'],['Pick target edge point']]
+        if copies:actions += [[9,-2,0],'Cancel'];gates += [['Pick target edge point']]*2
+        op.update(actions=actions,action_prompts=gates);rows.append(op);return op,at
+    for kind in ['Nurbs','Polyline','Line']:
+        for reverse in [False,True]:
+            for end in [False,True]:add(kind+'_'+str(int(reverse))+str(int(end)),kind,reverse,end)
+    for reverse in [False,True]:add('grouped_copies_'+str(int(reverse)),reverse=reverse,grouped=True,copies=True)
+    add('spatial',points=[[-3,-10,2],[-2,-10,2],[-1,-8,-1],[0,-6,2]])
+    for scene in ['tilted','warped_reversed']:add(scene,scene=scene)
+    for reverse in [False,True]:
+        op,at=add('closed_'+str(int(reverse)),reverse=reverse,points=[[3,0,1],[6,0,1],[6,3,1],[3,0,1]])
+        op['actions'][1]['pick']=at(.4)
+    for end in [False,True]:add('full_'+str(int(end)),end=end,span=(0.,1.))
+    for name,length,locked in [('length',.7,False),('negative_length',-.7,False),('locked_length',.7,True),('locked_clamp',3.,True)]:
+        op,at=add(name)
+        extra=[dict(hover=at(.6)),'Direction=Locked']if locked else[]
+        extra += [length]
+        if not locked:extra += [at(.8)]
+        op['actions'][3:4]=extra;op['action_prompts'][3:4]=[['Select curve']if isinstance(a,list)else['Current length']for a in extra]
+    for n in [1,2,3]:
+        for token in ['Cancel','Enter']:
+            op,_=add('return_'+token+'_'+str(n));op['actions']=op['actions'][:n]+[token,'Cancel'];op['action_prompts']=op['action_prompts'][:n]+[op['action_prompts'][n],['Select curve to orient']]
+    op,_=add('zero_length');op['actions']=op['actions'][:3]+[0,'Cancel'];op['action_prompts']=op['action_prompts'][:3]+[['Current length'],['Select curve to orient']]
+    op,_=add('same_point');op['actions']=op['actions'][:3]+[op['actions'][2],'Cancel'];op['action_prompts']=op['action_prompts'][:3]+[['Current length'],['Select curve to orient']]
+    q=dict(q,operations=rows)
+    from .structural_sdk import validate_operations
+    validate_operations(q);return q
+
 def main():
     from .client import OracleClient
     import argparse
     builders={'--options':('orient_curve_edge_options',option_request),'--spatial':('orient_curve_edge_spatial',spatial_request),'--parallel':('orient_curve_edge_parallel',parallel_request),'--threshold':('orient_curve_edge_threshold',threshold_request),'--cutoff':('orient_curve_edge_cutoff',cutoff_request),'--boundary':('orient_curve_edge_boundary',boundary_request),'--angle':('orient_curve_edge_angle',angle_request)}
+    builders['--subcurve']=('orient_curve_edge_subcurve',subcurve_request)
     parser=argparse.ArgumentParser(description=__doc__);group=parser.add_mutually_exclusive_group()
     for name in builders:group.add_argument(name,dest='recipe',action='store_const',const=name)
     args=parser.parse_args();label,build=builders[args.recipe]if args.recipe else('orient_curve_edge',request)
     q=build();path=HERE/('fixtures/'+label+'.json');path.write_text(json.dumps(q,indent=2)+'\n')
-    names=['generate_orient_curve_edge.py','orient_curve_edge_probe.py','client.py','structural_sdk.py','rhino_worker.py','conic_getter_input.py','number_token.py','join_probe.py','merge_edges_probe.py','managed_mouse_callback.py','snap_environment.py','catenary_point_picker.py','group_picking.py']
+    names=['generate_orient_curve_edge.py','orient_curve_edge_probe.py','client.py','structural_sdk.py','rhino_worker.py','conic_getter_input.py','number_token.py','join_probe.py','merge_edges_probe.py','managed_mouse_callback.py','snap_environment.py','catenary_point_picker.py','group_picking.py','arc_point_picker.py','subcurve_direction_input.py','subcurve_direction_probe.py']
     digest=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();sources={n:digest(HERE/n)for n in names}
     print('Capturing',len(q['operations']),'curve-to-edge workflows',flush=True)
     r=OracleClient(settings_scheme='VibocerosOracleOrientCurveEdge20261020').run_rhino(q,timeout=1000)

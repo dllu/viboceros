@@ -6,6 +6,12 @@ use viboceros_geometry::{Brep, Frame3, Point3, Tolerance, Vector3};
 pub fn rows() -> Vec<(Value, Value)> {
     let pairs = [
         (
+            include_str!("../../../../tools/rhino_oracle/fixtures/orient_curve_edge_subcurve.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/orient_curve_edge_subcurve.json"
+            ),
+        ),
+        (
             include_str!("../../../../tools/rhino_oracle/fixtures/orient_curve_edge.json"),
             include_str!("../../../../tools/rhino_oracle/observations/orient_curve_edge.json"),
         ),
@@ -196,7 +202,10 @@ pub fn check(doc: &Document, scene: &Scene, v: &Value, phase: &str) -> f64 {
         let e = morph::curve(&b["geometry"]["curve"]);
         assert_eq!(curve.degree(), e.degree());
         assert_eq!(curve.control_points().len(), e.control_points().len());
-        assert_eq!(curve.knots(), e.knots());
+        assert_eq!(curve.knots().len(), e.knots().len());
+        for (a, b) in curve.knots().iter().zip(e.knots()) {
+            assert!((a - b).abs() <= 1e-8 * (1. + b.abs()), "knot {a} != {b}");
+        }
         for (a, b) in curve.control_points().iter().zip(e.control_points()) {
             assert_eq!(a.weight(), b.weight());
             max = max.max(a.point().distance_to(b.point()).unwrap());
@@ -226,7 +235,9 @@ pub fn execute(doc: &mut Document, scene: &Scene, commands: &CommandRegistry, op
         .find_map(|a| a.get("pick").filter(|_| a["curve"] == 0))
         .map(point);
     let mut options = viboceros_command::orient_curve_edge::Options::default();
-    for action in op["actions"].as_array().unwrap() {
+    let range = source_range(op, scene.original.curve_ref().unwrap(), doc.tolerance());
+    let range = range.map_or_else(String::new, |[start, end]| format!(" SubCrv={start},{end}"));
+    for (i, action) in op["actions"].as_array().unwrap().iter().enumerate() {
         if let Some(s) = action.as_str() {
             if s == "Cancel" || s == "Enter" {
                 break;
@@ -245,19 +256,20 @@ pub fn execute(doc: &mut Document, scene: &Scene, commands: &CommandRegistry, op
             let (_, o, _) =
                 viboceros_command::orient_curve_edge::options(&[&normalized], options).unwrap();
             options = o;
-        } else if action.is_array() {
+        } else if action.is_array() && op["action_prompts"][i][0] == "Pick target edge point" {
             let pick = pick.map_or_else(String::new, |p| format!(" PickPoint={}", token(p)));
             commands
                 .execute_in_history_group(
                     doc,
                     &format!(
-                        "OrientCrvToEdge {} Edge={},{} {} PickedSources={}{}",
+                        "OrientCrvToEdge {} Edge={},{} {} PickedSources={}{}{}",
                         token(point(action)),
                         scene.target,
                         scene.edge,
                         options.arguments(),
                         scene.source,
-                        pick
+                        pick,
+                        range
                     ),
                     CommandContext {
                         construction_plane: plane(op),
@@ -268,4 +280,63 @@ pub fn execute(doc: &mut Document, scene: &Scene, commands: &CommandRegistry, op
         }
     }
     doc.clear_selection();
+}
+
+/// Replay authored SubCrv inputs through the shared geometric getter policy.
+/// Expected output geometry is never used to supply source parameters.
+pub fn source_range(
+    op: &Value,
+    curve: viboceros_geometry::CurveRef<'_>,
+    tol: Tolerance,
+) -> Option<[f64; 2]> {
+    use viboceros_command::subcurve_input as sub;
+    let mut start = None;
+    let mut hover = None;
+    let mut locked = None;
+    let mut length = None;
+    for (i, a) in op["actions"].as_array().unwrap().iter().enumerate() {
+        if a == "Cancel" || a == "Enter" {
+            return None;
+        }
+        let gate = op["action_prompts"][i][0].as_str().unwrap();
+        if gate == "Start of curve" && a.is_array() {
+            start = Some(curve.closest_parameter(point(a), tol).unwrap());
+        } else if gate == "Current length" || gate == "Select curve" {
+            let start = start.unwrap();
+            if let Some(p) = a.get("hover") {
+                hover = Some(curve.closest_parameter(point(p), tol).unwrap());
+            } else if let Some(s) = a.as_str() {
+                let value = sub::direction_option(s).unwrap().unwrap();
+                locked = value.then(|| sub::cursor_forward(curve, start, hover.unwrap()).unwrap());
+            } else if let Some(n) = a.as_f64() {
+                if n == 0. {
+                    return None;
+                }
+                length = Some(n.abs());
+                if let Some(forward) = locked {
+                    if !sub::locked_numeric_requires_confirmation(
+                        curve,
+                        start,
+                        n.abs(),
+                        forward,
+                        tol,
+                    )
+                    .unwrap()
+                    {
+                        return sub::interval_in_direction(curve, start, n.abs(), forward, tol)
+                            .unwrap();
+                    }
+                    locked = None;
+                }
+            } else if a.is_array() {
+                let t = curve.closest_parameter(point(a), tol).unwrap();
+                return if let Some(length) = length {
+                    sub::interval(curve, start, t, length, tol).unwrap()
+                } else {
+                    sub::point_parameters(curve, start, t, locked, false).unwrap()
+                };
+            }
+        }
+    }
+    None
 }

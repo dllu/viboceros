@@ -1,7 +1,9 @@
 //! Curve endpoint picking and repeated placements use the scripted command solver.
 use super::*;
+use viboceros_command::curve_reference::CapturedCurve;
 use viboceros_command::orient_curve_edge::{Edge, Options, Placement, Source};
 use viboceros_geometry::{AffineTransform3, NurbsCurve};
+mod subcurve;
 
 pub(super) struct Session {
     group: viboceros_document::HistoryGroup,
@@ -17,11 +19,17 @@ pub(super) struct Session {
     preview: Option<AffineTransform3>,
     applied: bool,
     postselected: bool,
+    subcurve: Option<super::uv_subcurve_input::PendingSubcurve>,
+    subcurve_source: Option<CapturedCurve>,
+    range: Option<[f64; 2]>,
     pub(super) pointer: Option<egui::Pos2>,
 }
 impl Session {
+    pub(super) fn has_subcurve(&self) -> bool {
+        self.subcurve.is_some()
+    }
     pub(super) fn wants_point(&self) -> bool {
-        self.placement.is_some()
+        self.placement.is_some() || self.subcurve_source.is_some()
     }
     pub(super) fn cursor_curve(&self) -> Option<&NurbsCurve> {
         self.cursor.as_ref()
@@ -97,6 +105,9 @@ impl VibocerosApp {
                     preview: None,
                     applied: false,
                     postselected: true,
+                    subcurve: None,
+                    subcurve_source: None,
+                    range: None,
                     pointer: None,
                 });
                 self.active_command = Some(InteractiveCommand::OrientCurveToEdge);
@@ -110,8 +121,19 @@ impl VibocerosApp {
         let Some(s) = &self.orient_edge_session else {
             return;
         };
-        let prompt = if s.source.is_none() {
-            "select a curve near an end"
+        let prompt = if let Some(p) = &s.subcurve {
+            match (p.object, p.start, p.length) {
+                (None, _, _) => "Select curve to temporarily shorten; Enter returns",
+                (Some(_), None, _) => "Start of curve: pick on the source",
+                (Some(_), Some(_), None) => {
+                    "Pick directed end or type a curve length; Direction=Locked/Free"
+                }
+                (Some(_), Some(_), Some(_)) => {
+                    "Confirm length direction on the curve; Enter returns"
+                }
+            }
+        } else if s.source.is_none() {
+            "select a curve near an end (SubCrv)"
         } else if s.edge.is_none() {
             "select a target surface edge"
         } else {
@@ -126,9 +148,12 @@ impl VibocerosApp {
         let Some(s) = &mut self.orient_edge_session else {
             return true;
         };
-        if s.source
+        if s.subcurve_source
             .as_ref()
-            .is_some_and(|c| !c.curve().current(&self.document))
+            .is_some_and(|c| !c.current(&self.document))
+            || s.source
+                .as_ref()
+                .is_some_and(|c| !c.curve().current(&self.document))
         {
             self.push_log(
                 "Source curve changed or became unavailable; restart OrientCrvToEdge".into(),
@@ -184,7 +209,20 @@ impl VibocerosApp {
                 "Select a curve or surface edge",
             ))?;
             let s = self.orient_edge_session.as_mut().unwrap();
-            if let Some(source) = &s.source {
+            if let Some(p) = &mut s.subcurve {
+                if edge.is_some() {
+                    return Err(viboceros_command::CommandError::Usage(
+                        "Select a curve object",
+                    ));
+                }
+                let captured = CapturedCurve::capture(&self.document, id, None)?;
+                s.cursor = Some(captured.curve().clone());
+                s.postselected = !self.document.is_selected(id);
+                s.sources = vec![id];
+                s.pick = pick;
+                p.object = Some(id);
+                s.subcurve_source = Some(captured);
+            } else if let Some(source) = &s.source {
                 let index = edge.ok_or(viboceros_command::CommandError::Usage(
                     "Select a surface edge",
                 ))?;
@@ -235,6 +273,9 @@ impl VibocerosApp {
         if !self.validate_orient_edge() {
             return Some(false);
         }
+        if let Some(result) = self.accept_edge_subcurve_point(point) {
+            return Some(result);
+        }
         let s = self.orient_edge_session.as_mut().unwrap();
         let Some(placement) = &s.placement else {
             self.push_log("Select the curve and target surface edge first".into());
@@ -253,8 +294,11 @@ impl VibocerosApp {
         let pick = s.pick.map_or_else(String::new, |p| {
             format!(" PickPoint={}", format_model_point(p))
         });
+        let range = s
+            .range
+            .map_or_else(String::new, |[start, end]| format!(" SubCrv={start},{end}"));
         let input = format!(
-            "OrientCrvToEdge {} Edge={id},{index} Face={} {} {}={}{}",
+            "OrientCrvToEdge {} Edge={id},{index} Face={} {} {}={}{}{}",
             format_model_point(point),
             placement.edge.target.face,
             s.options.arguments(),
@@ -264,7 +308,8 @@ impl VibocerosApp {
                 "Sources"
             },
             s.sources[0],
-            pick
+            pick,
+            range
         );
         match self.commands.execute_in_history_group(
             &mut self.document,
@@ -293,6 +338,9 @@ impl VibocerosApp {
         }
     }
     pub(super) fn continue_orient_edge(&mut self, input: &str) -> bool {
+        if self.continue_edge_subcurve(input) {
+            return true;
+        }
         let Some(s) = self.orient_edge_session.as_mut() else {
             return false;
         };

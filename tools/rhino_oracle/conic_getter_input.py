@@ -60,6 +60,13 @@ def drive(op,host,guides,command="Conic"):
     pointer_plane=vp.GetConstructionPlane().Plane
     arc_pointer_path=S.Array[S.Int32]([0]*384);arc_pointer_count=S.Array[S.Int32]([0])
     arc_pointer_initial=S.Array[S.Int32]([0]*(2*len(actions)))
+    def prompt_gate(prefix):
+        if command=='OrientCrvToEdge' and prefix=='Select curve':
+            # Numeric SubCrv confirmation changes its text while retaining a
+            # public point getter. Never confuse it with object selection.
+            in_point=method(R.Input.RhinoGet,'InGetPoint',[R.RhinoDoc])
+            return E.AndAlso(E.Equal(prompt,E.Constant(prefix)),call(None,in_point,[E.Constant(doc,clr.GetClrType(R.RhinoDoc))]))
+        return call(prompt,starts,[E.Constant(prefix)])
     def pointer_request(i,marker,screen):
         receipt=[]
         if op.get('op')in('arc_command','arc_extension'):
@@ -68,7 +75,7 @@ def drive(op,host,guides,command="Conic"):
             receipt=[E.Assign(item(arc_pointer_initial,2*i),E.Property(position,'X')),E.Assign(item(arc_pointer_initial,2*i+1),E.Property(position,'Y'))]
         return E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1))]+receipt+[log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
     for i,a in enumerate(actions):
-        if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge'):base=either([call(prompt,starts,[E.Constant(p)])for p in op['action_prompts'][i]])
+        if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
         located=command in('Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge')and op.get('op')in('circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
@@ -189,7 +196,7 @@ def drive(op,host,guides,command="Conic"):
         handlers=[]
         for c in clicks:
             i=c['action'];x,y=c['pixel']
-            gate=either([call(prompt,starts,[E.Constant(p)])for p in op['action_prompts'][i]])if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge')else base
+            gate=either([prompt_gate(p)for p in op['action_prompts'][i]])if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge')else base
             near=E.AndAlso(E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'X'),integer(x-1)),E.LessThanOrEqual(E.Property(pixel,'X'),integer(x+1))),E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'Y'),integer(y-1)),E.LessThanOrEqual(E.Property(pixel,'Y'),integer(y+1))))
             condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.Equal(item(counts,i),integer(7)),E.AndAlso(same_view,E.AndAlso(gate,E.AndAlso(near,E.AndAlso(left,E.Not(E.Property(event,'Cancel'))))))))
             advance=[E.Assign(item(observed,i),prompt),E.Assign(item(counts,i),integer(9)),E.Assign(item(last,0),now)]

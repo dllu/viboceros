@@ -14,6 +14,7 @@ use viboceros_document::{GeometrySnapshot, Object};
 pub(super) struct DisplayCache {
     analyses: Vec<AnalysisDrawing>,
     entries: HashMap<ObjectId, Rc<DisplayGeometry>>,
+    temporary_sources: HashMap<ObjectId, Rc<DisplayGeometry>>,
 }
 
 struct AnalysisDrawing {
@@ -116,6 +117,27 @@ impl DisplayCache {
 
     pub(super) fn retain_visible(&mut self, ids: &HashSet<ObjectId>) {
         self.entries.retain(|id, _| ids.contains(id));
+        self.temporary_sources.retain(|id, _| ids.contains(id));
+    }
+
+    pub(super) fn temporary_source(
+        &mut self,
+        object: &Object,
+        geometry: &GeometrySnapshot,
+        tolerance: Tolerance,
+    ) -> Rc<DisplayGeometry> {
+        let density = object.attributes().wire_density();
+        let entry = self
+            .temporary_sources
+            .entry(object.id())
+            .or_insert_with(|| Rc::new(DisplayGeometry::new(geometry.clone(), density, tolerance)));
+        if !entry.geometry.shares_storage_with(geometry)
+            || entry.wire_density != density
+            || entry.tolerance != tolerance
+        {
+            *entry = Rc::new(DisplayGeometry::new(geometry.clone(), density, tolerance));
+        }
+        Rc::clone(entry)
     }
 }
 

@@ -51,6 +51,11 @@ fn invalid_curve_edge_inputs_preserve_geometry_selection_and_redo() {
         format!("OrientCrvToEdge 2,0,0 Edge={target},0 Copy=Maybe"),
         format!("OrientCrvToEdge 2,0,0 Edge={source},0"),
         format!("OrientCrvToEdge 2,0,0 Edge={target},0 Copy=Yes Copy=No"),
+        format!("OrientCrvToEdge 2,0,0 Edge={target},0 SubCrv=0.2,0.2"),
+        format!("OrientCrvToEdge 2,0,0 Edge={target},0 SubCrv=NaN,0.8"),
+        format!("OrientCrvToEdge 2,0,0 Edge={target},0 SubCrv=-1,0.8"),
+        format!("OrientCrvToEdge 2,0,0 Edge={target},0 SubCrv=0.2,2"),
+        format!("OrientCrvToEdge 2,0,0 Edge={target},0 SubCrv=0.2,0.8 SubCrv=0.3,0.7"),
     ] {
         assert!(commands.execute(&mut doc, &input).is_err(), "{input}");
         assert_eq!(format!("{doc:?}"), before, "{input}");

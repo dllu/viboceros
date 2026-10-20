@@ -2,8 +2,10 @@
 use super::*;
 use crate::curve_reference::CapturedCurve;
 use crate::orient_surface::Target;
+use viboceros_document::GeometrySnapshot;
+use viboceros_geometry::CurveRef;
 
-pub const USAGE: &str = "OrientCrvToEdge target [Edge=id,index] [Face=index] [PickPoint=x,y,z] [Copy=Yes|No] [FlipSurface=Yes|No] [ReverseCurve=Yes|No] [Sources=id|PickedSources=id]";
+pub const USAGE: &str = "OrientCrvToEdge target [Edge=id,index] [Face=index] [PickPoint=x,y,z] [SubCrv=start-parameter,end-parameter] [Copy=Yes|No] [FlipSurface=Yes|No] [ReverseCurve=Yes|No] [Sources=id|PickedSources=id]";
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Options {
@@ -86,6 +88,7 @@ pub fn options<'a>(
 #[derive(Clone, Debug)]
 pub struct Source {
     curve: CapturedCurve,
+    portion: Option<GeometrySnapshot>,
     references: [Option<Vector3>; 2],
     pub at_end: bool,
 }
@@ -95,20 +98,43 @@ impl Source {
         id: ObjectId,
         pick: Option<Point3>,
     ) -> Result<Self, CommandError> {
+        Self::capture_range(doc, id, pick, None)
+    }
+    /// Capture a directed interval in the parent's native parameter domain.
+    /// The parent remains the validity reference; placement uses a private piece.
+    pub fn capture_range(
+        doc: &Document,
+        id: ObjectId,
+        pick: Option<Point3>,
+        range: Option<[Real; 2]>,
+    ) -> Result<Self, CommandError> {
         let curve = CapturedCurve::capture(doc, id, None)?;
-        let c = curve.curve_ref();
+        let portion = range
+            .map(|range| {
+                orient_curve::prepare_guide(&curve.curve_ref().to_owned(), Some(range))
+                    .map(|piece| GeometrySnapshot::from(Geometry::from(piece)))
+            })
+            .transpose()?;
+        let c = portion
+            .as_ref()
+            .map_or_else(|| curve.curve_ref(), |p| p.curve_ref().unwrap());
         if c.is_closed()? {
             return Err(CommandError::Usage("Select an open curve near an end"));
         }
         let d = c.domain();
-        // Public command captures retain the end opposite the located source pick.
-        let at_end = pick
-            .map(|p| {
+        // Ordinary-source captures retain the end opposite the located pick.
+        let at_end = if range.is_some() {
+            // A temporary source anchors its directed end, independent of the
+            // parent object's selection location.
+            true
+        } else {
+            pick.map(|p| {
                 c.closest_parameter(p, doc.tolerance())
                     .map(|t| t <= d.start() + (d.end() - d.start()) * 0.5)
             })
             .transpose()?
-            .unwrap_or(false);
+            .unwrap_or(false)
+        };
         let references = [*d.start(), *d.end()].map(|t| {
             c.evaluate_with_derivative(t)
                 .ok()
@@ -116,6 +142,7 @@ impl Source {
         });
         Ok(Self {
             curve,
+            portion,
             at_end,
             references,
         })
@@ -123,18 +150,28 @@ impl Source {
     pub fn curve(&self) -> &CapturedCurve {
         &self.curve
     }
+    pub fn working_curve(&self) -> CurveRef<'_> {
+        self.portion
+            .as_ref()
+            .map_or_else(|| self.curve.curve_ref(), |p| p.curve_ref().unwrap())
+    }
+    /// Immutable display geometry for a temporary source; ordinary sources
+    /// continue to share the original object's existing display cache.
+    pub fn portion(&self) -> Option<&GeometrySnapshot> {
+        self.portion.as_ref()
+    }
     pub fn base(&self) -> Result<CurveSample, GeometryError> {
-        let c = self.curve.curve_ref();
+        let c = self.working_curve();
         let d = c.domain();
         c.evaluate_with_tangent(if self.at_end { *d.end() } else { *d.start() })
     }
     pub fn picked_end(&self) -> Result<CurveSample, GeometryError> {
-        let c = self.curve.curve_ref();
+        let c = self.working_curve();
         let d = c.domain();
         c.evaluate_with_tangent(if self.at_end { *d.start() } else { *d.end() })
     }
     fn reference_tangent(&self, sample: CurveSample) -> Vector3 {
-        let end = sample.parameter() == *self.curve.curve_ref().domain().end();
+        let end = sample.parameter() == *self.working_curve().domain().end();
         self.references[usize::from(end)].unwrap_or_else(|| sample.tangent().as_vector())
     }
 }
@@ -281,8 +318,16 @@ impl Placement {
             // it at the opposite endpoint retained as the placement anchor.
             let pick = self.source.picked_end()?;
             let reference_pick = self.source.reference_tangent(pick);
-            let up = self.plane.z_axis().opposite();
-            let (up, reference_up) = if parallel(reference_pick, up.as_vector()) {
+            // Public SubCrv captures seed directly with +CPlane Z; ordinary
+            // object picks first project -CPlane Z at the picked endpoint.
+            let up = if self.source.portion().is_some() {
+                self.plane.z_axis()
+            } else {
+                self.plane.z_axis().opposite()
+            };
+            let (up, reference_up) = if self.source.portion().is_some()
+                || parallel(reference_pick, up.as_vector())
+            {
                 (up, up.as_vector())
             } else {
                 let frame = Frame3::try_from_unit_x_and_normal(
@@ -383,6 +428,7 @@ impl Command for OrientCurveEdgeCommand {
         let [id] = sources.ids.as_slice() else {
             return Err(CommandError::Usage("Select one open curve near an end"));
         };
+        let (args, range) = orient_curve::range_arguments(&args)?;
         let (rest, options, reference) = options(&args, Options::default())?;
         let (point, n) = parse_point(&rest)?;
         if n != rest.len() {
@@ -392,7 +438,7 @@ impl Command for OrientCurveEdgeCommand {
         if *id == target {
             return Err(CommandError::Usage("Select a separate surface edge"));
         }
-        let source = Source::capture(doc, *id, reference.pick)?;
+        let source = Source::capture_range(doc, *id, reference.pick, range)?;
         let edge = Edge::capture(doc, target, index, reference.face)?;
         let placement = Placement::new(
             source,
@@ -402,7 +448,18 @@ impl Command for OrientCurveEdgeCommand {
             doc.tolerance(),
         );
         let map = placement.transform_at(point)?;
-        if options.copy {
+        if let Some(portion) = placement.source.portion() {
+            // SubCrv is an ephemeral source, with default object attributes.
+            // Even Copy=No inserts its result and leaves the parent untouched.
+            let geometry = portion.transformed(map, doc.tolerance())?;
+            if sources.release_on_replay {
+                doc.release_command_selection_on_history_replay([*id])?;
+            }
+            doc.add_geometry(geometry)?;
+            if sources.postselected {
+                doc.select_command_results([])?;
+            }
+        } else if options.copy {
             // This command adds copies to the existing source groups, unlike
             // ordinary affine Copy, which allocates new group definitions.
             let geometry = doc

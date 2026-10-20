@@ -184,6 +184,7 @@ mod tests {
         let transform = AffineTransform3::from_translation(Vector3::try_new(1., 2., 3.).unwrap());
         let preview = TransformedObjects {
             rigid_layout: None,
+            source_geometry: None,
             sources: &[],
             grips: &grips,
             copy: true,

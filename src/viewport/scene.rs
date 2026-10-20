@@ -478,6 +478,8 @@ impl Viewport {
                         continue;
                     };
                     geometry
+                } else if let Some(geometry) = transform.source_geometry {
+                    cache.temporary_source(object, geometry, document.tolerance())
                 } else {
                     Rc::clone(&display.geometry)
                 };

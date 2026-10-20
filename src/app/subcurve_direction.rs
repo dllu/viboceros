@@ -3,6 +3,7 @@ use super::*;
 impl VibocerosApp {
     pub(super) fn continue_subcurve_direction(&mut self, input: &str) -> bool {
         if self.continue_conic_subcurve_direction(input)
+            || self.continue_edge_subcurve_direction(input)
             || self.continue_orient_subcurve_direction(input)
             || self.continue_array_subcurve_direction(input)
             || self.continue_curve_array_subcurve_direction(input)
@@ -87,6 +88,7 @@ impl VibocerosApp {
     }
     pub(super) fn update_subcurve_hover(&mut self, point: Point3) {
         if self.update_refinement_subcurve_hover(point)
+            || self.update_edge_subcurve_hover(point)
             || self.update_conic_subcurve_hover(point)
             || self.update_orient_subcurve_hover(point)
             || self.update_array_subcurve_hover(point)

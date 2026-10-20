@@ -162,13 +162,18 @@ impl<'a> AffinePreview<'a> {
                     self.grips
                 },
                 copy: self.copy,
-                reference_sources: !self.copy,
+                reference_sources: !self.copy
+                    && !matches!(self.definition, Mapping::CurveEdge(p) if p.source.portion().is_some()),
                 draw_source_faces: matches!(self.definition, Mapping::SurfaceCurveArray(_)),
                 reversing: self.rigid_layout.is_none()
                     && transform.orientation_reversing().unwrap_or(false),
                 reference: None,
                 transform,
                 rigid_layout: self.rigid_layout,
+                source_geometry: match self.definition {
+                    Mapping::CurveEdge(p) => p.source.portion(),
+                    _ => None,
+                },
             }),
             cursor.map(|_| transform),
         )
@@ -226,7 +231,13 @@ impl Viewport {
                         let Some(object) = document.object(*id) else {
                             return false;
                         };
-                        let bounds = cache.get(object, document.tolerance()).bounds();
+                        let bounds = if let Some(geometry) = objects.source_geometry {
+                            cache
+                                .temporary_source(object, geometry, document.tolerance())
+                                .bounds()
+                        } else {
+                            cache.get(object, document.tolerance()).bounds()
+                        };
                         let lo = bounds.min().to_array();
                         let hi = bounds.max().to_array();
                         (0..8).all(|bits| {

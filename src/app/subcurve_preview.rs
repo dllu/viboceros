@@ -243,6 +243,9 @@ fn resolve(
 
 impl VibocerosApp {
     pub(super) fn subcurve_preview_hover(&self) -> Option<f64> {
+        if let Some(s) = &self.orient_edge_session {
+            return s.subcurve_hover();
+        }
         if let Some(p) = &self.refinement_prompt {
             return p.subcurve_hover();
         }
@@ -276,6 +279,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn subcurve_draft_preview(&mut self) -> Option<Preview> {
+        if let Some(s) = &mut self.orient_edge_session {
+            return s.subcurve_preview(&self.document);
+        }
         if let Some(p) = &mut self.refinement_prompt {
             return p.subcurve_preview(&self.document);
         }

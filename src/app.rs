@@ -9943,6 +9943,12 @@ impl VibocerosApp {
             // Escape dismisses the choice without changing the selection.
         } else if self.dismiss_reparameterize_menu() {
             // Keep the reference selection active after dismissing its choices.
+        } else if self
+            .orient_edge_session
+            .as_ref()
+            .is_some_and(|s| s.has_subcurve())
+        {
+            self.continue_edge_subcurve("Cancel");
         } else if self.merge_face_prompt.take().is_some() {
             self.push_log("MergeCoplanarFace canceled".into());
         } else if self.shell_prompt.is_some() {

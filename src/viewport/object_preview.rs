@@ -36,6 +36,8 @@ pub(super) struct TransformedObjects<'a> {
     /// A Normal reference uses temporary selection styling without selecting it in the model.
     pub reference: Option<ObjectId>,
     pub transform: AffineTransform3,
+    /// An immutable temporary source portion, shared across preview frames.
+    pub source_geometry: Option<&'a viboceros_document::GeometrySnapshot>,
     pub rigid_layout: Option<&'a viboceros_command::nonuniform_scale::RigidLayout>,
 }
 
@@ -65,6 +67,7 @@ impl<'a> TransformedObjects<'a> {
             reference: None,
             transform,
             rigid_layout: None,
+            source_geometry: None,
         }
     }
 }

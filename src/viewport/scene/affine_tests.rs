@@ -9,6 +9,69 @@ fn rect() -> Rect {
 }
 
 #[test]
+fn shortened_edge_source_preview_renders_only_the_portion_and_reuses_samples() {
+    use viboceros_command::orient_curve_edge::{Edge, Options, Placement, Source};
+    let mut doc = Document::default();
+    let commands = CommandRegistry::with_builtins();
+    commands
+        .execute(&mut doc, "Curve 0,-6,0 2,-6,0 2,-5,0 3,-5,0 Degree=3")
+        .unwrap();
+    commands
+        .execute(&mut doc, "SrfPt 0,-2,0 12,-2,0 12,6,0 0,6,0")
+        .unwrap();
+    let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();
+    let original = doc.object(ids[0]).unwrap().geometry_snapshot().clone();
+    let c = original.curve_ref().unwrap();
+    let d = c.domain();
+    let range = [
+        d.start() + 0.2 * (d.end() - d.start()),
+        d.start() + 0.8 * (d.end() - d.start()),
+    ];
+    let source =
+        Source::capture_range(&doc, ids[0], Some(c.start_point().unwrap()), Some(range)).unwrap();
+    let portion = source.portion().unwrap().clone();
+    let placement = Placement::new(
+        source,
+        Edge::capture(&doc, ids[1], 0, None).unwrap(),
+        Options::default(),
+        viboceros_command::CommandContext::default().construction_plane,
+        doc.tolerance(),
+    );
+    let sources = [ids[0]];
+    let preview = AffinePreview {
+        sources: &sources,
+        grips: &[],
+        definition: super::super::affine_preview::Mapping::CurveEdge(&placement),
+        frame: None,
+        copy: false,
+        last_transform: None,
+        rigid_layout: None,
+    };
+    let before = format!("{doc:?}");
+    let mut samples = None;
+    for view in Viewport::standard_views() {
+        for target in [point(6., -2., 0.), point(8., -2., 0.)] {
+            let posed = view
+                .resolve_affine_preview(preview, Some(target), &doc)
+                .0
+                .unwrap();
+            view.object_scene_with_transform(rect(), &doc, None, &[], Some(posed));
+            let cache = view.cached_scene.borrow();
+            let objects = &cache.as_ref().unwrap().key.objects;
+            let posed = objects.iter().find(|o| o.transform.is_some()).unwrap();
+            assert!(posed.geometry.geometry.shares_storage_with(&portion));
+            assert!(!posed.geometry.geometry.shares_storage_with(&original));
+            let wires = posed.geometry.wires().as_ptr();
+            assert_eq!(*samples.get_or_insert(wires), wires);
+            assert!(objects.iter().any(
+                |o| o.transform.is_none() && o.geometry.geometry.shares_storage_with(&original)
+            ));
+        }
+    }
+    assert_eq!(format!("{doc:?}"), before);
+}
+
+#[test]
 fn scale_nu_rigid_preview_preserves_shapes_and_uses_group_centers_for_clipping() {
     use viboceros_command::nonuniform_scale::RigidLayout;
     let mut doc = Document::default();
@@ -41,6 +104,7 @@ fn scale_nu_rigid_preview_preserves_shapes_and_uses_group_centers_for_clipping()
         reference: None,
         transform: map,
         rigid_layout: Some(&layout),
+        source_geometry: None,
     };
     let translations = [[-21., 0., 2.], [-21., 0., 2.], [15., 0., 2.]];
     let before = format!("{doc:?}");
@@ -126,6 +190,7 @@ fn affine_preview_reuses_display_geometry_across_deformation_and_four_views() {
         {
             let preview = Some(TransformedObjects {
                 rigid_layout: None,
+                source_geometry: None,
                 grips: &[],
                 copy: false,
                 sources: &sources,
@@ -198,6 +263,7 @@ fn affine_preview_face_normals_match_independently_deformed_meshes() {
         let map = AffineTransform3::try_new(rows, Vector3::try_new(0., 0., 0.).unwrap()).unwrap();
         let preview = Some(TransformedObjects {
             rigid_layout: None,
+            source_geometry: None,
             grips: &[],
             copy: false,
             sources: &[id],

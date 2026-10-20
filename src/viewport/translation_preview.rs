@@ -32,6 +32,7 @@ impl<'a> TranslationPreview<'a> {
         (
             transform.map(|transform| TransformedObjects {
                 rigid_layout: None,
+                source_geometry: None,
                 sources: self.sources,
                 grips: self.grips,
                 copy: self.copy,

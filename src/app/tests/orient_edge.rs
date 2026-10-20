@@ -5,6 +5,61 @@ fn enter(app: &mut VibocerosApp, input: &str) {
     app.run_command();
 }
 #[test]
+fn temporary_edge_source_preview_escape_and_stale_capture_preserve_document() {
+    let (op, v) = support::rows().remove(0);
+    let (doc, scene) = support::setup(&op, &v);
+    let mut app = test_app();
+    app.document = doc;
+    app.document
+        .select_objects_direct([scene.source], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Move 0,0,0 1,0,0");
+    app.document.undo().unwrap();
+    app.document.clear_selection();
+    let before = format!("{:?}", app.document);
+    let curve = scene.original.curve_ref().unwrap();
+    let d = curve.domain();
+    let at = |f| {
+        curve
+            .evaluate(d.start() + f * (d.end() - d.start()))
+            .unwrap()
+    };
+    enter(&mut app, "OrientCrvToEdge");
+    enter(&mut app, "SubCrv");
+    app.pick_curve_to_edge_at(Some(scene.source), None, Some(at(0.)));
+    app.accept_orient_edge_point(at(0.2));
+    app.update_subcurve_hover(at(0.8));
+    let a = app.subcurve_draft_preview().unwrap();
+    let b = app.subcurve_draft_preview().unwrap();
+    assert!(std::sync::Arc::ptr_eq(&a.geometry, &b.geometry));
+    assert!(
+        (a.geometry.curve.length(app.document.tolerance()).unwrap()
+            - curve.length(app.document.tolerance()).unwrap())
+        .abs()
+            > 0.1
+    );
+    enter(&mut app, "Direction=Locked");
+    assert_eq!(format!("{:?}", app.document), before);
+    app.cancel_current_prompt_or_selection();
+    assert!(app.active_command.is_some());
+    assert!(app.picking_orient_edge());
+    assert!(app.subcurve_draft_preview().is_none());
+    app.cancel_current_prompt_or_selection();
+    assert!(app.active_command.is_none());
+    assert_eq!(format!("{:?}", app.document), before);
+    app.document.redo().unwrap();
+    app.document.undo().unwrap();
+    enter(&mut app, "OrientCrvToEdge");
+    enter(&mut app, "SubCrv");
+    app.pick_curve_to_edge_at(Some(scene.source), None, Some(at(0.)));
+    app.document
+        .replace_object_geometries([(scene.source, Geometry::Point(at(0.)))])
+        .unwrap();
+    assert!(!app.validate_orient_edge());
+    assert!(app.active_command.is_none());
+    assert!(app.subcurve_draft_preview().is_none());
+}
+#[test]
 fn curve_to_edge_native_getters_preview_and_history() {
     let mut app = test_app();
     let mut failures = Vec::new();
@@ -23,6 +78,10 @@ fn curve_to_edge_native_getters_preview_and_history() {
                         &mut app,
                         &format!("w{}", support::token(support::point(action))),
                     );
+                } else if let Some(value) = action.as_f64() {
+                    enter(&mut app, &value.to_string());
+                } else if let Some(hover) = action.get("hover") {
+                    app.update_subcurve_hover(support::point(hover));
                 } else if action["curve"] == 0 {
                     app.pick_curve_to_edge_at(
                         Some(scene.source),

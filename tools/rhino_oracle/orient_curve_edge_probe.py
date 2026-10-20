@@ -15,13 +15,15 @@ def validate(op):
     if not isinstance(op['cplane'],list)or len(op['cplane'])!=3 or not all(point(p)for p in op['cplane']):raise ValueError('invalid construction plane')
     if not isinstance(op['actions'],list)or not 1<=len(op['actions'])<=24:raise ValueError('invalid getter sequence')
     for a in op['actions']:
-        if isinstance(a,STR)and a in('Copy=Yes','Copy=No','FlipSurface','ReverseCurve','FlipSurface=Yes','FlipSurface=No','ReverseCurve=Yes','ReverseCurve=No','Enter','Cancel'):continue
+        if isinstance(a,STR)and a in('SubCrv','Direction=Locked','Direction=Free','Copy=Yes','Copy=No','FlipSurface','ReverseCurve','FlipSurface=Yes','FlipSurface=No','ReverseCurve=Yes','ReverseCurve=No','Enter','Cancel'):continue
+        if type(a)in(int,float)and not math.isnan(a)and not math.isinf(a)and abs(a)<=1000:continue
         if point(a):continue
+        if isinstance(a,dict)and set(a)=={'hover'}and point(a['hover']):continue
         if isinstance(a,dict)and set(a)=={'click'}and point(a['click']):continue
         if isinstance(a,dict)and set(a)in({'curve'},{'curve','pick'},{'curve','pick','edge'})and type(a['curve'])is int and a['curve']in(0,1)and('pick'not in a or point(a['pick']))and('edge'not in a or type(a['edge'])is int and 0<=a['edge']<4):continue
         raise ValueError('invalid getter action')
     gates=op['action_prompts']
-    if not isinstance(gates,list)or len(gates)!=len(op['actions'])or any(not isinstance(g,list)or not 1<=len(g)<=4 or any(not isinstance(s,STR)or s not in ('Select curve to orient','Select target surface edge','Pick target edge point') for s in g)for g in gates):raise ValueError('invalid prompt gates')
+    if not isinstance(gates,list)or len(gates)!=len(op['actions'])or any(not isinstance(g,list)or not 1<=len(g)<=4 or any(not isinstance(s,STR)or s not in ('Select curve to orient','Select curve to temporarily shorten','Start of curve','Current length','Select curve','Select target surface edge','Pick target edge point') for s in g)for g in gates):raise ValueError('invalid prompt gates')
 
 def run(op,host,iterations,tolerance):
     validate(op)

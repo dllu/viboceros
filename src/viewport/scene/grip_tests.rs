@@ -139,6 +139,7 @@ fn collapsed_mesh_grip_preview_and_committed_scene_render_in_all_modes() {
     let transform = AffineTransform3::try_nonuniform_scale(p(0., 0.), [-1., 1., 1.]).unwrap();
     let preview = TransformedObjects {
         rigid_layout: None,
+        source_geometry: None,
         sources: &owners,
         grips: &grips,
         copy: false,
@@ -216,6 +217,7 @@ fn partial_grip_scene_draws_edited_geometry_without_a_second_affine_map() {
     let owners = [id];
     let preview = TransformedObjects {
         rigid_layout: None,
+        source_geometry: None,
         sources: &owners,
         grips: &grips,
         copy: false,
