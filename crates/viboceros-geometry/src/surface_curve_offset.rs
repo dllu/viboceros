@@ -1,12 +1,19 @@
 //! Sampled cubic fitting of the complete surface-distance offset locus.
 use crate::{
     CurveRef, GeometryError, MAX_CURVE_FIT_CONTROL_POINTS, MorphInterpolationSolver, NurbsCurve,
-    NurbsSurface, ParameterSide, PreparedSurfaceGeodesic, Real, Tolerance,
+    NurbsCurve2, NurbsSurface, ParameterSide, PreparedSurfaceGeodesic, Real, SurfaceGeodesicPoint,
+    Tolerance,
     morph::fit_parameterized_curve,
     spline_collocation::{error_fractions, seed_breaks, stable_lerp},
 };
 
 const MAX_QUERIES: usize = 65_536;
+mod clip;
+pub use clip::{
+    SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions, SurfaceCurveOffsetPieces,
+    try_offset_curves_on_surface, try_offset_curves_on_surface_with_options,
+    try_offset_curves_on_surface_with_solver,
+};
 
 /// A fitted geodesic offset and diagnostics. Source admission has a continuous
 /// surface-image bound; integration and locus fitting retain numerical/sample
@@ -39,7 +46,8 @@ fn preserve_spans(old: &[Real], new: &[Real], degree: usize) -> Result<(), Geome
 /// Positive distance is left of the source tangent in the surface orientation.
 /// Source and surface are immutable. Natural boundaries, poles, source kinks,
 /// discontinuities and exhausted numerical work return errors, never a partial
-/// curve. Trims, corner joining and cut-locus removal belong to the command layer.
+/// curve. The plural producer clips to natural boundaries; trimmed faces,
+/// corner joining and cut-locus removal need further qualification.
 pub fn try_offset_curve_on_surface(
     surface: &NurbsSurface,
     source: &NurbsCurve,
@@ -68,6 +76,36 @@ fn offset_with_solver(
     tolerance: Tolerance,
     solver: Option<MorphInterpolationSolver>,
 ) -> Result<SurfaceCurveOffset, GeometryError> {
+    let (surface, source, numerical) =
+        normalized_sources(original_surface, original_source, distance, tolerance)?;
+    if distance == 0. {
+        let (_, source_deviation_bound) =
+            surface.try_pullback_curve_certified_with_bound(&source, None, numerical)?;
+        return Ok(SurfaceCurveOffset {
+            curve: original_source.clone(),
+            source_deviation_bound,
+            geodesic_queries: 0,
+            integration_steps: 0,
+            maximum_integration_estimate: 0.,
+        });
+    }
+    let mut sampler = OffsetSampler::new(&surface, &source, distance, numerical)?;
+    let fitted = fit_complete(&mut sampler, tolerance, solver)?;
+    Ok(SurfaceCurveOffset {
+        curve: restore_domain(&fitted, original_source, tolerance)?,
+        source_deviation_bound: sampler.source_deviation_bound,
+        geodesic_queries: sampler.diagnostics.queries,
+        integration_steps: sampler.diagnostics.steps,
+        maximum_integration_estimate: sampler.diagnostics.estimate,
+    })
+}
+
+fn normalized_sources(
+    original_surface: &NurbsSurface,
+    original_source: &NurbsCurve,
+    distance: Real,
+    tolerance: Tolerance,
+) -> Result<(NurbsSurface, NurbsCurve, Tolerance), GeometryError> {
     if !distance.is_finite() {
         return Err(invalid("offset distance must be finite"));
     }
@@ -89,42 +127,89 @@ fn offset_with_solver(
         tolerance.relative(),
         tolerance.angular(),
     )?;
-    let (uv, source_deviation_bound) =
-        surface.try_pullback_curve_certified_with_bound(&source, None, numerical)?;
-    let mut result = SurfaceCurveOffset {
-        curve: original_source.clone(),
-        source_deviation_bound,
-        geodesic_queries: 0,
-        integration_steps: 0,
-        maximum_integration_estimate: 0.,
-    };
-    if distance == 0. {
-        return Ok(result);
+    Ok((surface, source, numerical))
+}
+
+#[derive(Clone, Copy, Default)]
+struct Diagnostics {
+    queries: usize,
+    steps: usize,
+    estimate: Real,
+}
+impl Diagnostics {
+    fn include(&mut self, other: Self) {
+        self.queries += other.queries;
+        self.steps += other.steps;
+        self.estimate = self.estimate.max(other.estimate);
     }
-    let prepared = PreparedSurfaceGeodesic::new(&surface)?;
-    let mut evaluate = |t: Real, side: ParameterSide| {
-        if result.geodesic_queries >= MAX_QUERIES {
+}
+
+struct OffsetSampler<'a> {
+    surface: &'a NurbsSurface,
+    source: &'a NurbsCurve,
+    uv: NurbsCurve2,
+    prepared: PreparedSurfaceGeodesic<'a>,
+    distance: Real,
+    numerical: Tolerance,
+    source_deviation_bound: Real,
+    diagnostics: Diagnostics,
+}
+impl<'a> OffsetSampler<'a> {
+    fn new(
+        surface: &'a NurbsSurface,
+        source: &'a NurbsCurve,
+        distance: Real,
+        numerical: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let (uv, source_deviation_bound) =
+            surface.try_pullback_curve_certified_with_bound(source, None, numerical)?;
+        Ok(Self {
+            surface,
+            source,
+            uv,
+            prepared: PreparedSurfaceGeodesic::new(surface)?,
+            distance,
+            numerical,
+            source_deviation_bound,
+            diagnostics: Diagnostics::default(),
+        })
+    }
+    fn sample(
+        &mut self,
+        t: Real,
+        side: ParameterSide,
+    ) -> Result<SurfaceGeodesicPoint, GeometryError> {
+        if self.diagnostics.queries >= MAX_QUERIES {
             return Err(GeometryError::SurfaceCurveOffsetWorkLimit {
                 maximum: MAX_QUERIES,
             });
         }
-        let uv = uv.evaluate_on_side(t, side)?;
-        let normal = surface.normal_at(uv.x(), uv.y())?;
-        let tangent = CurveRef::NurbsCurve(&source)
+        self.diagnostics.queries += 1;
+        let uv = self.uv.evaluate_on_side(t, side)?;
+        let normal = self.surface.normal_at(uv.x(), uv.y())?;
+        let tangent = CurveRef::NurbsCurve(self.source)
             .evaluate_with_tangent_on_side(t, side)?
             .tangent();
         let direction = normal
             .as_vector()
             .cross(tangent.as_vector())?
             .normalized_nonzero()?;
-        let shot = prepared.point(uv, direction, distance, numerical)?;
-        result.geodesic_queries += 1;
-        result.integration_steps += shot.accepted_steps;
-        result.maximum_integration_estimate = result
-            .maximum_integration_estimate
-            .max(shot.estimated_error);
-        Ok(shot.point)
-    };
+        let shot = self
+            .prepared
+            .point(uv, direction, self.distance, self.numerical)?;
+        self.diagnostics.steps += shot.accepted_steps;
+        self.diagnostics.estimate = self.diagnostics.estimate.max(shot.estimated_error);
+        Ok(shot)
+    }
+}
+
+fn fit_complete(
+    sampler: &mut OffsetSampler<'_>,
+    tolerance: Tolerance,
+    solver: Option<MorphInterpolationSolver>,
+) -> Result<NurbsCurve, GeometryError> {
+    let source = sampler.source;
+    let uv = &sampler.uv;
     // The offset uses the first derivative of the source, so its guaranteed
     // continuity is one order lower. Retain pullback breaks as well.
     let mut breaks = seed_breaks(
@@ -146,6 +231,8 @@ fn offset_with_solver(
             false
         }
     });
+    let numerical = sampler.numerical;
+    let mut evaluate = |t, side| sampler.sample(t, side).map(|p| p.point);
     let count = breaks.len();
     for knot in &mut breaks[1..count - 1] {
         let left = evaluate(knot.parameter, ParameterSide::Left)?;
@@ -169,7 +256,7 @@ fn offset_with_solver(
         tolerance.angular(),
     )?;
     let fitted = fit_parameterized_curve(
-        &source,
+        source,
         breaks,
         fit_tolerance,
         MAX_CURVE_FIT_CONTROL_POINTS,
@@ -203,14 +290,35 @@ fn offset_with_solver(
         }
         e => e,
     })?;
-    let restored = fitted.try_reparameterized(original_source.domain())?;
+    Ok(fitted)
+}
+
+fn restore_domain(
+    fitted: &NurbsCurve,
+    original_source: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    let parameter = |t: Real| {
+        if t <= 1. {
+            original_source.parameter_at(t)
+        } else {
+            crate::parameter::shifted_parameter(
+                original_source.parameter_at(t - 1.)?,
+                &original_source.domain(),
+            )
+        }
+    };
+    let domain = fitted.domain();
+    let restored =
+        fitted.try_reparameterized(parameter(*domain.start())?..=parameter(*domain.end())?)?;
     preserve_spans(fitted.knots(), restored.knots(), fitted.degree())?;
     // Knot restoration and native parameter encoding must not consume the fit
     // allowance, especially in a narrow chart translated far from zero.
     for (a, b) in fitted.spans() {
         for fraction in error_fractions(16) {
             let t = stable_lerp(a, b, fraction)?;
-            let native = restored.parameter_at(t)?;
+            let fraction = crate::nurbs::interval_fraction(t, *domain.start(), *domain.end())?;
+            let native = restored.parameter_at(fraction)?;
             if fitted
                 .evaluate(t)?
                 .distance_to(restored.evaluate(native)?)?
@@ -222,8 +330,7 @@ fn offset_with_solver(
             }
         }
     }
-    result.curve = restored;
-    Ok(result)
+    Ok(restored)
 }
 
 #[cfg(test)]

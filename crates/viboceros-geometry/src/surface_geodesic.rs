@@ -62,11 +62,17 @@ fn affine_bilinear(surface: &NurbsSurface) -> bool {
         })
 }
 
-fn chart_closes(surface: &NurbsSurface, axis: usize) -> Result<bool, GeometryError> {
+pub(crate) fn chart_closes(surface: &NurbsSurface, axis: usize) -> Result<bool, GeometryError> {
     let (a, b) = if axis == 0 {
-        (surface.isocurve_v(0.)?, surface.isocurve_v(1.)?)
+        (
+            surface.isocurve_v(*surface.domain_u().start())?,
+            surface.isocurve_v(*surface.domain_u().end())?,
+        )
     } else {
-        (surface.isocurve_u(0.)?, surface.isocurve_u(1.)?)
+        (
+            surface.isocurve_u(*surface.domain_v().start())?,
+            surface.isocurve_u(*surface.domain_v().end())?,
+        )
     };
     if a.degree() != b.degree()
         || a.knots() != b.knots()

@@ -70,7 +70,10 @@ mod curve_tween;
 mod surface_curve_offset;
 mod surface_geodesic;
 pub use surface_curve_offset::{
-    SurfaceCurveOffset, try_offset_curve_on_surface, try_offset_curve_on_surface_with_solver,
+    SurfaceCurveOffset, SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions,
+    SurfaceCurveOffsetPieces, try_offset_curve_on_surface, try_offset_curve_on_surface_with_solver,
+    try_offset_curves_on_surface, try_offset_curves_on_surface_with_options,
+    try_offset_curves_on_surface_with_solver,
 };
 mod surface_rebuild;
 pub use surface_geodesic::{PreparedSurfaceGeodesic, SurfaceGeodesicPoint};

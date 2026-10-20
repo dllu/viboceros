@@ -38,6 +38,29 @@ crossings, discontinuous offsets and unrepresentable restored parameters.
 Fitting is checked at both uniform and nonuniform stations after every
 refinement; this does not certify all points of an arbitrary offset locus.
 
+`try_offset_curves_on_surface` returns the portions inside the natural
+rectangle. It reuses endpoint-span surface extension, adaptive UV fitting,
+curve intersection and exact curve trimming. UV crossing proposals get
+independent model-space contact checks, and retained portions get additional
+fit and membership checks. Periodic seams remain traversable; separate
+portions of a closed source join across its old seam. Empty output is distinct
+from numerical failure. Sources remain immutable.
+
+Clipping currently requires same-sign surface weights. Temporary extension
+has eight bounded retries; singular continuations and unresolved contacts
+return errors. UV fit tolerances use a conservative natural-chart derivative
+bound, with model-space validation after clipping. These sampled checks do not
+certify topology of the complete geodesic family.
+
+`SurfaceCurveOffsetOptions::closed_gaps = ConnectClosed` requests the captured
+SDK's planar closed-gap behavior. Retained portions are reconnected by
+parabolic spans using their endpoint tangent intersection. Those spans can
+leave the natural rectangle. This policy is qualified for affine planar
+patches; unsupported closed reconnections return errors. The default `Open`
+policy retains separate clipped portions. Reconnection uses unit bridge
+parameter spans where representable and source-period units otherwise,
+checking the assembled geometry after parameter mapping.
+
 ## Evidence
 
 Analytic tests cover skew planes under world scales from `2^-200` to `2^200`
@@ -70,24 +93,32 @@ captured offset curves. The replay records diagnostic ceilings for these five
 cases separately from the parity gate. It must not be reported as full native
 offset compatibility. See the [qualification report](surface-geodesic-qualification.json).
 
-Complete offset production also replays all 24 cases. It produces 22 curves,
-compared at 65 samples in each direction, and rejects two natural-boundary
-crossings. Nineteen recipes qualify; the five cases above remain unqualified.
-Rhino clips the negative 0.25 warped offset to the natural U boundaries and
-shortens its parameter interval, while this producer rejects the full source.
-Command boundary clipping therefore needs additional work alongside the
-numerical discrepancies.
+Clipped offset production also replays all 24 cases. It produces 23 curves,
+compared at 65 samples in each direction, and one empty result. Nineteen recipes
+qualify; the five cases above remain numerically unqualified. The negative
+0.25 warped offset now clips to both natural U boundaries and shortens its
+parameter interval, matching the structure of the SDK output.
 The complete distance-1 Bézier comparisons reach `3.70e-6` sampled difference.
 Separate dense analytic tests cover fitted planes, source self-crossings, cylinder generators,
 closed rings, sphere latitudes, physical and UV rescaling, and reversal. The
 warped-patch full curve is checked against an independent Cartesian equation.
 
+Five additional [clipping captures](../tools/rhino_oracle/fixtures/surface_curve_offset_clipping.json)
+cover four separate circle arcs, a tangent circle, a seam-crossing arc, both
+ends of an oblique line, and an empty result. The explicit closed-gap policy
+matches the five SDK outputs within `1e-6` at 129 samples in each direction.
+Open mode also verifies the separate natural-domain portions. Analytic tests
+cover tangencies, boundary overlaps, periodic seams, source seam joins and
+scaling from `2^-100` to `2^100`, including parameter precision during closed
+gap reconnection.
+
 ## Command work still required
 
 `OffsetCrvOnSrf` is not registered yet. The remaining work includes resolving
-the five SDK differences, boundary clipping, full command qualification of fitted
+the five SDK differences, trimmed-boundary clipping, full command qualification of fitted
 curves, trimmed faces and surface-edge inputs, Number and ThroughPoint behavior, temporary source
-portions, corner/cut-locus handling, previews and grouped history.
+portions, general closed-gap reconnection, corner/cut-locus handling, previews
+and grouped history.
 
 The existing usd-brep `SmBSplineSurface::OffsetCurveAlongSurface` producer
 intersects Euclidean offset circles with the surface. That metric differs from
@@ -108,6 +139,7 @@ cargo test -p viboceros-geometry --test surface_geodesic_native -- --nocapture
 python3 -m unittest tools.rhino_oracle.test_surface_curve_offset
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --verify
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --clipping
 ```
 
 To refresh the independent query points, save the Rust replay output and pass

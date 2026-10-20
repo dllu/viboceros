@@ -1,13 +1,17 @@
 """Read-only public OffsetOnSurface SDK observations on fixed source scenes."""
 import re
-CASES=('plane_line','plane_curve','cylinder_axis','cylinder_ring','sphere_latitude','warped_iso')
+STANDARD_CASES=('plane_line','plane_curve','cylinder_axis','cylinder_ring','sphere_latitude','warped_iso')
+CASES=STANDARD_CASES+('plane_circle','plane_seam','plane_bound')
 def validate(op):
     if not isinstance(op,dict)or set(op)-{'samples'}!={'op','id','case','distance'}or op['op']!='surface_curve_offset':raise ValueError('invalid surface curve offset recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or op['case']not in CASES:raise ValueError('invalid surface curve offset case')
     if type(op['distance'])not in(int,float)or not 0<abs(op['distance'])<=2:raise ValueError('invalid surface offset distance')
     if 'samples'in op and(not isinstance(op['samples'],list)or not 1<=len(op['samples'])<=64 or any(not isinstance(p,list)or len(p)!=3 or any(type(x)not in(int,float)or not abs(x)<=1000 for x in p)for p in op['samples'])):raise ValueError('invalid bounded offset query points')
 def request():
-    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='surface_curve_offset',id=case+'_'+str(i),case=case,distance=d)for case in CASES for i,d in enumerate([.25,-.25,1.,-1.])])
+    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='surface_curve_offset',id=case+'_'+str(i),case=case,distance=d)for case in STANDARD_CASES for i,d in enumerate([.25,-.25,1.,-1.])])
+def clipping_request():
+    q=request();q['operations']=[dict(op='surface_curve_offset',id=name,case=case,distance=distance)for name,case,distance in [('four_arcs','plane_circle',-.25),('tangent_circle','plane_circle',-.2),('seam_arc','plane_seam',-.25),('line_ends','plane_bound',.25),('empty_circle','plane_circle',-1.)]]
+    return q
 def validate_request(q):
     if type(q.get('iterations',1))is not int or q.get('iterations',1)!=1 or not isinstance(q.get('operations'),list)or not 1<=len(q['operations'])<=64:raise ValueError('bounded one-iteration surface offset SDK request required')
     names=[]
@@ -22,7 +26,11 @@ def run(op,host,iterations,tolerance):
         owned.append(g);return g
     try:
         case=op['case']
-        if case.startswith('plane'):
+        if case in('plane_circle','plane_seam','plane_bound'):
+            corners=[[0,0,0],[1,0,0],[1,1,0],[0,1,0]]if case=='plane_bound'else[[-1,-1,0],[1,-1,0],[1,1,0],[-1,1,0]]
+            surface=keep(G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in corners]))
+            source=keep(G.LineCurve(G.Point3d(0,.2,0),G.Point3d(1,.8,0)))if case=='plane_bound'else keep(G.Circle(G.Point3d(0,.3 if case=='plane_seam'else 0,0),.6 if case=='plane_seam'else .8).ToNurbsCurve())
+        elif case.startswith('plane'):
             surface=keep(G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in[[-10,-10,0],[10,-10,0],[10,10,0],[-10,10,0]]]))
             source=keep(G.LineCurve(G.Point3d(-4,0,0),G.Point3d(4,0,0)))if case=='plane_line'else keep(G.Curve.CreateControlPointCurve([G.Point3d(*p)for p in[[-4,0,0],[-2,3,0],[2,-3,0],[4,0,0]]],3))
         elif case.startswith('cylinder'):

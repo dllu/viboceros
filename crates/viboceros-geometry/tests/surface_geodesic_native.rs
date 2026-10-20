@@ -231,7 +231,7 @@ fn independent_sdk_closest_points_confirm_the_measured_differences() {
 }
 
 #[test]
-fn complete_offset_curves_keep_native_locus_and_boundary_differences_explicit() {
+fn clipped_offset_curves_keep_native_locus_differences_explicit() {
     let q: Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/surface_curve_offset.json"
     ))
@@ -257,91 +257,59 @@ fn complete_offset_curves_keep_native_locus_and_boundary_differences_explicit() 
             .iter()
             .map(|o| curve(&o["definition"]))
             .collect::<Vec<_>>();
-        let fitted = viboceros_geometry::try_offset_curve_on_surface(
+        let fitted = viboceros_geometry::try_offset_curves_on_surface(
             &surface,
             &source,
             op["distance"].as_f64().unwrap(),
             tolerance,
-        );
-        let fitted = match fitted {
-            Ok(fitted) => {
-                assert!(!native.is_empty());
-                fitted
-            }
-            Err(viboceros_geometry::GeometryError::ParameterCurveOutsideSurfaceDomain) => {
-                assert!(matches!(
-                    op["id"].as_str().unwrap(),
-                    "warped_iso_1" | "warped_iso_3"
-                ));
-                let qualified = native.is_empty();
-                if !qualified {
-                    // Rhino clips the offset to the natural U boundaries and
-                    // shortens its parameter interval. Whole-source rejection
-                    // is an explicit compatibility gap of this producer.
-                    assert_eq!(op["id"], "warped_iso_1");
-                    assert!(
-                        surface
-                            .control_points()
-                            .iter()
-                            .all(|p| p.weight() > 0. && p.point().x() >= -5.)
-                    );
-                    let endpoint = native[0].evaluate(*native[0].domain().start()).unwrap();
-                    assert!((endpoint.x() + 5.).abs() < 1e-10);
-                    assert!(native[0].domain().start() > source.domain().start());
-                    assert!(native[0].domain().end() < source.domain().end());
-                    unqualified.push(op["id"].clone());
-                }
-                println!(
-                    "SURFACE_CURVE_OFFSET {}",
-                    serde_json::json!({"id":op["id"],"status":"natural_domain_rejection","maximum_bidirectional_sample_error":null,"qualified":qualified,"native_outputs":native.len(),"queries":null,"controls":null})
-                );
-                continue;
-            }
-            Err(e) => panic!("{}: {e}", op["id"]),
-        };
+        )
+        .unwrap_or_else(|e| panic!("{}: {e}", op["id"]));
+        assert_eq!(fitted.curves.len(), native.len(), "{}", op["id"]);
         let mut maximum: f64 = 0.;
-        for i in 0..=64 {
-            let t = fitted.curve.parameter_at(i as f64 / 64.).unwrap();
-            let point = fitted.curve.evaluate(t).unwrap();
-            let distance = native
-                .iter()
-                .map(|c| {
-                    let t = c.closest_parameter(point, tolerance).unwrap();
-                    c.evaluate(t).unwrap().distance_to(point).unwrap()
-                })
-                .fold(f64::INFINITY, f64::min);
-            maximum = maximum.max(distance);
-        }
-        for native in &native {
-            for i in 0..=64 {
-                let point = native
-                    .evaluate(native.parameter_at(i as f64 / 64.).unwrap())
-                    .unwrap();
-                let t = fitted.curve.closest_parameter(point, tolerance).unwrap();
-                maximum = maximum.max(
-                    point
-                        .distance_to(fitted.curve.evaluate(t).unwrap())
-                        .unwrap(),
-                );
+        for (sources, targets) in [(&fitted.curves, &native), (&native, &fitted.curves)] {
+            for c in sources {
+                for i in 0..=64 {
+                    let p = c.evaluate(c.parameter_at(i as f64 / 64.).unwrap()).unwrap();
+                    let error = targets
+                        .iter()
+                        .map(|t| {
+                            let u = t.closest_parameter(p, tolerance).unwrap();
+                            t.evaluate(u).unwrap().distance_to(p).unwrap()
+                        })
+                        .fold(f64::INFINITY, f64::min);
+                    maximum = maximum.max(error);
+                }
             }
+        }
+        if op["id"] == "warped_iso_1" {
+            assert!(fitted.extension_attempts > 0);
+            let c = &fitted.curves[0];
+            assert!(
+                c.domain().start() > source.domain().start()
+                    && c.domain().end() < source.domain().end()
+            );
+            assert!(
+                (c.evaluate(*c.domain().start()).unwrap().x() + 5.).abs() < tolerance.absolute()
+            );
+            assert!((c.evaluate(*c.domain().end()).unwrap().x() - 5.).abs() < tolerance.absolute());
         }
         println!(
             "SURFACE_CURVE_OFFSET {}",
-            serde_json::json!({"id":op["id"],"status":"curve","maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6,"native_outputs":native.len(),"queries":fitted.geodesic_queries,"controls":fitted.curve.control_points().len()})
+            serde_json::json!({"id":op["id"],"status":if fitted.curves.is_empty(){"empty"}else{"curve"},"maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6,"native_outputs":native.len(),"curves":fitted.curves.len(),"queries":fitted.geodesic_queries,"controls":fitted.curves.iter().map(|c|c.control_points().len()).sum::<usize>(),"extension_attempts":fitted.extension_attempts,"source_intervals":fitted.curves.iter().map(|c|[*c.domain().start(),*c.domain().end()]).collect::<Vec<_>>()})
         );
         if maximum >= 1e-6 {
             unqualified.push(op["id"].clone());
         }
         let ceiling = match op["id"].as_str().unwrap() {
             "plane_curve_2" | "plane_curve_3" => 4e-6,
-            "warped_iso_0" => 2.7e-5,
+            "warped_iso_0" | "warped_iso_1" => 2.7e-5,
             "warped_iso_2" => 1.05e-4,
             _ => 1e-6,
         };
         assert!(maximum < ceiling, "{}: {maximum}", op["id"]);
     }
-    // Complete curve fitting does not waive the native parity gate. The
-    // negative warped case also exposes a natural-boundary policy difference.
+    // Boundary clipping now agrees structurally, while the original five
+    // numerical gaps remain unqualified against the unchanged 1e-6 gate.
     assert_eq!(
         unqualified,
         vec![
@@ -352,4 +320,83 @@ fn complete_offset_curves_keep_native_locus_and_boundary_differences_explicit() 
             "warped_iso_2"
         ]
     );
+}
+
+#[test]
+fn independently_captured_clipping_and_closed_gap_policies_match_the_sdk() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/surface_curve_offset_clipping.json"
+    ))
+    .unwrap();
+    let r: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/surface_curve_offset_clipping.json"
+    ))
+    .unwrap();
+    let tolerance = Tolerance::try_new(1e-7, 1e-12, 1e-9).unwrap();
+    let expected_open = [4, 1, 1, 1, 0];
+    let expected_connectors = [4, 0, 1, 0, 0];
+    let mut count = 0;
+    for (index, (op, row)) in q["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(r["results"].as_array().unwrap())
+        .enumerate()
+    {
+        assert_eq!(op["id"], row["id"]);
+        assert!(row["error"].is_null());
+        assert_eq!(row["value"]["source_unchanged"], true);
+        let source = curve(&row["value"]["curve"]);
+        let surface = surface(&row["value"]["surface"]);
+        let native = row["value"]["outputs"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|o| curve(&o["definition"]))
+            .collect::<Vec<_>>();
+        let distance = op["distance"].as_f64().unwrap();
+        let open = viboceros_geometry::try_offset_curves_on_surface(
+            &surface, &source, distance, tolerance,
+        )
+        .unwrap();
+        assert_eq!(open.curves.len(), expected_open[index]);
+        let connected = viboceros_geometry::try_offset_curves_on_surface_with_options(
+            &surface,
+            &source,
+            distance,
+            tolerance,
+            viboceros_geometry::SurfaceCurveOffsetOptions {
+                closed_gaps: viboceros_geometry::SurfaceCurveOffsetGapStyle::ConnectClosed,
+                ..Default::default()
+            },
+        )
+        .unwrap_or_else(|e| panic!("{}: {e}", op["id"]));
+        assert_eq!(connected.curves.len(), native.len());
+        assert_eq!(connected.connectors, expected_connectors[index]);
+        let mut maximum: f64 = 0.;
+        for (sources, targets) in [(&connected.curves, &native), (&native, &connected.curves)] {
+            for c in sources {
+                for i in 0..=128 {
+                    let p = c
+                        .evaluate(c.parameter_at(i as f64 / 128.).unwrap())
+                        .unwrap();
+                    let error = targets
+                        .iter()
+                        .map(|c| {
+                            let t = c.closest_parameter(p, tolerance).unwrap();
+                            p.distance_to(c.evaluate(t).unwrap()).unwrap()
+                        })
+                        .fold(f64::INFINITY, f64::min);
+                    maximum = maximum.max(error);
+                }
+            }
+        }
+        println!(
+            "SURFACE_OFFSET_CLIPPING {}",
+            serde_json::json!({"id":op["id"],"open_pieces":open.curves.len(),"sdk_curves":connected.curves.len(),"connectors":connected.connectors,"maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6})
+        );
+        assert!(maximum < 1e-6, "{}: {maximum}", op["id"]);
+        count += 1;
+    }
+    assert_eq!(count, 5);
 }

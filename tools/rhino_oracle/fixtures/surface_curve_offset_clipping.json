@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_curve_offset",
+      "id": "four_arcs",
+      "case": "plane_circle",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "tangent_circle",
+      "case": "plane_circle",
+      "distance": -0.2
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "seam_arc",
+      "case": "plane_seam",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "line_ends",
+      "case": "plane_bound",
+      "distance": 0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "empty_circle",
+      "case": "plane_circle",
+      "distance": -1.0
+    }
+  ]
+}

@@ -236,8 +236,9 @@
   ],
   "fitted_curves": {
     "recipes": 24,
-    "curves": 22,
-    "natural_domain_rejections": 2,
+    "curves": 23,
+    "empty_recipes": 1,
+    "natural_domain_rejections": 0,
     "qualified_recipes": 19,
     "unqualified_recipes": [
       "plane_curve_2",
@@ -247,243 +248,489 @@
       "warped_iso_2"
     ],
     "bidirectional_samples_per_curve": 130,
-    "maximum_sample_difference": 0.00010455198551727289,
+    "maximum_sample_difference": 0.0001045546633799336,
     "cases": [
       {
         "controls": 4,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "plane_line_0",
         "maximum_bidirectional_sample_error": 2.493235635302362e-14,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 34,
+        "queries": 85,
+        "source_intervals": [
+          [
+            0.0,
+            8.0
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 4,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "plane_line_1",
         "maximum_bidirectional_sample_error": 2.493235635302362e-14,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 34,
+        "queries": 85,
+        "source_intervals": [
+          [
+            0.0,
+            8.0
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 4,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "plane_line_2",
         "maximum_bidirectional_sample_error": 1.0805156823142815e-14,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 34,
+        "queries": 85,
+        "source_intervals": [
+          [
+            0.0,
+            8.0
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 4,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "plane_line_3",
         "maximum_bidirectional_sample_error": 1.0805156823142815e-14,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 34,
+        "queries": 85,
+        "source_intervals": [
+          [
+            0.0,
+            8.0
+          ]
+        ],
         "status": "curve"
       },
       {
-        "controls": 109,
+        "controls": 191,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "plane_curve_0",
-        "maximum_bidirectional_sample_error": 8.542581461820002e-07,
+        "maximum_bidirectional_sample_error": 8.542581460997079e-07,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 4808,
+        "queries": 26013,
+        "source_intervals": [
+          [
+            0.0,
+            8.961554203765576
+          ]
+        ],
         "status": "curve"
       },
       {
-        "controls": 109,
+        "controls": 191,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "plane_curve_1",
         "maximum_bidirectional_sample_error": 8.542581557481483e-07,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 4808,
+        "queries": 26013,
+        "source_intervals": [
+          [
+            0.0,
+            8.961554203765576
+          ]
+        ],
         "status": "curve"
       },
       {
-        "controls": 187,
+        "controls": 223,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "plane_curve_2",
-        "maximum_bidirectional_sample_error": 3.6962174677155406e-06,
+        "maximum_bidirectional_sample_error": 3.696217491193169e-06,
         "native_outputs": 1,
         "qualified": false,
-        "queries": 8338,
+        "queries": 30233,
+        "source_intervals": [
+          [
+            0.0,
+            8.961554203765576
+          ]
+        ],
         "status": "curve"
       },
       {
-        "controls": 187,
+        "controls": 223,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "plane_curve_3",
-        "maximum_bidirectional_sample_error": 3.696217484253148e-06,
+        "maximum_bidirectional_sample_error": 3.6962175077364028e-06,
         "native_outputs": 1,
         "qualified": false,
-        "queries": 8338,
+        "queries": 30233,
+        "source_intervals": [
+          [
+            0.0,
+            8.961554203765576
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 4,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "cylinder_axis_0",
         "maximum_bidirectional_sample_error": 7.592171504715134e-09,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 34,
+        "queries": 87,
+        "source_intervals": [
+          [
+            0.0,
+            6.0
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 4,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "cylinder_axis_1",
         "maximum_bidirectional_sample_error": 7.141686901917116e-09,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 34,
+        "queries": 87,
+        "source_intervals": [
+          [
+            0.0,
+            6.0
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 4,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "cylinder_axis_2",
         "maximum_bidirectional_sample_error": 5.963072424997141e-07,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 34,
+        "queries": 87,
+        "source_intervals": [
+          [
+            0.0,
+            6.0
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 4,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "cylinder_axis_3",
         "maximum_bidirectional_sample_error": 4.656831010894224e-07,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 34,
+        "queries": 87,
+        "source_intervals": [
+          [
+            0.0,
+            6.0
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 25,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "cylinder_ring_0",
         "maximum_bidirectional_sample_error": 5.857939004215904e-15,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 149,
+        "queries": 357,
+        "source_intervals": [
+          [
+            0.0,
+            6.283185307179586
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 25,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "cylinder_ring_1",
         "maximum_bidirectional_sample_error": 2.808666774861361e-15,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 149,
+        "queries": 357,
+        "source_intervals": [
+          [
+            0.0,
+            6.283185307179586
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 25,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "cylinder_ring_2",
         "maximum_bidirectional_sample_error": 1.3359632472723714e-14,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 149,
+        "queries": 357,
+        "source_intervals": [
+          [
+            0.0,
+            6.283185307179586
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 25,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "cylinder_ring_3",
         "maximum_bidirectional_sample_error": 9.431016226455614e-15,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 149,
+        "queries": 357,
+        "source_intervals": [
+          [
+            0.0,
+            6.283185307179586
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 25,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "sphere_latitude_0",
         "maximum_bidirectional_sample_error": 3.10006746170417e-09,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 149,
+        "queries": 357,
+        "source_intervals": [
+          [
+            0.0,
+            6.283185307179586
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 25,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "sphere_latitude_1",
         "maximum_bidirectional_sample_error": 5.419687102717952e-09,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 149,
+        "queries": 357,
+        "source_intervals": [
+          [
+            0.0,
+            6.283185307179586
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 25,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "sphere_latitude_2",
         "maximum_bidirectional_sample_error": 1.9579848111058467e-07,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 149,
+        "queries": 357,
+        "source_intervals": [
+          [
+            0.0,
+            6.283185307179586
+          ]
+        ],
         "status": "curve"
       },
       {
         "controls": 25,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "sphere_latitude_3",
         "maximum_bidirectional_sample_error": 1.6169651257819083e-07,
         "native_outputs": 1,
         "qualified": true,
-        "queries": 149,
+        "queries": 357,
+        "source_intervals": [
+          [
+            0.0,
+            6.283185307179586
+          ]
+        ],
         "status": "curve"
       },
       {
-        "controls": 13,
+        "controls": 19,
+        "curves": 1,
+        "extension_attempts": 0,
         "id": "warped_iso_0",
-        "maximum_bidirectional_sample_error": 2.6207914699192588e-05,
+        "maximum_bidirectional_sample_error": 2.6212553488514724e-05,
         "native_outputs": 1,
         "qualified": false,
-        "queries": 453,
+        "queries": 2166,
+        "source_intervals": [
+          [
+            0.0,
+            10.77032961426901
+          ]
+        ],
         "status": "curve"
       },
       {
-        "controls": null,
+        "controls": 19,
+        "curves": 1,
+        "extension_attempts": 1,
         "id": "warped_iso_1",
-        "maximum_bidirectional_sample_error": null,
+        "maximum_bidirectional_sample_error": 2.626282717389539e-05,
         "native_outputs": 1,
         "qualified": false,
-        "queries": null,
-        "status": "natural_domain_rejection"
-      },
-      {
-        "controls": 20,
-        "id": "warped_iso_2",
-        "maximum_bidirectional_sample_error": 0.00010455198551727289,
-        "native_outputs": 1,
-        "qualified": false,
-        "queries": 770,
+        "queries": 2171,
+        "source_intervals": [
+          [
+            0.0005130412958165154,
+            10.768848021635927
+          ]
+        ],
         "status": "curve"
       },
       {
-        "controls": null,
+        "controls": 33,
+        "curves": 1,
+        "extension_attempts": 0,
+        "id": "warped_iso_2",
+        "maximum_bidirectional_sample_error": 0.0001045546633799336,
+        "native_outputs": 1,
+        "qualified": false,
+        "queries": 3697,
+        "source_intervals": [
+          [
+            0.0,
+            10.77032961426901
+          ]
+        ],
+        "status": "curve"
+      },
+      {
+        "controls": 0,
+        "curves": 0,
+        "extension_attempts": 1,
         "id": "warped_iso_3",
-        "maximum_bidirectional_sample_error": null,
+        "maximum_bidirectional_sample_error": 0.0,
         "native_outputs": 0,
         "qualified": true,
-        "queries": null,
-        "status": "natural_domain_rejection"
+        "queries": 3222,
+        "source_intervals": [],
+        "status": "empty"
       }
     ],
     "limits": [
-      "Complete curve output is fitted, but native comparisons remain sampled.",
-      "The negative 0.25 warped SDK offset is clipped to the natural U boundaries; the current producer rejects the full source.",
-      "Command boundary clipping, trimmed faces, corners and cut-locus removal still require qualification."
+      "Complete curve output and UV boundary crossings are fitted; comparisons and topology checks remain sampled.",
+      "The negative 0.25 warped offset now clips to both natural U boundaries; its original numerical discrepancy remains.",
+      "Trimmed faces, general closed-gap reconnection, corners and cut-locus removal still require qualification."
+    ]
+  },
+  "closed_gap_cases": {
+    "recipes": 5,
+    "qualified_recipes": 5,
+    "bidirectional_samples_per_curve": 258,
+    "maximum_sample_difference": 1.502012791477148e-12,
+    "cases": [
+      {
+        "connectors": 4,
+        "id": "four_arcs",
+        "maximum_bidirectional_sample_error": 1.502012791477148e-12,
+        "open_pieces": 4,
+        "qualified": true,
+        "sdk_curves": 1
+      },
+      {
+        "connectors": 0,
+        "id": "tangent_circle",
+        "maximum_bidirectional_sample_error": 3.2023728339893768e-15,
+        "open_pieces": 1,
+        "qualified": true,
+        "sdk_curves": 1
+      },
+      {
+        "connectors": 1,
+        "id": "seam_arc",
+        "maximum_bidirectional_sample_error": 1.2555341316591815e-14,
+        "open_pieces": 1,
+        "qualified": true,
+        "sdk_curves": 1
+      },
+      {
+        "connectors": 0,
+        "id": "line_ends",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "open_pieces": 1,
+        "qualified": true,
+        "sdk_curves": 1
+      },
+      {
+        "connectors": 0,
+        "id": "empty_circle",
+        "maximum_bidirectional_sample_error": 0.0,
+        "open_pieces": 0,
+        "qualified": true,
+        "sdk_curves": 0
+      }
+    ],
+    "limits": [
+      "Open mode retains separate natural-domain portions.",
+      "Captured closed planar SDK offsets reconnect retained portions with parabolic spans, which can leave the natural domain.",
+      "ConnectClosed is currently qualified for affine planar patches; other clipped closed-source gaps fail explicitly."
     ]
   },
   "sha256": {
-    "crates/viboceros-geometry/src/surface_geodesic.rs": "44892c895139581488c600e1a51343d0cd07885eba7d2529cb694ff83eabdea3",
+    "crates/viboceros-geometry/src/surface_geodesic.rs": "096628e4c427321b9f09ff6d9b02f79f578b432f8fd3249e3dc071a5268154bb",
     "crates/viboceros-geometry/src/surface_geodesic/tests.rs": "ce2834aceb31ea886ddd751aa674af095b5bf5fe5d5258b5323507a0a1a2cf5d",
-    "crates/viboceros-geometry/src/surface_curve_offset.rs": "9c7778f11b12d162d267889d3d14ac7120f7fa59314f4a399d8886859b6bf1fc",
+    "crates/viboceros-geometry/src/surface_curve_offset.rs": "178f14b32501d2c54c71ed6f416cd843738d2b3cb73ed22e5b95d99636a904e1",
     "crates/viboceros-geometry/src/surface_curve_offset/tests.rs": "2d9f9d29996dbf11abda1a2d51e348293a68cbc255b77db174d7b3bd39f5cf76",
+    "crates/viboceros-geometry/src/surface_curve_offset/clip.rs": "a71f3523e16ab70551c83736f1c03e330cdea1702643ad6f0b189a338cae6114",
+    "crates/viboceros-geometry/src/surface_curve_offset/clip/tests.rs": "1ca625e6bb0fdd24d8f031a126729defca7849a46a10fa149e62ce24d22c4be1",
+    "crates/viboceros-geometry/src/surface_curve_offset/clip/closed_gap.rs": "ee1ce06993291fb6dc958bc549659be2b2b38911d15dc7141a2c84416de18fef",
+    "crates/viboceros-geometry/src/nurbs_surface/offset_extension.rs": "2e91a26d92077322bc3bf9e9221a3fa0d0075291a1af47c2398896d5762f640b",
     "crates/viboceros-geometry/src/morph/curve_fit.rs": "33e731519bae919b424b1f0aafd156f620add4796bf630c93273d3ff9e6b2d95",
     "crates/viboceros-geometry/src/integration/cash_karp.rs": "ab8524e4b80a486f4ed39fdd430e1b853a15ed124065e8dff9a0a4a3a705a558",
-    "crates/viboceros-geometry/tests/surface_geodesic_native.rs": "182eee564d84a84af1b5fe1a792dd5bebe7b432b948a184b0035e60305bc6b8d",
+    "crates/viboceros-geometry/tests/surface_geodesic_native.rs": "188d2a426f7b8a5b8c6160330fd92608c7e5ef98748b2b84828a7d21dcd95b20",
     "tools/rhino_oracle/fixtures/surface_curve_offset.json": "dad3fd6513fcae2773f306adc5ca9f4cc31f7ab55f381e8f290534e95e20dd40",
     "tools/rhino_oracle/observations/surface_curve_offset.json": "4a62830ab84a41d33a4348c6a67282b022fa97eeb6f552a086ba9ae6e6e07d4f",
     "tools/rhino_oracle/fixtures/surface_curve_offset_verify.json": "28583370224971ce8a9f2601917b0dbf4d9bc7340c2a8cf20cf20ac6be622553",
     "tools/rhino_oracle/observations/surface_curve_offset_verify.json": "4726447786c4a155b1830f1c979471bfc00a45250f1987321d34b8f2dc6cef3a",
-    "tools/rhino_oracle/report_surface_geodesic.py": "89c50f733e2acbd8f92244e1ed5cfbe005809878b578e095985752ebe7abbd34"
+    "tools/rhino_oracle/fixtures/surface_curve_offset_clipping.json": "4163d8d8874ec2e80cf95e9b7a5ada572260c201bcb590da09af82b6df266eb3",
+    "tools/rhino_oracle/observations/surface_curve_offset_clipping.json": "ad761cf4aa7802f5cccecb439ac2257d0bf125e07fe1a3c3f04273b986d654fa",
+    "tools/rhino_oracle/report_surface_geodesic.py": "d71b840b9b26f022abe5524992455ae271542564b4980a58e51e9327dc019b54"
   }
 }

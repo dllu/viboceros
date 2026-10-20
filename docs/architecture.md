@@ -9,10 +9,13 @@ file formats, or command parsing.
 [Surface geodesic shooting](surface-geodesic-offset.md) shares NURBS derivative
 evaluation and the existing Cash–Karp rule. It normalizes charts and geometry,
 checks regular transitions and retains model-space integration diagnostics.
-Complete smooth offset loci reuse the adaptive morph collocation and rational
-composition candidates after certified source pullback. This supplies geometry
-for OffsetCrvOnSrf; command integration, boundary/corner handling and five
-recorded SDK discrepancies remain open.
+Complete smooth offset loci reuse adaptive morph collocation and rational
+composition after certified source pullback. Natural-boundary clipping shares
+surface extension, UV fitting, intersections and trimming, with independent
+model-space checks. Closed planar gap reconnection reuses conic and NURBS
+concatenation operations. OffsetCrvOnSrf still needs command integration,
+trimmed boundaries, general gap/corner handling and five SDK discrepancies
+resolved.
 
 [`RemapCPlane`](commands/remap-cplane.md) shares rigid frame mapping and the
 existing object/grip transform path. Its application controller captures the
