@@ -50,7 +50,7 @@ pub(super) fn fit_with_stations(
         cache.insert(key, point);
         Ok::<_, GeometryError>(point)
     };
-    let mut breaks = seed_breaks(source.degree(), source.knots(), source.domain());
+    let breaks = seed_breaks(source.degree(), source.knots(), source.domain());
     let fractions = error_fractions(ERROR_SAMPLES);
     // Rational sources need not lose their exact representation just because
     // their point map is nonlinear. These optional bounded candidates still
@@ -85,18 +85,77 @@ pub(super) fn fit_with_stations(
             return Ok(candidate);
         }
     }
+    fit_samples(
+        &mut point_at,
+        breaks,
+        tolerance,
+        maximum,
+        stations,
+        morph.interpolation_solver(),
+    )
+}
+
+/// Share adaptive collocation with parameter-dependent constructions, such as
+/// surface offsets. A point map alone cannot distinguish two parameters at a
+/// self-intersection. The evaluator must be deterministic on each knot side.
+pub(crate) fn fit_parameterized(
+    source: &NurbsCurve,
+    breaks: Vec<Break>,
+    tolerance: Tolerance,
+    maximum: usize,
+    solver: Option<MorphInterpolationSolver>,
+    mut evaluate: impl FnMut(Real, ParameterSide) -> Result<Point3, GeometryError>,
+) -> Result<NurbsCurve, GeometryError> {
+    let mut cache = HashMap::new();
+    let mut point_at = |t: Real, side: ParameterSide| {
+        let key = (t.to_bits(), side == ParameterSide::Left);
+        if let Some(point) = cache.get(&key) {
+            return Ok(*point);
+        }
+        let point = evaluate(t, side)?;
+        cache.insert(key, point);
+        Ok(point)
+    };
+    if source.is_rational() && source.degree() <= 3 {
+        let fractions = error_fractions(ERROR_SAMPLES);
+        if let Some(candidate) = rational::candidate(&mut point_at, source, maximum, solver)?
+            && validate::errors(
+                &mut point_at,
+                &candidate,
+                &breaks,
+                &fractions,
+                tolerance.absolute() * 0.8,
+            )?
+            .deviation
+                <= tolerance.absolute() * 0.8
+        {
+            return Ok(candidate);
+        }
+    }
+    fit_samples(&mut point_at, breaks, tolerance, maximum, &[], solver)
+}
+
+fn fit_samples(
+    point_at: &mut impl FnMut(Real, ParameterSide) -> Result<Point3, GeometryError>,
+    mut breaks: Vec<Break>,
+    tolerance: Tolerance,
+    maximum: usize,
+    stations: &[Real],
+    solver: Option<MorphInterpolationSolver>,
+) -> Result<NurbsCurve, GeometryError> {
+    let fractions = error_fractions(ERROR_SAMPLES);
     loop {
         let count = control_count(&breaks);
         if count > maximum {
             return Err(GeometryError::TooManyMorphCurveControlPoints { maximum });
         }
         let knots = knots(&breaks);
-        let approximation = interpolate(&mut point_at, knots, morph.interpolation_solver())?;
+        let approximation = interpolate(point_at, knots, solver)?;
         let validate::Errors {
             deviation,
             mut refinements,
         } = validate::errors(
-            &mut point_at,
+            point_at,
             &approximation,
             &breaks,
             &fractions,

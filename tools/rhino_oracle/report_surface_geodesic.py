@@ -3,7 +3,7 @@ import argparse,hashlib,json,math,re
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
-SOURCES=['crates/viboceros-geometry/src/surface_geodesic.rs','crates/viboceros-geometry/src/surface_geodesic/tests.rs','crates/viboceros-geometry/src/integration/cash_karp.rs','crates/viboceros-geometry/tests/surface_geodesic_native.rs','tools/rhino_oracle/fixtures/surface_curve_offset.json','tools/rhino_oracle/observations/surface_curve_offset.json','tools/rhino_oracle/fixtures/surface_curve_offset_verify.json','tools/rhino_oracle/observations/surface_curve_offset_verify.json','tools/rhino_oracle/report_surface_geodesic.py']
+SOURCES=['crates/viboceros-geometry/src/surface_geodesic.rs','crates/viboceros-geometry/src/surface_geodesic/tests.rs','crates/viboceros-geometry/src/surface_curve_offset.rs','crates/viboceros-geometry/src/surface_curve_offset/tests.rs','crates/viboceros-geometry/src/morph/curve_fit.rs','crates/viboceros-geometry/src/integration/cash_karp.rs','crates/viboceros-geometry/tests/surface_geodesic_native.rs','tools/rhino_oracle/fixtures/surface_curve_offset.json','tools/rhino_oracle/observations/surface_curve_offset.json','tools/rhino_oracle/fixtures/surface_curve_offset_verify.json','tools/rhino_oracle/observations/surface_curve_offset_verify.json','tools/rhino_oracle/report_surface_geodesic.py']
 def summarize(log):
     rows=[json.loads(s)for s in re.findall(r'SURFACE_GEODESIC (\{[^\n]+\})',log)]
     q=json.loads((HERE/'fixtures/surface_curve_offset.json').read_text())
@@ -11,6 +11,15 @@ def summarize(log):
     for row in rows:
         error=row['maximum_error']
         if not math.isfinite(error)or error<0 or row['errors']or row['qualified']!=(error<1e-6):raise ValueError('invalid station qualification row')
+    fits=[json.loads(s)for s in re.findall(r'SURFACE_CURVE_OFFSET (\{[^\n]+\})',log)]
+    if len(fits)!=24 or [x['id']for x in fits]!=[x['id']for x in q['operations']]:raise ValueError('one complete ordered fitted-curve replay is required')
+    for fit in fits:
+        error=fit['maximum_bidirectional_sample_error']
+        if fit['status']=='curve':
+            if not math.isfinite(error)or error<0 or fit['qualified']!=(error<1e-6):raise ValueError('invalid fitted-curve qualification row')
+        elif fit['status']=='natural_domain_rejection':
+            if error is not None or fit['qualified']!=(fit['native_outputs']==0):raise ValueError('invalid boundary qualification row')
+        else:raise ValueError('unknown fitted-curve result')
     q=json.loads((HERE/'fixtures/surface_curve_offset_verify.json').read_text());r=json.loads((HERE/'observations/surface_curve_offset_verify.json').read_text());verified=[]
     for op,row in zip(q['operations'],r['results']):
         if op['id']!=row['id']or row.get('error'):raise ValueError('invalid independent SDK result')
@@ -22,6 +31,9 @@ def summarize(log):
         delta=max(abs(a-b['nearest_distance'])for a,b in zip(native,candidates))
         verified.append(dict(id=op['id'],queries=len(native),maximum_sdk_distance=max(native),maximum_closest_solver_difference=delta,maximum_query_point_difference=point_gap))
     report=dict(model_epsilon=1e-6,full_native_parity=False,command_registered=False,recipes=len(rows),stations=168,qualified_recipes=sum(x['qualified']for x in rows),unqualified_recipes=[x['id']for x in rows if not x['qualified']],maximum_station_difference=max(x['maximum_error']for x in rows),independent_sdk_queries=sum(x['queries']for x in verified),cases=[{k:v for k,v in x.items()if k!='candidates'}for x in rows],independent_closest_points=verified,limits=['Geodesic point foundation only; OffsetCrvOnSrf is not registered.','Station comparisons do not certify the complete offset locus.','Native discrepancies remain subject to the unchanged 1e-6 qualification gate.','Natural boundaries, poles and non-C1 chart transitions do not return partial endpoints.'])
+    report['limits'][0]='Geodesic point and fitted-curve foundation; OffsetCrvOnSrf is not registered.'
+    curves=[x for x in fits if x['status']=='curve']
+    report['fitted_curves']=dict(recipes=24,curves=len(curves),natural_domain_rejections=len(fits)-len(curves),qualified_recipes=sum(x['qualified']for x in fits),unqualified_recipes=[x['id']for x in fits if not x['qualified']],bidirectional_samples_per_curve=130,maximum_sample_difference=max(x['maximum_bidirectional_sample_error']for x in curves),cases=fits,limits=['Complete curve output is fitted, but native comparisons remain sampled.','The negative 0.25 warped SDK offset is clipped to the natural U boundaries; the current producer rejects the full source.','Command boundary clipping, trimmed faces, corners and cut-locus removal still require qualification.'])
     report['sha256']={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in SOURCES}
     return report
 def main():

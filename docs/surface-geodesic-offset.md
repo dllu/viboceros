@@ -15,10 +15,28 @@ singularities, non-C1 chart transitions and unrepresentable endpoints return
 errors; they do not return a shorter path as the requested result.
 Periodic wrapping requires identical boundary definitions; a thin open strip
 does not become periodic through an approximate object-closure predicate.
+Exactly affine bilinear charts use a direct metric step, retaining domain and
+endpoint precision checks. Exact stored coefficients decide this fast path;
+a nearly planar patch keeps its geodesic integration.
 
 The accumulated numerical estimates are not a global geometric certificate.
 Very ill-conditioned surfaces, arbitrary chart transitions, trimmed-face
 boundaries and paths through poles need further work.
+
+`try_offset_curve_on_surface` fits a complete offset locus for a smooth source
+on an untrimmed regular surface. A certified pullback first admits the source;
+the shared adaptive morph collocation then fits geodesic endpoints in the
+source parameter chart. It retains separate tangents at source self-crossings,
+one-sided knot values, reduced derivative continuity, and exact closed seams.
+Rational composition candidates reuse the morph fitter's homogeneous solves
+before polynomial refinement. A caller may supply its existing interpolation
+producer through `try_offset_curve_on_surface_with_solver`.
+
+The result retains the original parameter domain, source deviation bound,
+query/step counts and maximum integration estimate. It rejects natural-boundary
+crossings, discontinuous offsets and unrepresentable restored parameters.
+Fitting is checked at both uniform and nonuniform stations after every
+refinement; this does not certify all points of an arbitrary offset locus.
 
 ## Evidence
 
@@ -39,7 +57,7 @@ measure closest-locus distance to the captured SDK offset curves.
 The `1e-6` qualification gate is unchanged. Nineteen case recipes meet it,
 including the expected natural-boundary rejection. Five remain unqualified:
 
-| Cases | Maximum measured difference |
+| Source-station cases | Maximum point-shot difference |
 | --- | ---: |
 | Bézier profile, distance ±1 | `3.12e-6` |
 | Warped patch, distance ±0.25 | `2.63e-5` |
@@ -52,12 +70,24 @@ captured offset curves. The replay records diagnostic ceilings for these five
 cases separately from the parity gate. It must not be reported as full native
 offset compatibility. See the [qualification report](surface-geodesic-qualification.json).
 
+Complete offset production also replays all 24 cases. It produces 22 curves,
+compared at 65 samples in each direction, and rejects two natural-boundary
+crossings. Nineteen recipes qualify; the five cases above remain unqualified.
+Rhino clips the negative 0.25 warped offset to the natural U boundaries and
+shortens its parameter interval, while this producer rejects the full source.
+Command boundary clipping therefore needs additional work alongside the
+numerical discrepancies.
+The complete distance-1 Bézier comparisons reach `3.70e-6` sampled difference.
+Separate dense analytic tests cover fitted planes, source self-crossings, cylinder generators,
+closed rings, sphere latitudes, physical and UV rescaling, and reversal. The
+warped-patch full curve is checked against an independent Cartesian equation.
+
 ## Command work still required
 
 `OffsetCrvOnSrf` is not registered yet. The remaining work includes resolving
-the five SDK differences, fitting complete offset curves, trimmed faces and
-surface-edge inputs, Number and ThroughPoint behavior, temporary source
-portions, previews and grouped history.
+the five SDK differences, boundary clipping, full command qualification of fitted
+curves, trimmed faces and surface-edge inputs, Number and ThroughPoint behavior, temporary source
+portions, corner/cut-locus handling, previews and grouped history.
 
 The existing usd-brep `SmBSplineSurface::OffsetCurveAlongSurface` producer
 intersects Euclidean offset circles with the surface. That metric differs from
@@ -72,6 +102,7 @@ and the [command workflow](https://docs.mcneel.com/rhino/8/help/en-us/commands/o
 
 ```sh
 cargo test -p viboceros-geometry --lib surface_geodesic
+cargo test -p viboceros-geometry --lib surface_curve_offset
 cargo test -p viboceros-geometry --lib cash_karp
 cargo test -p viboceros-geometry --test surface_geodesic_native -- --nocapture
 python3 -m unittest tools.rhino_oracle.test_surface_curve_offset

@@ -30,6 +30,7 @@ pub struct PreparedSurfaceGeodesic<'a> {
     scale: Real,
     closed: [bool; 2],
     breaks: [Vec<Real>; 2],
+    affine: bool,
 }
 
 fn invalid(context: &'static str) -> GeometryError {
@@ -42,6 +43,23 @@ fn combine(a: Vector3, x: Real, b: Vector3, y: Real) -> Result<Vector3, Geometry
     let a = a.to_array();
     let b = b.to_array();
     v(std::array::from_fn(|i| a[i] * x + b[i] * y))
+}
+
+fn affine_bilinear(surface: &NurbsSurface) -> bool {
+    use crate::exact_scalar::rational;
+    if surface.degree_u() != 1
+        || surface.degree_v() != 1
+        || surface.control_point_count_u() != 2
+        || surface.control_point_count_v() != 2
+    {
+        return false;
+    }
+    let cp = surface.control_points();
+    cp.iter().all(|p| p.weight() == cp[0].weight())
+        && (0..3).all(|i| {
+            rational(cp[0].point().to_array()[i]) + rational(cp[3].point().to_array()[i])
+                == rational(cp[1].point().to_array()[i]) + rational(cp[2].point().to_array()[i])
+        })
 }
 
 fn chart_closes(surface: &NurbsSurface, axis: usize) -> Result<bool, GeometryError> {
@@ -139,12 +157,14 @@ impl<'a> PreparedSurfaceGeodesic<'a> {
             values
         });
         let closed = [chart_closes(&surface, 0)?, chart_closes(&surface, 1)?];
+        let affine = affine_bilinear(&surface);
         Ok(Self {
             original,
             surface,
             scale,
             closed,
             breaks,
+            affine,
         })
     }
 
@@ -302,6 +322,28 @@ impl<'a> PreparedSurfaceGeodesic<'a> {
         let budget = (tolerance.absolute() / self.scale * 0.01).min(length.abs() * 1e-9);
         if distance != 0. && (!budget.is_finite() || budget <= 0. || length == 0.) {
             return Err(invalid("unrepresentable integration tolerance or distance"));
+        }
+        // An exactly affine bilinear chart has zero geodesic acceleration.
+        // Reuse its metric solve and all endpoint/domain checks without ODE
+        // stages. Classification uses exact stored coefficients, not a flatness
+        // threshold that could silently flatten a slightly warped patch.
+        if self.affine && distance != 0. {
+            let next = [state[0] + state[2], state[1] + state[3]];
+            self.check_transition(uv, next, threshold)?;
+            if next == uv && distance.abs() > tolerance.absolute() * 0.1 {
+                return Err(invalid(
+                    "parameter state cannot resolve the requested motion",
+                ));
+            }
+            let q = self.jet(next)?.point;
+            let expected = j.point.translated(tangent.as_vector().scaled(length)?)?;
+            estimate = q.distance_to(expected)?;
+            if estimate * self.scale > tolerance.absolute() * 0.1 {
+                return Err(invalid("affine metric solve exceeded endpoint tolerance"));
+            }
+            state[0] = next[0];
+            state[1] = next[1];
+            x = 1.;
         }
         while distance != 0. && x < 1. {
             let j0 = self.jet([state[0], state[1]])?;

@@ -360,6 +360,21 @@ pub enum GeometryError {
     #[error("surface geodesic failed: {context}")]
     InvalidSurfaceGeodesic { context: &'static str },
 
+    #[error("surface curve offset failed: {context}")]
+    InvalidSurfaceCurveOffset { context: &'static str },
+
+    #[error("surface curve offset exceeds {maximum} geodesic queries")]
+    SurfaceCurveOffsetWorkLimit { maximum: usize },
+
+    #[error(
+        "surface curve offset did not fit within {tolerance}; sampled deviation {deviation}, control limit {maximum}"
+    )]
+    SurfaceCurveOffsetDidNotConverge {
+        tolerance: Real,
+        deviation: Real,
+        maximum: usize,
+    },
+
     #[error("a B-rep face subset must contain at least one face")]
     EmptyBrepFaceSubset,
 

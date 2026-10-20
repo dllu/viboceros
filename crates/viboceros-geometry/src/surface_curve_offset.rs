@@ -1,0 +1,230 @@
+//! Sampled cubic fitting of the complete surface-distance offset locus.
+use crate::{
+    CurveRef, GeometryError, MAX_CURVE_FIT_CONTROL_POINTS, MorphInterpolationSolver, NurbsCurve,
+    NurbsSurface, ParameterSide, PreparedSurfaceGeodesic, Real, Tolerance,
+    morph::fit_parameterized_curve,
+    spline_collocation::{error_fractions, seed_breaks, stable_lerp},
+};
+
+const MAX_QUERIES: usize = 65_536;
+
+/// A fitted geodesic offset and diagnostics. Source admission has a continuous
+/// surface-image bound; integration and locus fitting retain numerical/sample
+/// estimates rather than a continuous certificate for the offset itself.
+#[derive(Clone, Debug)]
+pub struct SurfaceCurveOffset {
+    pub curve: NurbsCurve,
+    pub source_deviation_bound: Real,
+    pub geodesic_queries: usize,
+    pub integration_steps: usize,
+    pub maximum_integration_estimate: Real,
+}
+
+fn invalid(context: &'static str) -> GeometryError {
+    GeometryError::InvalidSurfaceCurveOffset { context }
+}
+
+fn preserve_spans(old: &[Real], new: &[Real], degree: usize) -> Result<(), GeometryError> {
+    if old[degree..old.len() - degree]
+        .windows(2)
+        .zip(new[degree..new.len() - degree].windows(2))
+        .any(|(a, b)| a[0] < a[1] && b[0] >= b[1])
+    {
+        return Err(invalid("parameter normalization collapsed a knot span"));
+    }
+    Ok(())
+}
+
+/// Offset a smooth curve lying on an untrimmed, regular NURBS surface.
+/// Positive distance is left of the source tangent in the surface orientation.
+/// Source and surface are immutable. Natural boundaries, poles, source kinks,
+/// discontinuities and exhausted numerical work return errors, never a partial
+/// curve. Trims, corner joining and cut-locus removal belong to the command layer.
+pub fn try_offset_curve_on_surface(
+    surface: &NurbsSurface,
+    source: &NurbsCurve,
+    distance: Real,
+    tolerance: Tolerance,
+) -> Result<SurfaceCurveOffset, GeometryError> {
+    offset_with_solver(surface, source, distance, tolerance, None)
+}
+
+/// Use an existing homogeneous interpolation producer while retaining surface
+/// admission, geodesic integration and fit validation in the shared layer.
+pub fn try_offset_curve_on_surface_with_solver(
+    surface: &NurbsSurface,
+    source: &NurbsCurve,
+    distance: Real,
+    tolerance: Tolerance,
+    solver: MorphInterpolationSolver,
+) -> Result<SurfaceCurveOffset, GeometryError> {
+    offset_with_solver(surface, source, distance, tolerance, Some(solver))
+}
+
+fn offset_with_solver(
+    original_surface: &NurbsSurface,
+    original_source: &NurbsCurve,
+    distance: Real,
+    tolerance: Tolerance,
+    solver: Option<MorphInterpolationSolver>,
+) -> Result<SurfaceCurveOffset, GeometryError> {
+    if !distance.is_finite() {
+        return Err(invalid("offset distance must be finite"));
+    }
+    let surface = original_surface.try_reparameterized(0. ..=1., 0. ..=1.)?;
+    preserve_spans(
+        original_surface.knots_u(),
+        surface.knots_u(),
+        surface.degree_u(),
+    )?;
+    preserve_spans(
+        original_surface.knots_v(),
+        surface.knots_v(),
+        surface.degree_v(),
+    )?;
+    let source = original_source.try_reparameterized(0. ..=1.)?;
+    preserve_spans(original_source.knots(), source.knots(), source.degree())?;
+    let numerical = Tolerance::try_new(
+        tolerance.absolute() * 0.05,
+        tolerance.relative(),
+        tolerance.angular(),
+    )?;
+    let (uv, source_deviation_bound) =
+        surface.try_pullback_curve_certified_with_bound(&source, None, numerical)?;
+    let mut result = SurfaceCurveOffset {
+        curve: original_source.clone(),
+        source_deviation_bound,
+        geodesic_queries: 0,
+        integration_steps: 0,
+        maximum_integration_estimate: 0.,
+    };
+    if distance == 0. {
+        return Ok(result);
+    }
+    let prepared = PreparedSurfaceGeodesic::new(&surface)?;
+    let mut evaluate = |t: Real, side: ParameterSide| {
+        if result.geodesic_queries >= MAX_QUERIES {
+            return Err(GeometryError::SurfaceCurveOffsetWorkLimit {
+                maximum: MAX_QUERIES,
+            });
+        }
+        let uv = uv.evaluate_on_side(t, side)?;
+        let normal = surface.normal_at(uv.x(), uv.y())?;
+        let tangent = CurveRef::NurbsCurve(&source)
+            .evaluate_with_tangent_on_side(t, side)?
+            .tangent();
+        let direction = normal
+            .as_vector()
+            .cross(tangent.as_vector())?
+            .normalized_nonzero()?;
+        let shot = prepared.point(uv, direction, distance, numerical)?;
+        result.geodesic_queries += 1;
+        result.integration_steps += shot.accepted_steps;
+        result.maximum_integration_estimate = result
+            .maximum_integration_estimate
+            .max(shot.estimated_error);
+        Ok(shot.point)
+    };
+    // The offset uses the first derivative of the source, so its guaranteed
+    // continuity is one order lower. Retain pullback breaks as well.
+    let mut breaks = seed_breaks(
+        source.degree().saturating_sub(1),
+        source.knots(),
+        source.domain(),
+    );
+    breaks.extend(seed_breaks(
+        uv.degree().saturating_sub(1),
+        uv.knots(),
+        uv.domain(),
+    ));
+    breaks.sort_by(|a, b| a.parameter.total_cmp(&b.parameter));
+    breaks.dedup_by(|a, b| {
+        if a.parameter == b.parameter {
+            b.multiplicity = a.multiplicity.max(b.multiplicity);
+            true
+        } else {
+            false
+        }
+    });
+    let count = breaks.len();
+    for knot in &mut breaks[1..count - 1] {
+        let left = evaluate(knot.parameter, ParameterSide::Left)?;
+        let right = evaluate(knot.parameter, ParameterSide::Right)?;
+        if left.distance_to(right)? > numerical.absolute() {
+            return Err(invalid(
+                "source offset is discontinuous at an interior knot",
+            ));
+        }
+        knot.multiplicity = knot.multiplicity.min(3);
+    }
+    let first = evaluate(0., ParameterSide::Right)?;
+    let last = evaluate(1., ParameterSide::Left)?;
+    let closed = source.evaluate(0.)? == source.evaluate(1.)?;
+    if closed && first.distance_to(last)? > numerical.absolute() {
+        return Err(invalid("source offset is discontinuous at the closed seam"));
+    }
+    let fit_tolerance = Tolerance::try_new(
+        tolerance.absolute() * 0.5,
+        tolerance.relative(),
+        tolerance.angular(),
+    )?;
+    let fitted = fit_parameterized_curve(
+        &source,
+        breaks,
+        fit_tolerance,
+        MAX_CURVE_FIT_CONTROL_POINTS,
+        solver,
+        |t, side| {
+            if t == 0. || closed && t == 1. {
+                Ok(first)
+            } else if t == 1. {
+                Ok(last)
+            } else {
+                evaluate(t, side)
+            }
+        },
+    )
+    .map_err(|e| match e {
+        GeometryError::CurveMorphDidNotConverge {
+            tolerance,
+            deviation,
+            maximum,
+        } => GeometryError::SurfaceCurveOffsetDidNotConverge {
+            tolerance,
+            deviation,
+            maximum,
+        },
+        GeometryError::TooManyMorphCurveControlPoints { maximum } => {
+            GeometryError::SurfaceCurveOffsetDidNotConverge {
+                tolerance: fit_tolerance.absolute(),
+                deviation: Real::INFINITY,
+                maximum,
+            }
+        }
+        e => e,
+    })?;
+    let restored = fitted.try_reparameterized(original_source.domain())?;
+    preserve_spans(fitted.knots(), restored.knots(), fitted.degree())?;
+    // Knot restoration and native parameter encoding must not consume the fit
+    // allowance, especially in a narrow chart translated far from zero.
+    for (a, b) in fitted.spans() {
+        for fraction in error_fractions(16) {
+            let t = stable_lerp(a, b, fraction)?;
+            let native = restored.parameter_at(t)?;
+            if fitted
+                .evaluate(t)?
+                .distance_to(restored.evaluate(native)?)?
+                > tolerance.absolute() * 0.1
+            {
+                return Err(invalid(
+                    "native curve parameters cannot represent the fitted locus accurately",
+                ));
+            }
+        }
+    }
+    result.curve = restored;
+    Ok(result)
+}
+
+#[cfg(test)]
+mod tests;

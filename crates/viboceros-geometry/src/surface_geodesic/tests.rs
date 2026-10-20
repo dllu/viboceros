@@ -358,3 +358,34 @@ fn thin_skew_chart_does_not_square_the_metric_condition_number() {
         ));
     }
 }
+
+#[test]
+fn affine_charts_take_a_direct_step_but_small_warps_keep_the_ode() {
+    let plane =
+        NurbsSurface::try_bilinear([p(0., 0., 0.), p(1., 0., 0.), p(1., 1., 0.), p(0., 1., 0.)])
+            .unwrap();
+    let start = Point2::try_new(0.3, 0.4).unwrap();
+    let result = PreparedSurfaceGeodesic::new(&plane)
+        .unwrap()
+        .point(start, unit(1., 0., 0.), 0.2, tol(1.))
+        .unwrap();
+    assert_eq!(result.attempted_steps, 0);
+    assert!(result.point.distance_to(p(0.5, 0.4, 0.)).unwrap() < 1e-14);
+    let warped =
+        NurbsSurface::try_bilinear([p(0., 0., 0.), p(1., 0., 0.), p(1., 1., 1e-5), p(0., 1., 0.)])
+            .unwrap();
+    let (_, du, _) = warped
+        .evaluate_with_derivatives(start.x(), start.y())
+        .unwrap();
+    let result = PreparedSurfaceGeodesic::new(&warped)
+        .unwrap()
+        .point(
+            start,
+            du.normalized_nonzero().unwrap(),
+            0.2,
+            Tolerance::try_new(1e-13, 1e-14, 1e-10).unwrap(),
+        )
+        .unwrap();
+    assert!(result.attempted_steps > 0);
+    assert!((result.point.z() - 1e-5 * result.point.x() * result.point.y()).abs() < 1e-15);
+}
