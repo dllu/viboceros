@@ -4,11 +4,10 @@
   "command_registered": true,
   "command_cases": {
     "recipes": 12,
-    "qualified_recipes": 9,
+    "qualified_recipes": 10,
     "unqualified_recipes": [
       "off_mesh",
-      "cancel",
-      "disconnected"
+      "cancel"
     ],
     "cases": [
       {
@@ -62,9 +61,9 @@
         "qualified": true
       },
       {
-        "error": "a continuous directed section between mesh locations could not be resolved",
         "id": "disconnected",
-        "qualified": false
+        "maximum_bidirectional_sample_error": 9.171947447016606e-16,
+        "qualified": true
       },
       {
         "id": "return_to_start",
@@ -75,10 +74,9 @@
   },
   "getter_cases": {
     "recipes": 12,
-    "qualified_recipes": 10,
+    "qualified_recipes": 11,
     "unqualified_recipes": [
-      "off_mesh",
-      "disconnected"
+      "off_mesh"
     ],
     "cases": [
       {
@@ -94,7 +92,7 @@
       {
         "id": "off_mesh",
         "qualified": false,
-        "reason": "native degenerate miss output or disconnected bridge is not reproduced"
+        "reason": "native degenerate miss output is not reproduced"
       },
       {
         "id": "close",
@@ -133,12 +131,210 @@
       },
       {
         "id": "disconnected",
-        "qualified": false,
-        "reason": "native degenerate miss output or disconnected bridge is not reproduced"
+        "maximum_bidirectional_sample_error": 9.171947447016606e-16,
+        "qualified": true
       },
       {
         "id": "return_to_start",
         "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "boundary_command_cases": {
+    "recipes": 11,
+    "qualified_recipes": 11,
+    "unqualified_recipes": [],
+    "cases": [
+      {
+        "id": "hole_center",
+        "maximum_bidirectional_sample_error": 3.925231146709438e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_reverse",
+        "maximum_bidirectional_sample_error": 3.925231146709438e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_upper",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_lower",
+        "maximum_bidirectional_sample_error": 8.899114524108741e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_slope",
+        "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "qualified": true
+      },
+      {
+        "id": "panels_reverse",
+        "maximum_bidirectional_sample_error": 9.155133597044475e-16,
+        "qualified": true
+      },
+      {
+        "id": "panels_lower",
+        "maximum_bidirectional_sample_error": 6.281232253068483e-16,
+        "qualified": true
+      },
+      {
+        "id": "panels_normals_reversed",
+        "maximum_bidirectional_sample_error": 9.171947447016606e-16,
+        "qualified": true
+      },
+      {
+        "id": "three_panels",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "qualified": true
+      },
+      {
+        "id": "unwelded_fold",
+        "maximum_bidirectional_sample_error": 1.0877919644084148e-15,
+        "qualified": true
+      },
+      {
+        "id": "coplanar_grid",
+        "maximum_bidirectional_sample_error": 4.972820174300707e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "boundary_getter_cases": {
+    "recipes": 11,
+    "qualified_recipes": 11,
+    "unqualified_recipes": [],
+    "cases": [
+      {
+        "id": "hole_center",
+        "maximum_bidirectional_sample_error": 3.925231146709438e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_reverse",
+        "maximum_bidirectional_sample_error": 3.925231146709438e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_upper",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_lower",
+        "maximum_bidirectional_sample_error": 8.899114524108741e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_slope",
+        "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "qualified": true
+      },
+      {
+        "id": "panels_reverse",
+        "maximum_bidirectional_sample_error": 9.155133597044475e-16,
+        "qualified": true
+      },
+      {
+        "id": "panels_lower",
+        "maximum_bidirectional_sample_error": 6.281232253068483e-16,
+        "qualified": true
+      },
+      {
+        "id": "panels_normals_reversed",
+        "maximum_bidirectional_sample_error": 9.171947447016606e-16,
+        "qualified": true
+      },
+      {
+        "id": "three_panels",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "qualified": true
+      },
+      {
+        "id": "unwelded_fold",
+        "maximum_bidirectional_sample_error": 1.0877919644084148e-15,
+        "qualified": true
+      },
+      {
+        "id": "coplanar_grid",
+        "maximum_bidirectional_sample_error": 4.972820174300707e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "tie_command_cases": {
+    "recipes": 6,
+    "qualified_recipes": 6,
+    "unqualified_recipes": [],
+    "cases": [
+      {
+        "id": "slope_reverse",
+        "maximum_bidirectional_sample_error": 4.652688980559559e-16,
+        "qualified": true
+      },
+      {
+        "id": "slope_dyadic",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      },
+      {
+        "id": "slope_negative",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      },
+      {
+        "id": "slope_negative_reverse",
+        "maximum_bidirectional_sample_error": 5.900916318210353e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_vertical",
+        "maximum_bidirectional_sample_error": 3.925231146709438e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_vertical_reverse",
+        "maximum_bidirectional_sample_error": 3.925231146709438e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "tie_getter_cases": {
+    "recipes": 6,
+    "qualified_recipes": 6,
+    "unqualified_recipes": [],
+    "cases": [
+      {
+        "id": "slope_reverse",
+        "maximum_bidirectional_sample_error": 4.652688980559559e-16,
+        "qualified": true
+      },
+      {
+        "id": "slope_dyadic",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      },
+      {
+        "id": "slope_negative",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      },
+      {
+        "id": "slope_negative_reverse",
+        "maximum_bidirectional_sample_error": 5.900916318210353e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_vertical",
+        "maximum_bidirectional_sample_error": 3.925231146709438e-16,
+        "qualified": true
+      },
+      {
+        "id": "hole_vertical_reverse",
+        "maximum_bidirectional_sample_error": 3.925231146709438e-16,
         "qualified": true
       }
     ]
@@ -148,15 +344,18 @@
   "guarantees": [
     "Immutable mesh parents, current output layer, selection behavior and grouped Undo/Redo in the supported native scenes.",
     "Directed starting-face plane sections cross folds; one original polygon face uses a direct chord, including warped quads.",
-    "The point getter retains one owned spatial index, reuses accepted sections and rejects projection misses."
+    "Exact coincident unwelded vertices share section topology without editing the mesh.",
+    "Interrupted sections follow naked boundaries; original boundary corners can bridge disconnected mesh components, leave the mesh and skip an intervening component.",
+    "Boundary searches start at the destination and propagate the first corner branch through numerical distance ties. The captured symmetric cases retain the unchanged model epsilon.",
+    "The point getter retains one owned spatial index, lazily caches immutable boundary topology, reuses accepted sections and rejects projection misses."
   ],
   "limits": [
-    "Disconnected section components and routes interrupted by holes are not bridged or rerouted along naked boundaries.",
+    "Boundary routing is bounded to 16384 graph nodes, 1024 components and 4000000 work units; ambiguous or unresolved paths fail before document edits.",
     "The native microscopic degenerate polyline after projection misses is not reproduced.",
     "Cancellation is qualified through the interactive getter; it is not a scripted point argument.",
-    "Native point captures use Top. Perspective numeric parity, welded seams and nonmanifold branches need qualification.",
+    "Native point captures use Top. Perspective numeric parity and nonmanifold branches need qualification.",
     "Collinear section vertices may remain; native vertex-count and parameter-clock parity is not claimed.",
-    "These native locus comparisons are sampled; no universal closest-path, shortest-path or curvature certificate is claimed."
+    "Graph comparisons treat relative differences within 16 machine epsilons as ties and quantize heap distance to 16 adjacent floating-point values. These sampled native locus comparisons do not certify a universal mesh geodesic or exact shortest path."
   ],
   "sha256": {
     "crates/viboceros-command/src/lib.rs": "ed6c1f46a403c91ad885fb8cd35304dd75a2d8c8f2d3b88147bc4ceebcf17f25",
@@ -164,25 +363,32 @@
     "crates/viboceros-geometry/src/mesh/normals.rs": "e4cbcef46e287067a0364d7ad440c93d05d6bb77ac82aa1f9f21ad4dd97cd322",
     "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
     "crates/viboceros-geometry/src/mesh/closest.rs": "c151524d33d932ad5288ff72db2daed5a61234490157f34528056d7632ad1fbb",
-    "crates/viboceros-geometry/src/mesh/projection.rs": "b33a5bcfcc452cc923257d47696be754086fff241b6344b6f78c9992e76218ca",
-    "crates/viboceros-geometry/src/mesh/projection/polyline_path.rs": "3e40e7a3f6db06e0a65912fc2ebbf8dde087c12708fad858d250e893bc5f28a8",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
+    "crates/viboceros-geometry/src/mesh/projection/polyline_path.rs": "45c8ccdaf77e5b7dba4f7e7ef3b4b5a72835c59309c0f728f7937ae61ca502b1",
+    "crates/viboceros-geometry/src/mesh/projection/polyline_path/boundary.rs": "210528305071c4764648e8b5d2c4d13549854822c1ff6a2b4edb1b22ff3d6fbd",
     "crates/viboceros-geometry/src/mesh/projection/tests.rs": "16f58fd002af5adccfbe8ef5758d860f40c60b64951157ff3e288014b15ab7a2",
     "crates/viboceros-geometry/src/mesh/section.rs": "796f11612788d19548d1b799ccdf3178ceb1269047238befcc674525b067f42c",
     "crates/viboceros-geometry/src/mesh/section/tests.rs": "693b0b6b20de9dd2221e8ba8e2d520897c82530d6927ba85783bb9ec3469fcdd",
     "crates/viboceros-command/src/polyline_on_mesh.rs": "ced0e868477f084ed6cef5c6af4217a8407d1f503d91c6d5ba5704aefe3f232b",
-    "crates/viboceros-command/tests/polyline_on_mesh_native.rs": "639541ac3477aca96b6b1b174d25b306c0b3c88b157fdb095bb3c47a5925f876",
-    "crates/viboceros-command/tests/support/mesh_polyline.rs": "77ffdf4a827df673bd7db49f873fd0614eac9a2b4e12e692f06befc4b1f8c769",
+    "crates/viboceros-command/tests/polyline_on_mesh_native.rs": "050849e9424328faf825df8b99ece83288250dab73051d51c31a5645d36fcc82",
+    "crates/viboceros-command/tests/support/mesh_polyline.rs": "a87f0e2de6c9ea620a859b926aa7624f1d5bf7db645b9fa0a82d040ff78c976b",
     "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
     "src/app/polyline_on_mesh.rs": "b05f6afa49c5d88749bcf9eb944f9c470aa91eefcab2840809ff299491573d89",
-    "src/app/tests/polyline_on_mesh.rs": "70ae5970a89274fe2373467791a9641e49a239fcd10cf257e156a6a85279beed",
+    "src/app/tests/polyline_on_mesh.rs": "bdab09956080a9c71442b0fe92a751951edb974ed923fa078d2bdd0b065cff64",
     "src/app/mesh_face_prompt.rs": "634cca4d972e3af0cb33b153eb2ebc0cb5297416a497d3b7c422bd36732ec9ba",
     "src/viewport.rs": "4d26dc10bea07fe0af033fbf8c9cf2e243b443bad4d3eb2912825e3a4a40ce54",
     "src/viewport/normal_point.rs": "223393dfa302c78377e73b53e861bcac7916d15d0b9fe1bdea0e022ec325afb5",
-    "tools/rhino_oracle/polyline_on_mesh_probe.py": "60041714bb674d9f34be0dd2801c63bee6d1ce1123b1397f0715932207dde1cb",
+    "tools/rhino_oracle/polyline_on_mesh_probe.py": "036b5bf7ef84d97898f7300416d2565e270bf18965e6e2f81b9f5d5b1296cda8",
     "tools/rhino_oracle/generate_polyline_on_mesh.py": "33b15bb25db7602dc24376b940a06d6437883a8d005a88dd873f7b2508b6d14f",
-    "tools/rhino_oracle/test_polyline_on_mesh.py": "e8c950b1a6979437d1bd6a9ee1252cc7aafac1d282d86624efd64b8bb6f40dd1",
-    "tools/rhino_oracle/report_mesh_polyline.py": "5561bf77fcafdd506431dee0344a78c7feb835ddb041c67a90c68c9c167b72fe",
+    "tools/rhino_oracle/test_polyline_on_mesh.py": "a1a2135528b727b8ffd9d0535b24c5b5459f4777d00da53294ff8ef7e0ddf187",
+    "tools/rhino_oracle/report_mesh_polyline.py": "90351ce89851e23eed52f62319d39f2cc9d16082afcfce903cb8abf0d203a131",
     "tools/rhino_oracle/fixtures/polyline_on_mesh.json": "582b1f2c962aee05c6882f71e7509f138bf9263fec3962722a35bb5e4b36e9ee",
-    "tools/rhino_oracle/observations/polyline_on_mesh.json": "5eb3a7afc8c9fae5d3f57a3f87b91689a3401bb01ddd77c7343f49814d0668e4"
+    "tools/rhino_oracle/observations/polyline_on_mesh.json": "5eb3a7afc8c9fae5d3f57a3f87b91689a3401bb01ddd77c7343f49814d0668e4",
+    "tools/rhino_oracle/generate_mesh_polyline_boundaries.py": "5b381927cecfe54264f56efecef45331746b7c032d9afcfd85356a35da82c9bb",
+    "tools/rhino_oracle/generate_mesh_polyline_ties.py": "d5bcbb660507183966cc90b22cc3b4a2e164cb72ff86f150cfdee86da08c6e9c",
+    "tools/rhino_oracle/fixtures/mesh_polyline_boundaries.json": "41dd0e0bfb86f663caa470af6d1cca3e3e3e75d462d1292819087483f084c819",
+    "tools/rhino_oracle/observations/mesh_polyline_boundaries.json": "ddb9fe6fc33e9ff94a8ade39e55e9eda45978c2a48b0a36233b3d78782f2f956",
+    "tools/rhino_oracle/fixtures/mesh_polyline_ties.json": "f8e9c0a28b51bccff2d9a0de72a68b3e45a345deee4cbf102908b8f179f4e70d",
+    "tools/rhino_oracle/observations/mesh_polyline_ties.json": "7ebe1d326df0cabe9823593ec7a13f71894959a8c724ba7f0317c2a462b3a3fa"
   }
 }

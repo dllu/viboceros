@@ -4,7 +4,19 @@ mod support;
 use support::point;
 #[test]
 fn native_mesh_polyline_geometry_and_explicit_unresolved_cases() {
-    for (op, value) in support::rows() {
+    replay(support::rows(), "MESH_POLYLINE_COMMAND");
+}
+#[test]
+fn native_holes_disconnected_boundaries_and_unwelded_sections() {
+    replay(support::boundary_rows(), "MESH_BOUNDARY_COMMAND");
+}
+#[test]
+fn native_boundary_ties_are_qualified_without_relaxing_the_model_epsilon() {
+    replay(support::tie_rows(), "MESH_BOUNDARY_TIE_COMMAND");
+}
+fn replay(rows: Vec<(serde_json::Value, serde_json::Value)>, prefix: &str) {
+    let mut failures = Vec::new();
+    for (op, value) in rows {
         let v = &value;
         let (mut doc, id) = support::setup(v);
         let parent = doc.object(id).unwrap().geometry_snapshot().clone();
@@ -28,7 +40,7 @@ fn native_mesh_polyline_geometry_and_explicit_unresolved_cases() {
         }
         if canceled {
             println!(
-                "MESH_POLYLINE_COMMAND {}",
+                "{prefix} {}",
                 serde_json::json!({"id":op["id"],"qualified":false,"interactive_only":true})
             );
             continue;
@@ -43,11 +55,11 @@ fn native_mesh_polyline_geometry_and_explicit_unresolved_cases() {
             if closed { "Close" } else { "" }
         );
         let result = CommandRegistry::with_builtins().execute(&mut doc, &input);
-        if matches!(op["id"].as_str(), Some("off_mesh" | "disconnected")) {
+        if matches!(op["id"].as_str(), Some("off_mesh")) {
             assert!(result.is_err(), "{}", op["id"]);
             assert_eq!(doc.objects().count(), 1);
             println!(
-                "MESH_POLYLINE_COMMAND {}",
+                "{prefix} {}",
                 serde_json::json!({"id":op["id"],"qualified":false,"error":result.unwrap_err().to_string()})
             );
             continue;
@@ -61,9 +73,30 @@ fn native_mesh_polyline_geometry_and_explicit_unresolved_cases() {
         doc.redo().unwrap();
         error = error.max(support::check(&doc, id, v, "redo"));
         println!(
-            "MESH_POLYLINE_COMMAND {}",
+            "{prefix} {}",
             serde_json::json!({"id":op["id"],"qualified":error<1e-6,"maximum_bidirectional_sample_error":error})
         );
-        assert!(error < 1e-6, "{} {error:e}", op["id"]);
+        if error >= 1e-6 {
+            let actual = doc
+                .objects()
+                .last()
+                .unwrap()
+                .geometry()
+                .curve_ref()
+                .unwrap();
+            eprintln!(
+                "UNQUALIFIED {} {:?}",
+                op["id"],
+                actual
+                    .to_nurbs()
+                    .unwrap()
+                    .control_points()
+                    .iter()
+                    .map(|p| p.point().to_array())
+                    .collect::<Vec<_>>()
+            );
+            failures.push(op["id"].clone());
+        }
     }
+    assert!(failures.is_empty(), "Unqualified: {failures:?}");
 }

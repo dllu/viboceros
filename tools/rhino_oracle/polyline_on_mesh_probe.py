@@ -23,11 +23,43 @@ CASES={
  'disconnected':('disconnected',[[-3.,0.,0.],[3.,1.,0.],'Enter']),
  'return_to_start':('plane',A[:3]+A[:1]),
 }
+MESHES['hole']=([[-4.,-4.,0.],[4.,-4.,0.],[4.,4.,0.],[-4.,4.,0.],[-1.,-1.,0.],[1.,-1.,0.],[1.,1.,0.],[-1.,1.,0.]],[[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]])
+MESHES['disconnected_reversed']=(deepcopy(MESHES['disconnected'][0]),[list(reversed(f))for f in MESHES['disconnected'][1]])
+MESHES['three_panels']=([[x,y,0.]for lo,hi in[(-6.,-3.),(-1.,1.),(3.,6.)]for x,y in[(lo,-4.),(hi,-4.),(hi,4.),(lo,4.)]],[[4*i,4*i+1,4*i+2,4*i+3]for i in range(3)])
+MESHES['unwelded_fold']=([[-4.,-4.,0.],[0.,-4.,0.],[0.,4.,0.],[-4.,4.,0.],[0.,-4.,0.],[4.,-4.,3.],[4.,4.,3.],[0.,4.,0.]],[[0,1,2,3],[4,5,6,7]])
+MESHES['coplanar_grid']=([[-4.,-4.,0.],[0.,-4.,0.],[4.,-4.,0.],[-4.,4.,0.],[0.,4.,0.],[4.,4.,0.]],[[0,1,4,3],[1,2,5,4]])
+BOUNDARY_CASES={
+ 'hole_center':('hole',[[-3.,0.,0.],[3.,0.,0.],'Enter']),
+ 'hole_reverse':('hole',[[3.,0.,0.],[-3.,0.,0.],'Enter']),
+ 'hole_upper':('hole',[[-3.,.8,0.],[3.,.8,0.],'Enter']),
+ 'hole_lower':('hole',[[-3.,-.8,0.],[3.,-.8,0.],'Enter']),
+ 'hole_slope':('hole',[[-3.,-.5,0.],[3.,.5,0.],'Enter']),
+ 'panels_reverse':('disconnected',[[3.,1.,0.],[-3.,0.,0.],'Enter']),
+ 'panels_lower':('disconnected',[[-3.,-2.,0.],[3.,-1.,0.],'Enter']),
+ 'panels_normals_reversed':('disconnected_reversed',[[-3.,0.,0.],[3.,1.,0.],'Enter']),
+ 'three_panels':('three_panels',[[-5.,0.,0.],[5.,1.,0.],'Enter']),
+ 'unwelded_fold':('unwelded_fold',[[-3.,-2.,0.],[3.,2.,2.25],'Enter']),
+ 'coplanar_grid':('coplanar_grid',[[-3.,-2.,0.],[3.,2.,0.],'Enter']),
+}
+TIE_CASES={
+ 'slope_reverse':('hole',[[3.,.5,0.],[-3.,-.5,0.],'Enter']),
+ 'slope_dyadic':('hole',[[-3.,-.75,0.],[3.,.75,0.],'Enter']),
+ 'slope_negative':('hole',[[-3.,.5,0.],[3.,-.5,0.],'Enter']),
+ 'slope_negative_reverse':('hole',[[3.,-.5,0.],[-3.,.5,0.],'Enter']),
+ 'hole_vertical':('hole',[[0.,-3.,0.],[0.,3.,0.],'Enter']),
+ 'hole_vertical_reverse':('hole',[[0.,3.,0.],[0.,-3.,0.],'Enter']),
+}
+SCENES=dict(CASES,**BOUNDARY_CASES)
+SCENES.update(TIE_CASES)
+def tie_request():
+ q=request();q['operations']=[dict(op='polyline_on_mesh',id=k,case=k,actions=deepcopy(v[1]))for k,v in TIE_CASES.items()];return q
+def boundary_request():
+ q=request();q['operations']=[dict(op='polyline_on_mesh',id=k,case=k,actions=deepcopy(v[1]))for k,v in BOUNDARY_CASES.items()];return q
 def request():
  return deepcopy(dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='polyline_on_mesh',id=k,case=k,actions=v[1])for k,v in CASES.items()]))
 def validate(op):
- if not isinstance(op,dict)or set(op)!={'op','id','case','actions'}or op['op']!='polyline_on_mesh'or not isinstance(op['case'],str)or op['case']not in CASES:raise ValueError('fixed mesh polyline case required')
- if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or op['actions']!=CASES[op['case']][1]:raise ValueError('fixed mesh polyline actions required')
+ if not isinstance(op,dict)or set(op)!={'op','id','case','actions'}or op['op']!='polyline_on_mesh'or not isinstance(op['case'],str)or op['case']not in SCENES:raise ValueError('fixed mesh polyline case required')
+ if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or op['actions']!=SCENES[op['case']][1]:raise ValueError('fixed mesh polyline actions required')
 def validate_request(q):
  if type(q.get('iterations'))is not int or q['iterations']!=1 or not isinstance(q.get('operations'),list)or not 1<=len(q['operations'])<=16:raise ValueError('bounded one-iteration mesh polyline request required')
  for op in q['operations']:validate(op)
@@ -38,7 +70,7 @@ def run(op,host,iterations,tolerance):
  from conic_getter_input import drive
  R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
  if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:raise ValueError('empty owned idle document required')
- vertices,faces=MESHES[CASES[op['case']][0]];mesh=G.Mesh()
+ vertices,faces=MESHES[SCENES[op['case']][0]];mesh=G.Mesh()
  for p in vertices:mesh.Vertices.Add(*p)
  for f in faces:mesh.Faces.AddFace(*f)
  mesh.Normals.ComputeNormals();mesh.Compact()

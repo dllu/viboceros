@@ -1,0 +1,119 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "polyline_on_mesh",
+      "id": "slope_reverse",
+      "case": "slope_reverse",
+      "actions": [
+        [
+          3.0,
+          0.5,
+          0.0
+        ],
+        [
+          -3.0,
+          -0.5,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "slope_dyadic",
+      "case": "slope_dyadic",
+      "actions": [
+        [
+          -3.0,
+          -0.75,
+          0.0
+        ],
+        [
+          3.0,
+          0.75,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "slope_negative",
+      "case": "slope_negative",
+      "actions": [
+        [
+          -3.0,
+          0.5,
+          0.0
+        ],
+        [
+          3.0,
+          -0.5,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "slope_negative_reverse",
+      "case": "slope_negative_reverse",
+      "actions": [
+        [
+          3.0,
+          -0.5,
+          0.0
+        ],
+        [
+          -3.0,
+          0.5,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "hole_vertical",
+      "case": "hole_vertical",
+      "actions": [
+        [
+          0.0,
+          -3.0,
+          0.0
+        ],
+        [
+          0.0,
+          3.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "hole_vertical_reverse",
+      "case": "hole_vertical_reverse",
+      "actions": [
+        [
+          0.0,
+          3.0,
+          0.0
+        ],
+        [
+          0.0,
+          -3.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    }
+  ]
+}

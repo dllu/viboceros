@@ -1,0 +1,209 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "polyline_on_mesh",
+      "id": "hole_center",
+      "case": "hole_center",
+      "actions": [
+        [
+          -3.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0,
+          0.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "hole_reverse",
+      "case": "hole_reverse",
+      "actions": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ],
+        [
+          -3.0,
+          0.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "hole_upper",
+      "case": "hole_upper",
+      "actions": [
+        [
+          -3.0,
+          0.8,
+          0.0
+        ],
+        [
+          3.0,
+          0.8,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "hole_lower",
+      "case": "hole_lower",
+      "actions": [
+        [
+          -3.0,
+          -0.8,
+          0.0
+        ],
+        [
+          3.0,
+          -0.8,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "hole_slope",
+      "case": "hole_slope",
+      "actions": [
+        [
+          -3.0,
+          -0.5,
+          0.0
+        ],
+        [
+          3.0,
+          0.5,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "panels_reverse",
+      "case": "panels_reverse",
+      "actions": [
+        [
+          3.0,
+          1.0,
+          0.0
+        ],
+        [
+          -3.0,
+          0.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "panels_lower",
+      "case": "panels_lower",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          3.0,
+          -1.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "panels_normals_reversed",
+      "case": "panels_normals_reversed",
+      "actions": [
+        [
+          -3.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "three_panels",
+      "case": "three_panels",
+      "actions": [
+        [
+          -5.0,
+          0.0,
+          0.0
+        ],
+        [
+          5.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "unwelded_fold",
+      "case": "unwelded_fold",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          3.0,
+          2.0,
+          2.25
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "coplanar_grid",
+      "case": "coplanar_grid",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          3.0,
+          2.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    }
+  ]
+}

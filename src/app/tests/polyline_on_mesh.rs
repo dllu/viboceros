@@ -15,7 +15,18 @@ fn app_scene() -> (VibocerosApp, ObjectId) {
 }
 #[test]
 fn mesh_polyline_native_getters_keep_mesh_sections_metadata_and_history() {
-    for (op, v) in native::rows() {
+    replay(native::rows(), "MESH_POLYLINE_GETTER");
+}
+#[test]
+fn mesh_polyline_boundary_getters_replay_native_routes_and_history() {
+    replay(native::boundary_rows(), "MESH_BOUNDARY_GETTER");
+}
+#[test]
+fn mesh_polyline_boundary_tie_getters_match_native_choices() {
+    replay(native::tie_rows(), "MESH_BOUNDARY_TIE_GETTER");
+}
+fn replay(rows: Vec<(serde_json::Value, serde_json::Value)>, prefix: &str) {
+    for (op, v) in rows {
         let (doc, id) = native::setup(&v);
         let mut app = test_app();
         app.document = doc;
@@ -42,12 +53,12 @@ fn mesh_polyline_native_getters_keep_mesh_sections_metadata_and_history() {
                 enter(&mut app, &p.to_array().map(|v| v.to_string()).join(","));
             }
         }
-        if matches!(op["id"].as_str(), Some("off_mesh" | "disconnected")) {
+        if matches!(op["id"].as_str(), Some("off_mesh")) {
             assert_eq!(app.document.objects().count(), 1);
             assert!(app.document.undo_label().is_none());
             println!(
-                "MESH_POLYLINE_GETTER {}",
-                serde_json::json!({"id":op["id"],"qualified":false,"reason":"native degenerate miss output or disconnected bridge is not reproduced"})
+                "{prefix} {}",
+                serde_json::json!({"id":op["id"],"qualified":false,"reason":"native degenerate miss output is not reproduced"})
             );
             continue;
         }
@@ -67,7 +78,7 @@ fn mesh_polyline_native_getters_keep_mesh_sections_metadata_and_history() {
             maximum = maximum.max(native::check(&app.document, id, &v, "redo"));
         }
         println!(
-            "MESH_POLYLINE_GETTER {}",
+            "{prefix} {}",
             serde_json::json!({"id":op["id"],"qualified":maximum<1e-6,"maximum_bidirectional_sample_error":maximum})
         );
         assert!(maximum < 1e-6, "{} {maximum:e}", op["id"]);

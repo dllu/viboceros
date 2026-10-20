@@ -1,12 +1,16 @@
 //! Directed plane sections for polylines drawn on polygon meshes.
 use super::*;
 use crate::{Frame3, Polyline3};
+mod boundary;
+pub(super) use boundary::Boundaries;
 
 impl MeshProjectionIndex<'_> {
     /// Connects projected locations with a section plane containing the chord
     /// and the first polygon face's normal. Source order therefore matters at folds.
-    /// Shared exact mesh sections resolve edge/vertex crossings. Disconnected
-    /// or ambiguous sections decline instead of inserting an off-mesh bridge.
+    /// Shared exact mesh sections resolve edge/vertex crossings. When sections
+    /// separate, a bounded graph follows naked boundaries and may connect
+    /// original boundary corners across disconnected mesh components, matching
+    /// the native drawing command. These bridges need not lie on the mesh.
     pub fn polyline_on_mesh_segment(
         &self,
         start: Point3,
@@ -35,15 +39,19 @@ impl MeshProjectionIndex<'_> {
         let line = Polyline3::try_new(vec![a.point, b.point], Tolerance::NUMERICAL_VALIDATION)?
             .to_nurbs()?;
         let candidates = self.curve_candidates(&line, normal)?;
-        let mut map = BTreeMap::<u32, u32>::new();
+        let mut map = BTreeMap::<[u64; 3], u32>::new();
         let mut vertices = Vec::new();
         let mut triangles = Vec::new();
         for index in candidates {
             let mut triangle = [0; 3];
             for (j, raw) in self.triangles[index].iter().copied().enumerate() {
-                triangle[j] = *map.entry(raw).or_insert_with(|| {
+                let point = self.mesh.vertices()[raw as usize];
+                let key = point
+                    .to_array()
+                    .map(super::super::canonical_coordinate_bits);
+                triangle[j] = *map.entry(key).or_insert_with(|| {
                     let id = vertices.len() as u32;
-                    vertices.push(self.mesh.vertices()[raw as usize]);
+                    vertices.push(point);
                     id
                 });
             }
@@ -56,15 +64,15 @@ impl MeshProjectionIndex<'_> {
             TriangleMesh::try_new(vertices, triangles, Tolerance::NUMERICAL_VALIDATION)?;
         let sections = section_mesh.section_with_plane(frame, Tolerance::NUMERICAL_VALIDATION)?;
         let mut best: Option<(Real, Polyline3)> = None;
-        for section in sections {
-            let Some(u) = station(&section, a.point, tolerance)? else {
+        for section in &sections {
+            let Some(u) = station(section, a.point, tolerance)? else {
                 continue;
             };
-            let Some(v) = station(&section, b.point, tolerance)? else {
+            let Some(v) = station(section, b.point, tolerance)? else {
                 continue;
             };
-            let mut choices = vec![portion(&section, u, v, a.point, b.point)?];
-            if section.is_closed() {
+            let mut choices = vec![portion(section, u, v, a.point, b.point)?];
+            if closed_section(section) {
                 let count = section.segment_count() as Real;
                 let (low, high) = if u < v { (u, v) } else { (v, u) };
                 let mut points = vec![if u < v { b.point } else { a.point }];
@@ -98,8 +106,14 @@ impl MeshProjectionIndex<'_> {
                 }
             }
         }
-        best.map(|(_, p)| p).ok_or_else(failed)
+        if let Some((_, path)) = best {
+            return Ok(path);
+        }
+        boundary::route(self, &sections, a.point, b.point, tolerance)
     }
+}
+fn closed_section(curve: &Polyline3) -> bool {
+    curve.vertices().first() == curve.vertices().last()
 }
 fn station(
     curve: &Polyline3,
@@ -179,6 +193,191 @@ mod tests {
         .unwrap()
     }
 
+    fn ring() -> TriangleMesh {
+        TriangleMesh::try_new_faces(
+            vec![
+                p(-4., -4., 0.),
+                p(4., -4., 0.),
+                p(4., 4., 0.),
+                p(-4., 4., 0.),
+                p(-1., -1., 0.),
+                p(1., -1., 0.),
+                p(1., 1., 0.),
+                p(-1., 1., 0.),
+            ],
+            vec![
+                MeshFace::Quad([0, 1, 5, 4]),
+                MeshFace::Quad([1, 2, 6, 5]),
+                MeshFace::Quad([2, 3, 7, 6]),
+                MeshFace::Quad([3, 0, 4, 7]),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+    }
+    #[test]
+    fn excessive_disconnected_components_fail_before_boundary_graph_expansion() {
+        let mut vertices = Vec::new();
+        let mut faces = Vec::new();
+        for i in 0..1025 {
+            let x = 3. * i as Real;
+            let first = vertices.len() as u32;
+            vertices.extend([
+                p(x, 0., 0.),
+                p(x + 1., 0., 0.),
+                p(x + 1., 1., 0.),
+                p(x, 1., 0.),
+            ]);
+            faces.push(MeshFace::Quad([first, first + 1, first + 2, first + 3]));
+        }
+        let mesh = TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap();
+        let before = mesh.clone();
+        let index = MeshProjectionIndex::new(&mesh).unwrap();
+        assert!(
+            index
+                .polyline_on_mesh_segment(p(0.5, 0.5, 0.), p(3072.5, 0.5, 0.), Tolerance::DEFAULT)
+                .is_err()
+        );
+        assert!(index.boundary_routes.get().unwrap().is_err());
+        assert_eq!(mesh, before);
+    }
+    #[test]
+    fn topologically_closed_boundaries_remain_routable_at_small_model_scales() {
+        let base = ring();
+        for scale in [1e-9, 1e-6, 1e6] {
+            let mesh = TriangleMesh::try_new_faces(
+                base.vertices()
+                    .iter()
+                    .map(|p| Point3::try_from(p.to_array().map(|x| x * scale)).unwrap())
+                    .collect(),
+                base.faces().to_vec(),
+                Tolerance::MESH_VALIDATION,
+            )
+            .unwrap();
+            let index = MeshProjectionIndex::new(&mesh).unwrap();
+            let tolerance = Tolerance::try_new(1e-6 * scale, 1e-12, 1e-9).unwrap();
+            let path = index
+                .polyline_on_mesh_segment(
+                    p(-3. * scale, 0.8 * scale, 0.),
+                    p(3. * scale, 0.8 * scale, 0.),
+                    tolerance,
+                )
+                .unwrap();
+            assert!((path.length().unwrap() / scale - 6.4).abs() < 1e-9);
+        }
+    }
+    #[test]
+    fn hole_routes_follow_the_shorter_boundary_and_reuse_immutable_topology() {
+        let mesh = ring();
+        let before = mesh.clone();
+        let index = MeshProjectionIndex::new(&mesh).unwrap();
+        let mut cache = None;
+        for y in [0.8, -0.8] {
+            let path = index
+                .polyline_on_mesh_segment(p(-3., y, 0.), p(3., y, 0.), Tolerance::DEFAULT)
+                .unwrap();
+            assert!((path.length().unwrap() - 6.4).abs() < 1e-12);
+            let corner = p(-1., y.signum(), 0.);
+            assert!(
+                path.closest_point(corner, Tolerance::NUMERICAL_VALIDATION)
+                    .unwrap()
+                    .distance_to(corner)
+                    .unwrap()
+                    < 1e-12
+            );
+            for segment in path.segments() {
+                for i in 0..=16 {
+                    let point = segment.point_at(i as Real / 16.).unwrap();
+                    assert!(
+                        point
+                            .distance_to(index.closest_point(point).unwrap().unwrap())
+                            .unwrap()
+                            < 1e-12
+                    );
+                }
+            }
+            let pointer = index.boundary_routes.get().unwrap() as *const _;
+            if let Some(previous) = cache {
+                assert_eq!(previous, pointer);
+            }
+            cache = Some(pointer);
+        }
+        assert_eq!(mesh, before);
+    }
+    #[test]
+    fn disconnected_component_bridges_use_original_boundary_corners() {
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                p(-4., -4., 0.),
+                p(-1., -4., 0.),
+                p(-1., 4., 0.),
+                p(-4., 4., 0.),
+                p(1., -4., 0.),
+                p(4., -4., 0.),
+                p(4., 4., 0.),
+                p(1., 4., 0.),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3]), MeshFace::Quad([4, 5, 6, 7])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let index = MeshProjectionIndex::new(&mesh).unwrap();
+        let path = index
+            .polyline_on_mesh_segment(p(-3., 0., 0.), p(3., 1., 0.), Tolerance::DEFAULT)
+            .unwrap();
+        for corner in [p(-1., 4., 0.), p(1., 4., 0.)] {
+            assert!(path.vertices().contains(&corner));
+        }
+        let midpoint = p(0., 4., 0.);
+        assert!(
+            path.closest_point(midpoint, Tolerance::NUMERICAL_VALIDATION)
+                .unwrap()
+                .distance_to(midpoint)
+                .unwrap()
+                < 1e-12
+        );
+        assert_eq!(
+            index
+                .closest_point(midpoint)
+                .unwrap()
+                .unwrap()
+                .distance_to(midpoint)
+                .unwrap(),
+            1.
+        );
+    }
+    #[test]
+    fn coincident_unwelded_faces_share_a_section_without_changing_the_source() {
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                p(-4., -4., 0.),
+                p(0., -4., 0.),
+                p(0., 4., 0.),
+                p(-4., 4., 0.),
+                p(0., -4., 0.),
+                p(4., -4., 3.),
+                p(4., 4., 3.),
+                p(0., 4., 0.),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3]), MeshFace::Quad([4, 5, 6, 7])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let before = mesh.clone();
+        let index = MeshProjectionIndex::new(&mesh).unwrap();
+        let path = index
+            .polyline_on_mesh_segment(p(-3., -2., 0.), p(3., 2., 2.25), Tolerance::DEFAULT)
+            .unwrap();
+        let middle = p(0., 0., 0.);
+        assert!(
+            path.closest_point(middle, Tolerance::NUMERICAL_VALIDATION)
+                .unwrap()
+                .distance_to(middle)
+                .unwrap()
+                < 1e-12
+        );
+        assert_eq!(mesh, before);
+    }
     #[test]
     fn one_warped_quad_uses_a_direct_chord_without_an_internal_diagonal_corner() {
         let mesh = TriangleMesh::try_new_faces(

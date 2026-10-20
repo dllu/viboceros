@@ -28,6 +28,7 @@ pub struct MeshProjectionIndex<'a> {
     bounds: Vec<BoundingBox3>,
     order: Vec<usize>,
     nodes: Vec<Node>,
+    boundary_routes: std::sync::OnceLock<Result<polyline_path::Boundaries, GeometryError>>,
 }
 /// Nearest-point result identifying the indexed triangle, including a quad's
 /// chosen diagonal. Triangle indices belong to this index, not mesh face IDs.
@@ -74,6 +75,7 @@ impl<'a> MeshProjectionIndex<'a> {
             bounds,
             order,
             nodes: Vec::new(),
+            boundary_routes: std::sync::OnceLock::new(),
         };
         if !index.order.is_empty() {
             index.build(0..index.order.len())?;

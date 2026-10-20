@@ -5,16 +5,31 @@ pub fn point(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[f64; 3]>(v.clone()).unwrap()).unwrap()
 }
 pub fn rows() -> Vec<(Value, Value)> {
-    let q: Value = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/fixtures/polyline_on_mesh.json"
-    ))
-    .unwrap();
-    let r: Value = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/observations/polyline_on_mesh.json"
-    ))
-    .unwrap();
-    assert_eq!(q["operations"].as_array().unwrap().len(), 12);
-    assert_eq!(r["results"].as_array().unwrap().len(), 12);
+    captured(
+        include_str!("../../../../tools/rhino_oracle/fixtures/polyline_on_mesh.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/polyline_on_mesh.json"),
+        12,
+    )
+}
+pub fn boundary_rows() -> Vec<(Value, Value)> {
+    captured(
+        include_str!("../../../../tools/rhino_oracle/fixtures/mesh_polyline_boundaries.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_polyline_boundaries.json"),
+        11,
+    )
+}
+pub fn tie_rows() -> Vec<(Value, Value)> {
+    captured(
+        include_str!("../../../../tools/rhino_oracle/fixtures/mesh_polyline_ties.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_polyline_ties.json"),
+        6,
+    )
+}
+fn captured(request: &str, response: &str, count: usize) -> Vec<(Value, Value)> {
+    let q: Value = serde_json::from_str(request).unwrap();
+    let r: Value = serde_json::from_str(response).unwrap();
+    assert_eq!(q["operations"].as_array().unwrap().len(), count);
+    assert_eq!(r["results"].as_array().unwrap().len(), count);
     q["operations"]
         .as_array()
         .unwrap()
