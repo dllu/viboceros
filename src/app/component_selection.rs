@@ -194,6 +194,7 @@ impl VibocerosApp {
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
             && !self.picking_orient_curve()
+            && !self.picking_surface_offset_curve()
             && !self.picking_orient_edge()
             && !self.picking_array_curve()
             && !self.picking_curve_array()
@@ -246,6 +247,7 @@ impl VibocerosApp {
         }
         let picks = if self.picking_subcurve_edge()
             || self.picking_orient_curve()
+            || self.picking_surface_offset_curve()
             || self.picking_orient_edge()
             || self.picking_array_curve()
             || self.picking_curve_array()
@@ -387,6 +389,12 @@ impl VibocerosApp {
         if self.picking_array_curve() {
             if let [pick] = picks.as_slice() {
                 self.pick_array_curve(Some(pick.object), Some(pick.index));
+            }
+            return;
+        }
+        if self.picking_surface_offset_curve() {
+            if let [pick] = picks.as_slice() {
+                self.pick_surface_offset_curve(Some(pick.object), Some(pick.index));
             }
             return;
         }

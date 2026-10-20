@@ -511,6 +511,10 @@ class OracleClient:
             for op in operations:validate(op)
             click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in op['actions']])for op in operations])
             interaction=CatenaryPointPicker(click_request)
+        if any(op.get('op')=='surface_offset_command'for op in request.get('operations',[])):
+            from .surface_offset_command_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('Surface offset command captures require a private settings scheme')
+            validate_request(request)
         if any(op.get('op')=='surface_curve_offset'for op in request.get('operations',[])):
             from .surface_curve_offset_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('Surface offset SDK captures require a private settings scheme')

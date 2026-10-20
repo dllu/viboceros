@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
     if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv'):
@@ -39,7 +39,7 @@ def drive(op,host,guides,command="Conic"):
     def send_token(token):return call(None,send,[E.Constant(token),E.Constant(True)])
     def log(message):return call(None,append,[E.Constant(progress),E.Constant(message)])
     def point(p):
-        if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge'):
+        if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):
             from number_token import number_token
             return 'w'+','.join(number_token(x)for x in p)
         return 'w'+','.join(repr(float(x))for x in p)
@@ -48,7 +48,7 @@ def drive(op,host,guides,command="Conic"):
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
     if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
-    if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge'):prefixes=('Select objects to array','Base point','Select a curve on a surface','Select curve to temporarily shorten','Start of curve','Current length','Select the surface','Position objects or distance from last','Number of objects','Number of copies','Distance between copies')
+    if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):prefixes=('Select objects to array','Base point','Select a curve on a surface','Select curve to temporarily shorten','Start of curve','Current length','Select the surface','Position objects or distance from last','Number of objects','Number of copies','Distance between copies')
     if command=='Splop':prefixes=('Center of reference sphere','First','Second','Third','Radius','Select surface','Pick splop','Pick point')
     if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Mid','Radius','Direction','Angle','Length','Distance')
     if command=='Reparameterize':prefixes=('Select curve','Select surface','Select object','Domain start','Domain end','U domain start','U domain end','V domain start','V domain end')
@@ -75,9 +75,9 @@ def drive(op,host,guides,command="Conic"):
             receipt=[E.Assign(item(arc_pointer_initial,2*i),E.Property(position,'X')),E.Assign(item(arc_pointer_initial,2*i+1),E.Property(position,'Y'))]
         return E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1))]+receipt+[log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
     for i,a in enumerate(actions):
-        if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
+        if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        located=command in('Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge')and op.get('op')in('circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
+        located=command in('Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name
@@ -148,11 +148,11 @@ def drive(op,host,guides,command="Conic"):
             tokens.append(None)
         else:
             if isinstance(a,dict)and'relative'in a:token='r'+','.join(repr(float(v))for v in a['relative']);gate=base
-            elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=base if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge')else selection
+            elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=base if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')else selection
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
             else:
-                if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge'):
+                if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):
                     from number_token import number_token
                     token=number_token(a)
                 else:token=repr(float(a))
@@ -196,7 +196,7 @@ def drive(op,host,guides,command="Conic"):
         handlers=[]
         for c in clicks:
             i=c['action'];x,y=c['pixel']
-            gate=either([prompt_gate(p)for p in op['action_prompts'][i]])if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge')else base
+            gate=either([prompt_gate(p)for p in op['action_prompts'][i]])if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')else base
             near=E.AndAlso(E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'X'),integer(x-1)),E.LessThanOrEqual(E.Property(pixel,'X'),integer(x+1))),E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'Y'),integer(y-1)),E.LessThanOrEqual(E.Property(pixel,'Y'),integer(y+1))))
             condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.Equal(item(counts,i),integer(7)),E.AndAlso(same_view,E.AndAlso(gate,E.AndAlso(near,E.AndAlso(left,E.Not(E.Property(event,'Cancel'))))))))
             advance=[E.Assign(item(observed,i),prompt),E.Assign(item(counts,i),integer(9)),E.Assign(item(last,0),now)]

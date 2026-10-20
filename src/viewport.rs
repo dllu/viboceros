@@ -351,6 +351,7 @@ pub struct ViewportInput<'a> {
     pub point_cloud_remove_target: Option<ObjectId>,
     pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
+    pub preview_curves: &'a [NurbsCurve],
     pub isocurve_guides: &'a [NurbsCurve],
     pub preview_points: &'a [Point3],
     pub select_uv_rows: Option<(
@@ -465,6 +466,7 @@ impl Default for ViewportInput<'_> {
             point_cloud_remove_target: None,
             point_cloud_highlights: &[],
             preview_curve: None,
+            preview_curves: &[],
             isocurve_guides: &[],
             preview_points: &[],
             control_removal: None,
@@ -2208,13 +2210,14 @@ impl Viewport {
                 painter.line_segment(segment, Stroke::new(1.5, Color32::from_rgb(245, 160, 20)));
             }
         }
-        if drafting.active
-            && let Some(curve) = input.preview_curve
-        {
-            let mut projected = ProjectedPrimitives::default();
-            self.add_projected_nurbs_curve(&mut projected, rect, curve);
-            for segment in projected.segments {
-                painter.line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
+        if drafting.active {
+            for curve in input.preview_curve.into_iter().chain(input.preview_curves) {
+                let mut projected = ProjectedPrimitives::default();
+                self.add_projected_nurbs_curve(&mut projected, rect, curve);
+                for segment in projected.segments {
+                    painter
+                        .line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
+                }
             }
         }
         if drafting.active {

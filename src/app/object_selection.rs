@@ -377,6 +377,14 @@ impl VibocerosApp {
                     .then_some(ObjectSelectionFilter::Curves)
             };
         }
+        if self.surface_offset_session.is_some() {
+            return if self.picking_surface_offset_face() {
+                Some(ObjectSelectionFilter::SurfaceComponents)
+            } else {
+                self.picking_surface_offset_curve()
+                    .then_some(ObjectSelectionFilter::Curves)
+            };
+        }
         if self.orient_edge_session.is_some() {
             return self
                 .picking_orient_edge()

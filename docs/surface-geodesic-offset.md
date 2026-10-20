@@ -112,13 +112,23 @@ cover tangencies, boundary overlaps, periodic seams, source seam joins and
 scaling from `2^-100` to `2^100`, including parameter precision during closed
 gap reconnection.
 
-## Command work still required
+## Command integration and remaining work
 
-`OffsetCrvOnSrf` is not registered yet. The remaining work includes resolving
-the five SDK differences, trimmed-boundary clipping, full command qualification of fitted
-curves, trimmed faces and surface-edge inputs, Number and ThroughPoint behavior, temporary source
-portions, general closed-gap reconnection, corner/cut-locus handling, previews
-and grouped history.
+[`OffsetCrvOnSrf`](commands/offset-crv-on-srf.md) is registered with scripted
+and viewport source/face input, signed distances, picked sides, Flip, Number,
+temporary directed SubCrv input, cached previews and atomic history. Existing
+face clipping retains outer trims and holes. Planar open outputs reuse tangent
+boundary extension, matching the public command's behavior rather than the
+SDK's retained source endpoints. Number advances the complete offset before
+clipping each copy against face loops.
+
+Eight additional public command captures replay geometry, selection, layers,
+names and Undo/Redo through both command and UI paths. Seven qualify within
+`1e-6`. The extended Bézier offset remains unqualified at approximately
+`1.23e-5`, alongside the five existing SDK discrepancies. These are sampled
+comparisons, not continuous geometric certificates. ThroughPoint, curved-surface
+open-end extension, general closed-gap reconnection, corners, cut-locus
+handling and full native parity remain pending.
 
 The existing usd-brep `SmBSplineSurface::OffsetCurveAlongSurface` producer
 intersects Euclidean offset circles with the surface. That metric differs from
@@ -137,6 +147,9 @@ cargo test -p viboceros-geometry --lib surface_curve_offset
 cargo test -p viboceros-geometry --lib cash_karp
 cargo test -p viboceros-geometry --test surface_geodesic_native -- --nocapture
 python3 -m unittest tools.rhino_oracle.test_surface_curve_offset
+cargo test -p viboceros-command --test surface_curve_offset_native -- --nocapture
+cargo test -p viboceros --bin viboceros surface_curve_offset
+python3 -m unittest tools.rhino_oracle.test_surface_offset_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --verify
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --clipping
@@ -144,5 +157,5 @@ tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_s
 
 To refresh the independent query points, save the Rust replay output and pass
 it to the capture generator with `--candidate-report path/to/replay.log`.
-Regenerate the qualification report from the same output with
+Append the command replay output to that log, then regenerate the qualification report with
 `python3 -m tools.rhino_oracle.report_surface_geodesic path/to/replay.log`.

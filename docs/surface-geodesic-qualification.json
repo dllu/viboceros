@@ -1,7 +1,7 @@
 {
   "model_epsilon": 1e-06,
   "full_native_parity": false,
-  "command_registered": false,
+  "command_registered": true,
   "recipes": 24,
   "stations": 168,
   "qualified_recipes": 19,
@@ -229,7 +229,7 @@
     }
   ],
   "limits": [
-    "Geodesic point and fitted-curve foundation; OffsetCrvOnSrf is not registered.",
+    "OffsetCrvOnSrf is registered; ThroughPoint and full native parity remain pending.",
     "Station comparisons do not certify the complete offset locus.",
     "Native discrepancies remain subject to the unchanged 1e-6 qualification gate.",
     "Natural boundaries, poles and non-C1 chart transitions do not return partial endpoints."
@@ -657,7 +657,7 @@
     "limits": [
       "Complete curve output and UV boundary crossings are fitted; comparisons and topology checks remain sampled.",
       "The negative 0.25 warped offset now clips to both natural U boundaries; its original numerical discrepancy remains.",
-      "Trimmed faces, general closed-gap reconnection, corners and cut-locus removal still require qualification."
+      "General trimmed-face parity, closed-gap reconnection, corners and cut-locus removal still require qualification."
     ]
   },
   "closed_gap_cases": {
@@ -713,6 +713,71 @@
       "ConnectClosed is currently qualified for affine planar patches; other clipped closed-source gaps fail explicitly."
     ]
   },
+  "command_cases": {
+    "recipes": 8,
+    "qualified_recipes": 7,
+    "unqualified_recipes": [
+      "bezier"
+    ],
+    "bidirectional_samples_per_curve": 258,
+    "maximum_sample_difference": 1.2257590256581352e-05,
+    "cases": [
+      {
+        "id": "distance",
+        "maximum_bidirectional_sample_error": 1.0805156823142815e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "flip_number",
+        "maximum_bidirectional_sample_error": 2.1390168887322673e-14,
+        "outputs": 3,
+        "qualified": true
+      },
+      {
+        "id": "negative",
+        "maximum_bidirectional_sample_error": 2.1390168887322673e-14,
+        "outputs": 3,
+        "qualified": true
+      },
+      {
+        "id": "nurbs_line",
+        "maximum_bidirectional_sample_error": 1.0805156823142815e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "bezier",
+        "maximum_bidirectional_sample_error": 1.2257590256581352e-05,
+        "outputs": 1,
+        "qualified": false
+      },
+      {
+        "id": "trimmed_line",
+        "maximum_bidirectional_sample_error": 1.7308444606876822e-14,
+        "outputs": 2,
+        "qualified": true
+      },
+      {
+        "id": "postselect",
+        "maximum_bidirectional_sample_error": 1.0805156823142815e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "trimmed_number",
+        "maximum_bidirectional_sample_error": 2.416106516409301e-14,
+        "outputs": 4,
+        "qualified": true
+      }
+    ],
+    "limits": [
+      "Planar open curves extend along endpoint tangents to natural boundaries, then clip against face loops.",
+      "Number advances the complete curve before trimming each copy; hole splits do not duplicate later copies.",
+      "Source selection survives; outputs use the current layer and remain unselected.",
+      "ThroughPoint, general curved-surface open-end extension and full native parity remain pending."
+    ]
+  },
   "sha256": {
     "crates/viboceros-geometry/src/surface_geodesic.rs": "096628e4c427321b9f09ff6d9b02f79f578b432f8fd3249e3dc071a5268154bb",
     "crates/viboceros-geometry/src/surface_geodesic/tests.rs": "ce2834aceb31ea886ddd751aa674af095b5bf5fe5d5258b5323507a0a1a2cf5d",
@@ -731,6 +796,14 @@
     "tools/rhino_oracle/observations/surface_curve_offset_verify.json": "4726447786c4a155b1830f1c979471bfc00a45250f1987321d34b8f2dc6cef3a",
     "tools/rhino_oracle/fixtures/surface_curve_offset_clipping.json": "4163d8d8874ec2e80cf95e9b7a5ada572260c201bcb590da09af82b6df266eb3",
     "tools/rhino_oracle/observations/surface_curve_offset_clipping.json": "ad761cf4aa7802f5cccecb439ac2257d0bf125e07fe1a3c3f04273b986d654fa",
-    "tools/rhino_oracle/report_surface_geodesic.py": "d71b840b9b26f022abe5524992455ae271542564b4980a58e51e9327dc019b54"
+    "tools/rhino_oracle/report_surface_geodesic.py": "daf6aca3231f763159e81d7ba0c63c552164559aa4207d4663b5c90d75c3cf78",
+    "crates/viboceros-command/src/surface_curve_offset.rs": "5c6f145ec62de3f0e0ff0c15b8fc1bd67feddbf13aa9b644d4c2f45958ee014a",
+    "crates/viboceros-command/src/surface_curve_offset/tests.rs": "8f9f61908dd51d6073172de24eed219a327faee6dc63b06e5b7443af2d841283",
+    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "653877c96acd1c10bd6044cfff9082ae33582821a3d63a6359e582e08c4774aa",
+    "crates/viboceros-command/tests/surface_curve_offset_native.rs": "2803af8fefa4676186746a0362a8ed0021b068682cab06da6f9230b21608c9fa",
+    "src/app/surface_curve_offset.rs": "92ce97e63a37c863c10d0b02e908201681fd32f1aa897b8b0269c32990217c96",
+    "src/app/tests/surface_curve_offset.rs": "af9fcedeea769c40ec06e516e2614f8f32dbd79cfce25fbf3c29546aeeecd908",
+    "tools/rhino_oracle/fixtures/surface_offset_command.json": "46009c237a6d61e528daaad14015834e6d209024ea0d276cbbbdd257f86dfd3d",
+    "tools/rhino_oracle/observations/surface_offset_command.json": "6f500ba92c42f9725b11974da615c4d82c61ebf63318293b457b58d1e43fdf50"
   }
 }

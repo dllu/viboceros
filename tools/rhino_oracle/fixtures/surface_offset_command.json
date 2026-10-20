@@ -1,0 +1,189 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_offset_command",
+      "id": "distance",
+      "case": "distance",
+      "actions": [
+        {
+          "curve": 1
+        },
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "flip_number",
+      "case": "flip_number",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=3",
+        "Flip",
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "negative",
+      "case": "negative",
+      "actions": [
+        {
+          "curve": 1
+        },
+        -1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "nurbs_line",
+      "case": "nurbs_line",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=1",
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "bezier",
+      "case": "bezier",
+      "actions": [
+        {
+          "curve": 1
+        },
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "trimmed_line",
+      "case": "trimmed_line",
+      "actions": [
+        {
+          "curve": 1
+        },
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "postselect",
+      "case": "postselect",
+      "actions": [
+        {
+          "curve": 0
+        },
+        {
+          "curve": 1
+        },
+        "Number=1",
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select curve"
+        ],
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_command",
+      "id": "trimmed_number",
+      "case": "trimmed_number",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "Number=3",
+        1.0
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Offset distance"
+        ]
+      ]
+    }
+  ]
+}

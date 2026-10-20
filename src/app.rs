@@ -231,6 +231,7 @@ mod stretch_prompt;
 mod subcurve_direction;
 mod subcurve_preview;
 mod subcurve_prompt;
+mod surface_curve_offset;
 mod surface_flow;
 mod surface_rebuild;
 mod taper_prompt;
@@ -354,6 +355,7 @@ enum InteractiveCommand {
     RemapCPlane,
     OrientOnCurve,
     OrientCurveToEdge,
+    OffsetCurveOnSurface,
     ArrayCurveOnSurface,
     CurveArray {
         base: Option<Point3>,
@@ -865,6 +867,7 @@ impl InteractiveCommand {
             Self::RemapCPlane => "RemapCPlane",
             Self::OrientOnCurve => "OrientOnCrv",
             Self::OrientCurveToEdge => "OrientCrvToEdge",
+            Self::OffsetCurveOnSurface => "OffsetCrvOnSrf",
             Self::ArrayCurveOnSurface => "ArrayCrvOnSrf",
             Self::CurveArray { .. } => "ArrayCrv",
             Self::SurfaceArray { .. } => "ArraySrf",
@@ -1015,6 +1018,9 @@ impl InteractiveCommand {
             }
             Self::OrientCurveToEdge => {
                 "OrientCrvToEdge: select a curve near an end, then a surface edge"
+            }
+            Self::OffsetCurveOnSurface => {
+                "OffsetCrvOnSrf: select a curve and surface, then enter distance (Flip, Number, SubCrv)"
             }
             Self::OrientOnCurve => "OrientOnCrv: follow the curve placement prompt (Esc finishes)",
             Self::SurfaceArray { .. } => "ArraySrf: follow the surface array prompt (Esc cancels)",
@@ -2021,6 +2027,7 @@ impl InteractiveCommand {
             | Self::TrimCurve
             | Self::Move { start: None }
             | Self::OrientCurveToEdge
+            | Self::OffsetCurveOnSurface
             | Self::OrientOnCurve
             | Self::ArrayCurveOnSurface
             | Self::SetPoint { .. }
@@ -2428,6 +2435,8 @@ pub struct VibocerosApp {
     set_point_sources: Option<set_point::SetPointSources>,
     orient_curve_session: Option<orient_curve::Session>,
     orient_edge_session: Option<orient_edge::Session>,
+    surface_offset_session: Option<surface_curve_offset::Session>,
+    surface_offset_defaults: viboceros_command::surface_curve_offset::Options,
     array_curve_surface_session: Option<array_curve_surface::Session>,
     array_surface_session: Option<array_surface::Session>,
     curve_array_session: Option<curve_array::Session>,
@@ -2570,6 +2579,8 @@ impl VibocerosApp {
             set_point_sources: None,
             orient_curve_session: None,
             orient_edge_session: None,
+            surface_offset_session: None,
+            surface_offset_defaults: Default::default(),
             array_curve_surface_session: None,
             array_surface_session: None,
             curve_array_session: None,
@@ -2827,6 +2838,7 @@ impl VibocerosApp {
         if self.try_continue_orient_surface(&input)
             || self.try_continue_remap_cplane(&input)
             || self.try_continue_orient_points(&input)
+            || self.continue_surface_offset(&input)
             || self.continue_orient_edge(&input)
             || self.try_continue_orient_curve(&input)
             || self.try_continue_array_curve_surface(&input)
@@ -3582,6 +3594,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_array_curve_surface(input, picked_sources.as_deref()) {
+            return true;
+        }
+        if self.start_surface_offset(input) {
             return true;
         }
         if self.start_orient_edge(input) {
@@ -5979,6 +5994,7 @@ impl VibocerosApp {
         }
         self.cancel_surface_array();
         self.cancel_curve_array();
+        self.finish_surface_offset();
         let transform_applied = self.finish_orient_surface_session()
             | self.finish_orient_points_session()
             | self.finish_orient_edge()
@@ -6149,6 +6165,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_array_curve_surface_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_surface_offset_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_orient_edge_point(point) {
             return accepted;
         }
@@ -6186,6 +6205,7 @@ impl VibocerosApp {
             InteractiveCommand::RemapCPlane
             | InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientCurveToEdge
+            | InteractiveCommand::OffsetCurveOnSurface
             | InteractiveCommand::OrientOnCurve
             | InteractiveCommand::ArrayCurveOnSurface
             | InteractiveCommand::SurfaceArray { .. }
@@ -8845,6 +8865,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.pick_surface_offset_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_select_uv_object(click.object_id) {
             return;
         }
@@ -9600,6 +9623,7 @@ impl VibocerosApp {
             if let Some(s) = &mut self.spiral_session {
                 s.cursor = Some(point);
             }
+            self.update_surface_offset_hover(point);
             self.update_subcurve_hover(point);
             self.update_soft_edit_hover(point);
         }
@@ -9731,7 +9755,9 @@ impl VibocerosApp {
             self.accept_component_window(window);
         } else if let Some(picks) = output.edge_click {
             if self.picking_subcurve_edge()
-                || (self.picking_orient_curve() || self.picking_orient_edge())
+                || (self.picking_orient_curve()
+                    || self.picking_orient_edge()
+                    || self.picking_surface_offset_curve())
                 || self.picking_array_curve()
                 || self.picking_curve_array()
                 || self.picking_flow_guide()
@@ -9764,7 +9790,8 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            if self.accept_conic_parameter(parameter)
+            if self.accept_surface_offset_parameter(parameter)
+                || self.accept_conic_parameter(parameter)
                 || self.accept_rectangle_parameter(parameter)
                 || self.accept_ellipse_parameter(parameter)
                 || self.accept_splop_reference_parameter(parameter)
@@ -9937,6 +9964,9 @@ impl VibocerosApp {
 
 impl VibocerosApp {
     fn cancel_current_prompt_or_selection(&mut self) {
+        if self.discard_surface_offset_subcurve() {
+            return;
+        }
         if self.viewport_tab_rename.take().is_some() {
             // Escape dismisses the rename editor without canceling a modeling prompt.
         } else if self.selection_menu.take().is_some() {
@@ -10059,6 +10089,7 @@ impl eframe::App for VibocerosApp {
         self.show_curve_deviation(ui);
         self.validate_orient_guide();
         self.validate_array_curve_surface();
+        self.validate_surface_offset();
         self.validate_orient_edge();
         self.validate_curve_array();
         self.validate_surface_array();
@@ -10159,7 +10190,9 @@ impl eframe::App for VibocerosApp {
                     .is_none_or(tangent::Session::wants_point)
                 && !self.picking_circle_around_curve()
                 && !self.picking_splop_reference_curve()
-                && !(self.picking_orient_curve() || self.picking_orient_edge())
+                && !(self.picking_orient_curve()
+                    || self.picking_orient_edge()
+                    || self.picking_surface_offset_curve())
                 && !self.picking_array_curve()
                 && self
                     .curve_array_session
@@ -10170,6 +10203,7 @@ impl eframe::App for VibocerosApp {
                     || self.drawing_flow_line()
                     || self.drawing_flow_axis()
                     || self.drawing_flow_radius())
+                && !self.picking_surface_offset_face()
                 && !self.picking_orient_surface()
                 && !self.picking_array_surface()
                 && self
@@ -10402,6 +10436,7 @@ impl eframe::App for VibocerosApp {
         let face_pick = if self.merge_face_prompt.is_some() {
             Some(FacePickMode::MeshAndBrepAny)
         } else if self.picking_fillet_surface()
+            || self.picking_surface_offset_face()
             || self.picking_orient_surface()
             || self.picking_array_surface()
             || self.picking_surface_array()
@@ -10470,7 +10505,9 @@ impl eframe::App for VibocerosApp {
                 .as_ref()
                 .is_some_and(blend_surface::Prompt::selecting)
             || self.picking_subcurve_edge()
-            || (self.picking_orient_curve() || self.picking_orient_edge())
+            || (self.picking_orient_curve()
+                || self.picking_orient_edge()
+                || self.picking_surface_offset_curve())
             || self.picking_array_curve()
             || self.picking_curve_array()
             || self.picking_flow_guide()
@@ -10534,6 +10571,12 @@ impl eframe::App for VibocerosApp {
                     .as_ref()
                     .filter(|_| self.point_filter.is_none() && self.point_constraint.is_none())
                     .and_then(orient_edge::Session::cursor_curve)
+            })
+            .or_else(|| {
+                self.surface_offset_session
+                    .as_ref()
+                    .filter(|_| self.point_filter.is_none() && self.point_constraint.is_none())
+                    .and_then(surface_curve_offset::Session::cursor_curve)
             })
             .or_else(|| {
                 self.orient_curve_session
@@ -10720,7 +10763,9 @@ impl eframe::App for VibocerosApp {
         let selecting_normal = model_input_active && self.selecting_move_normal_reference();
         let curve_or_edge_pick = edge_pick
             && (self.picking_subcurve_edge()
-                || (self.picking_orient_curve() || self.picking_orient_edge())
+                || (self.picking_orient_curve()
+                    || self.picking_orient_edge()
+                    || self.picking_surface_offset_curve())
                 || self.picking_array_curve()
                 || self.picking_curve_array()
                 || self.picking_flow_guide()
@@ -11117,6 +11162,10 @@ impl eframe::App for VibocerosApp {
                                     .filter(|p| p.show_curve)
                                     .map(|p| &p.geometry.curve)
                             }),
+                            preview_curves: self
+                                .surface_offset_session
+                                .as_ref()
+                                .map_or(&[], surface_curve_offset::Session::preview_curves),
                             preview_points: orient_markers
                                 .as_deref()
                                 .or(division_preview.as_deref())
@@ -11540,6 +11589,7 @@ mod tests {
     mod subcurve_midpoint;
     mod subcurve_preferences;
     mod subcurve_preview;
+    mod surface_curve_offset;
     mod surface_flow;
     mod sweep_two_rails;
     mod taper;
@@ -11648,6 +11698,8 @@ mod tests {
             set_point_sources: None,
             orient_curve_session: None,
             orient_edge_session: None,
+            surface_offset_session: None,
+            surface_offset_defaults: Default::default(),
             array_curve_surface_session: None,
             array_surface_session: None,
             curve_array_session: None,

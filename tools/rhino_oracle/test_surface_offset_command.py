@@ -1,0 +1,49 @@
+"""Fixed public command recipes and source-pinned selection/history evidence."""
+import gzip,hashlib,json,os,subprocess,sys,tempfile
+from pathlib import Path
+from unittest import TestCase,mock
+from .client import OracleClient,OracleProtocolError
+from .surface_offset_command_probe import request,validate,validate_request
+from .structural_sdk import stage_helpers
+HERE=Path(__file__).resolve().parent
+class SurfaceOffsetCommandTests(TestCase):
+    def test_command_evidence_and_complete_source_closure(self):
+        path=HERE/'fixtures/surface_offset_command.json';q=json.loads(path.read_text())
+        self.assertEqual(q,request());validate_request(q)
+        r=json.loads((HERE/'observations/surface_offset_command.json').read_text())
+        self.assertEqual(len(r['results']),8)
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+        for name,sha in r['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),sha,name)
+        for op,row in zip(q['operations'],r['results']):
+            self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
+            v=row['value'];self.assertTrue(v['success']);trace=v['input_trace']
+            self.assertEqual(trace['errors'],[]);self.assertEqual(trace['completed'],len(op['actions']))
+            for phase in ['after_script','undo','redo']:
+                self.assertEqual(v[phase][:2],v['before'])
+            self.assertEqual(v['after_script'],v['redo']);self.assertEqual(v['before'],v['undo'])
+            for output in v['after_script'][2:]:
+                self.assertFalse(output['selected']);self.assertEqual(output['layer'],'Surface offset output');self.assertIsNone(output['name'])
+            event=next(e for e in v['events']if e['name']=='OffsetCrvOnSrf')
+            self.assertEqual(event['result'],'Success');self.assertEqual(event['objects'],v['after'])
+        # Number continues the untrimmed offset, then clips each copy: the hole
+        # splits only the first copy, without duplicating subsequent copies.
+        self.assertEqual(len(r['results'][-1]['value']['after_script']),6)
+    def test_staged_command_probe_imports_without_the_application(self):
+        with tempfile.TemporaryDirectory()as folder:
+            stage_helpers(request(),HERE,Path(folder))
+            self.assertEqual((Path(folder)/'surface_offset_command_probe.py').read_bytes(),(HERE/'surface_offset_command_probe.py').read_bytes())
+            subprocess.run([sys.executable,'-I','-c','import sys,json;sys.path.insert(0,sys.argv[1]);import surface_offset_command_probe as p;p.validate(json.loads(sys.argv[2]))',folder,json.dumps(request()['operations'][0])],check=True,capture_output=True)
+    def test_invalid_recipes_cannot_launch(self):
+        q=request();op=q['operations'][0]
+        for patch in [dict(op='other'),dict(id='../escape'),dict(case=[]),dict(case='unknown'),dict(actions=[{'curve':True},1.]),dict(actions=[{'curve':1},True]),dict(actions=[{'curve':1},'_Delete']),dict(action_prompts=[['Command'],['Distance']]),dict(extra=True)]:
+            with self.subTest(patch=patch),self.assertRaises(ValueError):validate(dict(op,**patch))
+        with mock.patch.dict(os.environ,dict(DISPLAY=':301',VIBOCEROS_ORACLE_HEADLESS=':301'),clear=True),mock.patch('tools.rhino_oracle.client._run_logged')as launch:
+            for scheme,body in [(None,q),('VibocerosOracleSurfaceOffsetCommandUnit',dict(q,iterations=2)),('VibocerosOracleSurfaceOffsetCommandUnit',dict(q,operations=[op,op])),('VibocerosOracleSurfaceOffsetCommandUnit',dict(q,operations=[dict(op,op='line')]))]:
+                # Include a valid command recipe to exercise the dedicated-job
+                # guard for a mixed request, before any process can be started.
+                if body['operations'][0].get('op')=='line':body=dict(body,operations=[op]+body['operations'])
+                with self.assertRaises((ValueError,OracleProtocolError)):OracleClient(launcher=Path('/bin/true'),settings_scheme=scheme).run_rhino(body,1)
+            launch.assert_not_called()

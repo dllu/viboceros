@@ -10,6 +10,9 @@ impl VibocerosApp {
         face: usize,
         point: Option<Point3>,
     ) {
+        if self.pick_surface_offset_face(Some(object), Some(face), point) {
+            return;
+        }
         if self.accept_reparameterize_face(object, face) {
             return;
         }

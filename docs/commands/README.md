@@ -112,6 +112,7 @@ Rhino's complete command set is still a work in progress.
 - [Remap objects between construction planes](remap-cplane.md)
 - [Interactive Orient and Orient3Pt point placement](orient.md)
 - [OrientCrvToEdge](orient-curve-to-edge.md)
+- [OffsetCrvOnSrf surface-distance offsets](offset-crv-on-srf.md)
 - [OrientOnCrv curve-guided placement and previews](orient-on-curve.md)
 - [Independent reference scaling by plane](scale-by-plane.md)
 - [Scale individual object positions](scale-positions.md)
