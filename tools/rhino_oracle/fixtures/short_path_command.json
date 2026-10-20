@@ -1,0 +1,75 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "short_path_command",
+      "id": "plane",
+      "case": "plane",
+      "actions": [
+        [
+          -4.0,
+          -3.0,
+          0.0
+        ],
+        [
+          4.0,
+          3.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "short_path_command",
+      "id": "cancel",
+      "case": "cancel",
+      "actions": [
+        [
+          -4.0,
+          -3.0,
+          0.0
+        ],
+        "Cancel"
+      ]
+    },
+    {
+      "op": "short_path_command",
+      "id": "cylinder",
+      "case": "cylinder",
+      "actions": [
+        [
+          3.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          3.0,
+          5.0
+        ]
+      ]
+    },
+    {
+      "op": "short_path_command",
+      "id": "general",
+      "case": "general",
+      "actions": [
+        [
+          0.4,
+          0.5,
+          0.05
+        ],
+        [
+          1.6,
+          1.5,
+          0.84
+        ]
+      ]
+    }
+  ]
+}

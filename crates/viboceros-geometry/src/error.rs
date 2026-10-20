@@ -362,6 +362,12 @@ pub enum GeometryError {
     #[error("surface geodesic failed: {context}")]
     InvalidSurfaceGeodesic { context: &'static str },
 
+    #[error("surface short path failed: {context}")]
+    InvalidSurfaceShortPath { context: &'static str },
+
+    #[error("surface short path exceeds {maximum} geodesic queries")]
+    SurfaceShortPathWorkLimit { maximum: usize },
+
     #[error("surface curve offset failed: {context}")]
     InvalidSurfaceCurveOffset { context: &'static str },
 

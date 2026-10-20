@@ -69,6 +69,7 @@ mod curve_trim;
 mod curve_tween;
 mod surface_curve_offset;
 mod surface_geodesic;
+mod surface_short_path;
 pub use surface_curve_offset::{
     SurfaceCurveExtension, SurfaceCurveOffset, SurfaceCurveOffsetGapStyle,
     SurfaceCurveOffsetOptions, SurfaceCurveOffsetPieces, SurfaceCurveOffsetThroughPoint,
@@ -79,6 +80,7 @@ pub use surface_curve_offset::{
     try_offset_curves_on_surface, try_offset_curves_on_surface_with_options,
     try_offset_curves_on_surface_with_solver,
 };
+pub use surface_short_path::{SurfaceShortPath, try_short_path_on_surface};
 mod surface_rebuild;
 pub use surface_geodesic::{PreparedSurfaceGeodesic, SurfaceGeodesicPoint};
 pub use surface_rebuild::{

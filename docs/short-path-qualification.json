@@ -1,0 +1,246 @@
+{
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "command_registered": true,
+  "sdk_cases": {
+    "recipes": 14,
+    "qualified_recipes": 4,
+    "unqualified_recipes": [
+      "cylinder",
+      "cylinder_seam",
+      "cylinder_half",
+      "sphere",
+      "sphere_pole",
+      "warped",
+      "general",
+      "rational",
+      "boundary",
+      "chart"
+    ],
+    "maximum_sample_difference": 0.01756322357664155,
+    "cases": [
+      {
+        "distance": 10.0,
+        "geodesic_queries": 0,
+        "id": "plane",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "native_length": 10.0,
+        "qualified": true,
+        "surface_image_bound": 0.0
+      },
+      {
+        "distance": 3.2557641192199416,
+        "geodesic_queries": 0,
+        "id": "skew_plane",
+        "maximum_bidirectional_sample_error": 8.005932084973442e-16,
+        "native_length": 3.2557641192199416,
+        "qualified": true,
+        "surface_image_bound": 1.1433715084215514e-16
+      },
+      {
+        "distance": 5.9301441721471715,
+        "geodesic_queries": 0,
+        "id": "cylinder",
+        "maximum_bidirectional_sample_error": 0.00031863525375039445,
+        "native_length": 5.93014427115971,
+        "qualified": false,
+        "surface_image_bound": 4.343548713670266e-07
+      },
+      {
+        "distance": 4.020137064929957,
+        "geodesic_queries": 0,
+        "id": "cylinder_seam",
+        "maximum_bidirectional_sample_error": 0.00011267764316555289,
+        "native_length": 4.020137124491087,
+        "qualified": false,
+        "surface_image_bound": 2.590790462553128e-08
+      },
+      {
+        "distance": 10.088926583626437,
+        "geodesic_queries": 0,
+        "id": "cylinder_half",
+        "maximum_bidirectional_sample_error": 8.035406232774587e-05,
+        "native_length": 10.08892663236487,
+        "qualified": false,
+        "surface_image_bound": 4.900101833495493e-09
+      },
+      {
+        "distance": 8.461282622485216,
+        "geodesic_queries": 0,
+        "id": "sphere",
+        "maximum_bidirectional_sample_error": 0.002737792602127108,
+        "native_length": 8.461284282116525,
+        "qualified": false,
+        "surface_image_bound": 4.789523036396906e-07
+      },
+      {
+        "distance": 6.283185307179586,
+        "geodesic_queries": 0,
+        "id": "sphere_pole",
+        "maximum_bidirectional_sample_error": 0.01756322357664155,
+        "native_length": 6.311420170437945,
+        "qualified": false,
+        "surface_image_bound": 9.099819059227666e-16
+      },
+      {
+        "distance": 12.566370614359172,
+        "geodesic_queries": 0,
+        "id": "sphere_antipodal",
+        "maximum_bidirectional_sample_error": 5.869770687286618e-07,
+        "native_length": 12.566370621192874,
+        "qualified": true,
+        "surface_image_bound": 7.138892960927152e-16
+      },
+      {
+        "distance": 9.481291404369465,
+        "geodesic_queries": 3456,
+        "id": "warped",
+        "maximum_bidirectional_sample_error": 0.00028920999149009675,
+        "native_length": 9.48129143631547,
+        "qualified": false,
+        "surface_image_bound": 6.375257723292454e-09
+      },
+      {
+        "distance": 1.7753812574424508,
+        "geodesic_queries": 3454,
+        "id": "general",
+        "maximum_bidirectional_sample_error": 5.325062376686979e-05,
+        "native_length": 1.775381274655007,
+        "qualified": false,
+        "surface_image_bound": 9.277522780047673e-09
+      },
+      {
+        "distance": 1.7546363893984036,
+        "geodesic_queries": 1491,
+        "id": "rational",
+        "maximum_bidirectional_sample_error": 4.9537264096802685e-05,
+        "native_length": 1.7546364027388226,
+        "qualified": false,
+        "surface_image_bound": 1.394227705162048e-08
+      },
+      {
+        "distance": 2.0670512703148836,
+        "geodesic_queries": 1491,
+        "id": "boundary",
+        "maximum_bidirectional_sample_error": 7.754589835238654e-05,
+        "native_length": 2.0670512897056694,
+        "qualified": false,
+        "surface_image_bound": 1.3957239063181735e-08
+      },
+      {
+        "distance": 1.7753812574424508,
+        "geodesic_queries": 3454,
+        "id": "chart",
+        "maximum_bidirectional_sample_error": 5.32504510328393e-05,
+        "native_length": 1.7753812746549908,
+        "qualified": false,
+        "surface_image_bound": 9.268306157203236e-09
+      },
+      {
+        "distance": 0.0,
+        "geodesic_queries": 0,
+        "id": "coincident",
+        "maximum_bidirectional_sample_error": 1.4217791915866692e-15,
+        "native_length": 0.0,
+        "qualified": true,
+        "surface_image_bound": 0.0
+      }
+    ]
+  },
+  "command_cases": {
+    "recipes": 3,
+    "qualified_recipes": 1,
+    "unqualified_recipes": [
+      "cylinder",
+      "general"
+    ],
+    "maximum_sample_difference": 0.000164923581962071,
+    "cases": [
+      {
+        "id": "plane",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "qualified": true
+      },
+      {
+        "id": "cylinder",
+        "maximum_bidirectional_sample_error": 0.000164923581962071,
+        "qualified": false
+      },
+      {
+        "id": "general",
+        "maximum_bidirectional_sample_error": 4.5477290292256906e-05,
+        "qualified": false
+      }
+    ]
+  },
+  "getter_cases": {
+    "recipes": 4,
+    "qualified_recipes": 2,
+    "unqualified_recipes": [
+      "cylinder",
+      "general"
+    ],
+    "maximum_sample_difference": 0.000164923581962071,
+    "cases": [
+      {
+        "id": "plane",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "qualified": true
+      },
+      {
+        "id": "cancel",
+        "maximum_bidirectional_sample_error": 0.0,
+        "qualified": true
+      },
+      {
+        "id": "cylinder",
+        "maximum_bidirectional_sample_error": 0.000164923581962071,
+        "qualified": false
+      },
+      {
+        "id": "general",
+        "maximum_bidirectional_sample_error": 4.547729030857955e-05,
+        "qualified": false
+      }
+    ]
+  },
+  "bidirectional_samples_per_curve": 130,
+  "maximum_surface_image_bound": 4.789523036396906e-07,
+  "native_cylinder_same_height_witness": 0.0005249644070614334,
+  "guarantees": [
+    "Requested surface endpoints within model tolerance and immutable parents.",
+    "Continuous correspondence bound over every returned curve, within half the model tolerance.",
+    "Analytic primitive loci; general paths retain numerical integration and sampled fit estimates.",
+    "Native metadata, cancellation, selection, current output layer and Undo/Redo replay."
+  ],
+  "limits": [
+    "General shooting selects the shortest converged candidate; no global minimum certificate.",
+    "Natural-boundary detours, general singularities, trim-hole detours and InfinitePlane point input are not implemented.",
+    "Curved native SDK and command outputs exceed the unchanged native agreement gate in the recorded cases.",
+    "Antipodal shortest paths are nonunique; the canonical sphere tie chooses decreasing U."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/surface_short_path.rs": "a4f686037d75714a4ee5ddd88e7d00735d7e20f70ea6ec7e7a2e1085b6d4a912",
+    "crates/viboceros-geometry/src/surface_short_path/tests.rs": "f937f59b13aebbd83aae9e7115d41c93cf0486fcc7a23674320a730544844642",
+    "crates/viboceros-geometry/tests/surface_short_path_native.rs": "295a931ca0a6ad79280779a0062e76b7d08111fe72f13e21b1a3297ad78ee7ca",
+    "crates/viboceros-geometry/src/surface_geodesic.rs": "442b5d6c177e9ab9de2a9990e6361bfd7cda648d8300f2ad3da819623cd84f54",
+    "crates/viboceros-geometry/src/morph/curve_fit.rs": "0951184a8d2b58d049ec5488462da802208f96571ff92888acbc60bcbb3c662d",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
+    "crates/viboceros-command/src/short_path.rs": "b80241ae59835a24d9f04dbfbc530a49933c5ef6b71f1ed80cd16b7504bbfca9",
+    "crates/viboceros-command/src/lib.rs": "6dcecd4e13cb77f8bdb18af2456a9c77291372ff530642894a806de29f4098c9",
+    "crates/viboceros-command/tests/short_path_native.rs": "fa7583089a3e5aa595e5300f3d5a4bd9a813f0a01a80716b6d94bb6d444b691a",
+    "crates/viboceros-command/tests/support/short_path.rs": "9ff9315b6b492b97b4725f542228f457f762c2db6418af6f143866952933d11b",
+    "src/app.rs": "c7cf8bee138a2ff96cae36005da3466d44958baa3301563110952d5621f87df3",
+    "src/app/short_path.rs": "2ef6b495adf363973d9af6dd6448951e240af6a4e4f9b99ff58dbbb8975801f7",
+    "src/app/mesh_face_prompt.rs": "6c5e2083b26d78ce05f77d3ece4e3920ef98a3b693e444ea0281161afeafa3fa",
+    "src/app/tests/short_path.rs": "e63f8c48a71dc627c6c5314a0a29256d7f9b409d77d45b01479edc0e5cc5e642",
+    "tools/rhino_oracle/surface_short_path_probe.py": "010b561268855ab68a60cbbfc763acd50165afce323edcde3ea4baaee45c72b0",
+    "tools/rhino_oracle/short_path_command_probe.py": "386eeaef28ba02ba508dbb8e1cf62515f333219815d436de49e71b0c12a5a88e",
+    "tools/rhino_oracle/fixtures/surface_short_path.json": "3b0d253515c93619a9bb98f9690815f783902ce482f8139111ae44f9b0a7c2a3",
+    "tools/rhino_oracle/observations/surface_short_path.json": "2e3ef19392efe91c4298d43d9ada97070200ea4132ac9bdf04f2c4d3bc9532bf",
+    "tools/rhino_oracle/fixtures/short_path_command.json": "fb07b5cea5e98426dfe90c9682f6a0c57dc2db559d924aa706bf9c6187e44dff",
+    "tools/rhino_oracle/observations/short_path_command.json": "75f1d29d8c19c6fc102f15d6c294007ff4e07bb0114c29c242116af080d21428",
+    "tools/rhino_oracle/test_short_path.py": "2e4fe20832515b7de9f79405651011b35abb4c4a2fce8cb52be19520012bd5c4",
+    "tools/rhino_oracle/report_short_path.py": "0d016544d60127ccad2ddba16c35fc35f9c320c932c294e0d2304666ce41b014"
+  }
+}

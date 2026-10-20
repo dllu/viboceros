@@ -519,6 +519,14 @@ class OracleClient:
             from .surface_curve_offset_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('Surface offset SDK captures require a private settings scheme')
             validate_request(request)
+        if any(op.get('op')=='short_path_command'for op in request.get('operations',[])):
+            from .short_path_command_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('ShortPath command captures require a private settings scheme')
+            validate_request(request)
+        if any(op.get('op')=='surface_short_path'for op in request.get('operations',[])):
+            from .surface_short_path_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('ShortPath SDK captures require a private settings scheme')
+            validate_request(request)
         if any(op.get('op')=='orient_curve_edge'for op in request.get('operations',[])):
             from .orient_curve_edge_probe import validate
             from .arc_point_picker import ArcPointPicker

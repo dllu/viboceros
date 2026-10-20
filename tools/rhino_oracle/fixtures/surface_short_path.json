@@ -1,0 +1,193 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_short_path",
+      "id": "plane",
+      "case": "plane",
+      "start": [
+        0.1,
+        0.2
+      ],
+      "end": [
+        0.9,
+        0.8
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "skew_plane",
+      "case": "skew_plane",
+      "start": [
+        0.1,
+        0.2
+      ],
+      "end": [
+        0.9,
+        0.8
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "cylinder",
+      "case": "cylinder",
+      "start": [
+        0.15,
+        0.2
+      ],
+      "end": [
+        0.4,
+        0.8
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "cylinder_seam",
+      "case": "cylinder_seam",
+      "start": [
+        0.95,
+        0.2
+      ],
+      "end": [
+        0.05,
+        0.8
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "cylinder_half",
+      "case": "cylinder_half",
+      "start": [
+        0.0,
+        0.2
+      ],
+      "end": [
+        0.5,
+        0.8
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "sphere",
+      "case": "sphere",
+      "start": [
+        0.1,
+        0.35
+      ],
+      "end": [
+        0.4,
+        0.75
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "sphere_pole",
+      "case": "sphere_pole",
+      "start": [
+        0.1,
+        0.5
+      ],
+      "end": [
+        0.3,
+        1.0
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "sphere_antipodal",
+      "case": "sphere_antipodal",
+      "start": [
+        0.0,
+        0.5
+      ],
+      "end": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "warped",
+      "case": "warped",
+      "start": [
+        0.15,
+        0.2
+      ],
+      "end": [
+        0.85,
+        0.8
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "general",
+      "case": "general",
+      "start": [
+        0.2,
+        0.25
+      ],
+      "end": [
+        0.8,
+        0.75
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "rational",
+      "case": "rational",
+      "start": [
+        0.2,
+        0.25
+      ],
+      "end": [
+        0.8,
+        0.75
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "boundary",
+      "case": "boundary",
+      "start": [
+        0.0,
+        0.2
+      ],
+      "end": [
+        0.8,
+        0.7
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "chart",
+      "case": "chart",
+      "start": [
+        0.2,
+        0.25
+      ],
+      "end": [
+        0.8,
+        0.75
+      ]
+    },
+    {
+      "op": "surface_short_path",
+      "id": "coincident",
+      "case": "coincident",
+      "start": [
+        0.2,
+        0.3
+      ],
+      "end": [
+        0.2,
+        0.3
+      ]
+    }
+  ]
+}

@@ -4,6 +4,7 @@ Commands are case-insensitive. Enter `Help` in the application to list registere
 commands. These pages describe implemented behavior and known limitations;
 Rhino's complete command set is still a work in progress.
 
+- [ShortPath surface geodesics](short-path.md)
 - [Check and SelBadObjects](check.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
 - [DivideAlongCreases](divide-along-creases.md)
