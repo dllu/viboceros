@@ -25,11 +25,12 @@ history, and committing a cached preview does not repeat the inverse solve.
 At the first ThroughPoint prompt, `Select` accepts existing point objects.
 Click points, use a selection window, or type their object IDs in the desired
 order. Enter creates one offset per selected point and finishes the command.
-On-source points are skipped; Number and Flip are ignored. The ordered batch
+On-source points and points without a resolved normal-family solution are skipped, with
+separate counts; Number and Flip are ignored. The ordered batch
 is fitted before any output is added and shares one Undo/Redo entry. Selection
 is cleared when entering this getter. Cancel and an empty selection create no
-geometry and preserve Redo. Other unresolved geometry fails without committing
-part of the batch. Selecting more than 1024 point objects is unsupported.
+geometry and preserve Redo. Other geometry errors stop preparation before any
+model edit. Selecting more than 1024 point objects is unsupported.
 
 At source selection, `SubCrv` picks a temporary directed portion: start and end
 points, or a curve length with direction confirmation. `Direction=Locked|Free`
@@ -133,8 +134,9 @@ The ThroughPoint solver finds a source parameter and signed distance using the
 existing normal geodesic shots and thin QR solve. Parameter-cell control hulls
 skip source regions whose Euclidean chord already exceeds an accepted surface
 distance. Finite work limits, line search, regular-target checks and a final
-closest-point check reject unresolved points. Multiple equal normal branches
-are ambiguous. This bounded numerical search does not certify the global
+closest-point check reject unresolved points. On affine planar corners,
+equal feet at the same signed distance identify one offset. Opposite signed
+ties remain ambiguous, as do unresolved equal branches on curved surfaces. This bounded numerical search does not certify the global
 cut locus or all roots of an arbitrary rational source.
 
 Sixteen further native command captures cover repeated and failed picks,
@@ -158,6 +160,18 @@ attributes and Undo/Redo. The five output cases meet the `1e-6` sampled gate wit
 difference of about `2.2e-14`; the other three create no output. Captured point
 objects, the source, and the target remain geometrically unchanged.
 
+Sixteen further native scenes cover ThroughPoint and point-object selection
+on cornered planar sources. Refinement keeps finite differences and samples
+on the correct side of each knot and closed seam. Inner-corner picks and outer
+join endpoints qualify; the captured picks inside outer quadratic bridges
+produce no regular normal-family solution and create no output, matching Rhino. A failed
+point leaves the typed getter active for another pick. Select retains resolved
+results when another point has no solution, skips on-source points, and commits
+one history entry. An entirely skipped batch preserves Redo. All sixteen
+command/getter scenes meet `1e-6`; their geometry differences stay below `6e-14`.
+Curved-source inverse branches and complete cut-locus topology remain under
+qualification.
+
 General closed-gap reconnection, curved-surface corner joins, cut-locus removal,
 pole crossings and complete topology certification remain pending. These
 limits preclude a claim of complete Rhino compatibility.
@@ -176,4 +190,6 @@ tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_s
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --through-point
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --select-point
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --corner-through
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --corner-select
 ```

@@ -7,6 +7,31 @@ from .surface_offset_command_probe import request,through_request,select_request
 from .structural_sdk import stage_helpers
 HERE=Path(__file__).resolve().parent
 class SurfaceOffsetCommandTests(TestCase):
+    def test_corner_point_getters_and_selected_batches_match_public_native_scenes(self):
+        from .surface_offset_command_probe import corner_through_request,corner_select_request
+        expected={'through_corner_inner':1,'through_corner_outer_end':1,'through_corner_closed_inner':1,'through_corner_repeat':1}
+        for name,factory,count in [('surface_offset_corner_through',corner_through_request,12),('surface_offset_corner_select',corner_select_request,4)]:
+            path=HERE/('fixtures/'+name+'.json');q=json.loads(path.read_text());self.assertEqual(q,factory());validate_request(q)
+            r=json.loads((HERE/('observations/'+name+'.json')).read_text());self.assertEqual(len(r['results']),count)
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),r['provenance']['request_sha256'])
+            for source,sha in r['provenance']['sources'].items():
+                data=(HERE/source).read_bytes()
+                if hashlib.sha256(data).hexdigest()!=sha:data=gzip.decompress((HERE/'observations/source_snapshots'/(sha+'.gz')).read_bytes())
+                self.assertEqual(hashlib.sha256(data).hexdigest(),sha,source)
+            for op,row in zip(q['operations'],r['results']):
+                self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
+                v=row['value'];self.assertEqual(v['success'],op['case']!='through_corner_cancel');self.assertEqual(v['input_trace']['errors'],[]);self.assertEqual(v['input_trace']['completed'],len(op['actions']))
+                self.assertEqual(v['after_script'],v['redo'])
+                base=len(v['before'])
+                if count==12:
+                    self.assertEqual(len(v['after_script'])-base,expected.get(op['case'],0));self.assertEqual(v['before'],v['undo']);self.assertEqual(v['after_script'][:base],v['before'])
+                else:
+                    parents=[dict(x,selected=False)for x in v['before']]
+                    self.assertEqual(v['undo'],parents);self.assertEqual(v['after_script'][:base],parents)
+                    self.assertEqual(len(v['after_script'])-base,1 if op['case']in('through_corner_select_on_source','through_corner_select_unresolved')else 2)
+                for output in v['after_script'][base:]:
+                    self.assertFalse(output['selected']);self.assertEqual(output['layer'],'Surface offset output');self.assertIsNone(output['name'])
+
     def test_independent_corner_bridge_queries_preserve_capture_provenance(self):
         from .generate_surface_corner_verify import request,CAPTURES
         path=HERE/'fixtures/surface_offset_corner_verify.json';q=json.loads(path.read_text())

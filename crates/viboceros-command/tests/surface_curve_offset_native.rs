@@ -1,3 +1,5 @@
+#[path = "surface_curve_offset_native/corner_through.rs"]
+mod corner_through;
 #[allow(dead_code)]
 #[path = "../src/morph_test_support.rs"]
 mod morph_fixtures;

@@ -4,6 +4,26 @@ CASES={'distance':[], 'flip_number':['Number=3','Flip'], 'negative':[], 'nurbs_l
 CURVED_CASES={'curved_axis':1.,'curved_axis_negative':-1.,'curved_ring':1.,'curved_ring_negative':-1.,'curved_diagonal':1.,'curved_warped':.25,'curved_warped_negative':-.25,'curved_warped_diagonal':.25}
 GENERAL_CASES={'general_diagonal':.05,'general_reversed':.05,'general_iso':-.05,'general_rational':.05}
 CORNER_CASES={'corner_open_inner':.5,'corner_open_outer':-.5,'corner_closed_inner':.5,'corner_closed_outer':-.5,'corner_zigzag_inner':.5,'corner_zigzag_outer':-.5,'corner_reverse':.5,'corner_tilted':-.5,'corner_polycurve':-.5}
+THROUGH_CORNER_CASES={
+    'through_corner_inner':('corner_open_inner',[[-.5,-1.5,0.]]),
+    'through_corner_outer':('corner_open_outer',[[.375,-2.375,0.]]),
+    'through_corner_outer_end':('corner_open_outer',[[.5,-2.,0.]]),
+    'through_corner_closed_inner':('corner_closed_inner',[[1.5,-1.5,0.]]),
+    'through_corner_closed_outer':('corner_closed_outer',[[2.375,-2.375,0.]]),
+    'through_corner_repeat':('corner_open_outer',[[.375,-2.375,0.],[-.5,-1.5,0.]]),
+    'through_corner_reverse':('corner_reverse',[[.375,-2.375,0.]]),
+    'through_corner_off_surface':('corner_open_outer',[[.375,-2.375,3.]]),
+    'through_corner_tilted':('corner_tilted',[[0.375, -1.960172085410486, -1.341025874313209]]),
+    'through_corner_on_source':('corner_open_inner',[[0.,-2.,0.]]),
+    'through_corner_polycurve':('corner_polycurve',[[.375,-2.375,0.]]),
+    'through_corner_cancel':('corner_open_outer',[[.375,-2.375,0.]]),
+}
+SELECT_CORNER_CASES={
+    'through_corner_select_inner':('corner_open_inner',[[-.5,-1.5,0.],[-1.,-1.,0.]]),
+    'through_corner_select_limits':('corner_open_outer',[[.5,-2.,0.],[0.,-2.5,0.]]),
+    'through_corner_select_on_source':('corner_open_inner',[[0.,-2.,0.],[-.5,-1.5,0.]]),
+    'through_corner_select_unresolved':('corner_open_outer',[[.375,-2.375,0.],[-.5,-1.5,0.]]),
+}
 def corner_source(G,case):
     if case=='corner_polycurve':
         source=G.PolyCurve()
@@ -86,6 +106,13 @@ SELECT_CASES={
     'through_select_same_offset':[[0.,2.,0.],[1.,2.,0.]],
 }
 def recipe(case):
+    if case in SELECT_CORNER_CASES:
+        indices=list(range(2,2+len(SELECT_CORNER_CASES[case][1])))
+        return [dict(curve=1),'ThroughPoint','Select']+[dict(curve=i)for i in indices]+['Enter'],[['Select base surface'],['Offset distance'],['Through point']]+[['Select points']for _ in indices+[0]]
+    if case in THROUGH_CORNER_CASES:
+        points=THROUGH_CORNER_CASES[case][1]
+        actions=[dict(curve=1),'Number=3','Flip','ThroughPoint']+points+['Cancel'if case=='through_corner_cancel'else'Enter']
+        return actions,[['Select base surface']]+[['Offset distance']for _ in range(3)]+[['Point','Select point','Through point','Offset point']for _ in points+['Enter']]
     if case in CORNER_CASES:
         return [dict(curve=1),'Number=1',CORNER_CASES[case]],[['Select base surface'],['Offset distance'],['Offset distance']]
     if case in GENERAL_CASES:
@@ -106,7 +133,7 @@ def recipe(case):
     return actions,gates
 def validate(op):
     if not isinstance(op,dict)or set(op)!={'op','id','case','actions','action_prompts'}or op['op']not in('surface_offset_command','surface_offset_through_point'):raise ValueError('invalid surface offset command recipe')
-    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(dict(dict(dict(CASES,**CURVED_CASES),**GENERAL_CASES),**CORNER_CASES)if op['op']=='surface_offset_command'else dict(THROUGH_CASES,**SELECT_CASES)):raise ValueError('invalid owned surface offset command case')
+    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(dict(dict(dict(CASES,**CURVED_CASES),**GENERAL_CASES),**CORNER_CASES)if op['op']=='surface_offset_command'else dict(dict(dict(THROUGH_CASES,**SELECT_CASES),**THROUGH_CORNER_CASES),**SELECT_CORNER_CASES)):raise ValueError('invalid owned surface offset command case')
     actions,gates=recipe(op['case'])
     import json
     if json.dumps(op['actions'],sort_keys=True)!=json.dumps(actions,sort_keys=True)or op['action_prompts']!=gates:raise ValueError('only fixed surface offset getters are allowed')
@@ -140,6 +167,18 @@ def corner_request():
         actions,gates=recipe(case)
         q['operations'].append(dict(op='surface_offset_command',id=case,case=case,actions=actions,action_prompts=gates))
     return q
+def corner_through_request():
+    q=request();q['operations']=[]
+    for case in THROUGH_CORNER_CASES:
+        actions,gates=recipe(case)
+        q['operations'].append(dict(op='surface_offset_through_point',id=case,case=case,actions=actions,action_prompts=gates))
+    return q
+def corner_select_request():
+    q=request();q['operations']=[]
+    for case in SELECT_CORNER_CASES:
+        actions,gates=recipe(case)
+        q['operations'].append(dict(op='surface_offset_through_point',id=case,case=case,actions=actions,action_prompts=gates))
+    return q
 def select_request():
     q=request();q['operations']=[]
     for case in SELECT_CASES:
@@ -157,9 +196,10 @@ def run(op,host,iterations,tolerance):
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
     if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:raise ValueError('an empty owned idle document is required')
     source=G.LineCurve(G.Point3d(-4,0,0),G.Point3d(4,0,0));surface=G.NurbsSurface.CreateFromCorners(*[G.Point3d(*p)for p in[[-10,-10,0],[10,-10,0],[10,10,0],[-10,10,0]]]).ToBrep()
-    if op['case']in CORNER_CASES:
-        source.Dispose();source=corner_source(G,op['case'])
-        if op['case']=='corner_tilted':
+    corner_case=SELECT_CORNER_CASES[op['case']][0]if op['case']in SELECT_CORNER_CASES else THROUGH_CORNER_CASES[op['case']][0]if op['case']in THROUGH_CORNER_CASES else op['case']
+    if corner_case in CORNER_CASES:
+        source.Dispose();source=corner_source(G,corner_case)
+        if corner_case=='corner_tilted':
             rotation=G.Transform.Rotation(.6,G.Vector3d.XAxis,G.Point3d.Origin);source.Transform(rotation);surface.Transform(rotation)
     if op['case']=='nurbs_line':
         converted=source.ToNurbsCurve();source.Dispose();source=converted
@@ -223,7 +263,7 @@ def run(op,host,iterations,tolerance):
                 layer=R.DocObjects.Layer();layer.Name=name;layers.append(doc.Layers.Add(layer))
             a=R.DocObjects.ObjectAttributes();a.Name='Source';a.LayerIndex=layers[0];ids.append(doc.Objects.AddCurve(source,a))
             a=R.DocObjects.ObjectAttributes();a.Name='Target';ids.append(doc.Objects.AddBrep(surface,a))
-            for p in SELECT_CASES.get(op['case'],[]):
+            for p in SELECT_CASES.get(op['case'],SELECT_CORNER_CASES.get(op['case'],(None,[]))[1]):
                 a=R.DocObjects.ObjectAttributes();a.Name='Reference';ids.append(doc.Objects.AddPoint(G.Point3d(*p),a))
             doc.Layers.SetCurrentLayerIndex(layers[1],True)
             if op['case']!='postselect':doc.Objects.Select(ids[0])

@@ -46,6 +46,24 @@ pub fn corner_rows() -> Vec<(Value, Value)> {
         9,
     )
 }
+pub fn corner_through_rows() -> Vec<(Value, Value)> {
+    captured(
+        include_str!("../../../../tools/rhino_oracle/fixtures/surface_offset_corner_through.json"),
+        include_str!(
+            "../../../../tools/rhino_oracle/observations/surface_offset_corner_through.json"
+        ),
+        12,
+    )
+}
+pub fn corner_select_rows() -> Vec<(Value, Value)> {
+    captured(
+        include_str!("../../../../tools/rhino_oracle/fixtures/surface_offset_corner_select.json"),
+        include_str!(
+            "../../../../tools/rhino_oracle/observations/surface_offset_corner_select.json"
+        ),
+        4,
+    )
+}
 fn captured(request: &str, response: &str, count: usize) -> Vec<(Value, Value)> {
     let q: Value = serde_json::from_str(request).unwrap();
     let r: Value = serde_json::from_str(response).unwrap();
@@ -64,7 +82,10 @@ fn captured(request: &str, response: &str, count: usize) -> Vec<(Value, Value)> 
                 v["success"],
                 !matches!(
                     op["case"].as_str().unwrap(),
-                    "through_cancel" | "through_select_cancel" | "through_select_empty"
+                    "through_cancel"
+                        | "through_select_cancel"
+                        | "through_select_empty"
+                        | "through_corner_cancel"
                 )
             );
             assert_eq!(v["input_trace"]["errors"], serde_json::json!([]));

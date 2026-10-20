@@ -7,6 +7,15 @@ const MAX_CLIP_CONTACTS: usize = 8192;
 mod closed_gap;
 mod corners;
 
+pub(super) fn has_planar_corners(
+    surface: &NurbsSurface,
+    source: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    Ok(corners::has_corners(source, tolerance)?
+        && surface.try_affine_patch_corners(tolerance).is_ok())
+}
+
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 /// How retained portions of a closed source are returned after clipping.
 pub enum SurfaceCurveOffsetGapStyle {
@@ -119,9 +128,7 @@ fn clipped(
         result.curves.push(original_source.clone());
         return Ok(result);
     }
-    if corners::has_corners(&source, tolerance)?
-        && surface.try_affine_patch_corners(numerical).is_ok()
-    {
+    if has_planar_corners(&surface, &source, numerical)? {
         let (curves, connectors) =
             corners::offset(&surface, &source, distance, tolerance, options)?;
         result.curves = curves

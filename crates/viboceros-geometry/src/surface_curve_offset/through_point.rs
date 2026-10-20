@@ -5,6 +5,9 @@ use crate::{Point3, Vector3};
 const MAX_THROUGH_QUERIES: usize = 8192;
 const MAX_SEEDS: usize = 129;
 
+#[cfg(test)]
+mod corner_tests;
+
 /// A regular normal-geodesic witness, in the original surface and source charts.
 /// The multistart search is bounded; it does not certify the global cut locus.
 #[derive(Clone, Copy, Debug)]
@@ -19,6 +22,9 @@ pub struct SurfaceCurveOffsetThroughPoint {
 /// Find a signed surface distance whose normal offset passes through `point`.
 /// The point must already lie on the natural surface; UI face constraints and
 /// planar endpoint extension are command policy. Inputs remain immutable.
+/// Equal planar-corner feet at one signed distance identify the same offset;
+/// opposite signed ties remain ambiguous. The inverse searches the regular
+/// normal family; it does not invert the quadratic corner bridges.
 pub fn surface_curve_offset_distance_through_point(
     original_surface: &NurbsSurface,
     original_source: &NurbsCurve,
@@ -36,6 +42,7 @@ pub fn surface_curve_offset_distance_through_point(
     // singular target chart (for example a sphere pole).
     surface.normal_at(uv.0, uv.1)?;
     let mut sampler = OffsetSampler::new(&surface, &source, 0., numerical)?;
+    let planar_corners = clip::has_planar_corners(&surface, &source, numerical)?;
     let closest = source.closest_parameter(constrained, numerical)?;
     let mut breaks = Vec::new();
     for i in 0..=8 {
@@ -51,11 +58,21 @@ pub fn surface_curve_offset_distance_through_point(
     if breaks.len() > MAX_SEEDS {
         return Err(GeometryError::SurfaceCurveOffsetWorkLimit { maximum: MAX_SEEDS });
     }
-    let mut seeds = vec![(closest, [0., 1.])];
+    let closest_interval = if planar_corners {
+        source
+            .spans()
+            .find(|&(a, b)| a <= closest && (closest < b || closest == 1. && b == 1.))
+            .map(|(a, b)| [a, b])
+            .ok_or(GeometryError::OffsetThroughPointNoSolution)?
+    } else {
+        [0., 1.]
+    };
+    let mut seeds = vec![(closest, closest_interval)];
     for span in breaks.windows(2) {
         seeds.push((stable_lerp(span[0], span[1], 0.5)?, [span[0], span[1]]));
     }
-    let closed = source.evaluate(0.)? == source.evaluate(1.)?;
+    // A polygon's two seam normals belong to separate one-sided families.
+    let closed = !planar_corners && source.evaluate(0.)? == source.evaluate(1.)?;
     let mut best: Option<(Real, Real, SurfaceGeodesicPoint)> = None;
     let mut ambiguous = false;
     for (t, interval) in seeds {
@@ -89,7 +106,11 @@ pub fn surface_curve_offset_distance_through_point(
             {
                 let (t, d, _) = candidate;
                 if let Some((old_t, old_d, _)) = best {
+                    // An inner polygon corner has two regular feet, but one
+                    // signed-distance result. Preserve ambiguity between
+                    // different signed families and the curved-surface policy.
                     if (d.abs() - old_d.abs()).abs() <= tolerance.absolute()
+                        && !(planar_corners && (d - old_d).abs() <= tolerance.absolute())
                         && source.evaluate(t)?.distance_to(source.evaluate(old_t)?)?
                             > tolerance.absolute()
                     {
@@ -185,6 +206,7 @@ fn shoot(
     sampler: &mut OffsetSampler<'_>,
     t: Real,
     d: Real,
+    interval: [Real; 2],
 ) -> Result<Option<SurfaceGeodesicPoint>, GeometryError> {
     if sampler.diagnostics.queries >= MAX_THROUGH_QUERIES {
         return Err(GeometryError::SurfaceCurveOffsetWorkLimit {
@@ -197,7 +219,7 @@ fn shoot(
     Ok(sampler
         .sample(
             t,
-            if t == 1. {
+            if t == interval[1] {
                 ParameterSide::Left
             } else {
                 ParameterSide::Right
@@ -218,13 +240,25 @@ fn derivative(
     d: Real,
     closed: bool,
     point: Point3,
+    interval: [Real; 2],
 ) -> Result<Option<Vector3>, GeometryError> {
     let mut h = Real::EPSILON.cbrt();
     for _ in 0..12 {
-        let a = if closed { t - h } else { (t - h).max(0.) };
-        let b = if closed { t + h } else { (t + h).min(1.) };
-        let left = shoot(sampler, parameter(a, closed), d)?;
-        let right = shoot(sampler, parameter(b, closed), d)?;
+        // Keep the finite difference in the current one-sided normal family.
+        // Crossing a kink would differentiate a jump between offset portions.
+        let cyclic = closed && interval == [0., 1.];
+        let a = if cyclic {
+            t - h
+        } else {
+            (t - h).max(interval[0])
+        };
+        let b = if cyclic {
+            t + h
+        } else {
+            (t + h).min(interval[1])
+        };
+        let left = shoot(sampler, parameter(a, cyclic), d, interval)?;
+        let right = shoot(sampler, parameter(b, cyclic), d, interval)?;
         let pair = match (left, right) {
             (Some(left), Some(right)) => Some((left.point, right.point, b - a)),
             (Some(left), None) if t > a => Some((left.point, point, t - a)),
@@ -250,7 +284,7 @@ fn refine(
 ) -> Result<Option<(Real, Real, SurfaceGeodesicPoint)>, GeometryError> {
     let mut current = None;
     for _ in 0..12 {
-        current = shoot(sampler, t, d)?;
+        current = shoot(sampler, t, d, interval)?;
         if current.is_some() {
             break;
         }
@@ -261,7 +295,7 @@ fn refine(
     };
     for _ in 0..40 {
         let error = shot.point.distance_to(point)?;
-        let Some(dt) = derivative(sampler, t, d, closed, shot.point)? else {
+        let Some(dt) = derivative(sampler, t, d, closed, shot.point, interval)? else {
             return Ok(None);
         };
         let dd = shot
@@ -293,7 +327,7 @@ fn refine(
             if (nt == t && nd == d) || !nd.is_finite() {
                 break;
             }
-            if let Some(candidate) = shoot(sampler, nt, nd)?
+            if let Some(candidate) = shoot(sampler, nt, nd, interval)?
                 && candidate.point.distance_to(point)? < error
             {
                 next = Some((nt, nd, candidate));

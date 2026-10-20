@@ -456,3 +456,48 @@ fn selected_point_errors_preserve_redo_and_reject_conflicting_modes() {
     }
     doc.redo().unwrap();
 }
+
+#[test]
+fn selected_points_without_an_offset_preserve_redo_when_every_result_is_empty() {
+    let (mut doc, source, surface) = scene();
+    let tolerance = doc.tolerance();
+    let curve = Polyline3::try_new(
+        vec![p(-4., -2., 0.), p(0., -2., 0.), p(0., 4., 0.)],
+        tolerance,
+    )
+    .unwrap()
+    .to_native_nurbs()
+    .unwrap();
+    doc.replace_object_geometries([(source, Geometry::NurbsCurve(curve))])
+        .unwrap();
+    let reference = doc
+        .add_geometry(Geometry::Point(p(0.375, -2.375, 0.)))
+        .unwrap();
+    doc.select_object(source, SelectionMode::Replace).unwrap();
+    doc.clear_history().unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut doc, "Move 0,0,0 1,0,0").unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    let plan = PointSetPlan::prepare(
+        &doc,
+        Source::capture(&doc, source, None, None).unwrap(),
+        Target::capture(&doc, surface, None).unwrap(),
+        &[reference],
+        Options::default(),
+    )
+    .unwrap();
+    assert_eq!(format!("{doc:?}"), before);
+    assert!(plan.curves.is_empty());
+    assert_eq!(plan.skipped, 0);
+    assert_eq!(plan.unresolved, 1);
+    let mut group = doc.begin_history_group("OffsetCrvOnSrf").unwrap();
+    plan.commit(&mut doc, &mut group).unwrap();
+    assert!(!group.can_undo());
+    assert!(doc.undo_label().is_none());
+    assert_eq!(doc.objects().count(), 3);
+    assert_eq!(doc.selected_object_count(), 0);
+    doc.redo().unwrap();
+    let c = doc.object(source).unwrap().geometry().curve_ref().unwrap();
+    assert!((c.start_point().unwrap().x() + 3.).abs() < tolerance.absolute());
+}

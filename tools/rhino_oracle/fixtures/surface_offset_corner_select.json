@@ -1,0 +1,167 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_corner_select_inner",
+      "case": "through_corner_select_inner",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        "Select",
+        {
+          "curve": 2
+        },
+        {
+          "curve": 3
+        },
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Through point"
+        ],
+        [
+          "Select points"
+        ],
+        [
+          "Select points"
+        ],
+        [
+          "Select points"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_corner_select_limits",
+      "case": "through_corner_select_limits",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        "Select",
+        {
+          "curve": 2
+        },
+        {
+          "curve": 3
+        },
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Through point"
+        ],
+        [
+          "Select points"
+        ],
+        [
+          "Select points"
+        ],
+        [
+          "Select points"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_corner_select_on_source",
+      "case": "through_corner_select_on_source",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        "Select",
+        {
+          "curve": 2
+        },
+        {
+          "curve": 3
+        },
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Through point"
+        ],
+        [
+          "Select points"
+        ],
+        [
+          "Select points"
+        ],
+        [
+          "Select points"
+        ]
+      ]
+    },
+    {
+      "op": "surface_offset_through_point",
+      "id": "through_corner_select_unresolved",
+      "case": "through_corner_select_unresolved",
+      "actions": [
+        {
+          "curve": 1
+        },
+        "ThroughPoint",
+        "Select",
+        {
+          "curve": 2
+        },
+        {
+          "curve": 3
+        },
+        "Enter"
+      ],
+      "action_prompts": [
+        [
+          "Select base surface"
+        ],
+        [
+          "Offset distance"
+        ],
+        [
+          "Through point"
+        ],
+        [
+          "Select points"
+        ],
+        [
+          "Select points"
+        ],
+        [
+          "Select points"
+        ]
+      ]
+    }
+  ]
+}

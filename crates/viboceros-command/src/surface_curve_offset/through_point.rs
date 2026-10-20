@@ -80,6 +80,8 @@ pub struct PointSetPlan {
     points: Vec<(ObjectId, viboceros_document::GeometrySnapshot)>,
     pub curves: Vec<NurbsCurve>,
     pub skipped: usize,
+    /// Point objects for which no regular offset was found.
+    pub unresolved: usize,
 }
 impl PointSetPlan {
     pub fn prepare(
@@ -112,17 +114,29 @@ impl PointSetPlan {
         }
         let mut curves = Vec::new();
         let mut skipped = 0;
+        let mut unresolved = 0;
         for (id, _) in &points {
             let Geometry::Point(point) = doc.object(*id).unwrap().geometry() else {
                 unreachable!()
             };
-            if let Some(plan) = Plan::prepare_optional_through_point(
+            let plan = match Plan::prepare_optional_through_point(
                 doc,
                 source.clone(),
                 target.clone(),
                 *point,
                 options,
-            )? {
+            ) {
+                Ok(plan) => plan,
+                // Public Select captures retain the other point results.
+                // Invalid captures, admission and backend failures still abort
+                // preparation before any document edits.
+                Err(CommandError::Geometry(GeometryError::OffsetThroughPointNoSolution)) => {
+                    unresolved += 1;
+                    continue;
+                }
+                Err(error) => return Err(error),
+            };
+            if let Some(plan) = plan {
                 if curves.len() + plan.curves.len() > MAX_OUTPUTS {
                     return Err(CommandError::Usage("Too many surface offset curves"));
                 }
@@ -137,6 +151,7 @@ impl PointSetPlan {
             points,
             curves,
             skipped,
+            unresolved,
         })
     }
     pub fn current(&self, doc: &Document) -> bool {
@@ -193,10 +208,17 @@ impl PointSetPlan {
         for curve in &self.curves {
             doc.add_geometry(Geometry::NurbsCurve(curve.clone()))?;
         }
-        Ok(format!(
+        let mut message = format!(
             "Created {} surface offset curve(s); skipped {} on-source point(s)",
             self.curves.len(),
             self.skipped
-        ))
+        );
+        if self.unresolved > 0 {
+            message.push_str(&format!(
+                "; skipped {} point(s) without an offset",
+                self.unresolved
+            ));
+        }
+        Ok(message)
     }
 }

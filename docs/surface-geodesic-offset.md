@@ -136,7 +136,9 @@ admission and thin QR solve. A bounded search starts at the Euclidean closest
 foot, then checks parameter cells; same-sign control hulls exclude cells whose
 chord lower bound exceeds an accepted intrinsic distance. Backtracking never
 accepts partial shots at boundaries. Singular target charts, ambiguous equal
-normal branches and exhausted work fail explicitly. The resulting fitted and
+normal branches and exhausted work fail explicitly. Affine planar corner
+feet at one signed distance describe the same offset; opposite signed ties
+remain ambiguous. The resulting fitted and
 face-clipped curve must independently pass through the constrained point within
 model tolerance. Global root completeness and cut-locus certification remain
 unproven. Repeated UI points retain accepted curves in one history entry.
@@ -244,6 +246,20 @@ maximum difference of about `2.2e-14`. Cancel, empty selection and an all-on-sou
 batch create no geometry or Undo step. The point getter releases selection;
 its local highlights and selection windows leave geometry and Redo untouched.
 
+Cornered planar ThroughPoint sources retain independent one-sided normal
+families at their knots and closed seam. Search-cell bounds constrain finite
+differences and trial samples. Equal source feet at one signed distance yield
+one result, while opposite signed ties remain ambiguous. The outer quadratic
+bridges are constructed separately from the regular normal family. Twelve public typed
+getters accept inner-corner/join-endpoint picks and reject these bridge picks,
+including reversal, tilt, off-surface projection, repeated input and cancellation.
+Four selected-point captures also retain resolved offsets when another point
+has no solution. On-source skips have a separate count. Every captured model,
+metadata and history result meets the unchanged `1e-6` gate, with maximum sampled
+difference below `6e-14`. Kernel tests cover tiny offsets, a closed seam, native
+parameter recovery, nonuniform rational weights, common signed gauges and physical scales from
+`2^-100` through `2^100`. Entirely skipped batches preserve Redo.
+
 Sixteen native ThroughPoint scenes compare repeated picks, constraints,
 selection, layers and grouped history through both command and viewport
 getters. Fourteen qualify at `1e-6`. Bézier and cylinder cases remain
@@ -306,6 +322,8 @@ python3 tools/numerics/check_general_surface_geodesic.py
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_curve_offset --corners
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --corners
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_corner_verify
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --corner-through
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --corner-select
 ```
 
 The independent graph calculation requires SciPy; the Rust and oracle replay tests do not.

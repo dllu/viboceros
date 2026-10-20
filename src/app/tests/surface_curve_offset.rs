@@ -1,4 +1,5 @@
 use super::*;
+mod corner_through;
 #[path = "../../../crates/viboceros-command/tests/support/surface_curve_offset.rs"]
 mod native;
 fn enter(app: &mut VibocerosApp, text: &str) {
