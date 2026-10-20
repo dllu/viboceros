@@ -1,0 +1,2050 @@
+{
+  "validated_at": "2026-10-20T01:52:43.541170+00:00",
+  "base_commit": "98e05c1b5cbf50ba41d87f30ba19504a78cec361",
+  "feature": "Stretch: cubic point map, factors/lengths/targets, rigid groups, grip reconstruction/display, repeated copies, interactive prompts and cached previews",
+  "sources": {
+    "crates/viboceros-command/src/lib.rs": "15efe41ba5c85ad85ce3af1ad73867d845c5188e9d83d614a0bc282e08052f4c",
+    "crates/viboceros-command/src/morph_test_support.rs": "d2c6fbcc409feaa5e0590bd788a64ca18c03315e9102339fdf4e3a1455c4b836",
+    "crates/viboceros-command/src/stretch.rs": "695b97cbf174ff0cfccf9a6d9baf462e14327b56b55bb3effaea20f845d3d1f9",
+    "crates/viboceros-command/tests/soft_edit_surface_command.rs": "fdb9cbde8f4951eab8550fa020c7b9a611ff7dbd02bb3360dfcabef718832f65",
+    "crates/viboceros-command/tests/stretch_command.rs": "2f1d234cc0ed05c7da538ca42d6e5ac0ba435b5a8a8413fb5332b978bcd8f36e",
+    "crates/viboceros-command/tests/support/grip_transform.rs": "020462d9d5a8519376996c6cbd4f8933a05819bb7161d5e92b14262ec9280ca9",
+    "crates/viboceros-command/tests/support/stretch.rs": "1bd7d008b816de911bf03f5491a965ab0a2b6ef6f24f64aa41233b105918bcf1",
+    "crates/viboceros-document/src/control_points.rs": "9a920e0979f173ae43bdad34f43737e4cc46776df17c69bc4da978a30997cd95",
+    "crates/viboceros-document/src/control_points/geometry.rs": "fe7a5b043084ba93fbfc32b7a7ff77a1bda665d3a1bd2ca824b362e96d925f7a",
+    "crates/viboceros-document/src/control_points/morph_tests.rs": "3ec9bb67f1f11ea31d741090d9702b663ae9b7a2d69c3ce8768c27f2b64e891b",
+    "crates/viboceros-geometry/src/lib.rs": "b73e94c1b236faf201e1b4366822415989f5828a535922eac4c037fb99de59fe",
+    "crates/viboceros-geometry/src/morph.rs": "33121637f6103fb8b8cea15359759e243601d004889818c55b913a07b017fcd9",
+    "crates/viboceros-geometry/src/stretch.rs": "05bdc2df74a2b80afc0a1deca9712c6363c3824ebac9e8f0ad806d1f0c942f3a",
+    "crates/viboceros-oracle/src/lib.rs": "da29e0631acaca66dcbfc204a9b45b27b95112ccd7824e3130edad5644bf011c",
+    "crates/viboceros-oracle/src/stretch_points.rs": "3e0d2b57fcac2607daff20354cba26c1d2e6c67da52c9db9b8f94287cc0b0f7f",
+    "src/app.rs": "e5cf0fa56bcae7de3fe1aca129448c3cfd8a76f2c9cb20e320528210c531cf3d",
+    "src/app/stretch_prompt.rs": "6f5629ce6d5b0a85785ad1192497cb18d51a6c4fa71374fdf81e44eedbdeed92",
+    "src/app/tests/grip_transform.rs": "98c624e135a8c585133dfa8b20813c16365c6b5dc3602479285bf58ac49a50ba",
+    "src/app/tests/stretch.rs": "7144df6f0035f2ce9dfd9fa789fe6c273f3b47d560148f1e57467b857b87e5a6",
+    "src/app/transform_sources.rs": "dbec1e676b8330dc1d7aeb70ca35dfca6c6c5f11b5191e8e3c58b9bc9899288a",
+    "src/main.rs": "c4a1605022374f39bf18cb06c19cb02d43e8f1155e4be90ae9b464734f23ff9f",
+    "src/viewport.rs": "30b434b8104012f439d915ff5d0aa0a0b3c1d9bdf853eb5ecd5c0a28b53e4529",
+    "src/viewport/affine_preview.rs": "fd139b2f94f0e9e948b2108a3ece279ef658e4caba596e4798c1d227620845f2",
+    "src/viewport/stretch_preview.rs": "09d51d8b3735f863edb97963183b5eea464cb4ff61d099ebec5a738472ac8436",
+    "src/viewport/stretch_preview/tests.rs": "d2d996a562e912ac8bb9b67e3ceac90bb17b716b982828b51c32e90282854309",
+    "tools/rhino_oracle/generate_stretch.py": "241c7f309e3ea0898ae8b5f6e87d979cf2cf3fed09331ce64b44d60ba7564767",
+    "tools/rhino_oracle/generate_stretch_details.py": "e366e21526acef90d9a800a0f61160929c85021c527226ed8e113a8d8599aaac",
+    "tools/rhino_oracle/generate_stretch_fit.py": "282f46453c5034db83234906a78f0dc54e1997dfc52ccbf53af00feb54966855",
+    "tools/rhino_oracle/generate_stretch_preferences.py": "6f92eb1141bc6d4e1be5e3d1a596492174c242e8d6bdb6cabfca72d1e994110f",
+    "tools/rhino_oracle/rhino_worker.py": "9f61f2b09727323ef6bd9d1129c611b61caf35a3a14611e793ef2393f2b59604",
+    "tools/rhino_oracle/stretch_details_probe.py": "11de11fea446c2297f3a1a2ee16e20f8b2430aea69f7aeaa9dfbb426900bb7c2",
+    "tools/rhino_oracle/stretch_fit_probe.py": "352f4a333c8e5948c4522c35d0f9d8389df8fdc30d16f700488f359f1ac1903f",
+    "tools/rhino_oracle/stretch_geometry_probe.py": "be78ae8ed35c9e8eafabc328bf2f50405fcbf6696a9ff790eaf78da3f146bd59",
+    "tools/rhino_oracle/stretch_grips_probe.py": "d629e41f12dbed563f7de8db7583587a3560147f785854295dd0fca5828343ae",
+    "tools/rhino_oracle/stretch_probe.py": "8900fde7d260a5937e538906180d3886a7baaf53b3cb4b667741ba32aaac4f31",
+    "tools/rhino_oracle/structural_sdk.py": "6445dce8344034c987d90bdac9ea4c82b0cb9bd2ee48563b12528d65efd5ca37",
+    "tools/rhino_oracle/test_stretch.py": "30497a873696e21c7da751b31379311f25087fcd3015e9aa35024a09a9cb381b"
+  },
+  "captures": [
+    {
+      "request": "tools/rhino_oracle/fixtures/stretch.json",
+      "request_sha256": "3fba5f33f5643fcb028dd4e957e7be8e340732c41ea9646ac6bd0af4f5b4d885",
+      "observation": "tools/rhino_oracle/observations/stretch.json",
+      "observation_sha256": "0bce19464f6793302e7b68afd0c14d5524262f3edbb9056d8c809a1dd008b524",
+      "cases": 142,
+      "provenance": {
+        "request_sha256": "3fba5f33f5643fcb028dd4e957e7be8e340732c41ea9646ac6bd0af4f5b4d885",
+        "sources": {
+          "generate_stretch.py": "241c7f309e3ea0898ae8b5f6e87d979cf2cf3fed09331ce64b44d60ba7564767",
+          "stretch_probe.py": "8900fde7d260a5937e538906180d3886a7baaf53b3cb4b667741ba32aaac4f31",
+          "stretch_geometry_probe.py": "be78ae8ed35c9e8eafabc328bf2f50405fcbf6696a9ff790eaf78da3f146bd59",
+          "stretch_grips_probe.py": "d629e41f12dbed563f7de8db7583587a3560147f785854295dd0fca5828343ae",
+          "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+          "taper_command_probe.py": "869a6ef84d6b51d386a950104c39c68bd929a58bad55e529e6fe98ee7a20caab",
+          "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+          "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "rhino_worker.py": "43ed7c521c71a05062156e413aa7439752f6ad3426be91440f386f678fdb63e8",
+          "structural_sdk.py": "b0648a678967b1b3739793042515e3e030afb316282d2f9e3e73a06e3835f865"
+        }
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/stretch_preferences.json",
+      "request_sha256": "37436b3729b68077921ec5f4c3fdb530b7fe8ac01995b944457fd8f67b551fb8",
+      "observation": "tools/rhino_oracle/observations/stretch_preferences.json",
+      "observation_sha256": "f6ebb8be9031ac0897ffc08ecf8e016de7a612ac9e829247e7b8fa792d5ea990",
+      "cases": 4,
+      "provenance": {
+        "request_sha256": "37436b3729b68077921ec5f4c3fdb530b7fe8ac01995b944457fd8f67b551fb8",
+        "sources": {
+          "generate_stretch_preferences.py": "6f92eb1141bc6d4e1be5e3d1a596492174c242e8d6bdb6cabfca72d1e994110f",
+          "stretch_probe.py": "8900fde7d260a5937e538906180d3886a7baaf53b3cb4b667741ba32aaac4f31",
+          "stretch_geometry_probe.py": "be78ae8ed35c9e8eafabc328bf2f50405fcbf6696a9ff790eaf78da3f146bd59",
+          "taper_command_probe.py": "869a6ef84d6b51d386a950104c39c68bd929a58bad55e529e6fe98ee7a20caab",
+          "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+          "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+          "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+          "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+          "rhino_worker.py": "43ed7c521c71a05062156e413aa7439752f6ad3426be91440f386f678fdb63e8",
+          "structural_sdk.py": "b0648a678967b1b3739793042515e3e030afb316282d2f9e3e73a06e3835f865"
+        }
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/stretch_fit.json",
+      "request_sha256": "7d97606f158f1f440857febb5ab3774955479d7804562f957485688971f4bc13",
+      "observation": "tools/rhino_oracle/observations/stretch_fit.json",
+      "observation_sha256": "3f3ab9b645addca72e399905ed0a7057cc038b09e393576cc8400f2ce6a58642",
+      "cases": 18,
+      "provenance": {
+        "request_sha256": "7d97606f158f1f440857febb5ab3774955479d7804562f957485688971f4bc13",
+        "sources": {
+          "generate_stretch_fit.py": "282f46453c5034db83234906a78f0dc54e1997dfc52ccbf53af00feb54966855",
+          "stretch_fit_probe.py": "352f4a333c8e5948c4522c35d0f9d8389df8fdc30d16f700488f359f1ac1903f",
+          "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+          "rhino_worker.py": "33c9bd8c5ce621ae35ff4de74c0485c8ce71e49639687acf3bdd1f13748ddffe",
+          "structural_sdk.py": "96dd57e75be32c6a34d6700645eba37a58debf4555601359e31a765a0f220c30"
+        }
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/stretch_details.json",
+      "request_sha256": "9aca2570293af97055f9bcf9f158628cd8264e4df34cb665cfd944e458d54f45",
+      "observation": "tools/rhino_oracle/observations/stretch_details.json",
+      "observation_sha256": "6bfd15b320ecf2eeb92587ead1de21d7ce528357bbc36fe0386c4d37bf3f068d",
+      "cases": 11,
+      "provenance": {
+        "request_sha256": "9aca2570293af97055f9bcf9f158628cd8264e4df34cb665cfd944e458d54f45",
+        "sources": {
+          "generate_stretch_details.py": "e366e21526acef90d9a800a0f61160929c85021c527226ed8e113a8d8599aaac",
+          "stretch_details_probe.py": "11de11fea446c2297f3a1a2ee16e20f8b2430aea69f7aeaa9dfbb426900bb7c2",
+          "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+          "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+          "rhino_worker.py": "9f61f2b09727323ef6bd9d1129c611b61caf35a3a14611e793ef2393f2b59604",
+          "structural_sdk.py": "6445dce8344034c987d90bdac9ea4c82b0cb9bd2ee48563b12528d65efd5ca37"
+        }
+      }
+    }
+  ],
+  "replays": [
+    {
+      "consumer": "portable command API",
+      "cases": 119,
+      "kinds": {
+        "stretch_geometry_command": 57,
+        "stretch_grips": 46,
+        "stretch_command": 16
+      },
+      "maximum_sampled_native_difference": 0.00030705697015661346,
+      "maximum_checked_exact_map_error": 7.874712564314333e-06,
+      "maximum_grip_numeric_difference": 4.440892098500626e-16,
+      "case_results": [
+        {
+          "id": "factor_19",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_20",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_21",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_22",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_23",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_24",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_25",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_26",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_27",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_28",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_29",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_30",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_35",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_36",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_37",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_38",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Line_39",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177263228192187e-10
+        },
+        {
+          "id": "geometry_Line_40",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177263228192187e-10
+        },
+        {
+          "id": "geometry_Line_41",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.7798229048217483e-15
+        },
+        {
+          "id": "geometry_Line_42",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.7798229048217483e-15
+        },
+        {
+          "id": "geometry_Curve_43",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.061525978229838e-08
+        },
+        {
+          "id": "geometry_Curve_44",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.061525978229838e-08
+        },
+        {
+          "id": "geometry_Curve_45",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Curve_46",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Surface_47",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177298755323823e-10
+        },
+        {
+          "id": "geometry_Surface_48",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177298755323823e-10
+        },
+        {
+          "id": "geometry_Surface_49",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Surface_50",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Box_51",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.16416517438997e-15
+        },
+        {
+          "id": "geometry_Box_52",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.16416517438997e-15
+        },
+        {
+          "id": "geometry_Box_53",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Box_54",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_55",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_56",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_57",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_58",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Reverse_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Reverse_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 3.6637359812630166e-15
+        },
+        {
+          "id": "axis_Reverse_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604673026602536e-10
+        },
+        {
+          "id": "axis_Reverse_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 3.6687789788066426e-15
+        },
+        {
+          "id": "rigid_Reverse",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Spatial_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.2947314098277875e-15
+        },
+        {
+          "id": "axis_Spatial_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 9.141636515828963e-06
+        },
+        {
+          "id": "axis_Spatial_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.00022503473729219985
+        },
+        {
+          "id": "axis_Spatial_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 5.652949731940433e-05
+        },
+        {
+          "id": "rigid_Spatial",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4769320134640543e-11
+        },
+        {
+          "id": "axis_Skew_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 9.930136612989092e-16
+        },
+        {
+          "id": "axis_Skew_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 8.43908415513217e-06
+        },
+        {
+          "id": "axis_Skew_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.00011681350636326398
+        },
+        {
+          "id": "axis_Skew_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.00030705697015661346
+        },
+        {
+          "id": "rigid_Skew",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.626135311134293e-12
+        },
+        {
+          "id": "factor_boundary_0_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_minus1_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_1_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_0_25",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_78",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_79",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_80",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 5.4037190382940445e-15
+        },
+        {
+          "id": "target_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 5.4037190382940445e-15
+        },
+        {
+          "id": "length_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604584208688829e-10
+        },
+        {
+          "id": "target_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604584208688829e-10
+        },
+        {
+          "id": "length_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.140037534908895e-15
+        },
+        {
+          "id": "target_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.140037534908895e-15
+        },
+        {
+          "id": "early_factor",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "repeat_Complete",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.061525978229838e-08
+        },
+        {
+          "id": "repeat_Cancel",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.061525978229838e-08
+        },
+        {
+          "id": "identity_0",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "identity_1",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_circle_00",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_01",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_10",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_11",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_arc_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_repeat_rational",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_repeat_surface",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "postselected_0",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "postselected_1",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        }
+      ]
+    },
+    {
+      "consumer": "interactive UI",
+      "cases": 119,
+      "kinds": {
+        "stretch_command": 16,
+        "stretch_geometry_command": 57,
+        "stretch_grips": 46
+      },
+      "maximum_sampled_native_difference": 0.00030705697015661346,
+      "maximum_checked_exact_map_error": 7.874712564314333e-06,
+      "maximum_grip_numeric_difference": 4.440892098500626e-16,
+      "case_results": [
+        {
+          "id": "factor_19",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_20",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_21",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_22",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_23",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_24",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_25",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_26",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_27",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_28",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_29",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_30",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_35",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_36",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_37",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_38",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Line_39",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177263228192187e-10
+        },
+        {
+          "id": "geometry_Line_40",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177263228192187e-10
+        },
+        {
+          "id": "geometry_Line_41",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.7798229048217483e-15
+        },
+        {
+          "id": "geometry_Line_42",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.7798229048217483e-15
+        },
+        {
+          "id": "geometry_Curve_43",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.061525978229838e-08
+        },
+        {
+          "id": "geometry_Curve_44",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.061525978229838e-08
+        },
+        {
+          "id": "geometry_Curve_45",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Curve_46",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Surface_47",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177298755323823e-10
+        },
+        {
+          "id": "geometry_Surface_48",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177298755323823e-10
+        },
+        {
+          "id": "geometry_Surface_49",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Surface_50",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Box_51",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.16416517438997e-15
+        },
+        {
+          "id": "geometry_Box_52",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.16416517438997e-15
+        },
+        {
+          "id": "geometry_Box_53",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Box_54",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_55",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_56",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_57",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_58",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Reverse_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Reverse_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 3.6637359812630166e-15
+        },
+        {
+          "id": "axis_Reverse_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604673026602536e-10
+        },
+        {
+          "id": "axis_Reverse_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 3.6687789788066426e-15
+        },
+        {
+          "id": "rigid_Reverse",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Spatial_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.2947314098277875e-15
+        },
+        {
+          "id": "axis_Spatial_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 9.141636515828963e-06
+        },
+        {
+          "id": "axis_Spatial_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.00022503473729219985
+        },
+        {
+          "id": "axis_Spatial_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 5.652949731940433e-05
+        },
+        {
+          "id": "rigid_Spatial",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4769320134640543e-11
+        },
+        {
+          "id": "axis_Skew_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 9.930136612989092e-16
+        },
+        {
+          "id": "axis_Skew_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 8.43908415513217e-06
+        },
+        {
+          "id": "axis_Skew_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.00011681350636326398
+        },
+        {
+          "id": "axis_Skew_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.00030705697015661346
+        },
+        {
+          "id": "rigid_Skew",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.626135311134293e-12
+        },
+        {
+          "id": "factor_boundary_0_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_minus1_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_1_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_0_25",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_78",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_79",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_80",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 5.4037190382940445e-15
+        },
+        {
+          "id": "target_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 5.4037190382940445e-15
+        },
+        {
+          "id": "length_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604584208688829e-10
+        },
+        {
+          "id": "target_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604584208688829e-10
+        },
+        {
+          "id": "length_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.140037534908895e-15
+        },
+        {
+          "id": "target_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.140037534908895e-15
+        },
+        {
+          "id": "early_factor",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "repeat_Complete",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.061525978229838e-08
+        },
+        {
+          "id": "repeat_Cancel",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.061525978229838e-08
+        },
+        {
+          "id": "identity_0",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "identity_1",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_circle_00",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_01",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_10",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_11",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_arc_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_repeat_rational",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_repeat_surface",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "postselected_0",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "postselected_1",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        }
+      ]
+    },
+    {
+      "consumer": "usd-brep command API",
+      "cases": 119,
+      "kinds": {
+        "stretch_geometry_command": 57,
+        "stretch_command": 16,
+        "stretch_grips": 46
+      },
+      "maximum_sampled_native_difference": 0.0003070569701565429,
+      "maximum_checked_exact_map_error": 7.874712563490547e-06,
+      "maximum_grip_numeric_difference": 4.440892098500626e-16,
+      "case_results": [
+        {
+          "id": "factor_19",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_20",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_21",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_22",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_23",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_24",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_25",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_26",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_27",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_28",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_29",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_30",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_35",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_36",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_37",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Points_38",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Line_39",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177263228191929e-10
+        },
+        {
+          "id": "geometry_Line_40",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177263228191929e-10
+        },
+        {
+          "id": "geometry_Line_41",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.7798229048217483e-15
+        },
+        {
+          "id": "geometry_Line_42",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.7798229048217483e-15
+        },
+        {
+          "id": "geometry_Curve_43",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.0615256229584702e-08
+        },
+        {
+          "id": "geometry_Curve_44",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.0615256229584702e-08
+        },
+        {
+          "id": "geometry_Curve_45",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Curve_46",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Surface_47",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177232697058666e-10
+        },
+        {
+          "id": "geometry_Surface_48",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.177232697058666e-10
+        },
+        {
+          "id": "geometry_Surface_49",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Surface_50",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Box_51",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.161583958246238e-15
+        },
+        {
+          "id": "geometry_Box_52",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.161583958246238e-15
+        },
+        {
+          "id": "geometry_Box_53",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Box_54",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_55",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_56",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_57",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "geometry_Mesh_58",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Reverse_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Reverse_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 5.4037190382940445e-15
+        },
+        {
+          "id": "axis_Reverse_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604673026581438e-10
+        },
+        {
+          "id": "axis_Reverse_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 3.6687789788066426e-15
+        },
+        {
+          "id": "rigid_Reverse",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "axis_Spatial_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.2947314098277875e-15
+        },
+        {
+          "id": "axis_Spatial_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 9.141636515828963e-06
+        },
+        {
+          "id": "axis_Spatial_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.00022503473729111207
+        },
+        {
+          "id": "axis_Spatial_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 5.652949731940433e-05
+        },
+        {
+          "id": "rigid_Spatial",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4769320134640543e-11
+        },
+        {
+          "id": "axis_Skew_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 9.930136612989092e-16
+        },
+        {
+          "id": "axis_Skew_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 8.439084155320464e-06
+        },
+        {
+          "id": "axis_Skew_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.00011681350636345226
+        },
+        {
+          "id": "axis_Skew_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0003070569701565429
+        },
+        {
+          "id": "rigid_Skew",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.626135311134293e-12
+        },
+        {
+          "id": "factor_boundary_0_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_minus1_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_1_0",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "factor_boundary_0_25",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_78",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_79",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_boundary_80",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "target_Points",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "length_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 3.580791979123119e-15
+        },
+        {
+          "id": "target_Curve",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 3.580791979123119e-15
+        },
+        {
+          "id": "length_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604584208739468e-10
+        },
+        {
+          "id": "target_Surface",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.4604584208739468e-10
+        },
+        {
+          "id": "length_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.140037534908895e-15
+        },
+        {
+          "id": "target_Box",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 7.140037534908895e-15
+        },
+        {
+          "id": "early_factor",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "repeat_Complete",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.0615256229584702e-08
+        },
+        {
+          "id": "repeat_Cancel",
+          "kind": "stretch_geometry_command",
+          "maximum_error": 1.0615256229584702e-08
+        },
+        {
+          "id": "identity_0",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "identity_1",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_curve_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_rational_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_closed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_periodic_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_line_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_circle_00",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_01",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_10",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_circle_11",
+          "kind": "stretch_grips",
+          "maximum_error": 4.440892098500626e-16
+        },
+        {
+          "id": "grips_arc_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_arc_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_surface_closed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_mesh_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_10",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_11",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_00",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "mixed_01",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_repeat_rational",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "grips_repeat_surface",
+          "kind": "stretch_grips",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "postselected_0",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "postselected_1",
+          "kind": "stretch_command",
+          "maximum_error": 0.0
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "cases": 23,
+    "maximum_point_error": 3.76822190084106e-15
+  },
+  "native_fitting_measurements": {
+    "curve_stations": 513,
+    "surface_stations_per_face": 2401,
+    "maximum_same_parameter_residual": 0.0006443629575321605,
+    "maximum_forward_closest_distance": 0.0003183641614305423
+  },
+  "fit_checks": {
+    "curve_stations": 259,
+    "surface_stations_per_face": 1089,
+    "note": "Endpoints plus shifted off-grid stations compare Viboceros to the exact point map separately from the native result; sampled checks do not certify continuous deviation."
+  },
+  "checks": [
+    {
+      "check": "3 kernel cubic/target/underflow tests",
+      "log_sha256": "65b614a3a3c46ecc771aa32ecdc531e3ccd9bc84004047de8faaa9d032de6e61"
+    },
+    {
+      "check": "23 SDK point-map cases",
+      "log_sha256": "8ba9a7b5522911b79e606a324d2c6e9049660c1d18497bff77ebd463b809af9d"
+    },
+    {
+      "check": "23 SDK cases through the release Python client",
+      "log_sha256": "41411db9d44bc314b2c79714f258f293ea1d16fe7509f57c0cc52000c8722685"
+    },
+    {
+      "check": "4 native remembered-default transitions",
+      "log_sha256": "db7e3d65fe36a963dfd5dc4c76124172a56aa69309d15a555bb2a0125b04c3ce"
+    },
+    {
+      "check": "22 document grip regressions",
+      "log_sha256": "001f672133729ecdf6e01070ae4b1c12c4524409d93a8ce06a08779099ba3bb5"
+    },
+    {
+      "check": "4 affine grip UI tests, including 64 native replays",
+      "log_sha256": "e2024374fc4cdb4230e051066730145867498af6eebfdae758cba8c2c1031e5f"
+    },
+    {
+      "check": "2 existing Taper command tests",
+      "log_sha256": "83e3d26077768297a6a65e6cc0d2a45639f6de320750e1542d5d0cae885c6feb"
+    },
+    {
+      "check": "3 existing Taper viewport tests",
+      "log_sha256": "8471e58eb13e21123a16ded0241c3084b16e4c21d12c08e04ce319d84a128e8f"
+    },
+    {
+      "check": "Stretch mouse click and retained hover in all three display modes",
+      "log_sha256": "1d6d5c1e6883a27ae86a854a4e8f6df27197a59f5de07972865688f670416aba"
+    },
+    {
+      "check": "2 actual native NURBS segment definitions",
+      "log_sha256": "f2570a212285728a29e3288debf95a3adabeb5121eab2bd0139c663d8442f26e"
+    },
+    {
+      "check": "46 complete grip API replays with measured tensor/display residuals",
+      "log_sha256": "7c242da0a33e50b395e8dc8692c1f1d794713f67119bf35c1e0c8acfca7b5364"
+    },
+    {
+      "check": "46 complete grip UI replays with measured tensor/display residuals",
+      "log_sha256": "d61edddb28b35f44c1faedd7f3215f6d621781743c5bce7cd3fa6887661fd687"
+    },
+    {
+      "check": "46 complete usd-brep grip API replays with measured tensor/display residuals",
+      "log_sha256": "8aa7b32c69db1a8f161c55ed75e9081d95ce89812f6a6e6bffc66735df3d43be"
+    },
+    {
+      "check": "sorted built-in command help",
+      "log_sha256": "0ce0a702774131a1195ed2a830f58839ae04443d5ad67a8dcd052daa33aebcf7"
+    },
+    {
+      "check": "14 Python source-closure, protocol and adjacent regression tests",
+      "log_sha256": "a8c02f5d0d301a87ccb550bbb7eb990182a93ac841e5f1e7bd6b3beb8ef40cdb"
+    },
+    {
+      "check": "strict default workspace Clippy, all targets",
+      "log_sha256": "265377277d6630b8da19804e4e5b4d290632004b7356ca7cadd00d4745b94131"
+    },
+    {
+      "check": "strict native-smlib workspace Clippy, all targets",
+      "log_sha256": "1dba51636761b2184f4d1e29f6a1fed5a622dedd372ace3fbc3bf62f8b5eabbb"
+    },
+    {
+      "check": "workspace rustfmt check",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "qualifications": [
+    "Native fitted curves use a 2e-5 sampled comparison bound. Tilted surface/box fits use 7e-4, supported by independent native SDK fitting-distance measurements. Points, rigid placements and complete grip tensors use tighter bounds in the tests.",
+    "Component fitting has a 1e-5 model-unit floor; B-rep assembly reserves four component budgets. Document settings are retained.",
+    "No cross-application performance claim. Large or ill-conditioned geometry can exhaust bounded fitting work and fail atomically."
+  ]
+}

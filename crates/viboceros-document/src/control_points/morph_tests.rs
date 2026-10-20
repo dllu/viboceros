@@ -230,3 +230,70 @@ fn staged_geometry_and_grip_reconstruction_commit_atomically_without_remapping_o
         assert_eq!(d.object(result(p)).unwrap().geometry(), &mapped);
     }
 }
+
+#[test]
+fn nonlinear_copy_display_uses_source_basis_and_survives_copy_history_only() {
+    let mut d = Document::default();
+    let original = curve();
+    let id = d.add_geometry(original.clone()).unwrap();
+    d.enable_control_points([id]).unwrap();
+    let grip = ControlPointId {
+        object: id,
+        index: 0,
+    };
+    d.select_control_points([grip], SelectionMode::Add).unwrap();
+    d.clear_history().unwrap();
+    let initial = d.control_point_locations(id).unwrap()[0];
+    let mapped = Warp.morph_point(initial).unwrap();
+    d.morph_objects_and_grips([], [grip], &Warp, true, CopyGroupPolicy::Preserve)
+        .unwrap();
+    d.morph_copy_grip_display([grip], &Warp).unwrap();
+    assert_eq!(d.object(id).unwrap().geometry(), &original);
+    assert_eq!(d.control_point_locations(id).unwrap()[0], mapped);
+    d.morph_copy_grip_display([grip], &Warp).unwrap();
+    assert_eq!(
+        d.control_point_locations(id).unwrap()[0],
+        mapped,
+        "copies must not accumulate the old display displacement"
+    );
+    d.undo().unwrap();
+    assert_eq!(d.objects().count(), 1);
+    assert_eq!(d.control_point_locations(id).unwrap()[0], mapped);
+    d.redo().unwrap();
+    assert_eq!(d.objects().count(), 2);
+    assert_eq!(d.control_point_locations(id).unwrap()[0], mapped);
+    let display = d.control_point_locations(id).unwrap().to_vec();
+    let label = d.undo_label().map(str::to_owned);
+    assert!(
+        d.morph_copy_grip_display(
+            [
+                grip,
+                ControlPointId {
+                    object: id,
+                    index: usize::MAX
+                }
+            ],
+            &Warp
+        )
+        .is_err()
+    );
+    assert_eq!(d.control_point_locations(id).unwrap(), display);
+    assert_eq!(d.undo_label(), label.as_deref());
+    d.replace_object_geometries([(
+        id,
+        Geometry::Line(
+            viboceros_geometry::LineSegment::try_new(
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(2., 0., 0.).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        ),
+    )])
+    .unwrap();
+    assert_ne!(
+        d.control_point_locations(id).unwrap()[0],
+        mapped,
+        "replacement must refresh the new owner's grip basis"
+    );
+}

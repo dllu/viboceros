@@ -1,0 +1,89 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "stretch_geometry_command",
+      "id": "copies_Cancel",
+      "shape": "Points",
+      "copy": true,
+      "rigid": true,
+      "grouped": true,
+      "factor": 2.0,
+      "targets": [
+        0.5,
+        1.25
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "stretch_command",
+      "id": "following_Cancel",
+      "start": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "points": [
+        [
+          2.0,
+          1.0,
+          5.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "factor": 1.9
+    },
+    {
+      "op": "stretch_geometry_command",
+      "id": "copies_Complete",
+      "shape": "Points",
+      "copy": true,
+      "rigid": true,
+      "grouped": true,
+      "factor": 2.0,
+      "targets": [
+        0.5,
+        0.75
+      ],
+      "finish": "Complete"
+    },
+    {
+      "op": "stretch_command",
+      "id": "following_Complete",
+      "start": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "points": [
+        [
+          2.0,
+          1.0,
+          5.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "factor": 1.9
+    }
+  ]
+}

@@ -1,0 +1,7478 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "engine": "rhino",
+  "protocol_version": 1,
+  "iterations": 1,
+  "results": [
+    {
+      "value": {
+        "undo": {
+          "groups": [
+            {
+              "members": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "members": []
+            },
+            {
+              "members": []
+            },
+            {
+              "members": []
+            }
+          ],
+          "objects": [
+            {
+              "source": 0,
+              "groups": [
+                0
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 1,
+              "groups": [
+                0
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 2,
+              "groups": [
+                0
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 3,
+              "groups": [
+                0
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 4,
+              "groups": [
+                0
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 5,
+              "groups": [
+                0
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 6,
+              "groups": [
+                0
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "script_macro": "_Taper w0,0,0 w0,0,10 _Copy=_Yes _Rigid=_Yes _Flat=_No _Infinite=_No _PreserveStructure=_No 10000000000000000e-16 20000000000000000e-16 _Cancel",
+        "macro": "_Stretch w0,0,0 w0,0,10 _Copy=Yes _Rigid=Yes 20000000000000000e-16 50000000000000000e-17 12500000000000000e-16 _Cancel",
+        "redo": {
+          "groups": [
+            {
+              "members": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "members": [
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+              ]
+            },
+            {
+              "members": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "members": [
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27
+              ]
+            }
+          ],
+          "objects": [
+            {
+              "source": 0,
+              "groups": [
+                0
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 1,
+              "groups": [
+                0
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 2,
+              "groups": [
+                0
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 3,
+              "groups": [
+                0
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 4,
+              "groups": [
+                0
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 5,
+              "groups": [
+                0
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 6,
+              "groups": [
+                0
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -0.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -0.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -0.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    11.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    11.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    11.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    13.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    13.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    13.25
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "recipe": {
+          "copy": true,
+          "id": "copies_Cancel",
+          "shape": "Points",
+          "factor": 2.0,
+          "rigid": true,
+          "finish": "Cancel",
+          "op": "stretch_geometry_command",
+          "targets": [
+            0.5,
+            1.25
+          ],
+          "grouped": true
+        },
+        "success": false,
+        "events": [
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Stretch",
+            "objects": {
+              "groups": [
+                {
+                  "members": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ]
+                },
+                {
+                  "members": [
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13
+                  ]
+                },
+                {
+                  "members": [
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20
+                  ]
+                },
+                {
+                  "members": [
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27
+                  ]
+                }
+              ],
+              "objects": [
+                {
+                  "source": 0,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-0",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -2.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -2.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -2.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 1,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-1",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 2,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-2",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 3,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-3",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 4,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    14,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-4",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 5,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    15,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-5",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 6,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    16,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-6",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        12.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        12.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        12.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-0",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        3.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        3.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        3.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-1",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-2",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-3",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    14,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-4",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        12.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        12.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        12.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    15,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-5",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        15.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        15.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        15.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    16,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-6",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        17.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        17.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        17.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-0",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -4.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -4.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -4.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-1",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -2.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -2.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -2.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-2",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-3",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    14,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-4",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    15,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-5",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    16,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-6",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        9.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        9.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        9.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-0",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -0.75
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -0.75
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -0.75
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-1",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        1.25
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        1.25
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        1.25
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-2",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        3.75
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        3.75
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        3.75
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-3",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        6.25
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        6.25
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        6.25
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    14,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-4",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        8.75
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        8.75
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        8.75
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    15,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-5",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        11.25
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        11.25
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        11.25
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    16,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-6",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        13.25
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        13.25
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        13.25
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "result": "Cancel"
+          }
+        ],
+        "history": "Command: _Stretch\nStart of stretch axis ( Copy=No  Rigid=No ): w0,0,0\nStretch factor or end of stretch axis <1> ( Copy=No  Rigid=No ): w0,0,10\nStretch factor or point to stretch to ( Copy=No  Rigid=No  Length ): _Copy=Yes\nStretch factor or point to stretch to ( Copy=Yes  Rigid=No  Length ): _Rigid=Yes\nStretch factor or point to stretch to ( Copy=Yes  Rigid=Yes  Length ): 20000000000000000e-16\nMorphed 7 objects.\nStretch factor or point to stretch to. Press Enter when done ( Copy=Yes  Rigid=Yes  Length ): 50000000000000000e-17\nMorphed 7 objects.\nStretch factor or point to stretch to. Press Enter when done ( Copy=Yes  Rigid=Yes  Length ): 12500000000000000e-16\nMorphed 7 objects.\nStretch factor or point to stretch to. Press Enter when done ( Copy=Yes  Rigid=Yes  Length ): _Cancel\nStretch factor or point to stretch to. Press Enter when done ( Copy=Yes  Rigid=Yes  Length )",
+        "before": {
+          "groups": [
+            {
+              "members": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          ],
+          "objects": [
+            {
+              "source": 0,
+              "groups": [
+                0
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 1,
+              "groups": [
+                0
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 2,
+              "groups": [
+                0
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 3,
+              "groups": [
+                0
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 4,
+              "groups": [
+                0
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 5,
+              "groups": [
+                0
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 6,
+              "groups": [
+                0
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "after": {
+          "groups": [
+            {
+              "members": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "members": [
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+              ]
+            },
+            {
+              "members": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "members": [
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27
+              ]
+            }
+          ],
+          "objects": [
+            {
+              "source": 0,
+              "groups": [
+                0
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 1,
+              "groups": [
+                0
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 2,
+              "groups": [
+                0
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 3,
+              "groups": [
+                0
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 4,
+              "groups": [
+                0
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 5,
+              "groups": [
+                0
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 6,
+              "groups": [
+                0
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -0.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -0.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -0.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    11.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    11.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    11.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    13.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    13.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    13.25
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "copies_Cancel",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "undo": [
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 0
+          }
+        ],
+        "macro": "_Stretch w0,0,0 w0,0,10 _Copy=No _Rigid=No 1.8999999999999999",
+        "redo": [
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              9.5
+            ],
+            "source": 0
+          }
+        ],
+        "success": true,
+        "events": [
+          {
+            "selected": [],
+            "name": "Stretch",
+            "objects": [
+              {
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  9.5
+                ],
+                "source": 0
+              }
+            ],
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _Stretch\nStart of stretch axis ( Copy=Yes  Rigid=No ): w0,0,0\nStretch factor or end of stretch axis <1.25> ( Copy=Yes  Rigid=No ): w0,0,10\nStretch factor or point to stretch to ( Copy=Yes  Rigid=No  Length ): _Copy=No\nStretch factor or point to stretch to ( Copy=No  Rigid=No  Length ): _Rigid=No\nStretch factor or point to stretch to ( Copy=No  Rigid=No  Length ): 1.8999999999999999\nMorphed one object.",
+        "before": [
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 0
+          }
+        ],
+        "after": [
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              9.5
+            ],
+            "source": 0
+          }
+        ]
+      },
+      "id": "following_Cancel",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "undo": {
+          "groups": [
+            {
+              "members": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "members": []
+            },
+            {
+              "members": []
+            },
+            {
+              "members": []
+            }
+          ],
+          "objects": [
+            {
+              "source": 0,
+              "groups": [
+                0
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 1,
+              "groups": [
+                0
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 2,
+              "groups": [
+                0
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 3,
+              "groups": [
+                0
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 4,
+              "groups": [
+                0
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 5,
+              "groups": [
+                0
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 6,
+              "groups": [
+                0
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "script_macro": "_Taper w0,0,0 w0,0,10 _Copy=_Yes _Rigid=_Yes _Flat=_No _Infinite=_No _PreserveStructure=_No 10000000000000000e-16 20000000000000000e-16 _Enter",
+        "macro": "_Stretch w0,0,0 w0,0,10 _Copy=Yes _Rigid=Yes 20000000000000000e-16 50000000000000000e-17 75000000000000000e-17 _Enter",
+        "redo": {
+          "groups": [
+            {
+              "members": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "members": [
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+              ]
+            },
+            {
+              "members": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "members": [
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27
+              ]
+            }
+          ],
+          "objects": [
+            {
+              "source": 0,
+              "groups": [
+                0
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 1,
+              "groups": [
+                0
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 2,
+              "groups": [
+                0
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 3,
+              "groups": [
+                0
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 4,
+              "groups": [
+                0
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 5,
+              "groups": [
+                0
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 6,
+              "groups": [
+                0
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -3.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -3.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -3.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -1.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -1.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -1.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.75
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "recipe": {
+          "copy": true,
+          "id": "copies_Complete",
+          "shape": "Points",
+          "factor": 2.0,
+          "rigid": true,
+          "finish": "Complete",
+          "op": "stretch_geometry_command",
+          "targets": [
+            0.5,
+            0.75
+          ],
+          "grouped": true
+        },
+        "success": true,
+        "events": [
+          {
+            "selected": [],
+            "name": "Stretch",
+            "objects": {
+              "groups": [
+                {
+                  "members": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ]
+                },
+                {
+                  "members": [
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13
+                  ]
+                },
+                {
+                  "members": [
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20
+                  ]
+                },
+                {
+                  "members": [
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27
+                  ]
+                }
+              ],
+              "objects": [
+                {
+                  "source": 0,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-0",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -2.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -2.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -2.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 1,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-1",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 2,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-2",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 3,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-3",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 4,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    14,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-4",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 5,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    15,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-5",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": 6,
+                  "groups": [
+                    0
+                  ],
+                  "color": [
+                    16,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-6",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        12.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        12.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        12.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-0",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        3.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        3.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        3.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-1",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-2",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-3",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    14,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-4",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        12.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        12.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        12.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    15,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-5",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        15.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        15.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        15.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    1
+                  ],
+                  "color": [
+                    16,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-6",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        17.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        17.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        17.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-0",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -4.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -4.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -4.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-1",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -2.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -2.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -2.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-2",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        0.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-3",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        2.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    14,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-4",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        5.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    15,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-5",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        7.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    2
+                  ],
+                  "color": [
+                    16,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-6",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        9.5
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        9.5
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        9.5
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-0",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -3.25
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -3.25
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -3.25
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-1",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        -1.25
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        -1.25
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        -1.25
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-2",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        1.25
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        1.25
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        1.25
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-3",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        3.75
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        3.75
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        3.75
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    14,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-4",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        6.25
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        6.25
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        6.25
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    15,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-5",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        8.75
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        8.75
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        8.75
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": null,
+                  "groups": [
+                    3
+                  ],
+                  "color": [
+                    16,
+                    30,
+                    50
+                  ],
+                  "selected": false,
+                  "name": "source-6",
+                  "geometry": {
+                    "bounds": [
+                      [
+                        2.0,
+                        1.0,
+                        10.75
+                      ],
+                      [
+                        2.0,
+                        1.0,
+                        10.75
+                      ]
+                    ],
+                    "type": "Point",
+                    "points": [
+                      [
+                        2.0,
+                        1.0,
+                        10.75
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _Stretch\nStart of stretch axis ( Copy=No  Rigid=No ): w0,0,0\nStretch factor or end of stretch axis <1.9> ( Copy=No  Rigid=No ): w0,0,10\nStretch factor or point to stretch to ( Copy=No  Rigid=No  Length ): _Copy=Yes\nStretch factor or point to stretch to ( Copy=Yes  Rigid=No  Length ): _Rigid=Yes\nStretch factor or point to stretch to ( Copy=Yes  Rigid=Yes  Length ): 20000000000000000e-16\nMorphed 7 objects.\nStretch factor or point to stretch to. Press Enter when done ( Copy=Yes  Rigid=Yes  Length ): 50000000000000000e-17\nMorphed 7 objects.\nStretch factor or point to stretch to. Press Enter when done ( Copy=Yes  Rigid=Yes  Length ): 75000000000000000e-17\nMorphed 7 objects.\nStretch factor or point to stretch to. Press Enter when done ( Copy=Yes  Rigid=Yes  Length ): _Enter\nStretch factor or point to stretch to. Press Enter when done ( Copy=Yes  Rigid=Yes  Length )",
+        "before": {
+          "groups": [
+            {
+              "members": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          ],
+          "objects": [
+            {
+              "source": 0,
+              "groups": [
+                0
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 1,
+              "groups": [
+                0
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 2,
+              "groups": [
+                0
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 3,
+              "groups": [
+                0
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 4,
+              "groups": [
+                0
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 5,
+              "groups": [
+                0
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 6,
+              "groups": [
+                0
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "after": {
+          "groups": [
+            {
+              "members": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "members": [
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+              ]
+            },
+            {
+              "members": [
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "members": [
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27
+              ]
+            }
+          ],
+          "objects": [
+            {
+              "source": 0,
+              "groups": [
+                0
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 1,
+              "groups": [
+                0
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 2,
+              "groups": [
+                0
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 3,
+              "groups": [
+                0
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 4,
+              "groups": [
+                0
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 5,
+              "groups": [
+                0
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": 6,
+              "groups": [
+                0
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    3.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    12.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    15.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                1
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    17.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -4.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    2.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    5.0
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    7.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                2
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    9.5
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-0",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -3.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -3.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -3.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-1",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    -1.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    -1.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    -1.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-2",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    1.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-3",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    3.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                14,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-4",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    6.25
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                15,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-5",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    8.75
+                  ]
+                ]
+              }
+            },
+            {
+              "source": null,
+              "groups": [
+                3
+              ],
+              "color": [
+                16,
+                30,
+                50
+              ],
+              "selected": false,
+              "name": "source-6",
+              "geometry": {
+                "bounds": [
+                  [
+                    2.0,
+                    1.0,
+                    10.75
+                  ],
+                  [
+                    2.0,
+                    1.0,
+                    10.75
+                  ]
+                ],
+                "type": "Point",
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    10.75
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "copies_Complete",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "undo": [
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 0
+          }
+        ],
+        "macro": "_Stretch w0,0,0 w0,0,10 _Copy=No _Rigid=No 1.8999999999999999",
+        "redo": [
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              9.5
+            ],
+            "source": 0
+          }
+        ],
+        "success": true,
+        "events": [
+          {
+            "selected": [],
+            "name": "Stretch",
+            "objects": [
+              {
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  9.5
+                ],
+                "source": 0
+              }
+            ],
+            "result": "Success"
+          }
+        ],
+        "history": "Command: _Stretch\nStart of stretch axis ( Copy=Yes  Rigid=No ): w0,0,0\nStretch factor or end of stretch axis <0.75> ( Copy=Yes  Rigid=No ): w0,0,10\nStretch factor or point to stretch to ( Copy=Yes  Rigid=No  Length ): _Copy=No\nStretch factor or point to stretch to ( Copy=No  Rigid=No  Length ): _Rigid=No\nStretch factor or point to stretch to ( Copy=No  Rigid=No  Length ): 1.8999999999999999\nMorphed one object.",
+        "before": [
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 0
+          }
+        ],
+        "after": [
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              9.5
+            ],
+            "source": 0
+          }
+        ]
+      },
+      "id": "following_Complete",
+      "elapsed_ns": 0
+    }
+  ],
+  "provenance": {
+    "request_sha256": "37436b3729b68077921ec5f4c3fdb530b7fe8ac01995b944457fd8f67b551fb8",
+    "sources": {
+      "generate_stretch_preferences.py": "6f92eb1141bc6d4e1be5e3d1a596492174c242e8d6bdb6cabfca72d1e994110f",
+      "stretch_probe.py": "8900fde7d260a5937e538906180d3886a7baaf53b3cb4b667741ba32aaac4f31",
+      "stretch_geometry_probe.py": "be78ae8ed35c9e8eafabc328bf2f50405fcbf6696a9ff790eaf78da3f146bd59",
+      "taper_command_probe.py": "869a6ef84d6b51d386a950104c39c68bd929a58bad55e529e6fe98ee7a20caab",
+      "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "43ed7c521c71a05062156e413aa7439752f6ad3426be91440f386f678fdb63e8",
+      "structural_sdk.py": "b0648a678967b1b3739793042515e3e030afb316282d2f9e3e73a06e3835f865"
+    }
+  }
+}

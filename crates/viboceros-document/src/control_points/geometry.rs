@@ -39,13 +39,18 @@ impl Geometry {
         tolerance: Tolerance,
         mode: GripMode,
     ) -> Result<Self, GeometryError> {
-        self.with_grip_map(
+        let edited = self.with_grip_map(
             indices,
             |point| morph.morph_point(point),
             tolerance,
             mode,
             false,
-        )
+        )?;
+        if let Self::NurbsCurve(curve) = edited {
+            Ok(Self::from(morph.rebuild_grip_curve(curve, tolerance)?))
+        } else {
+            Ok(edited)
+        }
     }
 
     fn with_grip_map(

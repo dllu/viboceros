@@ -293,7 +293,10 @@ impl Viewport {
         } else {
             drafting
         };
-        let line = definition.and_then(|p| p.mouse_line(document.tolerance()));
+        let line = input
+            .stretch_preview
+            .and_then(|p| p.mouse_line())
+            .or_else(|| definition.and_then(|p| p.mouse_line(document.tolerance())));
         let cursor = self.translation_drafting_cursor(
             pointer,
             rect,

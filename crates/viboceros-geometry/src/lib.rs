@@ -108,6 +108,8 @@ mod twist;
 pub use twist::TwistPointMorph;
 mod bend;
 pub use bend::BendPointMorph;
+mod stretch;
+pub use stretch::StretchPointMorph;
 mod taper;
 pub use taper::TaperPointMorph;
 mod maelstrom;

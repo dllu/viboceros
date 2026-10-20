@@ -48,6 +48,8 @@ use viboceros_io::{
 
 mod bend_points;
 mod blend_curve;
+mod stretch_points;
+pub use stretch_points::StretchPointFixture;
 mod taper_points;
 pub use bend_points::BendPointFixture;
 pub use taper_points::TaperPointFixture;
@@ -833,6 +835,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: BendPointFixture,
+    },
+    StretchSdk {
+        id: String,
+        #[serde(flatten)]
+        fixture: StretchPointFixture,
     },
     TaperPoints {
         id: String,
@@ -2786,6 +2793,7 @@ impl Operation {
             | Self::CurveSurfaceMorph { id, .. }
             | Self::TwistPoints { id, .. }
             | Self::BendPoints { id, .. }
+            | Self::StretchSdk { id, .. }
             | Self::TaperPoints { id, .. }
             | Self::MaelstromPoints { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
@@ -3464,6 +3472,7 @@ fn execute(
             curve_morph::run(fixture, iterations, tolerance)?
         }
         Operation::BendPoints { fixture, .. } => bend_points::run(fixture, iterations, tolerance)?,
+        Operation::StretchSdk { fixture, .. } => stretch_points::run(fixture, iterations)?,
         Operation::TaperPoints { fixture, .. } => {
             taper_points::run(fixture, iterations, tolerance)?
         }

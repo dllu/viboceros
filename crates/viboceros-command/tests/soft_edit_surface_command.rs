@@ -192,10 +192,12 @@ fn assert_repeated_surface_workflows(stem: &str, count: usize) {
         doc.select_object(id, SelectionMode::Replace).unwrap();
         doc.clear_history().unwrap();
         let before = doc.objects().cloned().collect::<Vec<_>>();
-        let mut options = Options::default();
-        options.distances = [4., 4.];
-        options.constraint = viboceros_command::soft_edit_surface::Constraint::None;
-        options.copy = recipe["copy"] == true;
+        let mut options = Options {
+            distances: [4., 4.],
+            constraint: viboceros_command::soft_edit_surface::Constraint::None,
+            copy: recipe["copy"] == true,
+            ..Default::default()
+        };
         let mut draft = Draft::new(&doc, id).unwrap();
         for (i, pair) in v["all_points"]
             .as_array()
@@ -396,9 +398,11 @@ fn native_public_sdk_surface_edit_transitions() {
                     let mut doc = Document::default();
                     let id = doc.add_geometry(Geometry::NurbsSurface(source)).unwrap();
                     let mut draft = Draft::new(&doc, id).unwrap();
-                    let mut options = Options::default();
-                    options.distances = [4., 4.];
-                    options.constraint = viboceros_command::soft_edit_surface::Constraint::None;
+                    let options = Options {
+                        distances: [4., 4.],
+                        constraint: viboceros_command::soft_edit_surface::Constraint::None,
+                        ..Default::default()
+                    };
                     draft.set_options(options).unwrap();
                     draft.point(point(&op["points"][2 * index])).unwrap();
                     let anchor_gap = draft

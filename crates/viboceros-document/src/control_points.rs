@@ -25,6 +25,13 @@ pub enum GripMode {
     Edit,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum DisplayOverride {
+    None,
+    ResetOnHistory,
+    RetainOnHistory,
+}
+
 #[derive(Clone, Debug)]
 pub(super) struct ControlPoints {
     mode: GripMode,
@@ -32,7 +39,7 @@ pub(super) struct ControlPoints {
     points: Arc<[Point3]>,
     selected: Arc<BTreeSet<usize>>,
     hidden: Arc<BTreeSet<usize>>,
-    display_override: bool,
+    display_override: DisplayOverride,
 }
 
 impl ControlPoints {
@@ -48,6 +55,12 @@ impl ControlPoints {
     /// Restoring a selected hidden grip makes this owner's entire display visible.
     pub(super) fn retain_live_visibility(&mut self, current: &Self) {
         if self.mode == current.mode && self.points.len() == current.points.len() {
+            if current.display_override == DisplayOverride::RetainOnHistory
+                && self.geometry.shares_storage_with(&current.geometry)
+            {
+                self.points = current.points.clone();
+                self.display_override = DisplayOverride::RetainOnHistory;
+            }
             self.hidden = if self.selected.iter().any(|i| current.hidden.contains(i)) {
                 Arc::default()
             } else {
@@ -212,7 +225,7 @@ impl Document {
                         points: object.geometry.grip_locations(mode)?.into(),
                         selected: Arc::default(),
                         hidden: Arc::default(),
-                        display_override: false,
+                        display_override: DisplayOverride::None,
                     },
                 ));
             }
@@ -286,7 +299,42 @@ impl Document {
         for (grip, point) in staged {
             let state = self.control_points.get_mut(&grip.object).unwrap();
             Arc::make_mut(&mut state.points)[grip.index] = point;
-            state.display_override = true;
+            state.display_override = DisplayOverride::ResetOnHistory;
+        }
+        Ok(count)
+    }
+
+    /// Native nonlinear Copy leaves source geometry unchanged while its live
+    /// grip display follows the accepted deformation. Each placement measures
+    /// the owner's original control/edit basis; repeated copies do not compound
+    /// the previous display. This override survives Undo/Redo of copies while
+    /// that source geometry remains unchanged.
+    pub fn morph_copy_grip_display(
+        &mut self,
+        grips: impl IntoIterator<Item = ControlPointId>,
+        morph: &(impl viboceros_geometry::PointMorph + ?Sized),
+    ) -> Result<usize, DocumentError> {
+        let mut layouts = BTreeMap::new();
+        let mut staged = BTreeMap::new();
+        for grip in grips {
+            self.control_point_locations(grip.object)
+                .filter(|p| grip.index < p.len())
+                .ok_or(DocumentError::InvalidControlPointSelection {
+                    object: grip.object,
+                    index: grip.index,
+                })?;
+            self.ensure_object_editable(self.object(grip.object).unwrap())?;
+            if let std::collections::btree_map::Entry::Vacant(entry) = layouts.entry(grip.object) {
+                let state = &self.control_points[&grip.object];
+                entry.insert(state.geometry.grip_locations(state.mode)?);
+            }
+            staged.insert(grip, morph.morph_point(layouts[&grip.object][grip.index])?);
+        }
+        let count = staged.len();
+        for (grip, point) in staged {
+            let state = self.control_points.get_mut(&grip.object).unwrap();
+            Arc::make_mut(&mut state.points)[grip.index] = point;
+            state.display_override = DisplayOverride::RetainOnHistory;
         }
         Ok(count)
     }
@@ -510,7 +558,7 @@ impl Document {
                     }
                     state.points = points.into();
                     state.geometry = object.geometry.clone();
-                    state.display_override = false;
+                    state.display_override = DisplayOverride::None;
                 }
                 state.selected = Arc::default();
             }
@@ -521,14 +569,14 @@ impl Document {
         for state in self
             .control_points
             .values_mut()
-            .filter(|state| state.display_override)
+            .filter(|state| state.display_override == DisplayOverride::ResetOnHistory)
         {
             state.points = state
                 .geometry
                 .grip_locations(state.mode)
                 .expect("enabled grip geometry is valid")
                 .into();
-            state.display_override = false;
+            state.display_override = DisplayOverride::None;
         }
     }
 

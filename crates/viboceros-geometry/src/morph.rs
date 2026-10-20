@@ -41,6 +41,17 @@ pub trait PointMorph {
 
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError>;
 
+    /// Rebuild a curve after selected controls or edit stations have moved.
+    /// The default retains the edited tensor. Morphs may expose derivative
+    /// breaks as real segments without fitting or changing the curve locus.
+    fn rebuild_grip_curve(
+        &self,
+        curve: NurbsCurve,
+        _tolerance: Tolerance,
+    ) -> Result<crate::Curve3, GeometryError> {
+        Ok(crate::Curve3::NurbsCurve(curve))
+    }
+
     fn morph_point_cloud(&self, cloud: &PointCloud3) -> Result<PointCloud3, GeometryError> {
         PointCloud3::try_new(
             cloud

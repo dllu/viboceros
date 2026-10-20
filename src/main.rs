@@ -1,4 +1,8 @@
 mod app;
+#[cfg(test)]
+#[allow(dead_code)]
+#[path = "../crates/viboceros-command/tests/support/stretch.rs"]
+mod deformation_test_support;
 mod sidebar;
 #[cfg(test)]
 #[path = "../crates/viboceros-oracle/src/test_json.rs"]

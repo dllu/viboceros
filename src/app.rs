@@ -223,6 +223,7 @@ mod silhouette;
 mod smooth;
 mod snapping;
 mod spiral;
+mod stretch_prompt;
 mod subcurve_direction;
 mod subcurve_preview;
 mod subcurve_prompt;
@@ -789,6 +790,11 @@ enum InteractiveCommand {
         target: Option<viboceros_command::maelstrom::MaelstromRadius>,
         options: viboceros_command::maelstrom::MaelstromOptions,
     },
+    Stretch {
+        points: [Option<Point3>; 2],
+        factor: Option<f64>,
+        options: viboceros_command::stretch::Options,
+    },
     Taper {
         points: [Option<Point3>; 2],
         initial: Option<viboceros_command::taper::TaperDistance>,
@@ -966,6 +972,7 @@ impl InteractiveCommand {
             Self::Rotate3D { .. } => "Rotate3D",
             Self::Twist { .. } => "Twist",
             Self::Bend { .. } => "Bend",
+            Self::Stretch { .. } => "Stretch",
             Self::Taper { .. } => "Taper",
             Self::Maelstrom { .. } => "Maelstrom",
             Self::Mirror { .. } | Self::MirrorThreePoint { .. } | Self::MirrorObject => "Mirror",
@@ -1760,6 +1767,12 @@ impl InteractiveCommand {
                     "Maelstrom: enter or pick the coil angle; Copy, Rigid"
                 }
             },
+            Self::Stretch { points, factor, .. } => match (points, factor) {
+                ([None, _], _) => "Stretch: pick the axis start; Copy, Rigid (Esc to cancel)",
+                ([Some(_), None], None) => "Stretch: pick the axis end or enter a factor",
+                ([Some(_), None], Some(_)) => "Stretch: pick the stretch direction",
+                _ => "Stretch: enter a factor or pick the target; Length, Copy, Rigid",
+            },
             Self::Taper {
                 points, initial, ..
             } => match (points, initial) {
@@ -1992,6 +2005,9 @@ impl InteractiveCommand {
             | Self::Bend {
                 points: [None, _], ..
             }
+            | Self::Stretch {
+                points: [None, _], ..
+            }
             | Self::Taper {
                 points: [None, _], ..
             }
@@ -2187,6 +2203,13 @@ impl InteractiveCommand {
                 center: Some(center),
                 ..
             } => Some(center),
+            Self::Stretch {
+                points: [Some(start), end],
+                ..
+            } => Some(match end {
+                Some(end) => end,
+                None => start,
+            }),
             Self::Taper {
                 points: [Some(start), end],
                 initial,
@@ -2362,6 +2385,7 @@ pub struct VibocerosApp {
     transform_session: Option<transform_prompt::TransformSession>,
     twist_session: Option<twist_prompt::TwistSession>,
     bend_session: Option<bend_prompt::BendSession>,
+    stretch_session: Option<stretch_prompt::StretchSession>,
     taper_session: Option<taper_prompt::TaperSession>,
     maelstrom_session: Option<maelstrom_prompt::MaelstromSession>,
     translation_session: Option<translation_prompt::TranslationSession>,
@@ -2499,6 +2523,7 @@ impl VibocerosApp {
             transform_session: None,
             twist_session: None,
             bend_session: None,
+            stretch_session: None,
             taper_session: None,
             maelstrom_session: None,
             translation_session: None,
@@ -2767,6 +2792,7 @@ impl VibocerosApp {
             || self.try_continue_transform(&input)
             || self.try_continue_twist(&input)
             || self.try_continue_bend(&input)
+            || self.try_continue_stretch(&input)
             || self.try_continue_taper(&input)
             || self.try_continue_maelstrom(&input)
             || self.try_continue_points(&input)
@@ -3313,6 +3339,7 @@ impl VibocerosApp {
             || self.try_continue_transform(input)
             || self.try_continue_twist(input)
             || self.try_continue_bend(input)
+            || self.try_continue_stretch(input)
             || self.try_continue_taper(input)
             || self.try_continue_maelstrom(input)
             || self.try_continue_points(input)
@@ -3610,6 +3637,18 @@ impl VibocerosApp {
                 center: None,
                 initial: None,
                 target: None,
+                options,
+            }
+        } else if normalized == "stretch" {
+            let mut options = self.commands.stretch_options_default();
+            for word in &arguments {
+                if !matches!(options.accept(word), Ok(true)) {
+                    return false;
+                }
+            }
+            InteractiveCommand::Stretch {
+                points: [None; 2],
+                factor: None,
                 options,
             }
         } else if normalized == "taper" {
@@ -5695,6 +5734,7 @@ impl VibocerosApp {
                 command,
                 InteractiveCommand::Twist { .. }
                     | InteractiveCommand::Bend { .. }
+                    | InteractiveCommand::Stretch { .. }
                     | InteractiveCommand::Taper { .. }
                     | InteractiveCommand::Maelstrom { .. }
             ))
@@ -5728,6 +5768,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Twist { .. }
                 | InteractiveCommand::Bend { .. }
+                | InteractiveCommand::Stretch { .. }
                 | InteractiveCommand::Taper { .. }
                 | InteractiveCommand::Maelstrom { .. }
                 | InteractiveCommand::Mirror { .. }
@@ -5804,6 +5845,10 @@ impl VibocerosApp {
             }
         } else if matches!(command, InteractiveCommand::Maelstrom { .. }) {
             if !self.start_maelstrom_session(picked_sources) {
+                return true;
+            }
+        } else if matches!(command, InteractiveCommand::Stretch { .. }) {
+            if !self.start_stretch_session(picked_sources) {
                 return true;
             }
         } else if matches!(command, InteractiveCommand::Taper { .. }) {
@@ -5903,6 +5948,7 @@ impl VibocerosApp {
         self.rectangle_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
+        self.finish_stretch_session(false);
         self.finish_taper_session(false);
         self.set_view_prompt = None;
         if std::mem::take(&mut self.remember_copy_prompt) && announce {
@@ -8350,6 +8396,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::Twist { .. } => return self.accept_twist_point(point),
             InteractiveCommand::Bend { .. } => return self.accept_bend_point(point),
+            InteractiveCommand::Stretch { .. } => return self.accept_stretch_point(point),
             InteractiveCommand::Taper { .. } => return self.accept_taper_point(point),
             InteractiveCommand::Maelstrom { .. } => {
                 return self.accept_maelstrom_point(point);
@@ -10513,6 +10560,10 @@ impl eframe::App for VibocerosApp {
                 self.commands.transform_scalar_default("Bend"),
             )
         });
+        let stretch_preview = self
+            .stretch_session
+            .as_ref()
+            .and_then(|s| s.preview(self.active_command));
         let taper_preview = self.taper_session.as_ref().and_then(|s| {
             s.preview(
                 self.active_command,
@@ -10918,6 +10969,7 @@ impl eframe::App for VibocerosApp {
                                 .filter(|_| model_input_active),
                             twist_preview,
                             bend_preview,
+                            stretch_preview,
                             taper_preview,
                             maelstrom_preview,
                             orient_surface_preview: surface_session
@@ -11022,6 +11074,11 @@ impl eframe::App for VibocerosApp {
             }
             if let Some(point) = output.bend_preview
                 && self.update_bend_preview(point)
+            {
+                ui.ctx().request_repaint();
+            }
+            if let Some(point) = output.stretch_preview
+                && self.update_stretch_preview(point)
             {
                 ui.ctx().request_repaint();
             }
@@ -11267,6 +11324,7 @@ mod tests {
     mod spiral_rail;
     mod split_edge;
     mod standalone_subcurve;
+    mod stretch;
     mod subcurve_direction;
     mod subcurve_direction_grid;
     mod subcurve_edge;
@@ -11375,6 +11433,7 @@ mod tests {
             transform_session: None,
             twist_session: None,
             bend_session: None,
+            stretch_session: None,
             taper_session: None,
             maelstrom_session: None,
             translation_session: None,

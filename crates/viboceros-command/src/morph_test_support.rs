@@ -1,7 +1,11 @@
 //! Native deformation fixture reconstruction and sampled comparisons.
-use crate::*;
 use serde_json::Value;
+use viboceros_document::{Document, Geometry};
 use viboceros_document::{ObjectId, SelectionMode};
+use viboceros_geometry::{
+    Brep, Frame3, LineSegment, NurbsCurve, NurbsSurface, Point3, Real, Tolerance, TriangleMesh,
+    Vector3,
+};
 use viboceros_geometry::{MeshFace, WeightedPoint3};
 
 pub(crate) fn p(v: &Value) -> Point3 {
@@ -22,7 +26,7 @@ fn controls(v: &Value) -> Vec<WeightedPoint3> {
         .map(|c| WeightedPoint3::try_new(p(&c["point"]), c["weight"].as_f64().unwrap()).unwrap())
         .collect()
 }
-fn curve(v: &Value) -> NurbsCurve {
+pub(crate) fn curve(v: &Value) -> NurbsCurve {
     NurbsCurve::try_new_rational(
         v["degree"].as_u64().unwrap() as usize,
         controls(&v["control_points"]),
@@ -129,7 +133,13 @@ pub(crate) fn setup(op: &Value, before: &Value) -> (Document, Vec<ObjectId>) {
             "Surface" => Geometry::NurbsSurface(surface(&g["surfaces"][0])),
             "Box" => Geometry::Brep(
                 Brep::try_box(
-                    CommandContext::default().construction_plane,
+                    Frame3::try_from_directions(
+                        Point3::try_from([0.; 3]).unwrap(),
+                        Vector3::try_new(1., 0., 0.).unwrap(),
+                        Vector3::try_new(0., 1., 0.).unwrap(),
+                        Tolerance::DEFAULT,
+                    )
+                    .unwrap(),
                     [[1., 3.], [-1., 1.], [0., 10.]],
                     tolerance,
                 )
@@ -173,6 +183,22 @@ pub(crate) fn compare_geometry(
     epsilon: Real,
     label: &str,
 ) {
+    compare_geometry_error(actual, expected, source, source_record, epsilon, label);
+}
+pub(crate) fn compare_geometry_error(
+    actual: &Geometry,
+    expected: &Value,
+    source: &Geometry,
+    source_record: &Value,
+    epsilon: Real,
+    label: &str,
+) -> Real {
+    let maximum = std::cell::Cell::new(0_f64);
+    let near = |a: Point3, b: Point3, epsilon: Real, label: &str| {
+        let gap = a.distance_to(b).unwrap();
+        maximum.set(maximum.get().max(gap));
+        assert!(gap <= epsilon, "{label}: {a:?} != {b:?} ({gap})");
+    };
     match actual {
         Geometry::Point(a) => near(*a, p(&expected["points"][0]), epsilon, label),
         Geometry::Mesh(mesh) => {
@@ -208,8 +234,8 @@ pub(crate) fn compare_geometry(
             }
         }
         Geometry::Brep(brep) => {
-            assert!(brep.is_closed());
-            assert!(brep.is_solid());
+            assert_eq!(brep.is_closed(), expected["solid"].as_bool().unwrap());
+            assert_eq!(brep.is_solid(), expected["solid"].as_bool().unwrap());
             assert_eq!(
                 brep.vertices().len(),
                 expected["vertices"].as_array().unwrap().len(),
@@ -315,6 +341,7 @@ pub(crate) fn compare_geometry(
             }
         }
     }
+    maximum.get()
 }
 pub(crate) fn assert_metadata(doc: &Document, expected: &Value, label: &str) {
     let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();

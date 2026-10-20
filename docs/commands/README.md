@@ -114,6 +114,7 @@ Rhino's complete command set is still a work in progress.
 - [Independent reference scaling by plane](scale-by-plane.md)
 - [Scale individual object positions](scale-positions.md)
 - [Axis Twist deformation and rigid placement](twist.md)
+- [Axis Stretch with numeric factors, lengths, targets and repeated copies](stretch.md)
 - [Circular spine Bend deformation and rigid placement](bend.md)
 - [Radial and flat Taper deformation](taper.md)
 - [Cylindrical spiral Maelstrom deformation](maelstrom.md)

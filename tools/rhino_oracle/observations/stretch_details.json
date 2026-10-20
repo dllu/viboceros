@@ -1,0 +1,613 @@
+{
+  "results": [
+    {
+      "value": {
+        "success": true,
+        "curve": {
+          "control_points": [
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.9999999999999996,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.2246467991473532e-16,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.9999999999999996,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2.0,
+                2.4492935982947064e-16,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                -1.9999999999999996,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -3.6739403974420594e-16,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999999999999993,
+                -2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            3.141592653589793,
+            3.141592653589793,
+            6.283185307179586,
+            6.283185307179586,
+            9.42477796076938,
+            9.42477796076938,
+            12.566370614359172,
+            12.566370614359172,
+            12.566370614359172
+          ],
+          "domain": [
+            0.0,
+            12.566370614359172
+          ]
+        },
+        "segments": [
+          {
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    1.9999999999999996,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.2246467991473532e-16,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                3.141592653589793,
+                3.141592653589793,
+                3.141592653589793
+              ],
+              "domain": [
+                0.0,
+                3.141592653589793
+              ]
+            },
+            "domain": [
+              0.0,
+              3.141592653589793
+            ],
+            "kind": "NurbsCurve"
+          },
+          {
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    1.2246467991473532e-16,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.9999999999999996,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.4492935982947064e-16,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -1.9999999999999996,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -3.6739403974420594e-16,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.9999999999999993,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "knots": [
+                3.141592653589793,
+                3.141592653589793,
+                3.141592653589793,
+                6.283185307179586,
+                6.283185307179586,
+                9.42477796076938,
+                9.42477796076938,
+                12.566370614359172,
+                12.566370614359172,
+                12.566370614359172
+              ],
+              "domain": [
+                3.141592653589793,
+                12.566370614359172
+              ]
+            },
+            "domain": [
+              3.141592653589793,
+              12.566370614359172
+            ],
+            "kind": "NurbsCurve"
+          }
+        ],
+        "kind": "PolyCurve"
+      },
+      "elapsed_ns": 0,
+      "id": "segments_circle"
+    },
+    {
+      "value": {
+        "success": true,
+        "curve": {
+          "control_points": [
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.9999999999999996,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.2246467991473532e-16,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.9999999999999996,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2.0,
+                2.4492935982947064e-16,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            3.141592653589793,
+            3.141592653589793,
+            6.283185307179586,
+            6.283185307179586,
+            6.283185307179586
+          ],
+          "domain": [
+            0.0,
+            6.283185307179586
+          ]
+        },
+        "segments": [
+          {
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    1.9999999999999996,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.2246467991473532e-16,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                3.141592653589793,
+                3.141592653589793,
+                3.141592653589793
+              ],
+              "domain": [
+                0.0,
+                3.141592653589793
+              ]
+            },
+            "domain": [
+              0.0,
+              3.141592653589793
+            ],
+            "kind": "NurbsCurve"
+          },
+          {
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    1.2246467991473532e-16,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.9999999999999996,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.4492935982947064e-16,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "knots": [
+                3.141592653589793,
+                3.141592653589793,
+                3.141592653589793,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ],
+              "domain": [
+                3.141592653589793,
+                6.283185307179586
+              ]
+            },
+            "domain": [
+              3.141592653589793,
+              6.283185307179586
+            ],
+            "kind": "NurbsCurve"
+          }
+        ],
+        "kind": "PolyCurve"
+      },
+      "elapsed_ns": 0,
+      "id": "segments_arc"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 1.8070063196279616e-07,
+            "maximum_same_parameter_error": 2.57639858425307e-06,
+            "samples": 513
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Curve_Z"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 8.483677887215735e-06,
+            "maximum_same_parameter_error": 9.259909695839115e-06,
+            "samples": 513
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Curve_Spatial"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 8.162166816370256e-06,
+            "maximum_same_parameter_error": 9.726931720610447e-06,
+            "samples": 513
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Curve_Skew"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 6.128632219990132e-14,
+            "maximum_same_parameter_error": 0.00014572817201141675,
+            "samples": 2401
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Surface_Z"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 0.00019740938102144246,
+            "maximum_same_parameter_error": 0.0004823840373252689,
+            "samples": 2401
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Surface_Spatial"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 0.00011652143496162565,
+            "maximum_same_parameter_error": 0.0002744350076376606,
+            "samples": 2401
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Surface_Skew"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 1.422819137495494e-14,
+            "maximum_same_parameter_error": 1.4283958749745402e-14,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 1.4224725733355617e-14,
+            "maximum_same_parameter_error": 1.4323167916492475e-14,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 1.427489518630181e-14,
+            "maximum_same_parameter_error": 1.4283958749745402e-14,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 1.4219525687218284e-14,
+            "maximum_same_parameter_error": 1.422342590005155e-14,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 1.807312143953211e-15,
+            "maximum_same_parameter_error": 1.7798229048217483e-15,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 1.7763915335309632e-14,
+            "maximum_same_parameter_error": 2.1346329435720016e-14,
+            "samples": 2401
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Box_Z"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 4.5207956280444096e-05,
+            "maximum_same_parameter_error": 0.00011057920187634545,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 9.434635581071853e-05,
+            "maximum_same_parameter_error": 0.00022826013993343887,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 9.434635581082917e-05,
+            "maximum_same_parameter_error": 0.0002282601399334162,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 4.5207956280110846e-05,
+            "maximum_same_parameter_error": 0.00011057920187589222,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 1.807312143953211e-15,
+            "maximum_same_parameter_error": 1.7798229048217483e-15,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 5.3486945852147655e-15,
+            "maximum_same_parameter_error": 8.032062680601159e-15,
+            "samples": 2401
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Box_Spatial"
+    },
+    {
+      "value": {
+        "measurements": [
+          {
+            "maximum_forward_distance": 0.0003183641614305423,
+            "maximum_same_parameter_error": 0.0005991050892988987,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 0.00020526619735179561,
+            "maximum_same_parameter_error": 0.0006443629575321605,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 0.00026182419614776634,
+            "maximum_same_parameter_error": 0.0006168122279434556,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 7.912872880689087e-05,
+            "maximum_same_parameter_error": 0.0002477660331646302,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 1.807312143953211e-15,
+            "maximum_same_parameter_error": 1.7798229048217483e-15,
+            "samples": 2401
+          },
+          {
+            "maximum_forward_distance": 4.6629367034256575e-15,
+            "maximum_same_parameter_error": 7.167820306092321e-15,
+            "samples": 2401
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "distance_Box_Skew"
+    }
+  ],
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine_version": "8.32.26160.13001",
+  "engine": "rhino",
+  "provenance": {
+    "request_sha256": "9aca2570293af97055f9bcf9f158628cd8264e4df34cb665cfd944e458d54f45",
+    "sources": {
+      "generate_stretch_details.py": "e366e21526acef90d9a800a0f61160929c85021c527226ed8e113a8d8599aaac",
+      "stretch_details_probe.py": "11de11fea446c2297f3a1a2ee16e20f8b2430aea69f7aeaa9dfbb426900bb7c2",
+      "twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+      "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+      "rhino_worker.py": "9f61f2b09727323ef6bd9d1129c611b61caf35a3a14611e793ef2393f2b59604",
+      "structural_sdk.py": "6445dce8344034c987d90bdac9ea4c82b0cb9bd2ee48563b12528d65efd5ca37"
+    }
+  }
+}
