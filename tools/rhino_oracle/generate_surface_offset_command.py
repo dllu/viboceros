@@ -1,15 +1,15 @@
 """Capture fixed public surface offset command getters and undo/redo."""
 import argparse,gzip,hashlib,json
 from pathlib import Path
-from .surface_offset_command_probe import request,through_request,validate_request
+from .surface_offset_command_probe import request,through_request,select_request,validate_request
 from .structural_sdk import PROBES
 HERE=Path(__file__).resolve().parent
 def main():
     from .client import OracleClient
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--through-point',action='store_true');parser.add_argument('--case');args=parser.parse_args()
-    label='surface_offset_through_point'if args.through_point else'surface_offset_command'
-    q=through_request()if args.through_point else request()
-    output=label
+    parser=argparse.ArgumentParser(description=__doc__);mode=parser.add_mutually_exclusive_group();mode.add_argument('--through-point',action='store_true');mode.add_argument('--select-point',action='store_true');parser.add_argument('--case');args=parser.parse_args()
+    label='surface_offset_through_point'if args.through_point or args.select_point else'surface_offset_command'
+    q=select_request()if args.select_point else through_request()if args.through_point else request()
+    output='surface_offset_select_point'if args.select_point else label
     if args.case:
         q['operations']=[op for op in q['operations']if op['case']==args.case]
         if not q['operations']:parser.error('unknown fixed scene case')

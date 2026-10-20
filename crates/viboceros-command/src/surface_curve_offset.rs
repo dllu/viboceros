@@ -6,9 +6,11 @@ use viboceros_geometry::{
     CurveExtensionSide, CurveExtensionStyle, SurfaceCurveOffsetGapStyle, SurfaceCurveOffsetOptions,
 };
 mod through_point;
+pub use through_point::PointSetPlan;
 
-pub const USAGE: &str = "OffsetCrvOnSrf distance|ThroughPoint=x,y,z Surface=id [Source=id|Edge=id,index] [Face=index] [SidePoint=x,y,z] [Flip=Yes|No] [Number=count] [SubCrv=start,end]";
+pub const USAGE: &str = "OffsetCrvOnSrf distance|ThroughPoint=x,y,z|ThroughPoint Points=id,... Surface=id [Source=id|Edge=id,index] [Face=index] [SidePoint=x,y,z] [Flip=Yes|No] [Number=count] [SubCrv=start,end]";
 pub const MAX_NUMBER: usize = 1024;
+pub const MAX_POINTS: usize = 1024;
 const MAX_OUTPUTS: usize = 8192;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -56,6 +58,7 @@ pub struct References {
     pub range: Option<[Real; 2]>,
     pub through: Option<Point3>,
     pub through_mode: bool,
+    pub points: Option<Vec<ObjectId>>,
 }
 
 pub fn options(
@@ -131,6 +134,17 @@ pub fn options(
                 refs.through = Some(parse_single_option_point(value, USAGE)?);
                 refs.through_mode = true;
             }
+            "points" => {
+                let ids = value
+                    .split(',')
+                    .take(MAX_POINTS + 1)
+                    .map(|v| v.parse().map_err(|_| CommandError::Usage(USAGE)))
+                    .collect::<Result<Vec<ObjectId>, _>>()?;
+                if ids.is_empty() || ids.len() > MAX_POINTS {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                refs.points = Some(ids);
+            }
             "subcrv" => {
                 let values = value
                     .split(',')
@@ -145,7 +159,9 @@ pub fn options(
     if seen.contains("source") && seen.contains("edge") {
         return Err(CommandError::Usage(USAGE));
     }
-    if distance && refs.through_mode {
+    if distance && refs.through_mode
+        || refs.points.is_some() && (!refs.through_mode || refs.through.is_some())
+    {
         return Err(CommandError::Usage(USAGE));
     }
     options.validate()?;
@@ -442,7 +458,7 @@ impl Command for OffsetCurveOnSurfaceCommand {
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let (options, mut refs, has_distance) = options(args, Options::default())?;
-        if !has_distance && refs.through.is_none() {
+        if !has_distance && refs.through.is_none() && refs.points.is_none() {
             return Err(CommandError::Usage(USAGE));
         }
         if refs.source.is_none() {
@@ -462,6 +478,9 @@ impl Command for OffsetCurveOnSurfaceCommand {
             refs.surface.ok_or(CommandError::Usage(USAGE))?,
             refs.face,
         )?;
+        if let Some(ids) = refs.points {
+            return PointSetPlan::prepare(doc, source, target, &ids, options)?.apply(doc);
+        }
         let plan = if let Some(point) = refs.through {
             Plan::prepare_through_point(doc, source, target, point, options)?
         } else {

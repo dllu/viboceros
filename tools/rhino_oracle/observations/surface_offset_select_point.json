@@ -1,0 +1,5508 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "engine": "rhino",
+  "iterations": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "undo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "success": true,
+        "before": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": true,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "history": "Command: _OffsetCrvOnSrf\nCommand: _Pause\nSelect base surface: '_-SelID\nSelect base surface: b8ef340f-3ae5-4fff-b350-b6007522fd72\n1 surface added to selection.\nOffset distance <1> ( ThroughPoint  Flip  Number=1 ): _ThroughPoint\nThrough point ( Select ): _Select\nSelect points: '_-SelID\nSelect points: 81af759b-737e-46f2-8afc-e6bba3d1d551\n1 point added to selection.\nSelect points. Press Enter when done: _Enter\nSelect points. Press Enter when done\nOffset curve on surface... Press Esc to cancel",
+        "target_definition": null,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "objects": [
+              {
+                "name": "Source",
+                "role": "source",
+                "layer": "Surface offset source",
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0
+                  ]
+                },
+                "selected": false,
+                "crc": 544168031
+              },
+              {
+                "name": "Target",
+                "role": "target",
+                "layer": "Default",
+                "selected": false,
+                "crc": 762087703
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  0.0,
+                  2.0,
+                  5.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": null,
+                "role": "output",
+                "layer": "Surface offset output",
+                "curve": {
+                  "domain": [
+                    -5.999999999999998,
+                    14.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    -5.999999999999998,
+                    -5.999999999999998,
+                    14.0,
+                    14.0
+                  ]
+                },
+                "selected": false,
+                "crc": 695018390
+              }
+            ],
+            "name": "OffsetCrvOnSrf",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "redo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "input_trace": {
+          "prompts": [
+            "Select base surface",
+            "Offset distance <1> ( ThroughPoint  Flip  Number=1 )",
+            "Through point ( Select )",
+            "Select points",
+            "Select points. Press Enter when done"
+          ],
+          "sent": [
+            {
+              "token": "'_-SelID b8ef340f-3ae5-4fff-b350-b6007522fd72",
+              "action": 0,
+              "prompt": "Select base surface"
+            },
+            {
+              "token": "_ThroughPoint",
+              "action": 1,
+              "prompt": "Offset distance <1> ( ThroughPoint  Flip  Number=1 )"
+            },
+            {
+              "token": "_Select",
+              "action": 2,
+              "prompt": "Through point ( Select )"
+            },
+            {
+              "token": "'_-SelID 81af759b-737e-46f2-8afc-e6bba3d1d551",
+              "action": 3,
+              "prompt": "Select points"
+            },
+            {
+              "token": "_Enter",
+              "action": 4,
+              "prompt": "Select points. Press Enter when done"
+            }
+          ],
+          "completed": 5,
+          "edge_picks": [],
+          "motion": [],
+          "expected": 5,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": []
+        },
+        "constraints": [],
+        "surface_definition": {
+          "knots_v": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                10.0,
+                0.0
+              ]
+            }
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "domain_v": [
+            0.0,
+            20.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "domain_u": [
+            0.0,
+            20.0
+          ],
+          "control_count": [
+            2,
+            2
+          ]
+        }
+      },
+      "id": "through_select"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 518065518
+          }
+        ],
+        "undo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "success": true,
+        "before": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": true,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "history": "Command: _OffsetCrvOnSrf\nCommand: _Pause\nSelect base surface: '_-SelID\nSelect base surface: 0152deff-f562-4414-afe4-60d5d33a336c\n1 surface added to selection.\nOffset distance <1> ( ThroughPoint  Flip  Number=1 ): _ThroughPoint\nThrough point ( Select ): _Select\nSelect points: '_-SelID\nSelect points: d3af3a13-97a5-46ab-9b3c-3bdbbf95cf64\n1 point added to selection.\nSelect points. Press Enter when done: '_-SelID\nSelect points. Press Enter when done: c4b18cfd-cdb8-4f6e-a4aa-e6fb1ff0c76a\n1 point added to selection.\nSelect points. Press Enter when done: _Enter\nSelect points. Press Enter when done\nOffset curve on surface... Press Esc to cancel",
+        "target_definition": null,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "objects": [
+              {
+                "name": "Source",
+                "role": "source",
+                "layer": "Surface offset source",
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0
+                  ]
+                },
+                "selected": false,
+                "crc": 544168031
+              },
+              {
+                "name": "Target",
+                "role": "target",
+                "layer": "Default",
+                "selected": false,
+                "crc": 762087703
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  1.0,
+                  -1.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": null,
+                "role": "output",
+                "layer": "Surface offset output",
+                "curve": {
+                  "domain": [
+                    -5.999999999999998,
+                    14.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    -5.999999999999998,
+                    -5.999999999999998,
+                    14.0,
+                    14.0
+                  ]
+                },
+                "selected": false,
+                "crc": 695018390
+              },
+              {
+                "name": null,
+                "role": "output",
+                "layer": "Surface offset output",
+                "curve": {
+                  "domain": [
+                    -5.999999999999998,
+                    14.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -10.0,
+                        -0.9999999999999893,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        10.0,
+                        -0.9999999999999893,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    -5.999999999999998,
+                    -5.999999999999998,
+                    14.0,
+                    14.0
+                  ]
+                },
+                "selected": false,
+                "crc": 518065518
+              }
+            ],
+            "name": "OffsetCrvOnSrf",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 518065518
+          }
+        ],
+        "redo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 518065518
+          }
+        ],
+        "input_trace": {
+          "prompts": [
+            "Select base surface",
+            "Offset distance <1> ( ThroughPoint  Flip  Number=1 )",
+            "Through point ( Select )",
+            "Select points",
+            "Select points. Press Enter when done",
+            "Select points. Press Enter when done"
+          ],
+          "sent": [
+            {
+              "token": "'_-SelID 0152deff-f562-4414-afe4-60d5d33a336c",
+              "action": 0,
+              "prompt": "Select base surface"
+            },
+            {
+              "token": "_ThroughPoint",
+              "action": 1,
+              "prompt": "Offset distance <1> ( ThroughPoint  Flip  Number=1 )"
+            },
+            {
+              "token": "_Select",
+              "action": 2,
+              "prompt": "Through point ( Select )"
+            },
+            {
+              "token": "'_-SelID d3af3a13-97a5-46ab-9b3c-3bdbbf95cf64",
+              "action": 3,
+              "prompt": "Select points"
+            },
+            {
+              "token": "'_-SelID c4b18cfd-cdb8-4f6e-a4aa-e6fb1ff0c76a",
+              "action": 4,
+              "prompt": "Select points. Press Enter when done"
+            },
+            {
+              "token": "_Enter",
+              "action": 5,
+              "prompt": "Select points. Press Enter when done"
+            }
+          ],
+          "completed": 6,
+          "edge_picks": [],
+          "motion": [],
+          "expected": 6,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": []
+        },
+        "constraints": [],
+        "surface_definition": {
+          "knots_v": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                10.0,
+                0.0
+              ]
+            }
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "domain_v": [
+            0.0,
+            20.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "domain_u": [
+            0.0,
+            20.0
+          ],
+          "control_count": [
+            2,
+            2
+          ]
+        }
+      },
+      "id": "through_select_multiple"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 518065518
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "undo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "success": true,
+        "before": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": true,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "history": "Command: _OffsetCrvOnSrf\nCommand: _Pause\nSelect base surface: '_-SelID\nSelect base surface: 02b620ca-c66a-4811-bdd9-5639b64f09e3\n1 surface added to selection.\nOffset distance <1> ( ThroughPoint  Flip  Number=1 ): _ThroughPoint\nThrough point ( Select ): _Select\nSelect points: '_-SelID\nSelect points: 01bd88a3-a332-4a4b-a815-f00e2e5ee6c9\n1 point added to selection.\nSelect points. Press Enter when done: '_-SelID\nSelect points. Press Enter when done: 677e24bf-d105-4318-aaaf-111aa63abf66\n1 point added to selection.\nSelect points. Press Enter when done: _Enter\nSelect points. Press Enter when done\nOffset curve on surface... Press Esc to cancel",
+        "target_definition": null,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "objects": [
+              {
+                "name": "Source",
+                "role": "source",
+                "layer": "Surface offset source",
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0
+                  ]
+                },
+                "selected": false,
+                "crc": 544168031
+              },
+              {
+                "name": "Target",
+                "role": "target",
+                "layer": "Default",
+                "selected": false,
+                "crc": 762087703
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  1.0,
+                  -1.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": null,
+                "role": "output",
+                "layer": "Surface offset output",
+                "curve": {
+                  "domain": [
+                    -5.999999999999998,
+                    14.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -10.0,
+                        -0.9999999999999893,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        10.0,
+                        -0.9999999999999893,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    -5.999999999999998,
+                    -5.999999999999998,
+                    14.0,
+                    14.0
+                  ]
+                },
+                "selected": false,
+                "crc": 518065518
+              },
+              {
+                "name": null,
+                "role": "output",
+                "layer": "Surface offset output",
+                "curve": {
+                  "domain": [
+                    -5.999999999999998,
+                    14.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    -5.999999999999998,
+                    -5.999999999999998,
+                    14.0,
+                    14.0
+                  ]
+                },
+                "selected": false,
+                "crc": 695018390
+              }
+            ],
+            "name": "OffsetCrvOnSrf",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 518065518
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "redo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    -0.9999999999999893,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 518065518
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "input_trace": {
+          "prompts": [
+            "Select base surface",
+            "Offset distance <1> ( ThroughPoint  Flip  Number=1 )",
+            "Through point ( Select )",
+            "Select points",
+            "Select points. Press Enter when done",
+            "Select points. Press Enter when done"
+          ],
+          "sent": [
+            {
+              "token": "'_-SelID 02b620ca-c66a-4811-bdd9-5639b64f09e3",
+              "action": 0,
+              "prompt": "Select base surface"
+            },
+            {
+              "token": "_ThroughPoint",
+              "action": 1,
+              "prompt": "Offset distance <1> ( ThroughPoint  Flip  Number=1 )"
+            },
+            {
+              "token": "_Select",
+              "action": 2,
+              "prompt": "Through point ( Select )"
+            },
+            {
+              "token": "'_-SelID 01bd88a3-a332-4a4b-a815-f00e2e5ee6c9",
+              "action": 3,
+              "prompt": "Select points"
+            },
+            {
+              "token": "'_-SelID 677e24bf-d105-4318-aaaf-111aa63abf66",
+              "action": 4,
+              "prompt": "Select points. Press Enter when done"
+            },
+            {
+              "token": "_Enter",
+              "action": 5,
+              "prompt": "Select points. Press Enter when done"
+            }
+          ],
+          "completed": 6,
+          "edge_picks": [],
+          "motion": [],
+          "expected": 6,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": []
+        },
+        "constraints": [],
+        "surface_definition": {
+          "knots_v": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                10.0,
+                0.0
+              ]
+            }
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "domain_v": [
+            0.0,
+            20.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "domain_u": [
+            0.0,
+            20.0
+          ],
+          "control_count": [
+            2,
+            2
+          ]
+        }
+      },
+      "id": "through_select_reverse"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "undo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "success": true,
+        "before": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": true,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "history": "Command: _OffsetCrvOnSrf\nCommand: _Pause\nSelect base surface: '_-SelID\nSelect base surface: a88d46aa-566c-45ca-85b2-cedd3965141e\n1 surface added to selection.\nOffset distance <1> ( ThroughPoint  Flip  Number=1 ): _ThroughPoint\nThrough point ( Select ): _Select\nSelect points: '_-SelID\nSelect points: ffeae458-94eb-43a5-9809-fa6dbd8a239f\n1 point added to selection.\nSelect points. Press Enter when done: '_-SelID\nSelect points. Press Enter when done: 1b194853-555c-496d-9b51-4cb64b667809\n1 point added to selection.\nSelect points. Press Enter when done: _Enter\nSelect points. Press Enter when done\nOffset curve on surface... Press Esc to cancel",
+        "target_definition": null,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "objects": [
+              {
+                "name": "Source",
+                "role": "source",
+                "layer": "Surface offset source",
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0
+                  ]
+                },
+                "selected": false,
+                "crc": 544168031
+              },
+              {
+                "name": "Target",
+                "role": "target",
+                "layer": "Default",
+                "selected": false,
+                "crc": 762087703
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": null,
+                "role": "output",
+                "layer": "Surface offset output",
+                "curve": {
+                  "domain": [
+                    -5.999999999999998,
+                    14.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    -5.999999999999998,
+                    -5.999999999999998,
+                    14.0,
+                    14.0
+                  ]
+                },
+                "selected": false,
+                "crc": 695018390
+              }
+            ],
+            "name": "OffsetCrvOnSrf",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "redo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "input_trace": {
+          "prompts": [
+            "Select base surface",
+            "Offset distance <1> ( ThroughPoint  Flip  Number=1 )",
+            "Through point ( Select )",
+            "Select points",
+            "Select points. Press Enter when done",
+            "Select points. Press Enter when done"
+          ],
+          "sent": [
+            {
+              "token": "'_-SelID a88d46aa-566c-45ca-85b2-cedd3965141e",
+              "action": 0,
+              "prompt": "Select base surface"
+            },
+            {
+              "token": "_ThroughPoint",
+              "action": 1,
+              "prompt": "Offset distance <1> ( ThroughPoint  Flip  Number=1 )"
+            },
+            {
+              "token": "_Select",
+              "action": 2,
+              "prompt": "Through point ( Select )"
+            },
+            {
+              "token": "'_-SelID ffeae458-94eb-43a5-9809-fa6dbd8a239f",
+              "action": 3,
+              "prompt": "Select points"
+            },
+            {
+              "token": "'_-SelID 1b194853-555c-496d-9b51-4cb64b667809",
+              "action": 4,
+              "prompt": "Select points. Press Enter when done"
+            },
+            {
+              "token": "_Enter",
+              "action": 5,
+              "prompt": "Select points. Press Enter when done"
+            }
+          ],
+          "completed": 6,
+          "edge_picks": [],
+          "motion": [],
+          "expected": 6,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": []
+        },
+        "constraints": [],
+        "surface_definition": {
+          "knots_v": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                10.0,
+                0.0
+              ]
+            }
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "domain_v": [
+            0.0,
+            20.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "domain_u": [
+            0.0,
+            20.0
+          ],
+          "control_count": [
+            2,
+            2
+          ]
+        }
+      },
+      "id": "through_select_on_source"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "undo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "success": false,
+        "before": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": true,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "history": "Command: _OffsetCrvOnSrf\nCommand: _Pause\nSelect base surface: '_-SelID\nSelect base surface: b40d9170-1c08-4834-93d9-e1b3ee2010c1\n1 surface added to selection.\nOffset distance <1> ( ThroughPoint  Flip  Number=1 ): _ThroughPoint\nThrough point ( Select ): _Select\nSelect points: '_-SelID\nSelect points: ff514c0d-5bbf-40cd-965d-8a4ff870f4f4\n1 point added to selection.\nSelect points. Press Enter when done: _Cancel\nSelect points. Press Enter when done",
+        "target_definition": null,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "objects": [
+              {
+                "name": "Source",
+                "role": "source",
+                "layer": "Surface offset source",
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0
+                  ]
+                },
+                "selected": false,
+                "crc": 544168031
+              },
+              {
+                "name": "Target",
+                "role": "target",
+                "layer": "Default",
+                "selected": false,
+                "crc": 762087703
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": false,
+                "crc": 0
+              }
+            ],
+            "name": "OffsetCrvOnSrf",
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "redo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "input_trace": {
+          "prompts": [
+            "Select base surface",
+            "Offset distance <1> ( ThroughPoint  Flip  Number=1 )",
+            "Through point ( Select )",
+            "Select points",
+            "Select points. Press Enter when done"
+          ],
+          "sent": [
+            {
+              "token": "'_-SelID b40d9170-1c08-4834-93d9-e1b3ee2010c1",
+              "action": 0,
+              "prompt": "Select base surface"
+            },
+            {
+              "token": "_ThroughPoint",
+              "action": 1,
+              "prompt": "Offset distance <1> ( ThroughPoint  Flip  Number=1 )"
+            },
+            {
+              "token": "_Select",
+              "action": 2,
+              "prompt": "Through point ( Select )"
+            },
+            {
+              "token": "'_-SelID ff514c0d-5bbf-40cd-965d-8a4ff870f4f4",
+              "action": 3,
+              "prompt": "Select points"
+            },
+            {
+              "token": "_Cancel",
+              "action": 4,
+              "prompt": "Select points. Press Enter when done"
+            }
+          ],
+          "completed": 5,
+          "edge_picks": [],
+          "motion": [],
+          "expected": 5,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": []
+        },
+        "constraints": [],
+        "surface_definition": {
+          "knots_v": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                10.0,
+                0.0
+              ]
+            }
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "domain_v": [
+            0.0,
+            20.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "domain_u": [
+            0.0,
+            20.0
+          ],
+          "control_count": [
+            2,
+            2
+          ]
+        }
+      },
+      "id": "through_select_cancel"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          }
+        ],
+        "undo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          }
+        ],
+        "success": false,
+        "before": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": true,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          }
+        ],
+        "history": "Command: _OffsetCrvOnSrf\nCommand: _Pause\nSelect base surface: '_-SelID\nSelect base surface: 3ecf506e-1fd3-43c8-9205-b53552c86e7b\n1 surface added to selection.\nOffset distance <1> ( ThroughPoint  Flip  Number=1 ): _ThroughPoint\nThrough point ( Select ): _Select\nSelect points: _Enter\nSelect points",
+        "target_definition": null,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "objects": [
+              {
+                "name": "Source",
+                "role": "source",
+                "layer": "Surface offset source",
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0
+                  ]
+                },
+                "selected": false,
+                "crc": 544168031
+              },
+              {
+                "name": "Target",
+                "role": "target",
+                "layer": "Default",
+                "selected": false,
+                "crc": 762087703
+              }
+            ],
+            "name": "OffsetCrvOnSrf",
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          }
+        ],
+        "redo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          }
+        ],
+        "input_trace": {
+          "prompts": [
+            "Select base surface",
+            "Offset distance <1> ( ThroughPoint  Flip  Number=1 )",
+            "Through point ( Select )",
+            "Select points"
+          ],
+          "sent": [
+            {
+              "token": "'_-SelID 3ecf506e-1fd3-43c8-9205-b53552c86e7b",
+              "action": 0,
+              "prompt": "Select base surface"
+            },
+            {
+              "token": "_ThroughPoint",
+              "action": 1,
+              "prompt": "Offset distance <1> ( ThroughPoint  Flip  Number=1 )"
+            },
+            {
+              "token": "_Select",
+              "action": 2,
+              "prompt": "Through point ( Select )"
+            },
+            {
+              "token": "_Enter",
+              "action": 3,
+              "prompt": "Select points"
+            }
+          ],
+          "completed": 4,
+          "edge_picks": [],
+          "motion": [],
+          "expected": 4,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": []
+        },
+        "constraints": [],
+        "surface_definition": {
+          "knots_v": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                10.0,
+                0.0
+              ]
+            }
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "domain_v": [
+            0.0,
+            20.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "domain_u": [
+            0.0,
+            20.0
+          ],
+          "control_count": [
+            2,
+            2
+          ]
+        }
+      },
+      "id": "through_select_empty"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              8.0,
+              0.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          }
+        ],
+        "undo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              8.0,
+              0.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "success": true,
+        "before": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": true,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              8.0,
+              0.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "history": "Command: _OffsetCrvOnSrf\nCommand: _Pause\nSelect base surface: '_-SelID\nSelect base surface: 2c8f05ff-9e51-433a-afc7-7a7c99e51c82\n1 surface added to selection.\nOffset distance <1> ( ThroughPoint  Flip  Number=1 ): _ThroughPoint\nThrough point ( Select ): _Select\nSelect points: '_-SelID\nSelect points: 5494f48c-3a10-4fb8-b5f6-e4f4713ca9c7\n1 point added to selection.\nSelect points. Press Enter when done: '_-SelID\nSelect points. Press Enter when done: 82600e6d-4285-4fe4-b7f7-bebb21486b68\n1 point added to selection.\nSelect points. Press Enter when done: _Enter\nSelect points. Press Enter when done\nOffset curve on surface... Press Esc to cancel\nOffset curve on surface failed.",
+        "target_definition": null,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "objects": [
+              {
+                "name": "Source",
+                "role": "source",
+                "layer": "Surface offset source",
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0
+                  ]
+                },
+                "selected": false,
+                "crc": 544168031
+              },
+              {
+                "name": "Target",
+                "role": "target",
+                "layer": "Default",
+                "selected": false,
+                "crc": 762087703
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  8.0,
+                  0.0,
+                  5.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              }
+            ],
+            "name": "OffsetCrvOnSrf",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              8.0,
+              0.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "redo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              8.0,
+              0.0,
+              5.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "input_trace": {
+          "prompts": [
+            "Select base surface",
+            "Offset distance <1> ( ThroughPoint  Flip  Number=1 )",
+            "Through point ( Select )",
+            "Select points",
+            "Select points. Press Enter when done",
+            "Select points. Press Enter when done"
+          ],
+          "sent": [
+            {
+              "token": "'_-SelID 2c8f05ff-9e51-433a-afc7-7a7c99e51c82",
+              "action": 0,
+              "prompt": "Select base surface"
+            },
+            {
+              "token": "_ThroughPoint",
+              "action": 1,
+              "prompt": "Offset distance <1> ( ThroughPoint  Flip  Number=1 )"
+            },
+            {
+              "token": "_Select",
+              "action": 2,
+              "prompt": "Through point ( Select )"
+            },
+            {
+              "token": "'_-SelID 5494f48c-3a10-4fb8-b5f6-e4f4713ca9c7",
+              "action": 3,
+              "prompt": "Select points"
+            },
+            {
+              "token": "'_-SelID 82600e6d-4285-4fe4-b7f7-bebb21486b68",
+              "action": 4,
+              "prompt": "Select points. Press Enter when done"
+            },
+            {
+              "token": "_Enter",
+              "action": 5,
+              "prompt": "Select points. Press Enter when done"
+            }
+          ],
+          "completed": 6,
+          "edge_picks": [],
+          "motion": [],
+          "expected": 6,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": []
+        },
+        "constraints": [],
+        "surface_definition": {
+          "knots_v": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                10.0,
+                0.0
+              ]
+            }
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "domain_v": [
+            0.0,
+            20.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "domain_u": [
+            0.0,
+            20.0
+          ],
+          "control_count": [
+            2,
+            2
+          ]
+        }
+      },
+      "id": "through_select_all_on_source"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": true,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "undo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "success": true,
+        "before": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": true,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          }
+        ],
+        "history": "Command: _OffsetCrvOnSrf\nCommand: _Pause\nSelect base surface: '_-SelID\nSelect base surface: 65830d24-43f7-419a-811d-33ebb7617d70\n1 surface added to selection.\nOffset distance <1> ( ThroughPoint  Flip  Number=1 ): _ThroughPoint\nThrough point ( Select ): _Select\nSelect points: '_-SelID\nSelect points: 0da33ef6-04fa-4e07-aa8f-b47bdc4ce554\n1 point added to selection.\nSelect points. Press Enter when done: '_-SelID\nSelect points. Press Enter when done: 1c25d999-4748-4ea0-949c-99ac3921a505\n1 point added to selection.\nSelect points. Press Enter when done: _Enter\nSelect points. Press Enter when done\nOffset curve on surface... Press Esc to cancel",
+        "target_definition": null,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "objects": [
+              {
+                "name": "Source",
+                "role": "source",
+                "layer": "Surface offset source",
+                "curve": {
+                  "domain": [
+                    0.0,
+                    8.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -4.0,
+                        0.0,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    0.0,
+                    0.0,
+                    8.0,
+                    8.0
+                  ]
+                },
+                "selected": false,
+                "crc": 544168031
+              },
+              {
+                "name": "Target",
+                "role": "target",
+                "layer": "Default",
+                "selected": false,
+                "crc": 762087703
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": "Reference",
+                "point": [
+                  1.0,
+                  2.0,
+                  0.0
+                ],
+                "role": "reference",
+                "layer": "Default",
+                "selected": true,
+                "crc": 0
+              },
+              {
+                "name": null,
+                "role": "output",
+                "layer": "Surface offset output",
+                "curve": {
+                  "domain": [
+                    -5.999999999999998,
+                    14.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    -5.999999999999998,
+                    -5.999999999999998,
+                    14.0,
+                    14.0
+                  ]
+                },
+                "selected": false,
+                "crc": 695018390
+              },
+              {
+                "name": null,
+                "role": "output",
+                "layer": "Surface offset output",
+                "curve": {
+                  "domain": [
+                    -5.999999999999998,
+                    14.0
+                  ],
+                  "control_points": [
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        -10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    },
+                    {
+                      "weight": 1.0,
+                      "point": [
+                        10.0,
+                        1.9999999999999787,
+                        0.0
+                      ]
+                    }
+                  ],
+                  "degree": 1,
+                  "knots": [
+                    -5.999999999999998,
+                    -5.999999999999998,
+                    14.0,
+                    14.0
+                  ]
+                },
+                "selected": false,
+                "crc": 695018390
+              }
+            ],
+            "name": "OffsetCrvOnSrf",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "after_script": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "redo": [
+          {
+            "name": "Source",
+            "role": "source",
+            "layer": "Surface offset source",
+            "curve": {
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "selected": false,
+            "crc": 544168031
+          },
+          {
+            "name": "Target",
+            "role": "target",
+            "layer": "Default",
+            "selected": false,
+            "crc": 762087703
+          },
+          {
+            "name": "Reference",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": "Reference",
+            "point": [
+              1.0,
+              2.0,
+              0.0
+            ],
+            "role": "reference",
+            "layer": "Default",
+            "selected": false,
+            "crc": 0
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          },
+          {
+            "name": null,
+            "role": "output",
+            "layer": "Surface offset output",
+            "curve": {
+              "domain": [
+                -5.999999999999998,
+                14.0
+              ],
+              "control_points": [
+                {
+                  "weight": 1.0,
+                  "point": [
+                    -10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                },
+                {
+                  "weight": 1.0,
+                  "point": [
+                    10.0,
+                    1.9999999999999787,
+                    0.0
+                  ]
+                }
+              ],
+              "degree": 1,
+              "knots": [
+                -5.999999999999998,
+                -5.999999999999998,
+                14.0,
+                14.0
+              ]
+            },
+            "selected": false,
+            "crc": 695018390
+          }
+        ],
+        "input_trace": {
+          "prompts": [
+            "Select base surface",
+            "Offset distance <1> ( ThroughPoint  Flip  Number=1 )",
+            "Through point ( Select )",
+            "Select points",
+            "Select points. Press Enter when done",
+            "Select points. Press Enter when done"
+          ],
+          "sent": [
+            {
+              "token": "'_-SelID 65830d24-43f7-419a-811d-33ebb7617d70",
+              "action": 0,
+              "prompt": "Select base surface"
+            },
+            {
+              "token": "_ThroughPoint",
+              "action": 1,
+              "prompt": "Offset distance <1> ( ThroughPoint  Flip  Number=1 )"
+            },
+            {
+              "token": "_Select",
+              "action": 2,
+              "prompt": "Through point ( Select )"
+            },
+            {
+              "token": "'_-SelID 0da33ef6-04fa-4e07-aa8f-b47bdc4ce554",
+              "action": 3,
+              "prompt": "Select points"
+            },
+            {
+              "token": "'_-SelID 1c25d999-4748-4ea0-949c-99ac3921a505",
+              "action": 4,
+              "prompt": "Select points. Press Enter when done"
+            },
+            {
+              "token": "_Enter",
+              "action": 5,
+              "prompt": "Select points. Press Enter when done"
+            }
+          ],
+          "completed": 6,
+          "edge_picks": [],
+          "motion": [],
+          "expected": 6,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "errors": []
+        },
+        "constraints": [],
+        "surface_definition": {
+          "knots_v": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                -10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                -10.0,
+                10.0,
+                0.0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                10.0,
+                10.0,
+                0.0
+              ]
+            }
+          ],
+          "degree": [
+            1,
+            1
+          ],
+          "domain_v": [
+            0.0,
+            20.0
+          ],
+          "knots_u": [
+            0.0,
+            0.0,
+            20.0,
+            20.0
+          ],
+          "domain_u": [
+            0.0,
+            20.0
+          ],
+          "control_count": [
+            2,
+            2
+          ]
+        }
+      },
+      "id": "through_select_same_offset"
+    }
+  ],
+  "provenance": {
+    "request_sha256": "1b60ec1a229929b338f20ed89f42130792096d7e367016862a707cad50b34338",
+    "sources": {
+      "generate_surface_offset_command.py": "7210bfa7215c60d66462c1c58062c877e7777205cbd1c0c82312c1939ec9a927",
+      "client.py": "d92dc94013b5d08d49370242093a4dde2bc7e829242734bc96c8814a7a95b6e1",
+      "rhino_worker.py": "f83e873ca728b794cddd1aa50616914e2635879c362b11a9675fb3e28ef7db97",
+      "structural_sdk.py": "463b38e560ee15cbf18580b193aebeacf401bb9a273b0aede4205e2fc746e7eb",
+      "surface_offset_command_probe.py": "20d85737ccc0a1bdff5196fdcbf435b53a8644c37482e1e1a91e23df4586fde4",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "046795a9a35ef9db6b1a3ddb81856c04d9d001c952e3e781ce29996f25d59a14",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f"
+    }
+  }
+}

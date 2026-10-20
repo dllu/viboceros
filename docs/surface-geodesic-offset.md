@@ -141,6 +141,16 @@ face-clipped curve must independently pass through the constrained point within
 model tolerance. Global root completeness and cut-locus certification remain
 unproven. Repeated UI points retain accepted curves in one history entry.
 
+The first ThroughPoint getter also accepts `Select` for ordered point objects.
+The same inverse and fitting path prepares the complete batch before one atomic
+commit. Point captures reject stale geometry and unselectable inputs. Eight
+further native captures replay selection order, off-surface projection, skipped
+on-source points, duplicate offsets from distinct points, cancellation and
+history. All five output cases meet the unchanged `1e-6` sampled gate, with a
+maximum difference of about `2.2e-14`. Cancel, empty selection and an all-on-source
+batch create no geometry or Undo step. The point getter releases selection;
+its local highlights and selection windows leave geometry and Redo untouched.
+
 Sixteen native ThroughPoint scenes compare repeated picks, constraints,
 selection, layers and grouped history through both command and viewport
 getters. Fourteen qualify at `1e-6`. Bézier and cylinder cases remain

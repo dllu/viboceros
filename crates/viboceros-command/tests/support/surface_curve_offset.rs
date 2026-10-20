@@ -23,6 +23,15 @@ pub fn through_rows() -> Vec<(Value, Value)> {
         16,
     )
 }
+pub fn select_rows() -> Vec<(Value, Value)> {
+    captured(
+        include_str!("../../../../tools/rhino_oracle/fixtures/surface_offset_select_point.json"),
+        include_str!(
+            "../../../../tools/rhino_oracle/observations/surface_offset_select_point.json"
+        ),
+        8,
+    )
+}
 fn captured(request: &str, response: &str, count: usize) -> Vec<(Value, Value)> {
     let q: Value = serde_json::from_str(request).unwrap();
     let r: Value = serde_json::from_str(response).unwrap();
@@ -37,7 +46,13 @@ fn captured(request: &str, response: &str, count: usize) -> Vec<(Value, Value)> 
             assert_eq!(op["id"], row["id"]);
             assert!(row["error"].is_null());
             let v = &row["value"];
-            assert_eq!(v["success"], op["case"] != "through_cancel");
+            assert_eq!(
+                v["success"],
+                !matches!(
+                    op["case"].as_str().unwrap(),
+                    "through_cancel" | "through_select_cancel" | "through_select_empty"
+                )
+            );
             assert_eq!(v["input_trace"]["errors"], serde_json::json!([]));
             assert_eq!(v["input_trace"]["completed"], v["input_trace"]["expected"]);
             (op.clone(), v.clone())
@@ -47,7 +62,8 @@ fn captured(request: &str, response: &str, count: usize) -> Vec<(Value, Value)> 
 pub struct Scene {
     pub source: ObjectId,
     pub target: ObjectId,
-    parents: [GeometrySnapshot; 2],
+    pub references: Vec<ObjectId>,
+    parents: Vec<GeometrySnapshot>,
 }
 fn p(x: f64, y: f64) -> Point3 {
     Point3::try_new(x, y, 0.).unwrap()
@@ -136,20 +152,36 @@ pub fn setup(op: &Value, v: &Value) -> (Document, Scene) {
         (target, Some("Target".into())),
     ])
     .unwrap();
+    let references = v["before"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .skip(2)
+        .map(|row| {
+            let id = doc
+                .add_geometry(Geometry::Point(morph::p(&row["point"])))
+                .unwrap();
+            doc.set_object_names([(id, Some("Reference".into()))])
+                .unwrap();
+            id
+        })
+        .collect::<Vec<_>>();
     if v["before"][0]["selected"] == true {
         doc.select_object(source, SelectionMode::Replace).unwrap();
     }
     doc.set_current_layer(output_layer).unwrap();
     doc.clear_history().unwrap();
-    let parents = [
-        doc.object(source).unwrap().geometry_snapshot().clone(),
-        doc.object(target).unwrap().geometry_snapshot().clone(),
-    ];
+    let parents = [source, target]
+        .into_iter()
+        .chain(references.iter().copied())
+        .map(|id| doc.object(id).unwrap().geometry_snapshot().clone())
+        .collect();
     (
         doc,
         Scene {
             source,
             target,
+            references,
             parents,
         },
     )
@@ -275,6 +307,8 @@ pub fn check(doc: &Document, scene: &Scene, v: &Value, phase: &str) -> f64 {
             "source"
         } else if a.id() == scene.target {
             "target"
+        } else if scene.references.contains(&a.id()) {
+            "reference"
         } else {
             "output"
         };
@@ -286,7 +320,15 @@ pub fn check(doc: &Document, scene: &Scene, v: &Value, phase: &str) -> f64 {
             b["layer"].as_str().unwrap()
         );
         if role != "output" {
-            let index = usize::from(role == "target");
+            let index = if role == "reference" {
+                2 + scene
+                    .references
+                    .iter()
+                    .position(|id| *id == a.id())
+                    .unwrap()
+            } else {
+                usize::from(role == "target")
+            };
             assert!(scene.parents[index].shares_storage_with(a.geometry_snapshot()));
             continue;
         }

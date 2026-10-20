@@ -17,6 +17,7 @@ class SurfaceCurveOffsetTests(TestCase):
         clips=r['closed_gap_cases'];self.assertEqual(clips['recipes'],5);self.assertEqual(clips['qualified_recipes'],5);self.assertLess(clips['maximum_sample_difference'],1e-6)
         commands=r['command_cases'];self.assertEqual(commands['recipes'],8);self.assertEqual(commands['qualified_recipes'],7);self.assertEqual(commands['unqualified_recipes'],['bezier']);self.assertLess(commands['maximum_sample_difference'],4.5e-6)
         through=r['through_point_cases'];self.assertEqual(through['recipes'],16);self.assertEqual(through['qualified_recipes'],14);self.assertEqual(through['unqualified_recipes'],['through_cylinder','through_bezier'])
+        selected=r['point_selection_cases'];self.assertEqual(selected['recipes'],8);self.assertEqual(selected['scripted_recipes'],6);self.assertEqual(selected['output_recipes'],5);self.assertEqual(selected['qualified_recipes'],8);self.assertLess(selected['maximum_sample_difference'],1e-6)
         for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
         self.assertTrue(all(x['maximum_closest_solver_difference']<1e-10 for x in r['independent_closest_points']))
     def test_fixed_sdk_evidence_and_source_closure(self):

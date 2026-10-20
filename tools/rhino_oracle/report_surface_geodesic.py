@@ -7,6 +7,7 @@ SOURCES=['crates/viboceros-geometry/src/surface_geodesic.rs','crates/viboceros-g
 SOURCES += ['crates/viboceros-command/src/surface_curve_offset.rs', 'crates/viboceros-command/src/surface_curve_offset/tests.rs', 'crates/viboceros-command/tests/support/surface_curve_offset.rs', 'crates/viboceros-command/tests/surface_curve_offset_native.rs', 'src/app/surface_curve_offset.rs', 'src/app/tests/surface_curve_offset.rs', 'tools/rhino_oracle/fixtures/surface_offset_command.json', 'tools/rhino_oracle/observations/surface_offset_command.json']
 SOURCES += ['crates/viboceros-geometry/src/surface_curve_offset/through_point.rs', 'crates/viboceros-command/src/surface_curve_offset/through_point.rs', 'crates/viboceros-geometry/src/brep.rs', 'tools/rhino_oracle/fixtures/surface_offset_through_point.json', 'tools/rhino_oracle/observations/surface_offset_through_point.json']
 SOURCES += ['crates/viboceros-geometry/src/spline_collocation/axis.rs', 'crates/viboceros-geometry/src/morph.rs', 'tools/rhino_oracle/fixtures/surface_offset_through_verify.json', 'tools/rhino_oracle/observations/surface_offset_through_verify.json', 'tools/rhino_oracle/generate_surface_through_verify.py']
+SOURCES += ['src/app.rs', 'tools/rhino_oracle/fixtures/surface_offset_select_point.json', 'tools/rhino_oracle/observations/surface_offset_select_point.json', 'tools/rhino_oracle/surface_offset_command_probe.py', 'tools/rhino_oracle/generate_surface_offset_command.py', 'tools/rhino_oracle/test_surface_offset_command.py']
 def summarize(log):
     rows=[json.loads(s)for s in re.findall(r'SURFACE_GEODESIC (\{[^\n]+\})',log)]
     q=json.loads((HERE/'fixtures/surface_curve_offset.json').read_text())
@@ -54,10 +55,22 @@ def summarize(log):
     for row,native in zip(through,through_response['results']):
         error=row['maximum_bidirectional_sample_error']
         if not math.isfinite(error)or error<0 or row['qualified']!=(error<1e-6)or row['outputs']!=len(native['value']['after_script'])-2:raise ValueError('invalid ThroughPoint qualification row')
-    report['through_point_cases']=dict(recipes=16,qualified_recipes=sum(x['qualified']for x in through),unqualified_recipes=[x['id']for x in through if not x['qualified']],bidirectional_samples_per_curve=258,maximum_sample_difference=max(x['maximum_bidirectional_sample_error']for x in through),cases=through,limits=['Point input constrains to the selected trimmed face; its final curve must pass through that constrained point within model tolerance.','Repeated points offset the original source once; Number and Flip are ignored. Accepted points share one history entry and survive cancellation.','Captured B-rep topology is preserved. Distinct-edge nearest-point ties follow topology index rather than world axes.','The bounded normal-family inverse has no global cut-locus or root-completeness certificate. The native Select option and general curved-surface open-end extension remain pending.'])
+    report['through_point_cases']=dict(recipes=16,qualified_recipes=sum(x['qualified']for x in through),unqualified_recipes=[x['id']for x in through if not x['qualified']],bidirectional_samples_per_curve=258,maximum_sample_difference=max(x['maximum_bidirectional_sample_error']for x in through),cases=through,limits=['Point input constrains to the selected trimmed face; its final curve must pass through that constrained point within model tolerance.','Repeated points offset the original source once; Number and Flip are ignored. Accepted points share one history entry and survive cancellation.','Captured B-rep topology is preserved. Distinct-edge nearest-point ties follow topology index rather than world axes.','The bounded normal-family inverse has no global cut-locus or root-completeness certificate. General curved-surface open-end extension remains pending.'])
     verification=json.loads((HERE/'observations/surface_offset_through_verify.json').read_text())
     if len(verification['results'])!=9 or any(r.get('error')for r in verification['results']):raise ValueError('nine independent ThroughPoint SDK queries are required')
     report['through_point_sdk_queries']=[dict(id=r['id'],distance=r['value']['distance'])for r in verification['results']]
+    selected=[json.loads(s)for s in re.findall(r'SURFACE_OFFSET_SELECT_GETTER (\{[^\n]+\})',log)]
+    scripted=[json.loads(s)for s in re.findall(r'SURFACE_OFFSET_SELECT_POINT (\{[^\n]+\})',log)]
+    selected_request=json.loads((HERE/'fixtures/surface_offset_select_point.json').read_text())
+    selected_response=json.loads((HERE/'observations/surface_offset_select_point.json').read_text())
+    if len(selected)!=8 or [x['id']for x in selected]!=[x['id']for x in selected_request['operations']]:raise ValueError('one complete Select getter replay is required')
+    if [x['id']for x in scripted]!=[r['id']for r in selected_response['results']if r['value']['success']]:raise ValueError('one complete scripted Select replay is required')
+    for row,native in zip(selected,selected_response['results']):
+        outputs=len(native['value']['after_script'])-len(native['value']['before'])
+        for actual in [row]+[x for x in scripted if x['id']==row['id']]:
+            error=actual['maximum_bidirectional_sample_error']
+            if not math.isfinite(error)or error<0 or actual['qualified']!=(error<1e-6)or actual['outputs']!=outputs:raise ValueError('invalid Select qualification row')
+    report['point_selection_cases']=dict(recipes=8,scripted_recipes=len(scripted),output_recipes=sum(x['outputs']>0 for x in selected),qualified_recipes=sum(x['qualified']for x in selected),maximum_sample_difference=max(x['maximum_bidirectional_sample_error']for x in selected),bidirectional_samples_per_curve=258,cases=selected,limits=['Select accepts ordered point objects at the first ThroughPoint getter and finishes on Enter.','On-source points are skipped; distinct point objects at the same offset are retained.','Selection is released; cancellation, empty selection and all-on-source batches create no geometry.','All nonzero results are prepared before one atomic commit; unresolved geometry does not commit a partial batch.','Curved-surface open-end extension and full native parity remain pending.'])
     report['sha256']={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in SOURCES}
     return report
 def main():

@@ -8865,6 +8865,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.pick_surface_offset_points(click.object_id, click.mode) {
+            return;
+        }
         if self.pick_surface_offset_curve(click.object_id, None) {
             return;
         }
@@ -9502,6 +9505,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
+        if self.pick_surface_offset_points(selection.object_ids.iter().copied(), selection.mode) {
+            return;
+        }
         if self.tangent_session.is_some() {
             return;
         }
@@ -10204,6 +10210,7 @@ impl eframe::App for VibocerosApp {
                     || self.drawing_flow_axis()
                     || self.drawing_flow_radius())
                 && !self.picking_surface_offset_face()
+                && !self.picking_surface_offset_points()
                 && !self.picking_orient_surface()
                 && !self.picking_array_surface()
                 && self
@@ -10289,6 +10296,8 @@ impl eframe::App for VibocerosApp {
         };
         let object_filter = if end_analysis_picking || self.surface_path_prompt.is_some() {
             Some(viboceros_command::ObjectSelectionFilter::Curves)
+        } else if self.picking_surface_offset_points() {
+            Some(viboceros_command::ObjectSelectionFilter::Points)
         } else {
             self.viewport_object_filter()
         };
@@ -10300,6 +10309,7 @@ impl eframe::App for VibocerosApp {
             .map(|ids| ids.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         selection_preview_ids.extend(self.block_edit_picked_sources());
+        selection_preview_ids.extend(self.surface_offset_selected_points());
         selection_preview_ids.extend(
             self.refinement_prompt
                 .as_ref()

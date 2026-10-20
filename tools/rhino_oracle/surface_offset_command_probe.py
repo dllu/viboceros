@@ -19,7 +19,21 @@ THROUGH_CASES={
     'through_trimmed_reverse_v':[[0.,1.,0.]],
     'through_trimmed_split_bottom':[[0.,1.,0.]],
 }
+SELECT_CASES={
+    'through_select':[[0.,2.,5.]],
+    'through_select_multiple':[[0.,2.,0.],[1.,-1.,0.]],
+    'through_select_reverse':[[0.,2.,0.],[1.,-1.,0.]],
+    'through_select_on_source':[[0.,0.,0.],[0.,2.,0.]],
+    'through_select_cancel':[[0.,2.,0.]],
+    'through_select_empty':[],
+    'through_select_all_on_source':[[0.,0.,0.],[8.,0.,5.]],
+    'through_select_same_offset':[[0.,2.,0.],[1.,2.,0.]],
+}
 def recipe(case):
+    if case in SELECT_CASES:
+        indices=list(range(2,2+len(SELECT_CASES[case])))
+        if case=='through_select_reverse':indices.reverse()
+        return [dict(curve=1),'ThroughPoint','Select']+[dict(curve=i)for i in indices]+['Cancel'if case=='through_select_cancel'else'Enter'],[['Select base surface'],['Offset distance'],['Through point']]+[['Select points']for _ in indices+[0]]
     if case in THROUGH_CASES:
         options=['Number=3']if case=='through_number'else[]
         actions=[dict(curve=1)]+options+['ThroughPoint']+THROUGH_CASES[case]+['Cancel'if case=='through_cancel'else'Enter']
@@ -30,7 +44,7 @@ def recipe(case):
     return actions,gates
 def validate(op):
     if not isinstance(op,dict)or set(op)!={'op','id','case','actions','action_prompts'}or op['op']not in('surface_offset_command','surface_offset_through_point'):raise ValueError('invalid surface offset command recipe')
-    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(CASES if op['op']=='surface_offset_command'else THROUGH_CASES):raise ValueError('invalid owned surface offset command case')
+    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,80}\Z',op['id'])is None or not isinstance(op['case'],str)or op['case']not in(CASES if op['op']=='surface_offset_command'else dict(THROUGH_CASES,**SELECT_CASES)):raise ValueError('invalid owned surface offset command case')
     actions,gates=recipe(op['case'])
     import json
     if json.dumps(op['actions'],sort_keys=True)!=json.dumps(actions,sort_keys=True)or op['action_prompts']!=gates:raise ValueError('only fixed surface offset getters are allowed')
@@ -43,6 +57,12 @@ def request():
 def through_request():
     q=request();q['operations']=[]
     for case in THROUGH_CASES:
+        actions,gates=recipe(case)
+        q['operations'].append(dict(op='surface_offset_through_point',id=case,case=case,actions=actions,action_prompts=gates))
+    return q
+def select_request():
+    q=request();q['operations']=[]
+    for case in SELECT_CASES:
         actions,gates=recipe(case)
         q['operations'].append(dict(op='surface_offset_through_point',id=case,case=case,actions=actions,action_prompts=gates))
     return q
@@ -88,9 +108,10 @@ def run(op,host,iterations,tolerance):
     def snapshot():
         rows=[]
         for o in sorted(list(doc.Objects),key=lambda o:o.RuntimeSerialNumber):
-            g=o.Geometry;role='source'if o.Id==ids[0]else'target'if o.Id==ids[1]else'output'
+            g=o.Geometry;role='source'if o.Id==ids[0]else'target'if o.Id==ids[1]else'reference'if o.Id in ids[2:]else'output'
             row=dict(role=role,selected=bool(o.IsSelected(False)),layer=doc.Layers[o.Attributes.LayerIndex].Name,name=o.Attributes.Name,crc=int(g.DataCRC(0)))
             if isinstance(g,G.Curve):row['curve']=host['_nurbs_curve_definition'](g)
+            if isinstance(g,G.Point):row['point']=host['_xyz'](g.Location)
             rows.append(row)
         return rows
     def definition(curve):
@@ -108,6 +129,8 @@ def run(op,host,iterations,tolerance):
                 layer=R.DocObjects.Layer();layer.Name=name;layers.append(doc.Layers.Add(layer))
             a=R.DocObjects.ObjectAttributes();a.Name='Source';a.LayerIndex=layers[0];ids.append(doc.Objects.AddCurve(source,a))
             a=R.DocObjects.ObjectAttributes();a.Name='Target';ids.append(doc.Objects.AddBrep(surface,a))
+            for p in SELECT_CASES.get(op['case'],[]):
+                a=R.DocObjects.ObjectAttributes();a.Name='Reference';ids.append(doc.Objects.AddPoint(G.Point3d(*p),a))
             doc.Layers.SetCurrentLayerIndex(layers[1],True)
             if op['case']!='postselect':doc.Objects.Select(ids[0])
         finally:doc.EndUndoRecord(record)

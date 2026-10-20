@@ -22,6 +22,15 @@ All accepted points share one Undo/Redo entry. A failed point preserves earlier
 curves and leaves the getter active. Hover previews remain outside document
 history, and committing a cached preview does not repeat the inverse solve.
 
+At the first ThroughPoint prompt, `Select` accepts existing point objects.
+Click points, use a selection window, or type their object IDs in the desired
+order. Enter creates one offset per selected point and finishes the command.
+On-source points are skipped; Number and Flip are ignored. The ordered batch
+is fitted before any output is added and shares one Undo/Redo entry. Selection
+is cleared when entering this getter. Cancel and an empty selection create no
+geometry and preserve Redo. Other unresolved geometry fails without committing
+part of the batch. Selecting more than 1024 point objects is unsupported.
+
 At source selection, `SubCrv` picks a temporary directed portion: start and end
 points, or a curve length with direction confirmation. `Direction=Locked|Free`
 uses the shared directed-subcurve solver. Escape returns to source selection.
@@ -36,6 +45,7 @@ OffsetCrvOnSrf -0.5 Edge=<brep-id>,0 Surface=<brep-id> Face=1
 OffsetCrvOnSrf 1 Source=<curve-id> Surface=<surface-id> SidePoint=0,3,0 Flip=Yes
 OffsetCrvOnSrf 1 Source=<curve-id> Surface=<surface-id> SubCrv=6,2
 OffsetCrvOnSrf ThroughPoint=0,2,0 Source=<curve-id> Surface=<surface-id>
+OffsetCrvOnSrf ThroughPoint Points=<point-id>,<point-id> Source=<curve-id> Surface=<surface-id>
 ```
 
 Without `SidePoint`, positive distance follows the left side of the curve in
@@ -83,7 +93,13 @@ shared collocation solver's fixed control rows. This keeps subsequent tangent
 extensions from amplifying position-fit derivative errors. The same constraints
 work with the optional usd-brep interpolation producer.
 
-ThroughPoint's Select option, general closed-gap reconnection, corner joins, cut-locus removal,
+Eight additional native captures qualify point-object selection order, off-surface
+projection, on-source skips, repeated offsets, cancellation, empty selection,
+attributes and Undo/Redo. The five output cases meet the `1e-6` sampled gate with a maximum
+difference of about `2.2e-14`; the other three create no output. Captured point
+objects, the source, and the target remain geometrically unchanged.
+
+General closed-gap reconnection, corner joins, cut-locus removal,
 pole crossings and complete topology certification remain pending. These
 limits preclude a claim of complete Rhino compatibility.
 
@@ -95,4 +111,5 @@ cargo test -p viboceros --bin viboceros surface_curve_offset
 python3 -m unittest tools.rhino_oracle.test_surface_offset_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --through-point
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --select-point
 ```

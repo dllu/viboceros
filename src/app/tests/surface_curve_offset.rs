@@ -33,6 +33,167 @@ fn scene(app: &mut VibocerosApp) -> (ObjectId, ObjectId) {
 }
 
 #[test]
+fn surface_offset_point_selection_windows_toggles_and_escape_preserve_redo() {
+    let mut app = test_app();
+    let (source, surface) = scene(&mut app);
+    let first = app
+        .document
+        .add_geometry(Geometry::Point(point(0., 2., 0.)))
+        .unwrap();
+    let second = app
+        .document
+        .add_geometry(Geometry::Point(point(1., -1., 0.)))
+        .unwrap();
+    app.document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Move 0,0,0 1,0,0");
+    app.document.undo().unwrap();
+    enter(&mut app, "OffsetCrvOnSrf ThroughPoint");
+    app.pick_surface_offset_face(Some(surface), None, None);
+    enter(&mut app, "Select");
+    let before = format!("{:?}", app.document);
+    app.apply_selection_window(SelectionWindow {
+        object_ids: vec![surface, first, second, first],
+        mode: SelectionMode::Replace,
+        crossing: false,
+        inverted: false,
+    });
+    assert_eq!(app.surface_offset_selected_points(), &[first, second]);
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(first),
+        mode: SelectionMode::Toggle,
+    });
+    assert_eq!(app.surface_offset_selected_points(), &[second]);
+    enter(&mut app, &first.to_string());
+    assert_eq!(app.surface_offset_selected_points(), &[second, first]);
+    assert_eq!(
+        app.accept_surface_offset_point(point(0., 5., 0.)),
+        Some(false)
+    );
+    app.update_surface_offset_hover(point(0., 5., 0.));
+    assert_eq!(format!("{:?}", app.document), before);
+    app.cancel_current_prompt_or_selection();
+    assert!(app.active_command.is_none());
+    assert_eq!(format!("{:?}", app.document), before);
+    app.document.redo().unwrap();
+    app.document.undo().unwrap();
+    enter(
+        &mut app,
+        &format!("OffsetCrvOnSrf ThroughPoint Source={source} Surface={surface}"),
+    );
+    enter(&mut app, "Select");
+    enter(&mut app, &format!("{second} {first}"));
+    assert_eq!(app.surface_offset_selected_points(), &[second, first]);
+    enter(&mut app, "Enter");
+    assert!(app.active_command.is_none());
+    let ys = app
+        .document
+        .objects()
+        .skip(4)
+        .map(|o| {
+            let c = o.geometry().curve_ref().unwrap();
+            c.evaluate(c.parameter_at(0.5).unwrap()).unwrap().y()
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(ys.len(), 2);
+    assert!((ys[0] + 1.).abs() < 1e-7 && (ys[1] - 2.).abs() < 1e-7);
+}
+
+#[test]
+fn surface_offset_native_selected_point_getters_keep_order_and_cancel_without_edits() {
+    for (op, value) in native::select_rows() {
+        let mut app = test_app();
+        let (doc, scene) = native::setup(&op, &value);
+        app.document = doc;
+        enter(&mut app, "OffsetCrvOnSrf");
+        let initial_count = app.document.objects().count();
+        let mut selected_count = 0;
+        for action in op["actions"].as_array().unwrap() {
+            if let Some(index) = action["curve"].as_u64() {
+                if index == 1 {
+                    app.pick_surface_offset_face(Some(scene.target), Some(0), None);
+                } else {
+                    let id = scene.references[index as usize - 2];
+                    assert!(app.picking_surface_offset_points());
+                    app.apply_selection_click(SelectionClick {
+                        object_id: Some(id),
+                        mode: SelectionMode::Replace,
+                    });
+                    selected_count += 1;
+                    assert_eq!(app.surface_offset_selected_points().len(), selected_count);
+                    assert_eq!(app.document.objects().count(), initial_count);
+                    assert_eq!(app.document.selected_object_count(), 0);
+                    assert!(app.document.undo_label().is_none());
+                }
+            } else {
+                let word = action.as_str().unwrap();
+                enter(&mut app, word);
+                if word == "Select" {
+                    assert!(app.picking_surface_offset_points());
+                    assert_eq!(
+                        app.surface_offset_session
+                            .as_ref()
+                            .unwrap()
+                            .cursor_surface(),
+                        None
+                    );
+                }
+            }
+        }
+        assert!(
+            app.active_command.is_none(),
+            "{} {:?}",
+            op["id"],
+            app.command_log
+        );
+        let mut maximum = native::check(&app.document, &scene, &value, "after_script");
+        if app.document.objects().count() > initial_count {
+            app.document.undo().unwrap();
+            maximum = maximum.max(native::check(&app.document, &scene, &value, "undo"));
+            assert!(app.document.undo().unwrap().is_none());
+            app.document.redo().unwrap();
+            maximum = maximum.max(native::check(&app.document, &scene, &value, "redo"));
+        } else {
+            assert!(app.document.undo_label().is_none());
+        }
+        native::qualify(&op, maximum);
+        println!(
+            "SURFACE_OFFSET_SELECT_GETTER {}",
+            serde_json::json!({"id":op["id"],"maximum_bidirectional_sample_error":maximum,"qualified":maximum<1e-6,"outputs":value["after_script"].as_array().unwrap().len()-value["before"].as_array().unwrap().len()})
+        );
+    }
+}
+
+#[test]
+fn surface_offset_target_before_source_prepares_default_preview() {
+    let mut app = test_app();
+    let (source, surface) = scene(&mut app);
+    let before = format!("{:?}", app.document);
+    enter(&mut app, &format!("OffsetCrvOnSrf Surface={surface}"));
+    assert!(app.picking_surface_offset_curve());
+    app.pick_surface_offset_curve(Some(source), None);
+    let curves = app
+        .surface_offset_session
+        .as_ref()
+        .unwrap()
+        .preview_curves();
+    assert_eq!(curves.len(), 1);
+    let midpoint = curves[0]
+        .evaluate(curves[0].parameter_at(0.5).unwrap())
+        .unwrap();
+    assert!((midpoint.y() - 1.).abs() < 1e-8);
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "Enter");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.objects().count(), 3);
+    app.document.undo().unwrap();
+    assert_eq!(app.document.objects().count(), 2);
+    app.document.redo().unwrap();
+    assert_eq!(app.document.objects().count(), 3);
+}
+
+#[test]
 fn surface_offset_previews_flip_number_and_atomic_history() {
     let mut app = test_app();
     let (source, surface) = scene(&mut app);

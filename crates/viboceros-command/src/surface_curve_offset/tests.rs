@@ -289,3 +289,113 @@ fn through_points_stage_once_ignore_number_and_keep_earlier_steps_after_a_failed
     doc.redo().unwrap();
     assert_eq!(doc.objects().count(), 4);
 }
+
+#[test]
+fn selected_points_validate_before_editing_and_reject_stale_point_captures() {
+    let (mut doc, source, surface) = scene();
+    let first = doc.add_geometry(Geometry::Point(p(0., 2., 5.))).unwrap();
+    let second = doc.add_geometry(Geometry::Point(p(0., -1., 0.))).unwrap();
+    doc.select_object(source, SelectionMode::Replace).unwrap();
+    let source = Source::capture(&doc, source, None, None).unwrap();
+    let target = Target::capture(&doc, surface, None).unwrap();
+    let original = format!("{doc:?}");
+    assert!(
+        PointSetPlan::prepare(
+            &doc,
+            source.clone(),
+            target.clone(),
+            &[first, surface],
+            Options::default()
+        )
+        .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), original);
+    let plan = PointSetPlan::prepare(
+        &doc,
+        source,
+        target,
+        &[second, first, second],
+        Options::default(),
+    )
+    .unwrap();
+    assert_eq!(format!("{doc:?}"), original);
+    assert_eq!(plan.curves.len(), 2);
+    for (curve, y) in plan.curves.iter().zip([-1., 2.]) {
+        assert!(
+            (curve
+                .evaluate(curve.parameter_at(0.5).unwrap())
+                .unwrap()
+                .y()
+                - y)
+                .abs()
+                < 1e-7
+        );
+    }
+    doc.replace_object_geometries([(first, Geometry::Point(p(0., 3., 0.)))])
+        .unwrap();
+    assert!(!plan.current(&doc));
+    let mut group = doc.begin_history_group("OffsetCrvOnSrf").unwrap();
+    let changed = format!("{doc:?}");
+    assert!(plan.commit(&mut doc, &mut group).is_err());
+    assert_eq!(format!("{doc:?}"), changed);
+    assert!(!group.can_undo());
+}
+
+#[test]
+fn selected_on_source_only_batch_preserves_redo_without_a_history_checkpoint() {
+    let (mut doc, source, surface) = scene();
+    let reference = doc.add_geometry(Geometry::Point(p(0., 0., 5.))).unwrap();
+    doc.select_object(source, SelectionMode::Replace).unwrap();
+    doc.clear_history().unwrap();
+    CommandRegistry::with_builtins()
+        .execute(&mut doc, "Move 0,0,0 1,0,0")
+        .unwrap();
+    doc.undo().unwrap();
+    let plan = PointSetPlan::prepare(
+        &doc,
+        Source::capture(&doc, source, None, None).unwrap(),
+        Target::capture(&doc, surface, None).unwrap(),
+        &[reference],
+        Options::default(),
+    )
+    .unwrap();
+    assert_eq!(plan.skipped, 1);
+    assert!(plan.curves.is_empty());
+    let mut group = doc.begin_history_group("OffsetCrvOnSrf").unwrap();
+    plan.commit(&mut doc, &mut group).unwrap();
+    assert!(!group.can_undo());
+    assert!(doc.undo_label().is_none());
+    assert_eq!(doc.selected_object_count(), 0);
+    assert_eq!(doc.objects().count(), 3);
+    doc.redo().unwrap();
+}
+
+#[test]
+fn selected_point_errors_preserve_redo_and_reject_conflicting_modes() {
+    let (mut doc, source, surface) = scene();
+    let registry = CommandRegistry::with_builtins();
+    let reference = doc.add_geometry(Geometry::Point(p(0., 2., 0.))).unwrap();
+    doc.select_object(source, SelectionMode::Replace).unwrap();
+    registry.execute(&mut doc, "Move 0,0,0 1,0,0").unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    for mode in [
+        format!("ThroughPoint Points={reference},{surface}"),
+        format!("1 Points={reference}"),
+        format!("ThroughPoint=0,2,0 Points={reference}"),
+        format!("1 ThroughPoint Points={reference}"),
+        format!("ThroughPoint Points={reference} Points={reference}"),
+        "ThroughPoint Points=".into(),
+    ] {
+        assert!(
+            registry
+                .execute(
+                    &mut doc,
+                    &format!("OffsetCrvOnSrf {mode} Source={source} Surface={surface}")
+                )
+                .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+    }
+    doc.redo().unwrap();
+}

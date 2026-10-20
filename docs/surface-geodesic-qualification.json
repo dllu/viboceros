@@ -889,7 +889,7 @@
       "Point input constrains to the selected trimmed face; its final curve must pass through that constrained point within model tolerance.",
       "Repeated points offset the original source once; Number and Flip are ignored. Accepted points share one history entry and survive cancellation.",
       "Captured B-rep topology is preserved. Distinct-edge nearest-point ties follow topology index rather than world axes.",
-      "The bounded normal-family inverse has no global cut-locus or root-completeness certificate. The native Select option and general curved-surface open-end extension remain pending."
+      "The bounded normal-family inverse has no global cut-locus or root-completeness certificate. General curved-surface open-end extension remains pending."
     ]
   },
   "through_point_sdk_queries": [
@@ -930,6 +930,71 @@
       "distance": 4.089298323453778e-07
     }
   ],
+  "point_selection_cases": {
+    "recipes": 8,
+    "scripted_recipes": 6,
+    "output_recipes": 5,
+    "qualified_recipes": 8,
+    "maximum_sample_difference": 2.161031364628563e-14,
+    "bidirectional_samples_per_curve": 258,
+    "cases": [
+      {
+        "id": "through_select",
+        "maximum_bidirectional_sample_error": 2.161031364628563e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "through_select_multiple",
+        "maximum_bidirectional_sample_error": 2.161031364628563e-14,
+        "outputs": 2,
+        "qualified": true
+      },
+      {
+        "id": "through_select_reverse",
+        "maximum_bidirectional_sample_error": 2.161031364628563e-14,
+        "outputs": 2,
+        "qualified": true
+      },
+      {
+        "id": "through_select_on_source",
+        "maximum_bidirectional_sample_error": 2.161031364628563e-14,
+        "outputs": 1,
+        "qualified": true
+      },
+      {
+        "id": "through_select_cancel",
+        "maximum_bidirectional_sample_error": 0.0,
+        "outputs": 0,
+        "qualified": true
+      },
+      {
+        "id": "through_select_empty",
+        "maximum_bidirectional_sample_error": 0.0,
+        "outputs": 0,
+        "qualified": true
+      },
+      {
+        "id": "through_select_all_on_source",
+        "maximum_bidirectional_sample_error": 0.0,
+        "outputs": 0,
+        "qualified": true
+      },
+      {
+        "id": "through_select_same_offset",
+        "maximum_bidirectional_sample_error": 2.161031364628563e-14,
+        "outputs": 2,
+        "qualified": true
+      }
+    ],
+    "limits": [
+      "Select accepts ordered point objects at the first ThroughPoint getter and finishes on Enter.",
+      "On-source points are skipped; distinct point objects at the same offset are retained.",
+      "Selection is released; cancellation, empty selection and all-on-source batches create no geometry.",
+      "All nonzero results are prepared before one atomic commit; unresolved geometry does not commit a partial batch.",
+      "Curved-surface open-end extension and full native parity remain pending."
+    ]
+  },
   "sha256": {
     "crates/viboceros-geometry/src/surface_geodesic.rs": "442b5d6c177e9ab9de2a9990e6361bfd7cda648d8300f2ad3da819623cd84f54",
     "crates/viboceros-geometry/src/surface_geodesic/tests.rs": "ce2834aceb31ea886ddd751aa674af095b5bf5fe5d5258b5323507a0a1a2cf5d",
@@ -948,17 +1013,17 @@
     "tools/rhino_oracle/observations/surface_curve_offset_verify.json": "4726447786c4a155b1830f1c979471bfc00a45250f1987321d34b8f2dc6cef3a",
     "tools/rhino_oracle/fixtures/surface_curve_offset_clipping.json": "4163d8d8874ec2e80cf95e9b7a5ada572260c201bcb590da09af82b6df266eb3",
     "tools/rhino_oracle/observations/surface_curve_offset_clipping.json": "ad761cf4aa7802f5cccecb439ac2257d0bf125e07fe1a3c3f04273b986d654fa",
-    "tools/rhino_oracle/report_surface_geodesic.py": "be92a842167916640abf2833522058865baac2c0f447b45aec8a6c66baa4498d",
-    "crates/viboceros-command/src/surface_curve_offset.rs": "3870c64bb4f517f6354dbedb8e6b987250b1bcf690c9cca8df8782fbc8a3c1ff",
-    "crates/viboceros-command/src/surface_curve_offset/tests.rs": "9e8ef17dbc8bd528c291168034c78f83e8096865710fd430a9d20479a0116dfb",
-    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "0d49525f87e1e40e0b2a7047481942edb9df446997e20ca90ff69bfea8dc17a1",
-    "crates/viboceros-command/tests/surface_curve_offset_native.rs": "fd9ed4403d69cc987ab6bb10dc1d16ce4c9a7fec76779e1a9853869211ae2364",
-    "src/app/surface_curve_offset.rs": "7c70ff68feb439c76d69b206424066bd4fb064d74eb0b80ef1e25411c7531fea",
-    "src/app/tests/surface_curve_offset.rs": "1982a91320dfb3d9965c1732359313c252fbfcff6d5b63f43ca1ffb11bf7093e",
+    "tools/rhino_oracle/report_surface_geodesic.py": "02608762ac7dbe780c087429aa27f04de8ece1eb6c1c5d93d1f494c334e387fe",
+    "crates/viboceros-command/src/surface_curve_offset.rs": "377360e0940be2257afd578d3d292d8cb46d7b82a8b2ea01c77402e67b33ba1f",
+    "crates/viboceros-command/src/surface_curve_offset/tests.rs": "fd4a0bcf32866c815746fa122faff077018583b831e047c09faf0bf778d9cca3",
+    "crates/viboceros-command/tests/support/surface_curve_offset.rs": "c497e8aa726fb42fb416d1a913b4e98eb58f1b260d1117a5bbe25e3d660eee14",
+    "crates/viboceros-command/tests/surface_curve_offset_native.rs": "bd9bfb4a1665ec2c9206bfc14e5e6c3229e3bc6214f3004e06c0c7d304e678a9",
+    "src/app/surface_curve_offset.rs": "234be5309b1ad250d35dac38cf1825ff2317aa2482e99f164de327eb871a7fe5",
+    "src/app/tests/surface_curve_offset.rs": "ae1b40f8c651f823406969c84e5b95eb95bd5f037cc423dc9a56cabf2242ace0",
     "tools/rhino_oracle/fixtures/surface_offset_command.json": "46009c237a6d61e528daaad14015834e6d209024ea0d276cbbbdd257f86dfd3d",
     "tools/rhino_oracle/observations/surface_offset_command.json": "6f500ba92c42f9725b11974da615c4d82c61ebf63318293b457b58d1e43fdf50",
     "crates/viboceros-geometry/src/surface_curve_offset/through_point.rs": "94732f4ae46c8d3a04d5f0e7d34981bf943128a62a0b127cc74aef29f7c17c07",
-    "crates/viboceros-command/src/surface_curve_offset/through_point.rs": "b2dde3818f8e11d5ab11f348587f133a8ce4fd5134b7b6602603a7600435419e",
+    "crates/viboceros-command/src/surface_curve_offset/through_point.rs": "4391df4f107810406bc4dbf3fbcc3a7a6da18560784ef1903c7d5ca0016d4348",
     "crates/viboceros-geometry/src/brep.rs": "c8b417cdb1da87f116ec337737c955c97f7c7de36d8c3f8dc3587af3a6b38c1a",
     "tools/rhino_oracle/fixtures/surface_offset_through_point.json": "7e20f4d1fc017ad8dd49aa480ece20ce37843aee7b2022bf22b5ac2df0f72ef6",
     "tools/rhino_oracle/observations/surface_offset_through_point.json": "20ca1ca59397d1c2f5770cd30f0b982ad62db25195ceb0abeb7b048094f877f5",
@@ -966,6 +1031,12 @@
     "crates/viboceros-geometry/src/morph.rs": "6b656c61543bfb3bbaa66acf6510ff1bf6dba854153c3086061c057636384ffc",
     "tools/rhino_oracle/fixtures/surface_offset_through_verify.json": "298695886dbfc1c7fa3fc2356621b3a5acba36f3d09525abfe7ba30f056a3eba",
     "tools/rhino_oracle/observations/surface_offset_through_verify.json": "3299da5041a05b2bdcd3f85e903dd92c3697e283825c62bd401dbdff12376fae",
-    "tools/rhino_oracle/generate_surface_through_verify.py": "dbfe6ceb20905dfebaf37923c00287d2d23029a2bca0c5782476274d75b420da"
+    "tools/rhino_oracle/generate_surface_through_verify.py": "dbfe6ceb20905dfebaf37923c00287d2d23029a2bca0c5782476274d75b420da",
+    "src/app.rs": "33308ddd1ae9c99ba9a36dba621ea3601eff82b11240422d6e32a8d0c6bf0f79",
+    "tools/rhino_oracle/fixtures/surface_offset_select_point.json": "1b60ec1a229929b338f20ed89f42130792096d7e367016862a707cad50b34338",
+    "tools/rhino_oracle/observations/surface_offset_select_point.json": "37eb6310b9cde04c1463f9d06fe08136ff4f88a86f253780bcb49544c43841cb",
+    "tools/rhino_oracle/surface_offset_command_probe.py": "20d85737ccc0a1bdff5196fdcbf435b53a8644c37482e1e1a91e23df4586fde4",
+    "tools/rhino_oracle/generate_surface_offset_command.py": "7210bfa7215c60d66462c1c58062c877e7777205cbd1c0c82312c1939ec9a927",
+    "tools/rhino_oracle/test_surface_offset_command.py": "7534fca815fe57901cc3c3d61bda30bce5085baa5e8893b15e31c23762564e41"
   }
 }
