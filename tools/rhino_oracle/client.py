@@ -523,6 +523,17 @@ class OracleClient:
             from .short_path_command_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('ShortPath command captures require a private settings scheme')
             validate_request(request)
+        if any(op.get('op')=='surface_interpolate_command'for op in request.get('operations',[])):
+            from .surface_interpolate_command_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('Surface interpolation command captures require a private settings scheme')
+            validate_request(request)
+            if any(isinstance(a,dict)and'click'in a for op in request['operations']for a in op['actions']):
+                from .catenary_point_picker import CatenaryPointPicker
+                interaction=CatenaryPointPicker(request)
+        if any(op.get('op')=='surface_interpolate'for op in request.get('operations',[])):
+            from .surface_interpolate_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('Surface interpolation captures require a private settings scheme')
+            validate_request(request)
         if any(op.get('op')=='surface_short_path'for op in request.get('operations',[])):
             from .surface_short_path_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('ShortPath SDK captures require a private settings scheme')

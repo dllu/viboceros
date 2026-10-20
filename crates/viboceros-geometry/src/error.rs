@@ -362,6 +362,9 @@ pub enum GeometryError {
     #[error("surface geodesic failed: {context}")]
     InvalidSurfaceGeodesic { context: &'static str },
 
+    #[error("surface interpolation failed: {context}")]
+    InvalidSurfaceInterpolation { context: &'static str },
+
     #[error("surface short path failed: {context}")]
     InvalidSurfaceShortPath { context: &'static str },
 

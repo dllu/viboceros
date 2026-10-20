@@ -337,6 +337,7 @@ pub struct ViewportInput<'a> {
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
     pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
+    pub surface_curve_close_point: Option<Point3>,
     pub zoom_window: bool,
     pub rect_selection_mode: Option<RectSelectionMode>,
     pub circular_selection: Option<CircularSelectionInput>,
@@ -452,6 +453,7 @@ impl Default for ViewportInput<'_> {
             point_constraint: None,
             translation_constraint: None,
             normal_surface: None,
+            surface_curve_close_point: None,
             zoom_window: false,
             rect_selection_mode: None,
             circular_selection: None,
@@ -1709,9 +1711,15 @@ impl Viewport {
         {
             let explicit = drafting_cursor
                 .filter(|cursor| cursor.object_snap.is_some() || input.point_filter.is_some());
-            let point = explicit
+            let mut point = explicit
                 .map(|cursor| cursor.point)
                 .or_else(|| self.normal_surface_point(pointer, rect, document, target));
+            if let Some(first) = input.surface_curve_close_point
+                && let Some(projected) = self.project(first, rect)
+                && pointer.distance(projected) <= 12.
+            {
+                point = Some(first);
+            }
             drafting_cursor = point.map(|point| drafting::DraftingCursor {
                 pointer,
                 source_point: point,

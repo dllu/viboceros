@@ -3534,7 +3534,7 @@ fn curve_planar_surface_point_intersections(
     Ok(intersections)
 }
 
-fn curve_plane_root_parameters(
+pub(crate) fn curve_plane_root_parameters(
     curve: &NurbsCurve,
     plane: Plane,
 ) -> Result<(Vec<Real>, bool), GeometryError> {

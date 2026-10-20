@@ -1,0 +1,375 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_interpolate",
+      "id": "plane_two",
+      "case": "plane_two",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.9,
+          0.8
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "plane_three",
+      "case": "plane_three",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.4,
+          0.75
+        ],
+        [
+          0.9,
+          0.3
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "plane_five",
+      "case": "plane_five",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.3,
+          0.7
+        ],
+        [
+          0.5,
+          0.35
+        ],
+        [
+          0.7,
+          0.8
+        ],
+        [
+          0.9,
+          0.3
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "plane_closed",
+      "case": "plane_closed",
+      "points": [
+        [
+          0.2,
+          0.2
+        ],
+        [
+          0.8,
+          0.25
+        ],
+        [
+          0.7,
+          0.8
+        ],
+        [
+          0.3,
+          0.7
+        ]
+      ],
+      "closed": true
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "skew_five",
+      "case": "skew_five",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.3,
+          0.7
+        ],
+        [
+          0.5,
+          0.35
+        ],
+        [
+          0.7,
+          0.8
+        ],
+        [
+          0.9,
+          0.3
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "cylinder_axis",
+      "case": "cylinder_axis",
+      "points": [
+        [
+          0.15,
+          0.1
+        ],
+        [
+          0.15,
+          0.35
+        ],
+        [
+          0.15,
+          0.6
+        ],
+        [
+          0.15,
+          0.9
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "cylinder_five",
+      "case": "cylinder_five",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.2,
+          0.7
+        ],
+        [
+          0.35,
+          0.35
+        ],
+        [
+          0.45,
+          0.8
+        ],
+        [
+          0.6,
+          0.3
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "cylinder_seam",
+      "case": "cylinder_seam",
+      "points": [
+        [
+          0.9,
+          0.2
+        ],
+        [
+          0.96,
+          0.7
+        ],
+        [
+          0.04,
+          0.4
+        ],
+        [
+          0.12,
+          0.8
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "sphere_five",
+      "case": "sphere_five",
+      "points": [
+        [
+          0.1,
+          0.35
+        ],
+        [
+          0.2,
+          0.55
+        ],
+        [
+          0.3,
+          0.45
+        ],
+        [
+          0.4,
+          0.75
+        ],
+        [
+          0.45,
+          0.6
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "sphere_pole",
+      "case": "sphere_pole",
+      "points": [
+        [
+          0.1,
+          0.5
+        ],
+        [
+          0.15,
+          0.7
+        ],
+        [
+          0.2,
+          1.0
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "general_five",
+      "case": "general_five",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.3,
+          0.7
+        ],
+        [
+          0.5,
+          0.35
+        ],
+        [
+          0.7,
+          0.8
+        ],
+        [
+          0.9,
+          0.3
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "rational_five",
+      "case": "rational_five",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.3,
+          0.7
+        ],
+        [
+          0.5,
+          0.35
+        ],
+        [
+          0.7,
+          0.8
+        ],
+        [
+          0.9,
+          0.3
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "boundary",
+      "case": "boundary",
+      "points": [
+        [
+          0.1,
+          0.1
+        ],
+        [
+          0.4,
+          0.95
+        ],
+        [
+          0.55,
+          0.05
+        ],
+        [
+          0.9,
+          0.9
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "chart",
+      "case": "chart",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.3,
+          0.7
+        ],
+        [
+          0.5,
+          0.35
+        ],
+        [
+          0.7,
+          0.8
+        ],
+        [
+          0.9,
+          0.3
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "coincident",
+      "case": "coincident",
+      "points": [
+        [
+          0.2,
+          0.3
+        ],
+        [
+          0.2,
+          0.3
+        ]
+      ],
+      "closed": false
+    }
+  ]
+}

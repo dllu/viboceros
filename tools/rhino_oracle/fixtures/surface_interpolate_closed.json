@@ -1,0 +1,199 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_interpolate",
+      "id": "cylinder_closed",
+      "case": "cylinder_closed",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.4,
+          0.3
+        ],
+        [
+          0.65,
+          0.7
+        ],
+        [
+          0.9,
+          0.6
+        ]
+      ],
+      "closed": true
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "cylinder_closed_reverse",
+      "case": "cylinder_closed_reverse",
+      "points": [
+        [
+          0.9,
+          0.6
+        ],
+        [
+          0.65,
+          0.7
+        ],
+        [
+          0.4,
+          0.3
+        ],
+        [
+          0.1,
+          0.2
+        ]
+      ],
+      "closed": true
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "cylinder_closed_two",
+      "case": "cylinder_closed_two",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.4,
+          0.8
+        ]
+      ],
+      "closed": true
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "cylinder_closed_local",
+      "case": "cylinder_closed_local",
+      "points": [
+        [
+          0.15,
+          0.2
+        ],
+        [
+          0.35,
+          0.7
+        ],
+        [
+          0.2,
+          0.8
+        ]
+      ],
+      "closed": true
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "cylinder_two_laps",
+      "case": "cylinder_two_laps",
+      "points": [
+        [
+          0.1,
+          0.5
+        ],
+        [
+          0.35,
+          0.5
+        ],
+        [
+          0.6,
+          0.5
+        ],
+        [
+          0.85,
+          0.5
+        ],
+        [
+          0.1,
+          0.5
+        ],
+        [
+          0.35,
+          0.5
+        ],
+        [
+          0.6,
+          0.5
+        ],
+        [
+          0.85,
+          0.5
+        ]
+      ],
+      "closed": true
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "sphere_closed",
+      "case": "sphere_closed",
+      "points": [
+        [
+          0.1,
+          0.35
+        ],
+        [
+          0.35,
+          0.4
+        ],
+        [
+          0.6,
+          0.7
+        ],
+        [
+          0.9,
+          0.6
+        ]
+      ],
+      "closed": true
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "plane_overshoot",
+      "case": "plane_overshoot",
+      "points": [
+        [
+          0.1,
+          0.1
+        ],
+        [
+          0.5,
+          1.0
+        ],
+        [
+          0.9,
+          0.2
+        ]
+      ],
+      "closed": false
+    },
+    {
+      "op": "surface_interpolate",
+      "id": "general_overshoot",
+      "case": "general_overshoot",
+      "points": [
+        [
+          0.1,
+          0.1
+        ],
+        [
+          0.5,
+          1.0
+        ],
+        [
+          0.9,
+          0.2
+        ]
+      ],
+      "closed": false
+    }
+  ]
+}

@@ -759,7 +759,35 @@ fn interpolate_periodic_cubic_with_solver<E: From<GeometryError>>(
     solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<NurbsCurve, E> {
     let intervals = interpolation_intervals(points, spacing, true)?;
-    let parameters = cumulative_parameters(&intervals)?;
+    interpolate_periodic_with_drift(points, &intervals, Vector3::try_new(0., 0., 0.)?, solve)
+}
+
+/// Shared periodic collocation also represents covering-space curves whose
+/// endpoint advances by a fixed translation while derivatives remain periodic.
+pub(crate) fn try_interpolate_periodic_with_drift(
+    points: &[Point3],
+    intervals: &[Real],
+    drift: Vector3,
+) -> Result<NurbsCurve, GeometryError> {
+    if points.len() < 2
+        || points.len() > MAX_CURVE_INTERPOLATION_POINTS
+        || intervals.len() != points.len()
+        || intervals.iter().any(|h| !h.is_finite() || *h <= 0.)
+    {
+        return Err(GeometryError::InvalidControlNet {
+            context: "invalid periodic interpolation intervals",
+        });
+    }
+    interpolate_periodic_with_drift(points, intervals, drift, &mut solve_portable_interpolation)
+}
+
+fn interpolate_periodic_with_drift<E: From<GeometryError>>(
+    points: &[Point3],
+    intervals: &[Real],
+    drift: Vector3,
+    solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsCurve, E> {
+    let parameters = cumulative_parameters(intervals)?;
     let unique_control_count = points.len();
     let control_count = unique_control_count + CUBIC_DEGREE;
 
@@ -792,9 +820,18 @@ fn interpolate_periodic_cubic_with_solver<E: From<GeometryError>>(
     } else {
         Point3::try_new(0., 0., 0.)?
     };
+    let length = *parameters
+        .last()
+        .ok_or(GeometryError::InvalidInterpolationParameter)?;
     let local_points = points
         .iter()
-        .map(|point| Point3::try_from(origin.vector_to(*point)?.to_array()))
+        .zip(&parameters)
+        .map(|(point, t)| {
+            let offset = origin.vector_to(*point)?;
+            let a = offset.to_array();
+            let d = drift.to_array();
+            Point3::try_from(std::array::from_fn(|i| (-*t / length).mul_add(d[i], a[i])))
+        })
         .collect::<Result<Vec<_>, GeometryError>>()?;
     let targets = local_points
         .iter()
@@ -815,8 +852,13 @@ fn interpolate_periodic_cubic_with_solver<E: From<GeometryError>>(
         .map(|point| origin.translated(Vector3::try_from(point.to_array())?))
         .collect::<Result<Vec<_>, GeometryError>>()?;
     let controls = (0..control_count)
-        .map(|index| unique_controls[index % unique_control_count])
-        .collect();
+        .map(|index| {
+            let fraction =
+                (knots[index + 1] / length + knots[index + 2] / length + knots[index + 3] / length)
+                    / 3.;
+            unique_controls[index % unique_control_count].translated(drift.scaled(fraction)?)
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
     Ok(NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)?)
 }
 

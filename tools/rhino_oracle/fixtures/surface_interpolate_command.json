@@ -1,0 +1,323 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_interpolate_command",
+      "id": "plane_two",
+      "case": "plane_two",
+      "actions": [
+        [
+          -4.0,
+          -3.0,
+          0.0
+        ],
+        [
+          4.0,
+          3.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "plane_five",
+      "case": "plane_five",
+      "actions": [
+        [
+          -4.0,
+          -3.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.5,
+          0.0
+        ],
+        [
+          2.0,
+          3.0,
+          0.0
+        ],
+        [
+          4.0,
+          -2.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "plane_close",
+      "case": "plane_close",
+      "actions": [
+        [
+          -3.0,
+          -3.0,
+          0.0
+        ],
+        [
+          3.0,
+          -2.5,
+          0.0
+        ],
+        [
+          2.0,
+          3.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        "Close"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "undo",
+      "case": "undo",
+      "actions": [
+        [
+          -4.0,
+          -3.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        [
+          0.0,
+          -1.5,
+          0.0
+        ],
+        "Undo",
+        [
+          2.0,
+          3.0,
+          0.0
+        ],
+        [
+          4.0,
+          -2.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "cancel",
+      "case": "cancel",
+      "actions": [
+        [
+          -4.0,
+          -3.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        "Cancel"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "hole",
+      "case": "hole",
+      "actions": [
+        [
+          -4.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          4.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "cylinder_axis",
+      "case": "cylinder_axis",
+      "actions": [
+        [
+          3.0,
+          0.0,
+          1.0
+        ],
+        [
+          3.0,
+          0.0,
+          3.0
+        ],
+        [
+          3.0,
+          0.0,
+          5.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "cylinder_seam",
+      "case": "cylinder_seam",
+      "actions": [
+        [
+          2.866009467376818,
+          -0.8865606199840186,
+          1.0
+        ],
+        [
+          2.9850124958340776,
+          -0.29950024994048446,
+          3.0
+        ],
+        [
+          2.940199733523725,
+          0.5960079923851836,
+          4.5
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "general",
+      "case": "general",
+      "actions": [
+        [
+          0.4,
+          0.5,
+          0.05
+        ],
+        [
+          1.0,
+          1.3,
+          0.429
+        ],
+        [
+          1.6,
+          1.5,
+          0.84
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "autoclose",
+      "case": "autoclose",
+      "actions": [
+        [
+          -3.0,
+          -3.0,
+          0.0
+        ],
+        [
+          3.0,
+          -2.5,
+          0.0
+        ],
+        [
+          2.0,
+          3.0,
+          0.0
+        ],
+        {
+          "click": [
+            -3.0,
+            -3.0,
+            0.0
+          ]
+        },
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "persistent",
+      "case": "persistent",
+      "actions": [
+        "PersistentClose=Yes",
+        [
+          -3.0,
+          -3.0,
+          0.0
+        ],
+        [
+          3.0,
+          -2.5,
+          0.0
+        ],
+        [
+          2.0,
+          3.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "surface_interpolate_command",
+      "id": "autoclose_no",
+      "case": "autoclose_no",
+      "actions": [
+        "PersistentClose=No",
+        "AutoClose=No",
+        [
+          -3.0,
+          -3.0,
+          0.0
+        ],
+        [
+          3.0,
+          -2.5,
+          0.0
+        ],
+        [
+          2.0,
+          3.0,
+          0.0
+        ],
+        [
+          -3.0,
+          -3.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    }
+  ]
+}

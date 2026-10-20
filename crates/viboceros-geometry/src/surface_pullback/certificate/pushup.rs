@@ -43,13 +43,36 @@ impl NurbsSurface {
         uv: &NurbsCurve2,
         tolerance: Tolerance,
     ) -> Result<(NurbsCurve, Real), GeometryError> {
+        self.pushup_with_degree_limit(uv, tolerance, None)
+    }
+
+    /// Cubic curve producers share the same fitter and whole-image proof while
+    /// avoiding degree elevation of many mixed-degree chart portions.
+    pub(crate) fn try_pushup_curve_certified_cubic(
+        &self,
+        uv: &NurbsCurve2,
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve, GeometryError> {
+        self.pushup_with_degree_limit(uv, tolerance, Some(3))
+            .map(|p| p.0)
+    }
+
+    fn pushup_with_degree_limit(
+        &self,
+        uv: &NurbsCurve2,
+        tolerance: Tolerance,
+        maximum_degree: Option<usize>,
+    ) -> Result<(NurbsCurve, Real), GeometryError> {
         let limit = tolerance.absolute();
         let failed = || GeometryError::SurfacePushupDidNotConverge { tolerance: limit };
-        if let Some(result) = affine::image(self, uv, limit)? {
+        if let Some(result) = affine::image(self, uv, limit)?
+            && maximum_degree.is_none_or(|maximum| result.0.degree() <= maximum)
+        {
             return Ok(result);
         }
         let mut certificate = ImageCertificate::new(self, uv)?.ok_or_else(failed)?;
         if let Some(proposal) = certificate.exact_proposal(uv)?
+            && maximum_degree.is_none_or(|maximum| proposal.degree() <= maximum)
             && let Some(bound) = self.parameter_curve_deviation_bound(uv, &proposal, limit)?
         {
             return Ok((proposal, bound));
@@ -80,6 +103,7 @@ impl NurbsSurface {
             certificate,
             segments: Vec::new(),
             limit,
+            hermite: maximum_degree.is_some(),
         };
         fitter.append([0., 1.], 0)?;
         let segments = fitter
@@ -294,6 +318,7 @@ struct Fitter<'a> {
     certificate: ImageCertificate,
     segments: Vec<([Real; 2], [Point3; 4])>,
     limit: Real,
+    hermite: bool,
 }
 impl Fitter<'_> {
     fn node(&self, t: Real) -> Result<Point3, GeometryError> {
@@ -337,12 +362,30 @@ impl Fitter<'_> {
             });
             Point3::try_from(coordinates)
         };
-        let controls = [
+        let mut controls = [
             points[0],
             blend([-5. / 6., 3., -1.5, 1. / 3.])?,
             blend([1. / 3., -1.5, 3., -5. / 6.])?,
             points[3],
         ];
+        if self.hermite {
+            // Chain-rule endpoint tangents make neighboring fitted cubics C1.
+            // The unchanged certificate checks the entire proposed image.
+            for (fraction, endpoint, index, sign) in
+                [(start, points[0], 1, 1.), (end, points[3], 2, -1.)]
+            {
+                let (uv, velocity) = self.sampler.evaluate_with_derivative(fraction)?;
+                let (_, du, dv) = self.surface.evaluate_with_derivatives(uv.x(), uv.y())?;
+                let velocity = velocity.to_array();
+                let a = du.to_array();
+                let b = dv.to_array();
+                controls[index] = Point3::try_from(std::array::from_fn(|axis| {
+                    (a[axis].mul_add(velocity[0], b[axis] * velocity[1]) * (end - start) * sign
+                        / 3.)
+                        + endpoint.to_array()[axis]
+                }))?;
+            }
+        }
         if self.certificate.segment(interval, controls, self.limit)? {
             if self.segments.len() >= MAX_CURVE_DIVISION_POINTS / 4 {
                 return Err(GeometryError::TooManySurfacePushupControlPoints {

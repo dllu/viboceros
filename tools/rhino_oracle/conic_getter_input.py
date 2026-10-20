@@ -2,10 +2,10 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
-    if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv'):
+    if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','InterpCrvOnSrf'):
         vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned surface curve array input',False);vp.ZoomExtents();view.Redraw()
     if command=='OrientCrvToEdge':
         vp.SetProjection(R.Display.DefinedViewportProjection.Perspective,'Owned curve edge input',False);vp.ZoomExtents();view.Redraw()
@@ -49,6 +49,7 @@ def drive(op,host,guides,command="Conic"):
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
     if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
     if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):prefixes=('Select objects to array','Base point','Select a curve on a surface','Select curve to temporarily shorten','Start of curve','Current length','Select the surface','Position objects or distance from last','Number of objects','Number of copies','Distance between copies')
+    if command=='InterpCrvOnSrf':prefixes=('Start of curve','Start of Curve','Next point','Next Point')
     if command=='ShortPath':prefixes=('Select surface','Start of Curve','End of Curve')
     if command=='Splop':prefixes=('Center of reference sphere','First','Second','Third','Radius','Select surface','Pick splop','Pick point')
     if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Mid','Radius','Direction','Angle','Length','Distance')

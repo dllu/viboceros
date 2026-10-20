@@ -1,0 +1,453 @@
+{
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "command_registered": true,
+  "native_engine_version": "8.32.26160.13001",
+  "sdk_cases": {
+    "recipes": 23,
+    "qualified_recipes": 23,
+    "unqualified_recipes": [],
+    "cases": [
+      {
+        "controls": 4,
+        "degree": 3,
+        "extended_support": false,
+        "id": "plane_two",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "maximum_node_error": 0.0,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 0.0
+      },
+      {
+        "controls": 5,
+        "degree": 3,
+        "extended_support": true,
+        "id": "plane_three",
+        "maximum_bidirectional_sample_error": 2.237726045655905e-15,
+        "maximum_node_error": 4.440892098500626e-16,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 0.0
+      },
+      {
+        "controls": 7,
+        "degree": 3,
+        "extended_support": true,
+        "id": "plane_five",
+        "maximum_bidirectional_sample_error": 3.580361673049448e-15,
+        "maximum_node_error": 8.881784197001252e-16,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 4.440892098500626e-16
+      },
+      {
+        "controls": 7,
+        "degree": 3,
+        "extended_support": false,
+        "id": "plane_closed",
+        "maximum_bidirectional_sample_error": 7.897148445677845e-07,
+        "maximum_node_error": 9.930136612989092e-16,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 6.661338147750939e-16
+      },
+      {
+        "controls": 7,
+        "degree": 3,
+        "extended_support": true,
+        "id": "skew_five",
+        "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+        "maximum_node_error": 2.220446049250313e-16,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 2.1115897615905198e-16
+      },
+      {
+        "controls": 12,
+        "degree": 3,
+        "extended_support": false,
+        "id": "cylinder_axis",
+        "maximum_bidirectional_sample_error": 1.0175362097255202e-15,
+        "maximum_node_error": 9.930136612989092e-16,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 8.799715899760854e-15
+      },
+      {
+        "controls": 688,
+        "degree": 3,
+        "extended_support": true,
+        "id": "cylinder_five",
+        "maximum_bidirectional_sample_error": 9.219294136788966e-07,
+        "maximum_node_error": 7.639026181973013e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 4.465378785885033e-07
+      },
+      {
+        "controls": 308,
+        "degree": 3,
+        "extended_support": true,
+        "id": "cylinder_seam",
+        "maximum_bidirectional_sample_error": 8.643566624762481e-07,
+        "maximum_node_error": 4.2422586098592374e-08,
+        "qualified": true,
+        "seams": 1,
+        "surface_image_bound": 8.487190890849995e-08
+      },
+      {
+        "controls": 944,
+        "degree": 3,
+        "extended_support": false,
+        "id": "sphere_five",
+        "maximum_bidirectional_sample_error": 8.066975328037927e-07,
+        "maximum_node_error": 8.801611151248853e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 4.3595430309309197e-07
+      },
+      {
+        "controls": 256,
+        "degree": 3,
+        "extended_support": false,
+        "id": "sphere_pole",
+        "maximum_bidirectional_sample_error": 7.673254556322289e-07,
+        "maximum_node_error": 2.3605978458772112e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 2.48039030209537e-08
+      },
+      {
+        "controls": 472,
+        "degree": 3,
+        "extended_support": true,
+        "id": "general_five",
+        "maximum_bidirectional_sample_error": 7.420324867953739e-07,
+        "maximum_node_error": 4.9387028219475177e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 1.0887023982005949e-07
+      },
+      {
+        "controls": 484,
+        "degree": 3,
+        "extended_support": true,
+        "id": "rational_five",
+        "maximum_bidirectional_sample_error": 7.54106093663117e-07,
+        "maximum_node_error": 4.8505342050654575e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 1.0787903084528139e-07
+      },
+      {
+        "controls": 476,
+        "degree": 3,
+        "extended_support": true,
+        "id": "boundary",
+        "maximum_bidirectional_sample_error": 8.844790101947787e-07,
+        "maximum_node_error": 1.2735946610855095e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 1.099590926190012e-07
+      },
+      {
+        "controls": 472,
+        "degree": 3,
+        "extended_support": true,
+        "id": "chart",
+        "maximum_bidirectional_sample_error": 6.413774690617419e-07,
+        "maximum_node_error": 1.8801261454441254e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 1.0681692951875983e-07
+      },
+      {
+        "expected_failure": true,
+        "id": "coincident",
+        "qualified": true
+      },
+      {
+        "controls": 1120,
+        "degree": 3,
+        "extended_support": false,
+        "id": "cylinder_closed",
+        "maximum_bidirectional_sample_error": 9.84117682813461e-07,
+        "maximum_node_error": 2.288751727893806e-08,
+        "qualified": true,
+        "seams": 1,
+        "surface_image_bound": 4.0762519744985983e-07
+      },
+      {
+        "controls": 1124,
+        "degree": 3,
+        "extended_support": false,
+        "id": "cylinder_closed_reverse",
+        "maximum_bidirectional_sample_error": 8.288550122547341e-07,
+        "maximum_node_error": 2.032620904339819e-08,
+        "qualified": true,
+        "seams": 1,
+        "surface_image_bound": 3.9100826703130694e-07
+      },
+      {
+        "expected_failure": true,
+        "id": "cylinder_closed_two",
+        "qualified": true
+      },
+      {
+        "controls": 912,
+        "degree": 3,
+        "extended_support": true,
+        "id": "cylinder_closed_local",
+        "maximum_bidirectional_sample_error": 9.32017191110656e-07,
+        "maximum_node_error": 1.356407431592889e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 3.611062097389644e-07
+      },
+      {
+        "controls": 1916,
+        "degree": 3,
+        "extended_support": false,
+        "id": "cylinder_two_laps",
+        "maximum_bidirectional_sample_error": 7.39548153809276e-08,
+        "maximum_node_error": 5.213847704518567e-09,
+        "qualified": true,
+        "seams": 2,
+        "surface_image_bound": 4.870697458447489e-07
+      },
+      {
+        "controls": 1044,
+        "degree": 3,
+        "extended_support": false,
+        "id": "sphere_closed",
+        "maximum_bidirectional_sample_error": 8.832738853379511e-07,
+        "maximum_node_error": 8.013528247016938e-09,
+        "qualified": true,
+        "seams": 1,
+        "surface_image_bound": 3.6852427849563924e-07
+      },
+      {
+        "controls": 5,
+        "degree": 3,
+        "extended_support": true,
+        "id": "plane_overshoot",
+        "maximum_bidirectional_sample_error": 7.003434888019788e-07,
+        "maximum_node_error": 4.440892098500626e-16,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 0.0
+      },
+      {
+        "controls": 284,
+        "degree": 3,
+        "extended_support": true,
+        "id": "general_overshoot",
+        "maximum_bidirectional_sample_error": 6.94767807020196e-07,
+        "maximum_node_error": 1.116506725023752e-08,
+        "qualified": true,
+        "seams": 0,
+        "surface_image_bound": 1.1197730685730948e-07
+      }
+    ]
+  },
+  "command_cases": {
+    "recipes": 12,
+    "qualified_recipes": 10,
+    "unqualified_recipes": [
+      "persistent",
+      "autoclose_no"
+    ],
+    "cases": [
+      {
+        "id": "plane_two",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "plane_five",
+        "maximum_bidirectional_sample_error": 3.580361673049448e-15,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "plane_close",
+        "maximum_bidirectional_sample_error": 7.897148445677845e-07,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "undo",
+        "maximum_bidirectional_sample_error": 7.34907714092176e-08,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "cancel",
+        "maximum_bidirectional_sample_error": 0.0,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "hole",
+        "maximum_bidirectional_sample_error": 9.899336034430582e-07,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "cylinder_axis",
+        "maximum_bidirectional_sample_error": 4.440892098500626e-16,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "cylinder_seam",
+        "maximum_bidirectional_sample_error": 9.67295237296914e-07,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "general",
+        "maximum_bidirectional_sample_error": 9.876432555092516e-07,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "autoclose",
+        "maximum_bidirectional_sample_error": 4.915203327289965e-08,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "persistent",
+        "native_supported": false,
+        "qualified": false
+      },
+      {
+        "id": "autoclose_no",
+        "native_supported": false,
+        "qualified": false
+      }
+    ]
+  },
+  "getter_cases": {
+    "recipes": 12,
+    "qualified_recipes": 10,
+    "unqualified_recipes": [
+      "persistent",
+      "autoclose_no"
+    ],
+    "cases": [
+      {
+        "id": "plane_two",
+        "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "plane_five",
+        "maximum_bidirectional_sample_error": 3.580361673049448e-15,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "plane_close",
+        "maximum_bidirectional_sample_error": 7.897148445677845e-07,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "undo",
+        "maximum_bidirectional_sample_error": 7.34907714092176e-08,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "cancel",
+        "maximum_bidirectional_sample_error": 0.0,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "hole",
+        "maximum_bidirectional_sample_error": 9.899336034430582e-07,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "cylinder_axis",
+        "maximum_bidirectional_sample_error": 4.440892098500626e-16,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "cylinder_seam",
+        "maximum_bidirectional_sample_error": 9.673647471584258e-07,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "general",
+        "maximum_bidirectional_sample_error": 9.87643133875627e-07,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "autoclose",
+        "maximum_bidirectional_sample_error": 4.915203327289965e-08,
+        "native_supported": true,
+        "qualified": true
+      },
+      {
+        "id": "persistent",
+        "native_supported": false,
+        "qualified": false
+      },
+      {
+        "id": "autoclose_no",
+        "native_supported": false,
+        "qualified": false
+      }
+    ]
+  },
+  "bidirectional_samples_per_curve": 130,
+  "maximum_sample_difference": 9.899336034430582e-07,
+  "maximum_surface_image_bound": 4.870697458447489e-07,
+  "guarantees": [
+    "Immutable sources, interpolation locations within model tolerance and a continuous image certificate within half that tolerance.",
+    "Native UV chord metric, periodic covering-space winding, private support extension for open-boundary overshoot.",
+    "Captured command geometry, trim-constrained points, selection, current output layer and Undo/Redo."
+  ],
+  "limits": [
+    "The captured native build rejects the documented AutoClose and PersistentClose option tokens. Those option cases remain unqualified; local tests cover their behavior.",
+    "The World SDK overload differs from UV seam unwrapping. This report qualifies the UV SDK overload and public command.",
+    "The image certificate bounds position, not curvature; spatial fitting uses cubic endpoint tangents.",
+    "Edit history, InfinitePlane point input and unrestricted singular transitions are not implemented."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/surface_interpolation.rs": "176970dd175231b1ec68fa6bc165ada1488307a6cec222f2fd0ed3ef9fcf8f17",
+    "crates/viboceros-geometry/src/surface_interpolation/tests.rs": "8af0dbe37b46d6c05989a0df975f653b53f7b5cf0f16d83f2b986337abcc12e9",
+    "crates/viboceros-geometry/tests/surface_interpolation_native.rs": "d17e7aa9b16f8055459943ee2a77be3e3cf9ed048f62664b026da0b6fa1f7802",
+    "crates/viboceros-geometry/src/interpolation.rs": "d44453b8e867ffcd21d2151465fc08c087b8efce50d85b4d60e7331cf33500d3",
+    "crates/viboceros-geometry/src/intersection.rs": "934971a5cc4a1b9a174ad78d40894a55f830436b22eb3ef8aa5c8cfacc454086",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/pushup.rs": "0f6ceb2f1df5e6398b6d6b4328769e9833888ea19c795daed83764dd7db8700e",
+    "crates/viboceros-command/src/surface_interpolation.rs": "5b629a73b31de551b66d92817de685fb2725bdb3e3631b526d8b0498cdaf2ea8",
+    "crates/viboceros-command/tests/surface_interpolation_native.rs": "7275b44f2598eadbd7420a64ebd6e42f9e9c3bec36bcd73775296e12de521f30",
+    "crates/viboceros-command/tests/support/surface_interpolation.rs": "221f7b9476a8a30888c82fb0aec64f44575706f4107e90bb51f0aac25a29bd09",
+    "src/app/surface_interpolation.rs": "22c422a05f71eef13cef1dccb8cc9975d5ff7b0d18ab214d6f878957ef37af02",
+    "src/app/tests/surface_interpolation.rs": "27c62ba580ff0a5fff66e59d5463922e5ec14d06a0e0f6818b92b923e0af9426",
+    "src/app.rs": "4099106bd615c20626b7a48758297072e26e2b2cafc7da5cfd3f3fde0168b822",
+    "src/viewport.rs": "32d7b6ba8f3cf4d7aa345fc16d300fa7c6b6c3a2947eeeae54d6096e4377934d",
+    "tools/rhino_oracle/surface_interpolate_probe.py": "6cd713df8f539736379e5755397b6e9b16db01b97d8b6522715451a87187f496",
+    "tools/rhino_oracle/surface_interpolate_command_probe.py": "ee777bfd4a2c0a0e24f6dcee9fc008b6b218c05d30b42f80d85436ad6ba352ac",
+    "tools/rhino_oracle/test_surface_interpolation.py": "7936d2c1973350d8f6047a968b1cd2ccc5db74666dba63369e8d59c67d2876b2",
+    "tools/rhino_oracle/report_surface_interpolation.py": "5395a82aa712960ae0ce35742cc32dfe82468ed61680b6e1ed4b1f9e394f79de",
+    "tools/rhino_oracle/fixtures/surface_interpolate.json": "175aa367e3e7560aa4af3d2d0c2d3ca85ca336d71a05da456e390d0464ccf4c5",
+    "tools/rhino_oracle/observations/surface_interpolate.json": "02e5cc1a28adf2bf625ee89541f2cc80dcb8d5b49dfff2e05fb70abe498ee52b",
+    "tools/rhino_oracle/fixtures/surface_interpolate_closed.json": "da3245f6fd0fd6c43f9172e73d73c8843cd41fc6c0bd683347ac3c474d3ba5c5",
+    "tools/rhino_oracle/observations/surface_interpolate_closed.json": "2244b821443ac039f776f48e05767b85fc31d0560f23a90af0b39570ea98e318",
+    "tools/rhino_oracle/fixtures/surface_interpolate_command.json": "8f6001cb2db6c395409defc3870d7de79e31f67b6fdb73d8faf4b0bcdcdfeba4",
+    "tools/rhino_oracle/observations/surface_interpolate_command.json": "85e2c8927443ba6a8f83fde954c27a2d8b4066e0925e78e7a868276145278bca"
+  }
+}

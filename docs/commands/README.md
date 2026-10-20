@@ -5,6 +5,7 @@ commands. These pages describe implemented behavior and known limitations;
 Rhino's complete command set is still a work in progress.
 
 - [ShortPath surface geodesics](short-path.md)
+- [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [Check and SelBadObjects](check.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
 - [DivideAlongCreases](divide-along-creases.md)
