@@ -511,6 +511,23 @@ class OracleClient:
             for op in operations:validate(op)
             click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in op['actions']])for op in operations])
             interaction=CatenaryPointPicker(click_request)
+        if any(op.get('op') == 'array_curve_surface' for op in request.get('operations', [])):
+            from .array_curve_surface_probe import validate
+            operations=request['operations']
+            if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')!='array_curve_surface'for op in operations):
+                raise OracleProtocolError('ArrayCrvOnSrf requires a private dedicated one-iteration capture')
+            names=[op.get('id')for op in operations]
+            if not 1<=len(names)<=64 or any(not isinstance(n,str)for n in names)or len(set(names))!=len(names):raise OracleProtocolError('ArrayCrvOnSrf requires 1 through 64 unique cases')
+            for op in operations:validate(op)
+            if any(op['pick_point']is not None for op in operations):
+                from .catenary_point_picker import CatenaryPointPicker
+                clicks=[]
+                for op in operations:
+                    index=(op['source_count']+1 if op['postselect']else 0)+1+int(op['subcurve']is not None)
+                    actions=[None]*(index+1)
+                    if op['pick_point']is not None:actions[index]=dict(click=op['pick_point'])
+                    clicks.append(dict(op,actions=actions))
+                interaction=CatenaryPointPicker(dict(request,operations=clicks))
         if any(op.get('op') == 'splop_tangent' for op in request.get('operations', [])):
             from .splop_tangent_probe import validate
             from .catenary_point_picker import CatenaryPointPicker
@@ -1883,6 +1900,8 @@ Rhino.RhinoApp.Idle += execute_owned_controls
         if block_controls:
             interaction.record_diagnostics(response)
         if any(op.get('op') == 'reparameterize_block_command' for op in request.get('operations', [])):
+            interaction.record_diagnostics(response)
+        if any(op.get('op')=='array_curve_surface'and op['pick_point']is not None for op in request.get('operations',[])):
             interaction.record_diagnostics(response)
         return response
 

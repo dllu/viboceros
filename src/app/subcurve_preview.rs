@@ -253,6 +253,9 @@ impl VibocerosApp {
                 .filter(|r| r.stage() == viboceros_command::conic::ReferenceStage::TrimEnd)?
                 .hover_parameter();
         }
+        if let Some(s) = &self.array_curve_surface_session {
+            return s.subcurve_hover();
+        }
         if let Some(s) = &self.orient_curve_session {
             return s.subcurve_hover();
         }
@@ -287,6 +290,9 @@ impl VibocerosApp {
                 r.locked_forward(),
                 self.document.tolerance(),
             );
+        }
+        if let Some(s) = &mut self.array_curve_surface_session {
+            return s.subcurve_preview(&self.document);
         }
         if let Some(s) = &mut self.orient_curve_session {
             return s.subcurve_preview(&self.document);

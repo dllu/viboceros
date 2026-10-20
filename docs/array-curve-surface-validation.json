@@ -1,0 +1,785 @@
+{
+  "schema_version": 1,
+  "command": "ArrayCrvOnSrf",
+  "native_engine": "rhino",
+  "native_engine_version": "8.32.26160.13001",
+  "qualified_workflows": 44,
+  "capture": {
+    "request": "tools/rhino_oracle/fixtures/array_curve_surface.json",
+    "request_sha256": "fe8f9dc0e5f75f26e4652c6fc682deaaa08708bbb2989079baca5674ca37915d",
+    "response": "tools/rhino_oracle/observations/array_curve_surface.json",
+    "response_sha256": "b892bc1366612aa411d4b8f29bcafe8b9a69837bde799e588dd2ee62dc65b6a3",
+    "sources": {
+      "array_curve_surface_probe.py": "e24fb8f1dffc7701bc746dd48c84cdf83ebd90b667271ca1f07844b809b515af",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "rhino_worker.py": "13883658e084a60ed6d305636a8505bc11b27d340b57cb28f5aab162d8d179b2",
+      "structural_sdk.py": "078e8ded065cec8f79207f93f57329530a2e0a753ee2d581576f718d932f5e3a",
+      "client.py": "dc08b6d78e1564702668e813937b8b6aa216de7b6bf08dbf9ba330dd16cb3ae2",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "conic_getter_input.py": "eea921c6319dcaafda835a4065cd13206a7aa3707bed5a0970c6084f33da065a",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+      "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa"
+    },
+    "physical_path_picks": 3,
+    "all_motion_and_clicks_acknowledged": true,
+    "isolated": "Private settings scheme, owned empty document, idle public command getters; no interactive user model or settings changed."
+  },
+  "comparison": {
+    "absolute_cloud_bound": 1e-06,
+    "maximum_observed_error": 7.525207590546514e-07,
+    "points_per_cloud": 5,
+    "phases": [
+      "before",
+      "after_script",
+      "undo",
+      "redo"
+    ],
+    "exact_state": [
+      "object order and counts",
+      "object names",
+      "source and output selection",
+      "literal group definition names including empty definitions",
+      "ordered memberships by literal group names",
+      "immutable guide geometry"
+    ],
+    "normalization": "Only opaque object/group identities are mapped through authored source roles and exact names; no group-number normalization."
+  },
+  "coverage": [
+    "plane, tilted plane, cylinder, sphere, warped surface, off-surface rail",
+    "line, polyline corners, rational circles, cubic NURBS and isocurves",
+    "reversed paths and reversed B-rep faces",
+    "full rotated construction planes and shifted source anchors",
+    "Divide, Multiple, picked positions, signed relative distances and sequences",
+    "shared remembered count and spacing, invalid counts, negative spacing, zero spacing, exhausted and closed rails",
+    "physical path direction picks and both SubCrv directions",
+    "one to three sources, preselection/postselection, copied and empty groups, deleted seed names, repeated document name reservations",
+    "one real Undo and Redo per accepted command"
+  ],
+  "implementation_sources": {
+    "README.md": "9819ef3ad916eb1ee9731fe9a33122519ea52e7dd95aa3e54d109661543153f0",
+    "crates/viboceros-command/src/array_curve_surface.rs": "dc3ea6f562cdfb72958db309f15b6ed6372a9e7f4be47706dc35c22e631a2f32",
+    "crates/viboceros-command/src/arrays.rs": "13af2f2649912177547bbfecf340c7e47367ff4706b888077e3813f1452c936c",
+    "crates/viboceros-command/src/lib.rs": "1e3465c4ed5a6400a728a27cf10931a4c10af4e90ca86ba7d282fb38abd6e4af",
+    "crates/viboceros-command/tests/array_curve_surface.rs": "e0b035fe602696d24d3c0e4ecf0b557cc2d5b7ed1abfbdfb842c6fa1e87babd4",
+    "crates/viboceros-command/tests/array_curve_surface_native.rs": "4fd2beeea389a98b4b8293e72dbf10a613030bbf0e7bcbb7499b1e5f63938a95",
+    "crates/viboceros-command/tests/support/array_curve_surface.rs": "edb7e7a6fbccd2e0b3fc2a7a892057f7bfe1f4646b9248b5b27adebfc2ff21b7",
+    "crates/viboceros-document/src/block_edit.rs": "74ac6d849ae63e70147ba9259852c0d23f6407aacc8292f794c96debf143bca2",
+    "crates/viboceros-document/src/block_edit/navigation.rs": "5646205942e30addd203b3e5b42c406770cffa734dd31022e912d13638c86615",
+    "crates/viboceros-document/src/groups.rs": "bea4a369873f53b8f7eb2c125790d3785d1bb56e59baf11aa7de0b4f821b8e5d",
+    "crates/viboceros-document/src/groups/names.rs": "67b00f11819b7692dce29cc167642f5374f89fa52c9c3a50698ee9b633de6f80",
+    "crates/viboceros-document/src/history.rs": "e31ee8a9de612e53753fa049a75a6cabb1ae30219313e088722ec855ac79e3f5",
+    "crates/viboceros-document/src/lib.rs": "b78d1a285240b372def86297543aa6bf598b7c412eb7dc9df77b4d11a3ba2225",
+    "docs/commands/README.md": "80559651d5fd818186ab3b387b9d88d3c04eeabaec03459b15001af12de4f5fb",
+    "docs/commands/array-curve-surface.md": "d80f9f3759112d61fcf44c3faed7f7a04ceeb0b1fe9dcc3cd02875d8686aac4d",
+    "docs/commands/transforms.md": "6a81b60227a1806f84e48a3a810ece5ce49260445acee2e29906a02627ab3b3c",
+    "docs/groups.md": "52f5a3445d94b971d2643effd7c81fa9a96c86ae682ee5e58030f31ffe05fb28",
+    "src/app.rs": "52bbc085777f37292c62eb77c81768436cd19d5ffbec9bf701a5e70c8e628b4b",
+    "src/app/array_curve_surface.rs": "44e289fe225b478a656194bd27e433771c49c82ab4cdec205e1040ea20e1e54c",
+    "src/app/array_curve_surface/subcurve.rs": "99690e625488e63dfeaa59d0cf5ab0a7d0a0427f3a36d3da685779616f230754",
+    "src/app/component_selection.rs": "7d8e1795aad0ea21db1c61629a1859af2643cfb84f2a02c8533355f1f76cf7ac",
+    "src/app/mesh_face_prompt.rs": "7e9aae45ce6c2b36f93bd75430021e5e3c9c5b8b4650673ba3fc080c1de13b74",
+    "src/app/object_selection.rs": "c92296ccde332ab703a0ddcdfc3823cf1fda65223d6f16d2a123dde3ec3b5ada",
+    "src/app/point_input.rs": "25edca02fc7ae50dab5a607ac01c9c4b8236d3fc99eebbc9959978fe9f443618",
+    "src/app/subcurve_direction.rs": "ced3ff78634db7c1015a21291bf07f7099575a2091655985b1fda1d8e70e2c32",
+    "src/app/subcurve_preview.rs": "1acad0df85fec5d8d3e534ca4c67a91bcdd63dae40d6840c25b9350f4994751e",
+    "src/app/tests/array_curve_surface.rs": "eff4dc8e0436d88a02219d702a0dffe0ce08323b3be6cd1c676b0525d88d5019",
+    "src/app/transform_prompt.rs": "21bcf1be149363e01308434a0a580dd8b08553ee1897e39e888ae0723d75dc3f",
+    "src/main.rs": "139fb45a92c39f59d329ea041e51c5eae0f4048ede21931e87ece9d5c48b32ae",
+    "src/viewport/affine_preview.rs": "452b5d94d830a112d53425ca931fc68b5fbdb78e52a5ad1fbe37e532a5842f87",
+    "tools/rhino_oracle/array_curve_surface_probe.py": "e24fb8f1dffc7701bc746dd48c84cdf83ebd90b667271ca1f07844b809b515af",
+    "tools/rhino_oracle/client.py": "dc08b6d78e1564702668e813937b8b6aa216de7b6bf08dbf9ba330dd16cb3ae2",
+    "tools/rhino_oracle/conic_getter_input.py": "eea921c6319dcaafda835a4065cd13206a7aa3707bed5a0970c6084f33da065a",
+    "tools/rhino_oracle/fixtures/array_curve_surface.json": "fe8f9dc0e5f75f26e4652c6fc682deaaa08708bbb2989079baca5674ca37915d",
+    "tools/rhino_oracle/generate_array_curve_surface.py": "51103b9ed0e1b1a2a1e55b72ce5110179c40459bfc727e5b74d3f9d5fc2cd8f2",
+    "tools/rhino_oracle/observations/array_curve_surface.json": "b892bc1366612aa411d4b8f29bcafe8b9a69837bde799e588dd2ee62dc65b6a3",
+    "tools/rhino_oracle/rhino_worker.py": "13883658e084a60ed6d305636a8505bc11b27d340b57cb28f5aab162d8d179b2",
+    "tools/rhino_oracle/structural_sdk.py": "078e8ded065cec8f79207f93f57329530a2e0a753ee2d581576f718d932f5e3a",
+    "tools/rhino_oracle/test_array_curve_surface.py": "6b829380427b092a70c8d9bc349fa58f1e7dd4946960faa72df11b451d7a102e"
+  },
+  "replay_audits": {
+    "native API": [
+      {
+        "id": "array_srf_0",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_1",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_2",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_3",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_4",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_5",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "array_srf_6",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_7",
+        "maximum_error": 7.525207590546514e-07
+      },
+      {
+        "id": "array_srf_8",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_9",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_10",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_11",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_12",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_13",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "array_srf_14",
+        "maximum_error": 8.899114524108741e-16
+      },
+      {
+        "id": "array_srf_15",
+        "maximum_error": 4.1854639434299355e-07
+      },
+      {
+        "id": "array_srf_16",
+        "maximum_error": 3.823944748917137e-07
+      },
+      {
+        "id": "array_srf_17",
+        "maximum_error": 1.1835309001827585e-09
+      },
+      {
+        "id": "array_srf_18",
+        "maximum_error": 1.1835287234314103e-09
+      },
+      {
+        "id": "array_srf_19",
+        "maximum_error": 3.8294839001929e-07
+      },
+      {
+        "id": "array_srf_20",
+        "maximum_error": 3.7559335503826613e-07
+      },
+      {
+        "id": "array_srf_21",
+        "maximum_error": 8.30688267106491e-09
+      },
+      {
+        "id": "array_srf_22",
+        "maximum_error": 8.30688268629864e-09
+      },
+      {
+        "id": "array_srf_23",
+        "maximum_error": 2.616335998359511e-08
+      },
+      {
+        "id": "array_srf_24",
+        "maximum_error": 4.167884062747589e-08
+      },
+      {
+        "id": "array_srf_25",
+        "maximum_error": 1.9860273225978185e-15
+      },
+      {
+        "id": "array_srf_26",
+        "maximum_error": 9.930136612989092e-16
+      },
+      {
+        "id": "array_srf_27",
+        "maximum_error": 1.4215747993648697e-07
+      },
+      {
+        "id": "array_srf_28",
+        "maximum_error": 6.505850886437924e-08
+      },
+      {
+        "id": "array_srf_29",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_30",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_31",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_32",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_33",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_34",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_35",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_36",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_37",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_38",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_39",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_40",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_41",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_42",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_43",
+        "maximum_error": 1.3877787807814457e-17
+      }
+    ],
+    "portable UI": [
+      {
+        "id": "array_srf_0",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_1",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_2",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_3",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_4",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_5",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "array_srf_6",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_7",
+        "maximum_error": 7.525207590546514e-07
+      },
+      {
+        "id": "array_srf_8",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_9",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_10",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_11",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_12",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_13",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "array_srf_14",
+        "maximum_error": 8.899114524108741e-16
+      },
+      {
+        "id": "array_srf_15",
+        "maximum_error": 4.1854639434299355e-07
+      },
+      {
+        "id": "array_srf_16",
+        "maximum_error": 3.823944748917137e-07
+      },
+      {
+        "id": "array_srf_17",
+        "maximum_error": 1.1835309001827585e-09
+      },
+      {
+        "id": "array_srf_18",
+        "maximum_error": 1.1835287234314103e-09
+      },
+      {
+        "id": "array_srf_19",
+        "maximum_error": 3.8294839001929e-07
+      },
+      {
+        "id": "array_srf_20",
+        "maximum_error": 3.7559335503826613e-07
+      },
+      {
+        "id": "array_srf_21",
+        "maximum_error": 8.30688267106491e-09
+      },
+      {
+        "id": "array_srf_22",
+        "maximum_error": 8.30688268629864e-09
+      },
+      {
+        "id": "array_srf_23",
+        "maximum_error": 2.616335998359511e-08
+      },
+      {
+        "id": "array_srf_24",
+        "maximum_error": 4.167884062747589e-08
+      },
+      {
+        "id": "array_srf_25",
+        "maximum_error": 1.9860273225978185e-15
+      },
+      {
+        "id": "array_srf_26",
+        "maximum_error": 9.930136612989092e-16
+      },
+      {
+        "id": "array_srf_27",
+        "maximum_error": 1.4215747993648697e-07
+      },
+      {
+        "id": "array_srf_28",
+        "maximum_error": 6.505850886437924e-08
+      },
+      {
+        "id": "array_srf_29",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_30",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_31",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_32",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_33",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_34",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_35",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_36",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_37",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_38",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_39",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_40",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_41",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_42",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_43",
+        "maximum_error": 1.3877787807814457e-17
+      }
+    ],
+    "native UI": [
+      {
+        "id": "array_srf_0",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_1",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_2",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_3",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_4",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_5",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "array_srf_6",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_7",
+        "maximum_error": 7.525207590546514e-07
+      },
+      {
+        "id": "array_srf_8",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_9",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_10",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_11",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_12",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_13",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "array_srf_14",
+        "maximum_error": 8.899114524108741e-16
+      },
+      {
+        "id": "array_srf_15",
+        "maximum_error": 4.1854639434299355e-07
+      },
+      {
+        "id": "array_srf_16",
+        "maximum_error": 3.823944748917137e-07
+      },
+      {
+        "id": "array_srf_17",
+        "maximum_error": 1.1835309001827585e-09
+      },
+      {
+        "id": "array_srf_18",
+        "maximum_error": 1.1835287234314103e-09
+      },
+      {
+        "id": "array_srf_19",
+        "maximum_error": 3.8294839001929e-07
+      },
+      {
+        "id": "array_srf_20",
+        "maximum_error": 3.7559335503826613e-07
+      },
+      {
+        "id": "array_srf_21",
+        "maximum_error": 8.30688267106491e-09
+      },
+      {
+        "id": "array_srf_22",
+        "maximum_error": 8.30688268629864e-09
+      },
+      {
+        "id": "array_srf_23",
+        "maximum_error": 2.616335998359511e-08
+      },
+      {
+        "id": "array_srf_24",
+        "maximum_error": 4.167884062747589e-08
+      },
+      {
+        "id": "array_srf_25",
+        "maximum_error": 1.9860273225978185e-15
+      },
+      {
+        "id": "array_srf_26",
+        "maximum_error": 9.930136612989092e-16
+      },
+      {
+        "id": "array_srf_27",
+        "maximum_error": 1.4215747993648697e-07
+      },
+      {
+        "id": "array_srf_28",
+        "maximum_error": 6.505850886437924e-08
+      },
+      {
+        "id": "array_srf_29",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_30",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_31",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_32",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_33",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_34",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_35",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_36",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_37",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_38",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "array_srf_39",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_40",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_41",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_42",
+        "maximum_error": 1.3877787807814457e-17
+      },
+      {
+        "id": "array_srf_43",
+        "maximum_error": 1.3877787807814457e-17
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "portable API and guards",
+      "status": "pass",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.06s"
+      ]
+    },
+    {
+      "name": "native API and guards",
+      "status": "pass",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.05s"
+      ]
+    },
+    {
+      "name": "portable UI and guards",
+      "status": "pass",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1505 filtered out; finished in 1.51s"
+      ]
+    },
+    {
+      "name": "native UI and guards",
+      "status": "pass",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1520 filtered out; finished in 1.52s"
+      ]
+    },
+    {
+      "name": "document regressions",
+      "status": "pass",
+      "test_results": [
+        "test result: ok. 283 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 14.33s"
+      ]
+    },
+    {
+      "name": "array regressions",
+      "status": "pass",
+      "test_results": [
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1519 filtered out; finished in 0.04s"
+      ]
+    },
+    {
+      "name": "prior Splop and curve array regressions",
+      "status": "pass",
+      "test_results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.39s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.41s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.36s"
+      ]
+    },
+    {
+      "name": "Python request and capture regressions",
+      "status": "pass",
+      "test_results": [
+        "Ran 19 tests (new receipt check plus prior 18 request/capture regressions)"
+      ]
+    },
+    {
+      "name": "shared Circle Arc driver regressions",
+      "status": "pass",
+      "test_results": [
+        "Ran 18 tests in 0.179s"
+      ]
+    },
+    {
+      "name": "portable strict all-workspace all-targets clippy",
+      "status": "pass"
+    },
+    {
+      "name": "native strict all-workspace all-targets clippy",
+      "status": "pass"
+    },
+    {
+      "name": "cargo fmt --all -- --check and git diff --check",
+      "status": "pass"
+    }
+  ],
+  "retained_diagnostics": [
+    {
+      "path": "docs/array-curve-surface-followup-diagnostic.json.gz",
+      "sha256": "ce25e63a2ed11c1a83412c3d68595fbfbf5e1ecc6be6ff03c27755f91a5cbe15",
+      "operations": 13,
+      "input_failures": [
+        {
+          "id": "follow_2",
+          "errors": [
+            "owned ArrayCrvOnSrf input timeout",
+            "incomplete owned ArrayCrvOnSrf input"
+          ]
+        },
+        {
+          "id": "follow_3",
+          "errors": [
+            "owned ArrayCrvOnSrf input timeout",
+            "incomplete owned ArrayCrvOnSrf input"
+          ]
+        },
+        {
+          "id": "follow_11",
+          "errors": [
+            "owned ArrayCrvOnSrf input timeout",
+            "incomplete owned ArrayCrvOnSrf input"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "docs/array-curve-surface-getter-diagnostic.json.gz",
+      "sha256": "785b1ecf7cce0524e1cdf47974198837afe465fdb974f56bc621e2d2a656a97d",
+      "operations": 14,
+      "input_failures": []
+    },
+    {
+      "path": "docs/array-curve-surface-input-pilot.json.gz",
+      "sha256": "e3c8d018dc64a0dba8d80ec1976f7debb7ed3210fb7659cfa563e2ada1cd1c07",
+      "operations": 3,
+      "input_failures": []
+    },
+    {
+      "path": "docs/array-curve-surface-protocol-diagnostic.json.gz",
+      "sha256": "8c60ba637b74c9fe8743d19aee47524d894f2dc5fcae63743f7bb9a2e063a8a7",
+      "operations": 16,
+      "input_failures": [
+        {
+          "id": "protocol_2",
+          "errors": [
+            "owned ArrayCrvOnSrf input timeout",
+            "incomplete owned ArrayCrvOnSrf input"
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "The native basis-cloud corpus does not qualify every source geometry type or arbitrary trimmed-face boundaries. Copies use the existing shared affine document path.",
+    "No performance comparison against a native x86 Rhino installation is claimed.",
+    "Singular frames and invalid script layouts reject atomically; interactive invalid inputs reject a step.",
+    "Older driver/count/pointer timeouts remain in diagnostic captures and are not counted as qualified workflows."
+  ]
+}

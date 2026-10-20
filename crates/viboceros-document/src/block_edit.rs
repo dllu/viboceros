@@ -527,6 +527,9 @@ impl Document {
             }
         }
         accepted.groups = self.groups.clone();
+        accepted
+            .used_group_names
+            .extend(self.used_group_names.iter().cloned());
         for group in &mut accepted.groups {
             group
                 .members
@@ -568,6 +571,9 @@ impl Document {
         Ok(count)
     }
     pub(super) fn swap_block_edit_model(&mut self, stored: &mut Document) {
+        self.used_group_names
+            .extend(stored.used_group_names.iter().cloned());
+        stored.used_group_names = self.used_group_names.clone();
         macro_rules! swap {($($field:ident),*)=>{$(std::mem::swap(&mut self.$field,&mut stored.$field);)*};}
         swap!(
             tolerance,

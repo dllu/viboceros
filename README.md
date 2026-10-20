@@ -70,6 +70,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Reparameterize curves, trimmed surfaces and placed block geometry with viewport picks and shared numeric prompts](docs/commands/reparameterize.md),
   including [Automatic surface domains](docs/automatic-surface-domains.md)
 - [Sweep cross sections along two rails](docs/commands/sweep2.md)
+- [Array objects along curves with surface-normal orientation, previews and repeated placement](docs/commands/array-curve-surface.md)
 - [Revolve a profile along a rail](docs/commands/rail-revolve.md)
 - [Gordon networks](docs/smlib-gordon-network.md) and [automatic curve fitting](docs/automatic-gordon-network-fit.md)
 - [Directional projection, custom points and subcurves](docs/commands/project.md)

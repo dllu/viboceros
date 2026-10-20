@@ -2,10 +2,12 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
-    if command in('Circle','Arc','Splop') and op.get('op')in('circle_tangent','arc_tangent','arc_extension','splop_tangent') and 'construction_plane'in op:
+    if command=='ArrayCrvOnSrf':
+        vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned surface curve array input',False);vp.ZoomExtents();view.Redraw()
+    if command in('Circle','Arc','Splop','ArrayCrvOnSrf') and op.get('op')in('circle_tangent','arc_tangent','arc_extension','splop_tangent') and 'construction_plane'in op:
         origin,x,y=op['construction_plane']
         plan_view=bool(vp.SetToPlanView(R.Geometry.Point3d(*origin),R.Geometry.Vector3d(*x),R.Geometry.Vector3d(*y),True))
         if not plan_view:raise ValueError('could not align owned tangent input viewport')
@@ -34,12 +36,17 @@ def drive(op,host,guides,command="Conic"):
     subtract=method(S.DateTime,'Subtract',[S.DateTime]);elapsed=lambda t:E.Property(call(now,subtract,[t]),'TotalSeconds')
     def send_token(token):return call(None,send,[E.Constant(token),E.Constant(True)])
     def log(message):return call(None,append,[E.Constant(progress),E.Constant(message)])
-    def point(p):return 'w'+','.join(repr(float(x))for x in p)
+    def point(p):
+        if command=='ArrayCrvOnSrf':
+            from number_token import number_token
+            return 'w'+','.join(number_token(x)for x in p)
+        return 'w'+','.join(repr(float(x))for x in p)
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
     if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch','Number of points per turn','Points per turn')
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
     if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
+    if command=='ArrayCrvOnSrf':prefixes=('Select objects to array','Base point','Select a curve on a surface','Select curve to temporarily shorten','Start of curve','Current length','Select the surface','Position objects or distance from last','Number of objects','Number of copies','Distance between copies')
     if command=='Splop':prefixes=('Center of reference sphere','First','Second','Third','Radius','Select surface','Pick splop','Pick point')
     if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Mid','Radius','Direction','Angle','Length','Distance')
     if command=='Reparameterize':prefixes=('Select curve','Select surface','Select object','Domain start','Domain end','U domain start','U domain end','V domain start','V domain end')
@@ -59,8 +66,9 @@ def drive(op,host,guides,command="Conic"):
             receipt=[E.Assign(item(arc_pointer_initial,2*i),E.Property(position,'X')),E.Assign(item(arc_pointer_initial,2*i+1),E.Property(position,'Y'))]
         return E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1))]+receipt+[log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
     for i,a in enumerate(actions):
+        if command=='ArrayCrvOnSrf':base=either([call(prompt,starts,[E.Constant(p)])for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        located=command in('Circle','Arc','Splop')and op.get('op')in('circle_tangent','arc_tangent','arc_extension','splop_tangent')and isinstance(a,dict)and'curve'in a and'pick'in a
+        located=command in('Circle','Arc','Splop','ArrayCrvOnSrf')and op.get('op')in('circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name
@@ -99,7 +107,7 @@ def drive(op,host,guides,command="Conic"):
                 if ok:clicks[-1]['projected_point']=host['_xyz'](ray.PointAt(t))
             if located:
                 clicks[-1]['curve']=a['curve'];clicks[-1]['edge']=a.get('edge')
-                if 'edge'not in a or op.get('op')in('arc_extension','splop_tangent'):
+                if 'edge'not in a or op.get('op')in('arc_extension','splop_tangent','array_curve_surface'):
                     source=doc.Objects.FindId(guides[a['curve']]).Geometry
                     if 'edge'in a:source=source.Edges[a['edge']]
                     ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
@@ -131,10 +139,15 @@ def drive(op,host,guides,command="Conic"):
             tokens.append(None)
         else:
             if isinstance(a,dict)and'relative'in a:token='r'+','.join(repr(float(v))for v in a['relative']);gate=base
-            elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=selection
+            elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=base if command=='ArrayCrvOnSrf'else selection
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
-            else:token=repr(float(a));gate=base
+            else:
+                if command=='ArrayCrvOnSrf':
+                    from number_token import number_token
+                    token=number_token(a)
+                else:token=repr(float(a))
+                gate=base
             if command=='Reparameterize':
                 gate=number_prompt
                 if a=='Enter':token=''
@@ -174,8 +187,9 @@ def drive(op,host,guides,command="Conic"):
         handlers=[]
         for c in clicks:
             i=c['action'];x,y=c['pixel']
+            gate=either([call(prompt,starts,[E.Constant(p)])for p in op['action_prompts'][i]])if command=='ArrayCrvOnSrf'else base
             near=E.AndAlso(E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'X'),integer(x-1)),E.LessThanOrEqual(E.Property(pixel,'X'),integer(x+1))),E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'Y'),integer(y-1)),E.LessThanOrEqual(E.Property(pixel,'Y'),integer(y+1))))
-            condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.Equal(item(counts,i),integer(7)),E.AndAlso(same_view,E.AndAlso(base,E.AndAlso(near,E.AndAlso(left,E.Not(E.Property(event,'Cancel'))))))))
+            condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.Equal(item(counts,i),integer(7)),E.AndAlso(same_view,E.AndAlso(gate,E.AndAlso(near,E.AndAlso(left,E.Not(E.Property(event,'Cancel'))))))))
             advance=[E.Assign(item(observed,i),prompt),E.Assign(item(counts,i),integer(9)),E.Assign(item(last,0),now)]
             if command!='Reparameterize':advance.append(E.Assign(stage,integer(i+1)))
             handlers.append(E.IfThen(condition,block(advance)))

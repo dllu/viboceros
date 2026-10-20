@@ -321,6 +321,7 @@ OrientOnSrf 0,0,0 1,0,0 5,5,2 Rigid=No SurfaceName=Panel
 Array 3 2 2 4 -3 5
 Array 3 2 1 20 12 0 Mode=Fill
 ArrayCrv 8 Orientation=Freeform PathName=Rail
+ArrayCrvOnSrf 0,0,0 Curve=rail-id Surface=surface-id Divide=8
 ArrayCrv Distance=2.5 Orientation=Roadlike BasePoint=0,0,0 PathName=Rail
 ArraySrf 4 3 BasePoint=0,0,0 Up=0,0,1 Mode=Isocurve SurfaceName=Panel
 ArrayLinear 4 0,0,0 2,1,0

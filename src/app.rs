@@ -148,6 +148,7 @@ mod circle_deform;
 mod tangent;
 use circle::CircleSizeMode;
 mod apply_curves;
+mod array_curve_surface;
 mod bend_prompt;
 mod blend_surface;
 mod block_add;
@@ -349,6 +350,7 @@ impl InteractiveScaleKind {
 enum InteractiveCommand {
     RemapCPlane,
     OrientOnCurve,
+    ArrayCurveOnSurface,
     SurfaceFlow {
         start: Option<Point3>,
     },
@@ -852,6 +854,7 @@ impl InteractiveCommand {
         match self {
             Self::RemapCPlane => "RemapCPlane",
             Self::OrientOnCurve => "OrientOnCrv",
+            Self::ArrayCurveOnSurface => "ArrayCrvOnSrf",
             Self::SurfaceFlow { .. } => "FlowAlongSrf",
             Self::Flow { .. } => "Flow",
             Self::OrientOnSurface { .. } => "OrientOnSrf",
@@ -998,6 +1001,9 @@ impl InteractiveCommand {
                 "RemapCPlane: click a target viewport, or choose CPlane or View (Esc cancels)"
             }
             Self::OrientOnCurve => "OrientOnCrv: follow the curve placement prompt (Esc finishes)",
+            Self::ArrayCurveOnSurface => {
+                "ArrayCrvOnSrf: follow the surface curve array prompt (Esc finishes)"
+            }
             Self::SurfaceFlow { .. } => {
                 "FlowAlongSrf: choose base and target surfaces; Enter applies; Esc cancels"
             }
@@ -1996,6 +2002,7 @@ impl InteractiveCommand {
             | Self::TrimCurve
             | Self::Move { start: None }
             | Self::OrientOnCurve
+            | Self::ArrayCurveOnSurface
             | Self::SetPoint { .. }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -2400,6 +2407,7 @@ pub struct VibocerosApp {
     translation_session: Option<translation_prompt::TranslationSession>,
     set_point_sources: Option<set_point::SetPointSources>,
     orient_curve_session: Option<orient_curve::Session>,
+    array_curve_surface_session: Option<array_curve_surface::Session>,
     flow_session: Option<flow::Session>,
     surface_flow_session: Option<surface_flow::Session>,
     catenary_session: Option<catenary::Session>,
@@ -2538,6 +2546,7 @@ impl VibocerosApp {
             translation_session: None,
             set_point_sources: None,
             orient_curve_session: None,
+            array_curve_surface_session: None,
             flow_session: None,
             surface_flow_session: None,
             catenary_session: None,
@@ -2793,6 +2802,7 @@ impl VibocerosApp {
             || self.try_continue_remap_cplane(&input)
             || self.try_continue_orient_points(&input)
             || self.try_continue_orient_curve(&input)
+            || self.try_continue_array_curve_surface(&input)
             || self.try_continue_conic(&input)
             || self.try_continue_rectangle(&input)
             || self.try_continue_surface_flow(&input)
@@ -3534,6 +3544,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_flow_input(input, picked_sources.as_deref()) {
+            return true;
+        }
+        if self.try_start_array_curve_surface(input, picked_sources.as_deref()) {
             return true;
         }
         if self.try_start_orient_curve_input(input, picked_sources.as_deref()) {
@@ -5929,6 +5942,7 @@ impl VibocerosApp {
         let transform_applied = self.finish_orient_surface_session()
             | self.finish_orient_points_session()
             | self.finish_orient_curve_session()
+            | self.finish_array_curve_surface_session()
             | self.finish_maelstrom_session()
             | self.finish_transform_session()
             | self
@@ -6085,6 +6099,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_orient_points_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_array_curve_surface_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_orient_curve_point(point) {
             return accepted;
         }
@@ -6119,6 +6136,7 @@ impl VibocerosApp {
             InteractiveCommand::RemapCPlane
             | InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::ArrayCurveOnSurface
             | InteractiveCommand::CircleDeform { .. }
             | InteractiveCommand::ArcTangent { .. }
             | InteractiveCommand::ArcExtension { .. }
@@ -8823,6 +8841,12 @@ impl VibocerosApp {
         if self.pick_subcurve_source(click.object_id) {
             return;
         }
+        if self.picking_array_surface() {
+            if let Some(id) = click.object_id {
+                self.accept_array_surface(id, None);
+            }
+            return;
+        }
         if self.picking_orient_surface() {
             if let Some(id) = click.object_id {
                 self.accept_orient_surface(id, None);
@@ -8860,6 +8884,9 @@ impl VibocerosApp {
             return;
         }
         if self.pick_flow_guide(click.object_id, None) {
+            return;
+        }
+        if self.pick_array_curve(click.object_id, None) {
             return;
         }
         if self.pick_orient_curve(click.object_id) {
@@ -9466,6 +9493,9 @@ impl VibocerosApp {
         }
         if output.selection_pointer.is_some() {
             self.capture_flow_pointer(output.selection_pointer);
+            if let Some(s) = &mut self.array_curve_surface_session {
+                s.pointer = output.selection_pointer;
+            }
             if let Some(s) = &mut self.arc_extension_session {
                 s.pointer = output.selection_pointer;
             }
@@ -9631,6 +9661,7 @@ impl VibocerosApp {
         } else if let Some(picks) = output.edge_click {
             if self.picking_subcurve_edge()
                 || self.picking_orient_curve()
+                || self.picking_array_curve()
                 || self.picking_flow_guide()
                 || self.picking_spiral_rail()
                 || self.picking_conic_curve()
@@ -9667,6 +9698,7 @@ impl VibocerosApp {
                 || self.accept_splop_reference_parameter(parameter)
                 || self.accept_circle_around_parameter(parameter)
                 || self.accept_orient_curve_parameter(parameter)
+                || self.accept_array_curve_surface_parameter(parameter)
             {
             } else if self.move_normal_curve().is_some() {
                 self.accept_move_normal_curve_parameter(parameter);
@@ -9947,6 +9979,7 @@ impl eframe::App for VibocerosApp {
         self.show_point_deviation(ui);
         self.show_curve_deviation(ui);
         self.validate_orient_guide();
+        self.validate_array_curve_surface();
         self.validate_orient_surface();
         self.validate_flow_guides();
         self.validate_surface_flow();
@@ -10045,12 +10078,18 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_circle_around_curve()
                 && !self.picking_splop_reference_curve()
                 && !self.picking_orient_curve()
+                && !self.picking_array_curve()
                 && (self.surface_flow_session.is_none() || self.drawing_surface_flow())
                 && (self.flow_session.is_none()
                     || self.drawing_flow_line()
                     || self.drawing_flow_axis()
                     || self.drawing_flow_radius())
                 && !self.picking_orient_surface()
+                && !self.picking_array_surface()
+                && self
+                    .array_curve_surface_session
+                    .as_ref()
+                    .is_none_or(array_curve_surface::Session::wants_point)
                 && !self.selecting_move_normal_reference()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())
                 && self.plane_prompt.as_ref().map_or_else(
@@ -10217,6 +10256,11 @@ impl eframe::App for VibocerosApp {
                     .and_then(orient_curve::Session::preview)
             })
             .or_else(|| {
+                self.array_curve_surface_session
+                    .as_ref()
+                    .and_then(array_curve_surface::Session::preview)
+            })
+            .or_else(|| {
                 self.orient_points_session
                     .as_ref()
                     .and_then(orient_points::Session::preview)
@@ -10254,6 +10298,7 @@ impl eframe::App for VibocerosApp {
             Some(FacePickMode::MeshAndBrepAny)
         } else if self.picking_fillet_surface()
             || self.picking_orient_surface()
+            || self.picking_array_surface()
             || self.picking_flow_surface()
             || self.picking_surface_flow()
             || self.selecting_move_normal_reference()
@@ -10320,6 +10365,7 @@ impl eframe::App for VibocerosApp {
                 .is_some_and(blend_surface::Prompt::selecting)
             || self.picking_subcurve_edge()
             || self.picking_orient_curve()
+            || self.picking_array_curve()
             || self.picking_flow_guide()
             || self.picking_spiral_rail()
             || self.picking_conic_curve()
@@ -10381,6 +10427,12 @@ impl eframe::App for VibocerosApp {
                     .as_ref()
                     .filter(|_| self.point_filter.is_none() && self.point_constraint.is_none())
                     .and_then(orient_curve::Session::cursor_curve)
+            })
+            .or_else(|| {
+                self.array_curve_surface_session
+                    .as_ref()
+                    .filter(|_| self.point_filter.is_none() && self.point_constraint.is_none())
+                    .and_then(array_curve_surface::Session::cursor_curve)
             });
         let edge_curve = edge_curve.or_else(|| {
             self.orient_surface_session
@@ -10550,6 +10602,7 @@ impl eframe::App for VibocerosApp {
         let curve_or_edge_pick = edge_pick
             && (self.picking_subcurve_edge()
                 || self.picking_orient_curve()
+                || self.picking_array_curve()
                 || self.picking_flow_guide()
                 || self.picking_spiral_rail()
                 || self.picking_conic_curve()
@@ -11210,6 +11263,7 @@ mod tests {
     mod arc_tangent;
     mod arc_tilted;
     mod area;
+    mod array_curve_surface;
     mod bend;
     mod bezier_selection;
     mod blend_edge;
@@ -11469,6 +11523,7 @@ mod tests {
             translation_session: None,
             set_point_sources: None,
             orient_curve_session: None,
+            array_curve_surface_session: None,
             flow_session: None,
             surface_flow_session: None,
             catenary_session: None,

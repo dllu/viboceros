@@ -148,12 +148,15 @@ untouched group peers. An older point-cloud probe used in-command selection
 while its native counterpart used preselection; the probe now matches the
 native workflow. Postselection equivalence is not claimed.
 
-New copied definitions use automatic `GroupNN`-style names. Native naming finds
-the first unused **live** name; it does not model Rhino's reservation of deleted
-automatic names. The oracle normalizes only automatic numeric names by relative
-numbering within a case, leaving explicit names and wrong naming styles intact.
-Consequently these comparisons verify naming style and relative group mapping,
-not absolute counters in a reused Rhino document.
+New copied definitions use automatic `GroupNN`-style names. The allocator fills
+the first unused name while reserving names seen earlier in the document,
+including deleted definitions and ASCII case variants. Undo and clearing history
+retain reservations; a failed transaction releases its new reservations.
+Block editing carries reservations between model snapshots. Explicit names can
+reuse removed definitions. The older group oracle cases normalize automatic
+numeric names by relative numbering. The newer
+[ArrayCrvOnSrf corpus](commands/array-curve-surface.md) compares literal names,
+including holes, deleted seeds, repeated commands and retained empty definitions.
 
 ## Verification and limits
 

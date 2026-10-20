@@ -9,6 +9,7 @@ use viboceros_geometry::{AffineTransform3, UnitVector3};
 pub(crate) enum Mapping<'a> {
     Point(PointTransform),
     Curve(&'a viboceros_command::orient_curve::Placement),
+    SurfaceCurveArray(&'a viboceros_command::array_curve_surface::Placement),
     Orient(viboceros_command::orient_points::Preview),
     Surface {
         placement: &'a viboceros_command::orient_surface::Placement,
@@ -43,6 +44,7 @@ impl Mapping<'_> {
         match self {
             Self::Point(p) => p.transform_at(frame, point, tolerance),
             Self::Curve(p) => p.transform_at(point),
+            Self::SurfaceCurveArray(p) => p.transform_at(point),
             Self::Orient(p) => p.transform_at(point, tolerance),
             Self::Surface { placement, phase } => {
                 let (pose, options) = placement.preview_pose(phase, point)?;
@@ -90,7 +92,7 @@ impl Mapping<'_> {
         self.point().is_none() || matches!(self.point(), Some(PointTransform::SetPoint(_)))
     }
     pub(super) fn follows_curve(self) -> bool {
-        matches!(self, Self::Curve(_))
+        matches!(self, Self::Curve(_) | Self::SurfaceCurveArray(_))
     }
 }
 
@@ -156,7 +158,7 @@ impl<'a> AffinePreview<'a> {
                 },
                 copy: self.copy,
                 reference_sources: !self.copy,
-                draw_source_faces: false,
+                draw_source_faces: matches!(self.definition, Mapping::SurfaceCurveArray(_)),
                 reversing: self.rigid_layout.is_none()
                     && transform.orientation_reversing().unwrap_or(false),
                 reference: None,

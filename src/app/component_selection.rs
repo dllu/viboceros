@@ -194,6 +194,7 @@ impl VibocerosApp {
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
             && !self.picking_orient_curve()
+            && !self.picking_array_curve()
             && !self.picking_flow_guide()
             && !self.picking_spiral_rail()
             && !self.picking_conic_curve()
@@ -243,6 +244,7 @@ impl VibocerosApp {
         }
         let picks = if self.picking_subcurve_edge()
             || self.picking_orient_curve()
+            || self.picking_array_curve()
             || self.picking_flow_guide()
             || self.picking_spiral_rail()
             || self.picking_conic_curve()
@@ -369,6 +371,12 @@ impl VibocerosApp {
         if self.picking_flow_guide() {
             if let [pick] = picks.as_slice() {
                 self.pick_flow_guide(Some(pick.object), Some(pick.index));
+            }
+            return;
+        }
+        if self.picking_array_curve() {
+            if let [pick] = picks.as_slice() {
+                self.pick_array_curve(Some(pick.object), Some(pick.index));
             }
             return;
         }

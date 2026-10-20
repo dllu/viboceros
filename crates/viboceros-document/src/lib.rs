@@ -457,6 +457,7 @@ pub struct Document {
     current_layer: LayerId,
     objects: Vec<Object>,
     groups: Vec<Group>,
+    used_group_names: BTreeSet<String>,
     block_definitions: Vec<BlockDefinition>,
     selection: BTreeSet<ObjectId>,
     selection_order: Vec<ObjectId>,
@@ -487,6 +488,7 @@ impl Document {
             current_layer,
             objects: Vec::new(),
             groups: Vec::new(),
+            used_group_names: BTreeSet::new(),
             block_definitions: Vec::new(),
             selection: BTreeSet::new(),
             selection_order: Vec::new(),
@@ -524,6 +526,7 @@ impl Document {
             label
         };
         self.history.active = Some(PendingTransaction {
+            newly_reserved_group_names: Vec::new(),
             retain_created_groups_on_undo: false,
             group: None,
             label,
@@ -664,6 +667,9 @@ impl Document {
             self.prune_selection_after_history_preserving(&BTreeSet::new());
         }
         result?;
+        for name in transaction.newly_reserved_group_names {
+            self.used_group_names.remove(&name);
+        }
         self.next_layer_number = transaction.next_layer_number_before;
         Ok(changed)
     }
@@ -2774,7 +2780,7 @@ mod tests {
         document
             .add_group(Some("group02".to_owned()), [second])
             .unwrap();
-        assert_eq!(document.next_unused_group_name(), "Group02");
+        assert_eq!(document.next_unused_group_name(), "Group03");
         assert_eq!(
             document.add_group(Some("Pair".to_owned()), [first]),
             Err(DocumentError::DuplicateGroupName("Pair".to_owned()))

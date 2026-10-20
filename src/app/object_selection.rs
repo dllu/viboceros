@@ -359,6 +359,14 @@ impl VibocerosApp {
                 .picking_flow_guide()
                 .then_some(ObjectSelectionFilter::Curves);
         }
+        if self.array_curve_surface_session.is_some() {
+            return if self.picking_array_surface() {
+                Some(ObjectSelectionFilter::SurfaceComponents)
+            } else {
+                self.picking_array_curve()
+                    .then_some(ObjectSelectionFilter::Curves)
+            };
+        }
         if self.picking_orient_curve() {
             return Some(ObjectSelectionFilter::Curves);
         }

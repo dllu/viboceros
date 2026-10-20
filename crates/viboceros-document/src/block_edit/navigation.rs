@@ -236,6 +236,9 @@ impl Document {
             },
         );
         working.commit_transaction()?;
+        working
+            .used_group_names
+            .extend(self.used_group_names.iter().cloned());
         *self = working;
         Ok(exposed)
     }
@@ -249,6 +252,7 @@ impl Document {
             current_layer: self.current_layer,
             objects: self.objects.clone(),
             groups: self.groups.clone(),
+            used_group_names: self.used_group_names.clone(),
             block_definitions: self.block_definitions.clone(),
             selection: self.selection.clone(),
             selection_order: self.selection_order.clone(),
@@ -285,6 +289,9 @@ impl Document {
             }
         }
         checkpoint.groups = self.groups.clone();
+        checkpoint
+            .used_group_names
+            .extend(self.used_group_names.iter().cloned());
         let ids = checkpoint
             .objects
             .iter()

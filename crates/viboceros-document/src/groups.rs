@@ -151,6 +151,12 @@ impl Document {
         }
         let id = GroupId::new();
         let index = self.groups.len();
+        if let Some(name) = &name
+            && self.used_group_names.insert(name.clone())
+            && let Some(transaction) = &mut self.history.active
+        {
+            transaction.newly_reserved_group_names.push(name.clone());
+        }
         self.groups.push(Group {
             id,
             name,
@@ -286,8 +292,14 @@ impl Document {
         })
     }
 
-    /// Returns the first unused live automatic-style group name, case-sensitive.
-    /// Deleted-name reservation across document history is not modeled here.
+    /// Names seen in this document, including removed and undone definitions.
+    /// Explicitly named groups may reuse a deleted name; automatic names do not.
+    pub fn used_group_names(&self) -> impl Iterator<Item = &str> {
+        self.used_group_names.iter().map(String::as_str)
+    }
+
+    /// Returns the first unreserved automatic name, ignoring ASCII case.
+    /// Removing a definition or clearing Undo does not release its name.
     pub fn next_unused_group_name(&self) -> String {
         GroupNames::default().next(self)
     }

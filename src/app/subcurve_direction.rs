@@ -4,6 +4,7 @@ impl VibocerosApp {
     pub(super) fn continue_subcurve_direction(&mut self, input: &str) -> bool {
         if self.continue_conic_subcurve_direction(input)
             || self.continue_orient_subcurve_direction(input)
+            || self.continue_array_subcurve_direction(input)
         {
             return true;
         }
@@ -87,6 +88,7 @@ impl VibocerosApp {
         if self.update_refinement_subcurve_hover(point)
             || self.update_conic_subcurve_hover(point)
             || self.update_orient_subcurve_hover(point)
+            || self.update_array_subcurve_hover(point)
         {
             return;
         }

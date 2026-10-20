@@ -155,6 +155,11 @@ all requested rail items. Without it, the originals are the first item. Use
 corners. Rhino's query-dependent twist at some sharp spatial corners remains
 an explicitly diagnosed compatibility gap.
 
+[`ArrayCrvOnSrf`](array-curve-surface.md) supports interactive curve and surface
+picks, single positions, relative distances, Divide and Multiple, temporary
+SubCrv guides and read-only previews. The construction plane defines the source
+orientation; the guide tangent and surface normal define each copy's frame.
+
 `ArraySrf` copies every selected source into a U-by-V grid over an untrimmed
 NURBS surface. `Mode=UV` divides normalized parameters; `Mode=Isocurve` divides
 the U and V domain-start isocurves by arc length before forming the grid. Counts

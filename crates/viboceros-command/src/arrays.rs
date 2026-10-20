@@ -415,10 +415,19 @@ fn post_translate(
     )
 }
 
-fn copy_array_objects(
+pub(super) fn copy_array_objects(
     document: &mut Document,
     selected: &[ObjectId],
     transforms: &[AffineTransform3],
+) -> Result<Vec<ObjectId>, DocumentError> {
+    copy_array_objects_in_order(document, selected, transforms, false)
+}
+
+pub(super) fn copy_array_objects_in_order(
+    document: &mut Document,
+    selected: &[ObjectId],
+    transforms: &[AffineTransform3],
+    preserve_order: bool,
 ) -> Result<Vec<ObjectId>, DocumentError> {
     use viboceros_document::CopyGroupPolicy;
     // Rhino's single-object array path clears groups on the copies, even
@@ -430,11 +439,19 @@ fn copy_array_objects(
     } else {
         CopyGroupPolicy::Preserve
     };
-    let copies = document.copy_objects_with_transforms_and_groups(
-        selected.iter().copied(),
-        transforms,
-        policy,
-    )?;
+    let copies = if preserve_order {
+        document.copy_objects_with_transforms_and_groups_in_order(
+            selected.iter().copied(),
+            transforms,
+            policy,
+        )?
+    } else {
+        document.copy_objects_with_transforms_and_groups(
+            selected.iter().copied(),
+            transforms,
+            policy,
+        )?
+    };
     document.select_objects_direct(selected.iter().copied(), SelectionMode::Replace)?;
     Ok(copies)
 }

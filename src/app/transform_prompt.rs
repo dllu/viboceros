@@ -261,6 +261,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn affine_preview(&self) -> Option<crate::viewport::AffinePreview<'_>> {
+        if let Some(s) = &self.array_curve_surface_session {
+            return s.preview();
+        }
         if let Some(s) = &self.orient_surface_session {
             return s.preview();
         }
@@ -292,6 +295,9 @@ impl VibocerosApp {
             return s.update_preview(preview);
         }
         if let Some(s) = &mut self.orient_points_session {
+            return s.update_preview(preview);
+        }
+        if let Some(s) = &mut self.array_curve_surface_session {
             return s.update_preview(preview);
         }
         if let Some(s) = &mut self.orient_curve_session {
