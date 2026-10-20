@@ -1,0 +1,188 @@
+{
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "command_registered": true,
+  "command_cases": {
+    "recipes": 12,
+    "qualified_recipes": 9,
+    "unqualified_recipes": [
+      "off_mesh",
+      "cancel",
+      "disconnected"
+    ],
+    "cases": [
+      {
+        "id": "plane_two",
+        "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      },
+      {
+        "id": "plane_many",
+        "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      },
+      {
+        "error": "usage: Point does not project onto the mesh",
+        "id": "off_mesh",
+        "qualified": false
+      },
+      {
+        "id": "close",
+        "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      },
+      {
+        "id": "undo",
+        "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+        "qualified": true
+      },
+      {
+        "id": "cancel",
+        "interactive_only": true,
+        "qualified": false
+      },
+      {
+        "id": "fold",
+        "maximum_bidirectional_sample_error": 1.0877919644084148e-15,
+        "qualified": true
+      },
+      {
+        "id": "fold_reverse",
+        "maximum_bidirectional_sample_error": 8.816492077661548e-16,
+        "qualified": true
+      },
+      {
+        "id": "ridge",
+        "maximum_bidirectional_sample_error": 5.978733960281817e-16,
+        "qualified": true
+      },
+      {
+        "id": "twisted",
+        "maximum_bidirectional_sample_error": 1.4217791915866694e-15,
+        "qualified": true
+      },
+      {
+        "error": "a continuous directed section between mesh locations could not be resolved",
+        "id": "disconnected",
+        "qualified": false
+      },
+      {
+        "id": "return_to_start",
+        "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "getter_cases": {
+    "recipes": 12,
+    "qualified_recipes": 10,
+    "unqualified_recipes": [
+      "off_mesh",
+      "disconnected"
+    ],
+    "cases": [
+      {
+        "id": "plane_two",
+        "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      },
+      {
+        "id": "plane_many",
+        "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      },
+      {
+        "id": "off_mesh",
+        "qualified": false,
+        "reason": "native degenerate miss output or disconnected bridge is not reproduced"
+      },
+      {
+        "id": "close",
+        "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      },
+      {
+        "id": "undo",
+        "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+        "qualified": true
+      },
+      {
+        "id": "cancel",
+        "maximum_bidirectional_sample_error": 0.0,
+        "qualified": true
+      },
+      {
+        "id": "fold",
+        "maximum_bidirectional_sample_error": 1.0877919644084148e-15,
+        "qualified": true
+      },
+      {
+        "id": "fold_reverse",
+        "maximum_bidirectional_sample_error": 8.816492077661548e-16,
+        "qualified": true
+      },
+      {
+        "id": "ridge",
+        "maximum_bidirectional_sample_error": 5.978733960281817e-16,
+        "qualified": true
+      },
+      {
+        "id": "twisted",
+        "maximum_bidirectional_sample_error": 1.4217791915866694e-15,
+        "qualified": true
+      },
+      {
+        "id": "disconnected",
+        "qualified": false,
+        "reason": "native degenerate miss output or disconnected bridge is not reproduced"
+      },
+      {
+        "id": "return_to_start",
+        "maximum_bidirectional_sample_error": 4.441027621704298e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "native_engine_version": "8.32.26160.13001",
+  "maximum_sample_difference": 1.4217791915866694e-15,
+  "guarantees": [
+    "Immutable mesh parents, current output layer, selection behavior and grouped Undo/Redo in the supported native scenes.",
+    "Directed starting-face plane sections cross folds; one original polygon face uses a direct chord, including warped quads.",
+    "The point getter retains one owned spatial index, reuses accepted sections and rejects projection misses."
+  ],
+  "limits": [
+    "Disconnected section components and routes interrupted by holes are not bridged or rerouted along naked boundaries.",
+    "The native microscopic degenerate polyline after projection misses is not reproduced.",
+    "Cancellation is qualified through the interactive getter; it is not a scripted point argument.",
+    "Native point captures use Top. Perspective numeric parity, welded seams and nonmanifold branches need qualification.",
+    "Collinear section vertices may remain; native vertex-count and parameter-clock parity is not claimed.",
+    "These native locus comparisons are sampled; no universal closest-path, shortest-path or curvature certificate is claimed."
+  ],
+  "sha256": {
+    "crates/viboceros-command/src/lib.rs": "ed6c1f46a403c91ad885fb8cd35304dd75a2d8c8f2d3b88147bc4ceebcf17f25",
+    "crates/viboceros-geometry/src/error.rs": "efcdd2f890834db407fb492fe9066dc9fe5aca1f4e307b075c22f8cb5bcc1b44",
+    "crates/viboceros-geometry/src/mesh/normals.rs": "e4cbcef46e287067a0364d7ad440c93d05d6bb77ac82aa1f9f21ad4dd97cd322",
+    "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
+    "crates/viboceros-geometry/src/mesh/closest.rs": "c151524d33d932ad5288ff72db2daed5a61234490157f34528056d7632ad1fbb",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "b33a5bcfcc452cc923257d47696be754086fff241b6344b6f78c9992e76218ca",
+    "crates/viboceros-geometry/src/mesh/projection/polyline_path.rs": "3e40e7a3f6db06e0a65912fc2ebbf8dde087c12708fad858d250e893bc5f28a8",
+    "crates/viboceros-geometry/src/mesh/projection/tests.rs": "16f58fd002af5adccfbe8ef5758d860f40c60b64951157ff3e288014b15ab7a2",
+    "crates/viboceros-geometry/src/mesh/section.rs": "796f11612788d19548d1b799ccdf3178ceb1269047238befcc674525b067f42c",
+    "crates/viboceros-geometry/src/mesh/section/tests.rs": "693b0b6b20de9dd2221e8ba8e2d520897c82530d6927ba85783bb9ec3469fcdd",
+    "crates/viboceros-command/src/polyline_on_mesh.rs": "ced0e868477f084ed6cef5c6af4217a8407d1f503d91c6d5ba5704aefe3f232b",
+    "crates/viboceros-command/tests/polyline_on_mesh_native.rs": "639541ac3477aca96b6b1b174d25b306c0b3c88b157fdb095bb3c47a5925f876",
+    "crates/viboceros-command/tests/support/mesh_polyline.rs": "77ffdf4a827df673bd7db49f873fd0614eac9a2b4e12e692f06befc4b1f8c769",
+    "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
+    "src/app/polyline_on_mesh.rs": "b05f6afa49c5d88749bcf9eb944f9c470aa91eefcab2840809ff299491573d89",
+    "src/app/tests/polyline_on_mesh.rs": "70ae5970a89274fe2373467791a9641e49a239fcd10cf257e156a6a85279beed",
+    "src/app/mesh_face_prompt.rs": "634cca4d972e3af0cb33b153eb2ebc0cb5297416a497d3b7c422bd36732ec9ba",
+    "src/viewport.rs": "4d26dc10bea07fe0af033fbf8c9cf2e243b443bad4d3eb2912825e3a4a40ce54",
+    "src/viewport/normal_point.rs": "223393dfa302c78377e73b53e861bcac7916d15d0b9fe1bdea0e022ec325afb5",
+    "tools/rhino_oracle/polyline_on_mesh_probe.py": "60041714bb674d9f34be0dd2801c63bee6d1ce1123b1397f0715932207dde1cb",
+    "tools/rhino_oracle/generate_polyline_on_mesh.py": "33b15bb25db7602dc24376b940a06d6437883a8d005a88dd873f7b2508b6d14f",
+    "tools/rhino_oracle/test_polyline_on_mesh.py": "e8c950b1a6979437d1bd6a9ee1252cc7aafac1d282d86624efd64b8bb6f40dd1",
+    "tools/rhino_oracle/report_mesh_polyline.py": "5561bf77fcafdd506431dee0344a78c7feb835ddb041c67a90c68c9c167b72fe",
+    "tools/rhino_oracle/fixtures/polyline_on_mesh.json": "582b1f2c962aee05c6882f71e7509f138bf9263fec3962722a35bb5e4b36e9ee",
+    "tools/rhino_oracle/observations/polyline_on_mesh.json": "5eb3a7afc8c9fae5d3f57a3f87b91689a3401bb01ddd77c7343f49814d0668e4"
+  }
+}

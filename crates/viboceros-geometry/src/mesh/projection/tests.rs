@@ -391,3 +391,35 @@ fn closest_location_retains_triangle_identity_and_deterministic_ties() {
         );
     }
 }
+
+#[test]
+fn owned_mesh_indexes_outlive_the_source_and_retain_projection_and_pull_queries() {
+    let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let index = {
+        let mesh = TriangleMesh::try_new(
+            vec![p(0., 0., 0.), p(4., 0., 0.), p(0., 4., 0.)],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let borrowed = MeshProjectionIndex::new(&mesh).unwrap();
+        let owned = MeshProjectionIndex::new_owned(mesh.clone()).unwrap();
+        assert_eq!(
+            borrowed.closest_point(p(1., 1., 2.)).unwrap(),
+            owned.closest_point(p(1., 1., 2.)).unwrap()
+        );
+        owned
+    };
+    assert_eq!(
+        index.closest_point(p(1., 1., 2.)).unwrap(),
+        Some(p(1., 1., 0.))
+    );
+    let line = crate::Polyline3::try_new(vec![p(0.5, 0.5, 2.), p(1.5, 1., 2.)], Tolerance::DEFAULT)
+        .unwrap();
+    let pulled = index
+        .pull_polyline(&line, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(pulled.vertices().first(), Some(&p(0.5, 0.5, 0.)));
+    assert_eq!(pulled.vertices().last(), Some(&p(1.5, 1., 0.)));
+}

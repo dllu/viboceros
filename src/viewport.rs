@@ -337,6 +337,7 @@ pub struct ViewportInput<'a> {
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
     pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
+    pub mesh_constraint: Option<&'a viboceros_geometry::MeshProjectionIndex<'static>>,
     pub surface_curve_close_point: Option<Point3>,
     pub zoom_window: bool,
     pub rect_selection_mode: Option<RectSelectionMode>,
@@ -453,6 +454,7 @@ impl Default for ViewportInput<'_> {
             point_constraint: None,
             translation_constraint: None,
             normal_surface: None,
+            mesh_constraint: None,
             surface_curve_close_point: None,
             zoom_window: false,
             rect_selection_mode: None,
@@ -1725,6 +1727,39 @@ impl Viewport {
                 source_point: point,
                 point,
                 object_snap: explicit.and_then(|cursor| cursor.object_snap),
+                track: None,
+                ortho: false,
+                ortho_z: false,
+                grid_snapped: false,
+            });
+        }
+        if let Some(index) = input.mesh_constraint
+            && !input
+                .point_filter
+                .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+            && let Some(pointer) = response.hover_pos()
+        {
+            let explicit = drafting_cursor
+                .filter(|cursor| cursor.object_snap.is_some() || input.point_filter.is_some());
+            let point = explicit
+                .and_then(|cursor| {
+                    self.mesh_constraint_location(cursor.point, index, document.tolerance())
+                })
+                .or_else(|| self.mesh_pointer_location(pointer, rect, index, document.tolerance()));
+            let point = if let Some(first) = input.surface_curve_close_point
+                && self
+                    .project(first, rect)
+                    .is_some_and(|p| p.distance(pointer) <= 12.)
+            {
+                Some(first)
+            } else {
+                point
+            };
+            drafting_cursor = point.map(|point| drafting::DraftingCursor {
+                pointer,
+                source_point: point,
+                point,
+                object_snap: explicit.and_then(|c| c.object_snap),
                 track: None,
                 ortho: false,
                 ortho_z: false,

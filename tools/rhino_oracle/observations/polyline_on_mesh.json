@@ -1,0 +1,4816 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "engine": "rhino",
+  "protocol_version": 1,
+  "iterations": 1,
+  "results": [
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 3,
+          "expected": 3,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w2.0,-1.0,0.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "_Enter",
+              "action": 2
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,-2.0,0.0\nNext point of polyline on mesh: w2.0,-1.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2047196345,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2047196345,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2047196345,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 3773481621,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 2047196345,
+                "polyline": [
+                  [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        -5.551115123125783e-17
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0,
+                        -1.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "plane_two"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )",
+            "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+            "Next point of polyline on mesh. Press Enter when done ( Close  Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 5,
+          "expected": 5,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w2.0,-1.0,0.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "w1.0,3.0,0.0",
+              "action": 2
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+              "token": "w-2.0,2.0,0.0",
+              "action": 3
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+              "token": "_Enter",
+              "action": 4
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,-2.0,0.0\nNext point of polyline on mesh: w2.0,-1.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): w1.0,3.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Close  Undo ): w-2.0,2.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Close  Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Close  Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 609886702,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                3.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                3.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 609886702,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                3.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                3.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 609886702,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                3.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                3.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 3773481621,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 609886702,
+                "polyline": [
+                  [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    3.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        -5.551115123125783e-17
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0,
+                        -1.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.0,
+                        3.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.0,
+                        2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0,
+                    3.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "plane_many"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 4,
+          "expected": 4,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-6.0,-2.0,4.0",
+              "action": 0
+            },
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w1.0,1.0,3.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w6.0,3.0,-2.0",
+              "action": 2
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "_Enter",
+              "action": 3
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-6.0,-2.0,4.0\nStart of polyline on mesh: w1.0,1.0,3.0\nNext point of polyline on mesh: w6.0,3.0,-2.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 681418166,
+            "polyline": [
+              [
+                1.0,
+                1.0,
+                -5.551115123125783e-17
+              ],
+              [
+                1.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 681418166,
+            "polyline": [
+              [
+                1.0,
+                1.0,
+                -5.551115123125783e-17
+              ],
+              [
+                1.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 681418166,
+            "polyline": [
+              [
+                1.0,
+                1.0,
+                -5.551115123125783e-17
+              ],
+              [
+                1.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 3773481621,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 681418166,
+                "polyline": [
+                  [
+                    1.0,
+                    1.0,
+                    -5.551115123125783e-17
+                  ],
+                  [
+                    1.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        1.0,
+                        1.0,
+                        -5.551115123125783e-17
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.0,
+                        1.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "off_mesh"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )",
+            "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+            "Next point of polyline on mesh. Press Enter when done ( Close  Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 5,
+          "expected": 5,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w2.0,-1.0,0.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "w1.0,3.0,0.0",
+              "action": 2
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+              "token": "w-2.0,2.0,0.0",
+              "action": 3
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+              "token": "_Close",
+              "action": 4
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,-2.0,0.0\nNext point of polyline on mesh: w2.0,-1.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): w1.0,3.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Close  Undo ): w-2.0,2.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Close  Undo ): _Close",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1603593830,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                4.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                4.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1603593830,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                4.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                4.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1603593830,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                4.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                4.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "crc": 3773481621,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 1603593830,
+                "polyline": [
+                  [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    4.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        -5.551115123125783e-17
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0,
+                        -1.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.0,
+                        3.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.0,
+                        2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0,
+                    4.0,
+                    4.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "close"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )",
+            "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )",
+            "Next point of polyline on mesh. Press Enter when done ( Close  Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 6,
+          "expected": 6,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w2.0,-1.0,0.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "w1.0,3.0,0.0",
+              "action": 2
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+              "token": "_Undo",
+              "action": 3
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "w-2.0,2.0,0.0",
+              "action": 4
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+              "token": "_Enter",
+              "action": 5
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,-2.0,0.0\nNext point of polyline on mesh: w2.0,-1.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): w1.0,3.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Close  Undo ): _Undo\nNext point of polyline on mesh. Press Enter when done ( Undo ): w-2.0,2.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Close  Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Close  Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1708417618,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1708417618,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1708417618,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 3773481621,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 1708417618,
+                "polyline": [
+                  [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  [
+                    -2.0,
+                    2.0,
+                    0.0
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    2.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        -5.551115123125783e-17
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0,
+                        -1.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.0,
+                        2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    2.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "undo"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 3,
+          "expected": 3,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w2.0,-1.0,0.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "_Cancel",
+              "action": 2
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,-2.0,0.0\nNext point of polyline on mesh: w2.0,-1.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): _Cancel\nNext point of polyline on mesh. Press Enter when done ( Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": false,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": false,
+        "redo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": false,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "before": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": false,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": false,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          },
+          {
+            "objects": [
+              {
+                "crc": 3773481621,
+                "layer": "Mesh polyline source",
+                "selected": false,
+                "role": "target",
+                "name": "Target"
+              }
+            ],
+            "selected": [],
+            "result": "Cancel",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "cancel"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 3,
+          "expected": 3,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w3.0,2.0,2.25",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "_Enter",
+              "action": 2
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,-2.0,0.0\nNext point of polyline on mesh: w3.0,2.0,2.25\nNext point of polyline on mesh. Press Enter when done ( Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              0.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              3.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ],
+            [
+              0.0,
+              4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              4,
+              3
+            ],
+            [
+              1,
+              2,
+              5,
+              4
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 632593650,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                2.25
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    2.25
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 632593650,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                2.25
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    2.25
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 632593650,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                2.25
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    2.25
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 414691126,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 632593650,
+                "polyline": [
+                  [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    3.0,
+                    2.0,
+                    2.25
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    2.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.0,
+                        2.0,
+                        2.25
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    2.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "fold"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 3,
+          "expected": 3,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w3.0,2.0,2.25",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "_Enter",
+              "action": 2
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w3.0,2.0,2.25\nNext point of polyline on mesh: w-3.0,-2.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              0.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              3.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ],
+            [
+              0.0,
+              4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              3.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              4,
+              3
+            ],
+            [
+              1,
+              2,
+              5,
+              4
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 4028099587,
+            "polyline": [
+              [
+                3.0,
+                2.0,
+                2.25
+              ],
+              [
+                0.0,
+                -0.43902439024390283,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    2.25
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    -0.43902439024390283,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 4028099587,
+            "polyline": [
+              [
+                3.0,
+                2.0,
+                2.25
+              ],
+              [
+                0.0,
+                -0.43902439024390283,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    2.25
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    -0.43902439024390283,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 414691126,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 4028099587,
+            "polyline": [
+              [
+                3.0,
+                2.0,
+                2.25
+              ],
+              [
+                0.0,
+                -0.43902439024390283,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    2.25
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    -0.43902439024390283,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 414691126,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 4028099587,
+                "polyline": [
+                  [
+                    3.0,
+                    2.0,
+                    2.25
+                  ],
+                  [
+                    0.0,
+                    -0.43902439024390283,
+                    0.0
+                  ],
+                  [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    2.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        3.0,
+                        2.0,
+                        2.25
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        -0.43902439024390283,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    2.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "fold_reverse"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 3,
+          "expected": 3,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,-1.0,0.5",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w3.0,2.0,0.5",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "_Enter",
+              "action": 2
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,-1.0,0.5\nNext point of polyline on mesh: w3.0,2.0,0.5\nNext point of polyline on mesh. Press Enter when done ( Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              0.0,
+              -4.0,
+              2.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ],
+            [
+              0.0,
+              4.0,
+              2.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              4,
+              3
+            ],
+            [
+              1,
+              2,
+              5,
+              4
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 1144807087,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 1144807087,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2937859717,
+            "polyline": [
+              [
+                -3.0,
+                -1.0,
+                0.5
+              ],
+              [
+                0.0,
+                0.875,
+                2.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.5
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -1.0,
+                    0.5
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.875,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    0.5
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 1144807087,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 1144807087,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2937859717,
+            "polyline": [
+              [
+                -3.0,
+                -1.0,
+                0.5
+              ],
+              [
+                0.0,
+                0.875,
+                2.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.5
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -1.0,
+                    0.5
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.875,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    0.5
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 1144807087,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2937859717,
+            "polyline": [
+              [
+                -3.0,
+                -1.0,
+                0.5
+              ],
+              [
+                0.0,
+                0.875,
+                2.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.5
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -1.0,
+                    0.5
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.875,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    0.5
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 1144807087,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 2937859717,
+                "polyline": [
+                  [
+                    -3.0,
+                    -1.0,
+                    0.5
+                  ],
+                  [
+                    0.0,
+                    0.875,
+                    2.0
+                  ],
+                  [
+                    3.0,
+                    2.0,
+                    0.5
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    2.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        -3.0,
+                        -1.0,
+                        0.5
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        0.875,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.0,
+                        2.0,
+                        0.5
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    2.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "ridge"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 3,
+          "expected": 3,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w0.5,0.5,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w3.5,3.5,1.75",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "_Enter",
+              "action": 2
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w0.5,0.5,0.0\nNext point of polyline on mesh: w3.5,3.5,1.75\nNext point of polyline on mesh. Press Enter when done ( Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              2.0
+            ],
+            [
+              0.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 208717381,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 208717381,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2364674678,
+            "polyline": [
+              [
+                0.5,
+                0.5,
+                0.0
+              ],
+              [
+                3.5,
+                3.5,
+                1.5
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    0.5,
+                    0.5,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.5,
+                    3.5,
+                    1.5
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 208717381,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 208717381,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2364674678,
+            "polyline": [
+              [
+                0.5,
+                0.5,
+                0.0
+              ],
+              [
+                3.5,
+                3.5,
+                1.5
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    0.5,
+                    0.5,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.5,
+                    3.5,
+                    1.5
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 208717381,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2364674678,
+            "polyline": [
+              [
+                0.5,
+                0.5,
+                0.0
+              ],
+              [
+                3.5,
+                3.5,
+                1.5
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    0.5,
+                    0.5,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.5,
+                    3.5,
+                    1.5
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 208717381,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 2364674678,
+                "polyline": [
+                  [
+                    0.5,
+                    0.5,
+                    0.0
+                  ],
+                  [
+                    3.5,
+                    3.5,
+                    1.5
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        0.5,
+                        0.5,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.5,
+                        3.5,
+                        1.5
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "twisted"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 3,
+          "expected": 3,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,0.0,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w3.0,1.0,0.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "_Enter",
+              "action": 2
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,0.0,0.0\nNext point of polyline on mesh: w3.0,1.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): _Enter\nNext point of polyline on mesh. Press Enter when done ( Undo )",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -4.0,
+              0.0
+            ],
+            [
+              -1.0,
+              4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ],
+            [
+              1.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              1.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6,
+              7
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 3409787704,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 3409787704,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2897437401,
+            "polyline": [
+              [
+                -3.0,
+                0.0,
+                -5.551115123125783e-17
+              ],
+              [
+                -1.0,
+                0.3333333333333339,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                1.0,
+                4.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.666666666666667,
+                0.0
+              ],
+              [
+                3.0000000000000004,
+                1.0000000000000004,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                5.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    0.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.3333333333333339,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    4.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    4.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.666666666666667,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0000000000000004,
+                    1.0000000000000004,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                5.0,
+                5.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 3409787704,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 3409787704,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2897437401,
+            "polyline": [
+              [
+                -3.0,
+                0.0,
+                -5.551115123125783e-17
+              ],
+              [
+                -1.0,
+                0.3333333333333339,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                1.0,
+                4.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.666666666666667,
+                0.0
+              ],
+              [
+                3.0000000000000004,
+                1.0000000000000004,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                5.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    0.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.3333333333333339,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    4.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    4.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.666666666666667,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0000000000000004,
+                    1.0000000000000004,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                5.0,
+                5.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3409787704,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 2897437401,
+            "polyline": [
+              [
+                -3.0,
+                0.0,
+                -5.551115123125783e-17
+              ],
+              [
+                -1.0,
+                0.3333333333333339,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                1.0,
+                4.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.666666666666667,
+                0.0
+              ],
+              [
+                3.0000000000000004,
+                1.0000000000000004,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                5.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    0.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.3333333333333339,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    4.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    4.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.666666666666667,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0000000000000004,
+                    1.0000000000000004,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                5.0,
+                5.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "objects": [
+              {
+                "crc": 3409787704,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 2897437401,
+                "polyline": [
+                  [
+                    -3.0,
+                    0.0,
+                    -5.551115123125783e-17
+                  ],
+                  [
+                    -1.0,
+                    0.3333333333333339,
+                    0.0
+                  ],
+                  [
+                    -1.0,
+                    4.0,
+                    0.0
+                  ],
+                  [
+                    1.0,
+                    4.0,
+                    0.0
+                  ],
+                  [
+                    1.0,
+                    0.666666666666667,
+                    0.0
+                  ],
+                  [
+                    3.0000000000000004,
+                    1.0000000000000004,
+                    0.0
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    5.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        -3.0,
+                        0.0,
+                        -5.551115123125783e-17
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -1.0,
+                        0.3333333333333339,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -1.0,
+                        4.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.0,
+                        4.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.0,
+                        0.666666666666667,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.0000000000000004,
+                        1.0000000000000004,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0,
+                    4.0,
+                    5.0,
+                    5.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "disconnected"
+    },
+    {
+      "value": {
+        "input_trace": {
+          "prompts": [
+            "Start of polyline on mesh",
+            "Next point of polyline on mesh",
+            "Next point of polyline on mesh. Press Enter when done ( Undo )",
+            "Next point of polyline on mesh. Press Enter when done ( Close  Undo )"
+          ],
+          "edge_picks": [],
+          "motion": [],
+          "errors": [],
+          "completed": 4,
+          "expected": 4,
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "sent": [
+            {
+              "prompt": "Start of polyline on mesh",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 0
+            },
+            {
+              "prompt": "Next point of polyline on mesh",
+              "token": "w2.0,-1.0,0.0",
+              "action": 1
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Undo )",
+              "token": "w1.0,3.0,0.0",
+              "action": 2
+            },
+            {
+              "prompt": "Next point of polyline on mesh. Press Enter when done ( Close  Undo )",
+              "token": "w-3.0,-2.0,0.0",
+              "action": 3
+            }
+          ]
+        },
+        "history": "Command: _PolylineOnMesh\nCommand: _Pause\nStart of polyline on mesh: w-3.0,-2.0,0.0\nNext point of polyline on mesh: w2.0,-1.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Undo ): w1.0,3.0,0.0\nNext point of polyline on mesh. Press Enter when done ( Close  Undo ): w-3.0,-2.0,0.0",
+        "mesh": {
+          "vertices": [
+            [
+              -4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              -4.0,
+              0.0
+            ],
+            [
+              4.0,
+              4.0,
+              0.0
+            ],
+            [
+              -4.0,
+              4.0,
+              0.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "success": true,
+        "redo": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1013149807,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                3.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                3.0
+              ]
+            }
+          }
+        ],
+        "before": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          }
+        ],
+        "after": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1013149807,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                3.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                3.0
+              ]
+            }
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3773481621,
+            "layer": "Mesh polyline source",
+            "selected": true,
+            "role": "target",
+            "name": "Target"
+          },
+          {
+            "crc": 1013149807,
+            "polyline": [
+              [
+                -3.0,
+                -2.0,
+                -5.551115123125783e-17
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            "layer": "Mesh polyline output",
+            "selected": false,
+            "role": "output",
+            "name": null,
+            "curve": {
+              "domain": [
+                0.0,
+                3.0
+              ],
+              "degree": 1,
+              "control_points": [
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                3.0
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "crc": 3773481621,
+                "layer": "Mesh polyline source",
+                "selected": true,
+                "role": "target",
+                "name": "Target"
+              },
+              {
+                "crc": 1013149807,
+                "polyline": [
+                  [
+                    -3.0,
+                    -2.0,
+                    -5.551115123125783e-17
+                  ],
+                  [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  [
+                    1.0,
+                    3.0,
+                    0.0
+                  ],
+                  [
+                    -3.0,
+                    -2.0,
+                    0.0
+                  ]
+                ],
+                "layer": "Mesh polyline output",
+                "selected": false,
+                "role": "output",
+                "name": null,
+                "curve": {
+                  "domain": [
+                    0.0,
+                    3.0
+                  ],
+                  "degree": 1,
+                  "control_points": [
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        -5.551115123125783e-17
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0,
+                        -1.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.0,
+                        3.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -3.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0,
+                    3.0
+                  ]
+                }
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "PolylineOnMesh"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "return_to_start"
+    }
+  ],
+  "provenance": {
+    "request_sha256": "582b1f2c962aee05c6882f71e7509f138bf9263fec3962722a35bb5e4b36e9ee",
+    "sources": {
+      "generate_polyline_on_mesh.py": "33b15bb25db7602dc24376b940a06d6437883a8d005a88dd873f7b2508b6d14f",
+      "polyline_on_mesh_probe.py": "60041714bb674d9f34be0dd2801c63bee6d1ce1123b1397f0715932207dde1cb",
+      "conic_getter_input.py": "a41534ab6ece202b833533b9fb08fd65e8f33d33a561cfc511a1b45dead5e845",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+      "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "client.py": "c3f243973fcd8fca2827cd274e02becec5723ecd7d67adc0afd75424f1ac23cc",
+      "rhino_worker.py": "ec29dfd8752360447183de5805add3be2a6eef8dab4e9b61af073e3a12005439",
+      "structural_sdk.py": "a2dcee4c2a08c8625e5a3d1a9f696d0ad0715b374f4d5a087dd7ff2457b89182"
+    }
+  }
+}

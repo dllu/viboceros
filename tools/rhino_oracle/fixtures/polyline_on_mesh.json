@@ -1,0 +1,272 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "polyline_on_mesh",
+      "id": "plane_two",
+      "case": "plane_two",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -1.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "plane_many",
+      "case": "plane_many",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -1.0,
+          0.0
+        ],
+        [
+          1.0,
+          3.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "off_mesh",
+      "case": "off_mesh",
+      "actions": [
+        [
+          -6.0,
+          -2.0,
+          4.0
+        ],
+        [
+          1.0,
+          1.0,
+          3.0
+        ],
+        [
+          6.0,
+          3.0,
+          -2.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "close",
+      "case": "close",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -1.0,
+          0.0
+        ],
+        [
+          1.0,
+          3.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        "Close"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "undo",
+      "case": "undo",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -1.0,
+          0.0
+        ],
+        [
+          1.0,
+          3.0,
+          0.0
+        ],
+        "Undo",
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "cancel",
+      "case": "cancel",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -1.0,
+          0.0
+        ],
+        "Cancel"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "fold",
+      "case": "fold",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          3.0,
+          2.0,
+          2.25
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "fold_reverse",
+      "case": "fold_reverse",
+      "actions": [
+        [
+          3.0,
+          2.0,
+          2.25
+        ],
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "ridge",
+      "case": "ridge",
+      "actions": [
+        [
+          -3.0,
+          -1.0,
+          0.5
+        ],
+        [
+          3.0,
+          2.0,
+          0.5
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "twisted",
+      "case": "twisted",
+      "actions": [
+        [
+          0.5,
+          0.5,
+          0.0
+        ],
+        [
+          3.5,
+          3.5,
+          1.75
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "disconnected",
+      "case": "disconnected",
+      "actions": [
+        [
+          -3.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0,
+          1.0,
+          0.0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "polyline_on_mesh",
+      "id": "return_to_start",
+      "case": "return_to_start",
+      "actions": [
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -1.0,
+          0.0
+        ],
+        [
+          1.0,
+          3.0,
+          0.0
+        ],
+        [
+          -3.0,
+          -2.0,
+          0.0
+        ]
+      ]
+    }
+  ]
+}

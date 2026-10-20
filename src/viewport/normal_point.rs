@@ -294,3 +294,142 @@ mod tests {
         assert!(location.distance_to(expected).unwrap() < 1e-5);
     }
 }
+
+impl Viewport {
+    pub(crate) fn mesh_constraint_location(
+        &self,
+        point: Point3,
+        index: &viboceros_geometry::MeshProjectionIndex<'_>,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Option<Point3> {
+        let (origin, direction) = if self.kind == ViewKind::Perspective {
+            let (_, _, forward) = self.perspective_basis();
+            let eye = self.target - forward * self.perspective_camera_distance;
+            let eye = Point3::try_new(eye.x, eye.y, eye.z).ok()?;
+            (eye, eye.vector_to(point).ok()?)
+        } else {
+            (point, self.viewward_direction().scaled(-1.).ok()?)
+        };
+        self.mesh_ray_location(origin, direction, index, tolerance)
+    }
+    pub(super) fn mesh_pointer_location(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        index: &viboceros_geometry::MeshProjectionIndex<'_>,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Option<Point3> {
+        let anchor = index.triangle_points(0)?[0];
+        let (offset, direction) = self.drafting_view_line_relative_to(anchor, pointer, rect)?;
+        let origin = anchor.translated(offset).ok()?;
+        self.mesh_ray_location(origin, direction, index, tolerance)
+    }
+    fn mesh_ray_location(
+        &self,
+        origin: Point3,
+        direction: Vector3,
+        index: &viboceros_geometry::MeshProjectionIndex<'_>,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Option<Point3> {
+        index
+            .project_point(origin, direction, tolerance)
+            .ok()?
+            .into_iter()
+            .filter(|p| {
+                self.kind != ViewKind::Perspective || self.view_depth(*p) > self.frustum_near
+            })
+            .min_by(|a, b| self.view_depth(*a).total_cmp(&self.view_depth(*b)))
+    }
+}
+
+#[cfg(test)]
+mod mesh_constraint_tests {
+    use super::*;
+    use viboceros_geometry::{MeshFace, MeshProjectionIndex, TriangleMesh};
+    fn p(x: Real, y: Real, z: Real) -> Point3 {
+        Point3::try_new(x, y, z).unwrap()
+    }
+    fn layers() -> TriangleMesh {
+        TriangleMesh::try_new_faces(
+            vec![
+                p(-4., -4., 0.),
+                p(4., -4., 0.),
+                p(4., 4., 0.),
+                p(-4., 4., 0.),
+                p(-4., -4., 2.),
+                p(4., -4., 2.),
+                p(4., 4., 2.),
+                p(-4., 4., 2.),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3]), MeshFace::Quad([4, 5, 6, 7])],
+            viboceros_geometry::Tolerance::DEFAULT,
+        )
+        .unwrap()
+    }
+    #[test]
+    fn mesh_constraints_use_the_visible_sheet_and_ignore_off_mesh_clicks() {
+        let mesh = layers();
+        let index = MeshProjectionIndex::new_owned(mesh.clone()).unwrap();
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        let context = egui::Context::default();
+        for (kind, z) in [(ViewKind::Top, 2.), (ViewKind::Bottom, 0.)] {
+            let mut view = Viewport::new(kind);
+            assert_eq!(
+                view.mesh_constraint_location(p(1., 1., 9.), &index, document.tolerance()),
+                Some(p(1., 1., z))
+            );
+            let input = ViewportInput {
+                drafting: DraftingInput {
+                    active: true,
+                    ..Default::default()
+                },
+                mesh_constraint: Some(&index),
+                ..Default::default()
+            };
+            let run = |view: &mut Viewport, events| {
+                let mut output = ViewportOutput::default();
+                context
+                    .run_ui(
+                        egui::RawInput {
+                            screen_rect: Some(Rect::from_min_size(
+                                Pos2::ZERO,
+                                Vec2::new(800., 600.),
+                            )),
+                            events,
+                            ..Default::default()
+                        },
+                        |ui| output = view.show(ui, &document, input, &[], 0, true),
+                    )
+                    .drop_without_applying_deltas();
+                output
+            };
+            run(&mut view, vec![]);
+            for (aim, hit) in [(p(1., 1., z), true), (p(6., 6., z), false)] {
+                let pointer = view.project(aim, view.last_rect.unwrap()).unwrap();
+                let events = vec![
+                    egui::Event::PointerMoved(pointer),
+                    egui::Event::PointerButton {
+                        pos: pointer,
+                        button: PointerButton::Primary,
+                        pressed: true,
+                        modifiers: Default::default(),
+                    },
+                    egui::Event::PointerButton {
+                        pos: pointer,
+                        button: PointerButton::Primary,
+                        pressed: false,
+                        modifiers: Default::default(),
+                    },
+                ];
+                let output = run(&mut view, events);
+                assert_eq!(output.picked_point.is_some(), hit);
+                if let Some(point) = output.picked_point {
+                    assert!(point.distance_to(aim).unwrap() < 1e-5);
+                }
+                assert!(output.face_click.is_none());
+                assert!(!document.is_selected(id));
+            }
+        }
+    }
+}

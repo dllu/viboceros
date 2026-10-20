@@ -152,10 +152,17 @@ impl TriangleMesh {
                 }
             }
             if nodes.len() >= 2 {
-                result.push(Polyline3::try_new(
-                    nodes.into_iter().map(|node| points[&node]).collect(),
-                    validation,
-                )?);
+                // Distinct exact intersections near a mesh vertex may round
+                // to the same XYZ. Drop only consecutive identical encodings;
+                // their zero-length output chord has no geometric extent.
+                let mut vertices = nodes
+                    .into_iter()
+                    .map(|node| points[&node])
+                    .collect::<Vec<_>>();
+                vertices.dedup();
+                if vertices.len() >= 2 {
+                    result.push(Polyline3::try_new(vertices, validation)?);
+                }
             }
         }
         Ok(result)

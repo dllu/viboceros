@@ -10,6 +10,9 @@ impl VibocerosApp {
         face: usize,
         point: Option<Point3>,
     ) {
+        if self.pick_mesh_polyline(Some(object)) {
+            return;
+        }
         if self.pick_surface_interpolation_face(Some(object), Some(face)) {
             return;
         }

@@ -523,6 +523,10 @@ class OracleClient:
             from .short_path_command_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('ShortPath command captures require a private settings scheme')
             validate_request(request)
+        if any(op.get('op')=='polyline_on_mesh'for op in request.get('operations',[])):
+            from .polyline_on_mesh_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('Mesh polyline captures require a private settings scheme')
+            validate_request(request)
         if any(op.get('op')=='surface_interpolate_command'for op in request.get('operations',[])):
             from .surface_interpolate_command_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('Surface interpolation command captures require a private settings scheme')

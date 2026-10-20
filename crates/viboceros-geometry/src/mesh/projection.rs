@@ -4,7 +4,9 @@ use crate::exact_scalar::{Rational, rational, scalar};
 use crate::interval::I;
 use crate::{NurbsCurve, Vector3};
 use num_traits::Zero;
+use std::borrow::Cow;
 
+mod polyline_path;
 mod pull;
 #[cfg(test)]
 mod tests;
@@ -18,9 +20,11 @@ struct Node {
 /// Reusable bounding-volume index using the existing shorter-diagonal quad splitter.
 /// Queries are bidirectional. Candidate rejection uses conservative interval
 /// slabs with exact fallback; touching bounds are retained.
+#[derive(Debug)]
 pub struct MeshProjectionIndex<'a> {
-    mesh: &'a TriangleMesh,
+    mesh: Cow<'a, TriangleMesh>,
     triangles: Vec<[u32; 3]>,
+    triangle_faces: Vec<usize>,
     bounds: Vec<BoundingBox3>,
     order: Vec<usize>,
     nodes: Vec<Node>,
@@ -34,6 +38,9 @@ pub struct MeshClosestLocation {
 }
 impl<'a> MeshProjectionIndex<'a> {
     pub fn new(mesh: &'a TriangleMesh) -> Result<Self, GeometryError> {
+        Self::from_mesh(Cow::Borrowed(mesh))
+    }
+    fn from_mesh(mesh: Cow<'a, TriangleMesh>) -> Result<Self, GeometryError> {
         if mesh.triangles().len() > MAX_TRIANGLES {
             return Err(GeometryError::MeshProjectionLimit {
                 maximum: MAX_TRIANGLES,
@@ -44,11 +51,28 @@ impl<'a> MeshProjectionIndex<'a> {
             .iter()
             .map(|t| BoundingBox3::from_points(t.map(|i| mesh.vertices()[i as usize])))
             .collect::<Result<Vec<_>, _>>()?;
+        let triangle_faces = mesh
+            .faces()
+            .iter()
+            .enumerate()
+            .flat_map(|(i, face)| {
+                std::iter::repeat_n(
+                    i,
+                    if matches!(face, MeshFace::Quad(_)) {
+                        2
+                    } else {
+                        1
+                    },
+                )
+            })
+            .collect();
+        let order = (0..triangles.len()).collect();
         let mut index = Self {
             mesh,
             triangles,
+            triangle_faces,
             bounds,
-            order: (0..mesh.triangles().len()).collect(),
+            order,
             nodes: Vec::new(),
         };
         if !index.order.is_empty() {
@@ -270,6 +294,13 @@ impl<'a> MeshProjectionIndex<'a> {
                 Ok(rounded)
             })
             .collect()
+    }
+}
+impl MeshProjectionIndex<'static> {
+    /// Owns an immutable mesh and its index, allowing point getters to reuse
+    /// their BVH without self-references or rebuilding it on each mouse move.
+    pub fn new_owned(mesh: TriangleMesh) -> Result<Self, GeometryError> {
+        Self::from_mesh(Cow::Owned(mesh))
     }
 }
 fn may_meet(target: BoundingBox3, source: BoundingBox3, d: [Real; 3]) -> bool {

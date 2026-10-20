@@ -76,3 +76,46 @@ fn distant_tiny_mesh_sections_do_not_lose_the_shared_exact_intersection() {
         assert!(point.x() >= base - step && point.x() <= base + step);
     }
 }
+
+#[test]
+fn rounded_near_vertex_hits_do_not_create_a_zero_length_output_chord() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            p(-4., -4., 0.),
+            p(4., -4., 0.),
+            p(4., 4., 0.),
+            p(-4., 4., 0.),
+        ],
+        vec![[0, 1, 2], [0, 2, 3]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let index = crate::MeshProjectionIndex::new(&mesh).unwrap();
+    let a = index.closest_point(p(1., 3., 0.)).unwrap().unwrap();
+    let b = index.closest_point(p(-2., 2., 0.)).unwrap().unwrap();
+    let direction = a.vector_to(b).unwrap();
+    let normal = direction
+        .cross(Vector3::try_new(0., 0., 1.).unwrap())
+        .unwrap();
+    let frame =
+        Frame3::try_from_x_and_normal(a, direction, normal, Tolerance::NUMERICAL_VALIDATION)
+            .unwrap();
+    let sections = mesh
+        .section_with_plane(frame, Tolerance::NUMERICAL_VALIDATION)
+        .unwrap();
+    assert_eq!(sections.len(), 1);
+    assert!(
+        sections[0]
+            .vertices()
+            .windows(2)
+            .all(|pair| pair[0] != pair[1])
+    );
+    assert!(
+        sections[0]
+            .closest_point(a, Tolerance::NUMERICAL_VALIDATION)
+            .unwrap()
+            .distance_to(a)
+            .unwrap()
+            < 1e-12
+    );
+}
