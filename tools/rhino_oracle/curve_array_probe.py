@@ -6,7 +6,7 @@ def validate(op):
     if not isinstance(op,dict)or set(op)!=required or op['op']!='curve_array':raise ValueError('invalid curve array recipe')
     def scalar(n):return type(n)in(int,float)and not math.isnan(n)and not math.isinf(n)and abs(n)<=1e6
     def point(p):return isinstance(p,list)and len(p)==3 and all(scalar(n)for n in p)
-    if op['path']not in('LineX','LineY','LineZ','Arc','Circle','Nurbs','Polyline','PolylineLong','ClosedNurbs','Edge','Folded','Uneven','PlanarPolyline')or op['representation']not in('Native','Nurbs','Polycurve'):raise ValueError('invalid path recipe')
+    if op['path']not in('LineX','LineY','LineZ','Arc','Circle','Nurbs','Polyline','PolylineLong','ClosedNurbs','Edge','Folded','Uneven','PlanarPolyline','SkewPolyline','SkewPolyline2','SkewPolylineStable')or op['representation']not in('Native','Nurbs','Polycurve'):raise ValueError('invalid path recipe')
     if op['spacing']not in('Items','Distance')or op['orientation']not in('Freeform','Roadlike','Stairlike','NoRotation'):raise ValueError('invalid curve array mode')
     if op['spacing']=='Items'and(type(op['value'])is not int or not 0<=op['value']<=16)or op['spacing']=='Distance'and(not scalar(op['value'])or not 0<op['value']<=100):raise ValueError('invalid array spacing')
     if any(type(op[k])is not bool for k in('reverse_path','postselect','grouped'))or type(op['source_count'])is not int or not 1<=op['source_count']<=3:raise ValueError('invalid source controls')
@@ -34,6 +34,9 @@ def run(op,host,iterations,tolerance):
     if op['path']in('Polyline','PolylineLong'):
         scale=4. if op['path']=='PolylineLong'else 1.
         path=G.PolylineCurve([G.Point3d(scale*x,scale*y,scale*z)for x,y,z in[(0.,0.,0.),(1.,0.,0.),(1.,1.,0.),(1.,1.,1.)]])
+    elif op['path']=='SkewPolyline':path=G.PolylineCurve([G.Point3d(*p)for p in[(0.,0.,0.),(1.,2.,2.),(3.,3.,0.),(1.,5.,-1.)]])
+    elif op['path']=='SkewPolylineStable':path=G.PolylineCurve([G.Point3d(*p)for p in[(0.,0.,0.),(1.,2.,2.),(3.,3.,4.),(2.,5.,6.)]])
+    elif op['path']=='SkewPolyline2':path=G.PolylineCurve([G.Point3d(*p)for p in[(0.,0.,0.),(2.,-2.,1.),(3.,0.,3.),(1.,-1.,5.)]])
     elif op['path']=='PlanarPolyline':path=G.PolylineCurve([G.Point3d(*p)for p in[(0.,0.,0.),(4.,0.,0.),(4.,4.,0.),(0.,4.,0.)]])
     elif op['path']=='Uneven':path=G.PolylineCurve([G.Point3d(*p)for p in[(0.,0.,0.),(100.,0.,0.),(101.,0.,0.),(102.,0.,0.)]])
     elif op['path']=='Folded':path=G.PolylineCurve([G.Point3d(*p)for p in[(0.,0.,0.),(10.,0.,0.),(10.,10.,0.),(0.,1.,0.)]])

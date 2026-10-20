@@ -210,7 +210,7 @@ pub use curve_fit::{
     try_fit_cubic_curve_with_constraints, try_fit_cubic_curve_with_constraints_with_solver,
     try_fit_curve, try_fit_curve_with_solver,
 };
-pub use curve_frame::FrameTransportOptions;
+pub use curve_frame::{FrameQueryRestart, FrameTransportOptions};
 pub use curve_join::{
     CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves, join_curves_with_endpoint_filter,
 };

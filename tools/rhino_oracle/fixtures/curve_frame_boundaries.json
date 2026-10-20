@@ -1,0 +1,2232 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_0",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_1",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_2",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_3",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_4",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_5",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_6",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_7",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_8",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_9",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_10",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_11",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_12",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_13",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_14",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_15",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_16",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_17",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_18",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_19",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_20",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_21",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_22",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_23",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_24",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_25",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_26",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_27",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_28",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_29",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_30",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_31",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_32",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_33",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_34",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_35",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_36",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_37",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_38",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_39",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_40",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_41",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_42",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_43",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_44",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_45",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_46",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        0.9,
+        1.8,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_47",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_48",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "NurbsCubic",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_49",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "NurbsCubic",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_50",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          3.0,
+          1.0,
+          4.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "representation": "NurbsCubic",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_51",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          2.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "NurbsCubic",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_52",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0009765625,
+          0.0,
+          1.0
+        ],
+        [
+          1.0009765625,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_53",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0000009536743164,
+          0.0,
+          1.0
+        ],
+        [
+          1.0000009536743164,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_54",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0000000037252903,
+          0.0,
+          1.0
+        ],
+        [
+          1.0000000037252903,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_55",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0000000009313226,
+          0.0,
+          1.0
+        ],
+        [
+          1.0000000009313226,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_56",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0000000004656613,
+          0.0,
+          1.0
+        ],
+        [
+          1.0000000004656613,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_57",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0000000002328306,
+          0.0,
+          1.0
+        ],
+        [
+          1.0000000002328306,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_58",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0000000001164153,
+          0.0,
+          1.0
+        ],
+        [
+          1.0000000001164153,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_59",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0000000000009095,
+          0.0,
+          1.0
+        ],
+        [
+          1.0000000000009095,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "boundaries_60",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    }
+  ]
+}

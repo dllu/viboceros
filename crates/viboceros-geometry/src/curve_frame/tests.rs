@@ -328,3 +328,98 @@ fn invalid_parameters_jumps_cusps_and_resource_exhaustion_fail_explicitly() {
         Err(GeometryError::DiscontinuousCurveFrame)
     ));
 }
+
+#[test]
+fn outgoing_seed_and_query_restarts_preserve_default_transport_and_its_budget() {
+    let tol = Tolerance::NUMERICAL_VALIDATION;
+    let p = |x, y, z| crate::Point3::try_new(x, y, z).unwrap();
+    let polyline = crate::Polyline3::try_new(
+        vec![p(0., 0., 0.), p(1., 0., 0.), p(1., 1., 0.), p(1., 1., 1.)],
+        tol,
+    )
+    .unwrap();
+    let curve = CurveRef::Polyline(&polyline);
+    let parameters = [0., 1., 2., 3.];
+    let options = FrameTransportOptions {
+        side: ParameterSide::Left,
+        ..Default::default()
+    };
+    let expected = curve
+        .rotation_minimizing_frames(&parameters, None, options)
+        .unwrap();
+    let noop = curve
+        .frames_with_query_restarts(
+            &parameters,
+            None,
+            ParameterSide::Left,
+            options,
+            |_, _, _| Ok(crate::FrameQueryRestart::default()),
+        )
+        .unwrap();
+    assert_eq!(noop, expected);
+    let initial = curve
+        .rotation_minimizing_frames_from_side(&[1., 2., 3.], None, ParameterSide::Right, options)
+        .unwrap();
+    assert_eq!(initial[0].z_axis().as_vector().to_array(), [0., 1., 0.]);
+    assert_eq!(initial[1].z_axis().as_vector().to_array(), [0., 1., 0.]);
+    assert_eq!(initial[2].z_axis().as_vector().to_array(), [0., 0., 1.]);
+    let mut seen = Vec::new();
+    let restarted = curve
+        .frames_with_query_restarts(
+            &parameters,
+            None,
+            ParameterSide::Right,
+            options,
+            |t, _, right| {
+                seen.push(t);
+                Ok(crate::FrameQueryRestart {
+                    outgoing_x: Some(Frame3::try_from_unit_normal(p(0., 0., 0.), right)?.x_axis()),
+                    ..Default::default()
+                })
+            },
+        )
+        .unwrap();
+    assert_eq!(seen, [1., 2., 3.]);
+    assert_eq!(restarted[1], expected[1]);
+    assert_ne!(restarted.last(), expected.last());
+    let error = curve
+        .frames_with_query_restarts(
+            &parameters,
+            None,
+            ParameterSide::Right,
+            options,
+            |_, _, right| {
+                Ok(crate::FrameQueryRestart {
+                    outgoing_x: Some(right),
+                    ..Default::default()
+                })
+            },
+        )
+        .unwrap_err();
+    assert!(matches!(error, GeometryError::Degenerate { .. }));
+    assert!(matches!(
+        curve.frames_with_query_restarts(
+            &parameters,
+            None,
+            ParameterSide::Right,
+            FrameTransportOptions {
+                maximum_evaluations: 1,
+                ..options
+            },
+            |_, _, _| Ok(crate::FrameQueryRestart::default())
+        ),
+        Err(GeometryError::CurveFrameResourceLimit { .. })
+    ));
+    let backtrack =
+        crate::Polyline3::try_new(vec![p(0., 0., 0.), p(1., 0., 0.), p(0., 0., 0.)], tol).unwrap();
+    let backtrack = CurveRef::Polyline(&backtrack);
+    assert!(
+        backtrack
+            .rotation_minimizing_frames_from_side(&[1., 2.], None, ParameterSide::Right, options)
+            .is_ok()
+    );
+    assert!(matches!(
+        backtrack.rotation_minimizing_frames(&[0., 2.], None, options),
+        Err(GeometryError::DiscontinuousCurveFrame)
+    ));
+}

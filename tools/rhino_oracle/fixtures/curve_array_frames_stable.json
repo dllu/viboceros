@@ -1,0 +1,607 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_0"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_1"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 7,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_2"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 7,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_3"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Nurbs",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_4"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Nurbs",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_5"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Nurbs",
+      "spacing": "Items",
+      "value": 7,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_6"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Nurbs",
+      "spacing": "Items",
+      "value": 7,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_7"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Polycurve",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_8"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Polycurve",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_9"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Polycurve",
+      "spacing": "Items",
+      "value": 7,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_10"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Polycurve",
+      "spacing": "Items",
+      "value": 7,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": true,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_11"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": [
+        2.0,
+        1.0,
+        3.0
+      ],
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_12"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Native",
+      "spacing": "Distance",
+      "value": 3.0,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_13"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Native",
+      "spacing": "Distance",
+      "value": 1.5,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": false,
+      "source_count": 1,
+      "grouped": false,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_14"
+    },
+    {
+      "op": "curve_array",
+      "path": "SkewPolylineStable",
+      "representation": "Native",
+      "spacing": "Items",
+      "value": 4,
+      "orientation": "Freeform",
+      "base_point": null,
+      "cplane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "reverse_path": false,
+      "postselect": true,
+      "source_count": 2,
+      "grouped": true,
+      "subcurve": null,
+      "pick_point": null,
+      "finish": "Accept",
+      "seed_names": [],
+      "edits": [],
+      "input": "Number",
+      "id": "stable_frame_array_15"
+    }
+  ]
+}

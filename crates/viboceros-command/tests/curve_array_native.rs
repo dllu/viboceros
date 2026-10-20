@@ -10,7 +10,11 @@ mod support;
 fn native_curve_arrays_placements_groups_selection_and_history() {
     let commands = viboceros_command::CommandRegistry::with_builtins();
     let mut failures = Vec::new();
-    for (op, value) in support::rows() {
+    for (op, value) in support::rows()
+        .into_iter()
+        .chain(support::frame_rows())
+        .chain(support::stable_frame_rows())
+    {
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             let (mut doc, scene) = support::setup(&value);
             let id = op["id"].as_str().unwrap();

@@ -153,9 +153,9 @@ explicit source anchor and, as in Rhino, retains the originals in addition to
 all requested rail items. Without it, the originals are the first item. Use
 
 `Flip` on the rail to reverse its travel direction. Freeform arrays use shared
-[adaptive curve frames](../curve-frames.md) and incoming tangents at exact
-corners. Rhino's query-dependent twist at some sharp spatial corners remains
-an explicitly diagnosed compatibility gap.
+[adaptive curve frames](../curve-frames.md), incoming corner tangents, and a
+[query-boundary projection policy](../curve-frame-query-policy.md). Native
+projection poles and numerical boundary differences remain diagnosed gaps.
 
 [`ArrayCrvOnSrf`](array-curve-surface.md) supports interactive curve and surface
 picks, single positions, relative distances, Divide and Multiple, temporary

@@ -6,6 +6,7 @@ mod apply_curves;
 pub mod array_curve_surface;
 pub mod array_surface;
 pub mod curve_array;
+pub mod curve_frames;
 use curve_array::{ArrayCurveCommand, CurveArraySpacing, curve_array_samples};
 mod block_edit;
 mod block_reset_scale;

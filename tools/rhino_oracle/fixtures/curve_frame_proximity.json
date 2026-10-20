@@ -1,0 +1,1948 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_0",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_1",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_2",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        2.0000000000000004,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_3",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.9999999999999996,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_4",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        2.000000000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_5",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.9999999999999991,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_6",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        2.0000000000000036,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_7",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.9999999999999964,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_8",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        2.000000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_9",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.999999999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_10",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        2.000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_11",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.999999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_12",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        2.000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_13",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_14",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_15",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_16",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        2.0000000000000004,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_17",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.9999999999999996,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_18",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        2.000000000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_19",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.9999999999999991,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_20",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        2.0000000000000036,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_21",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.9999999999999964,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_22",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        2.000000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_23",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.999999999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_24",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        2.000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_25",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.999999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_26",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        2.000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_27",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Nurbs",
+      "parameters": [
+        0.0,
+        1.999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_28",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_29",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        2.0,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_30",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        2.0000000000000004,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_31",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.9999999999999996,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_32",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        2.000000000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_33",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.9999999999999991,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_34",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        2.0000000000000036,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_35",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.9999999999999964,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_36",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        2.000000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_37",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.999999999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_38",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        2.000000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_39",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.999999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_40",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        2.000001,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_41",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "representation": "Polycurve",
+      "parameters": [
+        0.0,
+        1.999999,
+        3.0
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_42",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          5e-09
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0
+      ],
+      "domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_43",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1e-08
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0
+      ],
+      "domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_44",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1.49e-08
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0
+      ],
+      "domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_45",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          2e-08
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0
+      ],
+      "domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_46",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          2.1073424255447017e-08
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0
+      ],
+      "domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_47",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          2.2e-08
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0
+      ],
+      "domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_48",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          3e-08
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0
+      ],
+      "domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_49",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0,
+          1e-07
+        ]
+      ],
+      "representation": "Polyline",
+      "parameters": [
+        0.0,
+        1.0
+      ],
+      "domain": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_50",
+      "vertices": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0
+        ],
+        [
+          3.0,
+          1.0,
+          0.0
+        ],
+        [
+          3.0,
+          2.0,
+          0.0
+        ],
+        [
+          3.0,
+          3.0,
+          1.0
+        ],
+        [
+          4.0,
+          4.0,
+          1.0
+        ],
+        [
+          5.0,
+          4.0,
+          1.0
+        ],
+        [
+          5.0,
+          5.0,
+          2.0
+        ],
+        [
+          6.0,
+          5.0,
+          3.0
+        ]
+      ],
+      "representation": "BezierChain",
+      "parameters": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "domain": [
+        0.0,
+        3.0
+      ],
+      "query_mode": "Knots"
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_51",
+      "vertices": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -0.6666666666666666,
+          0.0,
+          0.0
+        ],
+        [
+          -0.3333333333333333,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          2.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "BezierChain",
+      "parameters": [
+        0,
+        1,
+        2
+      ],
+      "domain": [
+        0.0,
+        2.0
+      ],
+      "query_mode": "Knots"
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_52",
+      "vertices": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -0.6666666666666666,
+          0.0,
+          0.0
+        ],
+        [
+          -0.3333333333333333,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          2.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "BezierChain",
+      "parameters": [
+        0.0,
+        0.40866056036878556,
+        1.2043302801843927,
+        2.0
+      ],
+      "domain": [
+        0.0,
+        2.0
+      ]
+    },
+    {
+      "op": "curve_frame_boundary",
+      "id": "proximity_53",
+      "vertices": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -0.6666666666666666,
+          0.0,
+          0.0
+        ],
+        [
+          -0.3333333333333333,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          2.0
+        ],
+        [
+          1.0,
+          2.0,
+          3.0
+        ]
+      ],
+      "representation": "BezierChain",
+      "parameters": [
+        0.0,
+        0.40866056036878556,
+        0.567794504331907,
+        1.2043302801843927,
+        2.0
+      ],
+      "domain": [
+        0.0,
+        2.0
+      ]
+    }
+  ]
+}

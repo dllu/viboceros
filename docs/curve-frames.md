@@ -19,7 +19,10 @@ an error. Frame Z follows the unit tangent and Y completes the orientation.
 a curve-evaluation budget (default 131,072), and the exact requested side
 (default `ParameterSide::Right`). Both sides of a corner are traversed when
 continuing beyond it, regardless of which side is returned at that parameter.
-Non-antiparallel corners use the shortest tangent rotation. Antiparallel
+`rotation_minimizing_frames_from_side` can choose the seed's side independently.
+`frames_with_query_restarts` adds an optional, budgeted traversal hook for command
+policies; its default preserves this contract. Non-antiparallel corners use the
+shortest tangent rotation. Antiparallel
 corners and position jumps are rejected because no unique transport exists.
 At structurally discontinuous joins, unequal endpoint coordinates are a jump,
 even if a composite's joining tolerance admitted that gap. Ordinary
@@ -106,9 +109,12 @@ Two diagnostic fixtures deliberately do **not** pass those comparison limits:
   occurs for polyline, polycurve, and degree-one NURBS representations.
   `curve_array_corner_diagnostics.json` also reproduces the mismatch with an
   actual four-item `ArrayCrv`, including grouped axis witnesses and selection.
-  It is an untimed state probe. Native `ArrayCrv` uses incoming corner tangents
-  but currently retains stable minimum-twist transport; Rhino's query-dependent
-  corner restart is an unresolved compatibility difference.
+  It is an untimed state probe. `ArrayCrv` uses incoming corner tangents
+  in both implementations. `ArrayCrv` now applies a separately qualified
+  [query-boundary projection policy](curve-frame-query-policy.md), resolving
+  this axis-aligned command case. The geometry kernel retains minimum-twist
+  transport. Projection poles and native parameter round-trip differences
+  remain explicit command/SDK diagnostics.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/curve_frames.json \

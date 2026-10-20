@@ -10,6 +10,15 @@ mod breaks;
 mod tests;
 mod transport;
 
+/// Optional axes for one returned query and for subsequent transport. Query
+/// edits do not implicitly change continuation; each direction is projected
+/// into its corresponding tangent's normal plane.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct FrameQueryRestart {
+    pub query_x: Option<UnitVector3>,
+    pub outgoing_x: Option<UnitVector3>,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct FrameTransportOptions {
     /// Absolute angular error target in radians for the complete traversal.
@@ -44,6 +53,38 @@ impl CurveRef<'_> {
         initial_x: Option<UnitVector3>,
         options: FrameTransportOptions,
     ) -> Result<Vec<Frame3>, GeometryError> {
+        self.rotation_minimizing_frames_from_side(parameters, initial_x, options.side, options)
+    }
+
+    /// Select the seed's side independently of later requested limits. The
+    /// transport still crosses each intervening corner by its shortest rotation.
+    /// This permits starting on the outgoing side of an exact corner while
+    /// returning incoming limits at subsequent queries.
+    pub fn rotation_minimizing_frames_from_side(
+        self,
+        parameters: &[Real],
+        initial_x: Option<UnitVector3>,
+        initial_side: ParameterSide,
+        options: FrameTransportOptions,
+    ) -> Result<Vec<Frame3>, GeometryError> {
+        self.frames_with_query_restarts(parameters, initial_x, initial_side, options, |_, _, _| {
+            Ok(FrameQueryRestart::default())
+        })
+    }
+
+    /// Transport once, optionally replacing the outgoing perpendicular X axis
+    /// after each later query. A query edit changes returned axes; an outgoing
+    /// edit changes continuation. Default edits preserve minimum-twist
+    /// transport. Ambiguous antiparallel corners and position jumps still fail.
+    /// Curve evaluations inside `restart` are the caller's responsibility.
+    pub fn frames_with_query_restarts(
+        self,
+        parameters: &[Real],
+        initial_x: Option<UnitVector3>,
+        initial_side: ParameterSide,
+        options: FrameTransportOptions,
+        mut restart: impl FnMut(Real, Frame3, UnitVector3) -> Result<FrameQueryRestart, GeometryError>,
+    ) -> Result<Vec<Frame3>, GeometryError> {
         if !options.angular_tolerance.is_finite()
             || options.angular_tolerance <= 0.0
             || options.angular_tolerance > 1.0
@@ -66,7 +107,7 @@ impl CurveRef<'_> {
             });
         }
         let mut evaluator = transport::Evaluator::new(self, options.maximum_evaluations);
-        let first = evaluator.sample(parameters[0], options.side)?;
+        let first = evaluator.sample(parameters[0], initial_side)?;
         let seed = match initial_x {
             Some(x) => perpendicular(x.as_vector(), first.tangent())?,
             None => Frame3::try_from_normal(
@@ -91,7 +132,7 @@ impl CurveRef<'_> {
         let mut a = parameters[0];
         let mut tangent = first.tangent();
         let mut x = seed;
-        if options.side == ParameterSide::Left {
+        if initial_side == ParameterSide::Left {
             let right = evaluator.sample(a, ParameterSide::Right)?;
             if breaks::position_can_jump(self, a)? && first.point() != right.point() {
                 return Err(GeometryError::DiscontinuousCurveFrame);
@@ -117,8 +158,9 @@ impl CurveRef<'_> {
                 if b == target && options.side == ParameterSide::Left {
                     left_frame = Some(frame(left.point(), left.tangent(), x)?);
                     if b == end {
-                        output.push(left_frame.unwrap());
-                        return Ok(output);
+                        a = b;
+                        tangent = left.tangent();
+                        break;
                     }
                 }
                 let right = evaluator.sample(b, ParameterSide::Right)?;
@@ -139,6 +181,20 @@ impl CurveRef<'_> {
                     x,
                 )?
             });
+            let previous = *output.last().unwrap();
+            let edit = restart(target, previous, tangent)?;
+            if let Some(replacement) = edit.query_x {
+                *output.last_mut().unwrap() = frame(
+                    previous.origin(),
+                    previous.z_axis(),
+                    perpendicular(replacement.as_vector(), previous.z_axis())?,
+                )?;
+            }
+            if target != end
+                && let Some(replacement) = edit.outgoing_x
+            {
+                x = perpendicular(replacement.as_vector(), tangent)?;
+            }
         }
         Ok(output)
     }

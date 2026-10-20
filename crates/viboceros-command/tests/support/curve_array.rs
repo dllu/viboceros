@@ -119,6 +119,11 @@ pub fn execute(
 /// Keep every capture row in the state replay. Undefined native pole maps and
 /// the previously measured native smooth-frame integration error are diagnostics.
 pub fn qualification(op: &Value) -> &'static str {
+    if matches!(op["path"].as_str(), Some("SkewPolyline" | "SkewPolyline2"))
+        && (op["spacing"] == "Distance" || matches!(op["value"].as_u64(), Some(4 | 7)))
+    {
+        return "native_query_projection_pole";
+    }
     if matches!(op["path"].as_str(), Some("LineZ" | "Polyline"))
         && matches!(op["orientation"].as_str(), Some("Roadlike" | "Stairlike"))
     {
@@ -133,11 +138,62 @@ pub fn check(scene: &Scene, doc: &Document, op: &Value, value: &Value, phase: &s
     let id = op["id"].as_str().unwrap();
     let max = scene.audit(doc, value, phase, id);
     match qualification(op) {
-        "native_vertical_degeneracy" => {}
+        "native_vertical_degeneracy" | "native_query_projection_pole" => {}
         "native_frame_approximation" => {
             assert!(max <= 5e-5, "{id} {phase}: native frame discrepancy {max}")
         }
         _ => assert!(max <= 1e-6, "{id} {phase}: cloud error {max}"),
     }
     max
+}
+
+pub fn frame_rows() -> Vec<(Value, Value)> {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/curve_array_frames.json"
+    ))
+    .unwrap();
+    let r: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/curve_array_frames.json"
+    ))
+    .unwrap();
+    assert_eq!(q["operations"].as_array().unwrap().len(), 44);
+    assert_eq!(r["results"].as_array().unwrap().len(), 44);
+    q["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(r["results"].as_array().unwrap())
+        .map(|(op, row)| {
+            assert_eq!(op["id"], row["id"]);
+            assert!(row["error"].is_null());
+            let v = &row["value"];
+            assert_eq!(v["input_trace"]["errors"], json!([]));
+            (op.clone(), v.clone())
+        })
+        .collect()
+}
+pub fn stable_frame_rows() -> Vec<(Value, Value)> {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/curve_array_frames_stable.json"
+    ))
+    .unwrap();
+    let r: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/curve_array_frames_stable.json"
+    ))
+    .unwrap();
+    assert_eq!(q["operations"].as_array().unwrap().len(), 16);
+    assert_eq!(r["results"].as_array().unwrap().len(), 16);
+    q["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(r["results"].as_array().unwrap())
+        .map(|(op, row)| {
+            assert_eq!(op["id"], row["id"]);
+            assert!(row["error"].is_null());
+            let v = &row["value"];
+            assert_eq!(v["input_trace"]["errors"], json!([]));
+            (op.clone(), v.clone())
+        })
+        .collect()
 }

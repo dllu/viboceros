@@ -7266,6 +7266,9 @@ def _execute(operation, iterations, tolerance):
         return _volume_selection(operation)
     if kind == "sweep1":
         return _sweep1(operation, iterations, tolerance)
+    if kind == 'curve_frame_boundary':
+        from curve_frame_boundary_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == "curve_frames":
         return _curve_frames(operation, iterations)
     if kind == "brep_mesh_boundaries":

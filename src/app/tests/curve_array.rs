@@ -8,7 +8,11 @@ fn enter(app: &mut VibocerosApp, input: &str) {
 fn curve_array_native_getters_preview_and_history() {
     let mut app = test_app();
     let mut failures = Vec::new();
-    for (op, value) in support::rows() {
+    for (op, value) in support::rows()
+        .into_iter()
+        .chain(support::frame_rows())
+        .chain(support::stable_frame_rows())
+    {
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             let (doc, scene) = support::setup(&value);
             app.document = doc;

@@ -56,10 +56,11 @@ measured in the independent [curve-frame diagnostics](../curve-frames.md).
 These five cases are retained in both API and UI replays and are not counted as
 passing the 1e-6 geometry threshold.
 
-Freeform transport at some sharp spatial corners also differs from Rhino's
-query-dependent frame restart. The pilots preserve those observations; this
-change keeps the stable shared transport solver. Planar corner captures verify
-outgoing tangents for Roadlike/Stairlike across native polylines, degree-one
-NURBS and polycurves. General trimmed-edge topology, automatic closed seam ties,
-grip sources and large or pathological arrays remain outside this capture's
-qualification.
+Freeform arrays now use a [query-boundary projection policy](../curve-frame-query-policy.md)
+at sampled corners, over the shared adaptive transport solver. It resolves the
+original axis-aligned spatial corner discrepancy and is checked on additional
+non-orthogonal spatial paths, reverse travel and all three curve representations.
+Sixty added corner workflows retain eighteen native projection-pole diagnostics;
+these are not counted as matching geometry. General trimmed-edge topology,
+automatic closed-seam ties, grip sources and large or pathological arrays remain
+outside this capture's qualification.

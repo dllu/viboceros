@@ -546,22 +546,17 @@ fn freeform_curve_array_frames(
     samples: &[CurveSample],
 ) -> Result<Vec<CurveArrayFrame>, GeometryError> {
     let parameters = samples.iter().map(|s| s.parameter()).collect::<Vec<_>>();
-    Ok(curve
-        .rotation_minimizing_frames(
-            &parameters,
-            None,
-            viboceros_geometry::FrameTransportOptions {
-                side: viboceros_geometry::ParameterSide::Left,
-                maximum_evaluations: samples.len().saturating_mul(8).max(131_072),
-                ..Default::default()
-            },
-        )?
-        .into_iter()
-        .map(|f| CurveArrayFrame {
-            x: f.x_axis(),
-            y: f.y_axis(),
-        })
-        .collect())
+    Ok(crate::curve_frames::perpendicular_frames(
+        curve,
+        &parameters,
+        samples.len().saturating_mul(8).max(131_072),
+    )?
+    .into_iter()
+    .map(|f| CurveArrayFrame {
+        x: f.x_axis(),
+        y: f.y_axis(),
+    })
+    .collect())
 }
 
 fn roadlike_curve_array_frame(
