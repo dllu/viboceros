@@ -357,6 +357,9 @@ pub enum GeometryError {
     #[error("invalid B-rep topology: {context}")]
     InvalidBrepTopology { context: &'static str },
 
+    #[error("surface geodesic failed: {context}")]
+    InvalidSurfaceGeodesic { context: &'static str },
+
     #[error("a B-rep face subset must contain at least one face")]
     EmptyBrepFaceSubset,
 

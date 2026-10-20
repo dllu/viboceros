@@ -8,6 +8,60 @@
 use crate::{GeometryError, Real, require_finite};
 
 pub(crate) const MAX_STEPS: usize = 65_536;
+const A: [Real; 6] = [0., 1. / 5., 3. / 10., 3. / 5., 1., 7. / 8.];
+const C: [Real; 6] = [37. / 378., 0., 250. / 621., 125. / 594., 0., 512. / 1771.];
+const D: [Real; 6] = [
+    C[0] - 2825. / 27648.,
+    0.,
+    C[2] - 18575. / 48384.,
+    C[3] - 13525. / 55296.,
+    -277. / 14336.,
+    C[5] - 1. / 4.,
+];
+
+/// The same embedded rule for coupled states. The caller supplies its physical
+/// error norm and acceptance policy; this function never accepts a step.
+pub(crate) fn system_step<const N: usize>(
+    x: Real,
+    h: Real,
+    state: [Real; N],
+    mut rhs: impl FnMut(Real, [Real; N]) -> Result<[Real; N], GeometryError>,
+) -> Result<([Real; N], [Real; N]), GeometryError> {
+    require_finite([x, h], "Cash–Karp step inputs")?;
+    const B: [[Real; 5]; 6] = [
+        [0.; 5],
+        [1. / 5., 0., 0., 0., 0.],
+        [3. / 40., 9. / 40., 0., 0., 0.],
+        [3. / 10., -9. / 10., 6. / 5., 0., 0.],
+        [-11. / 54., 5. / 2., -70. / 27., 35. / 27., 0.],
+        [
+            1631. / 55296.,
+            175. / 512.,
+            575. / 13824.,
+            44275. / 110592.,
+            253. / 4096.,
+        ],
+    ];
+    let mut values = [[0.; N]; 6];
+    for i in 0..6 {
+        let y = std::array::from_fn(|axis| {
+            state[axis] + h * (0..i).map(|j| B[i][j] * values[j][axis]).sum::<Real>()
+        });
+        require_finite(y, "Cash–Karp state")?;
+        let parameter = x + A[i] * h;
+        require_finite([parameter], "Cash–Karp stage parameter")?;
+        values[i] = rhs(parameter, y)?;
+        require_finite(values[i], "Cash–Karp state derivative")?;
+    }
+    let output = std::array::from_fn(|axis| {
+        state[axis] + h * (0..6).map(|i| C[i] * values[i][axis]).sum::<Real>()
+    });
+    let error =
+        std::array::from_fn(|axis| h * (0..6).map(|i| D[i] * values[i][axis]).sum::<Real>());
+    require_finite(output, "Cash–Karp output state")?;
+    require_finite(error, "Cash–Karp state error")?;
+    Ok((output, error))
+}
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct Checkpoint {
@@ -90,16 +144,6 @@ fn step(
     first: Real,
     speed: &mut impl FnMut(Real) -> Result<Real, GeometryError>,
 ) -> Result<(Real, Real), GeometryError> {
-    const A: [Real; 6] = [0., 1. / 5., 3. / 10., 3. / 5., 1., 7. / 8.];
-    const C: [Real; 6] = [37. / 378., 0., 250. / 621., 125. / 594., 0., 512. / 1771.];
-    const D: [Real; 6] = [
-        C[0] - 2825. / 27648.,
-        0.,
-        C[2] - 18575. / 48384.,
-        C[3] - 13525. / 55296.,
-        -277. / 14336.,
-        C[5] - 1. / 4.,
-    ];
     let mut values = [first; 6];
     for i in 1..6 {
         values[i] = checked_speed(speed((x + A[i] * h).min(1.))?)?;
@@ -113,6 +157,14 @@ fn step(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn coupled_step_follows_a_harmonic_oscillator() {
+        let h: Real = 0.1;
+        let (value, error) = system_step(0., h, [1., 0.], |_, s| Ok([s[1], -s[0]])).unwrap();
+        assert!((value[0] - h.cos()).abs() < 2e-9, "{value:?} {error:?}");
+        assert!((value[1] + h.sin()).abs() < 2e-9, "{value:?} {error:?}");
+    }
 
     #[test]
     fn polynomial_quadrature_retains_endpoints_and_accepted_steps() {

@@ -7158,6 +7158,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'subcurve_edge':
         from subcurve_edge_probe import run
         return run(operation, globals())
+    if kind == 'surface_curve_offset':
+        from surface_curve_offset_probe import run
+        return run(operation,globals(),iterations,tolerance)
     if kind == 'surface_pullback_endpoints':
         from surface_pullback_endpoints_probe import run
         return run(operation, globals())

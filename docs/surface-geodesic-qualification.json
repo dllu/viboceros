@@ -1,0 +1,248 @@
+{
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "command_registered": false,
+  "recipes": 24,
+  "stations": 168,
+  "qualified_recipes": 19,
+  "unqualified_recipes": [
+    "plane_curve_2",
+    "plane_curve_3",
+    "warped_iso_0",
+    "warped_iso_1",
+    "warped_iso_2"
+  ],
+  "maximum_station_difference": 0.00010455450161462155,
+  "independent_sdk_queries": 42,
+  "cases": [
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "plane_line_0",
+      "maximum_error": 2.842170943040401e-14,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "plane_line_1",
+      "maximum_error": 2.6645352591003757e-14,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "plane_line_2",
+      "maximum_error": 7.105427357601002e-15,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "plane_line_3",
+      "maximum_error": 8.881784197001252e-15,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "plane_curve_0",
+      "maximum_error": 8.050860924983732e-07,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "plane_curve_1",
+      "maximum_error": 8.050860926986233e-07,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "plane_curve_2",
+      "maximum_error": 3.11948808468579e-06,
+      "qualified": false
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "plane_curve_3",
+      "maximum_error": 3.1194880783127446e-06,
+      "qualified": false
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "cylinder_axis_0",
+      "maximum_error": 7.592170900837078e-09,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "cylinder_axis_1",
+      "maximum_error": 7.141687179009347e-09,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "cylinder_axis_2",
+      "maximum_error": 5.963072422849694e-07,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "cylinder_axis_3",
+      "maximum_error": 4.656831006445589e-07,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "cylinder_ring_0",
+      "maximum_error": 4.440892098500626e-15,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "cylinder_ring_1",
+      "maximum_error": 2.220446049250313e-15,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "cylinder_ring_2",
+      "maximum_error": 1.2434497875801753e-14,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "cylinder_ring_3",
+      "maximum_error": 9.325873406851315e-15,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "sphere_latitude_0",
+      "maximum_error": 3.1000673336770473e-09,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "sphere_latitude_1",
+      "maximum_error": 5.419686744262059e-09,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "sphere_latitude_2",
+      "maximum_error": 1.9579848084507165e-07,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "sphere_latitude_3",
+      "maximum_error": 1.623602947691581e-07,
+      "qualified": true
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "warped_iso_0",
+      "maximum_error": 2.621236453401391e-05,
+      "qualified": false
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "warped_iso_1",
+      "maximum_error": 2.626188933744014e-05,
+      "qualified": false
+    },
+    {
+      "boundary_rejections": 0,
+      "errors": [],
+      "id": "warped_iso_2",
+      "maximum_error": 0.00010455450161462155,
+      "qualified": false
+    },
+    {
+      "boundary_rejections": 7,
+      "errors": [],
+      "id": "warped_iso_3",
+      "maximum_error": 0.0,
+      "qualified": true
+    }
+  ],
+  "independent_closest_points": [
+    {
+      "id": "plane_curve_0_verify",
+      "queries": 7,
+      "maximum_sdk_distance": 8.050860925383714e-07,
+      "maximum_closest_solver_difference": 1.6960140702872856e-16,
+      "maximum_query_point_difference": 0.0
+    },
+    {
+      "id": "plane_curve_2_verify",
+      "queries": 7,
+      "maximum_sdk_distance": 3.1194880846688675e-06,
+      "maximum_closest_solver_difference": 1.60947694923105e-16,
+      "maximum_query_point_difference": 0.0
+    },
+    {
+      "id": "cylinder_axis_2_verify",
+      "queries": 7,
+      "maximum_sdk_distance": 5.963072422849694e-07,
+      "maximum_closest_solver_difference": 0.0,
+      "maximum_query_point_difference": 0.0
+    },
+    {
+      "id": "warped_iso_0_verify",
+      "queries": 7,
+      "maximum_sdk_distance": 2.6212364534544822e-05,
+      "maximum_closest_solver_difference": 5.531277611501087e-16,
+      "maximum_query_point_difference": 2.7755575615628914e-17
+    },
+    {
+      "id": "warped_iso_1_verify",
+      "queries": 7,
+      "maximum_sdk_distance": 2.6261889337487837e-05,
+      "maximum_closest_solver_difference": 1.2891028305581087e-15,
+      "maximum_query_point_difference": 0.0
+    },
+    {
+      "id": "warped_iso_2_verify",
+      "queries": 7,
+      "maximum_sdk_distance": 0.00010455450161553103,
+      "maximum_closest_solver_difference": 9.094829923894654e-16,
+      "maximum_query_point_difference": 5.551115123125783e-17
+    }
+  ],
+  "limits": [
+    "Geodesic point foundation only; OffsetCrvOnSrf is not registered.",
+    "Station comparisons do not certify the complete offset locus.",
+    "Native discrepancies remain subject to the unchanged 1e-6 qualification gate.",
+    "Natural boundaries, poles and non-C1 chart transitions do not return partial endpoints."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/surface_geodesic.rs": "f6c9fd06699778377f8ab1c528edef444564067823a40cd66b764a06a827f809",
+    "crates/viboceros-geometry/src/surface_geodesic/tests.rs": "004d5c091ae563dcf6f125184dfa63a10377c5e72851802054fc25a1fcd62e55",
+    "crates/viboceros-geometry/src/integration/cash_karp.rs": "ab8524e4b80a486f4ed39fdd430e1b853a15ed124065e8dff9a0a4a3a705a558",
+    "crates/viboceros-geometry/tests/surface_geodesic_native.rs": "b85ede7b0981ed55f628a8467a66c770e9229526c606435d99666dca5ae712b5",
+    "tools/rhino_oracle/fixtures/surface_curve_offset.json": "dad3fd6513fcae2773f306adc5ca9f4cc31f7ab55f381e8f290534e95e20dd40",
+    "tools/rhino_oracle/observations/surface_curve_offset.json": "4a62830ab84a41d33a4348c6a67282b022fa97eeb6f552a086ba9ae6e6e07d4f",
+    "tools/rhino_oracle/fixtures/surface_curve_offset_verify.json": "28583370224971ce8a9f2601917b0dbf4d9bc7340c2a8cf20cf20ac6be622553",
+    "tools/rhino_oracle/observations/surface_curve_offset_verify.json": "4726447786c4a155b1830f1c979471bfc00a45250f1987321d34b8f2dc6cef3a",
+    "tools/rhino_oracle/report_surface_geodesic.py": "4eac968d2cef16ef1182edf74a6e7ed925339fff2858d9fe4e9eda2b43bfa6bb"
+  }
+}

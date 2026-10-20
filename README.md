@@ -114,6 +114,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Unit directions and model tolerances](docs/unit-directions-and-model-tolerance.md)
 - [Primitive directions and construction-plane parameter units](docs/direction-adapters.md)
 - [Surface frames, arrays and orientation under UV rescaling](docs/surface-parameter-frames.md)
+- [Surface geodesic distance and offset qualification](docs/surface-geodesic-offset.md)
 - [Pullback parameter units and UV border domains](docs/pullback-parameter-units.md)
 - [Curve-array frames and Flow direction units](docs/curve-direction-units.md)
 - [USD BRep kernel integration](docs/usd-brep.md)

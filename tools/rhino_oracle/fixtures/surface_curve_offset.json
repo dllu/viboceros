@@ -1,0 +1,155 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "surface_curve_offset",
+      "id": "plane_line_0",
+      "case": "plane_line",
+      "distance": 0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "plane_line_1",
+      "case": "plane_line",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "plane_line_2",
+      "case": "plane_line",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "plane_line_3",
+      "case": "plane_line",
+      "distance": -1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "plane_curve_0",
+      "case": "plane_curve",
+      "distance": 0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "plane_curve_1",
+      "case": "plane_curve",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "plane_curve_2",
+      "case": "plane_curve",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "plane_curve_3",
+      "case": "plane_curve",
+      "distance": -1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "cylinder_axis_0",
+      "case": "cylinder_axis",
+      "distance": 0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "cylinder_axis_1",
+      "case": "cylinder_axis",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "cylinder_axis_2",
+      "case": "cylinder_axis",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "cylinder_axis_3",
+      "case": "cylinder_axis",
+      "distance": -1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "cylinder_ring_0",
+      "case": "cylinder_ring",
+      "distance": 0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "cylinder_ring_1",
+      "case": "cylinder_ring",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "cylinder_ring_2",
+      "case": "cylinder_ring",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "cylinder_ring_3",
+      "case": "cylinder_ring",
+      "distance": -1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "sphere_latitude_0",
+      "case": "sphere_latitude",
+      "distance": 0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "sphere_latitude_1",
+      "case": "sphere_latitude",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "sphere_latitude_2",
+      "case": "sphere_latitude",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "sphere_latitude_3",
+      "case": "sphere_latitude",
+      "distance": -1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "warped_iso_0",
+      "case": "warped_iso",
+      "distance": 0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "warped_iso_1",
+      "case": "warped_iso",
+      "distance": -0.25
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "warped_iso_2",
+      "case": "warped_iso",
+      "distance": 1.0
+    },
+    {
+      "op": "surface_curve_offset",
+      "id": "warped_iso_3",
+      "case": "warped_iso",
+      "distance": -1.0
+    }
+  ]
+}

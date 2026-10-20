@@ -67,7 +67,9 @@ mod curve_shortness;
 mod curve_through;
 mod curve_trim;
 mod curve_tween;
+mod surface_geodesic;
 mod surface_rebuild;
+pub use surface_geodesic::{PreparedSurfaceGeodesic, SurfaceGeodesicPoint};
 pub use surface_rebuild::{
     NurbsInterpolationSystem, UniformInterpolationSystem, try_rebuild_nurbs_surface,
     try_rebuild_nurbs_surface_with_operations, try_rebuild_open_nurbs_surface_with_operations,
