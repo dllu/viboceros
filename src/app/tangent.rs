@@ -1,16 +1,18 @@
-//! Circle and Arc share one read-only tangent-contact picker.
+//! Circle, Arc and Splop share one read-only tangent-contact picker.
 use super::*;
 use viboceros_command::circle_tangent_input::Input;
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Kind {
     Circle,
     Arc,
+    Splop,
 }
 impl Kind {
     fn name(self) -> &'static str {
         match self {
             Self::Circle => "Circle",
             Self::Arc => "Arc",
+            Self::Splop => "Splop",
         }
     }
 }
@@ -23,6 +25,9 @@ pub(super) struct Session {
     pub(super) pointer: Option<egui::Pos2>,
 }
 impl Session {
+    pub(super) fn sphere(&self) -> bool {
+        self.kind == Kind::Splop
+    }
     pub(super) fn wants_point(&self) -> bool {
         self.support.is_some() || self.input.wants_point()
     }
@@ -42,6 +47,12 @@ impl VibocerosApp {
     pub(super) fn start_tangent_arc(&mut self) {
         self.start_tangent(Kind::Arc, None);
     }
+    pub(super) fn start_splop_tangent(&mut self) {
+        self.start_tangent(Kind::Splop, None);
+    }
+    pub(super) fn picking_splop_tangent(&self) -> bool {
+        self.tangent_session.as_ref().is_some_and(Session::sphere)
+    }
     fn start_tangent(
         &mut self,
         kind: Kind,
@@ -50,19 +61,27 @@ impl VibocerosApp {
         let plane = self
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
-        self.cancel_interactive_command(false);
+        if kind != Kind::Splop {
+            self.cancel_interactive_command(false);
+        }
         let preferences = if kind == Kind::Arc {
             viboceros_command::circle_around_input::Preferences {
                 radius: self.commands.arc_tangent_radius(),
                 ..Default::default()
             }
+        } else if kind == Kind::Splop {
+            Default::default()
         } else {
             self.commands.circle_preferences()
         };
         self.tangent_session = Some(Session {
             kind,
             support: None,
-            input: Input::new(plane, self.document.tolerance(), preferences),
+            input: if kind == Kind::Splop {
+                Input::reference_sphere(plane, self.document.tolerance())
+            } else {
+                Input::new(plane, self.document.tolerance(), preferences)
+            },
             plane,
             output,
             pointer: None,
@@ -98,10 +117,10 @@ impl VibocerosApp {
             return;
         };
         let anchor = s.input.anchor();
-        self.active_command = Some(if s.kind == Kind::Arc {
-            InteractiveCommand::ArcTangent { anchor }
-        } else {
-            InteractiveCommand::CircleTangent { anchor }
+        self.active_command = Some(match s.kind {
+            Kind::Arc => InteractiveCommand::ArcTangent { anchor },
+            Kind::Circle => InteractiveCommand::CircleTangent { anchor },
+            Kind::Splop => InteractiveCommand::Splop { last: anchor },
         });
         self.drafting_plane = s
             .support
@@ -132,6 +151,9 @@ impl VibocerosApp {
             let session = self.tangent_session.as_mut().unwrap();
             session.input.reset_sources(self.document.tolerance());
             session.support = None;
+            if session.sphere() {
+                self.refresh_splop_reference_history();
+            }
             self.point_filter = None;
             self.point_constraint = None;
             self.component_selection.clear_choices();
@@ -143,6 +165,16 @@ impl VibocerosApp {
     }
     fn finish_tangent(&mut self, choice: Option<Point3>) -> bool {
         let s = self.tangent_session.as_ref().unwrap();
+        if s.sphere() {
+            let result = s.input.finish();
+            return match result {
+                Ok(circle) => self.accept_splop_tangent_circle(circle),
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            };
+        }
         let command = if s.kind == Kind::Arc {
             viboceros_command::arc_tangent_input::command(
                 &s.input,
@@ -285,7 +317,10 @@ impl VibocerosApp {
             if !s.input.wants_number() {
                 return false;
             }
-            let value = word.strip_prefix("Radius=").unwrap_or(text);
+            let value = word
+                .split_once('=')
+                .filter(|(key, _)| key.eq_ignore_ascii_case("Radius"))
+                .map_or(text, |(_, value)| value);
             let Some(n) = viboceros_drafting::PointInput::parse_length_with_units(
                 value,
                 self.document.units(),

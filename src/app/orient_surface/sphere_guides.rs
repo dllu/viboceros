@@ -40,6 +40,13 @@ impl VibocerosApp {
         }) else {
             return false;
         };
+        if word.eq_ignore_ascii_case("Tangent") {
+            self.point_filter = None;
+            self.point_constraint = None;
+            self.start_splop_tangent();
+            self.command_input.clear();
+            return true;
+        }
         let guide = if word.eq_ignore_ascii_case("FitPoints") {
             Guide::FitPoints
         } else if word.eq_ignore_ascii_case("AroundCurve") {
@@ -209,16 +216,10 @@ impl VibocerosApp {
             return true;
         }
         self.document.clear_selection();
-        let s = self.orient_surface_session.as_mut().unwrap();
-        if !self.document.history_group_is_current(&s.group) {
-            match self.document.begin_history_group("Splop") {
-                Ok(group) => s.group = group,
-                Err(e) => {
-                    self.push_log(format!("Error: {e}"));
-                    return false;
-                }
-            }
+        if !self.refresh_splop_reference_history() {
+            return false;
         }
+        let s = self.orient_surface_session.as_mut().unwrap();
         s.sphere_guide = Some(Guide::Around {
             curve: None,
             center: false,
@@ -232,6 +233,36 @@ impl VibocerosApp {
         self.push_log("Reference curve changed or became unavailable; select it again".into());
         self.orient_surface_prompt();
         false
+    }
+    pub(crate) fn refresh_splop_reference_history(&mut self) -> bool {
+        let Some(s) = self.orient_surface_session.as_mut() else {
+            return false;
+        };
+        if !self.document.history_group_is_current(&s.group) {
+            match self.document.begin_history_group("Splop") {
+                Ok(group) => s.group = group,
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    return false;
+                }
+            }
+        }
+        true
+    }
+    pub(crate) fn accept_splop_tangent_circle(
+        &mut self,
+        circle: viboceros_geometry::Circle3,
+    ) -> bool {
+        if !self.refresh_splop_reference_history() {
+            return false;
+        }
+        let definition = viboceros_command::circle_input::CircleDefinition::from_circle(circle);
+        if definition.is_err() {
+            return self.accept_splop_reference_result(definition.map(Some));
+        }
+        self.tangent_session = None;
+        self.active_command = Some(Kind::Splop.command(Some(circle.center())));
+        self.accept_splop_reference_result(definition.map(Some))
     }
     pub(super) fn accept_splop_reference_curve_center(&mut self, point: Point3) -> Option<bool> {
         let s = self.orient_surface_session.as_ref()?;

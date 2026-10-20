@@ -25,6 +25,7 @@ pub struct Input {
     plane: Frame3,
     tolerance: Tolerance,
     preferences: Preferences,
+    sphere: bool,
 }
 impl Input {
     pub fn new(plane: Frame3, tolerance: Tolerance, preferences: Preferences) -> Self {
@@ -37,6 +38,16 @@ impl Input {
             plane,
             tolerance,
             preferences,
+            sphere: false,
+        }
+    }
+    /// Sphere reference getters use the minimum gap between a complete circle
+    /// and a disjoint coplanar line when two unconstrained contacts are accepted.
+    /// Consume this getter through `finish` rather than a standalone Circle command.
+    pub fn reference_sphere(plane: Frame3, tolerance: Tolerance) -> Self {
+        Self {
+            sphere: true,
+            ..Self::new(plane, tolerance, Preferences::default())
         }
     }
     pub fn wants_curve(&self) -> bool {
@@ -55,10 +66,11 @@ impl Input {
         })
     }
     pub fn current(&self, doc: &Document) -> bool {
-        self.picks.iter().all(|p| match p {
-            Pick::Point(_) => true,
-            Pick::Curve { source, .. } => source.current(doc),
-        })
+        self.tolerance == doc.tolerance()
+            && self.picks.iter().all(|p| match p {
+                Pick::Point(_) => true,
+                Pick::Curve { source, .. } => source.current(doc),
+            })
     }
     pub fn reset_sources(&mut self, tolerance: Tolerance) {
         self.tolerance = tolerance;
@@ -227,7 +239,7 @@ impl Input {
                 contact_points: vec![*a, circle.point_at_angle(std::f64::consts::PI)?],
             });
         }
-        let constraints = self
+        let mut constraints = self
             .picks
             .iter()
             .enumerate()
@@ -242,6 +254,16 @@ impl Input {
                 },
             })
             .collect::<Vec<_>>();
+        if let Some(parameter) = self.sphere_circle_line_contact()?
+            && let Constraint::Curve {
+                parameter: first,
+                fixed,
+                ..
+            } = &mut constraints[0]
+        {
+            *first = parameter;
+            *fixed = true;
+        }
         try_circle_tangent(&constraints, self.radius, self.plane, self.tolerance)?.ok_or_else(
             || {
                 GeometryError::Degenerate {
@@ -250,6 +272,59 @@ impl Input {
                 .into()
             },
         )
+    }
+    fn sphere_circle_line_contact(&self) -> Result<Option<f64>, GeometryError> {
+        use viboceros_geometry::CurveSegment3;
+        if !self.sphere || self.from_first || self.radius.is_some() {
+            return Ok(None);
+        }
+        let [
+            Pick::Curve { source: first, .. },
+            Pick::Curve { source: second, .. },
+        ] = self.picks.as_slice()
+        else {
+            return Ok(None);
+        };
+        let (circle, line) = match (
+            first.curve().analytic_form(self.tolerance)?,
+            second.curve().analytic_form(self.tolerance)?,
+        ) {
+            (Some(CurveSegment3::Arc(circle)), Some(CurveSegment3::Line(line)))
+                if first.curve().is_closed()? =>
+            {
+                (circle, line)
+            }
+            (Some(CurveSegment3::Line(line)), Some(CurveSegment3::Arc(circle)))
+                if second.curve().is_closed()? =>
+            {
+                (circle, line)
+            }
+            _ => return Ok(None),
+        };
+        let direction = line.start().vector_to(line.end())?;
+        let normal = circle.normal()?.as_vector();
+        if direction
+            .normalized_nonzero()?
+            .as_vector()
+            .dot(normal)?
+            .abs()
+            > self.tolerance.angular()
+        {
+            return Ok(None);
+        }
+        let foot = line.start().translated(direction.scaled(
+            line.start().vector_to(circle.center())?.dot(direction)? / direction.dot(direction)?,
+        )?)?;
+        let offset = circle.center().vector_to(foot)?;
+        if offset.dot(normal)?.abs() > self.tolerance.absolute()
+            || offset.length()? <= circle.radius() + self.tolerance.absolute()
+        {
+            return Ok(None);
+        }
+        first
+            .curve_ref()
+            .closest_parameter(foot, self.tolerance)
+            .map(Some)
     }
     pub fn argument(
         &mut self,

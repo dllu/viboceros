@@ -58,7 +58,8 @@ pub struct CircleDefinition {
     pub radius: Real,
 }
 impl CircleDefinition {
-    fn from_circle(circle: Circle3) -> Result<Self, GeometryError> {
+    /// Retain the circle's center, oriented axes and positive radius for a getter.
+    pub fn from_circle(circle: Circle3) -> Result<Self, GeometryError> {
         let radius = valid_radius(circle.radius())?;
         Ok(Self {
             frame: Frame3::try_from_directions(

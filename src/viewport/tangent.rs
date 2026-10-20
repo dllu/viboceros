@@ -1,11 +1,49 @@
-//! Read-only circle contact and final arc-choice previews.
+//! Read-only circle contacts, reference spheres and final arc-choice previews.
 use super::*;
 #[derive(Clone, Copy, Debug)]
 pub struct TangentPreview<'a> {
+    pub sphere: bool,
     pub contacts: &'a viboceros_command::circle_tangent_input::Input,
     pub output: Option<viboceros_command::circle_deform_input::Output>,
     pub arc_output: Option<viboceros_command::arc_deform_input::Output>,
     pub arc: Option<&'a viboceros_command::arc_tangent_input::Support>,
+}
+impl TangentPreview<'_> {
+    pub(crate) fn circle_curves(
+        self,
+        circle: viboceros_geometry::Circle3,
+    ) -> Result<Vec<viboceros_geometry::NurbsCurve>, viboceros_geometry::GeometryError> {
+        if self.sphere {
+            use viboceros_geometry::{Circle3, Tolerance};
+            let center = circle.center();
+            let radius = circle.radius();
+            let z = circle.normal()?;
+            return [
+                Ok(circle),
+                Circle3::try_from_frame(
+                    center,
+                    radius,
+                    circle.y_axis(),
+                    circle.x_axis(),
+                    Tolerance::NUMERICAL_VALIDATION,
+                ),
+                Circle3::try_from_frame(
+                    center,
+                    radius,
+                    z,
+                    circle.y_axis(),
+                    Tolerance::NUMERICAL_VALIDATION,
+                ),
+            ]
+            .into_iter()
+            .map(|c| c?.to_nurbs())
+            .collect();
+        }
+        Ok(vec![
+            self.output
+                .map_or_else(|| circle.to_nurbs(), |o| o.curve(circle))?,
+        ])
+    }
 }
 impl Viewport {
     pub(super) fn paint_tangent_preview(
@@ -18,7 +56,7 @@ impl Viewport {
         cursor: Option<Point3>,
     ) {
         let getter = input.contacts;
-        let curve = if let Some(support) = input.arc {
+        let curves = if let Some(support) = input.arc {
             self.paint_draft_points(painter, rect, &support.contact_points);
             cursor
                 .and_then(|p| support.choose(p, document.tolerance()).ok())
@@ -31,6 +69,8 @@ impl Viewport {
                         )
                         .ok()
                 })
+                .into_iter()
+                .collect::<Vec<_>>()
         } else {
             if let Some(anchor) = getter.anchor() {
                 self.paint_draft_points(painter, rect, &[anchor]);
@@ -69,14 +109,11 @@ impl Viewport {
             } else {
                 getter.preview_current()
             };
-            circle.and_then(|c| {
-                input
-                    .output
-                    .map_or_else(|| c.to_nurbs(), |o| o.curve(c))
-                    .ok()
-            })
+            circle
+                .and_then(|c| input.circle_curves(c).ok())
+                .unwrap_or_default()
         };
-        if let Some(curve) = curve {
+        for curve in curves {
             let mut projected = ProjectedPrimitives::default();
             self.add_projected_nurbs_curve(&mut projected, rect, &curve);
             for segment in projected.segments {

@@ -9,6 +9,9 @@ impl VibocerosApp {
         else {
             return false;
         };
+        if self.picking_splop_tangent() {
+            return self.try_continue_tangent(input);
+        }
         if !self.validate_splop_reference_curve() {
             self.command_input.clear();
             return true;

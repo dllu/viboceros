@@ -94,7 +94,7 @@ impl ReferenceInput {
     pub fn prompt(self) -> String {
         match self.state {
             State::Circle(c) if c.at_start() => {
-                "Center of reference sphere; 2Point, 3Point, 4Point, AroundCurve, FitPoints".into()
+                "Center of reference sphere; 2Point, 3Point, Tangent, 4Point, AroundCurve, FitPoints".into()
             }
             State::Circle(c) => c
                 .prompt()
@@ -132,7 +132,7 @@ impl ReferenceInput {
                 ) else {
                     return false;
                 };
-                let Ok(section) = definition(circle) else {
+                let Ok(section) = CircleDefinition::from_circle(circle) else {
                     return false;
                 };
                 self.state = State::FourRadius {
@@ -176,7 +176,10 @@ impl ReferenceInput {
     pub fn number(&mut self, value: Real) -> Result<Option<CircleDefinition>, GeometryError> {
         match &mut self.state {
             State::Circle(c) => c.number(value),
-            State::Around(input) => input.number(value).and_then(definition).map(Some),
+            State::Around(input) => input
+                .number(value)
+                .and_then(CircleDefinition::from_circle)
+                .map(Some),
             State::FourRadius { section, radius } => {
                 if !value.is_finite() || value < section.radius {
                     return Err(GeometryError::Degenerate {
@@ -195,7 +198,10 @@ impl ReferenceInput {
         let tol = Tolerance::NUMERICAL_VALIDATION;
         match &mut self.state {
             State::Circle(c) => c.point(point),
-            State::Around(input) => input.point(point).and_then(definition).map(Some),
+            State::Around(input) => input
+                .point(point)
+                .and_then(CircleDefinition::from_circle)
+                .map(Some),
             State::FourRadius { section, radius } => {
                 let delta = section.frame.origin().vector_to(point)?;
                 let radius = radius.map_or_else(|| delta.length(), Ok)?;
@@ -249,7 +255,7 @@ impl ReferenceInput {
                             Frame3::try_from_unit_normal(self.plane.origin(), self.plane.x_axis())?;
                         Circle3::try_from_diameter_on_plane(a, point, plane, tol)
                     })?;
-                Ok(Some(definition(circle)?))
+                Ok(Some(CircleDefinition::from_circle(circle)?))
             }
             State::Four(points) => {
                 if let Some(i) = points.iter().position(Option::is_none) {
@@ -275,7 +281,7 @@ impl ReferenceInput {
                 }
                 let [a, b, c] = points.map(Option::unwrap);
                 let circle = Circle3::try_from_three_points(a, b, c, tol)?;
-                let section = definition(circle)?;
+                let section = CircleDefinition::from_circle(circle)?;
                 if circle
                     .center()
                     .vector_to(point)?
@@ -304,15 +310,4 @@ impl ReferenceInput {
             }
         }
     }
-}
-fn definition(circle: Circle3) -> Result<CircleDefinition, GeometryError> {
-    Ok(CircleDefinition {
-        frame: Frame3::try_from_directions(
-            circle.center(),
-            circle.x_axis().as_vector(),
-            circle.y_axis().as_vector(),
-            Tolerance::NUMERICAL_VALIDATION,
-        )?,
-        radius: circle.radius(),
-    })
 }

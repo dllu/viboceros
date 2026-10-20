@@ -4,7 +4,7 @@ Select objects or visible control/edit grips and run `Splop`. Pick the reference
 sphere center, then enter its radius or pick a radius point. Enter accepts radius
 1. Reference spheres also accept `2Point`, `3Point` (including a radius
 constraint), `4Point` (including radius constraints), `Orientation`,
-`AroundCurve`, and `FitPoints`. After picking a center, use `Diameter`,
+`Tangent`, `AroundCurve`, and `FitPoints`. After picking a center, use `Diameter`,
 `Circumference`, or `Area` to enter size. Area measures the reference circle,
 so an area of `4*pi` gives radius 2. The construction plane supplies the default
 normal; a picked radius supplies the source X direction. Select a destination
@@ -17,6 +17,19 @@ the center pick onto it, and builds the reference circle perpendicular to its
 tangent. Both reuse the existing fit and circle-size getters and preserve the
 guide geometry. The original transform sources stay fixed while guides are
 picked. Unavailable curve guides return to curve selection.
+
+`Tangent` reuses the Circle/Arc contact picker. Pick two or three curve contacts
+or surface edges; choose `Point` before each free point. Enter accepts two
+contacts, a radius after the first contact constrains size, and `FromFirstPoint`
+fixes the first curve contact. With two curve contacts, `Radius` asks for a
+constrained radius. The resulting circle defines the reference sphere's frame
+and radius. Tangent preserves source selection, leaves guide geometry unselected,
+and adds no separate circle or sphere. Three great circles preview the sphere.
+A changed, hidden, locked or deleted contact resets the picker. For two
+unconstrained contacts on a complete circle and a disjoint coplanar line, Splop
+uses their minimum gap, with the first contact supplying the reference seam.
+`FromFirstPoint` keeps the picked first contact instead. Circle's separate
+two-contact rule remains unchanged.
 
 In `4Point`, `Radius` after the second point completes a constrained base circle.
 After the third point it constrains the sphere radius and asks which side of the
@@ -92,7 +105,7 @@ preview owner controls against accepted geometry in the three display modes.
 
 The [guided-reference and completion receipt](../splop-guided-validation.json)
 adds 317 fitting, curve-guided and radius-constrained workflows and 48 true
-Enter/Escape completion workflows. The current API and UI replay all 668 retained
+Enter/Escape completion workflows. Those captures account for 668 retained
 workflows. Guided cloud comparisons use the `1e-6` document tolerance; unchanged
 guides, grip bases and metadata use `1e-9` numeric comparisons. Noisy sphere fits
 can differ slightly between the independent solvers.
@@ -104,8 +117,20 @@ preselected objects and grips. The earlier receipts are retained as historical
 records. A separate input diagnostic retains the unsuccessful typed edge pick
 and trailing-Cancel investigation.
 
-Tangent remains in progress for the reference-sphere prompt. Native edge-input
-and viewport pixel comparisons, continuous deviation certificates and Splop
+The [tangent-reference receipt](../splop-tangent-validation.json) adds 100 native
+workflows, bringing the retained Splop corpus to 768 workflows. They cover free
+points, two/three curve contacts, radius and fixed-contact constraints, tilted
+construction planes, surface edges, rational arcs and general NURBS guides,
+plane/cylinder destinations, copy/rigid/flip and cancellation. API and UI replays
+use acknowledged native contact positions as inputs. Most cloud comparisons use
+the document's `1e-6` tolerance. Three rational-arc radius cases use `2e-5`:
+The observed difference is consistent with amplification of native reference-axis
+approximation through placement.
+A separate exact 3-4-5 tangent construction checks our center, radius and axes
+within `1e-9`. Guide controls and metadata compare within `1e-9`. All cases remain
+in the corpus, including the arc cases. The retained contact diagnostic compares
+Circle and Splop getters and preserves the three follow-up minimum-gap captures.
+Viewport pixel comparisons, continuous deviation certificates and Splop
 performance measurements remain unqualified.
 
 The retained dispatch diagnostic ran inside `RunPythonScript` and reported no
@@ -115,10 +140,11 @@ record. Every workflow with an accepted placement records `Undoing Splop` and
 `Redoing Splop`; cancellation before placement has no Undo entry.
 
 ```sh
-cargo test -p viboceros-command --test splop_command --test splop_grips --test splop_reference --test splop_guided --test splop_finish --config 'profile.test.package.viboceros-geometry.opt-level=2'
+cargo test -p viboceros-command --test splop_command --test splop_grips --test splop_reference --test splop_guided --test splop_finish --test splop_tangent --config 'profile.test.package.viboceros-geometry.opt-level=2'
 cargo test --bin viboceros splop --config 'profile.test.package.viboceros-geometry.opt-level=2'
-python3 -m unittest tools.rhino_oracle.test_splop tools.rhino_oracle.test_splop_extensions tools.rhino_oracle.test_splop_guided
+python3 -m unittest tools.rhino_oracle.test_splop tools.rhino_oracle.test_splop_extensions tools.rhino_oracle.test_splop_guided tools.rhino_oracle.test_splop_tangent
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_splop
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_splop_tangent
 ```
 
 [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/splop.htm)

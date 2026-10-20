@@ -82,7 +82,7 @@ pub fn tokens(value: &Value) -> Vec<&str> {
         .split_whitespace()
         .collect()
 }
-fn geometry(row: &Value) -> Geometry {
+fn geometry(row: &Value, tolerance: Tolerance) -> Geometry {
     let g = &row["geometry"];
     match g["kind"].as_str().unwrap() {
         "PointCloud" => Geometry::PointCloud(
@@ -113,11 +113,7 @@ fn geometry(row: &Value) -> Geometry {
         "NurbsCurve" => Geometry::NurbsCurve(morph::curve(&g["curve"])),
         "Mesh" => grips::geometry(&json!({"source":"mesh"}), g),
         "Brep" => Geometry::Brep(
-            Brep::try_surface_face(
-                morph::surface(&g["surface"]),
-                Tolerance::NUMERICAL_VALIDATION,
-            )
-            .unwrap(),
+            Brep::try_surface_face(morph::surface(&g["surface"]), tolerance).unwrap(),
         ),
         other => panic!("unknown {other}"),
     }
@@ -136,7 +132,7 @@ pub fn setup(value: &Value) -> (Document, Sources) {
     let mut source = None;
     let mut guides = Vec::new();
     for row in value["before"]["objects"].as_array().unwrap() {
-        let id = doc.add_geometry(geometry(row)).unwrap();
+        let id = doc.add_geometry(geometry(row, doc.tolerance())).unwrap();
         doc.set_object_names([(id, row["name"].as_str().map(String::from))])
             .unwrap();
         if row["role"] == "source" {
@@ -287,6 +283,7 @@ impl Sources {
             let geometry=match o.geometry() {
                 Geometry::PointCloud(cloud)=>json!({"kind":"PointCloud","points":cloud.points().iter().map(|p|p.to_array()).collect::<Vec<_>>()}),
                 Geometry::Point(p)=>json!({"kind":"Point","point":p.to_array()}),
+                Geometry::Brep(b)=>{let s=b.faces()[0].surface();json!({"kind":"Brep","surface":{"degree":[s.degree_u(),s.degree_v()],"control_count":[s.control_point_count_u(),s.control_point_count_v()],"control_points":controls(s.control_points()),"knots_u":s.knots_u(),"knots_v":s.knots_v(),"domain_u":[*s.domain_u().start(),*s.domain_u().end()],"domain_v":[*s.domain_v().start(),*s.domain_v().end()]}})},
                 Geometry::Mesh(m)=>json!({"kind":"Mesh","mesh":{"vertices":m.vertices().iter().map(|p|p.to_array()).collect::<Vec<_>>(),"faces":m.faces().iter().map(|f|f.indices().to_vec()).collect::<Vec<_>>()}}),
                 g=> {let c=g.nurbs_curve_representation().unwrap().unwrap();json!({"kind":if matches!(g,Geometry::Line(_)){"LineCurve"}else{"NurbsCurve"},"curve":{"degree":c.degree(),"control_points":controls(c.control_points()),"knots":c.knots(),"domain":[*c.domain().start(),*c.domain().end()]}})},
             };
@@ -296,6 +293,16 @@ impl Sources {
         json!({"objects":rows,"target_selected":doc.is_selected(self.target)})
     }
     pub fn check(&self, doc: &Document, value: &Value, phase: &str, label: &str) -> Real {
+        self.check_with_cloud_tolerance(doc, value, phase, label, doc.tolerance().absolute())
+    }
+    pub fn check_with_cloud_tolerance(
+        &self,
+        doc: &Document,
+        value: &Value,
+        phase: &str,
+        label: &str,
+        cloud_tolerance: Real,
+    ) -> Real {
         for (id, geometry) in self.guides.iter().zip(&self.guide_geometry) {
             assert_eq!(doc.object(*id).unwrap().geometry(), geometry);
         }
@@ -325,7 +332,7 @@ impl Sources {
                     maximum = maximum.max(morph::p(a).distance_to(morph::p(b)).unwrap());
                 }
                 assert!(
-                    maximum <= doc.tolerance().absolute(),
+                    maximum <= cloud_tolerance,
                     "{label} {phase}: cloud distance {maximum}"
                 );
                 a["geometry"]["points"] = json!([]);

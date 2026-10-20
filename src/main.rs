@@ -26,6 +26,10 @@ mod splop_guided_test_support;
 #[path = "../crates/viboceros-command/tests/support/splop_reference.rs"]
 mod splop_reference_test_support;
 #[cfg(test)]
+#[allow(dead_code)]
+#[path = "../crates/viboceros-command/tests/support/splop_tangent.rs"]
+mod splop_tangent_test_support;
+#[cfg(test)]
 #[path = "../crates/viboceros-oracle/src/test_json.rs"]
 mod test_json;
 mod viewport;

@@ -1,0 +1,8335 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "splop_tangent",
+      "id": "tangent_0",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_1",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_2",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_3",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_4",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_5",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_6",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_7",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_8",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_9",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_10",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_11",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_12",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_13",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_14",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_15",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_16",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_17",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_18",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_19",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_20",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_21",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_22",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_23",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_24",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Radius",
+        3
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_25",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Radius",
+        3
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_26",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Radius",
+        3
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_27",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_28",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_29",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_30",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        3,
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_31",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        3,
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_32",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        3,
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_33",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_34",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_35",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        "Point",
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_36",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_37",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_38",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_39",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            6,
+            0
+          ],
+          "end": [
+            12,
+            6,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            6,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_40",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            6,
+            0
+          ],
+          "end": [
+            12,
+            6,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            6,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_41",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            6,
+            0
+          ],
+          "end": [
+            12,
+            6,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            6,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_42",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            6,
+            0
+          ],
+          "end": [
+            12,
+            6,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            6,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_43",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            6,
+            0
+          ],
+          "end": [
+            12,
+            6,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            6,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_44",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            6,
+            0
+          ],
+          "end": [
+            12,
+            6,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            6,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_45",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_46",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_47",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_48",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.2,
+            1.6,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            1,
+            8,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_49",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.2,
+            1.6,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            1,
+            8,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_50",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.2,
+            1.6,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            1,
+            8,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_51",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.4142135623730951,
+            1.4142135623730951,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_52",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.4142135623730951,
+            1.4142135623730951,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_53",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.4142135623730951,
+            1.4142135623730951,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_54",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            12,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_55",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            12,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_56",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            12,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_57",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_58",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_59",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_60",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_61",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_62",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_63",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_64",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_65",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_66",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_67",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_68",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_69",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            14.2,
+            -14.399999999999999,
+            33
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_70",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            14.2,
+            -14.399999999999999,
+            33
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_71",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            14.2,
+            -14.399999999999999,
+            33
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_72",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_73",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_74",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_75",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Point",
+        [
+          -3,
+          0,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_76",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Point",
+        [
+          -3,
+          0,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_77",
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Point",
+        [
+          -3,
+          0,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_78",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Cancel"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_79",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Cancel"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "CancelReference"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_80",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            -4.0,
+            12.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        },
+        6.0,
+        {
+          "curve": 1,
+          "pick": [
+            -4.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_81",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            -4.0,
+            12.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        },
+        6.0,
+        {
+          "curve": 1,
+          "pick": [
+            -4.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_82",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            -4.0,
+            12.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        },
+        6.0,
+        {
+          "curve": 1,
+          "pick": [
+            -4.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_83",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            -4.0,
+            12.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 2,
+          "pick": [
+            3.0,
+            10.0,
+            0.0
+          ]
+        },
+        6.0,
+        {
+          "curve": 1,
+          "pick": [
+            -4.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_84",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            -4.0,
+            12.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 2,
+          "pick": [
+            3.0,
+            10.0,
+            0.0
+          ]
+        },
+        6.0,
+        {
+          "curve": 1,
+          "pick": [
+            -4.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_85",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                12.0,
+                10.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            -2.0,
+            0.0
+          ],
+          "end": [
+            -4.0,
+            12.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 2,
+          "pick": [
+            3.0,
+            10.0,
+            0.0
+          ]
+        },
+        6.0,
+        {
+          "curve": 1,
+          "pick": [
+            -4.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_86",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                8.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            10.0,
+            0.0
+          ],
+          "end": [
+            12.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            4.0,
+            2.0,
+            0.0
+          ]
+        },
+        3.0,
+        {
+          "curve": 1,
+          "pick": [
+            4.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_87",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                8.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            10.0,
+            0.0
+          ],
+          "end": [
+            12.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            4.0,
+            2.0,
+            0.0
+          ]
+        },
+        3.0,
+        {
+          "curve": 1,
+          "pick": [
+            4.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_88",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                8.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            10.0,
+            0.0
+          ],
+          "end": [
+            12.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            4.0,
+            2.0,
+            0.0
+          ]
+        },
+        3.0,
+        {
+          "curve": 1,
+          "pick": [
+            4.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_89",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                8.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            10.0,
+            0.0
+          ],
+          "end": [
+            12.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            4.0,
+            2.0,
+            0.0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            4.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_90",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                8.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            10.0,
+            0.0
+          ],
+          "end": [
+            12.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            4.0,
+            2.0,
+            0.0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            4.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_91",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                8.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            10.0,
+            0.0
+          ],
+          "end": [
+            12.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            4.0,
+            2.0,
+            0.0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            4.0,
+            10.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_92",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.121320343559643,
+              2.121320343559643,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            6.0,
+            0.0
+          ],
+          "end": [
+            10.0,
+            6.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            2.0,
+            2.0,
+            0.0
+          ]
+        },
+        2.0,
+        {
+          "curve": 1,
+          "pick": [
+            3.0,
+            6.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_93",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.121320343559643,
+              2.121320343559643,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            6.0,
+            0.0
+          ],
+          "end": [
+            10.0,
+            6.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            2.0,
+            2.0,
+            0.0
+          ]
+        },
+        2.0,
+        {
+          "curve": 1,
+          "pick": [
+            3.0,
+            6.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_94",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.121320343559643,
+              2.121320343559643,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.0,
+            6.0,
+            0.0
+          ],
+          "end": [
+            10.0,
+            6.0,
+            0.0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            2.0,
+            2.0,
+            0.0
+          ]
+        },
+        2.0,
+        {
+          "curve": 1,
+          "pick": [
+            3.0,
+            6.0,
+            0.0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_95",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "finish": "CancelCopies"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "tangent_96",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "surface": "Cylinder",
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "finish": "CancelCopies"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "gap_0",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.0,
+            8.0,
+            0.0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            1.2,
+            1.6,
+            0.0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "gap_1",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.2,
+            1.6,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            1,
+            8,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_tangent",
+      "id": "gap_2",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            -8.0,
+            0
+          ],
+          "end": [
+            14,
+            -8.0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.2,
+            -1.6,
+            0.0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            1.0,
+            -8.0,
+            0.0
+          ]
+        },
+        "Enter"
+      ],
+      "construction_plane": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "surface": "Plane",
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "finish": "Complete"
+    }
+  ]
+}

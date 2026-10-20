@@ -10751,6 +10751,7 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .filter(|_| model_input_active)
             .map(|s| crate::viewport::TangentPreview {
+                sphere: s.sphere(),
                 contacts: &s.input,
                 output: s.output,
                 arc: s.support.as_ref(),
@@ -11351,6 +11352,7 @@ mod tests {
     mod splop_grips;
     mod splop_guided;
     mod splop_reference;
+    mod splop_tangent;
     mod standalone_subcurve;
     mod stretch;
     mod subcurve_direction;
