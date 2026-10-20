@@ -15,8 +15,9 @@ impl VibocerosApp {
         }
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
             match s.phase {
-                Phase::Reference => {
-                    self.continue_splop_sphere_input("1");
+                Phase::Reference if s.sphere_input.is_some_and(|input| input.requests_size()) => {
+                    let size = s.sphere_input.unwrap().default_size().unwrap();
+                    self.continue_splop_sphere_input(&size.to_string());
                 }
                 Phase::Placement(PreviewPhase::Sphere(_, _)) => {
                     if let Some(point) = s.cursor {
@@ -98,6 +99,21 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
+        if matches!(s.phase, Phase::Base | Phase::Reference)
+            && self
+                .orient_surface_session
+                .as_mut()
+                .unwrap()
+                .sphere_input
+                .as_mut()
+                .unwrap()
+                .option(word)
+        {
+            self.orient_surface_prompt();
+            self.command_input.clear();
+            return true;
+        }
+        let s = self.orient_surface_session.as_ref().unwrap();
         let value = if let Ok(number) = input.parse::<f64>() {
             Some(number)
         } else if let Some(Ok(viboceros_drafting::PointConstraintInput::Distance(number))) =
@@ -112,19 +128,16 @@ impl VibocerosApp {
                 self.push_log("Error: sphere radius must be finite and positive".into());
             } else {
                 match s.phase {
-                    Phase::Reference => {
-                        let point = s
-                            .plane
-                            .x_axis()
-                            .as_vector()
-                            .scaled(radius)
-                            .and_then(|v| s.base.unwrap().translated(v));
-                        match point {
-                            Ok(p) => {
-                                self.accept_orient_surface_point(p);
-                            }
-                            Err(e) => self.push_log(format!("Error: {e}")),
-                        }
+                    Phase::Base | Phase::Reference => {
+                        let result = self
+                            .orient_surface_session
+                            .as_mut()
+                            .unwrap()
+                            .sphere_input
+                            .as_mut()
+                            .unwrap()
+                            .number(radius);
+                        self.accept_splop_reference_result(result);
                     }
                     Phase::Placement(PreviewPhase::Sphere(pose, _)) => {
                         let s = self.orient_surface_session.as_mut().unwrap();
@@ -140,5 +153,61 @@ impl VibocerosApp {
             return true;
         }
         false
+    }
+}
+
+impl VibocerosApp {
+    pub(super) fn accept_splop_reference_point(&mut self, point: Point3) -> bool {
+        let result = self
+            .orient_surface_session
+            .as_mut()
+            .unwrap()
+            .sphere_input
+            .as_mut()
+            .unwrap()
+            .point(point);
+        self.accept_splop_reference_result(result)
+    }
+    fn accept_splop_reference_result(
+        &mut self,
+        result: Result<
+            Option<viboceros_command::circle_input::CircleDefinition>,
+            viboceros_geometry::GeometryError,
+        >,
+    ) -> bool {
+        let definition = match result {
+            Ok(v) => v,
+            Err(e) => {
+                self.push_log(format!("Error: {e}"));
+                return false;
+            }
+        };
+        let s = self.orient_surface_session.as_mut().unwrap();
+        if let Some(definition) = definition {
+            let Ok(point) = definition
+                .frame
+                .x_axis()
+                .as_vector()
+                .scaled(definition.radius)
+                .and_then(|v| definition.frame.origin().translated(v))
+            else {
+                return false;
+            };
+            s.plane = definition.frame;
+            s.base = Some(definition.frame.origin());
+            s.reference = Some(point);
+            s.sphere_input = None;
+            s.phase = Phase::Guide;
+        } else {
+            let anchor = s.sphere_input.unwrap().anchor();
+            s.phase = if anchor.is_some() {
+                Phase::Reference
+            } else {
+                Phase::Base
+            };
+            self.active_command = Some(Kind::Splop.command(anchor));
+        }
+        self.orient_surface_prompt();
+        true
     }
 }

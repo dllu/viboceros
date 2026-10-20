@@ -87,7 +87,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [SoftEditSrf surface edits, periodic seams, constraints and previews](docs/commands/soft-edit-surface.md)
 - [Stretch along an axis with factors, lengths, targets, rigid groups and grip previews](docs/commands/stretch.md)
 - [Stretch fitting performance and native 3dm readback](docs/stretch-performance.md)
-- [Splop sphere-sized surface wrapping, rigid groups and live previews](docs/commands/splop.md)
+- [Splop surface wrapping, reference-sphere inputs, grips and live previews](docs/commands/splop.md)
 - [Control and edit-point workflows, HidePt and ShowPt](docs/control-points.md), including [curve closure and shared seam grips](docs/curve-closure.md)
 - [Delete selected control points, edit points, surface rows and mesh vertices](docs/commands/delete-grips.md)
 - [Control point weights with live previews and Undo/Redo](docs/commands/weight.md)

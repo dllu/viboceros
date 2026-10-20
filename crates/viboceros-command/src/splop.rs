@@ -1,5 +1,7 @@
 //! Sphere-sized placement through the shared plane-to-surface point morph.
 use super::*;
+mod reference;
+pub use reference::ReferenceInput;
 use viboceros_document::{ControlPointId, CopyGroupPolicy, ReplacementHistory};
 use viboceros_geometry::{PointMorph, SurfacePointMorph};
 
@@ -181,6 +183,13 @@ pub struct Morph {
     scale: Real,
 }
 impl PointMorph for Morph {
+    fn rebuild_grip_curve(
+        &self,
+        curve: viboceros_geometry::NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<viboceros_geometry::Curve3, GeometryError> {
+        curve.into_curve_with_derivative_breaks(tolerance)
+    }
     fn interpolation_solver(&self) -> Option<viboceros_geometry::MorphInterpolationSolver> {
         self.point_map.interpolation_solver()
     }
@@ -356,9 +365,6 @@ impl Command for SplopCommand {
                 options.copy,
                 CopyGroupPolicy::Preserve,
             )?;
-            if options.copy {
-                doc.morph_copy_grip_display(sources.grips.iter().copied(), &morph)?;
-            }
         } else if options.copy {
             doc.copy_object_geometries_with_groups(staged, CopyGroupPolicy::Preserve)?;
         } else {

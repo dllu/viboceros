@@ -9,7 +9,15 @@ mod sidebar;
 #[path = "../crates/viboceros-command/tests/support/splop.rs"]
 mod splop_test_support;
 #[cfg(test)]
-pub(crate) use deformation_test_support::morph as morph_fixtures;
+pub(crate) use deformation_test_support::{grips as grip_fixtures, morph as morph_fixtures};
+#[cfg(test)]
+#[allow(dead_code)]
+#[path = "../crates/viboceros-command/tests/support/splop_grips.rs"]
+mod splop_grips_test_support;
+#[cfg(test)]
+#[allow(dead_code)]
+#[path = "../crates/viboceros-command/tests/support/splop_reference.rs"]
+mod splop_reference_test_support;
 #[cfg(test)]
 #[path = "../crates/viboceros-oracle/src/test_json.rs"]
 mod test_json;

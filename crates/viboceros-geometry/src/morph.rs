@@ -501,6 +501,48 @@ impl PointMorph for SurfacePointMorph<'_> {
     }
 }
 
+impl NurbsCurve {
+    /// Expose one-sided derivative breaks as exact segments, retaining the
+    /// control net, parameter domains, and original seam after grip edits.
+    pub fn into_curve_with_derivative_breaks(
+        self,
+        tolerance: Tolerance,
+    ) -> Result<crate::Curve3, GeometryError> {
+        use crate::{Curve3, CurveSegment3, ParameterSide, PolyCurve3};
+        let curve = self;
+        let domain = curve.domain();
+        let mut parameters = vec![*domain.start()];
+        for (t, _) in curve.spans().skip(1) {
+            let (_, left) = curve.evaluate_with_derivative_on_side(t, ParameterSide::Left)?;
+            let (_, right) = curve.evaluate_with_derivative_on_side(t, ParameterSide::Right)?;
+            let error = crate::Vector3::try_from(std::array::from_fn(|i| {
+                left.to_array()[i] - right.to_array()[i]
+            }))?
+            .length()?;
+            let scale = left.length()?.max(right.length()?);
+            if error > (tolerance.absolute() / (domain.end() - domain.start())).max(1e-9 * scale) {
+                parameters.push(t);
+            }
+        }
+        if parameters.len() == 1 {
+            return Ok(Curve3::NurbsCurve(curve));
+        }
+        let mut segments = Vec::new();
+        let mut remainder = curve;
+        for &t in &parameters[1..] {
+            // Preserve the original seam even when the curve is closed.
+            let (left, right) = remainder.try_split(t)?;
+            segments.push(CurveSegment3::NurbsCurve(left));
+            remainder = right;
+        }
+        segments.push(CurveSegment3::NurbsCurve(remainder));
+        parameters.push(*domain.end());
+        Ok(Curve3::PolyCurve(PolyCurve3::try_with_segment_domains(
+            segments, parameters,
+        )?))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -37,6 +37,7 @@ impl Kind {
 pub(super) struct Session {
     kind: Kind,
     toggle: Option<&'static str>,
+    sphere_input: Option<viboceros_command::splop::ReferenceInput>,
     group: viboceros_document::HistoryGroup,
     sources: Vec<ObjectId>,
     grips: Vec<viboceros_document::ControlPointId>,
@@ -292,6 +293,7 @@ impl VibocerosApp {
         self.orient_surface_session = Some(Session {
             kind,
             toggle: None,
+            sphere_input: splop.then(|| viboceros_command::splop::ReferenceInput::new(plane)),
             group,
             sources,
             grips,
@@ -328,9 +330,8 @@ impl VibocerosApp {
         }
         let s = self.orient_surface_session.as_ref().unwrap();
         let prompt = match s.phase {
-            Phase::Base if s.kind == Kind::Splop => "pick the reference sphere center",
-            Phase::Reference if s.kind == Kind::Splop => {
-                "reference sphere radius <1> or direction point"
+            Phase::Base | Phase::Reference if s.kind == Kind::Splop => {
+                return self.push_log(format!("Splop: {}", s.sphere_input.unwrap().prompt()));
             }
             Phase::Base => "pick the source base point (OnSurface=Yes)",
             Phase::Reference => "pick the source reference point",
@@ -430,6 +431,11 @@ impl VibocerosApp {
         }
         if !self.validate_orient_surface() {
             return Some(false);
+        }
+        if self.orient_surface_session.as_ref().is_some_and(|s| {
+            s.kind == Kind::Splop && matches!(s.phase, Phase::Base | Phase::Reference)
+        }) {
+            return Some(self.accept_splop_reference_point(point));
         }
         let s = self.orient_surface_session.as_mut().unwrap();
         s.menu = None;

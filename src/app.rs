@@ -11334,6 +11334,8 @@ mod tests {
     mod spiral_rail;
     mod split_edge;
     mod splop;
+    mod splop_grips;
+    mod splop_reference;
     mod standalone_subcurve;
     mod stretch;
     mod subcurve_direction;

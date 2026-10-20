@@ -6392,6 +6392,12 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get('op') == 'splop_reference':
+        import splop_reference_probe
+        return splop_reference_probe.run(operation, globals(), iterations, tolerance)
+    if operation.get('op') == 'splop_grips':
+        import splop_grips_probe
+        return splop_grips_probe.run(operation, globals(), iterations, tolerance)
     if operation.get('op') == 'splop_command':
         import splop_probe
         return splop_probe.run(operation, globals(), iterations, tolerance)
@@ -17529,7 +17535,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op') in ('splop_command','stretch_grips','stretch_geometry_command','stretch_command','soft_edit_surface_closed_sequence','soft_edit_surface_seams','soft_edit_surface_sequence','soft_edit_surface_shapes','soft_edit_surface_command','soft_edit_curve_sequence','soft_edit_curve_command','empty_undo_selection','insert_edit_point_history','insert_edit_point_limits','insert_edit_point_command','grip_weight_nurbs','grip_weight_lifecycle','grip_weight','grip_delete_sequence','delete_grips','grip_visibility','select_uv_rows','grip_navigation','curve_insert_control_point_geometry','surface_insert_control_point_geometry','insert_control_point_command','remove_control_point_composite_parameters','remove_control_point_parameters','remove_control_point_command','remove_knot_smooth_periodic','remove_knot_command','insert_knot_command','insert_kink_subcurve', 'insert_kink_command','polyline_closure','mark_foci_command','reduce_polyline_command','reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('splop_reference','splop_grips','splop_command','stretch_grips','stretch_geometry_command','stretch_command','soft_edit_surface_closed_sequence','soft_edit_surface_seams','soft_edit_surface_sequence','soft_edit_surface_shapes','soft_edit_surface_command','soft_edit_curve_sequence','soft_edit_curve_command','empty_undo_selection','insert_edit_point_history','insert_edit_point_limits','insert_edit_point_command','grip_weight_nurbs','grip_weight_lifecycle','grip_weight','grip_delete_sequence','delete_grips','grip_visibility','select_uv_rows','grip_navigation','curve_insert_control_point_geometry','surface_insert_control_point_geometry','insert_control_point_command','remove_control_point_composite_parameters','remove_control_point_parameters','remove_control_point_command','remove_knot_smooth_periodic','remove_knot_command','insert_knot_command','insert_kink_subcurve', 'insert_kink_command','polyline_closure','mark_foci_command','reduce_polyline_command','reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

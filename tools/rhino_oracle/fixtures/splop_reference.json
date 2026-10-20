@@ -1,0 +1,137 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "splop_reference",
+      "id": "sphere_Radius",
+      "mode": "Radius",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_Diameter",
+      "mode": "Diameter",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_Circumference",
+      "mode": "Circumference",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_AreaCircle",
+      "mode": "AreaCircle",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_AreaSphere",
+      "mode": "AreaSphere",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_OrientationZ",
+      "mode": "OrientationZ",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_OrientationSpatial",
+      "mode": "OrientationSpatial",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_TwoX",
+      "mode": "TwoX",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_TwoY",
+      "mode": "TwoY",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_TwoZ",
+      "mode": "TwoZ",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_TwoSpatial",
+      "mode": "TwoSpatial",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_ThreeXY",
+      "mode": "ThreeXY",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_ThreeYZ",
+      "mode": "ThreeYZ",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_ThreeRadius",
+      "mode": "ThreeRadius",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_FourAbove",
+      "mode": "FourAbove",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_FourBelow",
+      "mode": "FourBelow",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_FourSection",
+      "mode": "FourSection",
+      "plane": "WorldXY"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_Radius_ZX",
+      "mode": "Radius",
+      "plane": "WorldZX"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_TwoY_ZX",
+      "mode": "TwoY",
+      "plane": "WorldZX"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_ThreeXY_ZX",
+      "mode": "ThreeXY",
+      "plane": "WorldZX"
+    },
+    {
+      "op": "splop_reference",
+      "id": "sphere_FourSection_ZX",
+      "mode": "FourSection",
+      "plane": "WorldZX"
+    }
+  ]
+}

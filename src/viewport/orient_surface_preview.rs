@@ -4,7 +4,33 @@ use super::morph_preview::{MorphPreviewCache, MorphPreviewImage, MorphPreviewKey
 use super::*;
 use std::{cell::RefCell, rc::Rc, sync::Arc};
 use viboceros_command::orient_surface::{Options, Placement, Pose, PreviewPhase};
-use viboceros_geometry::{AffineTransform3, GeometryError, SurfacePointMorph};
+use viboceros_geometry::{
+    AffineTransform3, Curve3, GeometryError, MorphInterpolationSolver, NurbsCurve, PointMorph,
+    SurfacePointMorph,
+};
+pub(crate) struct PreviewMorph {
+    map: SurfacePointMorph<'static>,
+    sphere: bool,
+}
+impl PointMorph for PreviewMorph {
+    fn interpolation_solver(&self) -> Option<MorphInterpolationSolver> {
+        self.map.interpolation_solver()
+    }
+    fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
+        self.map.morph_point(point)
+    }
+    fn rebuild_grip_curve(
+        &self,
+        curve: NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<Curve3, GeometryError> {
+        if self.sphere {
+            curve.into_curve_with_derivative_breaks(tolerance)
+        } else {
+            self.map.rebuild_grip_curve(curve, tolerance)
+        }
+    }
+}
 #[derive(Clone)]
 pub(crate) struct Key {
     placement: Placement,
@@ -26,7 +52,7 @@ impl PartialEq for Key {
     }
 }
 impl MorphPreviewKey for Key {
-    type Morph = SurfacePointMorph<'static>;
+    type Morph = PreviewMorph;
     fn morph(&self, _: Tolerance) -> Result<Self::Morph, GeometryError> {
         let morph = self
             .placement
@@ -34,7 +60,7 @@ impl MorphPreviewKey for Key {
             .map_err(|_| GeometryError::Degenerate {
                 context: "surface orientation preview",
             })?;
-        if self.sphere {
+        let map = if self.sphere {
             morph.with_normal_height_scale(if self.options.flip {
                 1.
             } else {
@@ -42,7 +68,11 @@ impl MorphPreviewKey for Key {
             })
         } else {
             Ok(morph)
-        }
+        }?;
+        Ok(PreviewMorph {
+            map,
+            sphere: self.sphere,
+        })
     }
     fn rigid(&self) -> bool {
         self.sphere && self.options.rigid
@@ -57,7 +87,7 @@ impl MorphPreviewKey for Key {
     ) -> Result<AffineTransform3, GeometryError> {
         if self.sphere {
             return AffineTransform3::try_uniform_scale(center, self.options.scale)?
-                .then(morph.rigid_transform(center)?);
+                .then(morph.map.rigid_transform(center)?);
         }
         self.placement
             .transform_at_pose(self.pose, self.options)
@@ -663,6 +693,107 @@ mod sphere_tests {
                 doc.tolerance(),
                 Tolerance::try_new(1e-6, 1e-12, 1e-9).unwrap()
             );
+        }
+    }
+    #[test]
+    fn splop_grip_previews_match_accepted_owner_nets_in_all_display_modes() {
+        use crate::splop_grips_test_support as support;
+        for (op, value) in support::rows() {
+            let (doc, sources) = support::setup(&op, &value);
+            let target =
+                viboceros_command::orient_surface::Target::capture(&doc, sources.guide, None)
+                    .unwrap();
+            let options = Options {
+                copy: op["copy"] == true,
+                rigid: op["rigid"] == true,
+                flip: op["flip"] == true,
+                scale_prompt: true,
+                ..Options::default()
+            };
+            let placement = Placement::try_new(
+                Point3::try_from([0.; 3]).unwrap(),
+                Point3::try_from([2., 0., 0.]).unwrap(),
+                target,
+                options,
+                crate::splop_test_support::frame("WorldXY"),
+                doc.tolerance(),
+            )
+            .unwrap();
+            let normal = Vector3::try_from([0., 0., 1.]).unwrap();
+            let cache = RefCell::new(OrientSurfacePreviewCache::default());
+            let display = RefCell::new(DisplayCache::default());
+            let preview = OrientSurfacePreview {
+                sphere: true,
+                sources: &sources.ids,
+                grips: &sources.grips,
+                placement: &placement,
+                phase: PreviewPhase::Sphere(placement.locate(sources.target).unwrap(), None),
+                normal,
+                last_normal: normal,
+                last_point: None,
+                cache: &cache,
+            };
+            let cursor = sources.direction(4., 0.);
+            let before = sources.snapshot(&doc);
+            let image = preview.resolve(Some(cursor), &doc, &display).0.unwrap();
+            assert!(Rc::ptr_eq(
+                &image,
+                &preview.resolve(Some(cursor), &doc, &display).0.unwrap()
+            ));
+            let mut accepted = doc.clone();
+            viboceros_command::CommandRegistry::with_builtins()
+                .execute(
+                    &mut accepted,
+                    &format!(
+                        "Splop 0,0,0 2 {} 4 Surface={} {} Finish=No {}",
+                        support::token(sources.target),
+                        sources.guide,
+                        support::Sources::options(&op).arguments(),
+                        sources.arguments()
+                    ),
+                )
+                .unwrap();
+            let expected = if options.copy {
+                accepted
+                    .objects()
+                    .find(|o| {
+                        o.id() != sources.owner
+                            && o.id() != sources.guide
+                            && Some(o.id()) != sources.peer
+                            && accepted.grip_mode(o.id()).is_some()
+                    })
+                    .unwrap()
+                    .geometry()
+            } else {
+                accepted.object(sources.owner).unwrap().geometry()
+            };
+            for mode in [
+                DisplayMode::Wireframe,
+                DisplayMode::Shaded,
+                DisplayMode::Ghosted,
+            ] {
+                let object = &image.objects_for_mode(mode)[&sources.owner];
+                assert!(object.transform.is_none());
+                let actual = &*object.geometry.geometry;
+                assert_eq!(
+                    std::mem::discriminant(actual),
+                    std::mem::discriminant(expected),
+                    "{}",
+                    op["id"]
+                );
+                let a = actual.extract_point_locations().unwrap();
+                let b = expected.extract_point_locations().unwrap();
+                assert_eq!(a.len(), b.len());
+                for (a, b) in a.into_iter().zip(b) {
+                    assert!(a.distance_to(b).unwrap() < 1e-9, "{}", op["id"]);
+                }
+            }
+            for grip in &sources.grips {
+                let expected = expected.grip_locations(sources.mode(&doc)).unwrap()[grip.index];
+                assert!(image.grips[grip].distance_to(expected).unwrap() < 1e-9);
+            }
+            assert_eq!(sources.snapshot(&doc), before);
+            assert!(doc.undo_label().is_none());
         }
     }
 }

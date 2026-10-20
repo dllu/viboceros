@@ -1,0 +1,2087 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_0",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_1",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_2",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_3",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_4",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_5",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_6",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_7",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_8",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_9",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_10",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_11",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_12",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_13",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_14",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_15",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_16",
+      "source": "line",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_17",
+      "source": "line",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_18",
+      "source": "line",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_19",
+      "source": "line",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_20",
+      "source": "polyline",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_21",
+      "source": "polyline",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_22",
+      "source": "polyline",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_23",
+      "source": "polyline",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_24",
+      "source": "circle",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_25",
+      "source": "circle",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_26",
+      "source": "circle",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_27",
+      "source": "circle",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_28",
+      "source": "arc",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_29",
+      "source": "arc",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_30",
+      "source": "arc",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_31",
+      "source": "arc",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_32",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_33",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_34",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_35",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_36",
+      "source": "surface_closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_37",
+      "source": "surface_closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_38",
+      "source": "surface_closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_39",
+      "source": "surface_closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_40",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_41",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_42",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_43",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Plane"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_44",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_45",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_46",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_47",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_48",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_49",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_50",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_51",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_52",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_53",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_54",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_55",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_56",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_57",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_58",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_59",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "surface": "Plane",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_60",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "parent": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_61",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "parent": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_62",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "parent": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_63",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "parent": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_64",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_65",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_66",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Plane",
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_67",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_68",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "grouped": true,
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_69",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": false,
+      "surface": "Plane",
+      "grouped": true,
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_70",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_71",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_72",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_73",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_74",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_75",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_76",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_77",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_78",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_79",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_80",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_81",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_82",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_83",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_84",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_85",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_86",
+      "source": "line",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_87",
+      "source": "line",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_88",
+      "source": "line",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_89",
+      "source": "line",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_90",
+      "source": "polyline",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_91",
+      "source": "polyline",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_92",
+      "source": "polyline",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_93",
+      "source": "polyline",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_94",
+      "source": "circle",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_95",
+      "source": "circle",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_96",
+      "source": "circle",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_97",
+      "source": "circle",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_98",
+      "source": "arc",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_99",
+      "source": "arc",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_100",
+      "source": "arc",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_101",
+      "source": "arc",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_102",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_103",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_104",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_105",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_106",
+      "source": "surface_closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_107",
+      "source": "surface_closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_108",
+      "source": "surface_closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_109",
+      "source": "surface_closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_110",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_111",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_112",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_113",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": true,
+      "surface": "Cylinder"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_114",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_115",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_116",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_117",
+      "source": "curve",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_118",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_119",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_120",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_121",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_122",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_123",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_124",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_125",
+      "source": "closed",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_126",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_127",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_128",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_129",
+      "source": "periodic",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": true,
+      "surface": "Cylinder",
+      "edit": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_130",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "parent": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_131",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "parent": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_132",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "parent": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_133",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "parent": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_134",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_135",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_136",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_137",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_138",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": false,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "grouped": true,
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_139",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": true,
+      "flip": false,
+      "surface": "Cylinder",
+      "grouped": true,
+      "point": true
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_140",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": false,
+      "targets": [
+        [
+          1.0,
+          90.0
+        ],
+        [
+          3.0,
+          -45.0
+        ]
+      ],
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_141",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": false,
+      "targets": [
+        [
+          1.0,
+          90.0
+        ],
+        [
+          3.0,
+          -45.0
+        ]
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_142",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": false,
+      "targets": [
+        [
+          1.0,
+          90.0
+        ],
+        [
+          3.0,
+          -45.0
+        ]
+      ],
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_143",
+      "source": "surface",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": false,
+      "targets": [
+        [
+          1.0,
+          90.0
+        ],
+        [
+          3.0,
+          -45.0
+        ]
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_144",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": false,
+      "targets": [
+        [
+          1.0,
+          90.0
+        ],
+        [
+          3.0,
+          -45.0
+        ]
+      ],
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_145",
+      "source": "mesh",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": false,
+      "targets": [
+        [
+          1.0,
+          90.0
+        ],
+        [
+          3.0,
+          -45.0
+        ]
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_146",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true,
+      "targets": [
+        [
+          1.0,
+          90.0
+        ],
+        [
+          3.0,
+          -45.0
+        ]
+      ],
+      "finish": "Complete"
+    },
+    {
+      "op": "splop_grips",
+      "id": "splop_grips_147",
+      "source": "rational",
+      "selected": [
+        0,
+        1
+      ],
+      "copy": true,
+      "rigid": false,
+      "flip": false,
+      "surface": "Cylinder",
+      "edit": true,
+      "targets": [
+        [
+          1.0,
+          90.0
+        ],
+        [
+          3.0,
+          -45.0
+        ]
+      ],
+      "finish": "Cancel"
+    }
+  ]
+}
