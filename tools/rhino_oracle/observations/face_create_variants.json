@@ -1,0 +1,3077 @@
+{
+  "protocol_version": 1,
+  "results": [
+    {
+      "id": "flat_zero",
+      "elapsed_ns": 0,
+      "value": {
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  PolygonType=Ngon  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  PolygonType=Ngon  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _WeldAngle=0.0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace ): w4,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace  Undo ): w7,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace  Undo ): w7,3,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace  Undo ): w4,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "redo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 797533884,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 6
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "name": "Input",
+                "layer": "3DFace source",
+                "crc": 797533884,
+                "selected": true,
+                "ngons": [],
+                "mesh": {
+                  "faces": [
+                    [
+                      3,
+                      0,
+                      1,
+                      4
+                    ],
+                    [
+                      2,
+                      3,
+                      4,
+                      5
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "normal_count": 6
+              }
+            ],
+            "name": "3DFace",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Enter",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          }
+        ],
+        "before": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 797533884,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 6
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 797533884,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 6
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "append": true,
+          "weld_angle": 0.0
+        }
+      }
+    },
+    {
+      "id": "fold_44",
+      "elapsed_ns": 0,
+      "value": {
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=0  Mode=SingleFace ): _WeldAngle=44.0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace ): w4,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace  Undo ): w7,0,3\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace  Undo ): w7,3,3\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace  Undo ): w4,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "redo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 1672100568,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "name": "Input",
+                "layer": "3DFace source",
+                "crc": 1672100568,
+                "selected": true,
+                "ngons": [],
+                "mesh": {
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ],
+                    [
+                      4,
+                      5,
+                      6,
+                      7
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      0.0,
+                      3.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      3.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "normal_count": 8
+              }
+            ],
+            "name": "3DFace",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Enter",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          }
+        ],
+        "before": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 1672100568,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 1672100568,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0,
+              3.0
+            ],
+            [
+              7.0,
+              3.0,
+              3.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "append": true,
+          "weld_angle": 44.0
+        }
+      }
+    },
+    {
+      "id": "fold_45",
+      "elapsed_ns": 0,
+      "value": {
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=44  Mode=SingleFace ): _WeldAngle=45.0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace ): w4,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace  Undo ): w7,0,3\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace  Undo ): w7,3,3\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace  Undo ): w4,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "redo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 1672100568,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "name": "Input",
+                "layer": "3DFace source",
+                "crc": 1672100568,
+                "selected": true,
+                "ngons": [],
+                "mesh": {
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ],
+                    [
+                      4,
+                      5,
+                      6,
+                      7
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      0.0,
+                      3.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      3.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "normal_count": 8
+              }
+            ],
+            "name": "3DFace",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Enter",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          }
+        ],
+        "before": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 1672100568,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 1672100568,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0,
+              3.0
+            ],
+            [
+              7.0,
+              3.0,
+              3.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "append": true,
+          "weld_angle": 45.0
+        }
+      }
+    },
+    {
+      "id": "fold_46",
+      "elapsed_ns": 0,
+      "value": {
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=45  Mode=SingleFace ): _WeldAngle=46.0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace ): w4,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace  Undo ): w7,0,3\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace  Undo ): w7,3,3\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace  Undo ): w4,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "redo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2075668600,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 6
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "name": "Input",
+                "layer": "3DFace source",
+                "crc": 2075668600,
+                "selected": true,
+                "ngons": [],
+                "mesh": {
+                  "faces": [
+                    [
+                      3,
+                      0,
+                      1,
+                      4
+                    ],
+                    [
+                      2,
+                      3,
+                      4,
+                      5
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      7.0,
+                      0.0,
+                      3.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      3.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "normal_count": 6
+              }
+            ],
+            "name": "3DFace",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Enter",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          }
+        ],
+        "before": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2075668600,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 6
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2075668600,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 6
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0,
+              3.0
+            ],
+            [
+              7.0,
+              3.0,
+              3.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "append": true,
+          "weld_angle": 46.0
+        }
+      }
+    },
+    {
+      "id": "near_seam",
+      "elapsed_ns": 0,
+      "value": {
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=46  Mode=SingleFace ): _WeldAngle=180.0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): w4.0000002,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w7,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w7,3,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w4.0000002,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "redo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 329486640,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0000002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0000002,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "name": "Input",
+                "layer": "3DFace source",
+                "crc": 329486640,
+                "selected": true,
+                "ngons": [],
+                "mesh": {
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ],
+                    [
+                      4,
+                      5,
+                      6,
+                      7
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      4.0000002,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      4.0000002,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "normal_count": 8
+              }
+            ],
+            "name": "3DFace",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Enter",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          }
+        ],
+        "before": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 329486640,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0000002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0000002,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 329486640,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0000002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0000002,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              4.0000002,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0000002,
+              3.0,
+              0.0
+            ]
+          ],
+          "append": true
+        }
+      }
+    },
+    {
+      "id": "far_seam",
+      "elapsed_ns": 0,
+      "value": {
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _WeldAngle=180.0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): w4.00002,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w7,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w7,3,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w4.00002,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "redo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2667182478,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.00002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.00002,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "name": "Input",
+                "layer": "3DFace source",
+                "crc": 2667182478,
+                "selected": true,
+                "ngons": [],
+                "mesh": {
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ],
+                    [
+                      4,
+                      5,
+                      6,
+                      7
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      4.00002,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      4.00002,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "normal_count": 8
+              }
+            ],
+            "name": "3DFace",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Enter",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          }
+        ],
+        "before": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2647301299,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 4
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2667182478,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.00002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.00002,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2667182478,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.00002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.00002,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              4.00002,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.00002,
+              3.0,
+              0.0
+            ]
+          ],
+          "append": true
+        }
+      }
+    },
+    {
+      "id": "old_unwelded",
+      "elapsed_ns": 0,
+      "value": {
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _WeldAngle=180.0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): w4,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w7,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w7,3,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w4,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2633038089,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "redo": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 703197799,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  7,
+                  0,
+                  1,
+                  8
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  6,
+                  7,
+                  8,
+                  9
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 10
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "name": "Input",
+                "layer": "3DFace source",
+                "crc": 703197799,
+                "selected": true,
+                "ngons": [],
+                "mesh": {
+                  "faces": [
+                    [
+                      7,
+                      0,
+                      1,
+                      8
+                    ],
+                    [
+                      2,
+                      3,
+                      4,
+                      5
+                    ],
+                    [
+                      6,
+                      7,
+                      8,
+                      9
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "normal_count": 10
+              }
+            ],
+            "name": "3DFace",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Enter",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          }
+        ],
+        "before": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 2633038089,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 8
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 703197799,
+            "selected": true,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  7,
+                  0,
+                  1,
+                  8
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  6,
+                  7,
+                  8,
+                  9
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 10
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "name": "Input",
+            "layer": "3DFace source",
+            "crc": 703197799,
+            "selected": false,
+            "ngons": [],
+            "mesh": {
+              "faces": [
+                [
+                  7,
+                  0,
+                  1,
+                  8
+                ],
+                [
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  6,
+                  7,
+                  8,
+                  9
+                ]
+              ],
+              "vertices": [
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "normal_count": 10
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "source_vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "append": true,
+          "source_faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6,
+              7
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "provenance": {
+    "request_sha256": "416766d0f73ecabbbaca1ab26e558502810653ec9e04d8214e454a10a868a804",
+    "sources": {
+      "generate_face_create.py": "b02355866ca7845465fa64b67d028d716cfff8660146e1cbe104249e1053fd88",
+      "face_create_probe.py": "6f443c60f69ae3af4ce9f519bd63b9947e1171ba6a11f1ad37340078665d1c86",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "cbed7f77605a7b80c4381de94207dbb9e672aabdac0b0b7531afdb1fda5bf101",
+      "rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
+      "structural_sdk.py": "42d9cf1508bba340f9535570f680226c2142014d26d74d6f4bb65db735b12727"
+    }
+  }
+}

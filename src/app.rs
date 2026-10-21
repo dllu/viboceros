@@ -180,6 +180,7 @@ mod extrude_surface_apex;
 mod extrude_surface_path;
 mod extrude_surface_tapered;
 mod extrude_tapered;
+mod face_create;
 mod fillet_surface;
 mod flow;
 mod grid_settings;
@@ -355,6 +356,9 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
+    FaceCreate {
+        anchor: Option<Point3>,
+    },
     RemapCPlane,
     PolylineOnMesh {
         anchor: Option<Point3>,
@@ -876,6 +880,7 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
+            Self::FaceCreate { .. } => "3DFace",
             Self::RemapCPlane => "RemapCPlane",
             Self::PolylineOnMesh { .. } => "PolylineOnMesh",
             Self::InterpolateCurveOnSurface { .. } => "InterpCrvOnSrf",
@@ -1033,6 +1038,9 @@ impl InteractiveCommand {
             }
             Self::OrientCurveToEdge => {
                 "OrientCrvToEdge: select a curve near an end, then a surface edge"
+            }
+            Self::FaceCreate { .. } => {
+                "3DFace: pick corners (Enter accepts, Undo removes a pick, Esc cancels)"
             }
             Self::PolylineOnMesh { .. } => {
                 "PolylineOnMesh: select a mesh, then polyline points (Close Undo)"
@@ -1918,7 +1926,8 @@ impl InteractiveCommand {
             | Self::CurveArray { base }
             | Self::ShortPath { start: base }
             | Self::InterpolateCurveOnSurface { anchor: base }
-            | Self::PolylineOnMesh { anchor: base } => base,
+            | Self::PolylineOnMesh { anchor: base }
+            | Self::FaceCreate { anchor: base } => base,
             Self::RemapCPlane => None,
             Self::ProjectDirection { start }
             | Self::SurfaceFlow { start }
@@ -2464,6 +2473,7 @@ pub struct VibocerosApp {
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
     mesh_polyline_session: Option<polyline_on_mesh::Session>,
+    face_create_session: Option<face_create::Session>,
     surface_interpolation_session: Option<surface_interpolation::Session>,
     surface_interpolation_defaults: viboceros_command::surface_interpolation::Options,
     surface_offset_defaults: viboceros_command::surface_curve_offset::Options,
@@ -2612,6 +2622,7 @@ impl VibocerosApp {
             surface_offset_session: None,
             short_path_session: None,
             mesh_polyline_session: None,
+            face_create_session: None,
             surface_interpolation_session: None,
             surface_interpolation_defaults: Default::default(),
             surface_offset_defaults: Default::default(),
@@ -2872,6 +2883,7 @@ impl VibocerosApp {
         if self.try_continue_orient_surface(&input)
             || self.try_continue_remap_cplane(&input)
             || self.try_continue_orient_points(&input)
+            || self.continue_face_create(&input)
             || self.continue_mesh_polyline(&input)
             || self.continue_surface_interpolation(&input)
             || self.continue_short_path(&input)
@@ -3631,6 +3643,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_array_curve_surface(input, picked_sources.as_deref()) {
+            return true;
+        }
+        if self.start_face_create(input) {
             return true;
         }
         if self.start_mesh_polyline(input) {
@@ -6042,6 +6057,7 @@ impl VibocerosApp {
         self.cancel_curve_array();
         let transform_applied = self.finish_orient_surface_session()
             | self.finish_orient_points_session()
+            | self.finish_face_create()
             | self.finish_mesh_polyline()
             | self.finish_surface_interpolation()
             | self.finish_short_path()
@@ -6214,6 +6230,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_array_curve_surface_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_face_create_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_mesh_polyline_point(point) {
             return accepted;
         }
@@ -6265,6 +6284,7 @@ impl VibocerosApp {
             | InteractiveCommand::OrientCurveToEdge
             | InteractiveCommand::OffsetCurveOnSurface
             | InteractiveCommand::ShortPath { .. }
+            | InteractiveCommand::FaceCreate { .. }
             | InteractiveCommand::PolylineOnMesh { .. }
             | InteractiveCommand::InterpolateCurveOnSurface { .. }
             | InteractiveCommand::OrientOnCurve
@@ -9699,6 +9719,7 @@ impl VibocerosApp {
             if let Some(s) = &mut self.spiral_session {
                 s.cursor = Some(point);
             }
+            self.update_face_create_hover(point);
             self.update_mesh_polyline_hover(point);
             self.update_surface_interpolation_hover(point);
             self.update_short_path_hover(point);
@@ -9833,6 +9854,9 @@ impl VibocerosApp {
         } else if let Some(window) = output.component_window {
             self.accept_component_window(window);
         } else if let Some(picks) = output.edge_click {
+            if self.pick_face_edge_click(&picks) {
+                return true;
+            }
             if self.picking_subcurve_edge()
                 || (self.picking_orient_curve()
                     || self.picking_orient_edge()
@@ -10043,6 +10067,9 @@ impl VibocerosApp {
 
 impl VibocerosApp {
     fn cancel_current_prompt_or_selection(&mut self) {
+        if self.cancel_face_corner() {
+            return;
+        }
         if self.discard_surface_offset_subcurve() {
             return;
         }
@@ -10286,6 +10313,8 @@ impl eframe::App for VibocerosApp {
                     || self.drawing_flow_line()
                     || self.drawing_flow_axis()
                     || self.drawing_flow_radius())
+                && !self.picking_face_append()
+                && !self.picking_face_edge()
                 && !self.picking_mesh_polyline()
                 && !self.picking_surface_interpolation_face()
                 && !self.picking_short_path_face()
@@ -10374,7 +10403,7 @@ impl eframe::App for VibocerosApp {
         } else {
             self.zoom_target
         };
-        let object_filter = if self.picking_mesh_polyline() {
+        let object_filter = if self.picking_mesh_polyline() || self.picking_face_append() {
             Some(viboceros_command::ObjectSelectionFilter::Mesh)
         } else if end_analysis_picking || self.surface_path_prompt.is_some() {
             Some(viboceros_command::ObjectSelectionFilter::Curves)
@@ -10598,6 +10627,7 @@ impl eframe::App for VibocerosApp {
                 .blend_surface_prompt
                 .as_ref()
                 .is_some_and(blend_surface::Prompt::selecting)
+            || self.picking_face_edge()
             || self.picking_subcurve_edge()
             || (self.picking_orient_curve()
                 || self.picking_orient_edge()
@@ -11273,23 +11303,28 @@ impl eframe::App for VibocerosApp {
                                     .map(|p| &p.geometry.curve)
                             }),
                             preview_curves: self
-                                .surface_offset_session
+                                .face_create_session
                                 .as_ref()
-                                .map(surface_curve_offset::Session::preview_curves)
+                                .map(face_create::Session::preview_curves)
                                 .or_else(|| {
-                                    self.short_path_session
+                                    self.surface_offset_session
                                         .as_ref()
-                                        .map(short_path::Session::preview_curves)
-                                })
-                                .or_else(|| {
-                                    self.surface_interpolation_session
-                                        .as_ref()
-                                        .map(surface_interpolation::Session::preview_curves)
-                                })
-                                .or_else(|| {
-                                    self.mesh_polyline_session
-                                        .as_ref()
-                                        .map(polyline_on_mesh::Session::preview_curves)
+                                        .map(surface_curve_offset::Session::preview_curves)
+                                        .or_else(|| {
+                                            self.short_path_session
+                                                .as_ref()
+                                                .map(short_path::Session::preview_curves)
+                                        })
+                                        .or_else(|| {
+                                            self.surface_interpolation_session
+                                                .as_ref()
+                                                .map(surface_interpolation::Session::preview_curves)
+                                        })
+                                        .or_else(|| {
+                                            self.mesh_polyline_session
+                                                .as_ref()
+                                                .map(polyline_on_mesh::Session::preview_curves)
+                                        })
                                 })
                                 .unwrap_or_default(),
                             preview_points: orient_markers
@@ -11679,6 +11714,7 @@ mod tests {
     mod points;
     mod polyline_closure;
     mod polyline_on_mesh;
+
     mod project;
     mod radius;
     mod rail_revolve;
@@ -11840,6 +11876,7 @@ mod tests {
             surface_offset_session: None,
             short_path_session: None,
             mesh_polyline_session: None,
+            face_create_session: None,
             surface_interpolation_session: None,
             surface_interpolation_defaults: Default::default(),
             surface_offset_defaults: Default::default(),

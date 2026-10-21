@@ -223,7 +223,7 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         validate_structural_sdk_operations(request)
-        if any(op.get('op')in ('mesh_patch_command','mesh_from_lines_command','mesh_polyline_command','planar_mesh_command')for op in request.get('operations',[])):
+        if any(op.get('op')in ('mesh_patch_command','mesh_from_lines_command','mesh_polyline_command','planar_mesh_command','face_create_command')for op in request.get('operations',[])):
             if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1:
                 raise OracleProtocolError('Owned mesh commands require a private scheme and one iteration')
             if len(request['operations'])>32 or len({op['id']for op in request['operations']})!=len(request['operations']):
@@ -476,6 +476,12 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='face_create_command' and op.get('case') in ('edge_single','cancel_partial','append_cancel_partial','multiple_cancel_partial','append_after_face_cancel_partial') for op in request.get('operations', [])):
+            from .face_create_probe import control_request
+            from .group_picking import IdlePicker
+            if request != control_request():
+                raise OracleProtocolError('3DFace physical inputs require the exact dedicated control sequence')
+            interaction = IdlePicker()
         if any(op.get('op')=='reparameterize_block_command' for op in request.get('operations',[])):
             from .reparameterize_block_probe import validate
             from .reparameterize_block_picker import BlockReferencePicker

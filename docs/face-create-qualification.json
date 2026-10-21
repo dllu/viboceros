@@ -1,0 +1,1336 @@
+{
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "recipes": 30,
+  "maximum_sample_difference": 9.155133597044475e-16,
+  "groups": {
+    "base": {
+      "native_engine_version": "8.32.26160.13001",
+      "command": {
+        "recipes": 18,
+        "qualified_recipes": 18,
+        "cases": [
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "quad",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 3,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 3,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "triangle",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 3,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 3,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "triangle_enter",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "reverse",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 4.518280359883027e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "concave",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "twisted",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 5.438959822042074e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "in_plane",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 3,
+                  "actual_ngons": 1,
+                  "actual_vertices": 5,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+                  "native_faces": 3,
+                  "native_ngons": 1,
+                  "native_vertices": 5,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 3,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 3,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon_triangle",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon_quad",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 3,
+                  "actual_ngons": 1,
+                  "actual_vertices": 5,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+                  "native_faces": 3,
+                  "native_ngons": 1,
+                  "native_vertices": 5,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon_concave",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 3,
+                  "actual_ngons": 1,
+                  "actual_vertices": 5,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 5.79553433516819e-16,
+                  "native_faces": 3,
+                  "native_ngons": 1,
+                  "native_vertices": 5,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon_spatial",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "multiple",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "undo_pick",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_flat",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_fold",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_unweld",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_crease",
+            "qualified": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 18,
+        "qualified_recipes": 18,
+        "cases": [
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "quad",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 3,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 3,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "triangle",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 3,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 3,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "triangle_enter",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "reverse",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 4.518280359883027e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "concave",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "twisted",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 5.438959822042074e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "in_plane",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 3,
+                  "actual_ngons": 1,
+                  "actual_vertices": 5,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+                  "native_faces": 3,
+                  "native_ngons": 1,
+                  "native_vertices": 5,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 3,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 3,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon_triangle",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon_quad",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 3,
+                  "actual_ngons": 1,
+                  "actual_vertices": 5,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+                  "native_faces": 3,
+                  "native_ngons": 1,
+                  "native_vertices": 5,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon_concave",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 3,
+                  "actual_ngons": 1,
+                  "actual_vertices": 5,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 5.79553433516819e-16,
+                  "native_faces": 3,
+                  "native_ngons": 1,
+                  "native_vertices": 5,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "ngon_spatial",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "multiple",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "undo_pick",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_flat",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_fold",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_unweld",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_crease",
+            "qualified": true
+          }
+        ]
+      }
+    },
+    "variants": {
+      "native_engine_version": "8.32.26160.13001",
+      "command": {
+        "recipes": 7,
+        "qualified_recipes": 7,
+        "cases": [
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "flat_zero",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "fold_44",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "fold_45",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "fold_46",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.155133597044475e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "near_seam",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.155133597044475e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "far_seam",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 3,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+                  "native_faces": 3,
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "old_unwelded",
+            "qualified": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 7,
+        "qualified_recipes": 7,
+        "cases": [
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "flat_zero",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "fold_44",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "fold_45",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "fold_46",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.155133597044475e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "near_seam",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.155133597044475e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "far_seam",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 3,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+                  "native_faces": 3,
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "old_unwelded",
+            "qualified": true
+          }
+        ]
+      }
+    },
+    "controls": {
+      "native_engine_version": "8.32.26160.13001",
+      "controls": {
+        "recipes": 5,
+        "qualified_recipes": 5,
+        "cases": [
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "edge_single",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "cancel_partial",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_cancel_partial",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "multiple_cancel_partial",
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "append_after_face_cancel_partial",
+            "qualified": true
+          }
+        ]
+      }
+    }
+  },
+  "guarantees": [
+    "Twenty-five captured mesh recipes match command and point-getter samples, raw vertex/face counts, triangle/quad kinds and cyclic n-gon boundary winding.",
+    "Five additional physical native input controls compare edge attachment and cancellation through the interactive getter.",
+    "Append keeps source identity, name and layer; output selection and grouped Undo/Redo match each captured result.",
+    "Zero-degree welding joins coplanar seams. Welding uses exact coordinate adjacency and preserves unrelated pre-existing unwelded seams.",
+    "Draft corners and previews leave the model and Redo unchanged until completion. History or source changes invalidate a stale draft.",
+    "Ordered n-gons reuse the existing constrained polygon triangulator and validated mesh n-gon overlays. InPlane projects later corners onto the first-three-corner plane."
+  ],
+  "limits": [
+    "SubD output, Chain=Yes and FromEdge with MultipleFaces are explicitly unsupported.",
+    "Quad surface comparisons use the shared shortest-diagonal triangulation on both sides. Native display tessellation of warped quads, raw vertex/face ordering, and stored normal arrays are not certified.",
+    "General self-intersecting polygons, nonmanifold append neighborhoods, texture/vertex-color channels and native comparative speed require further qualification.",
+    "Construction accepts at most 100000 corners. Per-face option changes retain prior completed faces; the usual constant-angle path appends and welds once."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/mesh.rs": "ac43d26835e9819d05fb66cd70d5d433d34ad00f1049f4ca52ef11cdcd2f2e84",
+    "crates/viboceros-geometry/src/mesh/face_create.rs": "69ed3bdd6314299202b86731354d40204c95dd988738e6ded79879e8f1b5ce87",
+    "crates/viboceros-geometry/src/mesh/append.rs": "41165b744bd8e4093b0c255fe4d219222639b655a160f701b65cce9e9971b843",
+    "crates/viboceros-geometry/src/mesh/ngon.rs": "2dcd7295247c7a899b42e278096dfcdefe20851c091c0d61280dc421428f5aae",
+    "crates/viboceros-geometry/src/mesh/closed_polyline.rs": "d85306f3d7b31e80aa842bd48d29e70fc67c244f064c5104e6836834e7cbb361",
+    "crates/viboceros-geometry/src/mesh/patch.rs": "e4564970793c796f812d6d4f4e04d09e3bd13b7814df0cf715144197c4cd59de",
+    "crates/viboceros-geometry/src/mesh/normals.rs": "e4cbcef46e287067a0364d7ad440c93d05d6bb77ac82aa1f9f21ad4dd97cd322",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
+    "crates/viboceros-geometry/src/mesh/union_find.rs": "6940de0d881901613f3263f895c5e438fb79aad50599de4ea2322738c2f8f8ce",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-command/src/lib.rs": "24f7f101657ee8f4d23e76db439518088c6a4c0ae0bce7be45c9f0e8c6f3c76b",
+    "crates/viboceros-command/src/face_create.rs": "fcbc32da3eb136fa350783d8969816bde58bd5f4fa9dd8930db002a65695977d",
+    "crates/viboceros-command/tests/face_create_native.rs": "6ebbc32acb8a33abdfdb8651ef5438689ecefc29e1f0947dd0a68c3d42cbac20",
+    "crates/viboceros-command/tests/support/face_create.rs": "4ecf2fdaf7c667410e3a916395cd20d05bca44e0cc66dc67352240d584beb148",
+    "src/app.rs": "41849d7de92143bf74def7ebc35cf912a1e93664ca5841f90a9e565d8eee2f60",
+    "src/app/face_create.rs": "55e002354e08bdbe76ef97a129439cd5c7a61e8c6419261b5708e66f2f70dd62",
+    "src/app/face_create/tests.rs": "bf7db3d9ea707796617c07bb9fed0cba03b2ea3e9f6889ddac0d79e92c3de0a6",
+    "src/app/mesh_face_prompt.rs": "8a6fe1e583489d85aa27f626debebae3ff4bf34d632b16b4eea36fc4ffbfc735",
+    "tools/rhino_oracle/face_create_probe.py": "164b478c64294a5f12b1fc3c62c3ab6134ac988abe0f079463508b2ff6c8e082",
+    "tools/rhino_oracle/face_create_input.py": "987f33c447ade5b71c178804bf3ba26035e2888f6107d829f8e5ac3797ab21c1",
+    "tools/rhino_oracle/generate_face_create.py": "0a80274d9dbc06ccd9c25bb18b0a4d3ff0d0d9f0ac3f1b933692814333b568ba",
+    "tools/rhino_oracle/report_face_create.py": "2dd6fdcadf3a6b28ee2b1287644d8b866864ad956872acea5f478140361f2b5e",
+    "tools/rhino_oracle/test_face_create.py": "e7cbca7e5b772e96e6d91712e6ed3644aa65ba177f70adc8c064f16dd3c6c7a5",
+    "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "tools/rhino_oracle/client.py": "22816c7368e074d55c24ecfb361ca37f934e6451b7b5f26e34be0a6aa1c3289f",
+    "tools/rhino_oracle/structural_sdk.py": "25ac215ca4c4f02c56f03e1e88a10fc4afea4942688f7e7c22e331e0b159c933",
+    "tools/rhino_oracle/rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
+    "tools/rhino_oracle/fixtures/face_create.json": "26fc3b89bd149d5506fb6f95c3fd75d30b01a2b46099739fc54f20af8057d8e1",
+    "tools/rhino_oracle/observations/face_create.json": "2472619c22ffac8634f52948a2ae81195b9b6b4276276f3f329b1d99060c1db8",
+    "tools/rhino_oracle/fixtures/face_create_variants.json": "416766d0f73ecabbbaca1ab26e558502810653ec9e04d8214e454a10a868a804",
+    "tools/rhino_oracle/observations/face_create_variants.json": "37840c47fea44c3fa920bd267e00255ab61c4e481a9bc8b41537f6a430e3610f",
+    "tools/rhino_oracle/fixtures/face_create_controls.json": "24ee9c4fe858a6c03457778775581ec37ba5e701e41601b4bda256cc7934b1b2",
+    "tools/rhino_oracle/observations/face_create_controls.json": "1ef09bbaafb1deb5b3a174be1c47c5e1086db7bdab02ef9f7041655fe82074df"
+  }
+}

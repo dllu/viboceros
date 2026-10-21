@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "quad",
+      "case": "quad"
+    },
+    {
+      "op": "face_create_command",
+      "id": "triangle",
+      "case": "triangle"
+    },
+    {
+      "op": "face_create_command",
+      "id": "triangle_enter",
+      "case": "triangle_enter"
+    },
+    {
+      "op": "face_create_command",
+      "id": "reverse",
+      "case": "reverse"
+    },
+    {
+      "op": "face_create_command",
+      "id": "concave",
+      "case": "concave"
+    },
+    {
+      "op": "face_create_command",
+      "id": "twisted",
+      "case": "twisted"
+    },
+    {
+      "op": "face_create_command",
+      "id": "in_plane",
+      "case": "in_plane"
+    },
+    {
+      "op": "face_create_command",
+      "id": "ngon",
+      "case": "ngon"
+    },
+    {
+      "op": "face_create_command",
+      "id": "ngon_triangle",
+      "case": "ngon_triangle"
+    },
+    {
+      "op": "face_create_command",
+      "id": "ngon_quad",
+      "case": "ngon_quad"
+    },
+    {
+      "op": "face_create_command",
+      "id": "ngon_concave",
+      "case": "ngon_concave"
+    },
+    {
+      "op": "face_create_command",
+      "id": "ngon_spatial",
+      "case": "ngon_spatial"
+    },
+    {
+      "op": "face_create_command",
+      "id": "multiple",
+      "case": "multiple"
+    },
+    {
+      "op": "face_create_command",
+      "id": "undo_pick",
+      "case": "undo_pick"
+    },
+    {
+      "op": "face_create_command",
+      "id": "append_flat",
+      "case": "append_flat"
+    },
+    {
+      "op": "face_create_command",
+      "id": "append_fold",
+      "case": "append_fold"
+    },
+    {
+      "op": "face_create_command",
+      "id": "append_unweld",
+      "case": "append_unweld"
+    },
+    {
+      "op": "face_create_command",
+      "id": "append_crease",
+      "case": "append_crease"
+    }
+  ]
+}

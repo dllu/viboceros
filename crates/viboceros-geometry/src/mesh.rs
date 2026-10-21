@@ -44,6 +44,7 @@ mod offset;
 mod planar_ngons;
 pub use offset::MeshOffsetDirection;
 mod closed_polyline;
+mod face_create;
 mod from_lines;
 mod patch;
 mod patch_single_face;
@@ -3333,6 +3334,16 @@ impl TriangleMesh {
         &self,
         angle_tolerance_radians: Real,
     ) -> Result<(Self, usize), GeometryError> {
+        self.welded_vertices_after(angle_tolerance_radians, 0)
+    }
+
+    /// Weld only seams incident to faces at or after `first_new_face`.
+    /// Existing unrelated unwelded edges retain their raw vertex sharing.
+    pub fn welded_vertices_after(
+        &self,
+        angle_tolerance_radians: Real,
+        first_new_face: usize,
+    ) -> Result<(Self, usize), GeometryError> {
         if !(angle_tolerance_radians.is_finite()
             && (0.0..=std::f64::consts::PI).contains(&angle_tolerance_radians))
         {
@@ -3350,6 +3361,9 @@ impl TriangleMesh {
             let Some(second) = uses.next() else {
                 continue;
             };
+            if first.face < first_new_face && second.face < first_new_face {
+                continue;
+            }
             let dot = face_normals[first.face]
                 .as_vector()
                 .dot(face_normals[second.face].as_vector())?

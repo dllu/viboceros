@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "edge_single",
+      "case": "edge_single"
+    },
+    {
+      "op": "face_create_command",
+      "id": "cancel_partial",
+      "case": "cancel_partial"
+    },
+    {
+      "op": "face_create_command",
+      "id": "append_cancel_partial",
+      "case": "append_cancel_partial"
+    },
+    {
+      "op": "face_create_command",
+      "id": "multiple_cancel_partial",
+      "case": "multiple_cancel_partial"
+    },
+    {
+      "op": "face_create_command",
+      "id": "append_after_face_cancel_partial",
+      "case": "append_after_face_cancel_partial"
+    }
+  ]
+}
