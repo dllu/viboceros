@@ -77,6 +77,7 @@ impl VibocerosApp {
             divide: None,
             modify_radius: None,
             reduce_polyline: None,
+            mesh_patch: None,
         });
         self.command_input.clear();
         self.push_log(format!(

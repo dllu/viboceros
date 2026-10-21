@@ -5,6 +5,14 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("mesh patch exceeds its input or perimeter resource limit")]
+    MeshPatchLimit,
+    #[error("distinct mesh patch samples occupy the same projected location")]
+    MeshPatchProjectionConflict,
+    #[error("mesh patch constraints cross or cannot be resolved in the projected chart")]
+    MeshPatchCrossingConstraints,
+    #[error("mesh patch has no faces after trimming")]
+    EmptyMeshPatch,
     #[error("a continuous directed section between mesh locations could not be resolved")]
     MeshPolylinePathUnresolved,
     #[error("polyline reduction would collapse the curve to an invalid result")]

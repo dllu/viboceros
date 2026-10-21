@@ -1,5 +1,6 @@
 //! Polyline recognition retains the public native policy for NURBS spans.
 use super::*;
+mod angle;
 
 impl CurveRef<'_> {
     /// Public native polyline recognition, without constructing new parameters.

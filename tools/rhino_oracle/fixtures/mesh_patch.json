@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_patch_command",
+      "id": "points",
+      "case": "points"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "raised",
+      "case": "raised"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "tilted",
+      "case": "tilted"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "concave",
+      "case": "concave"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "hole",
+      "case": "hole"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "constraint",
+      "case": "constraint"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "duplicate_constraint",
+      "case": "duplicate_constraint"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "untrimmed",
+      "case": "untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "line3",
+      "case": "line3"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "guide_with_outer",
+      "case": "guide_with_outer"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "inner_closed",
+      "case": "inner_closed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "untrimmed_raised",
+      "case": "untrimmed_raised"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "untrimmed_constraint",
+      "case": "untrimmed_constraint"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "untrimmed_concave",
+      "case": "untrimmed_concave"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "untrimmed_inner_closed",
+      "case": "untrimmed_inner_closed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "filled_inner",
+      "case": "filled_inner"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "filled_open3",
+      "case": "filled_open3"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "concave_outside",
+      "case": "concave_outside"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "circle",
+      "case": "circle"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cloud",
+      "case": "cloud"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "surface",
+      "case": "surface"
+    }
+  ]
+}

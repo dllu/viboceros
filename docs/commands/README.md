@@ -6,6 +6,7 @@ Rhino's complete command set is still a work in progress.
 
 - [ShortPath surface geodesics](short-path.md)
 - [PolylineOnMesh drawing](polyline-on-mesh.md)
+- [MeshPatch from curves, points and point clouds](mesh-patch.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [Check and SelBadObjects](check.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)

@@ -154,7 +154,7 @@
       "cylinder",
       "general"
     ],
-    "maximum_sample_difference": 0.00016492358196205955,
+    "maximum_sample_difference": 0.000164923581962071,
     "cases": [
       {
         "id": "plane",
@@ -163,12 +163,12 @@
       },
       {
         "id": "cylinder",
-        "maximum_bidirectional_sample_error": 0.00016492358196205955,
+        "maximum_bidirectional_sample_error": 0.000164923581962071,
         "qualified": false
       },
       {
         "id": "general",
-        "maximum_bidirectional_sample_error": 4.547729029219003e-05,
+        "maximum_bidirectional_sample_error": 4.5477290292256906e-05,
         "qualified": false
       }
     ]
@@ -324,7 +324,7 @@
     "crates/viboceros-geometry/src/morph/curve_fit.rs": "0951184a8d2b58d049ec5488462da802208f96571ff92888acbc60bcbb3c662d",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
     "crates/viboceros-command/src/short_path.rs": "63241a885df93acb0bb23893c32b62c18bdcba91e878fa85e61a83dabf2f1c2c",
-    "crates/viboceros-command/src/lib.rs": "ed6c1f46a403c91ad885fb8cd35304dd75a2d8c8f2d3b88147bc4ceebcf17f25",
+    "crates/viboceros-command/src/lib.rs": "dad13bc4409c9a88229ba8ba84eb503ed62009ef715530b5b37ccd5bedf42515",
     "crates/viboceros-command/tests/short_path_native.rs": "57a04b0bfbb258fec63f7fd4bb382ca3e6ba1f831aa3aa7ef99affa2c574c71e",
     "crates/viboceros-command/tests/support/short_path.rs": "87c532cc4fe9fb0184ef92cf02f6640da164932059ef09e43ddc5578bad4bd44",
     "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",

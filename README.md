@@ -38,6 +38,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Orient curves to surface boundaries](docs/commands/orient-curve-to-edge.md), with spatial frames, temporary source portions, previews, repeated copies, and grouped Undo
 - [Short paths on surfaces](docs/commands/short-path.md), with analytic primitives, general NURBS geodesic shooting, paths across trimmed holes, surface point getters, previews and Undo
 - [Polylines on polygon meshes](docs/commands/polyline-on-mesh.md), with view-constrained picking, directed fold paths, hole detours, disconnected-piece bridges, previews and Undo
+- [Mesh patches from curves and points](docs/commands/mesh-patch.md), with hole regions, starting surfaces, staged selection and Undo
 - [Interpolated curves on surfaces](docs/commands/interp-crv-on-srf.md), with periodic seams, closed drafts, constrained points, previews and Undo
 - [Offset curves on surfaces](docs/commands/offset-crv-on-srf.md), with normal sections, periodic seams, general NURBS sections via the native kernel, planar corner joins, ThroughPoint, previews and grouped Undo
 - [Remap objects between construction planes](docs/commands/remap-cplane.md), with viewport, world and saved-plane targets and Python replay

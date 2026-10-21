@@ -294,6 +294,7 @@ pub use mesh::{
     NonPlanarQuadCriterion, QuadSplitMethod, SolidPointLocation, TriangleMesh, align_mesh_vertices,
     join_meshes, match_mesh_edges,
 };
+pub use mesh::{MAX_MESH_PATCH_POINTS, MeshPatchOptions};
 pub use mesh::{MeshClosestLocation, MeshProjectionIndex};
 pub use morph::{
     CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph, CurveFlowTargetSurface,

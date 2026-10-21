@@ -17,6 +17,8 @@ pub enum ObjectSelectionFilter {
     Blocks,
     Grouped,
     Mesh,
+    MeshPatchSources,
+    MeshPatchHoles,
     Smooth,
     PolygonCount,
     CoplanarFaces,
@@ -55,6 +57,13 @@ impl ObjectSelectionFilter {
     pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
         let geometry = object.geometry();
         match self {
+            Self::MeshPatchSources => {
+                geometry.curve_ref().is_some()
+                    || matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_))
+            }
+            Self::MeshPatchHoles => geometry
+                .curve_ref()
+                .is_some_and(|c| c.is_closed().unwrap_or(false)),
             Self::DeviationSources => !matches!(geometry, Geometry::BlockInstance(_)),
             Self::DeviationTargets => {
                 geometry.curve_ref().is_some()

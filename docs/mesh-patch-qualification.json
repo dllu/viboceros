@@ -1,0 +1,396 @@
+{
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "native_engine_version": "8.32.26160.13001",
+  "native_construction_failures": [
+    "duplicate_constraint"
+  ],
+  "maximum_sample_difference": 2.1316282072803006e-14,
+  "geometry_cases": {
+    "recipes": 21,
+    "qualified_recipes": 21,
+    "cases": [
+      {
+        "id": "points",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "raised",
+        "maximum_bidirectional_sample_error": 6.66133814775094e-16,
+        "qualified": true
+      },
+      {
+        "id": "tilted",
+        "maximum_bidirectional_sample_error": 1.2609709600486848e-15,
+        "qualified": true
+      },
+      {
+        "id": "concave",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "hole",
+        "maximum_bidirectional_sample_error": 1.1102230246251565e-15,
+        "qualified": true
+      },
+      {
+        "id": "constraint",
+        "maximum_bidirectional_sample_error": 4.440892098500626e-16,
+        "qualified": true
+      },
+      {
+        "id": "duplicate_constraint",
+        "native_failure": true,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed",
+        "maximum_bidirectional_sample_error": 1.2212453270876722e-15,
+        "qualified": true
+      },
+      {
+        "id": "line3",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      },
+      {
+        "id": "guide_with_outer",
+        "maximum_bidirectional_sample_error": 1.7979101253009106e-15,
+        "qualified": true
+      },
+      {
+        "id": "inner_closed",
+        "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_raised",
+        "maximum_bidirectional_sample_error": 1.7979101253009106e-15,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_constraint",
+        "maximum_bidirectional_sample_error": 2.114508575119069e-14,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_concave",
+        "maximum_bidirectional_sample_error": 2.1316282072803006e-14,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_inner_closed",
+        "maximum_bidirectional_sample_error": 2.1041582237448136e-14,
+        "qualified": true
+      },
+      {
+        "id": "filled_inner",
+        "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "qualified": true
+      },
+      {
+        "id": "filled_open3",
+        "maximum_bidirectional_sample_error": 1.8610729195778454e-15,
+        "qualified": true
+      },
+      {
+        "id": "concave_outside",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "circle",
+        "maximum_bidirectional_sample_error": 2.4424906541753444e-15,
+        "qualified": true
+      },
+      {
+        "id": "cloud",
+        "maximum_bidirectional_sample_error": 6.66133814775094e-16,
+        "qualified": true
+      },
+      {
+        "id": "surface",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "command_cases": {
+    "recipes": 21,
+    "qualified_recipes": 21,
+    "cases": [
+      {
+        "id": "points",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "raised",
+        "maximum_bidirectional_sample_error": 6.66133814775094e-16,
+        "qualified": true
+      },
+      {
+        "id": "tilted",
+        "maximum_bidirectional_sample_error": 1.2609709600486848e-15,
+        "qualified": true
+      },
+      {
+        "id": "concave",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "hole",
+        "maximum_bidirectional_sample_error": 1.1102230246251565e-15,
+        "qualified": true
+      },
+      {
+        "id": "constraint",
+        "maximum_bidirectional_sample_error": 4.440892098500626e-16,
+        "qualified": true
+      },
+      {
+        "id": "duplicate_constraint",
+        "maximum_bidirectional_sample_error": 0.0,
+        "native_failure": true,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed",
+        "maximum_bidirectional_sample_error": 1.2212453270876722e-15,
+        "qualified": true
+      },
+      {
+        "id": "line3",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      },
+      {
+        "id": "guide_with_outer",
+        "maximum_bidirectional_sample_error": 1.7979101253009106e-15,
+        "qualified": true
+      },
+      {
+        "id": "inner_closed",
+        "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_raised",
+        "maximum_bidirectional_sample_error": 1.7979101253009106e-15,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_constraint",
+        "maximum_bidirectional_sample_error": 2.114508575119069e-14,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_concave",
+        "maximum_bidirectional_sample_error": 2.1316282072803006e-14,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_inner_closed",
+        "maximum_bidirectional_sample_error": 2.1041582237448136e-14,
+        "qualified": true
+      },
+      {
+        "id": "filled_inner",
+        "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "qualified": true
+      },
+      {
+        "id": "filled_open3",
+        "maximum_bidirectional_sample_error": 1.8610729195778454e-15,
+        "qualified": true
+      },
+      {
+        "id": "concave_outside",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "circle",
+        "maximum_bidirectional_sample_error": 2.4424906541753444e-15,
+        "qualified": true
+      },
+      {
+        "id": "cloud",
+        "maximum_bidirectional_sample_error": 6.66133814775094e-16,
+        "qualified": true
+      },
+      {
+        "id": "surface",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "getter_cases": {
+    "recipes": 21,
+    "qualified_recipes": 21,
+    "cases": [
+      {
+        "id": "points",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "raised",
+        "maximum_bidirectional_sample_error": 6.66133814775094e-16,
+        "qualified": true
+      },
+      {
+        "id": "tilted",
+        "maximum_bidirectional_sample_error": 1.2609709600486848e-15,
+        "qualified": true
+      },
+      {
+        "id": "concave",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "hole",
+        "maximum_bidirectional_sample_error": 1.1102230246251565e-15,
+        "qualified": true
+      },
+      {
+        "id": "constraint",
+        "maximum_bidirectional_sample_error": 4.440892098500626e-16,
+        "qualified": true
+      },
+      {
+        "id": "duplicate_constraint",
+        "maximum_bidirectional_sample_error": 0.0,
+        "native_failure": true,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed",
+        "maximum_bidirectional_sample_error": 1.2212453270876722e-15,
+        "qualified": true
+      },
+      {
+        "id": "line3",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      },
+      {
+        "id": "guide_with_outer",
+        "maximum_bidirectional_sample_error": 1.7979101253009106e-15,
+        "qualified": true
+      },
+      {
+        "id": "inner_closed",
+        "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_raised",
+        "maximum_bidirectional_sample_error": 1.7979101253009106e-15,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_constraint",
+        "maximum_bidirectional_sample_error": 2.114508575119069e-14,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_concave",
+        "maximum_bidirectional_sample_error": 2.1316282072803006e-14,
+        "qualified": true
+      },
+      {
+        "id": "untrimmed_inner_closed",
+        "maximum_bidirectional_sample_error": 2.1041582237448136e-14,
+        "qualified": true
+      },
+      {
+        "id": "filled_inner",
+        "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "qualified": true
+      },
+      {
+        "id": "filled_open3",
+        "maximum_bidirectional_sample_error": 1.8610729195778454e-15,
+        "qualified": true
+      },
+      {
+        "id": "concave_outside",
+        "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "qualified": true
+      },
+      {
+        "id": "circle",
+        "maximum_bidirectional_sample_error": 2.4424906541753444e-15,
+        "qualified": true
+      },
+      {
+        "id": "cloud",
+        "maximum_bidirectional_sample_error": 6.66133814775094e-16,
+        "qualified": true
+      },
+      {
+        "id": "surface",
+        "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "qualified": true
+      }
+    ]
+  },
+  "guarantees": [
+    "The 21 captured public SDK/command inputs retain geometry, source snapshots, names, layers, selection and grouped Undo/Redo through command and staged getter replays.",
+    "Automatic guide-region trimming, explicit holes, temporary fitted perimeters, point clouds, circle approximation and a curved starting surface are exercised.",
+    "A source/guide duplicate that leaves no trimmed faces fails before admission, with native selection release and no Undo record.",
+    "Projection conflicts, crossing constraints, open hole boundaries and resource exhaustion are rejected before geometry edits.",
+    "A staged prompt retains immutable source snapshots and a history token; cancellation preserves Redo and stale inputs cannot create a patch."
+  ],
+  "limits": [
+    "The geometry comparisons use barycentric triangle samples; they do not prove universal mesh topology or triangle ordering.",
+    "General curved guide sampling, periodic/folded starting charts and starting B-rep trim boundaries need broader qualification.",
+    "The projection chart must resolve distinct spatial samples; crossing constraints are not split or repaired.",
+    "Angular approximation controls direction variation and has bounded work/subdivision/output budgets; no universal positional certificate is claimed.",
+    "Input/perimeter records are capped at 100000. Performance is not yet compared against native Rhino."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/mesh/patch.rs": "32d09dd4e56f0da4adfc082da2f58b9cfd7e1c6e6076e416b654ccd08db04650",
+    "crates/viboceros-geometry/src/mesh/patch/tests.rs": "039c354e0ca3b14a368fec8f73320c93d75b9a55456fc052c0a203b2bfb3a3bd",
+    "crates/viboceros-geometry/src/curve/polyline.rs": "af769a36f117448e43eb4f0c435dd908e1532f95b5e2779ca3e5b095d1fc6676",
+    "crates/viboceros-geometry/src/curve/polyline/angle.rs": "1332c312e6b38cc3e1795d364060fa7e417c7c7c203a449d0adc2681290f246d",
+    "crates/viboceros-geometry/src/mesh.rs": "ea0646902ff93b8d808afa2cdb54c5f27cee91985265e831016077649b015183",
+    "crates/viboceros-geometry/src/lib.rs": "5f4a728dc9158efc5a38d6790914de5825bba95fbac746861b40d6a409720a6a",
+    "crates/viboceros-geometry/src/error.rs": "ac102875d83beac9257ebbb5487de17d145321bcdee1c2278f4e4052f5d8742d",
+    "crates/viboceros-geometry/src/point_projection.rs": "f297f74f124a39cb6dd80abc2abe37cb16f302d23cc71f464004bb44c54a4556",
+    "crates/viboceros-geometry/src/point_projection/fit.rs": "ff9b24930ffdd88aa820d62037fc7c435aeaaa32aeca15040d3bd634e11cba91",
+    "crates/viboceros-geometry/src/point_projection/fit/normalized.rs": "e94962bae969e4480a3032f02edf9ff5c7ec97a4da64e335f352d2447094e9f7",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/bezier.rs": "fb5b7ce4ec1dbf70c1d5191906bc7fa69ea830f7f96a5e7a10eb99d194f0f6b0",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
+    "crates/viboceros-command/src/lib.rs": "dad13bc4409c9a88229ba8ba84eb503ed62009ef715530b5b37ccd5bedf42515",
+    "crates/viboceros-command/src/object_selection.rs": "d1cefdd0da1a26943f705b0df33764f5b210bc4e34286e5428bdbf43598a085b",
+    "crates/viboceros-command/src/mesh_patch.rs": "1d0c35fa81f30b6f47f1a1a9c5f5dad1c486cab860f5fb8cfa400172b7376653",
+    "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",
+    "crates/viboceros-command/tests/mesh_patch_native.rs": "03cc5c6758cc2af4e6be6c7bf41d7b48cf2d26d8f513266d31489c22ef82a0dd",
+    "crates/viboceros-command/tests/support/mesh_patch.rs": "e787ce3ccef638d7e4de06c7a457d59c252eeff31baf1840d2df96ed3a2dce5a",
+    "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
+    "src/app/object_selection.rs": "6a478969808c4ec6a08ff406425a27ee7b50316b25efd9a90ab7c3988da751ad",
+    "src/app/transform_sources.rs": "65841394f479b7bd99bbbaf9c7a69ab3242b1cf0c42a98edc8f47fa01057fff2",
+    "src/app/object_selection/mesh_patch.rs": "aab85e841a3339466c4d77b2f60c440efeffb26dde8a99a522d866e80d32eacb",
+    "src/app/object_selection/mesh_patch/tests.rs": "0829a1aceb9a2d9804cb2181b41704b87f7d8ed2f86be1f01d69e7b2ace35209",
+    "tools/rhino_oracle/mesh_patch_probe.py": "a1b6a649079b0c80fbc2fa277421afc8a11d477668df43f603af685b1f9fa0dd",
+    "tools/rhino_oracle/generate_mesh_patch.py": "a60d07e832cbd919efbf3b143f730e62d4af23d86bc7684af81e2f831ccb0f4c",
+    "tools/rhino_oracle/report_mesh_patch.py": "da11e9b6ce035faf5f717be04d6e218e2d1bc9214dafe0bfbe2871f74dbb3d40",
+    "tools/rhino_oracle/test_mesh_patch.py": "94d38cd6581101eafbe686ab060c33b4f9152651c6de3b797b967c3c1a945d52",
+    "tools/rhino_oracle/fixtures/mesh_patch.json": "2a0884f05553efd4083b20f97dc1b985a4870fe644de8c09961911e25ad85400",
+    "tools/rhino_oracle/observations/mesh_patch.json": "79f352d68c46ab33e7842022ec0b14db87530d471915ef30837f9c8fe9e507b9",
+    "crates/viboceros-command/src/mesh_patch/tests.rs": "d76fee8b9d14f8ea618ef8078d81bd0b4d91a613e9f28a1f246035fe4e84140b",
+    "tools/rhino_oracle/client.py": "68b9aadbb31d4a5efed443252e29ae2d6dc50bc7266a1e33a4e05a579fcfcb86",
+    "tools/rhino_oracle/rhino_worker.py": "6c2f2a2a14911049981650181aba95641d18e692d308babf54bf651c05c753db",
+    "tools/rhino_oracle/structural_sdk.py": "8c4beb95ddb04a7084745bac5df4f84fd3740beb6b3e66e2bdc5bf32c1022d7b"
+  }
+}

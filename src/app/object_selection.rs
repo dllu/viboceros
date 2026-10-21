@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
 use viboceros_document::{Geometry, ObjectId, SelectionMode};
 mod divide;
+mod mesh_patch;
 mod modify_radius;
 mod reduce_polyline;
 
@@ -34,6 +35,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) divide: Option<divide::Session>,
     pub(super) modify_radius: Option<modify_radius::Session>,
     pub(super) reduce_polyline: Option<reduce_polyline::Session>,
+    pub(super) mesh_patch: Option<mesh_patch::Session>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -60,6 +62,7 @@ impl PendingObjectCommand {
             divide: None,
             modify_radius: None,
             reduce_polyline: None,
+            mesh_patch: None,
         }
     }
     pub(super) fn selection_filter(&self) -> Option<ObjectSelectionFilter> {
@@ -70,6 +73,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn label(&self) -> &'static str {
+        if let Some(session) = &self.mesh_patch {
+            return session.label();
+        }
         if let Some(session) = &self.divide {
             return session.prompt.label();
         }
@@ -84,6 +90,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if let Some(session) = &self.mesh_patch {
+            return session.hint();
+        }
         if self.description.command == "ReducePolyline" {
             return if self.phase == ObjectPromptPhase::Selecting {
                 "Select polylines; Enter specifies the reduction tolerance, Esc cancels"
@@ -506,6 +515,9 @@ impl VibocerosApp {
                 return true;
             }
         };
+        if description.command == "MeshPatch" {
+            return self.start_mesh_patch_prompt(input, description);
+        }
         // Starting selection is a command start even if the user later cancels.
         // The shared Copy policy resets saved defaults here when disabled.
         self.commands.begin_copy_options(description.command);
@@ -529,6 +541,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                mesh_patch: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -578,6 +591,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                mesh_patch: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -612,6 +626,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                mesh_patch: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -651,6 +666,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                mesh_patch: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -781,6 +797,7 @@ impl VibocerosApp {
                         divide: None,
                         modify_radius: None,
                         reduce_polyline: None,
+                        mesh_patch: None,
                     });
                 }
                 Ok(None) => return false,
@@ -847,6 +864,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                mesh_patch: None,
             });
         }
         self.command_input.clear();
@@ -887,6 +905,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_mesh_patch_prompt(input) {
+            return true;
+        }
         if self.promote_curve_deviation_subcurve(input) {
             return true;
         }

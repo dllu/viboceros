@@ -1,0 +1,393 @@
+//! Constrained triangulation of spatial samples in a fitted plane or surface chart.
+use super::*;
+use crate::exact_scalar::{Rational, rational};
+use num_traits::Zero;
+use std::cmp::Ordering;
+#[cfg(test)]
+mod tests;
+
+pub const MAX_MESH_PATCH_POINTS: usize = 100_000;
+
+#[derive(Clone, Copy, Debug)]
+pub struct MeshPatchOptions<'a> {
+    pub trim_back: bool,
+    pub divisions: usize,
+    pub starting_surface: Option<&'a NurbsSurface>,
+    pub outer_boundary: Option<&'a Polyline3>,
+}
+impl Default for MeshPatchOptions<'_> {
+    fn default() -> Self {
+        Self {
+            trim_back: true,
+            divisions: 1,
+            starting_surface: None,
+            outer_boundary: None,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+struct Vertex {
+    position: TriangulationPoint2<Real>,
+    source: usize,
+}
+impl HasPosition for Vertex {
+    type Scalar = Real;
+    fn position(&self) -> TriangulationPoint2<Real> {
+        self.position
+    }
+}
+
+fn boundary_orientation(points: &[[Real; 2]]) -> Ordering {
+    let approximate = projected_polygon_doubled_area(points);
+    if approximate.abs() > 64. * Real::EPSILON * points.len() as Real {
+        return approximate.total_cmp(&0.);
+    }
+    let mut area = Rational::zero();
+    for (a, b) in points
+        .iter()
+        .zip(points.iter().cycle().skip(1))
+        .take(points.len())
+    {
+        area += rational(a[0]) * rational(b[1]) - rational(a[1]) * rational(b[0]);
+    }
+    area.cmp(&Rational::zero())
+}
+
+impl TriangleMesh {
+    /// Builds a constrained Delaunay patch, retaining original spatial samples.
+    /// Guides constrain edges on both sides. With automatic trimming, guide
+    /// regions containing input points survive; without points, enclosed guide
+    /// regions survive. The temporary rectangular perimeter is then removed.
+    /// Holes and an explicit outer boundary trim connected triangulation regions.
+    /// A starting surface supplies closest-point UV coordinates, not a universal
+    /// unfolding: chart collisions and intersecting constraints are rejected.
+    pub fn try_patch(
+        points: &[Point3],
+        guides: &[Polyline3],
+        holes: &[Polyline3],
+        options: MeshPatchOptions<'_>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let invalid = |context| GeometryError::Degenerate { context };
+        let automatic_trim = options.trim_back && options.outer_boundary.is_none();
+        if holes
+            .iter()
+            .chain(options.outer_boundary)
+            .any(|c| c.vertices().first() != c.vertices().last())
+        {
+            return Err(invalid("mesh patch boundary must be exactly closed"));
+        }
+        if options.divisions == 0 || options.divisions > MAX_MESH_PATCH_POINTS / 4 {
+            return Err(invalid("mesh patch perimeter divisions"));
+        }
+        let count = guides
+            .iter()
+            .chain(holes)
+            .chain(options.outer_boundary)
+            .try_fold(points.len(), |n, c| n.checked_add(c.vertices().len()))
+            .ok_or(GeometryError::MeshPatchLimit)?;
+        let divisions = if options.trim_back {
+            1
+        } else {
+            options.divisions
+        };
+        if count > MAX_MESH_PATCH_POINTS
+            || options.outer_boundary.is_none()
+                && count.saturating_add(divisions * 4) > MAX_MESH_PATCH_POINTS
+        {
+            return Err(GeometryError::MeshPatchLimit);
+        }
+        let mut all = points.to_vec();
+        let mut chains = Vec::new();
+        for (curve, barrier) in guides
+            .iter()
+            .map(|c| (c, automatic_trim))
+            .chain(holes.iter().map(|c| (c, true)))
+            .chain(options.outer_boundary.map(|c| (c, true)))
+        {
+            if barrier && !automatic_trim && curve.vertices().first() != curve.vertices().last() {
+                return Err(invalid("mesh patch boundary must be exactly closed"));
+            }
+            let begin = all.len();
+            all.extend_from_slice(curve.vertices());
+            chains.push((begin..all.len(), barrier));
+            if all.len() > MAX_MESH_PATCH_POINTS {
+                return Err(GeometryError::MeshPatchLimit);
+            }
+        }
+        if all.len() < 3 {
+            return Err(invalid("mesh patch needs three noncollinear locations"));
+        }
+        if all.len() > MAX_MESH_PATCH_POINTS {
+            return Err(GeometryError::MeshPatchLimit);
+        }
+        let plane = PointProjection3::onto_best_fit_plane(&all)?.as_plane()?;
+        let frame = Frame3::try_from_normal(
+            plane.origin(),
+            plane.normal().as_vector(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )?;
+        let project = |point| -> Result<[Real; 2], GeometryError> {
+            if let Some(surface) = options.starting_surface {
+                let (u, v) = surface.closest_parameters(point, tolerance)?;
+                Ok([u, v])
+            } else {
+                frame.projected_coordinates_of(point)
+            }
+        };
+        let mut projected = all
+            .iter()
+            .copied()
+            .map(project)
+            .collect::<Result<Vec<_>, _>>()?;
+        let mut lo = [Real::INFINITY; 2];
+        let mut hi = [Real::NEG_INFINITY; 2];
+        for q in &projected {
+            for axis in 0..2 {
+                lo[axis] = lo[axis].min(q[axis]);
+                hi[axis] = hi[axis].max(q[axis]);
+            }
+        }
+        let source_count = all.len();
+        if options.outer_boundary.is_none() {
+            if let Some(surface) = options.starting_surface {
+                lo = [*surface.domain_u().start(), *surface.domain_v().start()];
+                hi = [*surface.domain_u().end(), *surface.domain_v().end()];
+            } else {
+                for axis in 0..2 {
+                    let margin = (hi[axis] - lo[axis]) * 0.1;
+                    lo[axis] -= margin;
+                    hi[axis] += margin;
+                }
+            }
+            for (a, b) in [
+                ([lo[0], lo[1]], [hi[0], lo[1]]),
+                ([hi[0], lo[1]], [hi[0], hi[1]]),
+                ([hi[0], hi[1]], [lo[0], hi[1]]),
+                ([lo[0], hi[1]], [lo[0], lo[1]]),
+            ] {
+                for i in 0..divisions {
+                    let f = i as Real / divisions as Real;
+                    let q = std::array::from_fn(|axis| (b[axis] - a[axis]).mul_add(f, a[axis]));
+                    let p = if let Some(surface) = options.starting_surface {
+                        surface.evaluate(q[0], q[1])?
+                    } else {
+                        frame.point_at([q[0], q[1], 0.])?
+                    };
+                    all.push(p);
+                    projected.push(q);
+                }
+            }
+        }
+        if all.len() > MAX_MESH_PATCH_POINTS {
+            return Err(GeometryError::MeshPatchLimit);
+        }
+        let origin = projected[0];
+        let scale = projected
+            .iter()
+            .flat_map(|q| (0..2).map(move |a| (q[a] - origin[a]).abs()))
+            .fold(0., Real::max);
+        if scale == 0. || !scale.is_finite() {
+            return Err(invalid("mesh patch chart scale"));
+        }
+        let mut keys = BTreeMap::new();
+        let mut vertices = Vec::new();
+        let mut coordinates = Vec::new();
+        let mut remap = Vec::new();
+        for (point, q) in all.into_iter().zip(projected) {
+            let q = std::array::from_fn::<_, 2, _>(|a| (q[a] - origin[a]) / scale);
+            let key = q.map(canonical_coordinate_bits);
+            let id = if let Some(&id) = keys.get(&key) {
+                if point.distance_to(vertices[id])? > tolerance.absolute() {
+                    return Err(GeometryError::MeshPatchProjectionConflict);
+                }
+                id
+            } else {
+                let id = vertices.len();
+                keys.insert(key, id);
+                vertices.push(point);
+                coordinates.push(q);
+                id
+            };
+            remap.push(id);
+        }
+        let input = coordinates
+            .iter()
+            .enumerate()
+            .map(|(source, q)| Vertex {
+                position: TriangulationPoint2::new(q[0], q[1]),
+                source,
+            })
+            .collect();
+        let mut triangulation = ConstrainedDelaunayTriangulation::<Vertex>::bulk_load(input)
+            .map_err(|_| invalid("mesh patch triangulation coordinates"))?;
+        if triangulation.num_inner_faces() == 0 {
+            return Err(invalid("mesh patch needs three noncollinear locations"));
+        }
+        let mut handles = vec![None; vertices.len()];
+        for v in triangulation.vertices() {
+            handles[v.data().source] = Some(v.fix());
+        }
+        let mut barriers = BTreeSet::new();
+        let mut hole_seeds = Vec::new();
+        let mut thin_guides = BTreeSet::new();
+        for (chain_index, (range, barrier)) in chains.iter().enumerate() {
+            let area = if *barrier {
+                boundary_orientation(
+                    &range
+                        .clone()
+                        .map(|i| coordinates[remap[i]])
+                        .collect::<Vec<_>>(),
+                )
+            } else {
+                Ordering::Equal
+            };
+            let is_hole = chain_index >= guides.len() && chain_index < guides.len() + holes.len();
+            let mut seed = None;
+            let is_guide = chain_index < guides.len();
+            let mut pairs = remap[range.clone()]
+                .windows(2)
+                .map(|p| [p[0], p[1]])
+                .collect::<Vec<_>>();
+            if is_guide && automatic_trim && remap[range.start] != remap[range.end - 1] {
+                pairs.push([remap[range.end - 1], remap[range.start]]);
+            }
+            for pair in pairs {
+                if pair[0] == pair[1] {
+                    continue;
+                }
+                let edges = triangulation
+                    .try_add_constraint(handles[pair[0]].unwrap(), handles[pair[1]].unwrap());
+                if edges.is_empty() {
+                    return Err(GeometryError::MeshPatchCrossingConstraints);
+                }
+                if *barrier {
+                    if is_hole && seed.is_none() {
+                        seed = Some((edges[0], area == Ordering::Greater));
+                    }
+                    for edge in edges {
+                        barriers.insert(edge.as_undirected().index());
+                        if is_guide && area == Ordering::Equal {
+                            thin_guides.insert(edge.as_undirected().index());
+                        }
+                    }
+                }
+            }
+            if *barrier && !is_guide && area == Ordering::Equal {
+                return Err(invalid("mesh patch boundary area"));
+            }
+            if let Some(seed) = seed {
+                hole_seeds.push(seed);
+            }
+        }
+        let mut neighbors = vec![Vec::new(); triangulation.num_all_faces()];
+        for edge in triangulation.directed_edges() {
+            if !barriers.contains(&edge.as_undirected().index()) {
+                neighbors[edge.face().index()].push(edge.rev().face().index());
+            }
+        }
+        let mut removed = vec![false; neighbors.len()];
+        let mut queue = VecDeque::new();
+        if options.outer_boundary.is_some() {
+            queue.push_back(triangulation.outer_face().index());
+        }
+        for (edge, left) in hole_seeds {
+            let edge = triangulation.directed_edge(edge);
+            queue.push_back(if left {
+                edge.face().index()
+            } else {
+                edge.rev().face().index()
+            });
+        }
+        while let Some(face) = queue.pop_front() {
+            if !removed[face] {
+                removed[face] = true;
+                queue.extend(neighbors[face].iter().copied());
+            }
+        }
+        let source_nodes = remap[..points.len()]
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>();
+        let perimeter_nodes = remap[source_count..]
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>();
+        let mut has_point = vec![false; neighbors.len()];
+        let mut has_perimeter = vec![false; neighbors.len()];
+        has_perimeter[triangulation.outer_face().index()] = true;
+        for face in triangulation.inner_faces() {
+            has_point[face.index()] = face
+                .vertices()
+                .iter()
+                .any(|v| source_nodes.contains(&v.data().source));
+            has_perimeter[face.index()] = face
+                .vertices()
+                .iter()
+                .any(|v| perimeter_nodes.contains(&v.data().source));
+        }
+        let mut reaches_perimeter = vec![false; neighbors.len()];
+        if automatic_trim {
+            let mut visited = vec![false; neighbors.len()];
+            for seed in 0..neighbors.len() {
+                if visited[seed] {
+                    continue;
+                }
+                let mut component = vec![seed];
+                visited[seed] = true;
+                let mut cursor = 0;
+                let mut seeded = false;
+                let mut perimeter = false;
+                while cursor < component.len() {
+                    let face = component[cursor];
+                    cursor += 1;
+                    seeded |= has_point[face];
+                    perimeter |= has_perimeter[face];
+                    for &next in &neighbors[face] {
+                        if !visited[next] {
+                            visited[next] = true;
+                            component.push(next);
+                        }
+                    }
+                }
+                let keep = if source_nodes.is_empty() {
+                    !perimeter
+                } else {
+                    seeded
+                };
+                for face in component {
+                    removed[face] |= !keep;
+                    reaches_perimeter[face] = perimeter;
+                }
+            }
+        }
+        let triangles = triangulation
+            .inner_faces()
+            .filter(|f| !removed[f.index()])
+            .filter(|f| {
+                !reaches_perimeter[f.index()]
+                    || !f
+                        .adjacent_edges()
+                        .iter()
+                        .any(|e| thin_guides.contains(&e.as_undirected().index()))
+            })
+            .filter(|f| {
+                !options.trim_back
+                    || !f
+                        .vertices()
+                        .iter()
+                        .any(|v| remap[source_count..].contains(&v.data().source))
+            })
+            .map(|f| f.vertices().map(|v| v.data().source as u32))
+            .collect::<Vec<_>>();
+        if triangles.is_empty() {
+            return Err(GeometryError::EmptyMeshPatch);
+        }
+        Ok(
+            Self::try_new(vertices, triangles, Tolerance::MESH_VALIDATION)?
+                .culled_unused_vertices()
+                .0,
+        )
+    }
+}
