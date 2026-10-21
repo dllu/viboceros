@@ -11,6 +11,7 @@ Rhino's complete command set is still a work in progress.
 - [MeshPolyline from closed polylines](mesh-polyline.md)
 - [3DFace from corner points and boundary edges](3dface.md)
 - [SubDBox primitives and rectangle construction modes](subd-box.md)
+- [SubDPlane grids and rectangle construction modes](subd-plane.md)
 - [PlanarMesh from planar curve regions](planar-mesh.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [Check and SelBadObjects](check.md)

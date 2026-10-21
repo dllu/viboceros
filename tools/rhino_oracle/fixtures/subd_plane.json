@@ -1,0 +1,106 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_default",
+      "case": "subd_plane_default"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_one",
+      "case": "subd_plane_one"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_grid",
+      "case": "subd_plane_grid"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_reversed",
+      "case": "subd_plane_reversed"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_off_plane",
+      "case": "subd_plane_off_plane"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_center",
+      "case": "subd_plane_center"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_three_point",
+      "case": "subd_plane_three_point"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_three_point_late",
+      "case": "subd_plane_three_point_late"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_midpoint",
+      "case": "subd_plane_midpoint"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_vertical",
+      "case": "subd_plane_vertical"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_dimensions",
+      "case": "subd_plane_dimensions"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_zero_origin",
+      "case": "subd_plane_zero_origin"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_uniform_first",
+      "case": "subd_plane_uniform_first"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_uniform_end",
+      "case": "subd_plane_uniform_end"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_prefix_counts",
+      "case": "subd_plane_prefix_counts"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_tilted",
+      "case": "subd_plane_tilted"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_around_curve",
+      "case": "subd_plane_around_curve"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_cancel_corner",
+      "case": "subd_plane_cancel_corner"
+    },
+    {
+      "op": "subd_plane_command",
+      "id": "subd_plane_cancel_grid",
+      "case": "subd_plane_cancel_grid"
+    }
+  ]
+}

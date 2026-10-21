@@ -41,7 +41,7 @@ impl VibocerosApp {
         self.rectangle_session
             .as_ref()
             .or_else(|| {
-                self.subd_box_session
+                self.subd_primitive_session
                     .as_ref()
                     .filter(|s| s.base.is_none())
                     .map(|s| &s.rectangle)
@@ -51,7 +51,11 @@ impl VibocerosApp {
     fn rectangle_getter_mut(&mut self) -> Option<&mut InputSession> {
         if self.rectangle_session.is_some() {
             self.rectangle_session.as_mut()
-        } else if let Some(s) = self.subd_box_session.as_mut().filter(|s| s.base.is_none()) {
+        } else if let Some(s) = self
+            .subd_primitive_session
+            .as_mut()
+            .filter(|s| s.base.is_none())
+        {
             Some(&mut s.rectangle)
         } else {
             self.surface_flow_session.as_mut()?.plane.as_mut()
@@ -112,8 +116,8 @@ impl VibocerosApp {
         }
     }
     fn rectangle_prompt(&mut self) {
-        if self.subd_box_session.is_some() {
-            self.subd_box_prompt();
+        if self.subd_primitive_session.is_some() {
+            self.subd_primitive_prompt();
             return;
         }
         let Some(s) = self.rectangle_getter() else {
@@ -157,8 +161,8 @@ impl VibocerosApp {
         });
     }
     fn finish_rectangle(&mut self, definition: RectangleDefinition) -> bool {
-        if self.subd_box_session.is_some() {
-            return self.accept_subd_box_base(definition);
+        if self.subd_primitive_session.is_some() {
+            return self.accept_subd_primitive_base(definition);
         }
         if self.rectangle_session.is_some() {
             // Route the completed construction through the public command so

@@ -4,11 +4,12 @@ from pathlib import Path
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
 SOURCES=[
+ 'crates/viboceros-command/src/subd_plane.rs','crates/viboceros-command/tests/support/subd_plane.rs',
  'crates/viboceros-opennurbs/native/subd.cpp','crates/viboceros-opennurbs/native/subd.h','crates/viboceros-opennurbs/native/subd_codec.h','crates/viboceros-opennurbs/src/subd.rs','crates/viboceros-opennurbs/src/lib.rs',
  'crates/viboceros-geometry/src/subd.rs','crates/viboceros-geometry/src/subd/primitives.rs','crates/viboceros-geometry/src/frame.rs','crates/viboceros-geometry/src/point.rs','crates/viboceros-geometry/src/vector.rs',
  'crates/viboceros-command/src/lib.rs','crates/viboceros-command/src/subd_box.rs','crates/viboceros-command/src/rectangle_input.rs','crates/viboceros-command/src/curve_reference.rs',
  'crates/viboceros-command/tests/subd_box_native.rs','crates/viboceros-command/tests/support/subd_box.rs','crates/viboceros-command/tests/support/subd.rs',
- 'src/app.rs','src/app/subd_box.rs','src/app/subd_box/tests.rs','src/app/rectangle.rs','src/app/point_input.rs',
+ 'src/app.rs','src/app/subd_primitives.rs','src/app/subd_primitives/tests.rs','src/app/rectangle.rs','src/app/point_input.rs',
  'tools/rhino_oracle/subd_box_probe.py','tools/rhino_oracle/generate_subd_box.py','tools/rhino_oracle/structural_sdk.py','tools/rhino_oracle/rhino_worker.py',
  'tools/rhino_oracle/fixtures/subd_box.json','tools/rhino_oracle/observations/subd_box.json','tools/rhino_oracle/report_subd_box.py','tools/rhino_oracle/test_subd_box.py',
 ]

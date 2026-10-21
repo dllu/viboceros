@@ -234,11 +234,11 @@ mod stretch_prompt;
 mod subcurve_direction;
 mod subcurve_preview;
 mod subcurve_prompt;
-mod subd_box;
 #[cfg(test)]
 #[path = "../crates/viboceros-command/tests/support/subd.rs"]
 #[allow(dead_code)]
 mod subd_native_tests;
+mod subd_primitives;
 mod surface_curve_offset;
 mod surface_flow;
 mod surface_interpolation;
@@ -605,7 +605,8 @@ enum InteractiveCommand {
     Rectangle {
         first: Option<Point3>,
     },
-    SubDBox {
+    SubDPrimitive {
+        kind: subd_primitives::Kind,
         anchor: Option<Point3>,
     },
     Box {
@@ -962,7 +963,7 @@ impl InteractiveCommand {
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
             Self::Box { .. } => "Box",
-            Self::SubDBox { .. } => "SubDBox",
+            Self::SubDPrimitive { kind, .. } => kind.name(),
             Self::SelBox { .. } => "SelBox",
             Self::PointGrid { .. } => "PointGrid",
             Self::MeshPlane { .. } => "MeshPlane",
@@ -1481,7 +1482,14 @@ impl InteractiveCommand {
             Self::PointGrid { .. } => {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
             }
-            Self::SubDBox { .. } => "SubDBox: pick the base or height; Esc cancels",
+            Self::SubDPrimitive {
+                kind: subd_primitives::Kind::Box,
+                ..
+            } => "SubDBox: pick the base or height; Esc cancels",
+            Self::SubDPrimitive {
+                kind: subd_primitives::Kind::Plane,
+                ..
+            } => "SubDPlane: pick rectangle points; Esc cancels",
             Self::Box { base: None, .. } => "Box: pick the first base corner (Esc to cancel)",
             Self::Box {
                 base: Some(_),
@@ -1938,7 +1946,7 @@ impl InteractiveCommand {
             | Self::InterpolateCurveOnSurface { anchor: base }
             | Self::PolylineOnMesh { anchor: base }
             | Self::FaceCreate { anchor: base }
-            | Self::SubDBox { anchor: base } => base,
+            | Self::SubDPrimitive { anchor: base, .. } => base,
             Self::RemapCPlane => None,
             Self::ProjectDirection { start }
             | Self::SurfaceFlow { start }
@@ -2507,7 +2515,7 @@ pub struct VibocerosApp {
     parabola_session: Option<parabola::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
-    subd_box_session: Option<subd_box::Session>,
+    subd_primitive_session: Option<subd_primitives::Session>,
     orient_points_session: Option<orient_points::Session>,
     remap_cplane_session: Option<remap_cplane::Session>,
     orient_surface_session: Option<orient_surface::Session>,
@@ -2657,7 +2665,7 @@ impl VibocerosApp {
             parabola_session: None,
             conic_session: None,
             rectangle_session: None,
-            subd_box_session: None,
+            subd_primitive_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,
@@ -2794,7 +2802,7 @@ impl VibocerosApp {
             || self.try_continue_spiral(&input)
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
-            || self.continue_subd_box(&input)
+            || self.continue_subd_primitive(&input)
             || self.try_continue_rectangle(&input)
         {
             return;
@@ -3619,7 +3627,7 @@ impl VibocerosApp {
         if self.try_start_conic(input) {
             return true;
         }
-        if self.start_subd_box(input) {
+        if self.start_subd_primitive(input) {
             return true;
         }
         if self.try_start_rectangle(input) {
@@ -6108,7 +6116,7 @@ impl VibocerosApp {
         self.parabola_session = None;
         self.conic_session = None;
         self.rectangle_session = None;
-        self.subd_box_session = None;
+        self.subd_primitive_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
         self.finish_stretch_session(false);
@@ -6224,7 +6232,7 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_conic_point(point) {
             return accepted;
         }
-        if let Some(accepted) = self.accept_subd_box_point(point) {
+        if let Some(accepted) = self.accept_subd_primitive_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_rectangle_point(point) {
@@ -6325,7 +6333,7 @@ impl VibocerosApp {
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
-            | InteractiveCommand::SubDBox { .. }
+            | InteractiveCommand::SubDPrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
             | InteractiveCommand::SurfaceFlow { .. }
             | InteractiveCommand::Flow { .. }
@@ -9742,7 +9750,7 @@ impl VibocerosApp {
             if let Some(s) = &mut self.spiral_session {
                 s.cursor = Some(point);
             }
-            self.update_subd_box_hover(point);
+            self.update_subd_primitive_hover(point);
             self.update_face_create_hover(point);
             self.update_mesh_polyline_hover(point);
             self.update_surface_interpolation_hover(point);
@@ -10719,7 +10727,7 @@ impl eframe::App for VibocerosApp {
                 self.rectangle_session
                     .as_ref()
                     .or_else(|| {
-                        self.subd_box_session
+                        self.subd_primitive_session
                             .as_ref()
                             .filter(|s| s.base.is_none())
                             .map(|s| &s.rectangle)
@@ -11349,9 +11357,9 @@ impl eframe::App for VibocerosApp {
                                 .as_ref()
                                 .map(face_create::Session::preview_curves)
                                 .or_else(|| {
-                                    self.subd_box_session
+                                    self.subd_primitive_session
                                         .as_ref()
-                                        .map(subd_box::Session::preview_curves)
+                                        .map(subd_primitives::Session::preview_curves)
                                 })
                                 .or_else(|| {
                                     self.surface_offset_session
@@ -11947,7 +11955,7 @@ mod tests {
             parabola_session: None,
             conic_session: None,
             rectangle_session: None,
-            subd_box_session: None,
+            subd_primitive_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,

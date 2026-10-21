@@ -38,12 +38,12 @@ pub fn plane(value: &Value) -> Frame3 {
     }
 }
 pub fn setup(value: &Value) -> Scene {
+    setup_on_layer(value, "SubDBox output")
+}
+pub fn setup_on_layer(value: &Value, name: &str) -> Scene {
     let mut document = Document::default();
     let layer = document
-        .add_layer(
-            "SubDBox output",
-            viboceros_document::ColorRgb::new(0, 0, 255),
-        )
+        .add_layer(name, viboceros_document::ColorRgb::new(0, 0, 255))
         .unwrap();
     document.set_current_layer(layer).unwrap();
     let source = value["input"].get("curve").map(|c| {

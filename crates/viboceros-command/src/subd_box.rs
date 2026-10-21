@@ -154,8 +154,7 @@ pub fn from_arguments(
     plane: Frame3,
     mut preferences: Preferences,
 ) -> Result<(Definition, Preferences), CommandError> {
-    let mut rectangle = RectangleInput::new(plane);
-    let mut curve = None;
+    let mut script = crate::rectangle_input::RectangleScript::new(RectangleInput::new(plane));
     let mut base = None;
     let mut definition = None;
     let mut i = 0;
@@ -164,44 +163,26 @@ pub fn from_arguments(
             return Err(CommandError::Usage(USAGE));
         }
         let word = args[i];
-        if base.is_none() && curve.is_none() {
-            if rectangle.anchor().is_none()
-                && let Some(count) = preferences.option(&args[i..])?
+        if base.is_none() && !script.has_curve() {
+            if script.input.anchor().is_none()
+                && let Some(n) = preferences.option(&args[i..])?
             {
-                i += count;
+                i += n;
                 continue;
             }
-            if rectangle_option(&mut rectangle, word) {
+            if rectangle_option(&mut script.input, word) {
                 i += 1;
                 continue;
             }
         }
-        if rectangle.requests_curve() && curve.is_none() {
-            let (key, value) = word.split_once('=').ok_or(CommandError::Usage(USAGE))?;
-            let (id, edge) = if key.eq_ignore_ascii_case("Curve") {
-                (value.parse().map_err(|_| CommandError::Usage(USAGE))?, None)
-            } else if key.eq_ignore_ascii_case("Edge") {
-                let (id, edge) =
-                    crate::curve_reference::parse_edge(value).ok_or(CommandError::Usage(USAGE))?;
-                (id, Some(edge))
-            } else {
-                return Err(CommandError::Usage(USAGE));
-            };
-            curve = Some(crate::curve_reference::CapturedCurve::capture(
-                doc, id, edge,
-            )?);
-            i += 1;
-            continue;
-        }
-        let enter = word.trim_start_matches('_').eq_ignore_ascii_case("Enter");
         if let Some(base) = base {
-            let height = if enter {
+            let height = if word.trim_start_matches('_').eq_ignore_ascii_case("Enter") {
                 i += 1;
                 default_height(base)?
             } else if word.contains(',') {
-                let (point, n) = parse_point(&args[i..])?;
+                let (p, n) = parse_point(&args[i..])?;
                 i += n;
-                height_at(base, point)?
+                height_at(base, p)?
             } else {
                 i += 1;
                 crate::parse_finite_real(word)?
@@ -211,27 +192,12 @@ pub fn from_arguments(
             definition = Some(value);
             continue;
         }
-        if enter {
-            base = rectangle.enter()?;
-            i += 1;
-            continue;
-        }
-        if word.contains(',') || curve.is_some() || rectangle.anchor().is_none() {
-            let (point, n) = if word == "0" && rectangle.anchor().is_none() {
-                (plane.origin(), 1)
-            } else {
-                parse_point(&args[i..])?
-            };
-            i += n;
-            if let Some(curve) = curve.take() {
-                rectangle.around_curve(RectangleInput::curve_frame(curve.curve_ref(), point)?)
-            } else {
-                base = rectangle.point(point)?
-            }
-        } else {
-            base = rectangle.number(crate::parse_finite_real(word)?)?;
-            i += 1;
-        }
+        let (n, rectangle) = script.value(doc, &args[i..], false).map_err(|e| match e {
+            CommandError::Usage(_) => CommandError::Usage(USAGE),
+            e => e,
+        })?;
+        i += n;
+        base = rectangle;
     }
     Ok((definition.ok_or(CommandError::Usage(USAGE))?, preferences))
 }

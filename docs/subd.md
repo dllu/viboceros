@@ -25,6 +25,8 @@ Interpolation is remembered and affects only SubD output.
 
 Use [SubDBox](commands/subd-box.md) for closed smooth boxes with editable face
 counts, Center/3Point/Vertical bases and bases perpendicular to guide curves.
+[SubDPlane](commands/subd-plane.md) makes open rectangular grids with crease
+boundaries, including their rounded corner limit stations.
 
 Select a SubD before `3DFace`, choose `Append` in the point getter, or supply
 `Append=<id>` to add faces to it. Without an explicit `Output` option, the target

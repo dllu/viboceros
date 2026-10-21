@@ -358,7 +358,7 @@
     "Graph comparisons treat relative differences within 16 machine epsilons as ties and quantize heap distance to 16 adjacent floating-point values. These sampled native locus comparisons do not certify a universal mesh geodesic or exact shortest path."
   ],
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "fe21c5c3f1797623896ab56289d757babd29a4578f6bcf72c994a50aea6af1fc",
+    "crates/viboceros-command/src/lib.rs": "c360248d73fa8fdcdab235df92c3e5d3e78e54c9bb6ee0085517c1027f14fd61",
     "crates/viboceros-geometry/src/error.rs": "564afd96b7fcb578c3ac6ffc9f22be356bc2effb81a512466fa6420a0f1f4dbc",
     "crates/viboceros-geometry/src/mesh/normals.rs": "e4cbcef46e287067a0364d7ad440c93d05d6bb77ac82aa1f9f21ad4dd97cd322",
     "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
@@ -372,7 +372,7 @@
     "crates/viboceros-command/src/polyline_on_mesh.rs": "ced0e868477f084ed6cef5c6af4217a8407d1f503d91c6d5ba5704aefe3f232b",
     "crates/viboceros-command/tests/polyline_on_mesh_native.rs": "050849e9424328faf825df8b99ece83288250dab73051d51c31a5645d36fcc82",
     "crates/viboceros-command/tests/support/mesh_polyline.rs": "a87f0e2de6c9ea620a859b926aa7624f1d5bf7db645b9fa0a82d040ff78c976b",
-    "src/app.rs": "242ba74ea8dd768a84e1aa3e79c3861c08aefeffd576cb47b3a866a1b57d1acb",
+    "src/app.rs": "135291d6d3b990111bb0978d8bfb3c0104321ff96bb43feef01364a420d14d88",
     "src/app/polyline_on_mesh.rs": "b05f6afa49c5d88749bcf9eb944f9c470aa91eefcab2840809ff299491573d89",
     "src/app/tests/polyline_on_mesh.rs": "bdab09956080a9c71442b0fe92a751951edb974ed923fa078d2bdd0b065cff64",
     "src/app/mesh_face_prompt.rs": "8a6fe1e583489d85aa27f626debebae3ff4bf34d632b16b4eea36fc4ffbfc735",

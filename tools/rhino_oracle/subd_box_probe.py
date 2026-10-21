@@ -49,10 +49,13 @@ def subd_value(subd,host):
 
 def run(op,host,iterations,tolerance):
  validate(op)
+ return run_scene(op,host,iterations,tolerance,'SubDBox',SCENES[op['case']])
+
+def run_scene(op,host,iterations,tolerance,command,recipe):
  from join_probe import observe_command
  R=host['Rhino'];G=R.Geometry;S=host['System'];doc=R.RhinoDoc.ActiveDoc;vp=doc.Views.ActiveView.ActiveViewport
  if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:raise ValueError('empty private idle document required')
- case=deepcopy(SCENES[op['case']]);saved_plane=vp.GetConstructionPlane();old_layer=doc.Layers.CurrentLayerIndex;layer=-1;guide=None
+ case=deepcopy(recipe);saved_plane=vp.GetConstructionPlane();old_layer=doc.Layers.CurrentLayerIndex;layer=-1;guide=None
  def snapshot():
   rows=[]
   for obj in sorted(list(doc.Objects),key=lambda o:o.RuntimeSerialNumber):
@@ -64,23 +67,23 @@ def run(op,host,iterations,tolerance):
  try:
   origin,x,y=case.get('construction_plane',[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.]])
   vp.SetConstructionPlane(G.Plane(G.Point3d(*origin),G.Vector3d(*x),G.Vector3d(*y)))
-  serial=doc.BeginUndoRecord('Owned SubDBox setup')
+  serial=doc.BeginUndoRecord('Owned '+command+' setup')
   try:
-   layer=doc.Layers.Add('SubDBox output',S.Drawing.Color.Blue);doc.Layers.SetCurrentLayerIndex(layer,True)
+   layer=doc.Layers.Add(command+' output',S.Drawing.Color.Blue);doc.Layers.SetCurrentLayerIndex(layer,True)
    if 'curve'in case:
     g=G.LineCurve(G.Point3d(*case['curve'][0]),G.Point3d(*case['curve'][1]))
     try:guide=doc.Objects.AddCurve(g)
     finally:g.Dispose()
   finally:doc.EndUndoRecord(serial)
-  doc.ClearUndoRecords(True);before=snapshot();tokens=['_-SubDBox']
-  for name,count in zip(['XCount','YCount','ZCount'],case.get('counts',[])):tokens.append('_'+name+'='+str(count))
+  doc.ClearUndoRecords(True);before=snapshot();tokens=['_-'+command]
+  for name,count in zip(['XCount','YCount','ZCount'],([]if case.get('counts_at_end')else case.get('counts',[]))):tokens.append('_'+name+'='+str(count))
   for action in case['actions']:
    if isinstance(action,dict):tokens.extend(["'_-SelID",str(guide)])
    elif isinstance(action,str):tokens.append('_'+action)
    elif isinstance(action,list):tokens.append('w'+','.join(format(float(v),'.17g')for v in action))
    else:tokens.append(format(float(action),'.17g'))
-  tokens.extend(['_Cancel']*3);macro=' '.join(tokens);marker='Owned SubDBox '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker)
-  success,after,events=observe_command(R.Commands.Command,'SubDBox',lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
+  tokens.extend(['_Cancel']*3);macro=' '.join(tokens);marker='Owned '+command+' '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker)
+  success,after,events=observe_command(R.Commands.Command,command,lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
   history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip();after_script=snapshot()
   R.RhinoApp.RunScript('_Undo',False);undo=snapshot();R.RhinoApp.RunScript('_Redo',False);redo=snapshot()
   return dict(input=case,success=success,events=events,history=history,macro=macro,before=before,after=after,after_script=after_script,undo=undo,redo=redo),0

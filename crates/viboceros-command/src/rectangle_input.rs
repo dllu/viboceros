@@ -481,27 +481,28 @@ pub fn from_arguments(
     from_arguments_with_options(doc, args, plane, Default::default())
         .map(|(rectangle, _)| rectangle)
 }
-pub fn from_arguments_with_options(
-    doc: &viboceros_document::Document,
-    args: &[&str],
-    plane: Frame3,
-    options: crate::rectangle_rounding::Options,
-) -> Result<(RectangleDefinition, crate::rectangle_rounding::Options), crate::CommandError> {
-    use crate::CommandError;
-    let mut input = RectangleInput::new(plane).with_rounding(options);
-    let mut curve = None;
-    let mut result = None;
-    let mut i = 0;
-    while i < args.len() {
-        if result.is_some() {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let token = args[i];
-        if input.option(token) {
-            i += 1;
-            continue;
-        }
-        if input.requests_curve() && curve.is_none() {
+/// Scripted consumers share curve capture and point/dimension admission while
+/// retaining their own construction options and completion phases.
+pub(crate) struct RectangleScript {
+    pub input: RectangleInput,
+    curve: Option<crate::curve_reference::CapturedCurve>,
+}
+impl RectangleScript {
+    pub fn new(input: RectangleInput) -> Self {
+        Self { input, curve: None }
+    }
+    pub fn has_curve(&self) -> bool {
+        self.curve.is_some()
+    }
+    pub fn value(
+        &mut self,
+        doc: &viboceros_document::Document,
+        args: &[&str],
+        legacy: bool,
+    ) -> Result<(usize, Option<RectangleDefinition>), crate::CommandError> {
+        use crate::CommandError;
+        let token = *args.first().ok_or(CommandError::Usage(USAGE))?;
+        if self.input.requests_curve() && self.curve.is_none() {
             let (key, value) = token.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             let (id, edge) = if key.eq_ignore_ascii_case("Curve") {
                 (value.parse().map_err(|_| CommandError::Usage(USAGE))?, None)
@@ -512,38 +513,62 @@ pub fn from_arguments_with_options(
             } else {
                 return Err(CommandError::Usage(USAGE));
             };
-            curve = Some(crate::curve_reference::CapturedCurve::capture(
+            self.curve = Some(crate::curve_reference::CapturedCurve::capture(
                 doc, id, edge,
             )?);
-            i += 1;
-            continue;
+            return Ok((1, None));
         }
         if token.trim_start_matches('_').eq_ignore_ascii_case("Enter") {
-            result = input.enter()?;
-            i += 1;
-            continue;
+            return Ok((1, self.input.enter()?));
         }
-        // Keep the existing six-scalar, two-corner spelling. Comma triples
-        // disambiguate other scripted points from scalar dimensions.
-        let legacy = args.len() == 6 && args.iter().all(|v| v.parse::<Real>().is_ok());
-        if token.contains(',') || input.anchor().is_none() || legacy {
-            let (p, count) = crate::parse_point(&args[i..])?;
-            i += count;
-            if let Some(curve) = curve.take() {
-                input.around_curve(RectangleInput::curve_frame(curve.curve_ref(), p)?);
+        if token.contains(',') || self.input.anchor().is_none() || self.curve.is_some() || legacy {
+            let (point, count) = if token == "0" && self.input.anchor().is_none() && !legacy {
+                (self.input.plane.origin(), 1)
             } else {
-                result = input.point(p)?;
+                crate::parse_point(args)?
+            };
+            if let Some(curve) = self.curve.take() {
+                self.input
+                    .around_curve(RectangleInput::curve_frame(curve.curve_ref(), point)?);
+                Ok((count, None))
+            } else {
+                Ok((count, self.input.point(point)?))
             }
         } else {
             let value = token
                 .parse::<Real>()
                 .map_err(|_| CommandError::Usage(USAGE))?;
-            result = input.number(value)?;
-            i += 1;
+            Ok((1, self.input.number(value)?))
         }
     }
+}
+
+pub fn from_arguments_with_options(
+    doc: &viboceros_document::Document,
+    args: &[&str],
+    plane: Frame3,
+    options: crate::rectangle_rounding::Options,
+) -> Result<(RectangleDefinition, crate::rectangle_rounding::Options), crate::CommandError> {
+    use crate::CommandError;
+    let mut script = RectangleScript::new(RectangleInput::new(plane).with_rounding(options));
+    let mut result = None;
+    let mut i = 0;
+    // Preserve the existing six-scalar, two-corner spelling.
+    let legacy = args.len() == 6 && args.iter().all(|v| v.parse::<Real>().is_ok());
+    while i < args.len() {
+        if result.is_some() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        if script.input.option(args[i]) {
+            i += 1;
+            continue;
+        }
+        let (count, rectangle) = script.value(doc, &args[i..], legacy)?;
+        i += count;
+        result = rectangle;
+    }
     result
-        .map(|r| (r, input.rounding_options().unwrap()))
+        .map(|r| (r, script.input.rounding_options().unwrap()))
         .ok_or(CommandError::Usage(USAGE))
 }
 

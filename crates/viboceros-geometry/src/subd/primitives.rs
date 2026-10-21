@@ -1,6 +1,39 @@
 use super::*;
 
 impl SubD {
+    /// An open rectangular SubD grid. Smooth interior vertices/edges and crease
+    /// boundaries match ordinary polygon SubD construction, including rounded
+    /// boundary limit stations. The existing mesh grid owns parameter sampling.
+    pub fn try_plane_grid(
+        frame: crate::Frame3,
+        dimensions: [f64; 2],
+        counts: [usize; 2],
+    ) -> Result<Self, GeometryError> {
+        let [x, y] = counts;
+        if x == 0
+            || y == 0
+            || x.checked_add(1)
+                .and_then(|x| y.checked_add(1).and_then(|y| x.checked_mul(y)))
+                .is_none_or(|n| n > 100_000)
+        {
+            return Err(viboceros_opennurbs::SubDError(
+                "Invalid or excessive SubD plane grid".into(),
+            )
+            .into());
+        }
+        let mesh = TriangleMesh::try_plane_grid(
+            frame,
+            [0., dimensions[0]],
+            [0., dimensions[1]],
+            x,
+            y,
+            crate::Tolerance::NUMERICAL_VALIDATION,
+        )?;
+        Self::try_from_polygons(
+            mesh.vertices().to_vec(),
+            mesh.faces().iter().map(|f| f.indices().to_vec()).collect(),
+        )
+    }
     /// A smooth box on an orthonormal frame, via OpenNURBS.
     /// Counts describe the three box-edge directions; the native record retains
     /// its face packing and original topology independently of display meshes.
@@ -63,6 +96,15 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap()
+    }
+    #[test]
+    fn plane_grid_rejects_invalid_dimensions_and_counts_before_native_allocation() {
+        for counts in [[0, 2], [100_000; 2], [usize::MAX, 1]] {
+            assert!(SubD::try_plane_grid(frame(), [4., 3.], counts).is_err());
+        }
+        for dimensions in [[0., 3.], [-1., 3.], [f64::INFINITY, 3.], [f64::NAN, 3.]] {
+            assert!(SubD::try_plane_grid(frame(), dimensions, [2; 2]).is_err());
+        }
     }
     #[test]
     fn box_constructor_rejects_lost_dimensions_and_excessive_topology() {
