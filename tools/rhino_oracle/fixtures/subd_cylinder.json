@@ -1,0 +1,151 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_cancel_center",
+      "case": "subd_cylinder_cancel_center"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_cancel_height",
+      "case": "subd_cylinder_cancel_height"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_default",
+      "case": "subd_cylinder_default"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_quad",
+      "case": "subd_cylinder_quad"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_open",
+      "case": "subd_cylinder_open"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_tri",
+      "case": "subd_cylinder_tri"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_three",
+      "case": "subd_cylinder_three"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_four",
+      "case": "subd_cylinder_four"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_odd",
+      "case": "subd_cylinder_odd"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_one_band",
+      "case": "subd_cylinder_one_band"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_negative",
+      "case": "subd_cylinder_negative"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_both",
+      "case": "subd_cylinder_both"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_height_point",
+      "case": "subd_cylinder_height_point"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_free_axis",
+      "case": "subd_cylinder_free_axis"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_free_negative",
+      "case": "subd_cylinder_free_negative"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_radius_point",
+      "case": "subd_cylinder_radius_point"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_diameter",
+      "case": "subd_cylinder_diameter"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_circumference",
+      "case": "subd_cylinder_circumference"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_area",
+      "case": "subd_cylinder_area"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_two_point",
+      "case": "subd_cylinder_two_point"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_three_point",
+      "case": "subd_cylinder_three_point"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_spatial_circle",
+      "case": "subd_cylinder_spatial_circle"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_vertical_circle",
+      "case": "subd_cylinder_vertical_circle"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_orientation",
+      "case": "subd_cylinder_orientation"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_tilted",
+      "case": "subd_cylinder_tilted"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_free_odd",
+      "case": "subd_cylinder_free_odd"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_free_x",
+      "case": "subd_cylinder_free_x"
+    },
+    {
+      "op": "subd_cylinder_command",
+      "id": "subd_cylinder_free_z",
+      "case": "subd_cylinder_free_z"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 //! SubD primitives share rectangle input, staged geometry and grouped history.
 use super::*;
 #[cfg(test)]
-mod tests;
+pub(super) mod tests;
 use viboceros_command::rectangle_input::RectangleDefinition;
 use viboceros_command::subd_box as solver;
 use viboceros_command::subd_plane as plane_solver;

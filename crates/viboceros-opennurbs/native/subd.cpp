@@ -207,6 +207,27 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 
+extern "C" int vibo_subd_cylinder(const double* frame,double radius,double height,const uint32_t* counts,uint32_t cap,ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{
+    require(frame && counts && counts[0]>=3 && counts[1]>=1 && counts[0]<=vibo_subd::component_limit && counts[1]<=vibo_subd::component_limit,
+      "Invalid SubD cylinder counts");
+    require(cap>=1 && cap<=3,"Invalid SubD cylinder cap style");
+    const uint64_t n=counts[0],h=counts[1];
+    const bool triangles=cap==2 || (cap==3 && n>4 && n%2!=0);
+    const bool center=(triangles && n>3) || (cap==3 && n>4);
+    const uint64_t cap_faces=cap==1?0:triangles?(n<=3?2:2*n):n<=4?2:n;
+    require(n*(h+1)+(center?2:0)<=vibo_subd::component_limit && n*h+cap_faces<=vibo_subd::component_limit,
+      "SubD cylinder component budget exceeded");
+    const ON_Plane plane(ON_3dPoint(frame),ON_3dVector(frame+3),ON_3dVector(frame+6));
+    require(plane.IsValid() && std::isfinite(radius) && radius>0. && std::isfinite(height) && height>0.,"Invalid SubD cylinder dimensions");
+    ON_SubD subd;
+    const ON_Cylinder cylinder(ON_Circle(plane,radius),height);
+    require(ON_SubD::CreateCylinder(cylinder,counts[0],counts[1],ON_SubDEndCapStyleFromUnsigned(cap),ON_SubDEdgeTag::Smooth,ON_SubDComponentLocation::Surface,&subd)==&subd,
+      "Native SubD cylinder construction failed");
+    return extract(subd);
+  });
+}
+
 extern "C" int vibo_subd_box(const double* corners,const uint32_t* counts,ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{
     require(corners && counts,"Missing SubD box parameters");

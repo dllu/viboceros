@@ -144,6 +144,12 @@ impl CircleInput {
             plane,
         }
     }
+    /// Latch the viewport construction plane before the first construction pick.
+    pub fn set_initial_plane(&mut self, plane: Frame3) {
+        if self.anchor().is_none() {
+            self.plane = plane;
+        }
+    }
     pub fn anchor(self) -> Option<Point3> {
         match self.state {
             State::Center { center, .. } | State::Vertical { center, .. } => center,

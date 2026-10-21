@@ -44,6 +44,16 @@ struct NativeResult {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vibo_subd_cylinder(
+        frame: *const f64,
+        radius: f64,
+        height: f64,
+        counts: *const u32,
+        cap: u32,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_subd_box(
         corners: *const f64,
         counts: *const u32,
@@ -135,6 +145,26 @@ pub fn subd_box(corners: &[[f64; 3]; 8], counts: [u32; 3]) -> Result<SubDData, S
         vibo_subd_box(
             corners.as_ptr().cast(),
             counts.as_ptr(),
+            out,
+            error,
+            capacity,
+        )
+    })
+}
+pub fn subd_cylinder(
+    frame: &[[f64; 3]; 3],
+    radius: f64,
+    height: f64,
+    counts: [u32; 2],
+    cap: u32,
+) -> Result<SubDData, SubDError> {
+    call(|out, error, capacity| unsafe {
+        vibo_subd_cylinder(
+            frame.as_ptr().cast(),
+            radius,
+            height,
+            counts.as_ptr(),
+            cap,
             out,
             error,
             capacity,

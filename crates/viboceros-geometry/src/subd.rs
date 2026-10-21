@@ -5,9 +5,11 @@ use crate::{
 };
 use std::sync::Arc;
 mod append;
+mod cylinder;
 mod interpolation;
 mod primitives;
 pub use append::SubDAppendResult;
+pub use cylinder::SubDCylinderCap;
 
 /// A display tessellation with exact native limit normals for each quad corner.
 /// A zero vector marks an undefined normal in a degenerate sector.

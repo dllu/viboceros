@@ -12,6 +12,7 @@ Rhino's complete command set is still a work in progress.
 - [3DFace from corner points and boundary edges](3dface.md)
 - [SubDBox primitives and rectangle construction modes](subd-box.md)
 - [SubDPlane grids and rectangle construction modes](subd-plane.md)
+- [SubDCylinder](subd-cylinder.md): circle bases, caps, face counts and spatial axes.
 - [PlanarMesh from planar curve regions](planar-mesh.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [Check and SelBadObjects](check.md)

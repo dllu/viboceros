@@ -2,7 +2,7 @@ use super::*;
 use crate::app::tests::test_app;
 #[path = "../../../crates/viboceros-command/tests/support/subd_box.rs"]
 #[allow(dead_code)]
-mod native;
+pub(in crate::app) mod native;
 use crate::app::subd_native_tests as subd_native;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();

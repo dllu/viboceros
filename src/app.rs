@@ -234,6 +234,7 @@ mod stretch_prompt;
 mod subcurve_direction;
 mod subcurve_preview;
 mod subcurve_prompt;
+mod subd_cylinder;
 #[cfg(test)]
 #[path = "../crates/viboceros-command/tests/support/subd.rs"]
 #[allow(dead_code)]
@@ -605,6 +606,9 @@ enum InteractiveCommand {
     Rectangle {
         first: Option<Point3>,
     },
+    SubDCylinder {
+        anchor: Option<Point3>,
+    },
     SubDPrimitive {
         kind: subd_primitives::Kind,
         anchor: Option<Point3>,
@@ -963,6 +967,7 @@ impl InteractiveCommand {
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
             Self::Box { .. } => "Box",
+            Self::SubDCylinder { .. } => "SubDCylinder",
             Self::SubDPrimitive { kind, .. } => kind.name(),
             Self::SelBox { .. } => "SelBox",
             Self::PointGrid { .. } => "PointGrid",
@@ -1482,6 +1487,9 @@ impl InteractiveCommand {
             Self::PointGrid { .. } => {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
             }
+            Self::SubDCylinder { .. } => {
+                "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
+            }
             Self::SubDPrimitive {
                 kind: subd_primitives::Kind::Box,
                 ..
@@ -1946,6 +1954,7 @@ impl InteractiveCommand {
             | Self::InterpolateCurveOnSurface { anchor: base }
             | Self::PolylineOnMesh { anchor: base }
             | Self::FaceCreate { anchor: base }
+            | Self::SubDCylinder { anchor: base }
             | Self::SubDPrimitive { anchor: base, .. } => base,
             Self::RemapCPlane => None,
             Self::ProjectDirection { start }
@@ -2516,6 +2525,7 @@ pub struct VibocerosApp {
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     subd_primitive_session: Option<subd_primitives::Session>,
+    subd_cylinder_session: Option<subd_cylinder::Session>,
     orient_points_session: Option<orient_points::Session>,
     remap_cplane_session: Option<remap_cplane::Session>,
     orient_surface_session: Option<orient_surface::Session>,
@@ -2666,6 +2676,7 @@ impl VibocerosApp {
             conic_session: None,
             rectangle_session: None,
             subd_primitive_session: None,
+            subd_cylinder_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,
@@ -2802,6 +2813,7 @@ impl VibocerosApp {
             || self.try_continue_spiral(&input)
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
+            || self.continue_subd_cylinder(&input)
             || self.continue_subd_primitive(&input)
             || self.try_continue_rectangle(&input)
         {
@@ -3625,6 +3637,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_conic(input) {
+            return true;
+        }
+        if self.start_subd_cylinder(input) {
             return true;
         }
         if self.start_subd_primitive(input) {
@@ -6117,6 +6132,7 @@ impl VibocerosApp {
         self.conic_session = None;
         self.rectangle_session = None;
         self.subd_primitive_session = None;
+        self.subd_cylinder_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
         self.finish_stretch_session(false);
@@ -6232,6 +6248,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_conic_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_subd_cylinder_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_subd_primitive_point(point) {
             return accepted;
         }
@@ -6333,6 +6352,7 @@ impl VibocerosApp {
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
+            | InteractiveCommand::SubDCylinder { .. }
             | InteractiveCommand::SubDPrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
             | InteractiveCommand::SurfaceFlow { .. }
@@ -9750,6 +9770,7 @@ impl VibocerosApp {
             if let Some(s) = &mut self.spiral_session {
                 s.cursor = Some(point);
             }
+            self.update_subd_cylinder_hover(point);
             self.update_subd_primitive_hover(point);
             self.update_face_create_hover(point);
             self.update_mesh_polyline_hover(point);
@@ -11032,6 +11053,7 @@ impl eframe::App for VibocerosApp {
                 .and_then(viboceros_command::circle_input::CircleInput::mouse_plane)
         });
         let angle_plane = angle_plane
+            .or_else(|| self.subd_cylinder_session.as_ref().and(self.drafting_plane))
             .or_else(|| {
                 self.circle_around_session
                     .as_ref()?
@@ -11356,6 +11378,11 @@ impl eframe::App for VibocerosApp {
                                 .face_create_session
                                 .as_ref()
                                 .map(face_create::Session::preview_curves)
+                                .or_else(|| {
+                                    self.subd_cylinder_session
+                                        .as_ref()
+                                        .map(subd_cylinder::Session::preview_curves)
+                                })
                                 .or_else(|| {
                                     self.subd_primitive_session
                                         .as_ref()
@@ -11956,6 +11983,7 @@ mod tests {
             conic_session: None,
             rectangle_session: None,
             subd_primitive_session: None,
+            subd_cylinder_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,
