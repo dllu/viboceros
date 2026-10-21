@@ -5,7 +5,13 @@ use viboceros_command::{
     circle_input::CircleSizeMode as Mode,
     curve_reference::{CapturedCurve, perpendicular_frame},
 };
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Owner {
+    Circle,
+    SubDSphere,
+}
 pub(super) struct Session {
+    owner: Owner,
     pub(super) output: Option<viboceros_command::circle_deform_input::Output>,
     curve: Option<CapturedCurve>,
     pub(super) input: Option<Input>,
@@ -45,12 +51,29 @@ impl VibocerosApp {
         &mut self,
         output: Option<viboceros_command::circle_deform_input::Output>,
     ) {
-        self.cancel_interactive_command(false);
-        let mut preferences = self.commands.circle_preferences();
+        self.start_circle_around_for(Owner::Circle, output);
+    }
+    pub(super) fn start_subd_sphere_around(&mut self) {
+        self.start_circle_around_for(Owner::SubDSphere, None);
+    }
+    fn start_circle_around_for(
+        &mut self,
+        owner: Owner,
+        output: Option<viboceros_command::circle_deform_input::Output>,
+    ) {
+        if owner == Owner::Circle {
+            self.cancel_interactive_command(false);
+        }
+        let mut preferences = if owner == Owner::Circle {
+            self.commands.circle_preferences()
+        } else {
+            Preferences::default()
+        };
         if let Some(output) = output {
             preferences.deformation = output.deformation;
         }
         self.circle_around_session = Some(Session {
+            owner,
             output,
             curve: None,
             input: None,
@@ -99,9 +122,18 @@ impl VibocerosApp {
         } else {
             "center on curve".into()
         };
-        self.active_command = Some(InteractiveCommand::CircleAround { center });
+        self.active_command = Some(if s.owner == Owner::Circle {
+            InteractiveCommand::CircleAround { center }
+        } else {
+            InteractiveCommand::SubDSphere { anchor: center }
+        });
         self.drafting_plane = s.input.map(Input::frame);
-        self.push_log(format!("Circle AroundCurve: {prompt}; Esc cancels"));
+        let name = if s.owner == Owner::Circle {
+            "Circle"
+        } else {
+            "SubDSphere"
+        };
+        self.push_log(format!("{name} AroundCurve: {prompt}; Esc cancels"));
     }
     pub(super) fn pick_circle_around_curve(
         &mut self,
@@ -110,6 +142,9 @@ impl VibocerosApp {
     ) -> bool {
         if !self.picking_circle_around_curve() {
             return false;
+        }
+        if !self.validate_circle_around_curve() {
+            return true;
         }
         let result = id
             .ok_or_else(|| "Select a curve or surface edge".to_owned())
@@ -134,7 +169,16 @@ impl VibocerosApp {
         }
         true
     }
-    pub(super) fn validate_circle_around_curve(&mut self) {
+    pub(super) fn validate_circle_around_curve(&mut self) -> bool {
+        if self
+            .circle_around_session
+            .as_ref()
+            .is_some_and(|s| s.owner == Owner::SubDSphere)
+            && !self.valid_subd_sphere()
+        {
+            return false;
+        }
+
         if self
             .circle_around_session
             .as_ref()
@@ -152,6 +196,7 @@ impl VibocerosApp {
             self.push_log("Circle guide changed or became unavailable; select it again".into());
             self.circle_around_prompt();
         }
+        true
     }
     pub(super) fn resolve_circle_around_point(
         &mut self,
@@ -184,6 +229,20 @@ impl VibocerosApp {
     fn commit_circle_around(&mut self, circle: viboceros_geometry::Circle3) -> bool {
         let s = self.circle_around_session.as_ref().unwrap();
         let curve = s.curve.as_ref().unwrap();
+        if s.owner == Owner::SubDSphere {
+            let release = if s.postselected {
+                vec![curve.object_id()]
+            } else {
+                vec![]
+            };
+            return match viboceros_command::circle_input::CircleDefinition::from_circle(circle) {
+                Ok(d) => self.accept_subd_sphere_reference(d, release),
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            };
+        }
         let command = s
             .input
             .unwrap()
@@ -196,7 +255,9 @@ impl VibocerosApp {
     }
     pub(super) fn accept_circle_around_point(&mut self, point: Point3) -> Option<bool> {
         self.circle_around_session.as_ref()?;
-        self.validate_circle_around_curve();
+        if !self.validate_circle_around_curve() {
+            return Some(false);
+        }
         if self.picking_circle_around_curve() {
             self.circle_around_prompt();
             return Some(false);
@@ -232,7 +293,9 @@ impl VibocerosApp {
         if self.circle_around_session.is_none() {
             return false;
         }
-        self.validate_circle_around_curve();
+        if !self.validate_circle_around_curve() {
+            return true;
+        }
         let word = text.trim().trim_start_matches(['_', '-']);
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);

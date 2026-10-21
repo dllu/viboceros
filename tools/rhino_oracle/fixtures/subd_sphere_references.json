@@ -1,0 +1,136 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_points",
+      "case": "sphere_tangent_points"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_spatial",
+      "case": "sphere_tangent_spatial"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_two",
+      "case": "sphere_tangent_two"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_radius",
+      "case": "sphere_tangent_radius"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_late_radius",
+      "case": "sphere_tangent_late_radius"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_from_first",
+      "case": "sphere_tangent_from_first"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_three",
+      "case": "sphere_tangent_three"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_circle_line",
+      "case": "sphere_tangent_circle_line"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_triangle_style",
+      "case": "sphere_tangent_triangle_style"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_tangent_cancel",
+      "case": "sphere_tangent_cancel"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_preselected",
+      "case": "sphere_fit_preselected"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_postselected",
+      "case": "sphere_fit_postselected"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_partial",
+      "case": "sphere_fit_partial"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_noisy",
+      "case": "sphere_fit_noisy"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_grips",
+      "case": "sphere_fit_grips"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_mixed",
+      "case": "sphere_fit_mixed"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_grips_postselected",
+      "case": "sphere_fit_grips_postselected"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_collinear",
+      "case": "sphere_fit_collinear"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_collinear_postselected",
+      "case": "sphere_fit_collinear_postselected"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_insufficient",
+      "case": "sphere_fit_insufficient"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_fit_cancel",
+      "case": "sphere_fit_cancel"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_around_z",
+      "case": "sphere_around_z"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_around_x",
+      "case": "sphere_around_x"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_around_preselected",
+      "case": "sphere_around_preselected"
+    },
+    {
+      "op": "subd_sphere_references",
+      "id": "sphere_around_circle",
+      "case": "sphere_around_circle"
+    }
+  ]
+}

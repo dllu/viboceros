@@ -95,3 +95,8 @@ comparisons cover standalone faces, append, source tags, disconnected pieces,
 chains, tilted/concave InPlane faces, Undo and cancellation. Each compares the
 native control net, vertex limit stations and sampled density-two surface.
 General imported sharpness and arbitrary nonmanifold fits remain unqualified.
+
+[SubDSphere](commands/subd-sphere.md) adds Quad, Triangle and UV sphere nets,
+shared sphere construction, Tangent, FitPoints and AroundCurve input. Its
+[qualification](subd-sphere-qualification.json) retains 54 native recipes and
+compares geometry, source state and grouped history at `1e-6`.

@@ -240,6 +240,7 @@ mod subd_cylinder;
 #[allow(dead_code)]
 mod subd_native_tests;
 mod subd_primitives;
+mod subd_sphere;
 mod surface_curve_offset;
 mod surface_flow;
 mod surface_interpolation;
@@ -606,6 +607,9 @@ enum InteractiveCommand {
     Rectangle {
         first: Option<Point3>,
     },
+    SubDSphere {
+        anchor: Option<Point3>,
+    },
     SubDCylinder {
         anchor: Option<Point3>,
     },
@@ -967,6 +971,7 @@ impl InteractiveCommand {
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
             Self::Box { .. } => "Box",
+            Self::SubDSphere { .. } => "SubDSphere",
             Self::SubDCylinder { .. } => "SubDCylinder",
             Self::SubDPrimitive { kind, .. } => kind.name(),
             Self::SelBox { .. } => "SelBox",
@@ -1487,6 +1492,7 @@ impl InteractiveCommand {
             Self::PointGrid { .. } => {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
             }
+            Self::SubDSphere { .. } => "SubDSphere: pick sphere references; Esc cancels",
             Self::SubDCylinder { .. } => {
                 "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
             }
@@ -1954,6 +1960,7 @@ impl InteractiveCommand {
             | Self::InterpolateCurveOnSurface { anchor: base }
             | Self::PolylineOnMesh { anchor: base }
             | Self::FaceCreate { anchor: base }
+            | Self::SubDSphere { anchor: base }
             | Self::SubDCylinder { anchor: base }
             | Self::SubDPrimitive { anchor: base, .. } => base,
             Self::RemapCPlane => None,
@@ -2526,6 +2533,7 @@ pub struct VibocerosApp {
     rectangle_session: Option<rectangle::InputSession>,
     subd_primitive_session: Option<subd_primitives::Session>,
     subd_cylinder_session: Option<subd_cylinder::Session>,
+    subd_sphere_session: Option<subd_sphere::Session>,
     orient_points_session: Option<orient_points::Session>,
     remap_cplane_session: Option<remap_cplane::Session>,
     orient_surface_session: Option<orient_surface::Session>,
@@ -2677,6 +2685,7 @@ impl VibocerosApp {
             rectangle_session: None,
             subd_primitive_session: None,
             subd_cylinder_session: None,
+            subd_sphere_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,
@@ -2813,6 +2822,7 @@ impl VibocerosApp {
             || self.try_continue_spiral(&input)
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
+            || self.continue_subd_sphere(&input)
             || self.continue_subd_cylinder(&input)
             || self.continue_subd_primitive(&input)
             || self.try_continue_rectangle(&input)
@@ -3010,6 +3020,7 @@ impl VibocerosApp {
             || self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
             || self.try_start_intersection_prompt(&input)
+            || self.start_subd_sphere(&input)
             || self.start_subd_cylinder(&input)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)
@@ -3638,6 +3649,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_conic(input) {
+            return true;
+        }
+        if self.start_subd_sphere(input) {
             return true;
         }
         if self.start_subd_cylinder(input) {
@@ -6134,6 +6148,7 @@ impl VibocerosApp {
         self.rectangle_session = None;
         self.subd_primitive_session = None;
         self.subd_cylinder_session = None;
+        self.subd_sphere_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
         self.finish_stretch_session(false);
@@ -6249,6 +6264,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_conic_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_subd_sphere_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_subd_cylinder_point(point) {
             return accepted;
         }
@@ -6353,6 +6371,7 @@ impl VibocerosApp {
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
+            | InteractiveCommand::SubDSphere { .. }
             | InteractiveCommand::SubDCylinder { .. }
             | InteractiveCommand::SubDPrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
@@ -9771,6 +9790,7 @@ impl VibocerosApp {
             if let Some(s) = &mut self.spiral_session {
                 s.cursor = Some(point);
             }
+            self.update_subd_sphere_hover(point);
             self.update_subd_cylinder_hover(point);
             self.update_subd_primitive_hover(point);
             self.update_face_create_hover(point);
@@ -9796,6 +9816,7 @@ impl VibocerosApp {
                     prompt.description.command,
                     "Circle FitPoints"
                         | "SubDCylinder FitPoints"
+                        | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
@@ -10008,6 +10029,7 @@ impl VibocerosApp {
                         prompt.description.command,
                         "Circle FitPoints"
                             | "SubDCylinder FitPoints"
+                            | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"
                             | "Sphere FitPoints"
@@ -11056,6 +11078,7 @@ impl eframe::App for VibocerosApp {
                 .and_then(viboceros_command::circle_input::CircleInput::mouse_plane)
         });
         let angle_plane = angle_plane
+            .or_else(|| self.subd_sphere_session.as_ref().and(self.drafting_plane))
             .or_else(|| self.subd_cylinder_session.as_ref().and(self.drafting_plane))
             .or_else(|| {
                 self.circle_around_session
@@ -11381,6 +11404,11 @@ impl eframe::App for VibocerosApp {
                                 .face_create_session
                                 .as_ref()
                                 .map(face_create::Session::preview_curves)
+                                .or_else(|| {
+                                    self.subd_sphere_session
+                                        .as_ref()
+                                        .map(subd_sphere::Session::preview_curves)
+                                })
                                 .or_else(|| {
                                     self.subd_cylinder_session
                                         .as_ref()
@@ -11987,6 +12015,7 @@ mod tests {
             rectangle_session: None,
             subd_primitive_session: None,
             subd_cylinder_session: None,
+            subd_sphere_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,

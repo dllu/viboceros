@@ -4,7 +4,7 @@ use viboceros_command::subd_cylinder::Input;
 use viboceros_document::HistoryGroup;
 use viboceros_geometry::{Circle3, NurbsCurve, Polyline3, Tolerance};
 #[cfg(test)]
-mod tests;
+pub(super) mod tests;
 pub(super) struct Session {
     input: Input,
     group: HistoryGroup,

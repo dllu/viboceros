@@ -39,11 +39,14 @@ def validate(op):
  if not valid:raise ValueError('fixed SubDCylinder reference recipe required')
 def run(op,host,iterations,tolerance):
  validate(op)
+ return run_scene(op,host,iterations,tolerance,'SubDCylinder',ALL_CASES[op['case']])
+
+def run_scene(op,host,iterations,tolerance,command,recipe):
  from join_probe import observe_command
  from subd_box_probe import subd_value
  R,S=host['Rhino'],host['System'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
  if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:raise ValueError('empty owned idle document required')
- case=deepcopy(ALL_CASES[op['case']]);ids=[];point_ids=[];grip_id=None;layer=-1
+ case=deepcopy(recipe);ids=[];point_ids=[];grip_id=None;layer=-1
  old_plane=vp.GetConstructionPlane();old_view=R.DocObjects.ViewportInfo(vp);old_layer=doc.Layers.CurrentLayerIndex
  def snapshot():
   rows=[]
@@ -57,12 +60,13 @@ def run(op,host,iterations,tolerance):
    rows.append(row)
   return rows
  try:
-  vp.SetConstructionPlane(G.Plane.WorldXY)
-  serial=doc.BeginUndoRecord('Owned SubDCylinder references')
+  origin,x,y=case.get('construction_plane',[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.]])
+  plane=G.Plane(G.Point3d(*origin),G.Vector3d(*x),G.Vector3d(*y));vp.SetConstructionPlane(plane)
+  serial=doc.BeginUndoRecord('Owned '+command+' references')
   try:
-   layer=doc.Layers.Add('SubDCylinder output',S.Drawing.Color.Blue);doc.Layers.SetCurrentLayerIndex(layer,True)
+   layer=doc.Layers.Add(command+' output',S.Drawing.Color.Blue);doc.Layers.SetCurrentLayerIndex(layer,True)
    for source in case.get('curves',[]):
-    g=G.LineCurve(G.Point3d(*source['start']),G.Point3d(*source['end']))
+    g=host['_object_source'](source,tolerance)
     try:ids.append(doc.Objects.AddCurve(g))
     finally:g.Dispose()
    if 'controls'in case:
@@ -79,21 +83,22 @@ def run(op,host,iterations,tolerance):
    obj=doc.Objects.FindId(grip_id);obj.GripsOn=True
    for i in case.get('selected_grips',[]):obj.GetGrips()[i].Select(True)
   for i in case.get('selected',[]):doc.Objects.Select(point_ids[i])
+  for i in case.get('selected_curves',[]):doc.Objects.Select(ids[i])
   doc.ClearUndoRecords(True);before=snapshot();marker='Owned cylinder references '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker);trace=[]
   if case.get('live'):
    from conic_getter_input import drive
-   vp.SetToPlanView(G.Point3d.Origin,G.Vector3d.XAxis,G.Vector3d.YAxis,True);vp.ZoomExtents();view.Redraw()
+   vp.SetToPlanView(plane.Origin,plane.XAxis,plane.YAxis,True);vp.ZoomExtents();view.Redraw()
    def execute():
-    success,t=drive(dict(op='subd_cylinder_references',id=op['id'],actions=case['actions']),host,ids,command='SubDCylinder');trace.append(t);return success
+    success,t=drive(dict(op=op['op'],id=op['id'],actions=case['actions']),host,ids,command=command);trace.append(t);return success
    macro=None
   else:
-   tokens=['_-SubDCylinder']
+   tokens=['_-'+command]
    for a in case['actions']:
     if isinstance(a,list):tokens.append('w'+','.join(format(float(x),'.17g')for x in a))
     elif isinstance(a,str):tokens.append('_'+a)
     else:tokens.append(str(a))
    macro=' '.join(tokens);execute=lambda:R.RhinoApp.RunScript(macro,True)
-  success,after,events=observe_command(R.Commands.Command,'SubDCylinder',execute,snapshot,lambda:[],True)
+  success,after,events=observe_command(R.Commands.Command,command,execute,snapshot,lambda:[],True)
   history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip();after_script=snapshot()
   R.RhinoApp.RunScript('_Undo',False);undo=snapshot();R.RhinoApp.RunScript('_Redo',False);redo=snapshot()
   return dict(input=case,success=success,before=before,after=after,after_script=after_script,undo=undo,redo=redo,events=events,history=history,macro=macro,input_trace=trace),0

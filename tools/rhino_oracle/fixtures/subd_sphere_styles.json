@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_styles_quad_zero",
+      "case": "subd_sphere_styles_quad_zero"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_styles_quad_two",
+      "case": "subd_sphere_styles_quad_two"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_styles_uv",
+      "case": "subd_sphere_styles_uv"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_styles_tri",
+      "case": "subd_sphere_styles_tri"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_styles_triangle",
+      "case": "subd_sphere_styles_triangle"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_styles_globe",
+      "case": "subd_sphere_styles_globe"
+    }
+  ]
+}

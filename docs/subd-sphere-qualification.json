@@ -1,0 +1,2033 @@
+{
+  "model_epsilon": 1e-06,
+  "captured_recipes": 54,
+  "successful_constructions": 47,
+  "command_cases": 49,
+  "getter_cases": 54,
+  "successful_no_output_fits": 2,
+  "native_engine_version": "8.32.26160.13001",
+  "maximum_control_or_limit_point_error": 3.652514677376928e-07,
+  "maximum_sampled_surface_error": 9.286654756301971e-08,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "stages": {
+    "command": [
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.003422574439099e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 12,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 1.3076146267408235e-14,
+              "maximum_sampled_surface_error": 7.513511730867176e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_quad_zero"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.1465641341965027e-14,
+              "maximum_sampled_surface_error": 8.317786158480605e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_quad_one"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 192,
+              "faces": 96,
+              "maximum_control_or_limit_point_error": 1.1530524382304622e-14,
+              "maximum_sampled_surface_error": 8.975657075985904e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 98
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_quad_two"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 768,
+              "faces": 384,
+              "maximum_control_or_limit_point_error": 1.3138212466834012e-14,
+              "maximum_sampled_surface_error": 9.833164305805468e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 386
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_quad_three"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.1658755877101679e-14,
+              "maximum_sampled_surface_error": 8.985148693049196e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_uv"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 9,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 1.9073174972105478e-14,
+              "maximum_sampled_surface_error": 8.155417528946423e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_uv_three"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 12,
+              "faces": 8,
+              "maximum_control_or_limit_point_error": 1.5115608789912843e-14,
+              "maximum_sampled_surface_error": 8.083564959329622e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_uv_four"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 35,
+              "faces": 21,
+              "maximum_control_or_limit_point_error": 9.339080995124634e-15,
+              "maximum_sampled_surface_error": 7.985120403276153e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 16
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_uv_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 30,
+              "faces": 20,
+              "maximum_control_or_limit_point_error": 1.1059961307158048e-14,
+              "maximum_sampled_surface_error": 9.055788244996884e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 12
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_tri_zero"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 120,
+              "faces": 80,
+              "maximum_control_or_limit_point_error": 9.33605837763102e-15,
+              "maximum_sampled_surface_error": 9.360583898615978e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 42
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_tri_one"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 480,
+              "faces": 320,
+              "maximum_control_or_limit_point_error": 7.415259286379226e-15,
+              "maximum_sampled_surface_error": 8.084261073518977e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 162
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_tri_two"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.1846300548576003e-14,
+              "maximum_sampled_surface_error": 8.331852114593072e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_radius_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.003422574439099e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_diameter"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.0757711651938403e-14,
+              "maximum_sampled_surface_error": 9.187389012045167e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_circumference"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.324374521249838e-15,
+              "maximum_sampled_surface_error": 4.824043605111779e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_area"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 7.29713033338574e-15,
+              "maximum_sampled_surface_error": 3.587449393537654e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_two_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.2210434516706244e-14,
+              "maximum_sampled_surface_error": 7.377764055609925e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_two_point_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.003422574439099e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_three_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.916431039970537e-15,
+              "maximum_sampled_surface_error": 2.808666774861361e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_spatial_circle"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.1721268639221945e-14,
+              "maximum_sampled_surface_error": 9.231723087001064e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_orientation"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 4.794213474303274e-15,
+              "maximum_sampled_surface_error": 1.6354606405429e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_four_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.2068282588107942e-14,
+              "maximum_sampled_surface_error": 3.9968028886505635e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_four_point_offset"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 4.593694506022584e-15,
+              "maximum_sampled_surface_error": 3.5963943163061975e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_four_point_radius"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 3.2671507653874523e-15,
+              "maximum_sampled_surface_error": 2.5989654674417885e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_three_point_radius"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.6407442894293542e-14,
+              "maximum_sampled_surface_error": 2.2539441496237913e-14,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_tilted"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.2080807600881636e-14,
+              "maximum_sampled_surface_error": 8.227644038804674e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_around_z"
+      }
+    ],
+    "getter": [
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_cancel_center"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.003422574439099e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 12,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 1.3076146267408235e-14,
+              "maximum_sampled_surface_error": 7.513511730867176e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_quad_zero"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.1465641341965027e-14,
+              "maximum_sampled_surface_error": 8.317786158480605e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_quad_one"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 192,
+              "faces": 96,
+              "maximum_control_or_limit_point_error": 1.1530524382304622e-14,
+              "maximum_sampled_surface_error": 8.975657075985904e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 98
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_quad_two"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 768,
+              "faces": 384,
+              "maximum_control_or_limit_point_error": 1.3138212466834012e-14,
+              "maximum_sampled_surface_error": 9.833164305805468e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 386
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_quad_three"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.1658755877101679e-14,
+              "maximum_sampled_surface_error": 8.985148693049196e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_uv"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 9,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 1.9073174972105478e-14,
+              "maximum_sampled_surface_error": 8.155417528946423e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_uv_three"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 12,
+              "faces": 8,
+              "maximum_control_or_limit_point_error": 1.5115608789912843e-14,
+              "maximum_sampled_surface_error": 8.083564959329622e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_uv_four"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 35,
+              "faces": 21,
+              "maximum_control_or_limit_point_error": 9.339080995124634e-15,
+              "maximum_sampled_surface_error": 7.985120403276153e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 16
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_uv_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 30,
+              "faces": 20,
+              "maximum_control_or_limit_point_error": 1.1059961307158048e-14,
+              "maximum_sampled_surface_error": 9.055788244996884e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 12
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_tri_zero"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 120,
+              "faces": 80,
+              "maximum_control_or_limit_point_error": 9.33605837763102e-15,
+              "maximum_sampled_surface_error": 9.360583898615978e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 42
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_tri_one"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 480,
+              "faces": 320,
+              "maximum_control_or_limit_point_error": 7.415259286379226e-15,
+              "maximum_sampled_surface_error": 8.084261073518977e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 162
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_tri_two"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.1846300548576003e-14,
+              "maximum_sampled_surface_error": 8.331852114593072e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_radius_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.003422574439099e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_diameter"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.0757711651938403e-14,
+              "maximum_sampled_surface_error": 9.187389012045167e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_circumference"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.324374521249838e-15,
+              "maximum_sampled_surface_error": 4.824043605111779e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_area"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 7.29713033338574e-15,
+              "maximum_sampled_surface_error": 3.587449393537654e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_two_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.2210434516706244e-14,
+              "maximum_sampled_surface_error": 7.377764055609925e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_two_point_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.003422574439099e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_three_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.916431039970537e-15,
+              "maximum_sampled_surface_error": 2.808666774861361e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_spatial_circle"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.1721268639221945e-14,
+              "maximum_sampled_surface_error": 9.231723087001064e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_orientation"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 4.794213474303274e-15,
+              "maximum_sampled_surface_error": 1.6354606405429e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_four_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.2068282588107942e-14,
+              "maximum_sampled_surface_error": 3.9968028886505635e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_four_point_offset"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 4.593694506022584e-15,
+              "maximum_sampled_surface_error": 3.5963943163061975e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_four_point_radius"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 3.2671507653874523e-15,
+              "maximum_sampled_surface_error": 2.5989654674417885e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_three_point_radius"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.6407442894293542e-14,
+              "maximum_sampled_surface_error": 2.2539441496237913e-14,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_tilted"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.2080807600881636e-14,
+              "maximum_sampled_surface_error": 8.227644038804674e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_around_z"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_sphere_cancel_radius"
+      }
+    ],
+    "reference_command": [
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.003422574439099e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_points"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.916431039970537e-15,
+              "maximum_sampled_surface_error": 2.808666774861361e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.0480881692492567e-14,
+              "maximum_sampled_surface_error": 3.4684476073050936e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_two"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.4069840011198216e-13,
+              "maximum_sampled_surface_error": 2.3892005054529836e-13,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_radius"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.39826676322288e-13,
+              "maximum_sampled_surface_error": 2.380322819427464e-13,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_late_radius"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 8.191610388096e-15,
+              "maximum_sampled_surface_error": 5.959116267248829e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_from_first"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 3.652514677376928e-07,
+              "maximum_sampled_surface_error": 2.9896551198994905e-08,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_three"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.2322186207912513e-12,
+              "maximum_sampled_surface_error": 1.9975172652054895e-12,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_circle_line"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 120,
+              "faces": 80,
+              "maximum_control_or_limit_point_error": 2.4158585670803835e-13,
+              "maximum_sampled_surface_error": 2.408892445554476e-13,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 42
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_triangle_style"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 4.803559250984066e-15,
+              "maximum_sampled_surface_error": 1.7926468242238565e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_preselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 9.70716667048066e-08,
+              "maximum_sampled_surface_error": 9.286654756301971e-08,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_postselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 9.70716667048066e-08,
+              "maximum_sampled_surface_error": 9.286654756301971e-08,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_partial"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.4670949283489566e-08,
+              "maximum_sampled_surface_error": 2.4642032858679386e-08,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_noisy"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 3.64856516669287e-15,
+              "maximum_sampled_surface_error": 1.793724696768827e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_grips"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 4.803559250984066e-15,
+              "maximum_sampled_surface_error": 1.7926468242238565e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_mixed"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 3.64856516669287e-15,
+              "maximum_sampled_surface_error": 1.793724696768827e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_grips_postselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_collinear"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_collinear_postselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 7.993605777301127e-15,
+              "maximum_sampled_surface_error": 2.2315206618374916e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_around_z"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.866350197783357e-15,
+              "maximum_sampled_surface_error": 4.1954092705889645e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_around_x"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 7.993605777301127e-15,
+              "maximum_sampled_surface_error": 2.2315206618374916e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_around_preselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.843874359417886e-15,
+              "maximum_sampled_surface_error": 2.2644195468014703e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_around_circle"
+      }
+    ],
+    "reference_getter": [
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.003422574439099e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_points"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.916431039970537e-15,
+              "maximum_sampled_surface_error": 2.808666774861361e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.0480881692492567e-14,
+              "maximum_sampled_surface_error": 3.4684476073050936e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_two"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.4069840011198216e-13,
+              "maximum_sampled_surface_error": 2.3892005054529836e-13,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_radius"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.39826676322288e-13,
+              "maximum_sampled_surface_error": 2.380322819427464e-13,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_late_radius"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 8.191610388096e-15,
+              "maximum_sampled_surface_error": 5.959116267248829e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_from_first"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 3.652514677376928e-07,
+              "maximum_sampled_surface_error": 2.9896551198994905e-08,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_three"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.2322186207912513e-12,
+              "maximum_sampled_surface_error": 1.9975172652054895e-12,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_circle_line"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 120,
+              "faces": 80,
+              "maximum_control_or_limit_point_error": 2.4158585670803835e-13,
+              "maximum_sampled_surface_error": 2.408892445554476e-13,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 42
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_triangle_style"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_tangent_cancel"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 4.803559250984066e-15,
+              "maximum_sampled_surface_error": 1.7926468242238565e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_preselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 9.70716667048066e-08,
+              "maximum_sampled_surface_error": 9.286654756301971e-08,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_postselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 9.70716667048066e-08,
+              "maximum_sampled_surface_error": 9.286654756301971e-08,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_partial"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 2.4670949283489566e-08,
+              "maximum_sampled_surface_error": 2.4642032858679386e-08,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_noisy"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 3.64856516669287e-15,
+              "maximum_sampled_surface_error": 1.793724696768827e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_grips"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 4.803559250984066e-15,
+              "maximum_sampled_surface_error": 1.7926468242238565e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_mixed"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 3.64856516669287e-15,
+              "maximum_sampled_surface_error": 1.793724696768827e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_grips_postselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_collinear"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_collinear_postselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_insufficient"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_fit_cancel"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 7.993605777301127e-15,
+              "maximum_sampled_surface_error": 2.2315206618374916e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_around_z"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.866350197783357e-15,
+              "maximum_sampled_surface_error": 4.1954092705889645e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_around_x"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 7.993605777301127e-15,
+              "maximum_sampled_surface_error": 2.2315206618374916e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_around_preselected"
+      },
+      {
+        "check": {
+          "attributes_selection_grips_and_source": true,
+          "objects": [
+            {
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 6.843874359417886e-15,
+              "maximum_sampled_surface_error": 2.2644195468014703e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "sphere_around_circle"
+      }
+    ]
+  },
+  "excluded_diagnostics": [
+    {
+      "id": "subd_sphere_discovery_default",
+      "rejected_option": false
+    },
+    {
+      "id": "subd_sphere_discovery_styles_quad",
+      "rejected_option": true
+    },
+    {
+      "id": "subd_sphere_discovery_quad",
+      "rejected_option": true
+    },
+    {
+      "id": "subd_sphere_discovery_tri",
+      "rejected_option": true
+    },
+    {
+      "id": "subd_sphere_discovery_uv",
+      "rejected_option": true
+    },
+    {
+      "id": "subd_sphere_discovery_style_quad",
+      "rejected_option": true
+    },
+    {
+      "id": "subd_sphere_discovery_style_tri",
+      "rejected_option": true
+    },
+    {
+      "id": "subd_sphere_discovery_style_uv",
+      "rejected_option": true
+    },
+    {
+      "id": "subd_sphere_styles_quad_zero",
+      "rejected_option": false
+    },
+    {
+      "id": "subd_sphere_styles_quad_two",
+      "rejected_option": false
+    },
+    {
+      "id": "subd_sphere_styles_uv",
+      "rejected_option": false
+    },
+    {
+      "id": "subd_sphere_styles_tri",
+      "rejected_option": false
+    },
+    {
+      "id": "subd_sphere_styles_triangle",
+      "rejected_option": false
+    },
+    {
+      "id": "subd_sphere_styles_globe",
+      "rejected_option": true
+    }
+  ],
+  "guarantees": [
+    "Quad, Triangle and UV nets reuse sphere mesh samplers and public OpenNURBS subdivision evaluation. Quad refinement projects subdivided limit stations onto the sphere; UV nets interpolate latitude stations; triangular nets use a rotated icosahedron and uniform control radii.",
+    "Captured center/radius, spatial radius point, Diameter, Circumference, Area, 2Point, 3Point, 4Point, section Radius, Orientation and tilted CPlane constructions match control topology, winding, tags, vertex limit stations and density-two sampled limit surfaces.",
+    "Tangent uses the ordinary circle-contact rule, including a disjoint circle/line pair. Splop retains its distinct minimum-gap reference-sphere rule. Fitting accepts points and displayed selected grips, including rational controls, mixed inputs and partial preselection.",
+    "AroundCurve accepts straight or circular guides and preselection. Physical native contacts retain acknowledged motion/clicks and projected world positions; replay uses admitted contacts.",
+    "The getter stages construction outside the document. Completion adds one unselected SubD on the current layer in one Undo record. Source storage, names, layers, selection, grips and real Undo/Redo are compared.",
+    "Collinear fits succeed without output or a modeling Undo record, preserving preselection and releasing postselection. Cancellation, stale inputs, invalid topology and failed admission preserve pending Redo."
+  ],
+  "limits": [
+    "The 14 raw discovery/style recipes include rejected option guesses and fallback geometry. They are retained as diagnostics and excluded from supported comparisons.",
+    "Native comparative speed, packing, textures/material channels, arbitrary fit seam/axis choices, surface-edge guides and all option clocks are unqualified.",
+    "Quad subdivisions are limited to 0..6, Triangle to 0..5 and UV grids to at least 3 by 2, with a budget of 100000 control vertices and faces. High resolution interpolation cost has not been benchmarked.",
+    "Hover previews show construction great circles. Subdivision spheres approximate an analytic sphere; facet sampling is not a continuous Hausdorff certificate."
+  ],
+  "sha256": {
+    "crates/viboceros-command/src/subd_plane.rs": "2e819e710086a5a3c33a77ca7ec3572d8844abd3b0cd2b38d2f8db1338d33173",
+    "crates/viboceros-command/tests/support/subd_plane.rs": "a37cc2f1131dd8af1837e24bd8ce5ad1f120fb244d22e33803409d87b5afc80d",
+    "crates/viboceros-opennurbs/native/subd.cpp": "fda56ab3d3a37c3e005b4f9d19366eab1fecdae0f53a75c1f54bdf19e388f1fd",
+    "crates/viboceros-opennurbs/native/subd.h": "ed1285813c51c34cdf2fc89d45a6c32b288d53586f4ee14fc73b72180809abad",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "692893eb5c4447a582d43aca0c78413b8622ed19600975057ec15fddacad5fd0",
+    "crates/viboceros-opennurbs/src/subd.rs": "e82017ae6f93d52d3e63a356239d9cb5682aced8107d0085a329df697f55e54e",
+    "crates/viboceros-opennurbs/src/lib.rs": "ccf94e0b2c07a1c1d3a1be341cd7f1feaae08d1543417e65e0ea7519ccb7ea6e",
+    "crates/viboceros-geometry/src/subd.rs": "53daddd65c25cd1024bde8b516b3f03df581048853a96e8429701d5d56b85d9e",
+    "crates/viboceros-geometry/src/subd/primitives.rs": "b85bfac843c76139954dfc48806527e75f4e511eee340a3bcf24c48b7e5192fb",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
+    "crates/viboceros-command/src/lib.rs": "59f2c83b3326cce2e5ef4a27b93b0d2a603c091a9bb32afb28b703c0bf686fb4",
+    "crates/viboceros-command/src/subd_box.rs": "b33686863c705ab9e4fbdf7e4defec3418f95cd781cc6077476de022f471ed8f",
+    "crates/viboceros-command/src/rectangle_input.rs": "eff9a3e8a2cfc1f6872675b60edab741a5f4d9632ce0e65f28e48a5400943322",
+    "crates/viboceros-command/src/curve_reference.rs": "47d7e8fadb36a2d50517c32b23eef15dfec8b777e06967068e44b09f52e9159d",
+    "crates/viboceros-command/tests/subd_box_native.rs": "a997b25ee17b58329f8fd98f57e214820d14438914ff355b1f96b4bfc9830fd6",
+    "crates/viboceros-command/tests/support/subd_box.rs": "0e7ba829f4111750a79434cac67c77b856dffeeff609e657a8e8eb70e9f9341c",
+    "crates/viboceros-command/tests/support/subd.rs": "aa2b45bdb9164e34404fe203a9bcf225b1813e92a20b8858efe8325a77a3ac2d",
+    "src/app.rs": "a3f6df58e5e032890c4d288b80f4f4c44bbe1b8360c21c254063d00ca68077a6",
+    "src/app/subd_primitives.rs": "ec60147e39f0c66fe0e7be127ba53526e22030f404fb06621bf8bdc0880a079f",
+    "src/app/subd_primitives/tests.rs": "41943b5553f0180611e05734771d0c624b5f1a9d0bc3ade5d7d5cadf39dbd22e",
+    "src/app/rectangle.rs": "45984c55d0ad2ccbc3437afd7618078c935f3fc148b5cd2db14ebec66b611dfb",
+    "src/app/point_input.rs": "37a651259d9cfd2c89aa935c791ae2b264047e09ef277e0c7856a49c56bc512a",
+    "tools/rhino_oracle/subd_box_probe.py": "2618ad79ea476573b9a13b60990127e5e55a3aa975f79dfdb98c58bb62ce0e5d",
+    "tools/rhino_oracle/generate_subd_box.py": "055f46a8b6ddcd56c52975e96b2e1166ae7bfceef2483f4044deed4eca7036c5",
+    "tools/rhino_oracle/structural_sdk.py": "8a80476581d5fa637cb2322c1540a1a400bbe37b41e2bc7e2d63a00a78b3ec75",
+    "tools/rhino_oracle/rhino_worker.py": "3588f80531d4de49338970240d0a1a1054580dc87588914bddecf78fa328bbbf",
+    "tools/rhino_oracle/fixtures/subd_box.json": "fb3bddad8c7d23347a25e31da1b7b702c18de1ddb0b2b4f63561fab073eabf23",
+    "tools/rhino_oracle/observations/subd_box.json": "22740b74ce7b370b50148d7b4fbdfd4a20fcb07725926fa5a78d2d1f1c2e637a",
+    "tools/rhino_oracle/report_subd_box.py": "183ae17edbd0d237020b8eeb1cc2bc59c99c13c2888e542983933d493ba7ec2a",
+    "tools/rhino_oracle/test_subd_box.py": "361f693c7d7d55763c4f638d2d428217630ad7675cb2b9913dffe0271af2fa72",
+    "crates/viboceros-geometry/src/subd/sphere.rs": "195077c3735f2d12df08e03c3b76a60400454a1e450a9e90f62243b874121f34",
+    "crates/viboceros-geometry/src/subd/interpolation.rs": "d1a5ac2f286ebc688584ac7318d81bb79bcf1a249cd5323dcef84ac9eb55ce03",
+    "crates/viboceros-geometry/src/mesh.rs": "393e9621f61a20ae9e64bb3f132fd51284e93d4c178355617d11ca30a2d7b41d",
+    "crates/viboceros-command/src/subd_sphere.rs": "aae9c604dc58548f923612c7f8cd0ec40ab3564da2dd3451b6c23afe6bfa95d9",
+    "crates/viboceros-command/src/sphere_input.rs": "833ba93f9b66f29a61d8ff2093a4bab7cbac383ae2d203290986af2e7967d799",
+    "crates/viboceros-command/src/splop/reference.rs": "0799db8bfca2dfe9e7c9c61c98fd0a0d4d46d74d8a039ea9f1c9b3c2bcd2b168",
+    "crates/viboceros-command/src/circle_input.rs": "e5bb4de5401ffb96a0c9814c74d03521584cefe6d9a6f7e356b9abbe53bc83a0",
+    "crates/viboceros-command/src/circle_tangent_input.rs": "97a30eac162a869a9f768d6ee14a27de7f381118eb7014dd638f9271e25e2300",
+    "crates/viboceros-command/src/circle_around_input.rs": "907bb25f4498e73c2a6555e98fa6b535dd3051d7488c7d31886d4704c8a81f06",
+    "crates/viboceros-command/src/point_fitting.rs": "f1b84cd39db86b9064a0eddd738f42551a6bb2723c5d8038484d46044478499a",
+    "crates/viboceros-command/tests/subd_sphere_native.rs": "d2a908f50b68f366a637c227c2aae5ab8f69dbcd98c3bcf2ac9c7bdde59fa33b",
+    "crates/viboceros-command/tests/subd_sphere_references_native.rs": "d1775d09b54f7cb63b3acf91f4d890138020a20c4e3963ece7eb90168f433a43",
+    "crates/viboceros-command/tests/support/subd_sphere.rs": "81f7d3ecd15ae8bebdd1dd0653037ef0587d62528c564ded0fad6519b5906b90",
+    "crates/viboceros-command/tests/support/subd_sphere_references.rs": "e37b16a9b5969128c751830238f7781114f215c5a899334dd1bf474fab26d854",
+    "crates/viboceros-command/tests/support/subd_cylinder_references.rs": "c138263c5cf6ff04d766875184912103391e465c6d11f6c1c60c99b3ae7f33d8",
+    "src/app/subd_sphere.rs": "d76625af275aaaca49ac09a493a8cdfb30ee3760268e86e67fd13106c84d9d10",
+    "src/app/subd_sphere/tests.rs": "ca8f1dcf07c4380e48230e576da5b9bfacc1f8967875d5c12074869ffae74fbf",
+    "src/app/tangent.rs": "61e9296bade32dbad23ae5c083a257e6c8c9c208b8d989b906391ec063eecbf0",
+    "src/app/circle_around.rs": "7dfba5510ebe9c9782a92b65c8e0e3e3949163bd93f384801f8b27d3fcdcd940",
+    "src/app/object_selection.rs": "9b81ef59d1f22b25ea3fbc76e495e6831b0f36e1fae48cb2a7ccb41fb6b098e1",
+    "tools/rhino_oracle/subd_sphere_probe.py": "7eeb1e6ab40769893e11f695b5e037000164ab9c0ec3fd3ac282edc15dca1948",
+    "tools/rhino_oracle/subd_sphere_references_probe.py": "50963bb82f77d3cbdb5b36a3674095c2432ec8d5a9206141f6aa4997f2e54f4d",
+    "tools/rhino_oracle/subd_cylinder_references_probe.py": "7f9d7238ec831b51466a2b9c992eb0ac3fad471a1ae13ad866ae5bd2e824f016",
+    "tools/rhino_oracle/generate_subd_sphere.py": "c81fc8378702c3340fe07b2ef853973c3eb8a01f3277f706bf4f8742c8d8f81e",
+    "tools/rhino_oracle/generate_subd_sphere_references.py": "0571c62392b033780b80cd5afe8e9ead2068a31bceec4e4565188d595ffb8bf1",
+    "tools/rhino_oracle/client.py": "207374887b5a7e181afd51163ae1a1f7c1688980b274208df90afe55e58ab1f5",
+    "tools/rhino_oracle/conic_getter_input.py": "512b3bda809eae0579af0926157796e39c788e7b4941f741988cf13f610ccbb5",
+    "tools/rhino_oracle/report_subd_sphere.py": "33deaa101012f7a864e2d086cbddd29d067521a06fd24e2a37d0c489dd0b7891",
+    "tools/rhino_oracle/test_subd_sphere.py": "a8e8707b32ed960fefab8a40d4fcfd8b7888bb18785073be1de4db8770e609c9",
+    "tools/rhino_oracle/fixtures/subd_sphere.json": "dda2bb97c63691234e8ce9486f5b4c468e3c4f817487eff83efb6cce7040579c",
+    "tools/rhino_oracle/observations/subd_sphere.json": "7ba5d88e7988fc76d64b04cb5649e674ab0b0f8737f78b5ec4d1ba04430c0cb5",
+    "tools/rhino_oracle/fixtures/subd_sphere_references.json": "19d7a9b7b1b20054661e3316524847743644fa78ab8e4816e1744f42c6c50473",
+    "tools/rhino_oracle/observations/subd_sphere_references.json": "11bd401362799059ddb9d2ff8e90db1a75ea44b44b26b789774d9638ef7406af",
+    "tools/rhino_oracle/fixtures/subd_sphere_discovery.json": "34752d5331e6090c030493f63455aacfdce5bb9e6adf8aa0af311c1d6c92402e",
+    "tools/rhino_oracle/observations/subd_sphere_discovery.json": "8188a651f2ec9a460bb6327d44920288a0c8b18fc6670f6fec8c3d5c43e3f3f8",
+    "tools/rhino_oracle/fixtures/subd_sphere_styles.json": "7d578aee1cf3d2b813f8b16e2964f47a9434e863d1a2fc4c609cbf00673f9fc7",
+    "tools/rhino_oracle/observations/subd_sphere_styles.json": "b5d493480705d1b1864966aaa8db8d20e8787747532121e889f98fbce33e94bf"
+  }
+}

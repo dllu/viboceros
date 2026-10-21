@@ -282,7 +282,7 @@ fn filters_constraints_and_dimensionless_area_follow_the_common_point_tools() {
 
 use crate::app::subd_native_tests as subd_native;
 #[path = "../../../crates/viboceros-command/tests/support/subd_cylinder_references.rs"]
-mod references_native;
+pub(in crate::app) mod references_native;
 #[test]
 fn native_reference_getters_match_contacts_fit_selection_grips_and_grouped_history() {
     for row in references_native::rows() {

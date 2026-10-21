@@ -2,14 +2,14 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
     if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','InterpCrvOnSrf','PolylineOnMesh'):
         vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned surface curve array input',False);vp.ZoomExtents();view.Redraw()
     if command=='OrientCrvToEdge':
         vp.SetProjection(R.Display.DefinedViewportProjection.Perspective,'Owned curve edge input',False);vp.ZoomExtents();view.Redraw()
-    if command in('Circle','Arc','Splop','ArrayCrvOnSrf') and op.get('op')in('subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent') and 'construction_plane'in op:
+    if command in('Circle','Arc','Splop','ArrayCrvOnSrf') and op.get('op')in('subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent') and 'construction_plane'in op:
         origin,x,y=op['construction_plane']
         plan_view=bool(vp.SetToPlanView(R.Geometry.Point3d(*origin),R.Geometry.Vector3d(*x),R.Geometry.Vector3d(*y),True))
         if not plan_view:raise ValueError('could not align owned tangent input viewport')
@@ -47,6 +47,7 @@ def drive(op,host,guides,command="Conic"):
     if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch','Number of points per turn','Points per turn')
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
+    if command=='SubDSphere':prefixes=('Center of sphere','Radius','Diameter','Circumference','Area','First','Second','Third','Fourth','Sphere','Orientation','Direction','Point','Select','Style','Subdivisions','Around','Vertical')
     if command=='SubDCylinder':prefixes=('Base of cylinder','Radius','Diameter','Circumference','Area','First','Second','Third','Select','Point','End of cylinder','Number','Vertical','Around','Cap','Solid','Direction')
     if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
     if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):prefixes=('Select objects to array','Base point','Select a curve on a surface','Select curve to temporarily shorten','Start of curve','Current length','Select the surface','Position objects or distance from last','Number of objects','Number of copies','Distance between copies')
@@ -81,7 +82,7 @@ def drive(op,host,guides,command="Conic"):
     for i,a in enumerate(actions):
         if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        located=command in('SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
+        located=command in('SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name

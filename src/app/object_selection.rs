@@ -186,9 +186,12 @@ impl PendingObjectCommand {
         if self.description.command == "PlaneThroughPt" {
             return "Select at least three points, cloud points or control points; Enter fits a plane, Esc cancels";
         }
+        if self.description.command == "SubDSphere FitPoints" {
+            return "Select at least three points or control points; Enter fits the sphere, Esc cancels";
+        }
         if matches!(
             self.description.command,
-            "Circle FitPoints" | "SubDCylinder FitPoints"
+            "Circle FitPoints" | "SubDCylinder FitPoints" | "SubDSphere FitPoints"
         ) {
             return "Select at least three points or control points; Enter fits the circle, Esc cancels";
         }
@@ -287,6 +290,7 @@ impl VibocerosApp {
                     p.description.command,
                     "Circle FitPoints"
                         | "SubDCylinder FitPoints"
+                        | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
@@ -710,6 +714,7 @@ impl VibocerosApp {
             }
             "Circle FitPoints"
             | "SubDCylinder FitPoints"
+            | "SubDSphere FitPoints"
             | "PlaneThroughPt"
             | "Sphere FitPoints" => 3,
             "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" | "LineThroughPt" | "CrvDeviation" => {
@@ -733,6 +738,7 @@ impl VibocerosApp {
             description.command,
             "Circle FitPoints"
                 | "SubDCylinder FitPoints"
+                | "SubDSphere FitPoints"
                 | "PlaneThroughPt"
                 | "LineThroughPt"
                 | "Sphere FitPoints"
@@ -876,6 +882,7 @@ impl VibocerosApp {
                     | "RailRevolve"
                     | "Circle FitPoints"
                     | "SubDCylinder FitPoints"
+                    | "SubDSphere FitPoints"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());
@@ -1110,6 +1117,7 @@ impl VibocerosApp {
                         pending.description.command,
                         "Circle FitPoints"
                             | "SubDCylinder FitPoints"
+                            | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"
                             | "Sphere FitPoints"
@@ -1174,6 +1182,11 @@ impl VibocerosApp {
                 && pending.command_override.is_none()
             {
                 self.push_log("Enter number to remove or Percent=n".into());
+                return true;
+            }
+            if pending.description.command == "SubDSphere FitPoints" {
+                self.accept_subd_sphere_fit(pending.postselected);
+                self.command_input.clear();
                 return true;
             }
             if pending.description.command == "SubDCylinder FitPoints" {
@@ -1367,6 +1380,7 @@ impl VibocerosApp {
                     pending.description.command,
                     "Circle FitPoints"
                         | "SubDCylinder FitPoints"
+                        | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
@@ -1627,6 +1641,12 @@ impl VibocerosApp {
         self.rebuild_preview = None;
         self.weight_prompt = None;
         if let Some(pending) = self.object_prompt.take() {
+            if pending.description.command == "SubDSphere FitPoints" {
+                self.subd_sphere_session = None;
+                self.active_command = None;
+                self.drafting_plane = None;
+            }
+
             if pending.description.command == "SubDCylinder FitPoints" {
                 self.subd_cylinder_session = None;
                 self.active_command = None;

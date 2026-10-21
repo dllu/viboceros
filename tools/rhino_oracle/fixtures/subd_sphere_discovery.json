@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_discovery_default",
+      "case": "subd_sphere_discovery_default"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_discovery_styles_quad",
+      "case": "subd_sphere_discovery_styles_quad"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_discovery_quad",
+      "case": "subd_sphere_discovery_quad"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_discovery_tri",
+      "case": "subd_sphere_discovery_tri"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_discovery_uv",
+      "case": "subd_sphere_discovery_uv"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_discovery_style_quad",
+      "case": "subd_sphere_discovery_style_quad"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_discovery_style_tri",
+      "case": "subd_sphere_discovery_style_tri"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_discovery_style_uv",
+      "case": "subd_sphere_discovery_style_uv"
+    }
+  ]
+}

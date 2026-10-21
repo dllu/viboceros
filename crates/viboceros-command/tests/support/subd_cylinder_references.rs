@@ -37,25 +37,41 @@ pub fn point(p: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap()).unwrap()
 }
 pub fn setup(value: &Value) -> Scene {
+    setup_on_layer(value, "SubDCylinder output")
+}
+pub fn setup_on_layer(value: &Value, layer_name: &str) -> Scene {
     let input = &value["input"];
     let mut document = Document::default();
     let layer = document
-        .add_layer(
-            "SubDCylinder output",
-            viboceros_document::ColorRgb::new(0, 0, 255),
-        )
+        .add_layer(layer_name, viboceros_document::ColorRgb::new(0, 0, 255))
         .unwrap();
     document.set_current_layer(layer).unwrap();
     let mut sources = Vec::new();
     for c in input["curves"].as_array().into_iter().flatten() {
-        sources.push(
-            document
-                .add_geometry(Geometry::Line(
-                    LineSegment::try_new(point(&c["start"]), point(&c["end"]), Tolerance::DEFAULT)
+        let g = if c["type"] == "circle" {
+            Geometry::Circle(
+                viboceros_geometry::Circle3::try_from_frame(
+                    point(&c["center"]),
+                    c["radius"].as_f64().unwrap(),
+                    viboceros_geometry::Vector3::try_from(point(&c["x_axis"]).to_array())
+                        .unwrap()
+                        .normalized_nonzero()
                         .unwrap(),
-                ))
+                    viboceros_geometry::Vector3::try_from(point(&c["normal"]).to_array())
+                        .unwrap()
+                        .normalized_nonzero()
+                        .unwrap(),
+                    Tolerance::DEFAULT,
+                )
                 .unwrap(),
-        );
+            )
+        } else {
+            Geometry::Line(
+                LineSegment::try_new(point(&c["start"]), point(&c["end"]), Tolerance::DEFAULT)
+                    .unwrap(),
+            )
+        };
+        sources.push(document.add_geometry(g).unwrap());
     }
     if let Some(points) = input["controls"].as_array() {
         let points = points.iter().map(point).collect::<Vec<_>>();
@@ -107,6 +123,16 @@ pub fn setup(value: &Value) -> Scene {
         )
         .unwrap();
     document
+        .select_objects_direct(
+            input["selected_curves"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .map(|i| sources[i.as_u64().unwrap() as usize]),
+            SelectionMode::Add,
+        )
+        .unwrap();
+    document
         .set_object_names(
             sources
                 .iter()
@@ -151,12 +177,15 @@ pub fn token(v: &Value) -> String {
 }
 #[allow(dead_code)]
 pub fn command(scene: &mut Scene, value: &Value) -> (String, bool) {
+    command_for("SubDCylinder", scene, value)
+}
+pub fn command_for(name: &str, scene: &mut Scene, value: &Value) -> (String, bool) {
     let fit = value["input"]["actions"]
         .as_array()
         .unwrap()
         .iter()
         .any(|a| a == "FitPoints");
-    let mut words = vec!["SubDCylinder".to_owned()];
+    let mut words = vec![name.to_owned()];
     let mut postselected = false;
     if fit
         && viboceros_command::circle_fit_points::selected_points(&scene.document)
@@ -187,9 +216,19 @@ pub fn command(scene: &mut Scene, value: &Value) -> (String, bool) {
                 "Curve={}",
                 scene.sources[action["curve"].as_u64().unwrap() as usize]
             ));
-            words.push(token(&action["pick"]));
+            if let Some(pick) = action.get("pick") {
+                words.push(token(pick));
+            }
         } else {
             words.push(token(&action));
+            if action == "AroundCurve"
+                && let Some(index) = value["input"]["selected_curves"]
+                    .as_array()
+                    .and_then(|v| v.first())
+                    .and_then(Value::as_u64)
+            {
+                words.push(format!("Curve={}", scene.sources[index as usize]));
+            }
         }
     }
     (words.join(" "), postselected)

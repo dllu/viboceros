@@ -1,0 +1,156 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_cancel_center",
+      "case": "subd_sphere_cancel_center"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_default",
+      "case": "subd_sphere_default"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_quad_zero",
+      "case": "subd_sphere_quad_zero"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_quad_one",
+      "case": "subd_sphere_quad_one"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_quad_two",
+      "case": "subd_sphere_quad_two"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_quad_three",
+      "case": "subd_sphere_quad_three"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_uv",
+      "case": "subd_sphere_uv"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_uv_three",
+      "case": "subd_sphere_uv_three"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_uv_four",
+      "case": "subd_sphere_uv_four"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_uv_odd",
+      "case": "subd_sphere_uv_odd"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_tri_zero",
+      "case": "subd_sphere_tri_zero"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_tri_one",
+      "case": "subd_sphere_tri_one"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_tri_two",
+      "case": "subd_sphere_tri_two"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_radius_point",
+      "case": "subd_sphere_radius_point"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_diameter",
+      "case": "subd_sphere_diameter"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_circumference",
+      "case": "subd_sphere_circumference"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_area",
+      "case": "subd_sphere_area"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_two_point",
+      "case": "subd_sphere_two_point"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_two_point_spatial",
+      "case": "subd_sphere_two_point_spatial"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_three_point",
+      "case": "subd_sphere_three_point"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_spatial_circle",
+      "case": "subd_sphere_spatial_circle"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_orientation",
+      "case": "subd_sphere_orientation"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_four_point",
+      "case": "subd_sphere_four_point"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_four_point_offset",
+      "case": "subd_sphere_four_point_offset"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_four_point_radius",
+      "case": "subd_sphere_four_point_radius"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_three_point_radius",
+      "case": "subd_sphere_three_point_radius"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_tilted",
+      "case": "subd_sphere_tilted"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_around_z",
+      "case": "subd_sphere_around_z"
+    },
+    {
+      "op": "subd_sphere_command",
+      "id": "subd_sphere_cancel_radius",
+      "case": "subd_sphere_cancel_radius"
+    }
+  ]
+}
