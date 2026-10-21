@@ -9,6 +9,7 @@ Rhino's complete command set is still a work in progress.
 - [MeshPatch from curves, points and point clouds](mesh-patch.md)
 - [MeshFromLines from connected line networks](mesh-from-lines.md)
 - [MeshPolyline from closed polylines](mesh-polyline.md)
+- [PlanarMesh from planar curve regions](planar-mesh.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [Check and SelBadObjects](check.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)

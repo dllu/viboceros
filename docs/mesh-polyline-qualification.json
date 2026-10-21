@@ -358,7 +358,7 @@
     "Graph comparisons treat relative differences within 16 machine epsilons as ties and quantize heap distance to 16 adjacent floating-point values. These sampled native locus comparisons do not certify a universal mesh geodesic or exact shortest path."
   ],
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "2edb7786184dedb63466f01e626c0e47eacab2bda737e18ab0dc3e2317620911",
+    "crates/viboceros-command/src/lib.rs": "4ca95d9c76d46947f0a7f3e1e1df1d6c7b84ec8907d432cb418c02f10850c7d2",
     "crates/viboceros-geometry/src/error.rs": "9c64e4c49ff46151badf89c79303e858deda3f397e38d7ef6db15932be86802e",
     "crates/viboceros-geometry/src/mesh/normals.rs": "e4cbcef46e287067a0364d7ad440c93d05d6bb77ac82aa1f9f21ad4dd97cd322",
     "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",

@@ -3,22 +3,17 @@ use super::*;
 use viboceros_smlib::{KernelCurve, Shape};
 
 pub(super) fn stage(
-    document: &Document,
-    selected: Vec<ObjectId>,
+    curves: Vec<(ObjectId, NurbsCurve)>,
+    tolerance: Tolerance,
+    independent_contacts: bool,
 ) -> Result<(Vec<Brep>, Vec<ObjectId>), CommandError> {
-    let tolerance = document.tolerance();
     let mut profiles = Vec::new();
+    let mut originals = Vec::new();
     let mut consumed = Vec::new();
-    for id in selected {
-        if let Some(curve) = document
-            .object(id)
-            .unwrap()
-            .geometry()
-            .nurbs_curve_representation()?
-            && curve.is_closed()?
-            && curve.is_planar(tolerance)?
-        {
+    for (id, curve) in curves {
+        if curve.is_closed()? && curve.is_planar(tolerance)? {
             profiles.push(KernelCurve::from_nurbs_for_modeling(&curve)?);
+            originals.push((id, curve));
             consumed.push(id);
         }
     }
@@ -54,9 +49,47 @@ pub(super) fn stage(
     }
     let mut faces = Vec::new();
     for group in groups {
+        let mut contact = false;
+        for i in 0..if independent_contacts { group.len() } else { 0 } {
+            for j in i + 1..group.len() {
+                if super::portable::curves_contact(
+                    &originals[group[i]].1,
+                    &originals[group[j]].1,
+                    tolerance,
+                )? {
+                    contact = true;
+                    break;
+                }
+            }
+            if contact {
+                break;
+            }
+        }
+        if contact {
+            // Boundary contacts form independent input regions; the native
+            // producer can merge them into a different union instead.
+            faces.extend(
+                super::portable::stage(
+                    group.iter().map(|&i| originals[i].clone()).collect(),
+                    tolerance,
+                    true,
+                )?
+                .0,
+            );
+            continue;
+        }
         let refs = group.iter().map(|&i| &profiles[i]).collect::<Vec<_>>();
-        let output = Shape::planar_faces(&refs, tolerance)?.to_brep(tolerance)?;
-        faces.extend(output.explode_faces(tolerance)?);
+        match Shape::planar_faces(&refs, tolerance) {
+            Ok(output) => faces.extend(output.to_brep(tolerance)?.explode_faces(tolerance)?),
+            Err(_) => {
+                // Some valid concave profiles are rejected by the upstream
+                // planar-face producer. Reuse the existing exact constructor
+                // after native curve admission; invalid weights still fail
+                // before this point and caller-owned profiles remain intact.
+                let curves = group.iter().map(|&i| originals[i].clone()).collect();
+                faces.extend(super::portable::stage(curves, tolerance, independent_contacts)?.0);
+            }
+        }
     }
     Ok((faces, consumed))
 }
@@ -64,6 +97,28 @@ pub(super) fn stage(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn concave_profile_uses_the_existing_exact_constructor_when_upstream_rejects_it() {
+        let mut doc = Document::default();
+        let registry = CommandRegistry::with_builtins();
+        registry
+            .execute(&mut doc, "Polyline 0,0,0 4,0,0 4,4,0 2,1,0 0,4,0 0,0,0")
+            .unwrap();
+        let source = doc.objects().next().unwrap().id();
+        doc.select_object(source, SelectionMode::Replace).unwrap();
+        registry.execute(&mut doc, "PlanarSrf").unwrap();
+        let area = doc
+            .objects()
+            .filter_map(|o| match o.geometry() {
+                Geometry::Brep(b) => Some(b.area(doc.tolerance()).unwrap()),
+                _ => None,
+            })
+            .sum::<Real>();
+        assert!((area - 10.).abs() < 1e-10);
+        assert!(doc.object(source).is_some());
+        doc.undo().unwrap();
+        assert_eq!(doc.objects().count(), 1);
+    }
     #[test]
     fn rejected_later_profile_preserves_model_groups_selection_and_redo() {
         let mut doc = Document::default();

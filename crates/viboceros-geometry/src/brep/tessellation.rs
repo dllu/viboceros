@@ -1,4 +1,5 @@
 //! Per-face meshing, boundary provenance audits, and conforming reconstruction.
+mod planar_mesh;
 
 use super::*;
 

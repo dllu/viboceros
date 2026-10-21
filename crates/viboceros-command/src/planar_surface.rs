@@ -1,6 +1,5 @@
 //! Planar-region command policy with interchangeable geometry adapters.
 use super::*;
-#[cfg(not(feature = "native-smlib"))]
 mod portable;
 #[cfg(not(feature = "native-smlib"))]
 use portable as backend;
@@ -37,7 +36,19 @@ impl Command for PlanarSurfaceCommand {
         }
 
         let selected = selected_ids(document)?;
-        let (faces, consumed) = backend::stage(document, selected)?;
+        let curves = selected
+            .into_iter()
+            .filter_map(|id| {
+                document
+                    .object(id)
+                    .unwrap()
+                    .geometry()
+                    .nurbs_curve_representation()
+                    .map(|curve| curve.map(|curve| (id, curve)))
+                    .transpose()
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let (faces, consumed) = stage_curves(curves, document.tolerance(), false)?;
 
         let face_count = faces.len();
         for face in faces {
@@ -58,4 +69,13 @@ impl Command for PlanarSurfaceCommand {
             }
         ))
     }
+}
+
+/// Shared pure construction for planar surfaces and editable planar meshes.
+pub(super) fn stage_curves(
+    curves: Vec<(ObjectId, NurbsCurve)>,
+    tolerance: Tolerance,
+    independent_contacts: bool,
+) -> Result<(Vec<Brep>, Vec<ObjectId>), CommandError> {
+    backend::stage(curves, tolerance, independent_contacts)
 }

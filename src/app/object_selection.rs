@@ -9,6 +9,8 @@ mod mesh_patch;
 #[cfg(test)]
 mod mesh_polyline_tests;
 mod modify_radius;
+#[cfg(test)]
+mod planar_mesh_tests;
 mod reduce_polyline;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1265,7 +1267,13 @@ impl VibocerosApp {
                     self.start_edge_zoom_options(&command);
                 }
                 Err(error) => {
-                    if pending.description.command == "BooleanUnion" {
+                    if pending.description.command == "BooleanUnion"
+                        || (pending.description.command == "PlanarMesh"
+                            && matches!(
+                                error,
+                                viboceros_command::CommandError::NoPlanarSurfaceBoundaries
+                            ))
+                    {
                         self.object_prompt = None;
                     }
                     if matches!(error, viboceros_command::CommandError::OperationDeclined) {

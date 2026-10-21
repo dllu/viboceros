@@ -1,0 +1,1516 @@
+{
+  "engine": "rhino",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "id": "post_rectangle",
+      "value": {
+        "document_tolerance": 1e-06,
+        "sdk_single_boundaries": [
+          {
+            "faces": [
+              [
+                3,
+                1,
+                0,
+                2
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                6.0,
+                0.0
+              ],
+              [
+                8.0,
+                0.0,
+                0.0
+              ],
+              [
+                8.0,
+                6.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "crc": 1345704974,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "success": true,
+        "input": {
+          "curves": [
+            {
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "kind": "polyline"
+            }
+          ],
+          "postselect": true
+        },
+        "after": [
+          {
+            "crc": 1345704974,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": true,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          },
+          {
+            "crc": 758041095,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "mesh": {
+              "faces": [
+                [
+                  6,
+                  1,
+                  0,
+                  5
+                ],
+                [
+                  7,
+                  2,
+                  1,
+                  6
+                ],
+                [
+                  8,
+                  3,
+                  2,
+                  7
+                ],
+                [
+                  9,
+                  4,
+                  3,
+                  8
+                ],
+                [
+                  11,
+                  6,
+                  5,
+                  10
+                ],
+                [
+                  12,
+                  7,
+                  6,
+                  11
+                ],
+                [
+                  13,
+                  8,
+                  7,
+                  12
+                ],
+                [
+                  14,
+                  9,
+                  8,
+                  13
+                ],
+                [
+                  16,
+                  11,
+                  10,
+                  15
+                ],
+                [
+                  17,
+                  12,
+                  11,
+                  16
+                ],
+                [
+                  18,
+                  13,
+                  12,
+                  17
+                ],
+                [
+                  19,
+                  14,
+                  13,
+                  18
+                ],
+                [
+                  21,
+                  16,
+                  15,
+                  20
+                ],
+                [
+                  22,
+                  17,
+                  16,
+                  21
+                ],
+                [
+                  23,
+                  18,
+                  17,
+                  22
+                ],
+                [
+                  24,
+                  19,
+                  18,
+                  23
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  2.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  6.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  6.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  8.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  8.0,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "selected": false,
+            "role": "output",
+            "layer": "PlanarMesh output",
+            "source_index": null,
+            "color_source": "ColorFromLayer",
+            "name": null
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 1345704974,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          },
+          {
+            "crc": 758041095,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "mesh": {
+              "faces": [
+                [
+                  6,
+                  1,
+                  0,
+                  5
+                ],
+                [
+                  7,
+                  2,
+                  1,
+                  6
+                ],
+                [
+                  8,
+                  3,
+                  2,
+                  7
+                ],
+                [
+                  9,
+                  4,
+                  3,
+                  8
+                ],
+                [
+                  11,
+                  6,
+                  5,
+                  10
+                ],
+                [
+                  12,
+                  7,
+                  6,
+                  11
+                ],
+                [
+                  13,
+                  8,
+                  7,
+                  12
+                ],
+                [
+                  14,
+                  9,
+                  8,
+                  13
+                ],
+                [
+                  16,
+                  11,
+                  10,
+                  15
+                ],
+                [
+                  17,
+                  12,
+                  11,
+                  16
+                ],
+                [
+                  18,
+                  13,
+                  12,
+                  17
+                ],
+                [
+                  19,
+                  14,
+                  13,
+                  18
+                ],
+                [
+                  21,
+                  16,
+                  15,
+                  20
+                ],
+                [
+                  22,
+                  17,
+                  16,
+                  21
+                ],
+                [
+                  23,
+                  18,
+                  17,
+                  22
+                ],
+                [
+                  24,
+                  19,
+                  18,
+                  23
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  2.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  6.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  6.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  8.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  8.0,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "selected": false,
+            "role": "output",
+            "layer": "PlanarMesh output",
+            "source_index": null,
+            "color_source": "ColorFromLayer",
+            "name": null
+          }
+        ],
+        "redo": [
+          {
+            "crc": 1345704974,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          },
+          {
+            "crc": 758041095,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "mesh": {
+              "faces": [
+                [
+                  6,
+                  1,
+                  0,
+                  5
+                ],
+                [
+                  7,
+                  2,
+                  1,
+                  6
+                ],
+                [
+                  8,
+                  3,
+                  2,
+                  7
+                ],
+                [
+                  9,
+                  4,
+                  3,
+                  8
+                ],
+                [
+                  11,
+                  6,
+                  5,
+                  10
+                ],
+                [
+                  12,
+                  7,
+                  6,
+                  11
+                ],
+                [
+                  13,
+                  8,
+                  7,
+                  12
+                ],
+                [
+                  14,
+                  9,
+                  8,
+                  13
+                ],
+                [
+                  16,
+                  11,
+                  10,
+                  15
+                ],
+                [
+                  17,
+                  12,
+                  11,
+                  16
+                ],
+                [
+                  18,
+                  13,
+                  12,
+                  17
+                ],
+                [
+                  19,
+                  14,
+                  13,
+                  18
+                ],
+                [
+                  21,
+                  16,
+                  15,
+                  20
+                ],
+                [
+                  22,
+                  17,
+                  16,
+                  21
+                ],
+                [
+                  23,
+                  18,
+                  17,
+                  22
+                ],
+                [
+                  24,
+                  19,
+                  18,
+                  23
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  2.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  6.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  6.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  1.5,
+                  0.0
+                ],
+                [
+                  8.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  4.5,
+                  0.0
+                ],
+                [
+                  8.0,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "selected": false,
+            "role": "output",
+            "layer": "PlanarMesh output",
+            "source_index": null,
+            "color_source": "ColorFromLayer",
+            "name": null
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "name": "SelID",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "PlanarMesh",
+            "objects": [
+              {
+                "crc": 1345704974,
+                "color": [
+                  37,
+                  83,
+                  149
+                ],
+                "selected": true,
+                "role": "source",
+                "layer": "PlanarMesh source",
+                "source_index": 0,
+                "color_source": "ColorFromObject",
+                "name": "Input 0"
+              },
+              {
+                "crc": 758041095,
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "mesh": {
+                  "faces": [
+                    [
+                      6,
+                      1,
+                      0,
+                      5
+                    ],
+                    [
+                      7,
+                      2,
+                      1,
+                      6
+                    ],
+                    [
+                      8,
+                      3,
+                      2,
+                      7
+                    ],
+                    [
+                      9,
+                      4,
+                      3,
+                      8
+                    ],
+                    [
+                      11,
+                      6,
+                      5,
+                      10
+                    ],
+                    [
+                      12,
+                      7,
+                      6,
+                      11
+                    ],
+                    [
+                      13,
+                      8,
+                      7,
+                      12
+                    ],
+                    [
+                      14,
+                      9,
+                      8,
+                      13
+                    ],
+                    [
+                      16,
+                      11,
+                      10,
+                      15
+                    ],
+                    [
+                      17,
+                      12,
+                      11,
+                      16
+                    ],
+                    [
+                      18,
+                      13,
+                      12,
+                      17
+                    ],
+                    [
+                      19,
+                      14,
+                      13,
+                      18
+                    ],
+                    [
+                      21,
+                      16,
+                      15,
+                      20
+                    ],
+                    [
+                      22,
+                      17,
+                      16,
+                      21
+                    ],
+                    [
+                      23,
+                      18,
+                      17,
+                      22
+                    ],
+                    [
+                      24,
+                      19,
+                      18,
+                      23
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.5,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      4.5,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.5,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      4.5,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      1.5,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      4.5,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      6.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      6.0,
+                      1.5,
+                      0.0
+                    ],
+                    [
+                      6.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      6.0,
+                      4.5,
+                      0.0
+                    ],
+                    [
+                      6.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      8.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      8.0,
+                      1.5,
+                      0.0
+                    ],
+                    [
+                      8.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      8.0,
+                      4.5,
+                      0.0
+                    ],
+                    [
+                      8.0,
+                      6.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "selected": false,
+                "role": "output",
+                "layer": "PlanarMesh output",
+                "source_index": null,
+                "color_source": "ColorFromLayer",
+                "name": null
+              }
+            ],
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Cancel",
+            "result": "Success"
+          }
+        ],
+        "sdk_inputs_unchanged": true,
+        "sdk_parameters": {
+          "MinimumEdgeLength": 0.0001,
+          "JaggedSeams": false,
+          "MaximumEdgeLength": 0.0,
+          "RefineGrid": true,
+          "GridMinCount": 0,
+          "SimplePlanes": false,
+          "GridMaxCount": 0,
+          "RelativeTolerance": 0.0,
+          "Tolerance": 0.0
+        },
+        "history": "Command: _-PlanarMesh\nSelect planar curves to build mesh: _SelID\nObject ID to select: d129e8fa-fa84-4bc1-9bec-264f0ee380c4\n1 curve added to selection.\nSelect planar curves to build mesh. Press Enter when done: _Enter\nSelect planar curves to build mesh. Press Enter when done\nCommand: _Cancel",
+        "undo": [
+          {
+            "crc": 1345704974,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "post_nonplanar",
+      "value": {
+        "document_tolerance": 1e-06,
+        "sdk_single_boundaries": [
+          null
+        ],
+        "before": [
+          {
+            "crc": 3802592106,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "success": false,
+        "input": {
+          "curves": [
+            {
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "kind": "polyline"
+            }
+          ],
+          "postselect": true
+        },
+        "after": [
+          {
+            "crc": 3802592106,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": true,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 3802592106,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "redo": [
+          {
+            "crc": 3802592106,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "name": "SelID",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "PlanarMesh",
+            "objects": [
+              {
+                "crc": 3802592106,
+                "color": [
+                  37,
+                  83,
+                  149
+                ],
+                "selected": true,
+                "role": "source",
+                "layer": "PlanarMesh source",
+                "source_index": 0,
+                "color_source": "ColorFromObject",
+                "name": "Input 0"
+              }
+            ],
+            "result": "Failure"
+          }
+        ],
+        "sdk_inputs_unchanged": true,
+        "sdk_parameters": {
+          "MinimumEdgeLength": 0.0001,
+          "JaggedSeams": false,
+          "MaximumEdgeLength": 0.0,
+          "RefineGrid": true,
+          "GridMinCount": 0,
+          "SimplePlanes": false,
+          "GridMaxCount": 0,
+          "RelativeTolerance": 0.0,
+          "Tolerance": 0.0
+        },
+        "history": "Command: _-PlanarMesh\nSelect planar curves to build mesh: _SelID\nObject ID to select: 3e8fcbeb-c4d1-4652-b0b8-0ffbeb381805\n1 curve added to selection.\nSelect planar curves to build mesh. Press Enter when done: _Enter\nSelect planar curves to build mesh. Press Enter when done\nCurve must be closed and planar.",
+        "undo": [
+          {
+            "crc": 3802592106,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "post_open_chain",
+      "value": {
+        "document_tolerance": 1e-06,
+        "sdk_single_boundaries": [
+          null
+        ],
+        "before": [
+          {
+            "crc": 1793236585,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "success": false,
+        "input": {
+          "curves": [
+            {
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  8.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              ],
+              "kind": "polyline"
+            }
+          ],
+          "postselect": true
+        },
+        "after": [
+          {
+            "crc": 1793236585,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": true,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "after_script": [
+          {
+            "crc": 1793236585,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "redo": [
+          {
+            "crc": 1793236585,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "name": "SelID",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "PlanarMesh",
+            "objects": [
+              {
+                "crc": 1793236585,
+                "color": [
+                  37,
+                  83,
+                  149
+                ],
+                "selected": true,
+                "role": "source",
+                "layer": "PlanarMesh source",
+                "source_index": 0,
+                "color_source": "ColorFromObject",
+                "name": "Input 0"
+              }
+            ],
+            "result": "Failure"
+          }
+        ],
+        "sdk_inputs_unchanged": true,
+        "sdk_parameters": {
+          "MinimumEdgeLength": 0.0001,
+          "JaggedSeams": false,
+          "MaximumEdgeLength": 0.0,
+          "RefineGrid": true,
+          "GridMinCount": 0,
+          "SimplePlanes": false,
+          "GridMaxCount": 0,
+          "RelativeTolerance": 0.0,
+          "Tolerance": 0.0
+        },
+        "history": "Command: _-PlanarMesh\nSelect planar curves to build mesh: _SelID\nObject ID to select: 151ad513-8351-4bea-9bc1-5b2bda908929\n1 curve added to selection.\nSelect planar curves to build mesh. Press Enter when done: _Enter\nSelect planar curves to build mesh. Press Enter when done\nCurve must be closed and planar.",
+        "undo": [
+          {
+            "crc": 1793236585,
+            "color": [
+              37,
+              83,
+              149
+            ],
+            "selected": false,
+            "role": "source",
+            "layer": "PlanarMesh source",
+            "source_index": 0,
+            "color_source": "ColorFromObject",
+            "name": "Input 0"
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "provenance": {
+    "request_sha256": "f3163a992f6b522d2c5dc327a80ff2d4a1ec0d5f25312eec446cdbeacc20983f",
+    "sources": {
+      "generate_planar_mesh.py": "35b937bed4d877ce6636cd373143ebdeda6f609f1bbd489c9e4391741a289e7b",
+      "planar_mesh_probe.py": "7e2191974ab97b94adb9781c5a3ab6aa492b17a1be3cb5b5b040b48665985efc",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "2f91959dc1c16e709a496f17ebf36f2a310006386db11c0ac5a38ba99316f7f3",
+      "rhino_worker.py": "3ba7e7dcc854c2f9ba0f48d0c55cb0237619be6aa8bf5036f4d4f62bb9985adf",
+      "structural_sdk.py": "debf59ebe5fc51f70164704cb401b09a1b3ecbfdf92d2244516efcfd64da43f4"
+    }
+  }
+}

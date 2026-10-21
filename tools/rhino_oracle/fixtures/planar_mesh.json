@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "planar_mesh_command",
+      "id": "triangle",
+      "case": "triangle"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "rectangle",
+      "case": "rectangle"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "reverse",
+      "case": "reverse"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "concave",
+      "case": "concave"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "tilted",
+      "case": "tilted"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "circle",
+      "case": "circle"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "ellipse",
+      "case": "ellipse"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "nurbs_polyline",
+      "case": "nurbs_polyline"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "polygon_hole",
+      "case": "polygon_hole"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "hole_reverse",
+      "case": "hole_reverse"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "circle_hole",
+      "case": "circle_hole"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "island",
+      "case": "island"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "disconnected",
+      "case": "disconnected"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "overlap",
+      "case": "overlap"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "different_planes",
+      "case": "different_planes"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "touching_hole",
+      "case": "touching_hole"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "nonplanar",
+      "case": "nonplanar"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "mixed_nonplanar",
+      "case": "mixed_nonplanar"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "open_chain",
+      "case": "open_chain"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "line_loop",
+      "case": "line_loop"
+    },
+    {
+      "op": "planar_mesh_command",
+      "id": "mixed_open",
+      "case": "mixed_open"
+    }
+  ]
+}

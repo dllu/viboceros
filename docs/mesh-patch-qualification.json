@@ -454,14 +454,14 @@
     "crates/viboceros-geometry/src/bezier.rs": "fb5b7ce4ec1dbf70c1d5191906bc7fa69ea830f7f96a5e7a10eb99d194f0f6b0",
     "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
     "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
-    "crates/viboceros-command/src/lib.rs": "2edb7786184dedb63466f01e626c0e47eacab2bda737e18ab0dc3e2317620911",
+    "crates/viboceros-command/src/lib.rs": "4ca95d9c76d46947f0a7f3e1e1df1d6c7b84ec8907d432cb418c02f10850c7d2",
     "crates/viboceros-command/src/object_selection.rs": "e7047a5880a0e5449b1aaa2e13504f69bdeb149e8da1b23b2f553980b1ac1711",
     "crates/viboceros-command/src/mesh_patch.rs": "1d0c35fa81f30b6f47f1a1a9c5f5dad1c486cab860f5fb8cfa400172b7376653",
     "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",
     "crates/viboceros-command/tests/mesh_patch_native.rs": "0340528dfaba64e917d9dc6ceabdd053cebfc6c9169f93c0d053691b5bcae0e5",
     "crates/viboceros-command/tests/support/mesh_patch.rs": "652360289115ab497f9c2ba2ae00e205a44ed6e0299c37cae1453f9ae56a04ff",
     "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
-    "src/app/object_selection.rs": "0e8d8a9b16ee168d9927125be8b3d1fb8f73d1119d78f633dbb69e51fda7cb68",
+    "src/app/object_selection.rs": "c768bf184d00ab0ff6515fb1aa48142d2a9980320cb2678ddc2eb98b75de72cc",
     "src/app/transform_sources.rs": "aec231cae3cfae46702f49ed92a0f54de1eee294e2720e77fc33d9696e02d7bc",
     "src/app/object_selection/mesh_patch.rs": "aab85e841a3339466c4d77b2f60c440efeffb26dde8a99a522d866e80d32eacb",
     "src/app/object_selection/mesh_patch/tests.rs": "0461e579b402be172de9fe75993db4e4afb0dba78411fc8e9f1b4274225d7cba",
@@ -472,8 +472,8 @@
     "tools/rhino_oracle/fixtures/mesh_patch.json": "2a0884f05553efd4083b20f97dc1b985a4870fe644de8c09961911e25ad85400",
     "tools/rhino_oracle/observations/mesh_patch.json": "79f352d68c46ab33e7842022ec0b14db87530d471915ef30837f9c8fe9e507b9",
     "crates/viboceros-command/src/mesh_patch/tests.rs": "d76fee8b9d14f8ea618ef8078d81bd0b4d91a613e9f28a1f246035fe4e84140b",
-    "tools/rhino_oracle/client.py": "cbdd7d4fe69c550f2144be1c0210402b3faf734ce32273d4d87a797cf69ff102",
-    "tools/rhino_oracle/rhino_worker.py": "5af381a7a233030560b7403ca4af18e27b9f1cee844bc54bfabd863562cc6097",
-    "tools/rhino_oracle/structural_sdk.py": "6b83b349b254511631bec6fcea1d791e1c635cc8d2eb0cec1497d46875cd104c"
+    "tools/rhino_oracle/client.py": "2f91959dc1c16e709a496f17ebf36f2a310006386db11c0ac5a38ba99316f7f3",
+    "tools/rhino_oracle/rhino_worker.py": "3ba7e7dcc854c2f9ba0f48d0c55cb0237619be6aa8bf5036f4d4f62bb9985adf",
+    "tools/rhino_oracle/structural_sdk.py": "debf59ebe5fc51f70164704cb401b09a1b3ecbfdf92d2244516efcfd64da43f4"
   }
 }

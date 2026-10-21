@@ -41,23 +41,31 @@ fn bounds_contain_point(bounds: BoundingBox3, point: Point3, tolerance: Toleranc
         })
 }
 
+pub(super) fn curves_contact(
+    a: &NurbsCurve,
+    b: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<bool, CommandError> {
+    if !bounds_overlap(
+        a.control_point_bounds(),
+        b.control_point_bounds(),
+        tolerance,
+    ) {
+        return Ok(false);
+    }
+    Ok(!a.intersection_events_with_curve(b, tolerance)?.is_empty())
+}
+
 pub(super) fn stage(
-    document: &Document,
-    selected: Vec<ObjectId>,
+    curves: Vec<(ObjectId, NurbsCurve)>,
+    tolerance: Tolerance,
+    independent_contacts: bool,
 ) -> Result<(Vec<Brep>, Vec<ObjectId>), CommandError> {
     let mut boundaries = Vec::new();
-    for id in selected {
-        let Some(curve) = document
-            .object(id)
-            .expect("selected objects exist")
-            .geometry()
-            .nurbs_curve_representation()?
-        else {
-            continue;
-        };
-        if curve.is_closed()? && curve.is_planar(document.tolerance())? {
-            let untrimmed_face = Brep::try_planar_face(&curve, document.tolerance())?;
-            let area = untrimmed_face.area(document.tolerance())?;
+    for (id, curve) in curves {
+        if curve.is_closed()? && curve.is_planar(tolerance)? {
+            let untrimmed_face = Brep::try_planar_face(&curve, tolerance)?;
+            let area = untrimmed_face.area(tolerance)?;
             let bounds = curve.control_point_bounds();
             let probe = curve.evaluate(*curve.domain().start())?;
             boundaries.push(PlanarSurfaceBoundary {
@@ -94,7 +102,7 @@ pub(super) fn stage(
                 || !bounds_contain_point(
                     boundaries[outer_index].bounds,
                     boundaries[child_index].probe,
-                    document.tolerance(),
+                    tolerance,
                 )
             {
                 continue;
@@ -102,9 +110,15 @@ pub(super) fn stage(
             if Brep::try_planar_face_with_holes(
                 &boundaries[outer_index].curve,
                 std::slice::from_ref(&boundaries[child_index].curve),
-                document.tolerance(),
+                tolerance,
             )
             .is_ok()
+                && (!independent_contacts
+                    || !curves_contact(
+                        &boundaries[outer_index].curve,
+                        &boundaries[child_index].curve,
+                        tolerance,
+                    )?)
             {
                 parents[child_index] = Some(outer_index);
                 break;
@@ -129,7 +143,7 @@ pub(super) fn stage(
                 if !bounds_overlap(
                     boundaries[first].bounds,
                     boundaries[second].bounds,
-                    document.tolerance(),
+                    tolerance,
                 ) {
                     continue;
                 }
@@ -140,7 +154,7 @@ pub(super) fn stage(
                 if Brep::try_planar_face_with_holes(
                     &boundaries[parent_index].curve,
                     &holes,
-                    document.tolerance(),
+                    tolerance,
                 )
                 .is_err()
                 {
@@ -182,11 +196,7 @@ pub(super) fn stage(
         let face = if holes.is_empty() {
             boundaries[outer_index].untrimmed_face.clone()
         } else {
-            Brep::try_planar_face_with_holes(
-                &boundaries[outer_index].curve,
-                &holes,
-                document.tolerance(),
-            )?
+            Brep::try_planar_face_with_holes(&boundaries[outer_index].curve, &holes, tolerance)?
         };
         faces.push(face);
     }
