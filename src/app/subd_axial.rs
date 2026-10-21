@@ -79,8 +79,8 @@ impl Session {
     }
 }
 impl VibocerosApp {
-    pub(super) fn valid_subd_cylinder(&mut self) -> bool {
-        let valid = self.subd_cylinder_session.as_ref().is_none_or(|s| {
+    pub(super) fn valid_subd_axial(&mut self) -> bool {
+        let valid = self.subd_axial_session.as_ref().is_none_or(|s| {
             self.document.history_group_is_current(&s.group)
                 && s.tolerance == self.document.tolerance()
         });
@@ -92,7 +92,7 @@ impl VibocerosApp {
         }
         valid
     }
-    pub(super) fn start_subd_cylinder(&mut self, input: &str) -> bool {
+    pub(super) fn start_subd_axial(&mut self, input: &str) -> bool {
         let words = input.split_whitespace().collect::<Vec<_>>();
         let kind = match words
             .first()
@@ -131,7 +131,7 @@ impl VibocerosApp {
                 return true;
             }
         };
-        self.subd_cylinder_session = Some(Session {
+        self.subd_axial_session = Some(Session {
             input: getter,
             group,
             tolerance: self.document.tolerance(),
@@ -139,14 +139,14 @@ impl VibocerosApp {
             fit_pending: false,
             release_picks: vec![],
         });
-        self.subd_cylinder_prompt();
+        self.subd_axial_prompt();
         if let Some(mode) = mode {
-            self.subd_cylinder_reference_mode(mode);
+            self.subd_axial_reference_mode(mode);
         }
         true
     }
-    fn subd_cylinder_prompt(&mut self) {
-        let Some(s) = self.subd_cylinder_session.as_mut() else {
+    fn subd_axial_prompt(&mut self) {
+        let Some(s) = self.subd_axial_session.as_mut() else {
             return;
         };
         s.input.kind.remember(&self.commands, s.input.preferences);
@@ -167,17 +167,14 @@ impl VibocerosApp {
         self.command_input.clear();
         self.push_log(message);
     }
-    fn advance_subd_cylinder(
-        &mut self,
-        result: Result<(), viboceros_command::CommandError>,
-    ) -> bool {
+    fn advance_subd_axial(&mut self, result: Result<(), viboceros_command::CommandError>) -> bool {
         if let Err(e) = result {
             self.push_log(format!("Error: {e}"));
             return false;
         }
-        let s = self.subd_cylinder_session.as_ref().unwrap();
+        let s = self.subd_axial_session.as_ref().unwrap();
         let Some(definition) = s.input.definition else {
-            self.subd_cylinder_prompt();
+            self.subd_axial_prompt();
             return true;
         };
         let geometry = match definition.geometry(s.input.preferences) {
@@ -188,16 +185,12 @@ impl VibocerosApp {
                     self.push_log(format!("Error: {e}"));
                     return false;
                 }
-                self.subd_cylinder_session
-                    .as_mut()
-                    .unwrap()
-                    .input
-                    .definition = None;
+                self.subd_axial_session.as_mut().unwrap().input.definition = None;
                 self.push_log(format!("Error: {e}"));
                 return false;
             }
         };
-        let mut s = self.subd_cylinder_session.take().unwrap();
+        let mut s = self.subd_axial_session.take().unwrap();
         let result = (|| -> Result<(), viboceros_command::CommandError> {
             self.document.begin_group_transaction(&s.group)?;
             let result = self
@@ -232,62 +225,55 @@ impl VibocerosApp {
             }
         }
     }
-    pub(super) fn accept_subd_cylinder_point(&mut self, point: Point3) -> Option<bool> {
-        self.subd_cylinder_session.as_ref()?;
-        if !self.valid_subd_cylinder() {
+    pub(super) fn accept_subd_axial_point(&mut self, point: Point3) -> Option<bool> {
+        self.subd_axial_session.as_ref()?;
+        if !self.valid_subd_axial() {
             return Some(false);
         }
-        let s = self.subd_cylinder_session.as_mut().unwrap();
+        let s = self.subd_axial_session.as_mut().unwrap();
         s.input
             .set_initial_plane(self.viewports[self.active_viewport].construction_plane());
         let result = s.input.point(point);
-        Some(self.advance_subd_cylinder(result))
+        Some(self.advance_subd_axial(result))
     }
-    pub(super) fn continue_subd_cylinder(&mut self, input: &str) -> bool {
-        if self.subd_cylinder_session.is_none() {
+    pub(super) fn continue_subd_axial(&mut self, input: &str) -> bool {
+        if self.subd_axial_session.is_none() {
             return false;
         }
-        if !self.valid_subd_cylinder() {
+        if !self.valid_subd_axial() {
             return true;
         }
-        if self.subd_cylinder_session.as_ref().unwrap().fit_pending
-            || self.tangent_session.is_some()
-        {
+        if self.subd_axial_session.as_ref().unwrap().fit_pending || self.tangent_session.is_some() {
             return false;
         }
         let word = input.trim().trim_start_matches(['_', '-']);
-        if self
-            .subd_cylinder_session
-            .as_ref()
-            .unwrap()
-            .input
-            .at_start()
+        if self.subd_axial_session.as_ref().unwrap().input.at_start()
             && ["Tangent", "FitPoints"]
                 .iter()
                 .any(|m| word.eq_ignore_ascii_case(m))
         {
-            self.subd_cylinder_reference_mode(word);
+            self.subd_axial_reference_mode(word);
             return true;
         }
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);
             return true;
         }
-        let s = self.subd_cylinder_session.as_mut().unwrap();
+        let s = self.subd_axial_session.as_mut().unwrap();
         if word.is_empty() || word.eq_ignore_ascii_case("Enter") {
             let result = s.input.enter();
-            self.advance_subd_cylinder(result);
+            self.advance_subd_axial(result);
             return true;
         }
         match s.input.option(input) {
             Ok(true) => {
                 if s.input.definition.is_some() {
-                    self.advance_subd_cylinder(Ok(()));
+                    self.advance_subd_axial(Ok(()));
                     return true;
                 }
                 self.point_filter = None;
                 self.point_constraint = None;
-                self.subd_cylinder_prompt();
+                self.subd_axial_prompt();
                 return true;
             }
             Err(e) => {
@@ -315,20 +301,20 @@ impl VibocerosApp {
             None
         };
         if let Some(result) = result {
-            self.advance_subd_cylinder(result);
+            self.advance_subd_axial(result);
             return true;
         }
         if word == "0" && !s.input.wants_number() {
             let point = self.viewports[self.active_viewport]
                 .construction_plane()
                 .origin();
-            self.accept_subd_cylinder_point(point);
+            self.accept_subd_axial_point(point);
             return true;
         }
         false
     }
-    pub(super) fn update_subd_cylinder_hover(&mut self, point: Point3) {
-        if let Some(s) = self.subd_cylinder_session.as_mut() {
+    pub(super) fn update_subd_axial_hover(&mut self, point: Point3) {
+        if let Some(s) = self.subd_axial_session.as_mut() {
             s.input.observe_cursor(point);
             s.refresh(Some(point));
         }
@@ -336,43 +322,38 @@ impl VibocerosApp {
 }
 
 impl VibocerosApp {
-    fn subd_cylinder_reference_mode(&mut self, mode: &str) {
+    fn subd_axial_reference_mode(&mut self, mode: &str) {
         self.point_filter = None;
         self.point_constraint = None;
         if mode.eq_ignore_ascii_case("Tangent") {
-            self.start_subd_cylinder_tangent();
+            self.start_subd_axial_tangent();
             return;
         }
-        self.subd_cylinder_session.as_mut().unwrap().fit_pending = true;
+        self.subd_axial_session.as_mut().unwrap().fit_pending = true;
         if viboceros_command::circle_fit_points::selected_points(&self.document)
             .take(3)
             .count()
             >= 3
         {
-            self.accept_subd_cylinder_fit(false);
+            self.accept_subd_axial_fit(false);
         } else {
             self.document.clear_selection();
             self.active_command = None;
             self.drafting_plane = None;
             self.object_prompt = Some(object_selection::PendingObjectCommand::selecting(
                 viboceros_command::subd_axial::selection_prompt_for(
-                    self.subd_cylinder_session.as_ref().unwrap().input.kind,
+                    self.subd_axial_session.as_ref().unwrap().input.kind,
                 ),
             ));
             self.command_input.clear();
             self.push_log(format!(
                 "{} FitPoints: select points or control points; Enter accepts, Esc cancels",
-                self.subd_cylinder_session
-                    .as_ref()
-                    .unwrap()
-                    .input
-                    .kind
-                    .name()
+                self.subd_axial_session.as_ref().unwrap().input.kind.name()
             ));
         }
     }
-    pub(super) fn accept_subd_cylinder_reference(&mut self, circle: Circle3) -> bool {
-        if !self.valid_subd_cylinder() {
+    pub(super) fn accept_subd_axial_reference(&mut self, circle: Circle3) -> bool {
+        if !self.valid_subd_axial() {
             return false;
         }
         let curve_contacts = self
@@ -382,20 +363,20 @@ impl VibocerosApp {
         self.tangent_session = None;
         self.point_filter = None;
         self.point_constraint = None;
-        let input = &mut self.subd_cylinder_session.as_mut().unwrap().input;
+        let input = &mut self.subd_axial_session.as_mut().unwrap().input;
         let result = if curve_contacts {
             input.tangent_curve_circle(circle)
         } else {
             input.reference_circle(circle)
         };
-        self.advance_subd_cylinder(result)
+        self.advance_subd_axial(result)
     }
-    pub(super) fn accept_subd_cylinder_fit(&mut self, postselected: bool) -> bool {
-        if !self.valid_subd_cylinder() {
+    pub(super) fn accept_subd_axial_fit(&mut self, postselected: bool) -> bool {
+        if !self.valid_subd_axial() {
             return false;
         }
         let result = self
-            .subd_cylinder_session
+            .subd_axial_session
             .as_mut()
             .unwrap()
             .input
@@ -405,12 +386,12 @@ impl VibocerosApp {
             return false;
         }
         self.object_prompt = None;
-        let s = self.subd_cylinder_session.as_mut().unwrap();
+        let s = self.subd_axial_session.as_mut().unwrap();
         s.fit_pending = false;
         if postselected {
             s.release_picks = self.document.selected_object_ids().collect();
             self.document.clear_selection();
         }
-        self.advance_subd_cylinder(Ok(()))
+        self.advance_subd_axial(Ok(()))
     }
 }

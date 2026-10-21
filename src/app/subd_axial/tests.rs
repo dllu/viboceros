@@ -19,7 +19,7 @@ fn native_getters_match_radius_modes_caps_axes_and_grouped_history() {
         std::mem::swap(&mut scene.document, &mut app.document);
         app.viewports[app.active_viewport].set_construction_plane(native::plane(value));
         enter(&mut app, "SubDCylinder");
-        assert!(app.subd_cylinder_session.is_some());
+        assert!(app.subd_axial_session.is_some());
         for action in native::actions(value, scene.source) {
             let action = if action.contains(',') {
                 format!("w{action}")
@@ -27,13 +27,13 @@ fn native_getters_match_radius_modes_caps_axes_and_grouped_history() {
                 action
             };
             enter(&mut app, if action == "Enter" { "" } else { &action });
-            if app.subd_cylinder_session.is_some() {
+            if app.subd_axial_session.is_some() {
                 assert_eq!(app.document.objects().count(), 0);
                 assert_eq!(app.document.undo_label(), None);
             }
         }
         assert!(
-            app.subd_cylinder_session.is_none(),
+            app.subd_axial_session.is_none(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -68,12 +68,12 @@ fn counts_preview_cancel_retry_and_stale_history_preserve_staged_document() {
     enter(&mut app, "w0,0,0");
     enter(&mut app, "3");
     enter(&mut app, "DirectionConstraint=None");
-    app.update_subd_cylinder_hover(Point3::try_new(3., 4., 6.).unwrap());
-    assert_eq!(app.subd_cylinder_session.as_ref().unwrap().preview.len(), 3);
+    app.update_subd_axial_hover(Point3::try_new(3., 4., 6.).unwrap());
+    assert_eq!(app.subd_axial_session.as_ref().unwrap().preview.len(), 3);
     assert_eq!(app.document.objects().count(), 0);
     assert_eq!(app.document.redo_label(), Some("Point"));
     enter(&mut app, "0");
-    assert!(app.subd_cylinder_session.is_some());
+    assert!(app.subd_axial_session.is_some());
     enter(&mut app, "Cancel");
     assert_eq!(app.document.redo_label(), Some("Point"));
     assert_eq!(app.commands.subd_cylinder_preferences().around_faces, 7);
@@ -84,7 +84,7 @@ fn counts_preview_cancel_retry_and_stale_history_preserve_staged_document() {
         .add_geometry(Geometry::Point(Point3::try_new(1., 2., 3.).unwrap()))
         .unwrap();
     enter(&mut app, "3");
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert_eq!(app.document.objects().count(), 1);
 }
 #[test]
@@ -99,13 +99,13 @@ fn viewport_plane_is_latched_at_first_pick_and_tolerance_changes_cancel() {
     )
     .unwrap();
     app.viewports[app.active_viewport].set_construction_plane(frame);
-    assert!(app.accept_subd_cylinder_point(frame.origin()).unwrap());
+    assert!(app.accept_subd_axial_point(frame.origin()).unwrap());
     assert!(
-        app.accept_subd_cylinder_point(frame.point_at([6., 0., 0.]).unwrap())
+        app.accept_subd_axial_point(frame.point_at([6., 0., 0.]).unwrap())
             .unwrap()
     );
     let circle = app
-        .subd_cylinder_session
+        .subd_axial_session
         .as_ref()
         .unwrap()
         .input
@@ -117,7 +117,7 @@ fn viewport_plane_is_latched_at_first_pick_and_tolerance_changes_cancel() {
             .set_tolerance(Tolerance::try_new(1e-4, 1e-8, 1e-6).unwrap())
     );
     enter(&mut app, "5");
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert_eq!(app.document.objects().count(), 0);
 }
 
@@ -138,10 +138,10 @@ fn numeric_free_axis_height_uses_hover_without_editing_the_document_preview() {
     enter(&mut app, "w0,0,0");
     enter(&mut app, "3");
     enter(&mut app, "DirectionConstraint=None");
-    app.update_subd_cylinder_hover(Point3::try_new(3., 4., 6.).unwrap());
+    app.update_subd_axial_hover(Point3::try_new(3., 4., 6.).unwrap());
     assert_eq!(app.document.objects().count(), 0);
     enter(&mut app, &61_f64.sqrt().to_string());
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     std::mem::swap(&mut scene.document, &mut app.document);
     native::check(&scene, value, "after_script");
 }
@@ -208,7 +208,7 @@ fn perspective_pointer_resolves_the_height_plane_and_preserves_cplane() {
         picked_point: Some(received),
         ..Default::default()
     }));
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert_eq!(app.document.undo_label(), Some("SubDCylinder"));
     assert_eq!(app.viewports[0].construction_plane(), cplane);
 }
@@ -222,7 +222,7 @@ fn filters_constraints_and_dimensionless_area_follow_the_common_point_tools() {
     assert!(app.point_constraint.is_some());
     enter(&mut app, "w3,4,0");
     assert!(
-        (app.subd_cylinder_session
+        (app.subd_axial_session
             .as_ref()
             .unwrap()
             .input
@@ -239,7 +239,7 @@ fn filters_constraints_and_dimensionless_area_follow_the_common_point_tools() {
         enter(&mut app, word);
     }
     assert_eq!(
-        app.subd_cylinder_session
+        app.subd_axial_session
             .as_ref()
             .unwrap()
             .input
@@ -249,7 +249,7 @@ fn filters_constraints_and_dimensionless_area_follow_the_common_point_tools() {
         [1., 2., 3.]
     );
     assert!(
-        app.subd_cylinder_session
+        app.subd_axial_session
             .as_ref()
             .unwrap()
             .input
@@ -258,7 +258,7 @@ fn filters_constraints_and_dimensionless_area_follow_the_common_point_tools() {
     );
     enter(&mut app, "9*pi");
     assert!(
-        (app.subd_cylinder_session
+        (app.subd_axial_session
             .as_ref()
             .unwrap()
             .input
@@ -274,7 +274,7 @@ fn filters_constraints_and_dimensionless_area_follow_the_common_point_tools() {
     app.document
         .set_tolerance(Tolerance::try_new(1e-4, 1e-8, 1e-6).unwrap());
     enter(&mut app, "5");
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert!(app.point_filter.is_none());
     assert!(app.point_constraint.is_none());
     assert_eq!(app.document.objects().count(), 0);
@@ -310,7 +310,7 @@ fn native_reference_getters_match_contacts_fit_selection_grips_and_grouped_histo
             }
             if action == "FitPoints" && value["input"]["no_output"] == true {
                 assert_eq!(
-                    app.subd_cylinder_session
+                    app.subd_axial_session
                         .as_ref()
                         .unwrap()
                         .input
@@ -321,13 +321,13 @@ fn native_reference_getters_match_contacts_fit_selection_grips_and_grouped_histo
                 );
                 assert!(app.active_command.is_some());
             }
-            if app.subd_cylinder_session.is_some() {
+            if app.subd_axial_session.is_some() {
                 assert_eq!(app.document.objects().count(), scene.sources.len());
                 assert_eq!(app.document.undo_label(), None);
             }
         }
         assert!(
-            app.subd_cylinder_session.is_none(),
+            app.subd_axial_session.is_none(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -385,7 +385,7 @@ fn inline_reference_modes_and_stale_tangent_sources_keep_the_draft_atomic() {
             enter(&mut app, if word == "Enter" { "" } else { &word });
         }
         assert!(
-            app.subd_cylinder_session.is_none(),
+            app.subd_axial_session.is_none(),
             "{name} {:?}",
             app.command_log
         );
@@ -410,7 +410,7 @@ fn inline_reference_modes_and_stale_tangent_sources_keep_the_draft_atomic() {
     assert!(app.pick_tangent_at(scene.sources[0], None, Point3::try_new(3., 0., 0.).unwrap()));
     app.document.delete_objects([scene.sources[0]]).unwrap();
     assert!(app.pick_tangent_at(scene.sources[1], None, Point3::try_new(0., 4., 0.).unwrap()));
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert!(app.tangent_session.is_none());
     assert_eq!(app.document.objects().count(), 1);
 }
@@ -466,7 +466,7 @@ fn fitted_grip_clicks_and_degenerate_fits_preserve_pending_redo() {
         app.document.undo().unwrap();
         enter(&mut app, "SubDCylinder FitPoints");
         assert_eq!(
-            app.subd_cylinder_session
+            app.subd_axial_session
                 .as_ref()
                 .unwrap()
                 .input
@@ -477,7 +477,7 @@ fn fitted_grip_clicks_and_degenerate_fits_preserve_pending_redo() {
         );
         assert_eq!(app.document.redo_label(), Some("Point"));
         enter(&mut app, "5");
-        assert!(app.subd_cylinder_session.is_none());
+        assert!(app.subd_axial_session.is_none());
         assert_eq!(app.document.redo_label(), Some("Point"));
         std::mem::swap(&mut scene.document, &mut app.document);
         references_native::check(&scene, value, "after_script");

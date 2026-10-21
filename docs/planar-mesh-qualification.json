@@ -2914,7 +2914,7 @@
     "crates/viboceros-command/src/lib.rs": "6da53cf824d98da57178f0f1c0940dc887c17e33e78967b954fc6d27784660a1",
     "crates/viboceros-command/tests/planar_mesh_native.rs": "3095805615d8eefe282f10002eda4117ff9ca828260a888f6f2744864cd183ee",
     "crates/viboceros-command/tests/support/planar_mesh.rs": "fe4f306e5110bab53e079abb012758822a540aa75f948a7a4406bd570091768a",
-    "src/app/object_selection.rs": "efc4925a8c64fcdc992fe62bf1cc1f6dab361ff2af7697f606250e9bd5210dbc",
+    "src/app/object_selection.rs": "9ab129a0a901f7b8ced1648f029f9dc1fc4dc022b28c24e6ee122f141f8dfbb7",
     "src/app/object_selection/planar_mesh_tests.rs": "3a894eaf110bc6188e50ae88674732aba6829ebcb3a3855992e96ff37ca6f2da",
     "crates/viboceros-geometry/src/brep.rs": "c8b417cdb1da87f116ec337737c955c97f7c7de36d8c3f8dc3587af3a6b38c1a",
     "crates/viboceros-geometry/src/brep/tessellation.rs": "5bf8e6883ef9e10d7515ad1b10e13755b2f858c2823e9d34072c96aae7313099",

@@ -234,7 +234,7 @@ mod stretch_prompt;
 mod subcurve_direction;
 mod subcurve_preview;
 mod subcurve_prompt;
-mod subd_cylinder;
+mod subd_axial;
 #[cfg(test)]
 #[path = "../crates/viboceros-command/tests/support/subd.rs"]
 #[allow(dead_code)]
@@ -2546,7 +2546,7 @@ pub struct VibocerosApp {
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     subd_primitive_session: Option<subd_primitives::Session>,
-    subd_cylinder_session: Option<subd_cylinder::Session>,
+    subd_axial_session: Option<subd_axial::Session>,
     subd_sphere_session: Option<subd_sphere::Session>,
     orient_points_session: Option<orient_points::Session>,
     remap_cplane_session: Option<remap_cplane::Session>,
@@ -2698,7 +2698,7 @@ impl VibocerosApp {
             conic_session: None,
             rectangle_session: None,
             subd_primitive_session: None,
-            subd_cylinder_session: None,
+            subd_axial_session: None,
             subd_sphere_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
@@ -2837,7 +2837,7 @@ impl VibocerosApp {
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
             || self.continue_subd_sphere(&input)
-            || self.continue_subd_cylinder(&input)
+            || self.continue_subd_axial(&input)
             || self.continue_subd_primitive(&input)
             || self.try_continue_rectangle(&input)
         {
@@ -3035,7 +3035,7 @@ impl VibocerosApp {
             || self.try_start_group_prompt(&input)
             || self.try_start_intersection_prompt(&input)
             || self.start_subd_sphere(&input)
-            || self.start_subd_cylinder(&input)
+            || self.start_subd_axial(&input)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)
         {
@@ -3668,7 +3668,7 @@ impl VibocerosApp {
         if self.start_subd_sphere(input) {
             return true;
         }
-        if self.start_subd_cylinder(input) {
+        if self.start_subd_axial(input) {
             return true;
         }
         if self.start_subd_primitive(input) {
@@ -6161,7 +6161,7 @@ impl VibocerosApp {
         self.conic_session = None;
         self.rectangle_session = None;
         self.subd_primitive_session = None;
-        self.subd_cylinder_session = None;
+        self.subd_axial_session = None;
         self.subd_sphere_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
@@ -6281,7 +6281,7 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_subd_sphere_point(point) {
             return accepted;
         }
-        if let Some(accepted) = self.accept_subd_cylinder_point(point) {
+        if let Some(accepted) = self.accept_subd_axial_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_subd_primitive_point(point) {
@@ -9807,7 +9807,7 @@ impl VibocerosApp {
                 s.cursor = Some(point);
             }
             self.update_subd_sphere_hover(point);
-            self.update_subd_cylinder_hover(point);
+            self.update_subd_axial_hover(point);
             self.update_subd_primitive_hover(point);
             self.update_face_create_hover(point);
             self.update_mesh_polyline_hover(point);
@@ -11099,7 +11099,7 @@ impl eframe::App for VibocerosApp {
         });
         let angle_plane = angle_plane
             .or_else(|| self.subd_sphere_session.as_ref().and(self.drafting_plane))
-            .or_else(|| self.subd_cylinder_session.as_ref().and(self.drafting_plane))
+            .or_else(|| self.subd_axial_session.as_ref().and(self.drafting_plane))
             .or_else(|| {
                 self.circle_around_session
                     .as_ref()?
@@ -11430,9 +11430,9 @@ impl eframe::App for VibocerosApp {
                                         .map(subd_sphere::Session::preview_curves)
                                 })
                                 .or_else(|| {
-                                    self.subd_cylinder_session
+                                    self.subd_axial_session
                                         .as_ref()
-                                        .map(subd_cylinder::Session::preview_curves)
+                                        .map(subd_axial::Session::preview_curves)
                                 })
                                 .or_else(|| {
                                     self.subd_primitive_session
@@ -12034,7 +12034,7 @@ mod tests {
             conic_session: None,
             rectangle_session: None,
             subd_primitive_session: None,
-            subd_cylinder_session: None,
+            subd_axial_session: None,
             subd_sphere_session: None,
             orient_points_session: None,
             remap_cplane_session: None,

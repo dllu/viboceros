@@ -1207,7 +1207,7 @@ impl VibocerosApp {
                 pending.description.command,
                 "SubDCylinder FitPoints" | "SubDCone FitPoints" | "SubDTruncatedCone FitPoints"
             ) {
-                self.accept_subd_cylinder_fit(pending.postselected);
+                self.accept_subd_axial_fit(pending.postselected);
                 self.command_input.clear();
                 return true;
             }
@@ -1670,7 +1670,7 @@ impl VibocerosApp {
                 pending.description.command,
                 "SubDCylinder FitPoints" | "SubDCone FitPoints" | "SubDTruncatedCone FitPoints"
             ) {
-                self.subd_cylinder_session = None;
+                self.subd_axial_session = None;
                 self.active_command = None;
                 self.drafting_plane = None;
             }

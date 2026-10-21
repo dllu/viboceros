@@ -372,7 +372,7 @@
     "crates/viboceros-command/src/polyline_on_mesh.rs": "ced0e868477f084ed6cef5c6af4217a8407d1f503d91c6d5ba5704aefe3f232b",
     "crates/viboceros-command/tests/polyline_on_mesh_native.rs": "050849e9424328faf825df8b99ece83288250dab73051d51c31a5645d36fcc82",
     "crates/viboceros-command/tests/support/mesh_polyline.rs": "a87f0e2de6c9ea620a859b926aa7624f1d5bf7db645b9fa0a82d040ff78c976b",
-    "src/app.rs": "d310b1e2e7862cf49291ac96b6bd8cf93771dafb61cf355042a74b3fdeb66333",
+    "src/app.rs": "b051d66924734b435fc69bafe1eb469d00fef6a4dfd78742c4b1820230da6b8f",
     "src/app/polyline_on_mesh.rs": "b05f6afa49c5d88749bcf9eb944f9c470aa91eefcab2840809ff299491573d89",
     "src/app/tests/polyline_on_mesh.rs": "bdab09956080a9c71442b0fe92a751951edb974ed923fa078d2bdd0b065cff64",
     "src/app/mesh_face_prompt.rs": "8a6fe1e583489d85aa27f626debebae3ff4bf34d632b16b4eea36fc4ffbfc735",

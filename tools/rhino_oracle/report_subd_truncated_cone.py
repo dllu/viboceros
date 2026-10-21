@@ -20,7 +20,7 @@ SOURCES = list(dict.fromkeys(BASE_SOURCES + [
     'crates/viboceros-command/tests/subd_truncated_cone_references_native.rs',
     'crates/viboceros-command/tests/support/subd_truncated_cone.rs',
     'crates/viboceros-command/tests/support/subd_truncated_cone_references.rs',
-    'src/app/subd_cylinder/truncated_tests.rs',
+    'src/app/subd_axial/truncated_tests.rs',
     'tools/rhino_oracle/subd_truncated_cone_probe.py',
     'tools/rhino_oracle/subd_truncated_cone_references_probe.py',
     'tools/rhino_oracle/generate_subd_truncated_cone.py',

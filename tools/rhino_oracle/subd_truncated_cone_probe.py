@@ -70,7 +70,15 @@ SCENES={
 # Rhino offers only the opposite size mode; invoking the active mode would
 # start its unrelated measurement command. Account for shared mode memory.
 _diameter = False
-_CASE_ORDER = ('subd_truncated_cone_cancel_center', 'subd_truncated_cone_default', 'subd_truncated_cone_quad', 'subd_truncated_cone_tri', 'subd_truncated_cone_open', 'subd_truncated_cone_three', 'subd_truncated_cone_four_quad', 'subd_truncated_cone_four_tri', 'subd_truncated_cone_odd', 'subd_truncated_cone_larger', 'subd_truncated_cone_equal', 'subd_truncated_cone_zero', 'subd_truncated_cone_zero_open', 'subd_truncated_cone_negative', 'subd_truncated_cone_free', 'subd_truncated_cone_free_odd', 'subd_truncated_cone_height_point', 'subd_truncated_cone_radius_point', 'subd_truncated_cone_diameter_base', 'subd_truncated_cone_diameter_end', 'subd_truncated_cone_diameter_point', 'subd_truncated_cone_end_point', 'subd_truncated_cone_end_spatial', 'subd_truncated_cone_circumference', 'subd_truncated_cone_area', 'subd_truncated_cone_two_point', 'subd_truncated_cone_three_point', 'subd_truncated_cone_spatial_circle', 'subd_truncated_cone_tilted', 'subd_truncated_cone_three_bands', 'subd_truncated_cone_cancel_radius', 'subd_truncated_cone_cancel_height', 'subd_truncated_cone_cancel_end')
+_CASE_ORDER = ['subd_truncated_cone_' + name for name in (
+ 'cancel_center default quad tri open '
+ 'three four_quad four_tri odd larger '
+ 'equal zero zero_open negative free '
+ 'free_odd height_point radius_point diameter_base diameter_end '
+ 'diameter_point end_point end_spatial circumference area '
+ 'two_point three_point spatial_circle tilted three_bands '
+ 'cancel_radius cancel_height cancel_end '
+).split()]
 for _key in _CASE_ORDER:
  _case=SCENES[_key]
  _actions=[]

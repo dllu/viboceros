@@ -632,7 +632,7 @@
     "crates/viboceros-command/tests/subd_box_native.rs": "a997b25ee17b58329f8fd98f57e214820d14438914ff355b1f96b4bfc9830fd6",
     "crates/viboceros-command/tests/support/subd_box.rs": "0e7ba829f4111750a79434cac67c77b856dffeeff609e657a8e8eb70e9f9341c",
     "crates/viboceros-command/tests/support/subd.rs": "aa2b45bdb9164e34404fe203a9bcf225b1813e92a20b8858efe8325a77a3ac2d",
-    "src/app.rs": "d310b1e2e7862cf49291ac96b6bd8cf93771dafb61cf355042a74b3fdeb66333",
+    "src/app.rs": "b051d66924734b435fc69bafe1eb469d00fef6a4dfd78742c4b1820230da6b8f",
     "src/app/subd_primitives.rs": "ec60147e39f0c66fe0e7be127ba53526e22030f404fb06621bf8bdc0880a079f",
     "src/app/subd_primitives/tests.rs": "41943b5553f0180611e05734771d0c624b5f1a9d0bc3ade5d7d5cadf39dbd22e",
     "src/app/rectangle.rs": "45984c55d0ad2ccbc3437afd7618078c935f3fc148b5cd2db14ebec66b611dfb",

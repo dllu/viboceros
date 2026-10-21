@@ -18,7 +18,7 @@ SOURCES = list(dict.fromkeys(BASE_SOURCES + [
     'crates/viboceros-command/tests/subd_cone_references_native.rs',
     'crates/viboceros-command/tests/support/subd_cone.rs',
     'crates/viboceros-command/tests/support/subd_cone_references.rs',
-    'src/app/subd_cylinder/cone_tests.rs',
+    'src/app/subd_axial/cone_tests.rs',
     'tools/rhino_oracle/subd_cone_probe.py',
     'tools/rhino_oracle/subd_cone_references_probe.py',
     'tools/rhino_oracle/generate_subd_cone.py',

@@ -55,7 +55,7 @@ fn sphere_getters_match_native_styles_modes_source_selection_and_grouped_history
     }
 }
 
-use crate::app::subd_cylinder::tests::references_native as cylinder_native;
+use crate::app::subd_axial::tests::references_native as cylinder_native;
 #[path = "../../../crates/viboceros-command/tests/support/subd_sphere_references.rs"]
 #[allow(unused_imports)]
 mod references_native;

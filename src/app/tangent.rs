@@ -55,8 +55,8 @@ impl VibocerosApp {
     pub(super) fn start_subd_sphere_tangent(&mut self) {
         self.start_tangent(Kind::SubDSphere, None);
     }
-    pub(super) fn start_subd_cylinder_tangent(&mut self) {
-        let kind = match self.subd_cylinder_session.as_ref().map(|s| s.kind()) {
+    pub(super) fn start_subd_axial_tangent(&mut self) {
+        let kind = match self.subd_axial_session.as_ref().map(|s| s.kind()) {
             Some(viboceros_command::subd_axial::Kind::Cone) => Kind::SubDCone,
             Some(viboceros_command::subd_axial::Kind::TruncatedCone) => Kind::SubDTruncatedCone,
             _ => Kind::SubDCylinder,
@@ -201,7 +201,7 @@ impl VibocerosApp {
                 s.kind,
                 Kind::SubDCylinder | Kind::SubDCone | Kind::SubDTruncatedCone
             )
-        }) && !self.valid_subd_cylinder()
+        }) && !self.valid_subd_axial()
         {
             return false;
         }
@@ -247,7 +247,7 @@ impl VibocerosApp {
         ) {
             let result = s.input.finish();
             return match result {
-                Ok(circle) => self.accept_subd_cylinder_reference(circle),
+                Ok(circle) => self.accept_subd_axial_reference(circle),
                 Err(e) => {
                     self.push_log(format!("Error: {e}"));
                     false

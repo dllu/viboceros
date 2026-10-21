@@ -23,14 +23,14 @@ fn cone_getters_match_native_caps_signed_axes_sizes_and_angles() {
                 action
             };
             enter(&mut app, if word == "Enter" { "" } else { &word });
-            if app.subd_cylinder_session.is_some() {
+            if app.subd_axial_session.is_some() {
                 assert_eq!(app.active_command.unwrap().name(), "SubDCone");
                 assert_eq!(app.document.objects().count(), 0);
                 assert_eq!(app.document.undo_label(), None);
             }
         }
         assert!(
-            app.subd_cylinder_session.is_none(),
+            app.subd_axial_session.is_none(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -60,7 +60,7 @@ fn independent_defaults_count_retry_previews_and_stale_drafts_preserve_history()
     let cylinder = app.commands.subd_cylinder_preferences();
     enter(&mut app, "SubDCone");
     assert_eq!(
-        app.subd_cylinder_session
+        app.subd_axial_session
             .as_ref()
             .unwrap()
             .input
@@ -75,8 +75,8 @@ fn independent_defaults_count_retry_previews_and_stale_drafts_preserve_history()
     enter(&mut app, "VerticalFaces=3");
     enter(&mut app, "w0,0,0");
     enter(&mut app, "3");
-    app.update_subd_cylinder_hover(Point3::try_new(0., 0., 5.).unwrap());
-    assert_eq!(app.subd_cylinder_session.as_ref().unwrap().preview.len(), 4);
+    app.update_subd_axial_hover(Point3::try_new(0., 0., 5.).unwrap());
+    assert_eq!(app.subd_axial_session.as_ref().unwrap().preview.len(), 4);
     assert_eq!(app.document.objects().count(), 0);
     assert_eq!(app.document.redo_label(), Some("Point"));
     enter(&mut app, "Cancel");
@@ -92,11 +92,11 @@ fn independent_defaults_count_retry_previews_and_stale_drafts_preserve_history()
     )
     .unwrap();
     app.viewports[app.active_viewport].set_construction_plane(frame);
-    app.accept_subd_cylinder_point(frame.origin()).unwrap();
-    app.accept_subd_cylinder_point(frame.point_at([6., 0., 0.]).unwrap())
+    app.accept_subd_axial_point(frame.origin()).unwrap();
+    app.accept_subd_axial_point(frame.point_at([6., 0., 0.]).unwrap())
         .unwrap();
     assert_eq!(
-        app.subd_cylinder_session
+        app.subd_axial_session
             .as_ref()
             .unwrap()
             .input
@@ -110,7 +110,7 @@ fn independent_defaults_count_retry_previews_and_stale_drafts_preserve_history()
         .set_tolerance(Tolerance::try_new(1e-4, 1e-8, 1e-6).unwrap());
     let redo_after_external_change = app.document.redo_label().map(str::to_owned);
     enter(&mut app, "5");
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert_eq!(
         app.document.redo_label(),
         redo_after_external_change.as_deref()
@@ -121,7 +121,7 @@ fn independent_defaults_count_retry_previews_and_stale_drafts_preserve_history()
         .add_geometry(Geometry::Point(frame.origin()))
         .unwrap();
     enter(&mut app, "3");
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert_eq!(app.document.objects().count(), 1);
 }
 #[test]
@@ -132,7 +132,7 @@ fn angle_defaults_units_and_radius_height_memory_use_the_shared_controller() {
     enter(&mut app, "3");
     enter(&mut app, "OrBaseAngle");
     enter(&mut app, "-30");
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     let prefs = app.commands.subd_cone_preferences();
     assert_eq!(prefs.base_angle, -30.);
     assert!((prefs.height + 3_f64.sqrt()).abs() < 1e-12);
@@ -141,16 +141,16 @@ fn angle_defaults_units_and_radius_height_memory_use_the_shared_controller() {
     enter(&mut app, "w0,0,0");
     enter(&mut app, "3");
     enter(&mut app, "OrApexAngle=180");
-    assert!(app.subd_cylinder_session.is_some());
+    assert!(app.subd_axial_session.is_some());
     enter(&mut app, "OrApexAngle");
     enter(&mut app, "");
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert!((app.commands.subd_cone_preferences().height - 3. * 3_f64.sqrt()).abs() < 1e-12);
     enter(&mut app, "SubDCone");
     enter(&mut app, "w0,0,0");
     enter(&mut app, "2cm");
     assert_eq!(
-        app.subd_cylinder_session
+        app.subd_axial_session
             .as_ref()
             .unwrap()
             .input
@@ -191,13 +191,13 @@ fn cone_reference_getters_match_native_tangencies_fit_grips_and_history() {
                 };
                 enter(&mut app, if word == "Enter" { "" } else { &word });
             }
-            if app.subd_cylinder_session.is_some() {
+            if app.subd_axial_session.is_some() {
                 assert_eq!(app.document.objects().count(), scene.sources.len());
                 assert_eq!(app.document.undo_label(), None);
             }
         }
         assert!(
-            app.subd_cylinder_session.is_none(),
+            app.subd_axial_session.is_none(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -234,7 +234,7 @@ fn stale_tangent_sources_and_unsupported_tangent_angles_leave_the_draft_atomic()
     app.pick_tangent_at(id, None, Point3::try_new(3., 0., 0.).unwrap());
     app.document.delete_objects([id]).unwrap();
     app.pick_tangent_at(id, None, Point3::try_new(4., 0., 0.).unwrap());
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert!(app.tangent_session.is_none());
     enter(&mut app, "Line 0,0,0 12,0,0");
     enter(&mut app, "Line 0,0,0 0,12,0");
@@ -246,7 +246,7 @@ fn stale_tangent_sources_and_unsupported_tangent_angles_leave_the_draft_atomic()
     enter(&mut app, "");
     enter(&mut app, "OrBaseAngle=30");
     assert!(
-        app.subd_cylinder_session
+        app.subd_axial_session
             .as_ref()
             .unwrap()
             .input
@@ -267,7 +267,7 @@ fn stale_tangent_sources_and_unsupported_tangent_angles_leave_the_draft_atomic()
     ] {
         enter(&mut app, text);
     }
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert_eq!(app.document.objects().count(), 3);
     assert!((app.commands.subd_cone_preferences().height - 3_f64.sqrt()).abs() < 1e-12);
 }
@@ -303,7 +303,7 @@ fn fitted_grip_clicks_and_degenerate_cones_preserve_source_and_pending_redo() {
     enter(&mut app, "");
     assert!(app.object_prompt.is_none());
     enter(&mut app, "5");
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     std::mem::swap(&mut scene.document, &mut app.document);
     references_native::check(&scene, value, "after_script");
     for row in references_native::rows()
@@ -317,10 +317,10 @@ fn fitted_grip_clicks_and_degenerate_cones_preserve_source_and_pending_redo() {
         enter(&mut app, "Point 99,99,99");
         app.document.undo().unwrap();
         enter(&mut app, "SubDCone FitPoints");
-        assert!(app.subd_cylinder_session.is_some());
+        assert!(app.subd_axial_session.is_some());
         assert_eq!(app.document.redo_label(), Some("Point"));
         enter(&mut app, "5");
-        assert!(app.subd_cylinder_session.is_none());
+        assert!(app.subd_axial_session.is_none());
         assert_eq!(app.document.redo_label(), Some("Point"));
         std::mem::swap(&mut scene.document, &mut app.document);
         references_native::check(&scene, value, "after_script");
@@ -389,7 +389,7 @@ fn cone_perspective_pointer_resolves_the_height_plane_and_preserves_cplane() {
         picked_point: Some(received),
         ..Default::default()
     }));
-    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.subd_axial_session.is_none());
     assert_eq!(app.document.undo_label(), Some("SubDCone"));
     assert_eq!(app.viewports[0].construction_plane(), cplane);
 }
