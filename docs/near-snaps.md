@@ -7,7 +7,7 @@ It supports lines, polylines, circles, arcs, ellipses, NURBS, polycurve leaves,
 natural surface boundaries and spatial B-rep edges. [Mesh wire Near](mesh-snaps.md)
 is separately opt-in and uses its own calibrated depth weighting; mesh wire-selection
 priorities remain incomplete. Fully front-facing curve Near uses screen-Euclidean
-distance. A [camera-crossing line](oracle.md#snap-targets-outside-the-visible-depth-interval)
+distance. A [camera-crossing line](oracle/visibility.md#snap-targets-outside-the-visible-depth-interval)
 uses its original visible endpoint, provided that endpoint is within the aperture.
 Enable it in **Snap modes**, right-click to isolate/restore it, or Shift-click
 for one point. At a point prompt, `Near`/`Nearest` selects a one-shot override.

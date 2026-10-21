@@ -5,7 +5,7 @@
 An independent mathematical audit after `ca54e32` repaired thin visible-line
 clipping, interior targets on long projected segments, and hover distance that
 rounded an interior minimum to an endpoint. Later actual Rhino GetPoint
-[captures](oracle.md#snap-targets-outside-the-visible-depth-interval) establish
+[captures](oracle/visibility.md#snap-targets-outside-the-visible-depth-interval) establish
 a separate Near admission rule for sources crossing the perspective camera.
 
 ## Shared implementation
@@ -43,7 +43,7 @@ before bisection. Projection-only callbacks retain the mathematical query becaus
 an unprojectable endpoint can also mean overflow or another clipping boundary.
 Positive-depth clipping and screen-range rejection do not trigger the camera rule.
 Mid/Center hover and the independent Fraction corpus keep visible-locus distance.
-Another [72 real GetPoint cases](oracle.md#camera-plane-centers-and-straight-source-representation)
+Another [72 real GetPoint cases](oracle/visibility.md#camera-plane-centers-and-straight-source-representation)
 verify the same Near policy on polylines and rational degree-one NURBS with
 translated, side, and oblique cameras. Their public full NURBS definitions are
 verified before the Python CLI replay; sampling alone does not verify a source net.

@@ -191,7 +191,7 @@ and Wine/FEX; it includes that API overhead and cannot establish a native Rhino
 kernel speed comparison. The [release point report](../twist-point-comparison.json)
 matches all 14 maps with maximum coordinate error `5.33e-15`; Rust batches
 measured approximately 72–172 ns per point, including result collection.
-See [timing interpretation](../oracle.md#timing-interpretation).
+See [timing interpretation](../oracle/timing.md#timing-interpretation).
 
 References: [Rhino Twist command](https://docs.mcneel.com/rhino/8/help/en-us/commands/twist.htm),
 [public TwistSpaceMorph API](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_Morphs_TwistSpaceMorph.htm),

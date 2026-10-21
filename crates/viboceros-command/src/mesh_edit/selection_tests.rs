@@ -1,4 +1,5 @@
 use super::*;
+use crate::*;
 
 #[test]
 fn collapse_locked_group_peers_follow_explicit_deletion_policy_and_restore_on_undo() {

@@ -168,6 +168,9 @@ memory. Mesh connectivity, polygon normals, edge collapse, and edge splitting
 have separate kernel modules. They preserve raw-vertex seam distinctions while
 sharing exact-location topology. See [mesh topology and editing](../mesh-topology.md)
 for allocation policy, numerical boundaries, and independent/Rhino regression coverage.
+The command crate's `mesh_edit` modules own face edits, edge edits, hole filling,
+triangulation and computed extraction. Their existing regression cases are grouped
+by operation under `tests/mesh_edit`; the registry retains command registration.
 The kernel's `mesh/ngon` module validates logical face groups over triangle/quad
 storage; the 3DM bridge's `mesh_ngon` payload preserves their boundary and member
 indices. Viewport display uses visible n-gon edges while editing selectors keep

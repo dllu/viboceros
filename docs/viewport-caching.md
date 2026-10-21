@@ -132,12 +132,12 @@ checks also passed. No new Rhino timing or viewport comparison is claimed.
 Camera restoration/clipping follow-up: 752 ordinary application tests, 484 Python
 tests, and all nine explicit offscreen raster tests passed on NVIDIA GB10/Vulkan,
 driver 610.57.04. Formatting and application all-target Clippy passed with the
-existing warnings. The new [public clip captures](oracle.md#gpu-frustum-clipping)
+existing warnings. The new [public clip captures](oracle/visibility.md#gpu-frustum-clipping)
 were taken entirely on private Xvfb; no new performance comparison is claimed.
 
 Selection-clipping follow-up: 757 ordinary application tests and 1,865 geometry
 tests passed (13 and eight opt-in exclusions respectively), alongside 486 Python
-tests. The [public pick captures](oracle.md#selection-at-the-depth-planes)
+tests. The [public pick captures](oracle/visibility.md#selection-at-the-depth-planes)
 record 1,296 paired primitive/document results on private Xvfb. Formatting and
 workspace all-target Clippy passed with existing warnings; GPU code and the
 previous offscreen verification remain unchanged in this selection change.

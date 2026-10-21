@@ -1,0 +1,90 @@
+{
+  "baseline_revision": "94dd26ffaa9e7be0662ea39a3c349aa6975b58fa",
+  "scope": "Documentation and source-module refactor before further command implementation",
+  "line_counts": {
+    "README.md": {
+      "before": 36,
+      "after": 36
+    },
+    "docs/oracle.md": {
+      "before": 2811,
+      "after": 72
+    },
+    "crates/viboceros-command/src/lib.rs": {
+      "before": 44502,
+      "after": 41026
+    },
+    "src/app.rs": {
+      "before": 15960,
+      "after": 15533
+    }
+  },
+  "preservation": {
+    "mesh_commands": 10,
+    "app_option_handlers": 2,
+    "moved_regression_tests": 29,
+    "code": "Moved and remaining dispatcher tokens and literals are identical after accounting for imports, module declarations, visibility, whitespace and formatting commas.",
+    "oracle_evidence": "Every former evidence line is retained. One direct-launch example now uses the headless wrapper.",
+    "local_documentation_links_and_fragments": 468,
+    "legacy_oracle_section_anchors": 23
+  },
+  "validation": {
+    "release_tests": {
+      "mesh-command": 192,
+      "app-arc": 23,
+      "app-pipe": 3,
+      "app-mesh": 8
+    },
+    "python_tests": 1694,
+    "clippy": "workspace, all targets, native-smlib, -D warnings",
+    "format": "cargo fmt --all -- --check"
+  },
+  "retained_native_comparisons": {
+    "reports": 19,
+    "numeric_results_and_limits_unchanged": true,
+    "fresh_native_captures": false,
+    "source_hashes": "Refreshed after source-preservation checks and focused regressions; saved measurements were reused."
+  },
+  "sha256": {
+    "README.md": "fe7df93b50e445786e88daeb12cb5a073f256d4bffa62ef63e0e360110db8c26",
+    "crates/viboceros-command/src/lib.rs": "73306ed55f5cf4cc748bd51306a4d8fc56c44cc44b394707f5bdf0a01832e215",
+    "crates/viboceros-command/src/mesh_edit/edges.rs": "72f53f72fc541d38f3aa4e6fa954da866f40a5a49372787f0e2217aea9e80c3a",
+    "crates/viboceros-command/src/mesh_edit/extraction.rs": "74ce78dbe0f2ed8aa7bdf7ddb600a4fdc16b723b4b4ef50753bd14e79bf37100",
+    "crates/viboceros-command/src/mesh_edit/faces.rs": "9bfe96795bf2eb014e7ba04924f3438825c8cada3d128a6231dd8e0a181cafe4",
+    "crates/viboceros-command/src/mesh_edit/holes.rs": "4ffcc95088e8d2e9874b32291196bbfb9e410caf9bd4c813e0090a1996517205",
+    "crates/viboceros-command/src/mesh_edit/mod.rs": "cddbddb392b04eb636fe88030ff56929904943f87555693f963fe306438cea32",
+    "crates/viboceros-command/src/mesh_edit/selection_tests.rs": "58723206b2bf1695b67abf24ed87e019d753ffb034fdab77d4983e072c29af7a",
+    "crates/viboceros-command/src/mesh_edit/triangulate.rs": "0537877b804664ece4ca4aa1b88d55aed9fba4ea3b76cdb6de2f6cca8a373be0",
+    "crates/viboceros-command/src/tests/mesh_edit/delete_faces.rs": "3216aa9f91c8c2ba76c6b8738ac691242eb9fe21c3dbd19209d8626c0d10f789",
+    "crates/viboceros-command/src/tests/mesh_edit/edges.rs": "11367e435354d31f3f7094796db257ae734ea278bc98e80b702eb46988285537",
+    "crates/viboceros-command/src/tests/mesh_edit/extraction.rs": "b2da9e2cce584337bcf4fe5ff6ea2399969a687736a2c8025539ea3b3224a68a",
+    "crates/viboceros-command/src/tests/mesh_edit/faces.rs": "28d10d142636186ee224abcb7bc26bff0f5a25403660d7b13f8620ce383b6e12",
+    "crates/viboceros-command/src/tests/mesh_edit/holes.rs": "de181cd0ddd9cebcae4946405ac498e28dc1e842e360cd486e987c5fbd158ea7",
+    "crates/viboceros-command/src/tests/mesh_edit/mod.rs": "3edff48ff235be7e9c56d0bb9d48c9e9ab7317cfd47602c5424ac2db937ae869",
+    "crates/viboceros-command/src/tests/mesh_edit/triangulate.rs": "eef8516cc643f11215d5c26ce42cdd3d1453b8e35b03d83e31bf36a0cb7e04c7",
+    "docs/oracle.md": "9dbf0a9df00020c74bdd142dcb385d91cd99c4ee760c8ffb2c9935d301b71796",
+    "docs/oracle/README.md": "b0f6ff31773707b98f238e43c2decf8a0ae403ce4781023609920a1f5b5c8e7f",
+    "docs/oracle/analysis.md": "52856c96252b5307d97c07fac4cd3cd00cdcc68e1e3c2afd5830d564e148bb74",
+    "docs/oracle/cameras.md": "92c0ae909fbda7d951b1dce5b6ca3eb6afc9a9f1d6a278bd5cfaee7318f17ba6",
+    "docs/oracle/construction-planes.md": "80cf8ada4ffccbf286413a5ef03a19383b76fd06fbc5bb4b3c8a46bbfd367243",
+    "docs/oracle/curve-input.md": "9be1fff88d748992a4cb0d3a7af52850369d88b0a8da6ecdec7aa787d4eea545",
+    "docs/oracle/document-workflows.md": "7132221bf13ed879cbe62b34b2a4fdde0c98ee335547769585ecaafe19da27db",
+    "docs/oracle/editing-evidence.md": "b9982162a3d5d25d99f3f912ac2f9feaa7574fcd76f964c1f6b03327bbb433d6",
+    "docs/oracle/geometry-evidence.md": "ff8b67c3d1ec169baef616a05d55090573a9ab93e74654d094366799c722471a",
+    "docs/oracle/modeling-evidence.md": "4b641255d46b2a215d47d4a03e662317327c8b20678fd781b7eaf7ed4bbd3244",
+    "docs/oracle/protocol.md": "7d1698716242522740ee1bcd648f9df125f9bcdceff334223fc799d6cbc04290",
+    "docs/oracle/running.md": "613b1fb358e9827c8f162a764c49919528865b93cf62732d925b65e3e3e33d22",
+    "docs/oracle/surface-editing.md": "404cd25a477530ba5ee53bffd213bb55803dfa5863bf0dc3022431ca686f85ba",
+    "docs/oracle/timing.md": "63b6ef656eb3228b43407d69fea1d4f7a94b40a2077ab1e66378f85ee19b5dd3",
+    "docs/oracle/visibility.md": "0cb1feb2af52c6c362c8f70191e396d0a54b6d937c88b35f7d88dd31b306f526",
+    "src/app.rs": "11516fe8f44faa14d857160eafe085fba11a9cf67476baac0dafe0d6c212afd3",
+    "src/app/arc.rs": "5ff809ecac6982251ac56f5c9195761ddfe0ed4491b44be546d7eb084233b90a",
+    "src/app/pipe.rs": "387df27acbedadee2d17e9fb9a53de4f41214719e61626cfb405ad90c14457a7"
+  },
+  "git_sha256": {
+    "94dd26ffaa9e7be0662ea39a3c349aa6975b58fa:crates/viboceros-command/src/lib.rs": "1bfb0eb273a3649dcfef42493728d6852a09b6eff5d964a1774448f233eab7d7",
+    "94dd26ffaa9e7be0662ea39a3c349aa6975b58fa:src/app.rs": "9050c2a1790f0c4ffbd61833aa81cf7210ab19fe5a37786f8e3aa68f219323c6",
+    "94dd26ffaa9e7be0662ea39a3c349aa6975b58fa:docs/oracle.md": "169571969a03470fbaff5846f867022ad88a6f51deabd6d7659e7f9de24b01f3",
+    "94dd26ffaa9e7be0662ea39a3c349aa6975b58fa:crates/viboceros-command/src/mesh_selection_tests.rs": "c99f43bd0ecf49d160d66a4213c1bcbc64d6221501f2f3849f6abcaa29003ddf"
+  }
+}

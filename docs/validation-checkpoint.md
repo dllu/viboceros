@@ -1445,7 +1445,7 @@ epsilon agreement, general curved Booleans, general STEP B-rep interchange,
 other graphics backends, or performance parity. Those remain subject to the
 implementation boundaries in
 the [architecture](architecture.md), [file-format](file-formats.md), and
-[oracle timing](oracle.md#timing-interpretation) documentation.
+[oracle timing](oracle/timing.md#timing-interpretation) documentation.
 
 ## Contour checkpoint
 

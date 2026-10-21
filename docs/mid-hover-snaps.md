@@ -54,7 +54,7 @@ construction. `object_snap/proximity` shares projected bounds and bounded curve
 refinement with Center. Ordinary and edge-constrained prompts use the same query.
 `ObjectSnap::distance()` is capture distance, which need not be distance to the
 returned model point. A visible source portion can admit a finite target behind
-the camera. The [depth-plane follow-up](oracle.md#snap-targets-outside-the-visible-depth-interval)
+the camera. The [depth-plane follow-up](oracle/visibility.md#snap-targets-outside-the-visible-depth-interval)
 records this behavior, including mixed-mode controls; a direct Mid hit still
 requires the target's projection.
 

@@ -251,7 +251,7 @@ features and source-curve proximity retain camera-plane rejection. Mixed-mode
 Mid remains a direct-feature query. Snap overlays use signed perspective depth
 for admitted targets; a target without a finite image keeps its label at the
 pointer. Ordinary geometry projection still rejects the camera's back side.
-See [snap depth evidence](oracle.md#snap-targets-outside-the-visible-depth-interval)
+See [snap depth evidence](oracle/visibility.md#snap-targets-outside-the-visible-depth-interval)
 for source families, independent Near checks, and the limited camera scope.
 
 Imported nonorthogonal `CameraUp` hints are retained separately from the

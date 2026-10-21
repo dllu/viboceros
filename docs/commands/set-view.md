@@ -14,7 +14,7 @@ zoom prompt. It accepts transparent view commands: for example, `CPlane`
 inside the World stage opens a construction-plane prompt, then returns to the
 World choices when that prompt finishes or is canceled. Canceling SetView
 resumes the suspended command and preserves its one-pick snap setting.
-The [saved option probe](../oracle.md#setview-option-prompt-probe) checks
+The [saved option probe](../oracle/cameras.md#setview-option-prompt-probe) checks
 33 transitions, including cancellation, rejected choices, and nested commands.
 
 `SetView World Top|Bottom|Front|Back|Right|Left|Perspective|TwoPointPerspective`
@@ -28,7 +28,7 @@ matching world construction-plane axes while retaining its origin. A panned
 parallel view keeps its current center. Conversion from perspective uses the
 frustum at the camera target depth, clamped to the existing near/far interval,
 and clears any lens shift. The
-[World parallel camera probe](../oracle.md#world-parallel-camera-probe)
+[World parallel camera probe](../oracle/cameras.md#world-parallel-camera-probe)
 checks all six presets from parallel, perspective, and two-point inputs at
 different zooms and with shifted frusta. `World Perspective` preserves
 the camera target and distance, uses a 50 mm lens and the standard world camera
@@ -44,7 +44,7 @@ the plane origin. Right-drag horizontally rotates around the vertical axis.
 Vertical right-drag changes camera height and shifts the frustum while keeping
 the camera level. Shift+right-drag and middle-drag pan the view. Named views,
 working 3DM views, and view history retain the projection and lens shift.
-The [saved camera probe](../oracle.md#world-perspective-and-two-point-camera-probe)
+The [saved camera probe](../oracle/cameras.md#world-perspective-and-two-point-camera-probe)
 checks both world perspective presets and six navigation drags. Document-based
 near/far clipping recomputation and configurable navigation settings remain
 pending; these comparisons check camera geometry and optical projection.
@@ -58,9 +58,9 @@ and axial camera distance. A two-point source becomes ordinary perspective, and
 lens shift is cleared. The camera captures the plane orientation, so later CPlane
 edits do not rotate it. View history restores the captured orientation, and
 perspective orbit continues from it. The
-[live camera probe](../oracle.md#setview-cplane-camera-probe) confirms
+[live camera probe](../oracle/cameras.md#setview-cplane-camera-probe) confirms
 that Rhino also preserves parallel frustum width through all six directions.
-The [two-point and shifted camera probe](../oracle.md#cplane-two-point-and-shifted-camera-probe)
+The [two-point and shifted camera probe](../oracle/cameras.md#cplane-two-point-and-shifted-camera-probe)
 checks six directions, Plan, and CPlane View from two-point and shifted parallel
 inputs. Imported off-axis camera targets and frustum centers remain independent;
 CPlane View places the plane at the saved target without changing optical framing.
@@ -86,7 +86,7 @@ default, matching [Rhino's View options](https://docs.mcneel.com/rhino/8/help/en
 
 These settings do not enter model undo history and do not affect SetView CPlane,
 Plan, or restoration of working viewports when opening a file. The
-[policy probes](../oracle.md#named-view-and-world-preset-policy-probes) check 96
+[policy probes](../oracle/cameras.md#named-view-and-world-preset-policy-probes) check 96
 World transitions and 72 named-view restores against private-Xvfb Rhino captures.
 
 `Plan` changes the active viewport to a parallel view looking down the current
@@ -97,7 +97,7 @@ UndoView/RedoView use this orientation. Rotated Plan views use the cloud's share
 tree with lazy three-dimensional subtree bounds for picking and snapping. The
 command preserves unfinished modeling prompts and document undo/redo. It keeps
 the drawing scale when the source view is parallel, matching the
-[live Plan probe](../oracle.md#plan-camera-probe). Rhino's perspective-to-parallel
+[live Plan probe](../oracle/cameras.md#plan-camera-probe). Rhino's perspective-to-parallel
 Plan conversion projects the former target plane when its axial distance is
 beyond the near plane. Otherwise it retains the raw near-plane width. It clears
 two-point locks and frustum shift and centers on the CPlane origin. The native

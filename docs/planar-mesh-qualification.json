@@ -2911,7 +2911,7 @@
     "crates/viboceros-command/src/planar_surface.rs": "8ab17a2aff4ea1dd551d5ba80dfaf4d2267295e51ffeca2ceaeefdb38f01827e",
     "crates/viboceros-command/src/planar_surface/native.rs": "c6cadb3f4dd529f0ec521d1815dec14df9854c2bb11afe0df6e8e8d8ab20d119",
     "crates/viboceros-command/src/planar_surface/portable.rs": "c2b249eb1e46866475e067c9ba73cfa5570f6bbb384de3c860cdfb9b5db37145",
-    "crates/viboceros-command/src/lib.rs": "1bfb0eb273a3649dcfef42493728d6852a09b6eff5d964a1774448f233eab7d7",
+    "crates/viboceros-command/src/lib.rs": "73306ed55f5cf4cc748bd51306a4d8fc56c44cc44b394707f5bdf0a01832e215",
     "crates/viboceros-command/tests/planar_mesh_native.rs": "3095805615d8eefe282f10002eda4117ff9ca828260a888f6f2744864cd183ee",
     "crates/viboceros-command/tests/support/planar_mesh.rs": "fe4f306e5110bab53e079abb012758822a540aa75f948a7a4406bd570091768a",
     "src/app/object_selection.rs": "fd7b8e6683d043c9432a4b26d8cccf5872168ceb044fc805fe4ed0abe33dee25",

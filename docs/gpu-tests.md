@@ -77,7 +77,7 @@ The independent ray test adds triangles crossing both stored clip planes,
 including an oblique Plan frame and perspective, both windings/modes/formats
 (40 renders). It requires both visible and clipped interior samples; numeric
 plane contacts and rasterizer edge bands are excluded.
-See [oracle coverage](oracle.md#gpu-frustum-clipping) for capture details.
+See [oracle coverage](oracle/visibility.md#gpu-frustum-clipping) for capture details.
 
 All nine tests use the application's camera, scene submission, shaders, pipelines,
 depth attachment, and buffer-upload code.

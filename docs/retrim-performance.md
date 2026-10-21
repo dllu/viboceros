@@ -135,4 +135,4 @@ python3 -m unittest tools.rhino_oracle.test_retrim_performance
 
 Run profiling separately from compilation and other tests. Current rendering,
 document transactions, larger control nets and arbitrary geometry families are
-outside these timing measurements. See [oracle timing interpretation](oracle.md#timing-interpretation).
+outside these timing measurements. See [oracle timing interpretation](oracle/timing.md#timing-interpretation).
