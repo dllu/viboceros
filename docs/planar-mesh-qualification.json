@@ -2942,7 +2942,7 @@
     "tools/rhino_oracle/generate_planar_mesh.py": "35b937bed4d877ce6636cd373143ebdeda6f609f1bbd489c9e4391741a289e7b",
     "tools/rhino_oracle/report_planar_mesh.py": "d118bcbd2fd24813ae546dbfbc4e0e21daa6af5294af023c71b83e0d472567e6",
     "tools/rhino_oracle/test_planar_mesh.py": "0039629674295a8eaa9f819e677ea2c1f9f5ec8e76bc00e20705660304766f64",
-    "tools/rhino_oracle/client.py": "9b368b1a726b3bbc7a193f21bda38ad1e0a5230757f5fc1762315afa8df52e96",
+    "tools/rhino_oracle/client.py": "8019946498804017b5cd85eccbf3beae00a054a58e39c66d7c6ee9a47b840fe3",
     "tools/rhino_oracle/structural_sdk.py": "0d65afb6def8b45f942f8b449245af4e90d1c85c785e7b1685a67b26b7a6592d",
     "tools/rhino_oracle/rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
     "tools/rhino_oracle/fixtures/planar_mesh.json": "12ae5506ed587c9fbe60a566dc129b8d34187e0c73907ab6f8bd6b4a0bbeb5a8",

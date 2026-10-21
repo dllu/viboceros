@@ -100,7 +100,7 @@ def summarize(text):
             'Seven additional native density-two captures compare exact sector normals, including shallow creases and a nonmanifold edge. The viewport consumes those normals without averaging across SubD sectors.',
             'Interactive drafts leave document geometry and history untouched until completion. One transaction applies source replacement and detached outputs; cancellation keeps the source geometry.',
         ],limits=[
-            'Interpolated=Yes remains unsupported. Output may be changed before the first draft corner; mixing output families inside an existing face draft is not implemented.',
+            'Interpolated=Yes has a separate qualification report. Output may be changed before the first draft corner; mixing output families inside an existing face draft is not implemented.',
             'The original nonmanifold interior-edge control has no native density-two mesh; a separate normal capture supplies mesh and sector-normal comparisons for that construction. Arbitrary nonmanifold fans and coincident distinct source controls require further qualification.',
             'Original component data are preserved through the native append path; material/texture edits and crease-sharpness parity are not separately qualified.',
             'Display meshes sample exact limit points, but their linear facets have no model-tolerance certificate. Certified tight bounds, exact SubD projection/intersection, surface snaps and comparative speed remain unqualified.',

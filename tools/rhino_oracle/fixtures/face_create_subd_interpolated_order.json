@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_order_control",
+      "case": "subd_interp_order_control"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_order_reverse",
+      "case": "subd_interp_order_reverse"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_order_reverse_control",
+      "case": "subd_interp_order_reverse_control"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_order_concave",
+      "case": "subd_interp_order_concave"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_order_free",
+      "case": "subd_interp_order_free"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_order_mesh_control",
+      "case": "subd_interp_order_mesh_control"
+    }
+  ]
+}

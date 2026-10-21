@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "subd_append.h"
+#include "subd_interpolation.h"
 
 struct ViboSubDResult {
   std::vector<uint8_t> archive, vertex_tags, edge_tags;
@@ -54,7 +55,7 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
   }
   return out;
 }
-template<class F> int guard(ViboSubDResult** out, char* error, size_t capacity, F&& f) {
+template<class Result,class F> int guard(Result** out, char* error, size_t capacity, F&& f) {
   if(out) *out=nullptr;
   if(error && capacity) error[0]=0;
   try {
@@ -205,3 +206,12 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
     r->archive.data(),r->points.data(),r->surface_points.data(),r->vertex_tags.data(),r->edges.data(),r->edge_tags.data(),r->face_sizes.data(),r->face_vertices.data(),r->corner_normals.data()};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
+
+extern "C" int vibo_subd_weights(const uint8_t* bytes,size_t n,ViboSubDWeights** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{auto subd=vibo_subd::decode(bytes,n);return vibo_subd::interpolation_weights(*subd);});
+}
+extern "C" int vibo_subd_weights_view(const ViboSubDWeights* w,ViboSubDWeightsView* view) {
+  if(!w || !view) return 0;
+  *view={w->offsets.size()-1,w->values.size(),w->offsets.data(),w->columns.data(),w->values.data()};return 1;
+}
+extern "C" void vibo_subd_weights_free(ViboSubDWeights* w) {delete w;}

@@ -21,3 +21,6 @@ pub use subd::{
     subd_from_polygons, subd_set_tags, subd_tessellate, subd_tessellate_with_normals,
     subd_transform,
 };
+
+mod subd_interpolation;
+pub use subd_interpolation::{SubDWeights, subd_interpolation_weights};

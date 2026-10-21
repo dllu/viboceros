@@ -6,6 +6,16 @@
 extern "C" {
 #endif
 typedef struct ViboSubDResult ViboSubDResult;
+typedef struct ViboSubDWeights ViboSubDWeights;
+typedef struct {
+  size_t vertex_count, coefficient_count;
+  const size_t* row_offsets;
+  const uint32_t* columns;
+  const double* values;
+} ViboSubDWeightsView;
+int vibo_subd_weights(const uint8_t*, size_t, ViboSubDWeights**, char*, size_t);
+int vibo_subd_weights_view(const ViboSubDWeights*, ViboSubDWeightsView*);
+void vibo_subd_weights_free(ViboSubDWeights*);
 typedef struct {
   size_t archive_count, point_count, edge_count, face_count, corner_count, normal_count;
   const uint8_t *archive;

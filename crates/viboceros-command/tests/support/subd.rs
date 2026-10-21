@@ -103,7 +103,11 @@ pub fn compare(subd: &SubD, native: &Value) -> Value {
             .map(|(j, q)| (j, p.distance_to(point(q)).unwrap()))
             .min_by(|a, b| a.1.total_cmp(&b.1))
             .unwrap();
-        assert!(!permutation.contains(&j));
+        assert!(
+            !permutation.contains(&j),
+            "control matching collided: actual={:?} native={points:?}",
+            subd.control_points()
+        );
         permutation.push(j);
         maximum = maximum.max(distance);
         assert_eq!(

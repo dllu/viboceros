@@ -10,7 +10,7 @@ impl Vector3 {
     /// Direction of `self × (end - start)`, with an exact range-recovery path.
     /// None means exact collinearity of the stored inputs. A large coordinate
     /// origin or a quadratic cross-product scale must not choose that branch.
-    pub(crate) fn unit_cross_point_difference(
+    pub fn unit_cross_point_difference(
         self,
         start: Point3,
         end: Point3,

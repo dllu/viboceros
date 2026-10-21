@@ -446,7 +446,7 @@
     "crates/viboceros-geometry/src/curve/polyline/angle.rs": "1332c312e6b38cc3e1795d364060fa7e417c7c7c203a449d0adc2681290f246d",
     "crates/viboceros-geometry/src/mesh.rs": "393e9621f61a20ae9e64bb3f132fd51284e93d4c178355617d11ca30a2d7b41d",
     "crates/viboceros-geometry/src/lib.rs": "78aa903cbdfd81aedbe32397b9ff6ce1e82c66e1afcf6c8faca851b16107e3b6",
-    "crates/viboceros-geometry/src/error.rs": "2601d5711d8c2402fbaa2bcde04b7c9ec46a8194bcf44b6c723032e42168ca88",
+    "crates/viboceros-geometry/src/error.rs": "564afd96b7fcb578c3ac6ffc9f22be356bc2effb81a512466fa6420a0f1f4dbc",
     "crates/viboceros-geometry/src/point_projection.rs": "f297f74f124a39cb6dd80abc2abe37cb16f302d23cc71f464004bb44c54a4556",
     "crates/viboceros-geometry/src/point_projection/fit.rs": "ff9b24930ffdd88aa820d62037fc7c435aeaaa32aeca15040d3bd634e11cba91",
     "crates/viboceros-geometry/src/point_projection/fit/normalized.rs": "e94962bae969e4480a3032f02edf9ff5c7ec97a4da64e335f352d2447094e9f7",
@@ -472,7 +472,7 @@
     "tools/rhino_oracle/fixtures/mesh_patch.json": "2a0884f05553efd4083b20f97dc1b985a4870fe644de8c09961911e25ad85400",
     "tools/rhino_oracle/observations/mesh_patch.json": "79f352d68c46ab33e7842022ec0b14db87530d471915ef30837f9c8fe9e507b9",
     "crates/viboceros-command/src/mesh_patch/tests.rs": "d76fee8b9d14f8ea618ef8078d81bd0b4d91a613e9f28a1f246035fe4e84140b",
-    "tools/rhino_oracle/client.py": "9b368b1a726b3bbc7a193f21bda38ad1e0a5230757f5fc1762315afa8df52e96",
+    "tools/rhino_oracle/client.py": "8019946498804017b5cd85eccbf3beae00a054a58e39c66d7c6ee9a47b840fe3",
     "tools/rhino_oracle/rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
     "tools/rhino_oracle/structural_sdk.py": "0d65afb6def8b45f942f8b449245af4e90d1c85c785e7b1685a67b26b7a6592d"
   }

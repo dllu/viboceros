@@ -64,7 +64,7 @@ fn invalid_faces_and_options_fail_without_consuming_redo() {
     for command in [
         "3DFace 0,0,0 1,0,0",
         "3DFace 0,0,0 1,0,0 2,0,0",
-        "3DFace Output=SubD Interpolated=Yes 0,0,0 1,0,0 1,1,0",
+        "3DFace Output=SubD Interpolated=Maybe 0,0,0 1,0,0 1,1,0",
         "3DFace Chain=Yes",
         "3DFace WeldAngle=NaN",
         "3DFace WeldAngle=181",

@@ -51,7 +51,12 @@ Detached SubD components become separate current-layer objects. Source creases
 and corners away from a join remain intact; joined endpoints are retagged.
 Explicit output-family switches create separate objects beside the source.
 See [SubD geometry](../subd.md) for display and interchange behavior.
-`Interpolated=Yes` remains unsupported.
+`Interpolated=Yes` fits SubD vertex limit stations to the picked or InPlane-projected
+points. Appending keeps the source's original vertex limit stations fixed;
+control points move across the joined net to satisfy those constraints. Exact
+source control coordinates identify joins. The option is remembered and affects
+only SubD output. Fitting runs at completion and checks native residuals against
+the document absolute tolerance before applying the result.
 
 The [qualification report](../face-create-qualification.json) retains 73 native
 recipes. The command and viewport getter comparisons match sampled surfaces
@@ -81,5 +86,8 @@ current-layer output, selection and grouped history at `1e-6`.
 [Append controls](../subd-append-qualification.json) add 32 recipes covering source
 identity, detached objects, nonmanifold joins, reversed faces, late bridges,
 boundary chains, output-family switches and cancellation.
+[Interpolation controls](../subd-interpolation-qualification.json) add 36
+interpolated recipes and three ordering controls, including tilted concave
+append faces, source creases/corners, chained boundary picks and cancellation.
 
 Reference: [McNeel 3DFace command](https://docs.mcneel.com/rhino/8/help/en-us/commands/3dface.htm).

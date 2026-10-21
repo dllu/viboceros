@@ -195,7 +195,7 @@ impl VibocerosApp {
         } else if s.draft.as_ref().is_none_or(solver::Draft::waiting_edge) {
             "3DFace: select a boundary edge".into()
         } else {
-            "3DFace: pick a corner; Enter ends the chain (Output PolygonType FromEdge Chain InPlane WeldAngle Mode Undo)"
+            "3DFace: pick a corner; Enter ends the chain (Output Interpolated PolygonType FromEdge Chain InPlane WeldAngle Mode Undo)"
                 .into()
         };
         self.push_log(message);
@@ -399,7 +399,7 @@ impl VibocerosApp {
             self.face_create_prompt();
             self.command_input.clear();
             return true;
-        } else if ["PolygonType", "WeldAngle", "Mode", "Output"]
+        } else if ["PolygonType", "WeldAngle", "Mode", "Output", "Interpolated"]
             .iter()
             .any(|v| word.eq_ignore_ascii_case(v))
         {
@@ -407,6 +407,8 @@ impl VibocerosApp {
                 "PolygonType"
             } else if word.eq_ignore_ascii_case("WeldAngle") {
                 "WeldAngle"
+            } else if word.eq_ignore_ascii_case("Interpolated") {
+                "Interpolated"
             } else if word.eq_ignore_ascii_case("Mode") {
                 "Mode"
             } else {
@@ -518,7 +520,12 @@ impl VibocerosApp {
             return false;
         };
         self.commands.accept_face_create_preferences(s.preferences);
-        let mesh = match s.draft.as_ref().map(solver::Draft::output).transpose() {
+        let mesh = match s
+            .draft
+            .as_ref()
+            .map(|draft| draft.output(s.tolerance))
+            .transpose()
+        {
             Ok(Some(Some(m))) => m,
             Ok(_) => return false,
             Err(e) => {

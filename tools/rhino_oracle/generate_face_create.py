@@ -21,6 +21,9 @@ VARIANTS=[
  ('subd-append-extras','face_create_subd_append_extras',probe.subd_append_extra_request,'SubDAppendExtras'),
  ('subd-drafts','face_create_subd_drafts',probe.subd_draft_request,'SubDDrafts'),
  ('subd-normals','face_create_subd_normals',probe.subd_normal_request,'SubDNormals'),
+ ('subd-interpolated','face_create_subd_interpolated',probe.subd_interp_request,'SubDInterpolated'),
+ ('subd-interpolated-order','face_create_subd_interpolated_order',probe.subd_interp_order_request,'SubDInterpolatedOrder'),
+ ('subd-interpolated-drafts','face_create_subd_interpolated_drafts',probe.subd_interp_draft_request,'SubDInterpolatedDrafts'),
 ]
 
 

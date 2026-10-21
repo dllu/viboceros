@@ -47,3 +47,29 @@ fn native_limit_sector_normals_match_creased_smooth_and_nonmanifold_surfaces() {
         );
     }
 }
+
+#[test]
+fn interpolated_faces_match_native_controls_limit_stations_and_grouped_history() {
+    for row in native::interpolation_rows()
+        .into_iter()
+        .filter(|r| r["value"]["input"]["cancel"] != true)
+    {
+        let value = &row["value"];
+        let mut scene = native::setup(value);
+        let registry = CommandRegistry::with_builtins();
+        let command = native::command(&scene, value);
+        registry
+            .execute(&mut scene.document, &command)
+            .unwrap_or_else(|e| panic!("{} {e}", row["id"]));
+        let check = native::check(&scene, value, "after_script");
+        assert_eq!(scene.document.undo_label(), Some("3DFace"));
+        scene.document.undo().unwrap();
+        native::check(&scene, value, "undo");
+        scene.document.redo().unwrap();
+        assert_eq!(native::check(&scene, value, "redo"), check);
+        println!(
+            "SUBD_INTERP_COMMAND {}",
+            serde_json::json!({"id":row["id"],"check":check,"grouped_history":true})
+        );
+    }
+}

@@ -2,7 +2,7 @@
 use super::*;
 use viboceros_geometry::{MeshFaceBoundaryGraph, UnitVector3};
 
-pub const USAGE: &str = "3DFace [Output=Mesh|SubD] [Interpolated=No] [PolygonType=Triangle|Quad|Ngon] [InPlane=Yes|No] [WeldAngle=degrees] [Mode=SingleFace|MultipleFaces] [Append=id] [FromEdge=Yes|No Chain=Yes|No Edge=n] points...";
+pub const USAGE: &str = "3DFace [Output=Mesh|SubD] [Interpolated=Yes|No] [PolygonType=Triangle|Quad|Ngon] [InPlane=Yes|No] [WeldAngle=degrees] [Mode=SingleFace|MultipleFaces] [Append=id] [FromEdge=Yes|No Chain=Yes|No Edge=n] points...";
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Polygon {
     Triangle,
@@ -17,6 +17,7 @@ pub enum Output {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Preferences {
     pub output: Output,
+    pub interpolated: bool,
     pub polygon: Polygon,
     pub in_plane: bool,
     pub weld_angle: Real,
@@ -29,6 +30,7 @@ impl Default for Preferences {
     fn default() -> Self {
         Self {
             output: Output::Mesh,
+            interpolated: false,
             polygon: Polygon::Quad,
             in_plane: false,
             weld_angle: 180.,
@@ -91,11 +93,9 @@ pub fn parse(args: &[&str], preferences: Preferences) -> Result<Input, CommandEr
                         _ => return Err(CommandError::Usage(USAGE)),
                     }
                 }
-                "interpolated" if value.eq_ignore_ascii_case("No") => (),
                 "interpolated" => {
-                    return Err(CommandError::Usage(
-                        "3DFace SubD surface-point interpolation is not implemented; use Interpolated=No",
-                    ));
+                    input.preferences.interpolated =
+                        parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?
                 }
                 "polygontype" => {
                     input.preferences.polygon = match value.to_ascii_lowercase().as_str() {
@@ -495,7 +495,19 @@ impl Draft {
                 if !self.edge_same_order {
                     physical.swap(0, 1);
                 }
-                TriangleMesh::face_quad_crosses(physical)? ^ !self.edge_same_order
+                // Both orders can be simple when the last corner lies inside
+                // the first triangle. Keep coherent boundary winding in that
+                // concave case. Collinear starts retain the native physical
+                // edge ordering, including overlapping and reversed sources.
+                if points[0]
+                    .vector_to(points[1])?
+                    .unit_cross_point_difference(points[0], points[2])?
+                    .is_some()
+                {
+                    TriangleMesh::face_quad_crosses([points[0], points[1], points[2], points[3]])?
+                } else {
+                    TriangleMesh::face_quad_crosses(physical)? ^ !self.edge_same_order
+                }
             }
         } else {
             false
@@ -569,7 +581,7 @@ impl Draft {
     }
     /// Source replacement and new objects are staged together. Exact-edge
     /// SubD components that do not touch the source become separate objects.
-    pub fn output(&self) -> Result<Option<FaceOutput>, CommandError> {
+    pub fn output(&self, tolerance: Tolerance) -> Result<Option<FaceOutput>, CommandError> {
         if self.faces.is_empty() {
             return Ok(None);
         }
@@ -597,23 +609,47 @@ impl Draft {
         let output = if let Some(source) = &self.source_subd {
             let result = source.try_append_face_components(&faces)?;
             FaceOutput {
-                replacement: if result.attached_faces > 0 {
-                    Some(Geometry::SubD(result.source))
+                replacement: if result.attached_faces > 0 || self.preferences.interpolated {
+                    Some(Geometry::SubD(self.fitted_subd(
+                        result.source,
+                        source.control_points().len(),
+                        tolerance,
+                    )?))
                 } else {
                     None
                 },
-                additions: result.detached.into_iter().map(Geometry::SubD).collect(),
+                additions: result
+                    .detached
+                    .into_iter()
+                    .map(|s| self.fitted_subd(s, 0, tolerance).map(Geometry::SubD))
+                    .collect::<Result<Vec<_>, _>>()?,
             }
         } else {
             FaceOutput {
                 replacement: None,
                 additions: viboceros_geometry::SubD::try_from_face_components(&faces)?
                     .into_iter()
-                    .map(Geometry::SubD)
-                    .collect(),
+                    .map(|s| self.fitted_subd(s, 0, tolerance).map(Geometry::SubD))
+                    .collect::<Result<Vec<_>, _>>()?,
             }
         };
         Ok(Some(output))
+    }
+    fn fitted_subd(
+        &self,
+        subd: viboceros_geometry::SubD,
+        original_vertices: usize,
+        tolerance: Tolerance,
+    ) -> Result<viboceros_geometry::SubD, CommandError> {
+        if !self.preferences.interpolated {
+            return Ok(subd);
+        }
+        let mut targets = subd.control_points().to_vec();
+        if original_vertices > 0 {
+            targets[..original_vertices]
+                .copy_from_slice(self.source_subd.as_ref().unwrap().surface_points());
+        }
+        Ok(subd.try_with_limit_points(&targets, tolerance)?)
     }
     pub fn mesh(&self) -> Result<Option<TriangleMesh>, CommandError> {
         if self.faces.is_empty() {
@@ -786,7 +822,7 @@ impl Command for FaceCreateCommand {
         if !draft.finished {
             draft.accept(Token::Enter)?;
         }
-        let Some(output) = draft.output()? else {
+        let Some(output) = draft.output(document.tolerance())? else {
             return Err(CommandError::Usage(USAGE));
         };
         let ids = apply_output(document, target, output)?;

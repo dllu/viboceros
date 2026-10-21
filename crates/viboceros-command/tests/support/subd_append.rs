@@ -168,8 +168,13 @@ pub fn header(value: &Value) -> String {
     let from_edge =
         c["from_edge"] == true || c["points"].as_array().unwrap().iter().any(Value::is_object);
     format!(
-        "3DFace Output={} Interpolated=No PolygonType={} InPlane={} Mode={} FromEdge={} Chain={}",
+        "3DFace Output={} Interpolated={} PolygonType={} InPlane={} Mode={} FromEdge={} Chain={}",
         c["output"].as_str().unwrap_or("SubD"),
+        if c["interpolated"] == true {
+            "Yes"
+        } else {
+            "No"
+        },
         c["polygon"].as_str().unwrap_or("Quad"),
         if c["in_plane"] == true { "Yes" } else { "No" },
         if c["multiple"] == true {
@@ -381,4 +386,35 @@ pub fn check_normals(scene: &Scene, value: &Value) -> Value {
         }
     }
     json!({"qualified":true,"maximum_corner_normal_error":maximum,"corners":corners})
+}
+
+#[allow(dead_code)] // Shared with the interactive getter harness.
+pub fn interpolation_rows() -> Vec<Value> {
+    let mut all = Vec::new();
+    for (source, count) in [
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/face_create_subd_interpolated.json"
+            ),
+            21,
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/face_create_subd_interpolated_drafts.json"
+            ),
+            12,
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/face_create_subd_interpolated_order.json"
+            ),
+            6,
+        ),
+    ] {
+        let data: Value = serde_json::from_str(source).unwrap();
+        let rows = data["results"].as_array().unwrap();
+        assert_eq!(rows.len(), count);
+        all.extend(rows.iter().cloned());
+    }
+    all
 }

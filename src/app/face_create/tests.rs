@@ -646,7 +646,59 @@ fn subd_output_option_and_cancellation_preserve_the_redo_branch() {
 mod append_native;
 #[test]
 fn subd_append_getters_match_native_objects_boundary_clicks_and_history() {
-    for row in append_native::rows() {
+    run_subd_getter_rows(append_native::rows(), "SUBD_APPEND_GETTER");
+}
+#[test]
+fn interpolated_subd_getters_match_native_controls_and_preserve_staged_history() {
+    run_subd_getter_rows(append_native::interpolation_rows(), "SUBD_INTERP_GETTER");
+}
+#[test]
+fn interpolated_option_accepts_values_remembers_cancellation_and_fits_only_at_completion() {
+    let mut app = test_app();
+    enter(&mut app, "Point 9,9,9");
+    app.document.undo().unwrap();
+    enter(&mut app, "3DFace Output=SubD");
+    enter(&mut app, "Interpolated");
+    enter(&mut app, "Yes");
+    enter(&mut app, "0,0,0");
+    enter(&mut app, "4,0,0");
+    assert_eq!(app.document.objects().count(), 0);
+    assert!(app.cancel_face_corner());
+    assert!(app.cancel_face_corner());
+    assert_eq!(app.document.redo_label(), Some("Point"));
+    enter(&mut app, "3DFace");
+    assert!(
+        app.face_create_session
+            .as_ref()
+            .unwrap()
+            .preferences
+            .interpolated
+    );
+    for text in [
+        "0,0,0",
+        "4,0,0",
+        "4,3,0",
+        "Interpolated=No",
+        "Interpolated=Yes",
+    ] {
+        enter(&mut app, text);
+        assert_eq!(app.document.objects().count(), 0);
+        assert_eq!(app.document.redo_label(), Some("Point"));
+    }
+    enter(&mut app, "0,3,0");
+    assert!(app.face_create_session.is_none());
+    let Geometry::SubD(subd) = app.document.objects().next().unwrap().geometry() else {
+        panic!("expected interpolated SubD");
+    };
+    subd_native::compare(
+        subd,
+        &append_native::interpolation_rows()[0]["value"]["after_script"][0]["subd"],
+    );
+    assert_eq!(app.document.undo_label(), Some("3DFace"));
+    assert_eq!(app.document.redo_label(), None);
+}
+fn run_subd_getter_rows(rows: Vec<serde_json::Value>, prefix: &str) {
+    for row in rows {
         let value = &row["value"];
         let mut scene = append_native::setup(value);
         let mut app = test_app();
@@ -724,7 +776,7 @@ fn subd_append_getters_match_native_objects_boundary_clicks_and_history() {
             assert_eq!(scene.document.undo_label(), None);
         }
         println!(
-            "SUBD_APPEND_GETTER {}",
+            "{prefix} {}",
             serde_json::json!({"id":row["id"],"check":check,"grouped_history":true})
         );
     }

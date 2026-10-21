@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_quad",
+      "case": "subd_interp_quad"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_triangle",
+      "case": "subd_interp_triangle"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_triangle_enter",
+      "case": "subd_interp_triangle_enter"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_reverse",
+      "case": "subd_interp_reverse"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_concave",
+      "case": "subd_interp_concave"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_twisted",
+      "case": "subd_interp_twisted"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_in_plane",
+      "case": "subd_interp_in_plane"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_ngon",
+      "case": "subd_interp_ngon"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_ngon_spatial",
+      "case": "subd_interp_ngon_spatial"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_multiple",
+      "case": "subd_interp_multiple"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_append_flat",
+      "case": "subd_interp_append_flat"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_append_fold",
+      "case": "subd_interp_append_fold"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_append_multiple",
+      "case": "subd_interp_append_multiple"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_append_ngon",
+      "case": "subd_interp_append_ngon"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_append_triangle",
+      "case": "subd_interp_append_triangle"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_append_corner",
+      "case": "subd_interp_append_corner"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_append_crease",
+      "case": "subd_interp_append_crease"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_append_disconnected",
+      "case": "subd_interp_append_disconnected"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_vertex_only",
+      "case": "subd_interp_vertex_only"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_late_bridge",
+      "case": "subd_interp_late_bridge"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_interp_ngon_source",
+      "case": "subd_interp_ngon_source"
+    }
+  ]
+}

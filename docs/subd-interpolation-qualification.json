@@ -1,0 +1,1594 @@
+{
+  "model_epsilon": 1e-06,
+  "recipes": 39,
+  "interpolated_recipes": 36,
+  "ordering_controls": 3,
+  "command_cases": 38,
+  "getter_cases": 39,
+  "physical_input_recipes": 18,
+  "native_engine_versions": [
+    "8.32.26160.13001"
+  ],
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "maximum_control_or_limit_point_error": 3.580361673049448e-15,
+  "maximum_sampled_surface_error": 3.8007914079648956e-15,
+  "stages": {
+    "command": [
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 9.155133597044475e-16,
+              "maximum_sampled_surface_error": 9.930136612989092e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 3,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.4043333874306805e-15,
+              "maximum_sampled_surface_error": 1.1329839816793908e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 3
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_triangle"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 3,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.4043333874306805e-15,
+              "maximum_sampled_surface_error": 1.1329839816793908e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 3
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_triangle_enter"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 9.930136612989092e-16,
+              "maximum_sampled_surface_error": 1.2560739669470201e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_reverse"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+              "maximum_sampled_surface_error": 1.3554841079649082e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_concave"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 9.42055475210265e-16,
+              "maximum_sampled_surface_error": 1.0877919644084148e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_twisted"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 9.019494489765866e-16,
+              "maximum_sampled_surface_error": 1.0877919644084148e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_in_plane"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 5,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.0778315928076987e-15,
+              "maximum_sampled_surface_error": 9.155133597044475e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_ngon"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 5,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.0835344452754878e-15,
+              "maximum_sampled_surface_error": 9.305364597889227e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_ngon_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.831026719408895e-15,
+              "maximum_sampled_surface_error": 2.7012892057857038e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_multiple"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.4217791915866692e-15,
+              "maximum_sampled_surface_error": 1.0778315928076987e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_flat"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.9484335006297032e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_fold"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 2.035072419451041e-15,
+              "maximum_sampled_surface_error": 3.8007914079648956e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_multiple"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 8,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.831026719408895e-15,
+              "maximum_sampled_surface_error": 2.0308833815521357e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 7
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_ngon"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 6,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 5.15536935946823e-16,
+              "maximum_sampled_surface_error": 1.790180836524724e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_triangle"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 2.5146000066436358e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_corner"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 2.0053283331865004e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_crease"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 5.551115123125783e-17,
+              "maximum_sampled_surface_error": 9.155133597044475e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            },
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.831026719408895e-15,
+              "maximum_sampled_surface_error": 1.831026719408895e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_disconnected"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 8,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.7763568394002505e-15,
+              "maximum_sampled_surface_error": 1.9860273225978185e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 7
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_vertex_only"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 3.580361673049448e-15,
+              "maximum_sampled_surface_error": 3.580361673049448e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_late_bridge"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 8,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.7763568394002505e-15,
+              "maximum_sampled_surface_error": 2.7465400791133423e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 7
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_ngon_source"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.4217791915866692e-15,
+              "maximum_sampled_surface_error": 1.0758698497675642e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_single"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 1.3155045263334169e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_edge_multiple"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 17,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 2.6645352591003757e-15,
+              "maximum_sampled_surface_error": 1.831026719408895e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 12
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_strip"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 17,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 2.7012892057857038e-15,
+              "maximum_sampled_surface_error": 2.673771110915334e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 12
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_reverse"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 17,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 2.6645352591003757e-15,
+              "maximum_sampled_surface_error": 2.6645352591003757e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 12
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_fold"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 18,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 3.552713678800501e-15,
+              "maximum_sampled_surface_error": 2.5121479338940403e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 13
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_undo"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 3.794299872214038e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_new_boundary"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 8,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 9.930136612989092e-16,
+              "maximum_sampled_surface_error": 1.831026719408895e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_edge_triangles"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 12,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 1.831026719408895e-15,
+              "maximum_sampled_surface_error": 2.808666774861361e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 10
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_edge_ngons"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.4217791915866694e-15,
+              "maximum_sampled_surface_error": 1.275549143317629e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_in_plane"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 1.4217791915866692e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_folded_plane"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 9.155133597044475e-16,
+              "maximum_sampled_surface_error": 1.275549143317629e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_control"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 2.519649870255406e-15,
+              "maximum_sampled_surface_error": 3.52059127112863e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_reverse"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 2.7755575615628914e-16,
+              "maximum_sampled_surface_error": 2.0380985511143445e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_reverse_control"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 2.6296119242823513e-15,
+              "maximum_sampled_surface_error": 2.5124929012273932e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_concave"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 2.0137621733714643e-15,
+              "maximum_sampled_surface_error": 1.4217791915866692e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_free"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "faces": 2,
+              "maximum_sampled_surface_error": 1.0877919644084148e-15,
+              "mesh": true,
+              "qualified": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_mesh_control"
+      }
+    ],
+    "getter": [
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 9.155133597044475e-16,
+              "maximum_sampled_surface_error": 9.930136612989092e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 3,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.4043333874306805e-15,
+              "maximum_sampled_surface_error": 1.1329839816793908e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 3
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_triangle"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 3,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.4043333874306805e-15,
+              "maximum_sampled_surface_error": 1.1329839816793908e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 3
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_triangle_enter"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 9.930136612989092e-16,
+              "maximum_sampled_surface_error": 1.2560739669470201e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_reverse"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+              "maximum_sampled_surface_error": 1.3554841079649082e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_concave"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 9.42055475210265e-16,
+              "maximum_sampled_surface_error": 1.0877919644084148e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_twisted"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 9.019494489765866e-16,
+              "maximum_sampled_surface_error": 1.0877919644084148e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_in_plane"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 5,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.0778315928076987e-15,
+              "maximum_sampled_surface_error": 9.155133597044475e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_ngon"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 5,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.0835344452754878e-15,
+              "maximum_sampled_surface_error": 9.305364597889227e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_ngon_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.831026719408895e-15,
+              "maximum_sampled_surface_error": 2.7012892057857038e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_multiple"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.4217791915866692e-15,
+              "maximum_sampled_surface_error": 1.0778315928076987e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_flat"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.9484335006297032e-15,
+              "maximum_sampled_surface_error": 1.8610729195778454e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_fold"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 2.035072419451041e-15,
+              "maximum_sampled_surface_error": 3.8007914079648956e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_multiple"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 8,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.831026719408895e-15,
+              "maximum_sampled_surface_error": 2.0308833815521357e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 7
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_ngon"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 6,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 5.15536935946823e-16,
+              "maximum_sampled_surface_error": 1.790180836524724e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_triangle"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 2.5146000066436358e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_corner"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 2.0053283331865004e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_crease"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 5.551115123125783e-17,
+              "maximum_sampled_surface_error": 9.155133597044475e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            },
+            {
+              "edges": 4,
+              "faces": 1,
+              "maximum_control_or_limit_point_error": 1.831026719408895e-15,
+              "maximum_sampled_surface_error": 1.831026719408895e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 4
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_append_disconnected"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 8,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.7763568394002505e-15,
+              "maximum_sampled_surface_error": 1.9860273225978185e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 7
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_vertex_only"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 3.580361673049448e-15,
+              "maximum_sampled_surface_error": 3.580361673049448e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_late_bridge"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 8,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.7763568394002505e-15,
+              "maximum_sampled_surface_error": 2.7465400791133423e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 7
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_ngon_source"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.4217791915866692e-15,
+              "maximum_sampled_surface_error": 1.0758698497675642e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_single"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 1.3155045263334169e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_edge_multiple"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 17,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 2.6645352591003757e-15,
+              "maximum_sampled_surface_error": 1.831026719408895e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 12
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_strip"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 17,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 2.7012892057857038e-15,
+              "maximum_sampled_surface_error": 2.673771110915334e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 12
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_reverse"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 17,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 2.6645352591003757e-15,
+              "maximum_sampled_surface_error": 2.6645352591003757e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 12
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_fold"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 18,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 3.552713678800501e-15,
+              "maximum_sampled_surface_error": 2.5121479338940403e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 13
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_undo"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 3.794299872214038e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_chain_new_boundary"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 8,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 9.930136612989092e-16,
+              "maximum_sampled_surface_error": 1.831026719408895e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_edge_triangles"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 12,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 1.831026719408895e-15,
+              "maximum_sampled_surface_error": 2.808666774861361e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 10
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_edge_ngons"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.4217791915866694e-15,
+              "maximum_sampled_surface_error": 1.275549143317629e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_in_plane"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+              "maximum_sampled_surface_error": 1.4217791915866692e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_folded_plane"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 10,
+              "faces": 3,
+              "maximum_control_or_limit_point_error": 0.0,
+              "maximum_sampled_surface_error": 9.930136612989092e-16,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 8
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_draft_cancel"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 9.155133597044475e-16,
+              "maximum_sampled_surface_error": 1.275549143317629e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_control"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 2.519649870255406e-15,
+              "maximum_sampled_surface_error": 3.52059127112863e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_reverse"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 2.7755575615628914e-16,
+              "maximum_sampled_surface_error": 2.0380985511143445e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_reverse_control"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 2.6296119242823513e-15,
+              "maximum_sampled_surface_error": 2.5124929012273932e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_concave"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "edges": 7,
+              "faces": 2,
+              "maximum_control_or_limit_point_error": 2.0137621733714643e-15,
+              "maximum_sampled_surface_error": 1.4217791915866692e-15,
+              "qualified": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_free"
+      },
+      {
+        "check": {
+          "attributes_selection_and_identity": true,
+          "objects": [
+            {
+              "faces": 2,
+              "maximum_sampled_surface_error": 1.0877919644084148e-15,
+              "mesh": true,
+              "qualified": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_interp_order_mesh_control"
+      }
+    ]
+  },
+  "guarantees": [
+    "Interpolated=Yes fits vertex limit stations to picked or InPlane-projected points. Original source limit stations remain the constraints for reused vertices; raw control coordinates determine joins.",
+    "Triangle, quad, concave, twisted, reversed, n-gon and adjacent multiple-face controls match the captured native control nets, topology, tags and limit stations.",
+    "Append coverage includes corner and crease sources, detached components, a shared-vertex fan, a later connecting bridge and an n-gon source.",
+    "Twelve physical native input recipes cover boundary picks, both chain directions, folded strips, new boundaries, point Undo, triangles, n-gons, tilted InPlane constraints and double-Escape cancellation.",
+    "Six further ordering controls isolate folded concave quads, reversed picks, direct entry and noninterpolated mesh/SubD output; both simple corner orders retain coherent source-boundary winding.",
+    "Command and viewport getters match all captured density-two limit meshes by bidirectional facet sampling, source identity, attributes, selection and grouped Undo/Redo. Drafts leave source geometry and history unchanged until completion.",
+    "A sparse Rust factorization fits all three coordinates using public OpenNURBS limit masks. Native vertex residuals are checked against the document absolute tolerance before applying a result; failure preserves the document."
+  ],
+  "limits": [
+    "Surface comparison uses sampled facets, not a continuous Hausdorff certificate. Dynamic previews show draft boundaries; interpolation is solved at completion.",
+    "General imported sharpness, arbitrary nonmanifold neighborhoods, coincident distinct source controls and texture/material channels require further native qualification.",
+    "Mixing output families inside an existing draft is not implemented. Interpolated is remembered and affects only SubD output.",
+    "Sparse masks are limited to four million coefficients and 32 million local basis work units. Factor fill and comparative performance are unqualified; singular or unresolved fits return an error."
+  ],
+  "sha256": {
+    "Cargo.toml": "3c295d751cff0799aa55e2f96ff3eeaba3a9b9b1e59b0b09b67735bbacc0e9a3",
+    "crates/viboceros-opennurbs/src/subd_interpolation.rs": "97c4529555beb702dbe9a16aa60f64a4ab1c7eee4d363f9bbb82b2ced5404bd8",
+    "crates/viboceros-opennurbs/native/subd_interpolation.h": "fe3f6d607f1b4cd94556b6ba667b579de06efee53dc970bc0ae35444d31d29bd",
+    "crates/viboceros-geometry/src/subd/interpolation.rs": "d1a5ac2f286ebc688584ac7318d81bb79bcf1a249cd5323dcef84ac9eb55ce03",
+    "crates/viboceros-geometry/src/vector/cross_direction.rs": "a7d521a3ee9f7d58e01caf7fd79b88a937949918fd91ebccf979ec8d61085b4e",
+    "crates/viboceros-opennurbs/src/subd.rs": "ca1b26bb55b100958fe5911d9f46281b2363b9420e740378c280a5b0446bc437",
+    "crates/viboceros-opennurbs/src/lib.rs": "69ee8a63b25ef977d230840d5273779e2a9ba69a330f26b46476dfdf677e0cd4",
+    "crates/viboceros-opennurbs/build.rs": "b5b15717ed1cdbff489be7923f3d8cae3f4e210494e56930cd85363f4aa980f8",
+    "crates/viboceros-opennurbs/native/subd.cpp": "b721236d66d8c59f5b3587d0521e3a13bdbb01a2a79e611cb6a7ecbf4c411c39",
+    "crates/viboceros-opennurbs/native/subd.h": "0fc36dd0ceba767977d0dece5b1b24fb7929b09ca867f9229ce326fcbf7ca686",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "692893eb5c4447a582d43aca0c78413b8622ed19600975057ec15fddacad5fd0",
+    "crates/viboceros-opennurbs/native/subd_append.h": "d2194c830af5303d2e1c57cf94e02ddc55257c70b1f12daba6a2f3220a570ede",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "e832471a1568b5b3b47b698d3d9f55530dccd36b2687d44ba4cac36beab5af24",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "64c2ef86c7e04754e5d63c87ede409cb887617e71f08625a7fe5ef7f4530e486",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "e3dac3e45514143c449d516f7f1c3af2730af6c9a028fc538255e7125cb663e1",
+    "crates/viboceros-geometry/src/subd.rs": "c4bc3f1d21744e984c543b6a711e44e5c14842936cc071bc0202fd053479e17c",
+    "crates/viboceros-geometry/src/subd/append.rs": "28171f689e95cc242f035c4147f056677ee6a8b5780b9b2f5f6222a6c505ee34",
+    "crates/viboceros-geometry/src/lib.rs": "78aa903cbdfd81aedbe32397b9ff6ce1e82c66e1afcf6c8faca851b16107e3b6",
+    "crates/viboceros-geometry/src/error.rs": "564afd96b7fcb578c3ac6ffc9f22be356bc2effb81a512466fa6420a0f1f4dbc",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/transform.rs": "e8b24486c8963c14828765f7d29ab5e4ce1c79006eef1b912508374e4da8ac9f",
+    "crates/viboceros-geometry/src/mesh.rs": "393e9621f61a20ae9e64bb3f132fd51284e93d4c178355617d11ca30a2d7b41d",
+    "crates/viboceros-geometry/src/mesh/face_create.rs": "8e30235e97616ce91117e6ed0477edcc0bfea75a7b766a1c9ef41a9910da57e8",
+    "crates/viboceros-geometry/src/mesh/face_records.rs": "09545428f12dabd55bc4e07ab993c9699fc6c934936d73a48f0f90df49d4514d",
+    "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
+    "crates/viboceros-geometry/src/mesh/closest.rs": "c151524d33d932ad5288ff72db2daed5a61234490157f34528056d7632ad1fbb",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
+    "crates/viboceros-document/src/geometry.rs": "80718e3423f59adee298d55dee7f017e1027a7213e2a409ebb0dc0e772655f65",
+    "crates/viboceros-document/src/control_points.rs": "9a920e0979f173ae43bdad34f43737e4cc46776df17c69bc4da978a30997cd95",
+    "crates/viboceros-document/src/control_points/geometry.rs": "cf5cbda50d47b3f25d1a564bfee83d089858a102839013019935af285b621bf9",
+    "crates/viboceros-command/src/lib.rs": "53bacaea2cf20e4d779722e7b08ca576b1240b89e43ea19319be761e344b0f39",
+    "crates/viboceros-command/src/face_create.rs": "d20c390e9fe5e1379340ecef654312c3f30c2e357176aa39ad26db38a5d51c4a",
+    "crates/viboceros-command/src/object_selection.rs": "a02c86b082135fb0c7ba07ac29a2ca790752f6c931346f5cce221c3d7c0ce7b8",
+    "crates/viboceros-command/src/interchange.rs": "6f9df72cd4882fcd3d0f4e791117545daa500dca6564f6859c5bfb2f7409a67f",
+    "crates/viboceros-command/tests/subd_native.rs": "39e2e11ba9c32798010f9f2971e579e1c07922f6cd8b685eed9aadb766245221",
+    "crates/viboceros-command/tests/support/subd.rs": "aa2b45bdb9164e34404fe203a9bcf225b1813e92a20b8858efe8325a77a3ac2d",
+    "crates/viboceros-io/src/three_dm.rs": "760e02b441c17ea65df39d73837e5cb09490494c809a063aee71f099f5f8dacc",
+    "crates/viboceros-io/src/three_dm_units.rs": "c2586509c7ce6195af2929095af219321df79cdb97195ff451b4faeff66d77f8",
+    "crates/viboceros-io/src/three_dm/blocks.rs": "3d4262a301c78ac39117c5d1226bb34fdfa07fffe9bc6fe43e97fcf6c02d1373",
+    "src/app.rs": "ea986c1f60ec2a452450159f86bf68a4f7ca111294b86c4b80943c376e0ae874",
+    "src/app/face_create.rs": "1d9a48612ea3b24db66614e106505acb1af3a8c469630ca7982af3a87415fc0a",
+    "src/app/face_create/tests.rs": "0ecbb1288acf37182e98018ca257ee7c856de4d05b5acea15c88e25ddca56b47",
+    "src/viewport/display_cache.rs": "c0454076d5df78d083d3898eda842bbadc11d4349dd9c9b0abfaa573050494a0",
+    "src/viewport/selection.rs": "97a0c529b7e43b496a55c38bfe3be56e78dcd30535ef8480902db6bab0acc1b6",
+    "src/viewport/scene.rs": "7320880878fbc09fdce587e8e976aa6f3ff98954c79932ad6ab4c5ebef2efbdc",
+    "src/viewport/tests/object_selection.rs": "a462b04440fd8b2a8ebddea43d83dab1aab851ef1eaa26cf180b04a8fb679046",
+    "tools/rhino_oracle/face_create_probe.py": "7372a0b2e782f990e3e77f58d724aced3c7508dab32d8e2b51aeee1bfee1bc40",
+    "tools/rhino_oracle/generate_face_create.py": "387ee8922a9b02084e90c3d8c3357156b6ee9866b653fd485426e22e2c317308",
+    "tools/rhino_oracle/report_subd.py": "34a5d68687e7504dcb25d78c82dae3bfa1db5b8cc52af3e8de148b09771d94d5",
+    "tools/rhino_oracle/test_subd.py": "16ed7481e8d31839e9df4c4922188d7adbe315386772ce56ac6132689d1315f1",
+    "tools/rhino_oracle/fixtures/face_create_subd.json": "551db14e859a1096dfba03083866f341808649b341a9433d6260c1aad502770a",
+    "tools/rhino_oracle/observations/face_create_subd.json": "a9708420831c8280cb9570854365e651284045d1fc1e6df1a867f56ce1d3848d",
+    "tools/rhino_oracle/fixtures/face_create_subd_surface.json": "b9caa28a9a344255783fb6afdbac4af622839eaaad89a632cadcf6edee1a6a9a",
+    "tools/rhino_oracle/observations/face_create_subd_surface.json": "08f576e7af7815a93f10e84f2c4cd7b1f21e195c471cf06e74a93a8f9618b6c3",
+    "crates/viboceros-command/tests/subd_append_native.rs": "42604d7cdabb2c2e31cfb569b1ee52a021527a56c5e2de26d3b71de76cd7e533",
+    "crates/viboceros-command/tests/support/subd_append.rs": "29c1e3b52b0c18f842e91be606e1cf9db701b0a25f72084e2942984e6179af94",
+    "tools/rhino_oracle/client.py": "8019946498804017b5cd85eccbf3beae00a054a58e39c66d7c6ee9a47b840fe3",
+    "tools/rhino_oracle/structural_sdk.py": "0d65afb6def8b45f942f8b449245af4e90d1c85c785e7b1685a67b26b7a6592d",
+    "tools/rhino_oracle/face_draft_input.py": "bb0e0d8e4a7cdd1b5b0488a0d09b1ec63b6caf94196cdd9a8e6cc3c54762e56e",
+    "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "tools/rhino_oracle/report_subd_append.py": "77275184660f7b707ee9b39c4c56efe80fcf5d9868df167ab55cc54f5459db95",
+    "tools/rhino_oracle/test_subd_append.py": "2eda9fc050f3fe3b43c5fbe88dad1a1d3895552f00b41db9c6227588476d1412",
+    "tools/rhino_oracle/fixtures/face_create_subd_append.json": "874485d5161d334b343c398569129293e92a73fa18f4a1a46dbce5eb97c0ac06",
+    "tools/rhino_oracle/observations/face_create_subd_append.json": "edd6ad4be8f61bbdfd360713b0b9012590acd081e2a4867ff70e6a1ad82bbc8b",
+    "tools/rhino_oracle/fixtures/face_create_subd_append_extras.json": "aeaf576ffc53f94fbbfa255c261030f65e150305dec3ef5012b0df00088a0dfa",
+    "tools/rhino_oracle/observations/face_create_subd_append_extras.json": "6fa605983e274536bb54b7bbd5776c2254dc9f4abde6731a202cddfbcea41003",
+    "tools/rhino_oracle/fixtures/face_create_subd_drafts.json": "8df01f0436d1e5bf993172a3069bc1b831db1559a60bf606ab804f2e4b9b31f3",
+    "tools/rhino_oracle/observations/face_create_subd_drafts.json": "5f30b7a0784d7255ecd8c50fd09717528b3ed507b5eb449fead709359904eab1",
+    "tools/rhino_oracle/fixtures/face_create_subd_normals.json": "dac083a926359b30a6996e6ffc05f1e614bfa2d4b88b64a3d86cb62d45708421",
+    "tools/rhino_oracle/observations/face_create_subd_normals.json": "25f679ea3a0703fdf82e8f53c5d2981ef14e6e3738752237105033dffd1f4be7",
+    "tools/rhino_oracle/report_subd_interpolation.py": "dba5fdd5bcd64b8aa76cecaadb917922fc0bbf5f4bae7707e89a91d221e44601",
+    "tools/rhino_oracle/test_subd_interpolation.py": "3dbb77a89b96519d99f6ac00756577b3d5be39d2f052f260ced8c811a100b7cb",
+    "tools/rhino_oracle/fixtures/face_create_subd_interpolated.json": "99612c650231bc9bb1cc9eca7fabdc49394f4e751957ca42442e44f1e9240734",
+    "tools/rhino_oracle/observations/face_create_subd_interpolated.json": "9f8a4195baf180baef2cbbf03ce6db3ec5dde75de36013d4f7cd657c3392d75f",
+    "tools/rhino_oracle/fixtures/face_create_subd_interpolated_drafts.json": "570630d9044ba590761cc6def1347acb21be2bf36469a8a58f083fc92fdc55a7",
+    "tools/rhino_oracle/observations/face_create_subd_interpolated_drafts.json": "b5bcf06c012e7ee9b4f0f087844b6df67e2534722ed387088eec03b086aabd30",
+    "tools/rhino_oracle/fixtures/face_create_subd_interpolated_order.json": "46a30725b4a04856c5d63afc296d46ca3203ed3822189edc1c18ba57d8641966",
+    "tools/rhino_oracle/observations/face_create_subd_interpolated_order.json": "0636fe169e0c42368f6b7d459eb2542d247e55192701d14786255ccb3c14468b"
+  }
+}

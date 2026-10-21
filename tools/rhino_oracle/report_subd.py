@@ -11,6 +11,11 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 GROUPS = ['face_create_subd', 'face_create_subd_surface']
 SOURCES = [
+    'Cargo.toml',
+    'crates/viboceros-opennurbs/src/subd_interpolation.rs',
+    'crates/viboceros-opennurbs/native/subd_interpolation.h',
+    'crates/viboceros-geometry/src/subd/interpolation.rs',
+    'crates/viboceros-geometry/src/vector/cross_direction.rs',
     'crates/viboceros-opennurbs/src/subd.rs',
     'crates/viboceros-opennurbs/src/lib.rs',
     'crates/viboceros-opennurbs/build.rs',
@@ -104,7 +109,7 @@ def summarize(text):
             'Command and interactive getters preserve native current-layer attributes, output selection and grouped Undo/Redo.',
             'Public OpenNURBS owns subdivision evaluation and the full SubD archive. SubD geometry survives 3DM Save/Open, affine transforms and control-point edits.',
         ], limits=[
-            'SubD append has a separate qualification report. Interpolated=Yes is not implemented.',
+            'SubD append and Interpolated=Yes have separate qualification reports.',
             'Display tessellation samples exact limit points; linear facets between samples do not carry a Hausdorff or model-tolerance certificate.',
             'Certified tight bounds and exact SubD projection, intersections, border extraction and surface snaps are not implemented.',
             'Imported tags and sharpness remain in the archive; property-edit commands, arbitrary nonmanifold neighborhoods, texture/material channels and comparative speed remain unqualified.',

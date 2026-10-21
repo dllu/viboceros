@@ -94,6 +94,36 @@ SUBD_NORMAL_CASES={
 }
 SUBD_NORMAL_CASES['subd_normal_smooth']=dict(deepcopy(SUBD_NORMAL_CASES['subd_normal_crease']),source_creases=[])
 SCENES.update(SUBD_NORMAL_CASES)
+SUBD_INTERP_CASES={}
+for _name,_case in SUBD_CASES.items():SUBD_INTERP_CASES[_name.replace('subd_','subd_interp_',1)]=dict(deepcopy(_case),interpolated=True,surface_mesh=True)
+for _name in ['subd_append_flat','subd_append_fold','subd_append_multiple','subd_append_ngon','subd_append_triangle','subd_append_corner','subd_append_crease','subd_append_disconnected']:
+ SUBD_INTERP_CASES[_name.replace('subd_','subd_interp_',1)]=dict(deepcopy(SUBD_APPEND_CASES[_name]),interpolated=True)
+for _name in ['subd_extra_vertex_only','subd_extra_late_bridge','subd_extra_ngon_source']:
+ SUBD_INTERP_CASES[_name.replace('subd_extra_','subd_interp_',1)]=dict(deepcopy(SUBD_APPEND_EXTRAS[_name]),interpolated=True)
+SCENES.update(SUBD_INTERP_CASES)
+SUBD_INTERP_DRAFTS={}
+for _name,_case in SUBD_DRAFT_CASES.items():
+ if not _case.get('cancel'):SUBD_INTERP_DRAFTS[_name.replace('subd_draft_','subd_interp_draft_',1)]=dict(deepcopy(_case),interpolated=True)
+SUBD_INTERP_DRAFTS['subd_interp_draft_in_plane']=dict(deepcopy(SUBD_DRAFT_CASES['subd_draft_chain_single']),interpolated=True,chain=False,in_plane=True,source_vertices=[[0.,0.,0.],[4.,0.,0.],[4.,3.,2.],[0.,3.,0.]],points=[dict(edge_pick=[4.,1.5,1.]),[7.,0.,0.],[7.,3.,0.]])
+SUBD_INTERP_DRAFTS['subd_interp_draft_folded_plane']=dict(deepcopy(SUBD_INTERP_DRAFTS['subd_interp_draft_in_plane']),points=[dict(edge_pick=[4.,1.5,1.]),[7.,0.,3.],[7.,3.,0.]])
+SUBD_INTERP_DRAFTS['subd_interp_draft_cancel']=dict(deepcopy(SUBD_DRAFT_CASES['subd_draft_chain_cancel']),interpolated=True)
+SCENES.update(SUBD_INTERP_DRAFTS)
+PHYSICAL_DRAFTS.update(SUBD_INTERP_DRAFTS)
+# Ordering controls isolate a concave, tilted InPlane append from interpolation.
+SUBD_INTERP_ORDER = {
+ 'subd_interp_order_control': dict(deepcopy(SUBD_INTERP_DRAFTS['subd_interp_draft_folded_plane']), interpolated=False),
+ 'subd_interp_order_reverse': dict(deepcopy(SUBD_INTERP_DRAFTS['subd_interp_draft_folded_plane']), points=[dict(edge_pick=[4.,1.5,1.]), [7.,3.,0.], [7.,0.,3.]]),
+ 'subd_interp_order_reverse_control': dict(deepcopy(SUBD_INTERP_DRAFTS['subd_interp_draft_folded_plane']), interpolated=False, points=[dict(edge_pick=[4.,1.5,1.]), [7.,3.,0.], [7.,0.,3.]]),
+ 'subd_interp_order_concave': dict(deepcopy(SUBD_INTERP_DRAFTS['subd_interp_draft_folded_plane']), in_plane=False, points=[dict(edge_pick=[4.,1.5,1.]), [7.,0.,3.], [5.,1.5,2.]]),
+ 'subd_interp_order_free': dict(deepcopy(SUBD_INTERP_DRAFTS['subd_interp_draft_folded_plane']), from_edge=False, points=[[4.,0.,0.], [4.,3.,2.], [7.,0.,3.], [7.,3.,0.]]),
+ 'subd_interp_order_mesh_control': dict(deepcopy(SUBD_INTERP_DRAFTS['subd_interp_draft_folded_plane']), source_subd=False, output='Mesh', interpolated=False),
+}
+SCENES.update(SUBD_INTERP_ORDER)
+PHYSICAL_DRAFTS.update(SUBD_INTERP_ORDER)
+
+
+
+
 
 
 
@@ -130,6 +160,18 @@ def subd_draft_request():
 
 def subd_normal_request():
  q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_NORMAL_CASES];return q
+
+
+def subd_interp_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_INTERP_CASES];return q
+
+
+def subd_interp_draft_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_INTERP_DRAFTS];return q
+
+
+def subd_interp_order_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_INTERP_ORDER];return q
 
 
 def control_request():
