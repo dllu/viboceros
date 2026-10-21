@@ -94,7 +94,9 @@ saved observations does not launch Rhino.
 Keep the root README limited to a project overview, basic setup, and documentation
 links. Put command syntax, behavior, examples, and limitations in
 [`docs/commands/`](commands/README.md), and implementation or testing details in
-the relevant page under `docs/`.
+the relevant page under `docs/`. Use the [documentation directory](README.md) and
+existing command topic indexes for navigation. Keep examples with their topic,
+and split an index by subject when it becomes difficult to scan.
 
 Historical usd-brep integration sources are retained through immutable Git
 references instead of copied `*-prior-source` trees. Provenance maps named

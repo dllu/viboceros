@@ -59,7 +59,7 @@ class SurfaceInterpolationTests(TestCase):
             dest=Path(directory);stage_helpers(command.request(),HERE,dest)
             for name in ['surface_interpolate_command_probe','surface_short_path_probe','short_path_command_probe','conic_getter_input','join_probe','merge_edges_probe','number_token','managed_mouse_callback','snap_environment']:
                 self.assertEqual((dest/(name+'.py')).read_bytes(),(HERE/(name+'.py')).read_bytes())
-    def test_qualification_keeps_the_native_version_gap_and_source_hashes(self):
+    def test_qualification_keeps_the_native_version_gap_and_retained_sources(self):
         root=HERE.parents[1]
         r=json.loads((root/'docs/surface-interpolation-qualification.json').read_text())
         self.assertEqual(r['model_epsilon'],1e-6);self.assertFalse(r['full_native_parity'])
@@ -69,4 +69,5 @@ class SurfaceInterpolationTests(TestCase):
             self.assertIn('persistent',r[name]['unqualified_recipes'])
             self.assertIn('autoclose_no',r[name]['unqualified_recipes'])
         self.assertLessEqual(r['maximum_surface_image_bound'],5e-7)
-        for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((root/path).read_bytes()).hexdigest(),sha,path)
+        from tools.verify_provenance import verify
+        self.assertGreaterEqual(verify(r),23)

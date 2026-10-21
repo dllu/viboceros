@@ -1,5 +1,5 @@
 """Bounded temporary getters, real owned input, and retained native evidence."""
-import copy,hashlib,json,tempfile
+import copy,gzip,hashlib,json,tempfile
 from pathlib import Path
 from unittest import TestCase,mock
 from .generate_insert_kink_subcurve import request
@@ -51,7 +51,7 @@ class InsertKinkSubcurve(TestCase):
             if op['getter'].get('cancel_getter'):self.assertIn([x['token']for x in v['input_trace']['typed']][-2:],[['Escape','Escape'],['Escape','_Enter']])
             path=Path(op['artifact_path']);self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),capture['provenance']['fixtures'][path.name])
         for name,digest in capture['provenance']['sources'].items():
-            # Dispatch evolves; the recorded hashes describe the historical
-            # capture. Its producer, inputs and geometry helpers remain exact.
-            if name in ('rhino_worker.py','structural_sdk.py'):continue
-            self.assertEqual(hashlib.sha256((HERE/name).read_bytes()).hexdigest(),digest,name)
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=digest:
+                data=gzip.decompress((HERE/'observations/source_snapshots'/(digest+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),digest,name)

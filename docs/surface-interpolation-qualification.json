@@ -437,11 +437,8 @@
     "crates/viboceros-command/tests/support/surface_interpolation.rs": "221f7b9476a8a30888c82fb0aec64f44575706f4107e90bb51f0aac25a29bd09",
     "src/app/surface_interpolation.rs": "22c422a05f71eef13cef1dccb8cc9975d5ff7b0d18ab214d6f878957ef37af02",
     "src/app/tests/surface_interpolation.rs": "27c62ba580ff0a5fff66e59d5463922e5ec14d06a0e0f6818b92b923e0af9426",
-    "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
-    "src/viewport.rs": "4d26dc10bea07fe0af033fbf8c9cf2e243b443bad4d3eb2912825e3a4a40ce54",
     "tools/rhino_oracle/surface_interpolate_probe.py": "6cd713df8f539736379e5755397b6e9b16db01b97d8b6522715451a87187f496",
     "tools/rhino_oracle/surface_interpolate_command_probe.py": "ee777bfd4a2c0a0e24f6dcee9fc008b6b218c05d30b42f80d85436ad6ba352ac",
-    "tools/rhino_oracle/test_surface_interpolation.py": "7936d2c1973350d8f6047a968b1cd2ccc5db74666dba63369e8d59c67d2876b2",
     "tools/rhino_oracle/report_surface_interpolation.py": "5395a82aa712960ae0ce35742cc32dfe82468ed61680b6e1ed4b1f9e394f79de",
     "tools/rhino_oracle/fixtures/surface_interpolate.json": "175aa367e3e7560aa4af3d2d0c2d3ca85ca336d71a05da456e390d0464ccf4c5",
     "tools/rhino_oracle/observations/surface_interpolate.json": "02e5cc1a28adf2bf625ee89541f2cc80dcb8d5b49dfff2e05fb70abe498ee52b",
@@ -449,5 +446,11 @@
     "tools/rhino_oracle/observations/surface_interpolate_closed.json": "2244b821443ac039f776f48e05767b85fc31d0560f23a90af0b39570ea98e318",
     "tools/rhino_oracle/fixtures/surface_interpolate_command.json": "8f6001cb2db6c395409defc3870d7de79e31f67b6fdb73d8faf4b0bcdcdfeba4",
     "tools/rhino_oracle/observations/surface_interpolate_command.json": "85e2c8927443ba6a8f83fde954c27a2d8b4066e0925e78e7a868276145278bca"
-  }
+  },
+  "git_sha256": {
+    "315061c0fc130ba7cd2cba0953aea376a98f394b:src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
+    "315061c0fc130ba7cd2cba0953aea376a98f394b:src/viewport.rs": "4d26dc10bea07fe0af033fbf8c9cf2e243b443bad4d3eb2912825e3a4a40ce54",
+    "2c68ed869106ea97a53e775073be5359bbd21025:tools/rhino_oracle/test_surface_interpolation.py": "7936d2c1973350d8f6047a968b1cd2ccc5db74666dba63369e8d59c67d2876b2"
+  },
+  "historical_source_note": "Original qualification hashes are retained. Evolving source files use immutable Git revisions; captured artifacts remain local. These maps do not claim a fresh replay of the current implementation."
 }

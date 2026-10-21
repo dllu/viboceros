@@ -60,7 +60,6 @@
     "crates/viboceros-oracle/src/mesh_pull.rs": "3a1ef51f0b2fd38dae0a8d394e7d60594ff15238b277ac2a859d7a1c78a80117",
     "crates/viboceros-oracle/src/projection_loose_tests.rs": "29a27ad35e05c1895cd96b2f3952886412681f5cc855293c3ef3db399577c72e",
     "src/app/tests/pull.rs": "50e97a7f8078e6aa9e3b4b868125378a992013867880e63ec473d3bafac41222",
-    "tools/rhino_oracle/test_worker.py": "864d079e63f944debe3052e94b7cef2dfa84aa0575e52bd5abddf6e3e167141a",
     "tools/rhino_oracle/test_projection_loose.py": "368bb357c5f547b468bf39b3755eed9e18781809573874eace050dd249d6bb34",
     "tools/rhino_oracle/fixtures/projection_loose.json": "e478f699e3488bf3ca2260dc582dabf9d346212a0e42bf8e2ee13338b0e2efb8",
     "docs/commands/projection-loose.md": "de26bde4211ebe17018a53a227001424cab3f1d00870646f4f565cbfa77ec811",
@@ -85,6 +84,8 @@
     "b80f97d6bad11b546a6fe4532bff326f1f82895f:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "9d34e2ea1445d9f9eabb2a769a4f66571d899c5318bc766901559638c247131f",
     "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/src/native/knot_refinement.rs": "5ab536a60df85ad1e75a4e44ffdeeb351331b628f21ede15d2243820034f1542",
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/project.rs": "e9d06bec5d3422338cdd5dcbe5f52cd3dfbd74f035a722e5959f3903ba702b56",
-    "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99"
-  }
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
+    "462b129706e7be81ccde492c16db1ff7c243e4d5:tools/rhino_oracle/test_worker.py": "864d079e63f944debe3052e94b7cef2dfa84aa0575e52bd5abddf6e3e167141a"
+  },
+  "historical_source_note": "Original qualification hashes are retained. Evolving source files use immutable Git revisions; captured artifacts remain local. These maps do not claim a fresh replay of the current implementation."
 }

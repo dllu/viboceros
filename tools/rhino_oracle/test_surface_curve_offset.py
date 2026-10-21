@@ -71,7 +71,7 @@ class SurfaceCurveOffsetTests(TestCase):
             self.assertEqual(op['id'],row['id']);self.assertNotIn('error',row)
             v=row['value'];self.assertTrue(v['source_unchanged']);self.assertIsNotNone(v['extended_source'])
             self.assertGreater(len(v['offset_extended_source']),0);self.assertGreater(len(v['extended_offsets']),0)
-    def test_qualification_preserves_the_parity_gate_and_current_source_hashes(self):
+    def test_qualification_preserves_the_parity_gate_and_retained_sources(self):
         from .report_surface_geodesic import ROOT
         r=json.loads((ROOT/'docs/surface-geodesic-qualification.json').read_text())
         self.assertEqual(r['model_epsilon'],1e-6);self.assertFalse(r['full_native_parity']);self.assertTrue(r['command_registered'])
@@ -90,7 +90,8 @@ class SurfaceCurveOffsetTests(TestCase):
         corners=r['planar_corner_cases'];self.assertEqual(corners['recipes'],9);self.assertEqual(corners['qualified_sdk_recipes'],9);self.assertEqual(corners['qualified_command_recipes'],8);self.assertEqual(corners['unqualified_command_recipes'],['corner_polycurve']);self.assertLess(corners['maximum_sample_difference'],3.2e-5);self.assertEqual(len(corners['getter_cases']),9)
         point_corners=r['corner_through_point_cases'];self.assertEqual(point_corners['recipes'],12);self.assertEqual(point_corners['qualified_recipes'],12);self.assertEqual(point_corners['output_recipes'],4);self.assertEqual(point_corners['rejected_point_picks'],9);self.assertLess(point_corners['maximum_sample_difference'],1e-6)
         selected_corners=r['corner_point_selection_cases'];self.assertEqual(selected_corners['recipes'],4);self.assertEqual(selected_corners['qualified_recipes'],4);self.assertEqual(selected_corners['outputs'],6);self.assertEqual(selected_corners['on_source_points'],1);self.assertEqual(selected_corners['unresolved_points'],1);self.assertLess(selected_corners['maximum_sample_difference'],1e-6)
-        for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+        from tools.verify_provenance import verify
+        self.assertGreaterEqual(verify(r),89)
         self.assertTrue(all(x['maximum_closest_solver_difference']<1e-10 for x in r['independent_closest_points']))
     def test_fixed_sdk_evidence_and_source_closure(self):
         self.assertEqual(request(),json.loads((HERE/'fixtures/surface_curve_offset.json').read_text()))
