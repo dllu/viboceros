@@ -1,0 +1,136 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_points",
+      "case": "truncated_tangent_points"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_spatial",
+      "case": "truncated_tangent_spatial"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_two",
+      "case": "truncated_tangent_two"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_radius",
+      "case": "truncated_tangent_radius"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_late_radius",
+      "case": "truncated_tangent_late_radius"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_from_first",
+      "case": "truncated_tangent_from_first"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_three",
+      "case": "truncated_tangent_three"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_cancel_contact",
+      "case": "truncated_tangent_cancel_contact"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_cancel_height",
+      "case": "truncated_tangent_cancel_height"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_preselected",
+      "case": "truncated_fit_preselected"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_postselected",
+      "case": "truncated_fit_postselected"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_partial",
+      "case": "truncated_fit_partial"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_spatial",
+      "case": "truncated_fit_spatial"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_collinear",
+      "case": "truncated_fit_collinear"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_insufficient",
+      "case": "truncated_fit_insufficient"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_cancel_selection",
+      "case": "truncated_fit_cancel_selection"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_cancel_height",
+      "case": "truncated_fit_cancel_height"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_grips",
+      "case": "truncated_fit_grips"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_mixed",
+      "case": "truncated_fit_mixed"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_grips_postselected",
+      "case": "truncated_fit_grips_postselected"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_collinear_finish",
+      "case": "truncated_fit_collinear_finish"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_coincident_finish",
+      "case": "truncated_fit_coincident_finish"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_circle_line",
+      "case": "truncated_tangent_circle_line"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_tangent_cancel_end",
+      "case": "truncated_tangent_cancel_end"
+    },
+    {
+      "op": "subd_truncated_cone_references",
+      "id": "truncated_fit_cancel_end",
+      "case": "truncated_fit_cancel_end"
+    }
+  ]
+}

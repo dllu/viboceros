@@ -41,6 +41,16 @@ impl Command for AxialCommand {
         self.preferences.set(p);
         true
     }
+    fn subd_truncated_cone_preferences(&self) -> Option<Preferences> {
+        (self.kind == Kind::TruncatedCone).then(|| self.preferences.get())
+    }
+    fn remember_subd_truncated_cone_preferences(&self, p: Preferences) -> bool {
+        if self.kind != Kind::TruncatedCone {
+            return false;
+        }
+        self.preferences.set(p);
+        true
+    }
     fn object_selection_prompt(
         &self,
         args: &[&str],
@@ -85,6 +95,7 @@ pub fn selection_prompt_for(kind: Kind) -> crate::ObjectSelectionPrompt {
         command: match kind {
             Kind::Cylinder => "SubDCylinder FitPoints",
             Kind::Cone => "SubDCone FitPoints",
+            Kind::TruncatedCone => "SubDTruncatedCone FitPoints",
         },
         filter: crate::ObjectSelectionFilter::Points,
         options: vec![],

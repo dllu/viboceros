@@ -635,6 +635,15 @@ class OracleClient:
             for op in operations: validate(op)
             click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in SCENES[op['case']]['actions']])for op in operations])
             interaction=CatenaryPointPicker(click_request)
+        if any(op.get('op') == 'subd_truncated_cone_references' for op in request.get('operations', [])):
+            from .subd_truncated_cone_references_probe import validate, SCENES
+            from .catenary_point_picker import CatenaryPointPicker
+            operations=request['operations']
+            if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1)!=1 or any(op.get('op')!='subd_truncated_cone_references'for op in operations):
+                raise OracleProtocolError('SubDTruncatedCone reference input requires a private dedicated one-iteration capture')
+            for op in operations: validate(op)
+            click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in SCENES[op['case']]['actions']])for op in operations])
+            interaction=CatenaryPointPicker(click_request)
         if any(op.get('op') == 'subd_sphere_references' for op in request.get('operations', [])):
             from .subd_sphere_references_probe import validate, SCENES
             from .catenary_point_picker import CatenaryPointPicker

@@ -7,6 +7,8 @@ use viboceros_geometry::{Circle3, NurbsCurve, Polyline3, Tolerance};
 mod cone_tests;
 #[cfg(test)]
 pub(super) mod tests;
+#[cfg(test)]
+mod truncated_tests;
 pub(super) struct Session {
     input: Input,
     group: HistoryGroup,
@@ -36,33 +38,26 @@ impl Session {
     }
     fn refresh(&mut self, cursor: Option<Point3>) {
         self.preview.clear();
-        let Some(point) = cursor else {
-            if let Some(c) = self.input.circle {
-                self.circle(c.frame, c.radius);
-            }
-            return;
-        };
-        let Some(c) = self.input.preview_circle(point) else {
-            return;
-        };
-        let mut preview = self.input;
-        if preview.circle.is_some()
-            && preview.point(point).is_ok()
-            && let Some(d) = preview.definition
-        {
-            self.circle(d.frame, c.radius);
+        if let Some(d) = self.input.preview_definition(cursor) {
+            self.circle(d.frame, d.circle.radius);
             if let Ok(end) = d.frame.point_at([0., 0., d.height]) {
-                if self.input.kind == Kind::Cylinder {
-                    self.circle(d.frame.with_origin(end), c.radius);
-                } else {
-                    for x in [-c.radius, c.radius] {
+                if d.end_radius > 0. {
+                    self.circle(d.frame.with_origin(end), d.end_radius);
+                }
+                if self.input.kind != Kind::Cylinder {
+                    for side in [-1., 1.] {
                         if let Ok(curve) = d
                             .frame
-                            .point_at([x, 0., 0.])
-                            .and_then(|p| {
-                                Polyline3::try_new(vec![p, end], Tolerance::NUMERICAL_VALIDATION)
+                            .point_at([side * d.circle.radius, 0., 0.])
+                            .and_then(|base| {
+                                d.frame
+                                    .point_at([side * d.end_radius, 0., d.height])
+                                    .map(|top| vec![base, top])
                             })
-                            .and_then(|p| p.to_nurbs())
+                            .and_then(|points| {
+                                Polyline3::try_new(points, Tolerance::NUMERICAL_VALIDATION)
+                            })
+                            .and_then(|line| line.to_nurbs())
                         {
                             self.preview.push(curve);
                         }
@@ -75,7 +70,10 @@ impl Session {
                     self.preview.push(line);
                 }
             }
-        } else {
+        } else if let Some(c) = cursor
+            .and_then(|p| self.input.preview_circle(p))
+            .or(self.input.circle)
+        {
             self.circle(c.frame, c.radius);
         }
     }
@@ -103,6 +101,7 @@ impl VibocerosApp {
         {
             Some("subdcylinder") => Kind::Cylinder,
             Some("subdcone") => Kind::Cone,
+            Some("subdtruncatedcone") => Kind::TruncatedCone,
             _ => return false,
         };
         let mut getter = Input::new_for(
@@ -158,6 +157,9 @@ impl VibocerosApp {
                 anchor: s.input.anchor(),
             },
             Kind::Cone => InteractiveCommand::SubDCone {
+                anchor: s.input.anchor(),
+            },
+            Kind::TruncatedCone => InteractiveCommand::SubDTruncatedCone {
                 anchor: s.input.anchor(),
             },
         });

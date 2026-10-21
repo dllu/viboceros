@@ -32,7 +32,9 @@ inputs and tangent/fitted circle bases. Its [qualification](subd-cone-qualificat
 records construction, source state and history comparisons against Rhino.
 [SubDCylinder](commands/subd-cylinder.md) adds open or capped cylinders,
 circle construction modes, tangent and fitted references, free-axis endpoints
-and BothSides. Cone and cylinder share the `subd_axial` input controller,
+and BothSides. [SubDTruncatedCone](commands/subd-truncated-cone.md) adds a
+staged top Radius/Diameter getter, including zero ends and reverse fitted cones.
+These round primitives share the `subd_axial` input controller,
 with separate modules for staged input, script parsing and command admission.
 Each command instance owns its remembered settings.
 

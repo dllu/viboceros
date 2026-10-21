@@ -610,6 +610,9 @@ enum InteractiveCommand {
     SubDSphere {
         anchor: Option<Point3>,
     },
+    SubDTruncatedCone {
+        anchor: Option<Point3>,
+    },
     SubDCone {
         anchor: Option<Point3>,
     },
@@ -977,6 +980,7 @@ impl InteractiveCommand {
             Self::SubDSphere { .. } => "SubDSphere",
             Self::SubDCylinder { .. } => "SubDCylinder",
             Self::SubDCone { .. } => "SubDCone",
+            Self::SubDTruncatedCone { .. } => "SubDTruncatedCone",
             Self::SubDPrimitive { kind, .. } => kind.name(),
             Self::SelBox { .. } => "SelBox",
             Self::PointGrid { .. } => "PointGrid",
@@ -1497,6 +1501,9 @@ impl InteractiveCommand {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
             }
             Self::SubDSphere { .. } => "SubDSphere: pick sphere references; Esc cancels",
+            Self::SubDTruncatedCone { .. } => {
+                "SubDTruncatedCone: pick a base circle, height and end size; Esc cancels"
+            }
             Self::SubDCone { .. } => "SubDCone: pick a base circle or cone end; Esc cancels",
             Self::SubDCylinder { .. } => {
                 "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
@@ -1966,6 +1973,7 @@ impl InteractiveCommand {
             | Self::PolylineOnMesh { anchor: base }
             | Self::FaceCreate { anchor: base }
             | Self::SubDSphere { anchor: base }
+            | Self::SubDTruncatedCone { anchor: base }
             | Self::SubDCone { anchor: base }
             | Self::SubDCylinder { anchor: base }
             | Self::SubDPrimitive { anchor: base, .. } => base,
@@ -6378,6 +6386,7 @@ impl VibocerosApp {
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::SubDSphere { .. }
+            | InteractiveCommand::SubDTruncatedCone { .. }
             | InteractiveCommand::SubDCone { .. }
             | InteractiveCommand::SubDCylinder { .. }
             | InteractiveCommand::SubDPrimitive { .. }
@@ -9824,6 +9833,7 @@ impl VibocerosApp {
                     "Circle FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
+                        | "SubDTruncatedCone FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
@@ -10038,6 +10048,7 @@ impl VibocerosApp {
                         "Circle FitPoints"
                             | "SubDCylinder FitPoints"
                             | "SubDCone FitPoints"
+                            | "SubDTruncatedCone FitPoints"
                             | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"

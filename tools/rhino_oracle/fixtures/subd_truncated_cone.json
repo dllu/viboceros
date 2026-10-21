@@ -1,0 +1,176 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_cancel_center",
+      "case": "subd_truncated_cone_cancel_center"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_default",
+      "case": "subd_truncated_cone_default"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_quad",
+      "case": "subd_truncated_cone_quad"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_tri",
+      "case": "subd_truncated_cone_tri"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_open",
+      "case": "subd_truncated_cone_open"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_three",
+      "case": "subd_truncated_cone_three"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_four_quad",
+      "case": "subd_truncated_cone_four_quad"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_four_tri",
+      "case": "subd_truncated_cone_four_tri"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_odd",
+      "case": "subd_truncated_cone_odd"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_larger",
+      "case": "subd_truncated_cone_larger"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_equal",
+      "case": "subd_truncated_cone_equal"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_zero",
+      "case": "subd_truncated_cone_zero"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_zero_open",
+      "case": "subd_truncated_cone_zero_open"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_negative",
+      "case": "subd_truncated_cone_negative"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_free",
+      "case": "subd_truncated_cone_free"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_free_odd",
+      "case": "subd_truncated_cone_free_odd"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_height_point",
+      "case": "subd_truncated_cone_height_point"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_radius_point",
+      "case": "subd_truncated_cone_radius_point"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_diameter_base",
+      "case": "subd_truncated_cone_diameter_base"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_diameter_end",
+      "case": "subd_truncated_cone_diameter_end"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_diameter_point",
+      "case": "subd_truncated_cone_diameter_point"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_end_point",
+      "case": "subd_truncated_cone_end_point"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_end_spatial",
+      "case": "subd_truncated_cone_end_spatial"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_circumference",
+      "case": "subd_truncated_cone_circumference"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_area",
+      "case": "subd_truncated_cone_area"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_two_point",
+      "case": "subd_truncated_cone_two_point"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_three_point",
+      "case": "subd_truncated_cone_three_point"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_spatial_circle",
+      "case": "subd_truncated_cone_spatial_circle"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_tilted",
+      "case": "subd_truncated_cone_tilted"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_three_bands",
+      "case": "subd_truncated_cone_three_bands"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_cancel_radius",
+      "case": "subd_truncated_cone_cancel_radius"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_cancel_height",
+      "case": "subd_truncated_cone_cancel_height"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "subd_truncated_cone_cancel_end",
+      "case": "subd_truncated_cone_cancel_end"
+    }
+  ]
+}

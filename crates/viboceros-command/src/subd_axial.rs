@@ -9,23 +9,28 @@ use viboceros_geometry::{
 pub enum Kind {
     Cylinder,
     Cone,
+    TruncatedCone,
 }
 impl Kind {
     pub fn name(self) -> &'static str {
         match self {
             Self::Cylinder => "SubDCylinder",
             Self::Cone => "SubDCone",
+            Self::TruncatedCone => "SubDTruncatedCone",
         }
     }
     pub fn usage(self) -> &'static str {
         match self {
             Self::Cylinder => crate::subd_cylinder::USAGE,
             Self::Cone => crate::subd_cone::USAGE,
+            Self::TruncatedCone => crate::subd_truncated_cone::USAGE,
         }
     }
     pub fn defaults(self) -> Preferences {
         Preferences {
             height: if self == Self::Cone { 10. } else { 1. },
+            around_faces: if self == Self::TruncatedCone { 3 } else { 8 },
+            vertical_faces: if self == Self::TruncatedCone { 8 } else { 4 },
             ..Default::default()
         }
     }
@@ -33,12 +38,14 @@ impl Kind {
         match self {
             Self::Cylinder => commands.subd_cylinder_preferences(),
             Self::Cone => commands.subd_cone_preferences(),
+            Self::TruncatedCone => commands.subd_truncated_cone_preferences(),
         }
     }
     pub fn remember(self, commands: &CommandRegistry, p: Preferences) {
         match self {
             Self::Cylinder => commands.remember_subd_cylinder_preferences(p),
             Self::Cone => commands.remember_subd_cone_preferences(p),
+            Self::TruncatedCone => commands.remember_subd_truncated_cone_preferences(p),
         };
     }
 }
@@ -60,6 +67,7 @@ pub struct Preferences {
     pub diameter: bool,
     pub base_angle: f64,
     pub apex_angle: f64,
+    pub end_size: f64,
 }
 impl Default for Preferences {
     fn default() -> Self {
@@ -75,6 +83,7 @@ impl Default for Preferences {
             diameter: false,
             base_angle: 60.,
             apex_angle: 60.,
+            end_size: 1.,
         }
     }
 }
@@ -148,6 +157,9 @@ impl Preferences {
                 Kind::Cone => {
                     "SubDCone requires at least 3 around faces, 2 vertical faces and at most 100000 control vertices/faces"
                 }
+                Kind::TruncatedCone => {
+                    "SubDTruncatedCone requires at least 3 around faces, 2 vertical faces and at most 100000 control vertices/faces"
+                }
             }));
         }
         Ok(())
@@ -159,10 +171,24 @@ pub struct Definition {
     pub kind: Kind,
     pub frame: Frame3,
     pub height: f64,
+    pub end_radius: f64,
 }
 impl Definition {
     pub fn geometry(self, p: Preferences) -> Result<Geometry, CommandError> {
         p.validate_for(self.kind)?;
+        if self.kind == Kind::TruncatedCone {
+            return Ok(Geometry::SubD(SubD::try_truncated_cone(
+                self.frame,
+                [self.circle.radius, self.end_radius],
+                self.height,
+                [p.around_faces, p.vertical_faces],
+                if p.solid {
+                    p.cap
+                } else {
+                    SubDCylinderCap::None
+                },
+            )?));
+        }
         let build = if self.kind == Kind::Cylinder {
             SubD::try_cylinder
         } else {
@@ -183,6 +209,7 @@ impl Definition {
 }
 mod adapter;
 mod arguments;
+mod end_circle;
 mod input;
 pub(super) use adapter::AxialCommand;
 pub use adapter::selection_prompt_for;

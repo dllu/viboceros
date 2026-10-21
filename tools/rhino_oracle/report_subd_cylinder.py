@@ -3,7 +3,7 @@ import argparse,hashlib,json,re
 from pathlib import Path
 from .report_subd_box import ROOT,HERE,SOURCES as BASE_SOURCES,error
 SOURCES=list(dict.fromkeys(BASE_SOURCES+[
- 'crates/viboceros-command/src/subd_axial.rs','crates/viboceros-command/src/subd_axial/input.rs','crates/viboceros-command/src/subd_axial/arguments.rs','crates/viboceros-command/src/subd_axial/adapter.rs',
+ 'crates/viboceros-command/src/subd_axial.rs','crates/viboceros-command/src/subd_axial/input.rs','crates/viboceros-command/src/subd_axial/arguments.rs','crates/viboceros-command/src/subd_axial/adapter.rs','crates/viboceros-command/src/subd_axial/end_circle.rs',
  'crates/viboceros-geometry/src/subd/cylinder.rs','crates/viboceros-command/src/circle_input.rs','crates/viboceros-geometry/src/circle_curve.rs','src/app/subd_cylinder.rs','src/app/subd_cylinder/tests.rs',
  'crates/viboceros-command/src/subd_cylinder.rs','crates/viboceros-command/tests/subd_cylinder_native.rs','crates/viboceros-command/tests/support/subd_cylinder.rs',
  'tools/rhino_oracle/subd_cylinder_probe.py','tools/rhino_oracle/generate_subd_cylinder.py','tools/rhino_oracle/report_subd_cylinder.py','tools/rhino_oracle/test_subd_cylinder.py',

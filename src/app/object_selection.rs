@@ -194,6 +194,7 @@ impl PendingObjectCommand {
             "Circle FitPoints"
                 | "SubDCylinder FitPoints"
                 | "SubDCone FitPoints"
+                | "SubDTruncatedCone FitPoints"
                 | "SubDSphere FitPoints"
         ) {
             return "Select at least three points or control points; Enter fits the circle, Esc cancels";
@@ -294,6 +295,7 @@ impl VibocerosApp {
                     "Circle FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
+                        | "SubDTruncatedCone FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
@@ -719,6 +721,7 @@ impl VibocerosApp {
             "Circle FitPoints"
             | "SubDCylinder FitPoints"
             | "SubDCone FitPoints"
+            | "SubDTruncatedCone FitPoints"
             | "SubDSphere FitPoints"
             | "PlaneThroughPt"
             | "Sphere FitPoints" => 3,
@@ -744,6 +747,7 @@ impl VibocerosApp {
             "Circle FitPoints"
                 | "SubDCylinder FitPoints"
                 | "SubDCone FitPoints"
+                | "SubDTruncatedCone FitPoints"
                 | "SubDSphere FitPoints"
                 | "PlaneThroughPt"
                 | "LineThroughPt"
@@ -889,6 +893,7 @@ impl VibocerosApp {
                     | "Circle FitPoints"
                     | "SubDCylinder FitPoints"
                     | "SubDCone FitPoints"
+                    | "SubDTruncatedCone FitPoints"
                     | "SubDSphere FitPoints"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
@@ -1125,6 +1130,7 @@ impl VibocerosApp {
                         "Circle FitPoints"
                             | "SubDCylinder FitPoints"
                             | "SubDCone FitPoints"
+                            | "SubDTruncatedCone FitPoints"
                             | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"
@@ -1199,7 +1205,7 @@ impl VibocerosApp {
             }
             if matches!(
                 pending.description.command,
-                "SubDCylinder FitPoints" | "SubDCone FitPoints"
+                "SubDCylinder FitPoints" | "SubDCone FitPoints" | "SubDTruncatedCone FitPoints"
             ) {
                 self.accept_subd_cylinder_fit(pending.postselected);
                 self.command_input.clear();
@@ -1392,6 +1398,7 @@ impl VibocerosApp {
                     "Circle FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
+                        | "SubDTruncatedCone FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
@@ -1661,7 +1668,7 @@ impl VibocerosApp {
 
             if matches!(
                 pending.description.command,
-                "SubDCylinder FitPoints" | "SubDCone FitPoints"
+                "SubDCylinder FitPoints" | "SubDCone FitPoints" | "SubDTruncatedCone FitPoints"
             ) {
                 self.subd_cylinder_session = None;
                 self.active_command = None;

@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_default",
+      "case": "truncated_discovery_default"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_quad",
+      "case": "truncated_discovery_quad"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_tri",
+      "case": "truncated_discovery_tri"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_open",
+      "case": "truncated_discovery_open"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_three",
+      "case": "truncated_discovery_three"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_four_quad",
+      "case": "truncated_discovery_four_quad"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_four_tri",
+      "case": "truncated_discovery_four_tri"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_larger",
+      "case": "truncated_discovery_larger"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_equal",
+      "case": "truncated_discovery_equal"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_negative",
+      "case": "truncated_discovery_negative"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_free",
+      "case": "truncated_discovery_free"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_end_point",
+      "case": "truncated_discovery_end_point"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_end_diameter",
+      "case": "truncated_discovery_end_diameter"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_end_zero",
+      "case": "truncated_discovery_end_zero"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_one_band",
+      "case": "truncated_discovery_one_band"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_both",
+      "case": "truncated_discovery_both"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_base_angle",
+      "case": "truncated_discovery_base_angle"
+    },
+    {
+      "op": "subd_truncated_cone_command",
+      "id": "truncated_discovery_end_area",
+      "case": "truncated_discovery_end_area"
+    }
+  ]
+}

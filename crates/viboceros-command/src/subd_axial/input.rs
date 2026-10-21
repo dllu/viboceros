@@ -48,6 +48,7 @@ pub struct Input {
     pending: Option<Pending>,
     cursor: Option<Point3>,
     allow_angles: bool,
+    end_circle: Option<super::end_circle::EndCircle>,
 }
 impl Input {
     pub fn new(plane: Frame3, p: Preferences) -> Self {
@@ -67,6 +68,7 @@ impl Input {
             pending: None,
             cursor: None,
             allow_angles: true,
+            end_circle: None,
         }
     }
     /// Accept an independently solved reference without adding a temporary circle.
@@ -85,7 +87,8 @@ impl Input {
         Ok(())
     }
     /// Native round SubD primitives request height for a zero-radius point fit.
-    /// Keep that base staged; geometry admission rejects it without a model edit.
+    /// Keep that base staged; a truncated cone can accept a nonzero end radius.
+    /// Other primitives reject it at geometry admission without a model edit.
     pub fn fit_points(&mut self, document: &Document) -> Result<(), CommandError> {
         if !self.at_start() || self.pending.is_some() {
             return Err(CommandError::Usage(self.kind.usage()));
@@ -101,10 +104,23 @@ impl Input {
             }
         }
         let center = Point3::try_new(sums[0].mean()?, sums[1].mean()?, sums[2].mean()?)?;
-        self.circle = Some(CircleDefinition {
-            frame: self.getter.construction_plane().with_origin(center),
-            radius: 0.,
-        });
+        let frame = if self.kind == Kind::TruncatedCone {
+            let normal = if let Some(point) =
+                crate::circle_fit_points::selected_points(document).find(|&p| p != center)
+            {
+                Frame3::try_from_unit_normal(
+                    center,
+                    center.vector_to(point)?.normalized_nonzero()?,
+                )?
+                .y_axis()
+            } else {
+                viboceros_geometry::Vector3::try_new(1., 0., 0.)?.normalized_nonzero()?
+            };
+            Frame3::try_from_unit_normal(center, normal)?
+        } else {
+            self.getter.construction_plane().with_origin(center)
+        };
+        self.circle = Some(CircleDefinition { frame, radius: 0. });
         Ok(())
     }
     pub fn set_initial_plane(&mut self, plane: Frame3) {
@@ -113,9 +129,10 @@ impl Input {
         }
     }
     pub fn anchor(&self) -> Option<Point3> {
-        self.circle
+        self.end_circle.map(|e| e.frame().origin()).or(self
+            .circle
             .map(|c| c.frame.origin())
-            .or(self.getter.anchor())
+            .or(self.getter.anchor()))
     }
     pub fn at_start(&self) -> bool {
         self.circle.is_none() && self.getter.anchor().is_none()
@@ -131,6 +148,9 @@ impl Input {
         self.pending.is_some() || self.circle.is_some() || self.getter.requests_size()
     }
     pub fn mouse_plane(&self) -> Option<Frame3> {
+        if let Some(end) = self.end_circle {
+            return Some(end.frame());
+        }
         if let Some(c) = self.circle {
             if self.preferences.direction == Direction::Vertical {
                 Frame3::try_from_directions(
@@ -150,6 +170,17 @@ impl Input {
     pub fn prompt(&self) -> String {
         if let Some(p) = self.pending {
             return p.label().to_string();
+        }
+        if let Some(end) = self.end_circle {
+            return format!(
+                "{} at top <{}>; {}",
+                if end.diameter() { "Diameter" } else { "Radius" },
+                self.preferences.end_size,
+                if end.diameter() { "Radius" } else { "Diameter" }
+            );
+        }
+        if self.circle.is_some() && self.kind == Kind::TruncatedCone {
+            return format!("top of truncated cone <{}>", self.preferences.height);
         }
         if self.circle.is_some() && self.kind == Kind::Cone && self.allow_angles {
             return format!(
@@ -178,7 +209,7 @@ impl Input {
                 }
             );
         }
-        format!(
+        let prompt = format!(
             "{}; AroundFaces={} VerticalFaces={} Solid={} CapFaceStyle={}",
             if self.at_start() {
                 "center of base circle; 2Point, 3Point, Tangent, FitPoints"
@@ -193,7 +224,15 @@ impl Input {
             } else {
                 "Tri"
             }
-        )
+        );
+        if self.kind == Kind::TruncatedCone && self.at_start() {
+            format!(
+                "{prompt}; DirectionConstraint={:?}",
+                self.preferences.direction
+            )
+        } else {
+            prompt
+        }
     }
     fn setting(&mut self, key: Pending, value: &str) -> Result<(), CommandError> {
         let value = value.trim_start_matches('_');
@@ -285,9 +324,22 @@ impl Input {
         let (name, value) = word
             .split_once('=')
             .map_or((word, None), |(k, v)| (k, Some(v)));
+        if let Some(end) = self.end_circle.as_mut() {
+            if end.option(name) {
+                self.preferences.diameter = end.diameter();
+                if let Some(value) = value {
+                    self.number(crate::parse_finite_real(value)?)?;
+                }
+                return Ok(true);
+            }
+            if Pending::parse(name).is_some() || CircleSizeMode::parse(name).is_some() {
+                return Err(CommandError::Usage(self.kind.usage()));
+            }
+            return Ok(false);
+        }
         if let Some(key) = Pending::parse(name) {
             let allowed = match key {
-                Pending::Direction => true,
+                Pending::Direction => self.kind != Kind::TruncatedCone || self.at_start(),
                 Pending::Both => self.kind == Kind::Cylinder && self.circle.is_some(),
                 Pending::BaseAngle | Pending::ApexAngle => {
                     self.kind == Kind::Cone && self.circle.is_some() && self.allow_angles
@@ -340,6 +392,13 @@ impl Input {
         if self.pending.is_some() {
             return Err(CommandError::Usage(self.kind.usage()));
         }
+        if let Some(end) = self.end_circle {
+            let (d, size) = end.point(p)?;
+            self.preferences.end_size = size;
+            self.preferences.diameter = end.diameter();
+            self.definition = Some(d);
+            return Ok(());
+        }
         if let Some(circle) = self.circle {
             let vector = circle.frame.origin().vector_to(p)?;
             let height = if self.preferences.direction == Direction::Vertical {
@@ -359,6 +418,13 @@ impl Input {
         if self.pending.is_some() {
             return self.option(&value.to_string()).map(|_| ());
         }
+        if let Some(end) = self.end_circle {
+            let (d, size) = end.number(value)?;
+            self.preferences.end_size = size;
+            self.preferences.diameter = end.diameter();
+            self.definition = Some(d);
+            return Ok(());
+        }
         if self.circle.is_some() {
             return self.end(value, self.cursor);
         }
@@ -374,6 +440,9 @@ impl Input {
                 Pending::ApexAngle => self.number(self.preferences.apex_angle),
                 _ => Err(CommandError::Usage(self.kind.usage())),
             };
+        }
+        if self.end_circle.is_some() {
+            return self.number(self.preferences.end_size);
         }
         if self.circle.is_some() {
             self.number(self.preferences.height)
@@ -416,16 +485,20 @@ impl Input {
                 .origin()
                 .vector_to(point)?
                 .normalized_nonzero()?;
-            let basis = Frame3::try_from_unit_normal(
-                circle.frame.origin(),
-                normal.as_vector().scaled(-1.)?.normalized_nonzero()?,
-            )?;
-            frame = Frame3::try_from_directions(
-                basis.origin(),
-                basis.x_axis().as_vector(),
-                basis.y_axis().as_vector().scaled(-1.)?,
-                Tolerance::NUMERICAL_VALIDATION,
-            )?;
+            frame = if self.kind == Kind::TruncatedCone {
+                Frame3::try_from_unit_normal(circle.frame.origin(), normal)?
+            } else {
+                let basis = Frame3::try_from_unit_normal(
+                    circle.frame.origin(),
+                    normal.as_vector().scaled(-1.)?.normalized_nonzero()?,
+                )?;
+                Frame3::try_from_directions(
+                    basis.origin(),
+                    basis.x_axis().as_vector(),
+                    basis.y_axis().as_vector().scaled(-1.)?,
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?
+            };
         }
         if value < 0. {
             frame = Frame3::try_from_directions(
@@ -435,7 +508,7 @@ impl Input {
                 Tolerance::NUMERICAL_VALIDATION,
             )?;
         }
-        let height = if self.preferences.both_sides {
+        let height = if self.kind == Kind::Cylinder && self.preferences.both_sides {
             let offset = frame.z_axis().as_vector().scaled(-value.abs())?;
             frame = frame.with_origin(frame.origin().translated(offset)?);
             2. * value.abs()
@@ -449,13 +522,37 @@ impl Input {
             .into());
         }
         self.preferences.height = value;
-        self.definition = Some(Definition {
+        let definition = Definition {
             kind: self.kind,
             circle,
             frame,
             height,
-        });
+            end_radius: if self.kind == Kind::Cylinder {
+                circle.radius
+            } else {
+                0.
+            },
+        };
+        if self.kind == Kind::TruncatedCone {
+            self.end_circle = Some(super::end_circle::EndCircle::new(
+                definition,
+                self.preferences,
+            )?);
+            self.cursor = None;
+        } else {
+            self.definition = Some(definition);
+        }
         Ok(())
+    }
+    pub fn preview_definition(&self, cursor: Option<Point3>) -> Option<Definition> {
+        let mut copy = *self;
+        if let Some(point) = cursor {
+            copy.point(point).ok()?;
+        }
+        if copy.end_circle.is_some() && copy.definition.is_none() {
+            copy.enter().ok()?;
+        }
+        copy.definition
     }
     pub fn observe_cursor(&mut self, p: Point3) {
         self.cursor = Some(p)
