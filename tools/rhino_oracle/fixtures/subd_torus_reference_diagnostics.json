@@ -1,0 +1,156 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_points",
+      "case": "torus_tangent_points"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_spatial",
+      "case": "torus_tangent_spatial"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_two",
+      "case": "torus_tangent_two"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_radius",
+      "case": "torus_tangent_radius"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_late_radius",
+      "case": "torus_tangent_late_radius"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_from_first",
+      "case": "torus_tangent_from_first"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_three",
+      "case": "torus_tangent_three"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_cancel_contact",
+      "case": "torus_tangent_cancel_contact"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_cancel_tube",
+      "case": "torus_tangent_cancel_tube"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_preselected",
+      "case": "torus_fit_preselected"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_postselected",
+      "case": "torus_fit_postselected"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_partial",
+      "case": "torus_fit_partial"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_spatial",
+      "case": "torus_fit_spatial"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_collinear",
+      "case": "torus_fit_collinear"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_insufficient",
+      "case": "torus_fit_insufficient"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_cancel_selection",
+      "case": "torus_fit_cancel_selection"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_cancel_tube",
+      "case": "torus_fit_cancel_tube"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_grips",
+      "case": "torus_fit_grips"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_mixed",
+      "case": "torus_fit_mixed"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_grips_postselected",
+      "case": "torus_fit_grips_postselected"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_collinear_finish",
+      "case": "torus_fit_collinear_finish"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_coincident_finish",
+      "case": "torus_fit_coincident_finish"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_around_z",
+      "case": "torus_around_z"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_around_x",
+      "case": "torus_around_x"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_around_preselected",
+      "case": "torus_around_preselected"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_around_circle",
+      "case": "torus_around_circle"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_collinear_fixed",
+      "case": "torus_fit_collinear_fixed"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_fit_coincident_fixed",
+      "case": "torus_fit_coincident_fixed"
+    },
+    {
+      "op": "subd_torus_references",
+      "id": "torus_tangent_circle_line",
+      "case": "torus_tangent_circle_line"
+    }
+  ]
+}

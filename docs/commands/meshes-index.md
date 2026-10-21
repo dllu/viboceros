@@ -10,6 +10,7 @@
 - [SubDBox primitives and rectangle construction modes](subd-box.md)
 - [SubDPlane grids and rectangle construction modes](subd-plane.md)
 - [SubDSphere styles, sphere construction and reference inputs](subd-sphere.md)
+- [SubDTorus: periodic rings, tube sizes and fixed inner dimensions](subd-torus.md)
 - [SubDCone: rounded cones, caps, angle and reference inputs](subd-cone.md)
 - [SubDTruncatedCone: two-radius frusta and projected top-size inputs](subd-truncated-cone.md)
 - [SubDCylinder](subd-cylinder.md): circle bases, caps, face counts and spatial axes.

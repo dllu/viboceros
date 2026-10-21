@@ -1,0 +1,20 @@
+{
+  "capture": "subd_torus_reference_diagnostics",
+  "excluded_from_supported_comparisons": true,
+  "actions": [
+    {
+      "case": "torus_fit_collinear_finish",
+      "action": "Escape",
+      "reason": "invalid tube macro waits for correction",
+      "pid": 3586861,
+      "job": "/tmp/viboceros-rhino-oracle-c2o8k1hj"
+    },
+    {
+      "case": "torus_fit_coincident_finish",
+      "action": "Escape",
+      "reason": "invalid tube macro waits for correction",
+      "pid": 3586861,
+      "job": "/tmp/viboceros-rhino-oracle-c2o8k1hj"
+    }
+  ]
+}

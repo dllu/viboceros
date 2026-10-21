@@ -9,6 +9,7 @@ use viboceros_command::{
 enum Owner {
     Circle,
     SubDSphere,
+    SubDTorus,
 }
 pub(super) struct Session {
     owner: Owner,
@@ -56,6 +57,9 @@ impl VibocerosApp {
     pub(super) fn start_subd_sphere_around(&mut self) {
         self.start_circle_around_for(Owner::SubDSphere, None);
     }
+    pub(super) fn start_subd_torus_around(&mut self) {
+        self.start_circle_around_for(Owner::SubDTorus, None);
+    }
     fn start_circle_around_for(
         &mut self,
         owner: Owner,
@@ -66,6 +70,13 @@ impl VibocerosApp {
         }
         let mut preferences = if owner == Owner::Circle {
             self.commands.circle_preferences()
+        } else if owner == Owner::SubDTorus {
+            let p = self.commands.subd_torus_preferences();
+            Preferences {
+                radius: p.radius,
+                diameter: p.diameter,
+                ..Default::default()
+            }
         } else {
             Preferences::default()
         };
@@ -124,12 +135,16 @@ impl VibocerosApp {
         };
         self.active_command = Some(if s.owner == Owner::Circle {
             InteractiveCommand::CircleAround { center }
+        } else if s.owner == Owner::SubDTorus {
+            InteractiveCommand::SubDTorus { anchor: center }
         } else {
             InteractiveCommand::SubDSphere { anchor: center }
         });
         self.drafting_plane = s.input.map(Input::frame);
         let name = if s.owner == Owner::Circle {
             "Circle"
+        } else if s.owner == Owner::SubDTorus {
+            "SubDTorus"
         } else {
             "SubDSphere"
         };
@@ -170,6 +185,14 @@ impl VibocerosApp {
         true
     }
     pub(super) fn validate_circle_around_curve(&mut self) -> bool {
+        if self
+            .circle_around_session
+            .as_ref()
+            .is_some_and(|s| s.owner == Owner::SubDTorus)
+            && !self.valid_subd_torus()
+        {
+            return false;
+        }
         if self
             .circle_around_session
             .as_ref()
@@ -229,6 +252,29 @@ impl VibocerosApp {
     fn commit_circle_around(&mut self, circle: viboceros_geometry::Circle3) -> bool {
         let s = self.circle_around_session.as_ref().unwrap();
         let curve = s.curve.as_ref().unwrap();
+        if s.owner == Owner::SubDTorus {
+            let release = if s.postselected {
+                vec![curve.object_id()]
+            } else {
+                vec![]
+            };
+            let diameter = s.input.unwrap().size_mode();
+            let result = viboceros_command::circle_input::CircleDefinition::from_circle(circle);
+            if let Some(parent) = self.subd_torus_session.as_mut() {
+                match diameter {
+                    Mode::Radius => parent.input.preferences.diameter = false,
+                    Mode::Diameter => parent.input.preferences.diameter = true,
+                    _ => (),
+                }
+            }
+            return match result {
+                Ok(d) => self.accept_subd_torus_reference(d, release),
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            };
+        }
         if s.owner == Owner::SubDSphere {
             let release = if s.postselected {
                 vec![curve.object_id()]

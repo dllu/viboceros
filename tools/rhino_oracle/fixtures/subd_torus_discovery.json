@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_default",
+      "case": "torus_discovery_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_grid",
+      "case": "torus_discovery_grid"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_three",
+      "case": "torus_discovery_three"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_odd",
+      "case": "torus_discovery_odd"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_point",
+      "case": "torus_discovery_point"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_inner",
+      "case": "torus_discovery_inner"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_diameter",
+      "case": "torus_discovery_diameter"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_radius",
+      "case": "torus_discovery_radius"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_vertical_two",
+      "case": "torus_discovery_vertical_two"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_horn",
+      "case": "torus_discovery_horn"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_spindle",
+      "case": "torus_discovery_spindle"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_zero",
+      "case": "torus_discovery_zero"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_discovery_free_circle",
+      "case": "torus_discovery_free_circle"
+    }
+  ]
+}

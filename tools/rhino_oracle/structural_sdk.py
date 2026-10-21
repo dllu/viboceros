@@ -6,7 +6,9 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'subd_torus_command': ('subd_torus_probe', ('subd_box_probe','join_probe','merge_edges_probe')),
     'subd_sphere_references': ('subd_sphere_references_probe', ('subd_cylinder_references_probe','subd_box_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),
+    'subd_torus_references': ('subd_torus_references_probe', ('subd_sphere_references_probe','subd_cylinder_references_probe','subd_box_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),
     'subd_cone_references': ('subd_cone_references_probe', ('subd_cylinder_references_probe','subd_box_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),
     'subd_truncated_cone_references': ('subd_truncated_cone_references_probe', ('subd_cylinder_references_probe','subd_box_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),
     'subd_truncated_cone_command': ('subd_truncated_cone_probe', ('subd_box_probe','join_probe','merge_edges_probe')),

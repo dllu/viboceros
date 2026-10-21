@@ -1,0 +1,251 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_cancel_center",
+      "case": "subd_torus_cancel_center"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_default_small_retry",
+      "case": "subd_torus_default_small_retry"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_default",
+      "case": "subd_torus_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_grid",
+      "case": "subd_torus_grid"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_three",
+      "case": "subd_torus_three"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_four",
+      "case": "subd_torus_four"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_odd",
+      "case": "subd_torus_odd"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_tall_grid",
+      "case": "subd_torus_tall_grid"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_flat_grid",
+      "case": "subd_torus_flat_grid"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_dense",
+      "case": "subd_torus_dense"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_tube_point",
+      "case": "subd_torus_tube_point"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_tube_spatial",
+      "case": "subd_torus_tube_spatial"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_tube_inner",
+      "case": "subd_torus_tube_inner"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_tube_quadrant",
+      "case": "subd_torus_tube_quadrant"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_fix_inner",
+      "case": "subd_torus_fix_inner"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_fix_large",
+      "case": "subd_torus_fix_large"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_fix_point",
+      "case": "subd_torus_fix_point"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_fix_below",
+      "case": "subd_torus_fix_below"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_fix_toggle",
+      "case": "subd_torus_fix_toggle"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_near_horn",
+      "case": "subd_torus_near_horn"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_zero_offset",
+      "case": "subd_torus_zero_offset"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_radius_point",
+      "case": "subd_torus_radius_point"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_orientation",
+      "case": "subd_torus_orientation"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_vertical",
+      "case": "subd_torus_vertical"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_diameter_base",
+      "case": "subd_torus_diameter_base"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_diameter_tube",
+      "case": "subd_torus_diameter_tube"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_diameter_point",
+      "case": "subd_torus_diameter_point"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_diameter_default",
+      "case": "subd_torus_diameter_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_radius_default",
+      "case": "subd_torus_radius_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_base_default",
+      "case": "subd_torus_base_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_circumference",
+      "case": "subd_torus_circumference"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_area",
+      "case": "subd_torus_area"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_two_point",
+      "case": "subd_torus_two_point"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_two_spatial",
+      "case": "subd_torus_two_spatial"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_three_point",
+      "case": "subd_torus_three_point"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_spatial_circle",
+      "case": "subd_torus_spatial_circle"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_three_point_radius",
+      "case": "subd_torus_three_point_radius"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_tilted",
+      "case": "subd_torus_tilted"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_around_z",
+      "case": "subd_torus_around_z"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_around_x",
+      "case": "subd_torus_around_x"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_cancel_radius",
+      "case": "subd_torus_cancel_radius"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_cancel_two_point",
+      "case": "subd_torus_cancel_two_point"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_cancel_tube",
+      "case": "subd_torus_cancel_tube"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_reject_equal",
+      "case": "subd_torus_reject_equal"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_reject_large",
+      "case": "subd_torus_reject_large"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_reject_negative",
+      "case": "subd_torus_reject_negative"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_reject_zero",
+      "case": "subd_torus_reject_zero"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "subd_torus_reject_center",
+      "case": "subd_torus_reject_center"
+    }
+  ]
+}

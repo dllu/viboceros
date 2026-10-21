@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_default",
+      "case": "torus_options_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_exact_horn",
+      "case": "torus_options_exact_horn"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_exact_spindle",
+      "case": "torus_options_exact_spindle"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_diameter_large",
+      "case": "torus_options_diameter_large"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_diameter_equal",
+      "case": "torus_options_diameter_equal"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_diameter_default",
+      "case": "torus_options_diameter_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_radius_default",
+      "case": "torus_options_radius_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_fix_default",
+      "case": "torus_options_fix_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_base_diameter",
+      "case": "torus_options_base_diameter"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_base_default",
+      "case": "torus_options_base_default"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_fix_base",
+      "case": "torus_options_fix_base"
+    },
+    {
+      "op": "subd_torus_command",
+      "id": "torus_options_late_count",
+      "case": "torus_options_late_count"
+    }
+  ]
+}

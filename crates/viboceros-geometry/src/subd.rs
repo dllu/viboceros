@@ -10,6 +10,7 @@ mod cylinder;
 mod interpolation;
 mod primitives;
 mod sphere;
+mod torus;
 mod truncated_cone;
 pub use append::SubDAppendResult;
 pub use cylinder::SubDCylinderCap;
