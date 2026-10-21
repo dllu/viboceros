@@ -44,6 +44,13 @@ struct NativeResult {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vibo_subd_box(
+        corners: *const f64,
+        counts: *const u32,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_subd_create(
         points: *const f64,
         point_count: usize,
@@ -121,6 +128,18 @@ unsafe extern "C" {
     ) -> c_int;
     fn vibo_subd_view(result: *const NativeResult, view: *mut View) -> c_int;
     fn vibo_subd_free(result: *mut NativeResult);
+}
+/// Uses the public native box constructor, including its face packing metadata.
+pub fn subd_box(corners: &[[f64; 3]; 8], counts: [u32; 3]) -> Result<SubDData, SubDError> {
+    call(|out, error, capacity| unsafe {
+        vibo_subd_box(
+            corners.as_ptr().cast(),
+            counts.as_ptr(),
+            out,
+            error,
+            capacity,
+        )
+    })
 }
 struct Owner(NonNull<NativeResult>);
 impl Drop for Owner {

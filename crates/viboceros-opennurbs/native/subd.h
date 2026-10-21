@@ -6,6 +6,7 @@
 extern "C" {
 #endif
 typedef struct ViboSubDResult ViboSubDResult;
+int vibo_subd_box(const double*, const uint32_t*, ViboSubDResult**, char*, size_t);
 typedef struct ViboSubDWeights ViboSubDWeights;
 typedef struct {
   size_t vertex_count, coefficient_count;

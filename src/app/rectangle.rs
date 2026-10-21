@@ -40,11 +40,19 @@ impl VibocerosApp {
     pub(super) fn rectangle_getter(&self) -> Option<&InputSession> {
         self.rectangle_session
             .as_ref()
+            .or_else(|| {
+                self.subd_box_session
+                    .as_ref()
+                    .filter(|s| s.base.is_none())
+                    .map(|s| &s.rectangle)
+            })
             .or_else(|| self.surface_flow_session.as_ref()?.plane.as_ref())
     }
     fn rectangle_getter_mut(&mut self) -> Option<&mut InputSession> {
         if self.rectangle_session.is_some() {
             self.rectangle_session.as_mut()
+        } else if let Some(s) = self.subd_box_session.as_mut().filter(|s| s.base.is_none()) {
+            Some(&mut s.rectangle)
         } else {
             self.surface_flow_session.as_mut()?.plane.as_mut()
         }
@@ -104,6 +112,10 @@ impl VibocerosApp {
         }
     }
     fn rectangle_prompt(&mut self) {
+        if self.subd_box_session.is_some() {
+            self.subd_box_prompt();
+            return;
+        }
         let Some(s) = self.rectangle_getter() else {
             return;
         };
@@ -145,6 +157,9 @@ impl VibocerosApp {
         });
     }
     fn finish_rectangle(&mut self, definition: RectangleDefinition) -> bool {
+        if self.subd_box_session.is_some() {
+            return self.accept_subd_box_base(definition);
+        }
         if self.rectangle_session.is_some() {
             // Route the completed construction through the public command so
             // selection, layer attributes and history retain one owner.

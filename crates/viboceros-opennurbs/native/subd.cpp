@@ -207,6 +207,22 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 
+extern "C" int vibo_subd_box(const double* corners,const uint32_t* counts,ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{
+    require(corners && counts,"Missing SubD box parameters");
+    for(unsigned i=0;i<3;++i)
+      require(counts[i]>0 && counts[i]<=vibo_subd::component_limit,"Invalid SubD box face count");
+    const uint64_t x=counts[0],y=counts[1],z=counts[2];
+    require(2*(x*y+x*z+y*z)+2<=vibo_subd::component_limit,"SubD box component budget exceeded");
+    ON_3dPoint points[8];
+    for(unsigned i=0;i<8;++i) {points[i]=ON_3dPoint(corners+3*i);require(points[i].IsValid(),"Invalid SubD box corner");}
+    ON_SubD subd;
+    require(ON_SubD::CreateSubDBox(points,ON_SubDEdgeTag::Smooth,counts[0],counts[1],counts[2],&subd)==&subd,
+      "Native SubD box construction failed");
+    return extract(subd);
+  });
+}
+
 extern "C" int vibo_subd_weights(const uint8_t* bytes,size_t n,ViboSubDWeights** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{auto subd=vibo_subd::decode(bytes,n);return vibo_subd::interpolation_weights(*subd);});
 }

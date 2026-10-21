@@ -15,6 +15,7 @@ SOURCES = [
     'crates/viboceros-opennurbs/src/subd_interpolation.rs',
     'crates/viboceros-opennurbs/native/subd_interpolation.h',
     'crates/viboceros-geometry/src/subd/interpolation.rs',
+    'crates/viboceros-geometry/src/subd/primitives.rs',
     'crates/viboceros-geometry/src/vector/cross_direction.rs',
     'crates/viboceros-opennurbs/src/subd.rs',
     'crates/viboceros-opennurbs/src/lib.rs',

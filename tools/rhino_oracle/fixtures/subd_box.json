@@ -1,0 +1,126 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_default",
+      "case": "subd_box_default"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_one",
+      "case": "subd_box_one"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_two",
+      "case": "subd_box_two"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_counts",
+      "case": "subd_box_counts"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_reversed",
+      "case": "subd_box_reversed"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_height_point",
+      "case": "subd_box_height_point"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_height_default",
+      "case": "subd_box_height_default"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_center",
+      "case": "subd_box_center"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_three_point",
+      "case": "subd_box_three_point"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_midpoint",
+      "case": "subd_box_midpoint"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_vertical",
+      "case": "subd_box_vertical"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_diagonal",
+      "case": "subd_box_diagonal"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_diagonal_flat",
+      "case": "subd_box_diagonal_flat"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_cube",
+      "case": "subd_box_cube"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_cube_flat",
+      "case": "subd_box_cube_flat"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_uniform_count",
+      "case": "subd_box_uniform_count"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_dimensions",
+      "case": "subd_box_dimensions"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_around_curve",
+      "case": "subd_box_around_curve"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_tilted",
+      "case": "subd_box_tilted"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_tilted_diagonal",
+      "case": "subd_box_tilted_diagonal"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_cancel",
+      "case": "subd_box_cancel"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_zero_origin",
+      "case": "subd_box_zero_origin"
+    },
+    {
+      "op": "subd_box_command",
+      "id": "subd_box_around_x",
+      "case": "subd_box_around_x"
+    }
+  ]
+}

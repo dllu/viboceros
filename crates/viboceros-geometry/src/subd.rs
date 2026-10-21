@@ -6,6 +6,7 @@ use crate::{
 use std::sync::Arc;
 mod append;
 mod interpolation;
+mod primitives;
 pub use append::SubDAppendResult;
 
 /// A display tessellation with exact native limit normals for each quad corner.

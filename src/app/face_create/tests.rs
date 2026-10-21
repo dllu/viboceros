@@ -587,8 +587,7 @@ fn reversed_edge_hover_uses_the_corner_order_that_will_be_committed() {
     );
 }
 
-#[path = "../../../crates/viboceros-command/tests/support/subd.rs"]
-mod subd_native;
+use crate::app::subd_native_tests as subd_native;
 #[test]
 fn subd_point_getters_keep_native_geometry_and_grouped_history() {
     for row in subd_native::rows() {
