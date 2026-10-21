@@ -14,9 +14,9 @@ remain separate from the model until completion.
 3DFace PolygonType=Ngon 0,0,0 3,0,0 4,2,0 2,4,0 -1,2,0 Enter
 ```
 
-Select a mesh first to append, or use the interactive `Append` picker.
+Select a mesh or SubD first to append, or use the interactive `Append` picker.
 `Append=<id>` is the explicit-ID scripting extension. Appending preserves the
-mesh's identity, name and layer. Standalone output uses the current layer.
+source's identity, name and layer. Standalone output uses the current layer.
 Results are unselected. Each command produces one Undo operation.
 
 Options include `PolygonType=Triangle|Quad|Ngon`, `InPlane=Yes|No`,
@@ -26,7 +26,7 @@ into one mesh; press Enter at an empty corner prompt to finish. WeldAngle joins
 exactly coincident seams within the chosen angle, including flat seams at zero
 degrees. Unrelated pre-existing unwelded seams stay separate.
 
-With an append mesh, `FromEdge=Yes` accepts a boundary-edge click and supplies the
+With an append mesh or SubD, `FromEdge=Yes` accepts a boundary-edge click and supplies the
 first two corners with coherent winding. `Edge=<index>` supplies the local
 boundary index for scripts. `FromEdgeReset=Yes` resets edge mode when starting
 the next command. In MultipleFaces mode, pick a boundary for each triangle, quad
@@ -44,11 +44,14 @@ remaining points can form a fresh face.
 in a script. Its index refers to the mesh including completed draft faces.
 A standalone MultipleFaces draft can switch to FromEdge mode before admission.
 
-`Output=SubD Interpolated=No` creates standalone subdivision faces. Triangle,
+`Output=SubD Interpolated=No` creates or appends subdivision faces. Triangle,
 quad, n-gon, InPlane, MultipleFaces and corner Undo share the point getter.
-Adjacent faces share exact-coordinate vertices and smooth interior edges.
+Adjacent faces share exact-coordinate vertices and smooth joined boundaries.
+Detached SubD components become separate current-layer objects. Source creases
+and corners away from a join remain intact; joined endpoints are retagged.
+Explicit output-family switches create separate objects beside the source.
 See [SubD geometry](../subd.md) for display and interchange behavior.
-Appending to existing SubDs and `Interpolated=Yes` remain unsupported.
+`Interpolated=Yes` remains unsupported.
 
 The [qualification report](../face-create-qualification.json) retains 73 native
 recipes. The command and viewport getter comparisons match sampled surfaces
@@ -75,5 +78,8 @@ SubD qualification is separate: [report](../subd-qualification.json), with ten
 standalone recipes captured twice (control topology and density-two limit meshes).
 Both command and point-getter tests compare tags, winding, surface stations,
 current-layer output, selection and grouped history at `1e-6`.
+[Append controls](../subd-append-qualification.json) add 32 recipes covering source
+identity, detached objects, nonmanifold joins, reversed faces, late bridges,
+boundary chains, output-family switches and cancellation.
 
 Reference: [McNeel 3DFace command](https://docs.mcneel.com/rhino/8/help/en-us/commands/3dface.htm).

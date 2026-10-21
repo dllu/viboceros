@@ -17,6 +17,8 @@ pub struct SubDData {
     pub edges: Vec<[u32; 2]>,
     pub edge_tags: Vec<u8>,
     pub faces: Vec<Vec<u32>>,
+    /// Exact limit normals per face corner, when explicitly requested.
+    pub corner_normals: Vec<[f64; 3]>,
 }
 #[repr(C)]
 #[derive(Default)]
@@ -26,6 +28,7 @@ struct View {
     edge_count: usize,
     face_count: usize,
     corner_count: usize,
+    normal_count: usize,
     archive: *const u8,
     points: *const f64,
     surface_points: *const f64,
@@ -34,6 +37,7 @@ struct View {
     edge_tags: *const u8,
     face_sizes: *const u32,
     face_vertices: *const u32,
+    corner_normals: *const f64,
 }
 #[repr(C)]
 struct NativeResult {
@@ -47,6 +51,30 @@ unsafe extern "C" {
         face_count: usize,
         corners: *const u32,
         corner_count: usize,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vibo_subd_append(
+        bytes: *const u8,
+        count: usize,
+        points: *const f64,
+        point_count: usize,
+        sizes: *const u32,
+        face_count: usize,
+        corners: *const u32,
+        corner_count: usize,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vibo_subd_set_tags(
+        bytes: *const u8,
+        count: usize,
+        vertex: c_int,
+        indices: *const usize,
+        tags: *const u8,
+        tag_count: usize,
         out: *mut *mut NativeResult,
         error: *mut c_char,
         capacity: usize,
@@ -75,10 +103,18 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+    fn vibo_subd_control_mesh(
+        bytes: *const u8,
+        count: usize,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_subd_tessellate(
         bytes: *const u8,
         count: usize,
         density: u32,
+        normals: c_int,
         out: *mut *mut NativeResult,
         error: *mut c_char,
         capacity: usize,
@@ -139,6 +175,7 @@ fn call(
         edges: unsafe { copy(v.edges.cast(), v.edge_count) },
         edge_tags: unsafe { copy(v.edge_tags, v.edge_count) },
         faces,
+        corner_normals: unsafe { copy(v.corner_normals.cast(), v.normal_count) },
     })
 }
 fn check_archive(bytes: &[u8]) -> Result<(), SubDError> {
@@ -200,9 +237,23 @@ pub fn subd_edit_points(bytes: &[u8], points: &[[f64; 3]]) -> Result<SubDData, S
 /// Samples the exact limit surface at the vertices of the refined control net.
 /// The mesh between samples is an approximation, without a Hausdorff guarantee.
 pub fn subd_tessellate(bytes: &[u8], density: u32) -> Result<SubDData, SubDError> {
+    tessellate(bytes, density, false)
+}
+pub fn subd_tessellate_with_normals(bytes: &[u8], density: u32) -> Result<SubDData, SubDError> {
+    tessellate(bytes, density, true)
+}
+fn tessellate(bytes: &[u8], density: u32, normals: bool) -> Result<SubDData, SubDError> {
     check_archive(bytes)?;
     call(|out, error, n| unsafe {
-        vibo_subd_tessellate(bytes.as_ptr(), bytes.len(), density, out, error, n)
+        vibo_subd_tessellate(
+            bytes.as_ptr(),
+            bytes.len(),
+            density,
+            normals.into(),
+            out,
+            error,
+            n,
+        )
     })
 }
 
@@ -222,5 +273,84 @@ pub fn subd_transform(bytes: &[u8], matrix: [[f64; 4]; 4]) -> Result<SubDData, S
             error,
             n,
         )
+    })
+}
+
+/// Append polygons to the original record, preserving its existing components.
+/// Points begin with the unchanged original control-point table. Adjacent new
+/// faces are oriented against the original boundary and each other.
+pub fn subd_append(
+    bytes: &[u8],
+    points: &[[f64; 3]],
+    faces: &[Vec<u32>],
+) -> Result<SubDData, SubDError> {
+    check_archive(bytes)?;
+    if points.len() > 100_000
+        || faces.is_empty()
+        || faces.len() > 100_000
+        || points.as_flattened().iter().any(|p| !p.is_finite())
+        || faces.iter().any(|f| {
+            !(3..=0xfff0).contains(&f.len()) || f.iter().any(|&i| i as usize >= points.len())
+        })
+        || faces.iter().map(Vec::len).sum::<usize>() > 400_000
+    {
+        return Err(SubDError("Invalid or excessive append control net".into()));
+    }
+    let sizes = faces.iter().map(|f| f.len() as u32).collect::<Vec<_>>();
+    let corners = faces.iter().flatten().copied().collect::<Vec<_>>();
+    call(|out, error, n| unsafe {
+        vibo_subd_append(
+            bytes.as_ptr(),
+            bytes.len(),
+            points.as_flattened().as_ptr(),
+            points.len(),
+            sizes.as_ptr(),
+            sizes.len(),
+            corners.as_ptr(),
+            corners.len(),
+            out,
+            error,
+            n,
+        )
+    })
+}
+/// Tags are applied through the public native setters, including their neighbor
+/// updates. Vertex tags are 1..4; edge setters accept smooth (1) or crease (2).
+pub fn subd_set_tags(
+    bytes: &[u8],
+    vertex: bool,
+    values: &[(usize, u8)],
+) -> Result<SubDData, SubDError> {
+    check_archive(bytes)?;
+    if values.len() > 100_000
+        || values
+            .iter()
+            .any(|&(i, t)| i >= 100_000 || t < 1 || t > if vertex { 4 } else { 2 })
+    {
+        return Err(SubDError("Invalid SubD component tags".into()));
+    }
+    let indices = values.iter().map(|&(i, _)| i).collect::<Vec<_>>();
+    let tags = values.iter().map(|&(_, t)| t).collect::<Vec<_>>();
+    call(|out, error, n| unsafe {
+        vibo_subd_set_tags(
+            bytes.as_ptr(),
+            bytes.len(),
+            vertex.into(),
+            indices.as_ptr(),
+            tags.as_ptr(),
+            values.len(),
+            out,
+            error,
+            n,
+        )
+    })
+}
+
+/// Native triangulated control cage, used only for control-boundary input.
+/// This is not a limit-surface approximation.
+pub fn subd_control_mesh(bytes: &[u8]) -> Result<SubDData, SubDError> {
+    check_archive(bytes)?;
+    call(|out, error, n| unsafe {
+        vibo_subd_control_mesh(bytes.as_ptr(), bytes.len(), out, error, n)
     })
 }

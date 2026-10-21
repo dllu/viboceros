@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_chain_single",
+      "case": "subd_draft_chain_single"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_edge_multiple",
+      "case": "subd_draft_edge_multiple"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_chain_strip",
+      "case": "subd_draft_chain_strip"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_chain_reverse",
+      "case": "subd_draft_chain_reverse"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_chain_fold",
+      "case": "subd_draft_chain_fold"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_chain_undo",
+      "case": "subd_draft_chain_undo"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_chain_new_boundary",
+      "case": "subd_draft_chain_new_boundary"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_edge_triangles",
+      "case": "subd_draft_edge_triangles"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_edge_ngons",
+      "case": "subd_draft_edge_ngons"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_draft_chain_cancel",
+      "case": "subd_draft_chain_cancel"
+    }
+  ]
+}

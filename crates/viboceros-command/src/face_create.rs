@@ -50,6 +50,7 @@ pub enum Token {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Input {
     pub preferences: Preferences,
+    pub output_explicit: bool,
     pub append: Option<ObjectId>,
     pub edge: Option<usize>,
     pub tokens: Vec<Token>,
@@ -58,6 +59,7 @@ pub struct Input {
 pub fn parse(args: &[&str], preferences: Preferences) -> Result<Input, CommandError> {
     let mut input = Input {
         preferences,
+        output_explicit: false,
         append: None,
         edge: None,
         tokens: vec![],
@@ -82,6 +84,7 @@ pub fn parse(args: &[&str], preferences: Preferences) -> Result<Input, CommandEr
             }
             match key.to_ascii_lowercase().as_str() {
                 "output" => {
+                    input.output_explicit = true;
                     input.preferences.output = match value.to_ascii_lowercase().as_str() {
                         "mesh" => Output::Mesh,
                         "subd" => Output::SubD,
@@ -191,6 +194,7 @@ pub struct Draft {
     pub points: Vec<Point3>,
     faces: Vec<CompletedFace>,
     source: Option<TriangleMesh>,
+    source_subd: Option<viboceros_geometry::SubD>,
     boundaries: MeshFaceBoundaryGraph,
     edge_same_order: bool,
     seed: usize,
@@ -205,11 +209,19 @@ impl Draft {
         source: Option<TriangleMesh>,
         edge: Option<usize>,
     ) -> Result<Self, CommandError> {
-        if preferences.output == Output::SubD && source.is_some() {
-            return Err(CommandError::Usage(
-                "3DFace SubD output currently requires a standalone draft",
-            ));
-        }
+        Self::with_source(preferences, source.map(Geometry::Mesh), edge)
+    }
+    pub fn with_source(
+        preferences: Preferences,
+        source: Option<Geometry>,
+        edge: Option<usize>,
+    ) -> Result<Self, CommandError> {
+        let (source, source_subd) = match source {
+            Some(Geometry::SubD(subd)) => (Some(subd.control_mesh()?), Some(subd)),
+            Some(Geometry::Mesh(mesh)) => (Some(mesh), None),
+            None => (None, None),
+            _ => return Err(CommandError::Usage(USAGE)),
+        };
         if !preferences.weld_angle.is_finite() || !(0. ..=180.).contains(&preferences.weld_angle) {
             return Err(CommandError::Usage(USAGE));
         }
@@ -223,6 +235,7 @@ impl Draft {
             points: vec![],
             faces: vec![],
             source,
+            source_subd,
             boundaries,
             edge_same_order: true,
             seed: 0,
@@ -284,7 +297,7 @@ impl Draft {
     }
     pub fn update_preferences(&mut self, preferences: Preferences) -> Result<(), CommandError> {
         if preferences.output != self.preferences.output
-            && (!self.faces.is_empty() || !self.points.is_empty() || self.source.is_some())
+            && (!self.faces.is_empty() || !self.points.is_empty())
         {
             return Err(CommandError::Usage(
                 "Clear the face draft before changing Output",
@@ -554,51 +567,74 @@ impl Draft {
         }
         Ok(())
     }
-    /// Produces the native document family; mesh drafts remain useful for shared
-    /// corner constraints and boundary picking, independently of final output.
-    pub fn geometry(&self) -> Result<Option<Geometry>, CommandError> {
-        if self.preferences.output == Output::Mesh {
-            return self.mesh().map(|m| m.map(Geometry::Mesh));
-        }
+    /// Source replacement and new objects are staged together. Exact-edge
+    /// SubD components that do not touch the source become separate objects.
+    pub fn output(&self) -> Result<Option<FaceOutput>, CommandError> {
         if self.faces.is_empty() {
             return Ok(None);
         }
-        let mut points = Vec::new();
-        let mut indices = BTreeMap::new();
+        if self.preferences.output == Output::Mesh {
+            let geometry = Geometry::Mesh(self.mesh()?.unwrap());
+            return Ok(Some(
+                if self.source.is_some() && self.source_subd.is_none() {
+                    FaceOutput {
+                        replacement: Some(geometry),
+                        additions: vec![],
+                    }
+                } else {
+                    FaceOutput {
+                        replacement: None,
+                        additions: vec![geometry],
+                    }
+                },
+            ));
+        }
         let faces = self
             .faces
             .iter()
-            .map(|face| {
-                face.points
-                    .iter()
-                    .map(|&point| {
-                        let key = point
-                            .to_array()
-                            .map(|x| if x == 0. { 0 } else { x.to_bits() });
-                        *indices.entry(key).or_insert_with(|| {
-                            let i = points.len() as u32;
-                            points.push(point);
-                            i
-                        })
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .collect();
-        Ok(Some(Geometry::SubD(
-            viboceros_geometry::SubD::try_from_polygons(points, faces)?,
-        )))
+            .map(|f| f.points.clone())
+            .collect::<Vec<_>>();
+        let output = if let Some(source) = &self.source_subd {
+            let result = source.try_append_face_components(&faces)?;
+            FaceOutput {
+                replacement: if result.attached_faces > 0 {
+                    Some(Geometry::SubD(result.source))
+                } else {
+                    None
+                },
+                additions: result.detached.into_iter().map(Geometry::SubD).collect(),
+            }
+        } else {
+            FaceOutput {
+                replacement: None,
+                additions: viboceros_geometry::SubD::try_from_face_components(&faces)?
+                    .into_iter()
+                    .map(Geometry::SubD)
+                    .collect(),
+            }
+        };
+        Ok(Some(output))
     }
     pub fn mesh(&self) -> Result<Option<TriangleMesh>, CommandError> {
         if self.faces.is_empty() {
             return Ok(None);
         }
         let parts = self.faces.iter().map(|face| &face.part).collect::<Vec<_>>();
+        if self.preferences.output == Output::SubD {
+            return Ok(Some(TriangleMesh::try_append(
+                &self
+                    .source
+                    .iter()
+                    .chain(parts.iter().copied())
+                    .collect::<Vec<_>>(),
+            )?));
+        }
         if self
             .faces
             .iter()
             .any(|f| f.weld_angle != self.faces[0].weld_angle)
         {
-            let mut mesh = self.source.clone();
+            let mut mesh = self.source.clone().filter(|_| self.source_subd.is_none());
             for (face, part) in self.faces.iter().zip(parts) {
                 let count = mesh.as_ref().map_or(0, |m| m.faces().len());
                 let added = if let Some(original) = mesh {
@@ -614,13 +650,16 @@ impl Draft {
             }
             return Ok(mesh);
         }
-        let refs = self
-            .source
-            .iter()
+        let included_source = self.source.iter().filter(|_| self.source_subd.is_none());
+        let refs = included_source
             .chain(parts.iter().copied())
             .collect::<Vec<_>>();
         let mesh = TriangleMesh::try_append(&refs)?;
-        let first = self.source.as_ref().map_or(0, |m| m.faces().len());
+        let first = if self.source_subd.is_some() {
+            0
+        } else {
+            self.source.as_ref().map_or(0, |m| m.faces().len())
+        };
         let angle = self.faces[0].weld_angle;
         let mesh = mesh.welded_vertices_after(angle.to_radians(), first)?.0;
         Ok(Some(mesh))
@@ -635,22 +674,15 @@ pub fn target(
         document
             .object(id)
             .filter(|o| {
-                document.is_object_selectable(id) && matches!(o.geometry(), Geometry::Mesh(_))
+                document.is_object_selectable(id)
+                    && matches!(o.geometry(), Geometry::Mesh(_) | Geometry::SubD(_))
             })
             .ok_or(CommandError::Usage(USAGE))?;
         return Ok(Some(id));
     }
-    if document
-        .selected_objects()
-        .any(|o| matches!(o.geometry(), Geometry::SubD(_)))
-    {
-        return Err(CommandError::Usage(
-            "3DFace appending to existing SubDs is not implemented",
-        ));
-    }
     let mut selected = document
         .selected_objects()
-        .filter(|o| matches!(o.geometry(), Geometry::Mesh(_)))
+        .filter(|o| matches!(o.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)))
         .map(|o| o.id());
     let first = selected.next();
     if selected.next().is_some() {
@@ -658,13 +690,60 @@ pub fn target(
     }
     Ok(first)
 }
-pub fn source(document: &Document, target: Option<ObjectId>) -> Option<TriangleMesh> {
+pub fn target_preferences(
+    document: &Document,
+    target: Option<ObjectId>,
+    preferences: Preferences,
+    explicit_output: bool,
+) -> Preferences {
+    if explicit_output {
+        return preferences;
+    }
+    let output = target.and_then(|id| document.object(id)).map(|o| {
+        if matches!(o.geometry(), Geometry::SubD(_)) {
+            Output::SubD
+        } else {
+            Output::Mesh
+        }
+    });
+    Preferences {
+        output: output.unwrap_or(preferences.output),
+        ..preferences
+    }
+}
+pub fn source(document: &Document, target: Option<ObjectId>) -> Option<Geometry> {
     target
         .and_then(|id| document.object(id))
         .and_then(|o| match o.geometry() {
-            Geometry::Mesh(m) => Some(m.clone()),
+            Geometry::Mesh(_) | Geometry::SubD(_) => Some(o.geometry().clone()),
             _ => None,
         })
+}
+#[derive(Clone, Debug)]
+pub struct FaceOutput {
+    pub replacement: Option<Geometry>,
+    pub additions: Vec<Geometry>,
+}
+pub fn apply_output(
+    document: &mut Document,
+    target: Option<ObjectId>,
+    output: FaceOutput,
+) -> Result<Vec<ObjectId>, CommandError> {
+    if output.replacement.is_some() && target.is_none() {
+        return Err(CommandError::Usage(USAGE));
+    }
+    let mut ids = Vec::new();
+    if let Some(id) = target {
+        document.select_objects_direct([id], SelectionMode::Remove)?;
+        if let Some(geometry) = output.replacement {
+            document.replace_object_geometries(vec![(id, geometry)])?;
+        }
+        ids.push(id);
+    }
+    for geometry in output.additions {
+        ids.push(document.add_geometry(geometry)?);
+    }
+    Ok(ids)
 }
 pub fn apply(
     document: &mut Document,
@@ -698,21 +777,27 @@ impl Command for FaceCreateCommand {
         }
         let input = parse(args, preferences)?;
         let target = target(document, input.append)?;
-        let mut draft = Draft::new(input.preferences, source(document, target), input.edge)?;
+        let preferences =
+            target_preferences(document, target, input.preferences, input.output_explicit);
+        let mut draft = Draft::with_source(preferences, source(document, target), input.edge)?;
         for token in input.tokens {
             draft.accept(token)?;
         }
         if !draft.finished {
             draft.accept(Token::Enter)?;
         }
-        let Some(geometry) = draft.geometry()? else {
+        let Some(output) = draft.output()? else {
             return Err(CommandError::Usage(USAGE));
         };
-        let id = apply_geometry(document, target, geometry)?;
-        self.0.set(input.preferences);
+        let ids = apply_output(document, target, output)?;
+        self.0.set(draft.preferences);
         Ok(format!(
-            "Created {} face(s) on object {id}",
-            draft.face_count()
+            "Created {} face(s) on object(s) {}",
+            draft.face_count(),
+            ids.iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(", ")
         ))
     }
 }

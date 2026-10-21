@@ -15,10 +15,31 @@ Create standalone faces through the command line or the interactive point getter
 for mesh faces. Exactly coincident corners in adjacent faces share vertices;
 interior edges are smooth and boundary edges are creased. Boundary vertices
 normally move inward on the limit surface: picked corners define the control
-net, rather than interpolation targets. `Interpolated=Yes` and appending to an
-existing SubD are not implemented.
+net, rather than interpolation targets. `Interpolated=Yes` is not implemented.
+
+Select a SubD before `3DFace`, choose `Append` in the point getter, or supply
+`Append=<id>` to add faces to it. Without an explicit `Output` option, the target
+sets the output family. `FromEdge=Yes` picks a control-cage boundary;
+`Chain=Yes Mode=MultipleFaces` supports walking along existing or new boundaries,
+with corner Undo and Enter to choose another edge. All changes are staged until
+completion, and double Escape discards the draft without consuming Redo.
+
+Joining uses exact coincident vertices. Even a tiny gap creates a detached SubD
+on the current layer. Detached components in a standalone MultipleFaces draft
+also become separate objects. Joined source objects retain their identity, name
+and layer. Their original native component data are edited through OpenNURBS;
+unrelated creases and corners remain. A joined boundary becomes smooth and its
+endpoint tags are recomputed. Shared-vertex fans and a three-face nonmanifold
+edge have native comparison coverage.
+
+Before entering corners, `Output=Mesh` on a SubD target creates separate mesh
+output, while `Output=SubD` on a mesh target creates separate SubD output. The
+source geometry stays unchanged. Mixing output families inside a face draft is
+not implemented.
 
 SubDs draw and support object picking in wireframe, shaded and ghosted modes.
+Shading uses native limit-surface normals for each sector, keeping shallow
+creases sharp without averaging normals across them.
 `PointsOn` exposes their control vertices; ordinary transforms and control-point
 edits retain SubD topology. Creation and edits support Undo/Redo. 3DM Save/Open
 preserves SubDs, including native fields such as crease sharpness that are not
@@ -37,6 +58,12 @@ budget. Unsupported commands reject SubDs rather than changing their family.
 for control topology and again for limit meshes. Command and interactive getter
 tests compare topology, winding, tags, exact vertex limit stations, sampled limit
 meshes, current-layer attributes, selection and grouped history at `1e-6`.
-The largest sampled surface difference is about `1.8e-15`. Separate tests cover
+[Append qualification](subd-append-qualification.json) adds 32 native recipes:
+31 command comparisons and 32 viewport getter comparisons, including physical
+edge picks, cancellation, disconnected pieces, reversed faces, late bridges,
+source n-gons, crease/corner changes and output-family switches. The largest
+sampled difference in those controls is about `3.6e-15`. Seven further captures
+compare native sector normals, with a largest vector difference of about
+`3.5e-8` against Rhino’s float normal arrays. Separate tests cover
 3DM round trips, units, transforms, control edits, display and picking. General
 SubD parity, texture/material channels and comparative performance remain open.

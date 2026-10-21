@@ -8,9 +8,11 @@
 #include <set>
 #include <unordered_map>
 
+#include "subd_append.h"
+
 struct ViboSubDResult {
   std::vector<uint8_t> archive, vertex_tags, edge_tags;
-  std::vector<double> points, surface_points;
+  std::vector<double> points, surface_points, corner_normals;
   std::vector<uint32_t> edges, face_sizes, face_vertices;
 };
 namespace {
@@ -19,7 +21,7 @@ void point(std::vector<double>& out, const ON_3dPoint& p) {
   require(p.IsValid(), "Nonfinite SubD point");
   out.insert(out.end(),{p.x,p.y,p.z});
 }
-std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=false) {
+std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=false, bool normals=false) {
   auto out=std::make_unique<ViboSubDResult>();
   if (!evaluated) out->archive=vibo_subd::encode(subd);
   std::unordered_map<const ON_SubDVertex*,uint32_t> indices;
@@ -40,7 +42,15 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
   auto fit=subd.FaceIterator();
   for (auto* f=fit.FirstFace(); f; f=fit.NextFace()) {
     out->face_sizes.push_back(f->EdgeCount());
-    for (unsigned i=0; i<f->EdgeCount(); ++i) out->face_vertices.push_back(indices.at(f->Vertex(i)));
+    for (unsigned i=0; i<f->EdgeCount(); ++i) {
+      out->face_vertices.push_back(indices.at(f->Vertex(i)));
+      if(normals) {
+        auto normal=f->Vertex(i)->SurfaceNormal(f,true);
+        // Undefined normals in degenerate sectors remain explicit zero vectors.
+        if(!normal.IsValid()) normal=ON_3dVector::ZeroVector;
+        out->corner_normals.insert(out->corner_normals.end(),{normal.x,normal.y,normal.z});
+      }
+    }
   }
   return out;
 }
@@ -99,6 +109,34 @@ extern "C" int vibo_subd_create(const double* points,size_t point_count,
     return extract(subd);
   });
 }
+extern "C" int vibo_subd_append(const uint8_t* bytes,size_t count,const double* points,size_t point_count,
+    const uint32_t* sizes,size_t face_count,const uint32_t* corners,size_t corner_count,
+    ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{
+    auto subd=vibo_subd::decode(bytes,count);
+    vibo_subd::append_polygons(*subd,points,point_count,sizes,face_count,corners,corner_count);
+    return extract(*subd);
+  });
+}
+extern "C" int vibo_subd_set_tags(const uint8_t* bytes,size_t count,int vertex,
+    const size_t* indices,const uint8_t* tags,size_t tag_count,ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{
+    require((vertex==0 || vertex==1) && tag_count<=vibo_subd::component_limit &&
+      (tag_count==0 || (indices && tags)),"Invalid SubD tag input");
+    auto subd=vibo_subd::decode(bytes,count);
+    std::vector<ON_SubDComponentPtr> components;
+    if(vertex) {auto it=subd->VertexIterator();for(auto* v=it.FirstVertex();v;v=it.NextVertex()) components.push_back(ON_SubDComponentPtr::Create(v));}
+    else {auto it=subd->EdgeIterator();for(auto* e=it.FirstEdge();e; e=it.NextEdge()) components.push_back(ON_SubDComponentPtr::Create(e));}
+    for(size_t i=0;i<tag_count;++i) {
+      require(indices[i]<components.size(),"SubD tag index outside component table");
+      require(tags[i]>=1 && tags[i]<=(vertex?4:2),"Unsupported SubD tag");
+      const auto component=components[indices[i]];
+      if(vertex) subd->SetVertexTags(&component,1,static_cast<ON_SubDVertexTag>(tags[i]));
+      else subd->SetEdgeTags(&component,1,static_cast<ON_SubDEdgeTag>(tags[i]));
+    }
+    subd->UpdateAllTagsAndSectorCoefficients(false);subd->ClearEvaluationCache();return extract(*subd);
+  });
+}
 extern "C" int vibo_subd_read(const uint8_t* bytes,size_t n,ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{return extract(*vibo_subd::decode(bytes,n));});
 }
@@ -131,9 +169,25 @@ extern "C" int vibo_subd_transform(const uint8_t* bytes,size_t n,const double* m
     return extract(*subd);
   });
 }
-extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned density,
+extern "C" int vibo_subd_control_mesh(const uint8_t* bytes,size_t count,ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{
+    auto subd=vibo_subd::decode(bytes,count);ON_Mesh mesh;
+    require(subd->GetControlNetMesh(&mesh,ON_SubDGetControlNetMeshPriority::Geometry),"Cannot get SubD control mesh");
+    auto result=std::make_unique<ViboSubDResult>();
+    for(int i=0;i<mesh.VertexCount();++i) {
+      point(result->points,mesh.Vertex(i));point(result->surface_points,mesh.Vertex(i));result->vertex_tags.push_back(0);
+    }
+    for(int i=0;i<mesh.FaceCount();++i) {
+      const auto& face=mesh.m_F[i];const unsigned n=face.IsTriangle()?3:4;result->face_sizes.push_back(n);
+      for(unsigned j=0;j<n;++j) result->face_vertices.push_back(static_cast<uint32_t>(face.vi[j]));
+    }
+    return result;
+  });
+}
+extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned density,int normals,
     ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{
+    require(normals==0 || normals==1,"Invalid SubD normal request");
     require(density>=1 && density<=6,"SubD display density must be between 1 and 6");
     auto subd=vibo_subd::decode(bytes,n);
     // Count in 64 bits before subdivision; GlobalSubdivideQuadCount() returns u32.
@@ -142,12 +196,12 @@ extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned densi
     for(unsigned i=1;i<density;++i) quads*=4;
     require(quads<=1000000,"SubD tessellation face budget exceeded");
     require(subd->GlobalSubdivide(density),"SubD subdivision failed");
-    return extract(*subd,true);
+    return extract(*subd,true,normals!=0);
   });
 }
 extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
   if(!r || !v) return 0;
-  *v={r->archive.size(),r->points.size()/3,r->edges.size()/2,r->face_sizes.size(),r->face_vertices.size(),
-    r->archive.data(),r->points.data(),r->surface_points.data(),r->vertex_tags.data(),r->edges.data(),r->edge_tags.data(),r->face_sizes.data(),r->face_vertices.data()};return 1;
+  *v={r->archive.size(),r->points.size()/3,r->edges.size()/2,r->face_sizes.size(),r->face_vertices.size(),r->corner_normals.size()/3,
+    r->archive.data(),r->points.data(),r->surface_points.data(),r->vertex_tags.data(),r->edges.data(),r->edge_tags.data(),r->face_sizes.data(),r->face_vertices.data(),r->corner_normals.data()};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }

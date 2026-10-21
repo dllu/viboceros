@@ -539,6 +539,19 @@ fn subd_limit_surface_reaches_display_and_object_picking() {
             assert!(!display.wires().is_empty());
             let pixel = view.project(mesh.vertices()[0], rect).unwrap();
             assert_eq!(view.pick_object(pixel, rect, &document), Some(id));
+            assert_eq!(
+                view.pick_object_matching(
+                    pixel,
+                    rect,
+                    &document,
+                    ObjectSelectionFilter::FaceAppend
+                ),
+                Some(id)
+            );
+            assert_eq!(
+                view.pick_object_matching(pixel, rect, &document, ObjectSelectionFilter::Mesh),
+                None
+            );
             let scene = view.object_scene(rect, &document);
             assert!(!scene.lines.is_empty());
             if mode != DisplayMode::Wireframe {

@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "subd_normal_quad",
+      "case": "subd_normal_quad"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_normal_twisted",
+      "case": "subd_normal_twisted"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_normal_ngon",
+      "case": "subd_normal_ngon"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_normal_crease",
+      "case": "subd_normal_crease"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_normal_corner",
+      "case": "subd_normal_corner"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_normal_nonmanifold",
+      "case": "subd_normal_nonmanifold"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_normal_smooth",
+      "case": "subd_normal_smooth"
+    }
+  ]
+}

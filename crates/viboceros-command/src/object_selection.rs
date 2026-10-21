@@ -17,6 +17,7 @@ pub enum ObjectSelectionFilter {
     Blocks,
     Grouped,
     Mesh,
+    FaceAppend,
     MeshPatchSources,
     MeshPatchHoles,
     LineCurves,
@@ -130,6 +131,7 @@ impl ObjectSelectionFilter {
             Self::HiddenObjects => !object.attributes().is_visible(),
             Self::LockedObjects => object.attributes().is_locked(),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
+            Self::FaceAppend => matches!(geometry, Geometry::Mesh(_) | Geometry::SubD(_)),
             Self::PolygonCount | Self::CoplanarFaces => matches!(
                 geometry,
                 Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)

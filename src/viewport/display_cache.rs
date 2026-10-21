@@ -155,6 +155,7 @@ pub(super) struct DisplayGeometry {
 
 struct GeneratedDisplayMesh {
     mesh: TriangleMesh,
+    normals: Option<Vec<[NaVector3<Real>; 3]>>,
     face_sources: Option<Vec<usize>>,
 }
 
@@ -297,15 +298,13 @@ impl DisplayGeometry {
     fn generated_mesh(&self) -> Option<&GeneratedDisplayMesh> {
         self.mesh
             .get_or_init(|| match &*self.geometry {
-                Geometry::SubD(subd) => subd.display_mesh().ok().map(|mesh| GeneratedDisplayMesh {
-                    mesh,
-                    face_sources: None,
-                }),
+                Geometry::SubD(subd) => Self::subd_display(subd),
                 Geometry::NurbsSurface(surface) => surface
                     .tessellate(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
                     .ok()
                     .map(|mesh| GeneratedDisplayMesh {
                         mesh,
+                        normals: None,
                         face_sources: None,
                     }),
                 Geometry::Brep(brep) => brep
@@ -313,6 +312,7 @@ impl DisplayGeometry {
                     .ok()
                     .map(|(mesh, face_sources)| GeneratedDisplayMesh {
                         mesh,
+                        normals: None,
                         face_sources: Some(face_sources),
                     }),
                 _ => None,
@@ -320,7 +320,49 @@ impl DisplayGeometry {
             .as_ref()
     }
 
+    fn subd_display(subd: &viboceros_geometry::SubD) -> Option<GeneratedDisplayMesh> {
+        let display = subd.display_mesh_with_normals().ok()?;
+        let mesh = display.mesh;
+        if display.face_corner_normals.len() != mesh.faces().len() {
+            return None;
+        }
+        let mut normals = Vec::with_capacity(mesh.triangles().len());
+        for (face_index, (face, native)) in mesh
+            .faces()
+            .iter()
+            .zip(display.face_corner_normals)
+            .enumerate()
+        {
+            let indices = face.indices();
+            for (offset, triangle) in mesh.triangles()[2 * face_index..2 * face_index + 2]
+                .iter()
+                .enumerate()
+            {
+                let fallback = mesh
+                    .face_normal(2 * face_index + offset)
+                    .map(|n| NaVector3::new(n.x(), n.y(), n.z()))
+                    .unwrap_or_else(|_| NaVector3::new(0., 0., 1.));
+                normals.push(triangle.map(|vertex| {
+                    let n = native[indices.iter().position(|i| *i == vertex).unwrap()].to_array();
+                    NaVector3::new(n[0], n[1], n[2])
+                        .try_normalize(Real::EPSILON)
+                        .unwrap_or(fallback)
+                }));
+            }
+        }
+        Some(GeneratedDisplayMesh {
+            mesh,
+            normals: Some(normals),
+            face_sources: None,
+        })
+    }
     pub(super) fn normals(&self) -> &[[NaVector3<Real>; 3]] {
+        if let Some(normals) = self
+            .generated_mesh()
+            .and_then(|mesh| mesh.normals.as_deref())
+        {
+            return normals;
+        }
         self.normals.get_or_init(|| {
             self.mesh()
                 .map(scene::smooth_corner_normals)

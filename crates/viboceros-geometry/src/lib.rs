@@ -5,7 +5,7 @@
 //! invalid values enter the model.
 
 mod subd;
-pub use subd::SubD;
+pub use subd::{SubD, SubDAppendResult, SubDDisplayMesh};
 mod area_mass_properties;
 mod mass_integration;
 pub use area_mass_properties::AreaMassProperties;

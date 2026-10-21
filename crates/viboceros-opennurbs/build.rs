@@ -11,7 +11,7 @@ fn main() {
     }
 
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
-    for file in ["subd.cpp", "subd.h", "subd_codec.h"] {
+    for file in ["subd.cpp", "subd.h", "subd_codec.h", "subd_append.h"] {
         println!("cargo:rerun-if-changed=native/{file}");
     }
     println!("cargo:rerun-if-changed=native/mesh_modeling.cpp");

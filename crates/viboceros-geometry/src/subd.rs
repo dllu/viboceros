@@ -1,8 +1,19 @@
 //! Catmull–Clark subdivision surfaces backed by the public OpenNURBS kernel.
 //! Control topology is retained independently of display tessellations.
-use crate::{AffineTransform3, BoundingBox3, GeometryError, MeshFace, Point3, TriangleMesh};
+use crate::{
+    AffineTransform3, BoundingBox3, GeometryError, MeshFace, Point3, TriangleMesh, Vector3,
+};
 use std::sync::Arc;
+mod append;
+pub use append::SubDAppendResult;
 
+/// A display tessellation with exact native limit normals for each quad corner.
+/// A zero vector marks an undefined normal in a degenerate sector.
+#[derive(Clone, Debug)]
+pub struct SubDDisplayMesh {
+    pub mesh: TriangleMesh,
+    pub face_corner_normals: Vec<[Vector3; 4]>,
+}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SubD {
     data: Arc<viboceros_opennurbs::SubDData>,
@@ -65,9 +76,44 @@ impl SubD {
     pub fn vertex_tags(&self) -> &[u8] {
         &self.data.vertex_tags
     }
-    /// OpenNURBS tags: 1 smooth, 2 crease, 3 smooth between tagged vertices.
+    /// OpenNURBS tags: 1 smooth, 2 crease, 4 smooth between tagged vertices.
     pub fn edge_tags(&self) -> &[u8] {
         &self.data.edge_tags
+    }
+    /// Uses OpenNURBS' validated component setters, including neighbor updates.
+    pub fn try_with_vertex_tags(&self, tags: &[(usize, u8)]) -> Result<Self, GeometryError> {
+        Self::from_native(viboceros_opennurbs::subd_set_tags(
+            self.archive(),
+            true,
+            tags,
+        )?)
+    }
+    pub fn try_with_edge_tags(&self, tags: &[(usize, u8)]) -> Result<Self, GeometryError> {
+        Self::from_native(viboceros_opennurbs::subd_set_tags(
+            self.archive(),
+            false,
+            tags,
+        )?)
+    }
+    /// Native control-cage facets for boundary selection. The displayed SubD
+    /// continues to use the separately evaluated limit surface.
+    pub fn control_mesh(&self) -> Result<TriangleMesh, GeometryError> {
+        let data = viboceros_opennurbs::subd_control_mesh(self.archive())?;
+        let vertices = data
+            .points
+            .into_iter()
+            .map(Point3::try_from)
+            .collect::<Result<Vec<_>, _>>()?;
+        let faces = data
+            .faces
+            .into_iter()
+            .map(|f| match f[..] {
+                [a, b, c] => MeshFace::Triangle([a, b, c]),
+                [a, b, c, d] => MeshFace::Quad([a, b, c, d]),
+                _ => unreachable!("control mesh contains triangles or quads"),
+            })
+            .collect();
+        TriangleMesh::try_from_face_records(vertices, faces)
     }
     pub fn archive(&self) -> &[u8] {
         &self.data.archive
@@ -110,6 +156,34 @@ impl SubD {
     /// Polygonal interpolation between samples has no model-tolerance guarantee.
     pub fn tessellate(&self, density: u32) -> Result<TriangleMesh, GeometryError> {
         let data = viboceros_opennurbs::subd_tessellate(self.archive(), density)?;
+        Self::tessellation(data).map(|display| display.mesh)
+    }
+    pub fn tessellate_with_normals(&self, density: u32) -> Result<SubDDisplayMesh, GeometryError> {
+        Self::tessellation(viboceros_opennurbs::subd_tessellate_with_normals(
+            self.archive(),
+            density,
+        )?)
+    }
+    fn tessellation(data: viboceros_opennurbs::SubDData) -> Result<SubDDisplayMesh, GeometryError> {
+        let mut normals = data.corner_normals.into_iter();
+        let mut face_corner_normals = Vec::new();
+        while let Some(a) = normals.next() {
+            let b = normals.next().ok_or_else(|| {
+                viboceros_opennurbs::SubDError("Incomplete SubD face normals".into())
+            })?;
+            let c = normals.next().ok_or_else(|| {
+                viboceros_opennurbs::SubDError("Incomplete SubD face normals".into())
+            })?;
+            let d = normals.next().ok_or_else(|| {
+                viboceros_opennurbs::SubDError("Incomplete SubD face normals".into())
+            })?;
+            face_corner_normals.push([
+                Vector3::try_from(a)?,
+                Vector3::try_from(b)?,
+                Vector3::try_from(c)?,
+                Vector3::try_from(d)?,
+            ]);
+        }
         let vertices = data
             .points
             .into_iter()
@@ -127,16 +201,25 @@ impl SubD {
             .collect();
         // Valid SubDs can have coincident evaluated samples. Retain their quad
         // records instead of making subdivision depend on a mesh area epsilon.
-        TriangleMesh::try_from_face_records(vertices, faces)
+        Ok(SubDDisplayMesh {
+            mesh: TriangleMesh::try_from_face_records(vertices, faces)?,
+            face_corner_normals,
+        })
     }
     /// Adapts the display density to stay within the native quad budget.
     pub fn display_mesh(&self) -> Result<TriangleMesh, GeometryError> {
+        self.tessellate(self.display_density())
+    }
+    pub fn display_mesh_with_normals(&self) -> Result<SubDDisplayMesh, GeometryError> {
+        self.tessellate_with_normals(self.display_density())
+    }
+    fn display_density(&self) -> u32 {
         let mut density = 3;
         let corners = self.faces().iter().map(Vec::len).sum::<usize>();
         while density > 1 && corners * 4usize.pow(density - 1) > 1_000_000 {
             density -= 1;
         }
-        self.tessellate(density)
+        density
     }
 }
 

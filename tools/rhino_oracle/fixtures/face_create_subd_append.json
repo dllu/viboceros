@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "subd_append_flat",
+      "case": "subd_append_flat"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_fold",
+      "case": "subd_append_fold"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_multiple",
+      "case": "subd_append_multiple"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_ngon",
+      "case": "subd_append_ngon"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_triangle",
+      "case": "subd_append_triangle"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_undo_pick",
+      "case": "subd_append_undo_pick"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_near",
+      "case": "subd_append_near"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_far",
+      "case": "subd_append_far"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_corner",
+      "case": "subd_append_corner"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_crease",
+      "case": "subd_append_crease"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_reverse",
+      "case": "subd_append_reverse"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_append_disconnected",
+      "case": "subd_append_disconnected"
+    }
+  ]
+}

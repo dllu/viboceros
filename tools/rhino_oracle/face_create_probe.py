@@ -50,6 +50,53 @@ for _name in ['quad','triangle','triangle_enter','reverse','concave','twisted','
 SUBD_SURFACE_CASES={name.replace("subd_","subd_surface_",1):dict(deepcopy(case),surface_mesh=True)for name,case in SUBD_CASES.items()}
 SCENES.update(SUBD_CASES)
 SCENES.update(SUBD_SURFACE_CASES)
+SUBD_APPEND_CASES={}
+for _name in ['append_flat','append_fold','multiple','ngon','triangle','undo_pick']:
+ _case=deepcopy(CASES[_name]);_case.update(append=True,source_subd=True,output='SubD',interpolated=False,surface_mesh=True)
+ if _name=='multiple':_case['points']=[[4.,0.,0.],[7.,0.,0.],[7.,3.,0.],[4.,3.,0.],[7.,0.,0.],[10.,0.,1.],[10.,3.,1.],[7.,3.,0.]]
+ if _name=='ngon':_case['points']=[[4.,0.,0.],[7.,-1.,0.],[9.,1.,1.],[7.,4.,0.],[4.,3.,0.]]
+ if _name=='triangle':_case['points']=[[4.,0.,0.],[7.,1.,2.],[4.,3.,0.]]
+ if _name=='undo_pick':_case['points']=[[4.,0.,0.],[7.,0.,0.],[7.,3.,0.],'Undo',[7.,3.,2.],[4.,3.,0.]]
+ SUBD_APPEND_CASES['subd_append_'+(_name[7:]if _name.startswith('append_')else _name)]=_case
+for _name,_gap in [('near',2e-7),('far',2e-5)]:
+ SUBD_APPEND_CASES['subd_append_'+_name]=dict(deepcopy(SUBD_APPEND_CASES['subd_append_flat']),points=[[4.+_gap,0.,0.],[7.,0.,0.],[7.,3.,0.],[4.+_gap,3.,0.]])
+SUBD_APPEND_CASES['subd_append_corner']=dict(deepcopy(SUBD_APPEND_CASES['subd_append_fold']),source_corners=[1])
+SUBD_APPEND_CASES['subd_append_crease']=dict(deepcopy(SUBD_APPEND_CASES['subd_append_fold']),source_vertices=[[0.,0.,0.],[2.,0.,0.],[4.,0.,0.],[0.,3.,0.],[2.,3.,0.],[4.,3.,0.]],source_faces=[[0,1,4,3],[1,2,5,4]],source_creases=[[1,4]])
+SUBD_APPEND_CASES['subd_append_reverse']=dict(deepcopy(SUBD_APPEND_CASES['subd_append_fold']),points=list(reversed(SUBD_APPEND_CASES['subd_append_fold']['points'])))
+SUBD_APPEND_CASES['subd_append_disconnected']=dict(deepcopy(SUBD_APPEND_CASES['subd_append_flat']),points=[[8.,0.,0.],[10.,0.,0.],[10.,3.,0.],[8.,3.,0.]])
+SCENES.update(SUBD_APPEND_CASES)
+SUBD_APPEND_EXTRAS={
+ 'subd_extra_corner_unaffected':dict(deepcopy(SUBD_APPEND_CASES['subd_append_fold']),source_corners=[0]),
+ 'subd_extra_corner_both':dict(deepcopy(SUBD_APPEND_CASES['subd_append_fold']),source_corners=[1,2]),
+ 'subd_extra_vertex_only':dict(deepcopy(SUBD_APPEND_CASES['subd_append_flat']),points=[[4.,3.,0.],[7.,3.,0.],[7.,6.,0.],[4.,6.,0.]]),
+ 'subd_extra_late_bridge':dict(deepcopy(SUBD_APPEND_CASES['subd_append_multiple']),points=[[8.,3.,0.],[12.,3.,0.],[12.,0.,0.],[8.,0.,0.],[4.,0.,0.],[8.,0.,0.],[8.,3.,0.],[4.,3.,0.]]),
+ 'subd_extra_standalone_disjoint':dict(deepcopy(SUBD_APPEND_CASES['subd_append_multiple']),append=False,points=QUAD+[[8.,0.,0.],[12.,0.,0.],[12.,3.,0.],[8.,3.,0.]]),
+ 'subd_extra_standalone_bridge':dict(deepcopy(SUBD_APPEND_CASES['subd_append_multiple']),append=False,points=QUAD+[[8.,3.,0.],[12.,3.,0.],[12.,0.,0.],[8.,0.,0.],[4.,0.,0.],[8.,0.,0.],[8.,3.,0.],[4.,3.,0.]]),
+ 'subd_extra_ngon_source':dict(deepcopy(SUBD_APPEND_CASES['subd_append_flat']),source_vertices=PENTAGON,source_faces=[[0,1,2],[0,2,3],[0,3,4]],source_ngons=[dict(vertices=[0,1,2,3,4],faces=[0,1,2])],points=[[3.,0.,0.],[7.,0.,0.],[7.,2.,0.],[4.,2.,0.]]),
+ 'subd_extra_interior_edge':dict(deepcopy(SUBD_APPEND_CASES['subd_append_crease']),source_creases=[],polygon='Triangle',surface_mesh=False,points=[[2.,0.,0.],[3.,1.5,2.],[2.,3.,0.]]),
+ 'subd_extra_output_mesh':dict(deepcopy(SUBD_APPEND_CASES['subd_append_flat']),output='Mesh'),
+ 'subd_extra_mesh_source':dict(deepcopy(SUBD_APPEND_CASES['subd_append_flat']),source_subd=False),
+}
+SCENES.update(SUBD_APPEND_EXTRAS)
+SUBD_DRAFT_CASES={}
+for _name in ['chain_single','edge_multiple','chain_strip','chain_reverse','chain_fold','chain_undo','chain_new_boundary','edge_triangles','edge_ngons','chain_cancel']:
+ _case=deepcopy(DRAFTS[_name]);_case.update(source_subd=True,output='SubD',interpolated=False,surface_mesh=True)
+ SUBD_DRAFT_CASES['subd_draft_'+_name]=_case
+SCENES.update(SUBD_DRAFT_CASES)
+PHYSICAL_DRAFTS=set(DRAFTS)|set(SUBD_DRAFT_CASES)
+SUBD_NORMAL_CASES={
+ 'subd_normal_quad':dict(deepcopy(SUBD_SURFACE_CASES['subd_surface_quad']),native_normals=True),
+ 'subd_normal_twisted':dict(deepcopy(SUBD_SURFACE_CASES['subd_surface_twisted']),native_normals=True),
+ 'subd_normal_ngon':dict(deepcopy(SUBD_SURFACE_CASES['subd_surface_ngon_spatial']),native_normals=True),
+ 'subd_normal_crease':dict(deepcopy(SUBD_APPEND_CASES['subd_append_crease']),native_normals=True,source_vertices=[[0.,0.,0.],[2.,0.,0.],[4.,0.,.5],[0.,3.,0.],[2.,3.,0.],[4.,3.,.5]],points=[[4.,0.,.5],[7.,0.,.75],[7.,3.,.75],[4.,3.,.5]]),
+ 'subd_normal_corner':dict(deepcopy(SUBD_APPEND_EXTRAS['subd_extra_corner_unaffected']),native_normals=True),
+ 'subd_normal_nonmanifold':dict(deepcopy(SUBD_APPEND_EXTRAS['subd_extra_interior_edge']),native_normals=True,surface_mesh=True),
+}
+SUBD_NORMAL_CASES['subd_normal_smooth']=dict(deepcopy(SUBD_NORMAL_CASES['subd_normal_crease']),source_creases=[])
+SCENES.update(SUBD_NORMAL_CASES)
+
+
+
 
 
 def request():
@@ -67,6 +114,22 @@ def subd_request():
 
 def subd_surface_request():
  q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_SURFACE_CASES];return q
+
+
+def subd_append_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_APPEND_CASES];return q
+
+
+def subd_append_extra_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_APPEND_EXTRAS];return q
+
+
+def subd_draft_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_DRAFT_CASES];return q
+
+
+def subd_normal_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_NORMAL_CASES];return q
 
 
 def control_request():
@@ -111,7 +174,11 @@ def run(op,host,iterations,tolerance):
     if case.get('surface_mesh'):
      mesh=G.Mesh.CreateFromSubD(subd,2)
      if mesh is None:raise ValueError('SubD limit meshing failed')
-     try:row['subd']['surface_mesh']=host['_polygon_mesh_value'](mesh)
+     try:
+      row['subd']['surface_mesh']=host['_polygon_mesh_value'](mesh)
+      if case.get('native_normals'):
+       if mesh.Normals.Count!=mesh.Vertices.Count:raise ValueError('missing native limit mesh normals')
+       row['subd']['surface_mesh_normals']=[point(n)for n in mesh.Normals]
      finally:mesh.Dispose()
    rows.append(row)
   return rows
@@ -124,9 +191,24 @@ def run(op,host,iterations,tolerance):
     mesh=G.Mesh()
     for p in case.get('source_vertices',QUAD):mesh.Vertices.Add(*p)
     for f in case.get('source_faces',[[0,1,2,3]]):mesh.Faces.AddFace(*f)
+    for ngon in case.get('source_ngons',[]):mesh.Ngons.AddNgon(G.MeshNgon.Create(S.Array[S.UInt32](ngon['vertices']),S.Array[S.UInt32](ngon['faces'])))
     mesh.Normals.ComputeNormals()
     a=R.DocObjects.ObjectAttributes();a.LayerIndex=layers[0];a.Name='Input'
-    sources.append(doc.Objects.AddMesh(mesh,a));mesh.Dispose()
+    if case.get('source_subd'):
+     subd=G.SubD.CreateFromMesh(mesh)
+     if subd is None:raise ValueError('source SubD creation failed')
+     vertex=subd.Vertices.First;vertices=[]
+     while vertex is not None:
+      vertices.append(vertex);vertex=vertex.Next
+     for index in case.get('source_corners',[]):vertices[index].Tag=G.SubDVertexTag.Corner
+     index={int(v.Id):i for i,v in enumerate(vertices)}
+     for edge in subd.Edges:
+      if sorted([index[int(edge.VertexFrom.Id)],index[int(edge.VertexTo.Id)]])in case.get('source_creases',[]):edge.Tag=G.SubDEdgeTag.Crease
+     subd.UpdateAllTagsAndSectorCoefficients()
+     if not subd.IsValid:raise ValueError('invalid source SubD')
+     sources.append(doc.Objects.AddSubD(subd,a));subd.Dispose()
+    else:sources.append(doc.Objects.AddMesh(mesh,a))
+    mesh.Dispose()
     doc.Objects.Select(sources[0])
    doc.Layers.SetCurrentLayerIndex(layers[1],True)
   finally:doc.EndUndoRecord(record)
@@ -138,17 +220,17 @@ def run(op,host,iterations,tolerance):
   command+=' _InPlane='+('Yes'if case.get('in_plane')else'No')
   if case.get('output','Mesh')=='Mesh':command+=' _WeldAngle='+str(case.get('weld_angle',180.))
   command+=' _Mode='+('MultipleFaces'if case.get('multiple')else'SingleFace')
-  command+=' _FromEdge='+('Yes'if op['case']in DRAFTS and case.get('from_edge',True)else'No'if op['case']in DRAFTS else'Yes _Pause'if case.get('edge_pick')else'No')
-  if op['case']in DRAFTS and case.get('from_edge',True)and case.get('polygon','Quad')=='Quad':command+=' _Chain='+('Yes'if case.get('chain')else'No')
+  command+=' _FromEdge='+('Yes'if op['case']in PHYSICAL_DRAFTS and case.get('from_edge',True)else'No'if op['case']in PHYSICAL_DRAFTS else'Yes _Pause'if case.get('edge_pick')else'No')
+  if op['case']in PHYSICAL_DRAFTS and case.get('from_edge',True)and case.get('polygon','Quad')=='Quad':command+=' _Chain='+('Yes'if case.get('chain')else'No')
   for point in case['points']:
    if isinstance(point,dict):command+=' _Pause'
    elif isinstance(point,str):command+=' _'+point
    else:command+=' w'+','.join(format(float(v),'.17g')for v in point)
   if case.get('cancel'):command+=' _Pause'
-  else:command+=' _Enter _Enter _Cancel _Cancel _Cancel'if op['case']in DRAFTS else' _Enter _Cancel _Cancel _Cancel'
+  else:command+=' _Enter _Enter _Cancel _Cancel _Cancel'if op['case']in PHYSICAL_DRAFTS else' _Enter _Cancel _Cancel _Cancel'
   trace={}
   def execute():
-   if op['case']in DRAFTS:
+   if op['case']in PHYSICAL_DRAFTS:
     from face_draft_input import drive
     result,observed=drive(op,case,command,host);trace.update(observed);return result
    if op['case']in CONTROLS:

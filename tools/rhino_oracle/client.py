@@ -488,6 +488,12 @@ class OracleClient:
             if request not in (draft_request(),extra_request(),corner_request(),corner_control_request(),corner_finish_request()):
                 raise OracleProtocolError('3DFace chain inputs require the exact dedicated draft sequence')
             interaction = IdlePicker()
+        if any(op.get('op')=='face_create_command' and op.get('case','').startswith('subd_draft_') for op in request.get('operations',[])):
+            from .face_create_probe import subd_draft_request
+            from .group_picking import IdlePicker
+            if request != subd_draft_request():
+                raise OracleProtocolError('SubD face inputs require the exact dedicated draft sequence')
+            interaction = IdlePicker()
         if any(op.get('op')=='reparameterize_block_command' for op in request.get('operations',[])):
             from .reparameterize_block_probe import validate
             from .reparameterize_block_picker import BlockReferencePicker

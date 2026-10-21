@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_corner_unaffected",
+      "case": "subd_extra_corner_unaffected"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_corner_both",
+      "case": "subd_extra_corner_both"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_vertex_only",
+      "case": "subd_extra_vertex_only"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_late_bridge",
+      "case": "subd_extra_late_bridge"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_standalone_disjoint",
+      "case": "subd_extra_standalone_disjoint"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_standalone_bridge",
+      "case": "subd_extra_standalone_bridge"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_ngon_source",
+      "case": "subd_extra_ngon_source"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_interior_edge",
+      "case": "subd_extra_interior_edge"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_output_mesh",
+      "case": "subd_extra_output_mesh"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_extra_mesh_source",
+      "case": "subd_extra_mesh_source"
+    }
+  ]
+}

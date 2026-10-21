@@ -40,6 +40,7 @@ impl Session {
                     .as_ref()
                     .and_then(|geometry| match &**geometry {
                         Geometry::Mesh(mesh) => Some(mesh.clone()),
+                        Geometry::SubD(subd) => subd.control_mesh().ok(),
                         _ => None,
                     })
             };
@@ -91,7 +92,7 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        let input = match self.commands.face_create_input(&words[1..]) {
+        let mut input = match self.commands.face_create_input(&words[1..]) {
             Ok(i) => i,
             Err(e) => {
                 self.push_log(format!("Error: {e}"));
@@ -105,6 +106,12 @@ impl VibocerosApp {
                 return true;
             }
         };
+        input.preferences = solver::target_preferences(
+            &self.document,
+            target,
+            input.preferences,
+            input.output_explicit,
+        );
         self.cancel_interactive_command(false);
         let group = match self.document.begin_history_group("3DFace") {
             Ok(g) => g,
@@ -117,7 +124,7 @@ impl VibocerosApp {
             .and_then(|id| self.document.object(id))
             .map(|o| o.geometry_snapshot().clone());
         let draft = {
-            match solver::Draft::new(
+            match solver::Draft::with_source(
                 input.preferences,
                 solver::source(&self.document, target),
                 input.edge,
@@ -130,7 +137,7 @@ impl VibocerosApp {
             }
         };
         self.face_create_session = Some(Session {
-            preferences: input.preferences,
+            preferences: draft.as_ref().map_or(input.preferences, |d| d.preferences),
             draft,
             target,
             original,
@@ -184,11 +191,11 @@ impl VibocerosApp {
         let message = if let Some(value) = s.value {
             format!("3DFace: enter {value}")
         } else if s.append_pick {
-            "3DFace: select a mesh to append".into()
+            "3DFace: select a mesh or SubD to append".into()
         } else if s.draft.as_ref().is_none_or(solver::Draft::waiting_edge) {
             "3DFace: select a boundary edge".into()
         } else {
-            "3DFace: pick a corner; Enter ends the chain (PolygonType FromEdge Chain InPlane WeldAngle Mode Undo)"
+            "3DFace: pick a corner; Enter ends the chain (Output PolygonType FromEdge Chain InPlane WeldAngle Mode Undo)"
                 .into()
         };
         self.push_log(message);
@@ -215,26 +222,36 @@ impl VibocerosApp {
         };
         match solver::target(&self.document, Some(id)) {
             Ok(Some(id)) => {
-                let s = self.face_create_session.as_mut().unwrap();
-                s.target = Some(id);
-                s.original = Some(
-                    self.document
-                        .object(id)
-                        .unwrap()
-                        .geometry_snapshot()
-                        .clone(),
+                let preferences = solver::target_preferences(
+                    &self.document,
+                    Some(id),
+                    self.face_create_session.as_ref().unwrap().preferences,
+                    false,
                 );
-                s.append_pick = false;
-                s.draft = if s.preferences.from_edge {
-                    None
-                } else {
-                    solver::Draft::new(
-                        s.preferences,
-                        solver::source(&self.document, Some(id)),
-                        None,
-                    )
-                    .ok()
-                };
+                match solver::Draft::with_source(
+                    preferences,
+                    solver::source(&self.document, Some(id)),
+                    None,
+                ) {
+                    Ok(draft) => {
+                        let s = self.face_create_session.as_mut().unwrap();
+                        s.target = Some(id);
+                        s.original = Some(
+                            self.document
+                                .object(id)
+                                .unwrap()
+                                .geometry_snapshot()
+                                .clone(),
+                        );
+                        s.append_pick = false;
+                        s.preferences = draft.preferences;
+                        s.draft = Some(draft);
+                    }
+                    Err(e) => {
+                        self.push_log(format!("Error: {e}"));
+                        return true;
+                    }
+                }
                 self.face_create_prompt();
             }
             Err(e) => self.push_log(format!("Error: {e}")),
@@ -252,7 +269,7 @@ impl VibocerosApp {
         let result = if let Some(draft) = s.draft.as_mut() {
             draft.pick_edge(index)
         } else {
-            solver::Draft::new(
+            solver::Draft::with_source(
                 s.preferences,
                 solver::source(&self.document, s.target),
                 Some(index),
@@ -442,7 +459,7 @@ impl VibocerosApp {
                 let result = if let Some(draft) = &mut s.draft {
                     draft.update_preferences(input.preferences)
                 } else {
-                    solver::Draft::new(
+                    solver::Draft::with_source(
                         input.preferences,
                         solver::source(&self.document, s.target),
                         None,
@@ -501,7 +518,7 @@ impl VibocerosApp {
             return false;
         };
         self.commands.accept_face_create_preferences(s.preferences);
-        let mesh = match s.draft.as_ref().map(solver::Draft::geometry).transpose() {
+        let mesh = match s.draft.as_ref().map(solver::Draft::output).transpose() {
             Ok(Some(Some(m))) => m,
             Ok(_) => return false,
             Err(e) => {
@@ -511,7 +528,7 @@ impl VibocerosApp {
         };
         let result = (|| -> Result<(), viboceros_command::CommandError> {
             self.document.begin_group_transaction(&s.group)?;
-            match solver::apply_geometry(&mut self.document, s.target, mesh) {
+            match solver::apply_output(&mut self.document, s.target, mesh) {
                 Ok(_) => {
                     self.document.commit_group_transaction(&mut s.group)?;
                     Ok(())

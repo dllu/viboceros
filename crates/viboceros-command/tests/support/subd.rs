@@ -210,7 +210,7 @@ pub fn compare(subd: &SubD, native: &Value) -> Value {
     json!({"qualified":true,"maximum_control_or_limit_point_error":maximum,"maximum_sampled_surface_error":surface_error,"surface_sampled":native.get("surface_mesh").is_some(),"vertices":points.len(),"faces":expected.len(),"edges":edges.len()})
 }
 
-fn directed(a: &TriangleMesh, b: &TriangleMesh) -> f64 {
+pub fn directed(a: &TriangleMesh, b: &TriangleMesh) -> f64 {
     let target = MeshProjectionIndex::new(b).unwrap();
     let source = MeshProjectionIndex::new(a).unwrap();
     let mut maximum = 0f64;

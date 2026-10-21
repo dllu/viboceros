@@ -110,7 +110,7 @@ fn edge_chain_scripts_retain_all_native_mesh_and_rejection_results() {
         let header = native::draft_header(value);
         let words = header.split_whitespace().collect::<Vec<_>>();
         let input = registry.face_create_input(&words[1..]).unwrap();
-        let mut draft = Draft::new(
+        let mut draft = Draft::with_source(
             input.preferences,
             viboceros_command::face_create::source(&scene.document, scene.source),
             None,

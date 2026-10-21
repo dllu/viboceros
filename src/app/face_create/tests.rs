@@ -641,3 +641,152 @@ fn subd_output_option_and_cancellation_preserve_the_redo_branch() {
     ));
     assert_eq!(app.document.redo_label(), None);
 }
+
+#[path = "../../../crates/viboceros-command/tests/support/subd_append.rs"]
+mod append_native;
+#[test]
+fn subd_append_getters_match_native_objects_boundary_clicks_and_history() {
+    for row in append_native::rows() {
+        let value = &row["value"];
+        let mut scene = append_native::setup(value);
+        let mut app = test_app();
+        std::mem::swap(&mut scene.document, &mut app.document);
+        enter(&mut app, &append_native::header(value));
+        for action in value["input"]["points"].as_array().unwrap() {
+            if let Some(point) = action.get("edge_pick") {
+                let view = crate::viewport::Viewport::new(crate::viewport::ViewKind::Top);
+                let rect = egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(800., 600.));
+                let pointer = view.project(append_native::pick(point), rect).unwrap();
+                let picks = view.pick_mesh_boundary_edges(
+                    pointer,
+                    rect,
+                    app.face_boundary_edges().unwrap(),
+                );
+                assert!(!picks.is_empty(), "{}", row["id"]);
+                assert!(app.handle_viewport_action(crate::viewport::ViewportOutput {
+                    mesh_boundary_edge_click: Some(picks),
+                    ..Default::default()
+                }));
+            } else if let Some(word) = action.as_str() {
+                enter(&mut app, if word == "Enter" { "" } else { word });
+            } else {
+                enter(
+                    &mut app,
+                    &action
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|x| x.as_f64().unwrap().to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                );
+            }
+            if app.face_create_session.is_some() {
+                assert_eq!(
+                    app.document.objects().count(),
+                    value["before"].as_array().unwrap().len()
+                );
+                if let Some(id) = scene.source {
+                    assert!(
+                        scene.original.as_ref().unwrap().shares_storage_with(
+                            app.document.object(id).unwrap().geometry_snapshot()
+                        )
+                    );
+                }
+            }
+        }
+        if value["input"]["cancel"] == true {
+            while app.face_create_session.is_some() {
+                assert!(app.cancel_face_corner());
+            }
+        } else {
+            for _ in 0..3 {
+                if app.face_create_session.is_some() {
+                    enter(&mut app, "");
+                }
+            }
+        }
+        assert!(
+            app.face_create_session.is_none(),
+            "{} {:?}",
+            row["id"],
+            app.command_log
+        );
+        std::mem::swap(&mut scene.document, &mut app.document);
+        let check = append_native::check(&scene, value, "after_script");
+        if value["input"]["cancel"] != true {
+            assert_eq!(scene.document.undo_label(), Some("3DFace"));
+            scene.document.undo().unwrap();
+            append_native::check(&scene, value, "undo");
+            scene.document.redo().unwrap();
+            assert_eq!(append_native::check(&scene, value, "redo"), check);
+        } else {
+            assert_eq!(scene.document.undo_label(), None);
+        }
+        println!(
+            "SUBD_APPEND_GETTER {}",
+            serde_json::json!({"id":row["id"],"check":check,"grouped_history":true})
+        );
+    }
+}
+
+#[test]
+fn subd_append_targets_infer_output_and_allow_a_family_switch_before_corners() {
+    let rows = append_native::rows();
+    for mode in ["preselected", "picker", "explicit", "switch"] {
+        let value = &rows
+            .iter()
+            .find(|r| {
+                r["id"]
+                    == if mode == "switch" {
+                        "subd_extra_output_mesh"
+                    } else {
+                        "subd_append_flat"
+                    }
+            })
+            .unwrap()["value"];
+        let mut scene = append_native::setup(value);
+        let mut app = test_app();
+        std::mem::swap(&mut scene.document, &mut app.document);
+        let id = scene.source.unwrap();
+        if mode != "preselected" {
+            app.document
+                .select_objects_direct([id], viboceros_document::SelectionMode::Remove)
+                .unwrap();
+        }
+        if mode == "explicit" {
+            enter(&mut app, &format!("3DFace Append={id}"));
+        } else {
+            enter(&mut app, "3DFace");
+        }
+        if mode == "picker" || mode == "switch" {
+            enter(&mut app, "Append");
+            assert!(app.picking_face_append());
+            assert!(app.pick_face_append(Some(id)));
+        }
+        assert_eq!(
+            app.face_create_session.as_ref().unwrap().preferences.output,
+            solver::Output::SubD
+        );
+        if mode == "switch" {
+            enter(&mut app, "Output=Mesh");
+        }
+        for point in value["input"]["points"].as_array().unwrap() {
+            enter(
+                &mut app,
+                &point
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|x| x.as_f64().unwrap().to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            );
+        }
+        assert!(app.face_create_session.is_none(), "{:?}", app.command_log);
+        std::mem::swap(&mut scene.document, &mut app.document);
+        append_native::check(&scene, value, "after_script");
+        scene.document.undo().unwrap();
+        append_native::check(&scene, value, "undo");
+    }
+}

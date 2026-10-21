@@ -10409,7 +10409,9 @@ impl eframe::App for VibocerosApp {
         } else {
             self.zoom_target
         };
-        let object_filter = if self.picking_mesh_polyline() || self.picking_face_append() {
+        let object_filter = if self.picking_face_append() {
+            Some(viboceros_command::ObjectSelectionFilter::FaceAppend)
+        } else if self.picking_mesh_polyline() {
             Some(viboceros_command::ObjectSelectionFilter::Mesh)
         } else if end_analysis_picking || self.surface_path_prompt.is_some() {
             Some(viboceros_command::ObjectSelectionFilter::Curves)
