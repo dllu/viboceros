@@ -1,0 +1,1461 @@
+{
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "native_target": "public MeshPatch command",
+  "captures": 48,
+  "unique_scenes": 37,
+  "qualified_unique_scenes": 31,
+  "unqualified_scenes": [
+    "shared_endpoint",
+    "overlap",
+    "self_cross",
+    "cross_h_reverse",
+    "two_crossings",
+    "cross_seed_axis"
+  ],
+  "maximum_qualified_sample_difference": 3.7345763888702946e-14,
+  "groups": {
+    "crossings": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 11,
+        "qualified_recipes": 8,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "overlap",
+          "self_cross"
+        ],
+        "cases": [
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_diagonals",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 2.0152543263816605
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 3.5355339059327378
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 9,
+            "id": "point_at_crossing",
+            "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 1.4043333874306805e-15
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 0.3858718165706448,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.375
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "native_faces": 6,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.9805806756909203
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 10,
+            "id": "hole_cut",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_faces": 12,
+            "native_vertices": 10,
+            "qualified": true,
+            "sdk_command_difference": 1.3506446028928519e-15
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_3d_reverse",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_lifted",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_sloped",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 1.256757435759363
+          }
+        ]
+      },
+      "command": {
+        "recipes": 11,
+        "qualified_recipes": 8,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "overlap",
+          "self_cross"
+        ],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_diagonals",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_at_crossing",
+            "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 0.3858718165706448,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "hole_cut",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_reverse",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_lifted",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_sloped",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 11,
+        "qualified_recipes": 8,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "overlap",
+          "self_cross"
+        ],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_diagonals",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_at_crossing",
+            "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 0.3858718165706448,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "hole_cut",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_reverse",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_lifted",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_sloped",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      }
+    },
+    "repeat_and_variants": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 21,
+        "qualified_recipes": 16,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "overlap",
+          "self_cross",
+          "cross_h_reverse",
+          "two_crossings"
+        ],
+        "cases": [
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_diagonals",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 2.0152543263816605
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 3.5355339059327378
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 9,
+            "id": "point_at_crossing",
+            "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 1.4043333874306805e-15
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 0.3858718165706448,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.375
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "native_faces": 6,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.9805806756909203
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 10,
+            "id": "hole_cut",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_faces": 12,
+            "native_vertices": 10,
+            "qualified": true,
+            "sdk_command_difference": 1.3506446028928519e-15
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_3d_reverse",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_lifted",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_sloped",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 1.256757435759363
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_v_reverse",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8696263565463045
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_h_reverse",
+            "maximum_bidirectional_sample_error": 0.8696263565463045,
+            "native_faces": 8,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.8696263565463045
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_both_reverse",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_v_first",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_asymmetric",
+            "maximum_bidirectional_sample_error": 2.0471501066083613e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.6246950475544242
+          },
+          {
+            "actual_faces": 13,
+            "actual_vertices": 10,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 2.1868857395626282e-15
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 9,
+            "id": "cross_seed",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 3.1401849173675502e-15
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "cross_untrimmed",
+            "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 3.072250108791504e-14
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 10,
+            "id": "hole_cut_reverse",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_faces": 12,
+            "native_vertices": 10,
+            "qualified": true,
+            "sdk_command_difference": 1.3506446028928519e-15
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 10,
+            "id": "hole_cut_raised",
+            "maximum_bidirectional_sample_error": 1.2560739669470201e-15,
+            "native_faces": 12,
+            "native_vertices": 10,
+            "qualified": true,
+            "sdk_command_difference": 1.2560739669470201e-15
+          }
+        ]
+      },
+      "command": {
+        "recipes": 21,
+        "qualified_recipes": 16,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "overlap",
+          "self_cross",
+          "cross_h_reverse",
+          "two_crossings"
+        ],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_diagonals",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_at_crossing",
+            "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 0.3858718165706448,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "hole_cut",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_reverse",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_lifted",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_sloped",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_v_reverse",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "cross_h_reverse",
+            "maximum_bidirectional_sample_error": 0.8696263565463045,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_both_reverse",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_v_first",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_asymmetric",
+            "maximum_bidirectional_sample_error": 2.0471501066083613e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_untrimmed",
+            "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "hole_cut_reverse",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "hole_cut_raised",
+            "maximum_bidirectional_sample_error": 1.2560739669470201e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 21,
+        "qualified_recipes": 16,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "overlap",
+          "self_cross",
+          "cross_h_reverse",
+          "two_crossings"
+        ],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_diagonals",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_at_crossing",
+            "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 0.3858718165706448,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "hole_cut",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_reverse",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_lifted",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_sloped",
+            "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_v_reverse",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "cross_h_reverse",
+            "maximum_bidirectional_sample_error": 0.8696263565463045,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_both_reverse",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_v_first",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_asymmetric",
+            "maximum_bidirectional_sample_error": 2.0471501066083613e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_untrimmed",
+            "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "hole_cut_reverse",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "hole_cut_raised",
+            "maximum_bidirectional_sample_error": 1.2560739669470201e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      }
+    },
+    "untrimmed": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 9,
+        "qualified_recipes": 9,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "cross_axes_untrimmed",
+            "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 3.072250108791504e-14
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "cross_diagonals_untrimmed",
+            "maximum_bidirectional_sample_error": 3.0757786665920847e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 3.072250108791504e-14
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "shared_endpoint_untrimmed",
+            "maximum_bidirectional_sample_error": 3.7327276539370134e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 2.657703254624014e-14
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "overlap_untrimmed",
+            "maximum_bidirectional_sample_error": 3.7345763888702946e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 2.9823698573254374e-14
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "self_cross_untrimmed",
+            "maximum_bidirectional_sample_error": 3.022927516559128e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 2.5232123460381468e-14
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "cross_3d_untrimmed",
+            "maximum_bidirectional_sample_error": 3.200216685294657e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "cross_3d_reverse_untrimmed",
+            "maximum_bidirectional_sample_error": 3.072267767741298e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "cross_lifted_untrimmed",
+            "maximum_bidirectional_sample_error": 1.934523798513661e-14,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 1.9392568628436742e-14
+          },
+          {
+            "actual_faces": 18,
+            "actual_vertices": 12,
+            "id": "cross_sloped_untrimmed",
+            "maximum_bidirectional_sample_error": 3.8778423131653425e-15,
+            "native_faces": 18,
+            "native_vertices": 12,
+            "qualified": true,
+            "sdk_command_difference": 3.8778423131653425e-15
+          }
+        ]
+      },
+      "command": {
+        "recipes": 9,
+        "qualified_recipes": 9,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes_untrimmed",
+            "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_diagonals_untrimmed",
+            "maximum_bidirectional_sample_error": 3.0757786665920847e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "shared_endpoint_untrimmed",
+            "maximum_bidirectional_sample_error": 3.7327276539370134e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_untrimmed",
+            "maximum_bidirectional_sample_error": 3.7345763888702946e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "self_cross_untrimmed",
+            "maximum_bidirectional_sample_error": 3.022927516559128e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_untrimmed",
+            "maximum_bidirectional_sample_error": 3.200216685294657e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_reverse_untrimmed",
+            "maximum_bidirectional_sample_error": 3.072267767741298e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_lifted_untrimmed",
+            "maximum_bidirectional_sample_error": 1.934523798513661e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_sloped_untrimmed",
+            "maximum_bidirectional_sample_error": 3.8778423131653425e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 9,
+        "qualified_recipes": 9,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes_untrimmed",
+            "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_diagonals_untrimmed",
+            "maximum_bidirectional_sample_error": 3.0757786665920847e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "shared_endpoint_untrimmed",
+            "maximum_bidirectional_sample_error": 3.7327276539370134e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_untrimmed",
+            "maximum_bidirectional_sample_error": 3.7345763888702946e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "self_cross_untrimmed",
+            "maximum_bidirectional_sample_error": 3.022927516559128e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_untrimmed",
+            "maximum_bidirectional_sample_error": 3.200216685294657e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_reverse_untrimmed",
+            "maximum_bidirectional_sample_error": 3.072267767741298e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_lifted_untrimmed",
+            "maximum_bidirectional_sample_error": 1.934523798513661e-14,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_sloped_untrimmed",
+            "maximum_bidirectional_sample_error": 3.8778423131653425e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      }
+    },
+    "seeded": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 7,
+        "qualified_recipes": 6,
+        "unqualified_recipes": [
+          "cross_seed_axis"
+        ],
+        "cases": [
+          {
+            "actual_faces": 12,
+            "actual_vertices": 9,
+            "id": "cross_seed_top",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 3.1401849173675502e-15
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "cross_seed_bottom",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378436
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 9,
+            "id": "cross_seed_left",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.9013878188659973
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 9,
+            "id": "cross_seed_outside",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 10,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.0,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 0.8320502943378437
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 9,
+            "id": "cross_seed_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872
+          },
+          {
+            "actual_faces": 14,
+            "actual_vertices": 10,
+            "id": "cross_seed_cloud",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 14,
+            "native_vertices": 10,
+            "qualified": true,
+            "sdk_command_difference": 1.3340734093775516e-15
+          }
+        ]
+      },
+      "command": {
+        "recipes": 7,
+        "qualified_recipes": 6,
+        "unqualified_recipes": [
+          "cross_seed_axis"
+        ],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_top",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_bottom",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_left",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_outside",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.0,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_cloud",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 7,
+        "qualified_recipes": 6,
+        "unqualified_recipes": [
+          "cross_seed_axis"
+        ],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_top",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_bottom",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_left",
+            "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_outside",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.0,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_cloud",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      }
+    }
+  },
+  "guarantees": [
+    "Every capture is replayed in geometry, scripted command and interactive getter tests; unresolved results remain explicit.",
+    "Source storage, names, layers, selection and grouped Undo/Redo match the captured command even for geometry gaps.",
+    "Earlier guide constraints take priority without generated intersection vertices. Point seeds and recovered parts of crossing holes participate in trimming.",
+    "Constraint walks and recovered edges have a cumulative 4000000 work limit; input and perimeter records remain capped at 100000."
+  ],
+  "limits": [
+    "Native SDK and command meshes can differ for identical inputs. Command qualification does not imply SDK parity; every SDK/command sample difference is recorded.",
+    "Shared endpoints, overlapping or self-crossing guides, some direction changes, multiple crossings and points on guides retain measured compatibility gaps.",
+    "The 1e-6 gate uses bidirectional barycentric triangle samples and vertex/face counts; it does not certify universal topology or native face ordering.",
+    "General curved guides, folded or periodic charts, starting B-rep trims and native performance need further qualification."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/mesh/patch.rs": "e376c27ade78b4cdd9f0f067e5566b088797b4308e25fef04285877007d0411a",
+    "crates/viboceros-geometry/src/mesh/patch/tests.rs": "b7c44410dfebbd44acba52ca0612535d1363304e7276ab06ff69f31022df55ac",
+    "crates/viboceros-geometry/src/mesh/patch/constraints.rs": "1a32dbaf58e45b9578353adfd8efe8acfe90cf8a9d5cfaccf5055b238482515e",
+    "crates/viboceros-geometry/src/curve/polyline.rs": "af769a36f117448e43eb4f0c435dd908e1532f95b5e2779ca3e5b095d1fc6676",
+    "crates/viboceros-geometry/src/curve/polyline/angle.rs": "1332c312e6b38cc3e1795d364060fa7e417c7c7c203a449d0adc2681290f246d",
+    "crates/viboceros-geometry/src/mesh.rs": "ea0646902ff93b8d808afa2cdb54c5f27cee91985265e831016077649b015183",
+    "crates/viboceros-geometry/src/lib.rs": "5f4a728dc9158efc5a38d6790914de5825bba95fbac746861b40d6a409720a6a",
+    "crates/viboceros-geometry/src/error.rs": "ac102875d83beac9257ebbb5487de17d145321bcdee1c2278f4e4052f5d8742d",
+    "crates/viboceros-geometry/src/point_projection.rs": "f297f74f124a39cb6dd80abc2abe37cb16f302d23cc71f464004bb44c54a4556",
+    "crates/viboceros-geometry/src/point_projection/fit.rs": "ff9b24930ffdd88aa820d62037fc7c435aeaaa32aeca15040d3bd634e11cba91",
+    "crates/viboceros-geometry/src/point_projection/fit/normalized.rs": "e94962bae969e4480a3032f02edf9ff5c7ec97a4da64e335f352d2447094e9f7",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/bezier.rs": "fb5b7ce4ec1dbf70c1d5191906bc7fa69ea830f7f96a5e7a10eb99d194f0f6b0",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
+    "crates/viboceros-command/src/lib.rs": "dad13bc4409c9a88229ba8ba84eb503ed62009ef715530b5b37ccd5bedf42515",
+    "crates/viboceros-command/src/object_selection.rs": "d1cefdd0da1a26943f705b0df33764f5b210bc4e34286e5428bdbf43598a085b",
+    "crates/viboceros-command/src/mesh_patch.rs": "1d0c35fa81f30b6f47f1a1a9c5f5dad1c486cab860f5fb8cfa400172b7376653",
+    "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",
+    "crates/viboceros-command/tests/mesh_patch_native.rs": "c8a2d4eb577f6eb1c36b0200a9917319a8ea74bbe9504dece968db6216da3e8e",
+    "crates/viboceros-command/tests/support/mesh_patch.rs": "95a9aed3287e7c46bd86498511ce914bcc818efaef3e4f48c38c8ef1231051a2",
+    "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
+    "src/app/object_selection.rs": "6a478969808c4ec6a08ff406425a27ee7b50316b25efd9a90ab7c3988da751ad",
+    "src/app/transform_sources.rs": "65841394f479b7bd99bbbaf9c7a69ab3242b1cf0c42a98edc8f47fa01057fff2",
+    "src/app/object_selection/mesh_patch.rs": "aab85e841a3339466c4d77b2f60c440efeffb26dde8a99a522d866e80d32eacb",
+    "src/app/object_selection/mesh_patch/tests.rs": "43896f0e68b5b38684dccd878cf35d8fba9f20377af2c8bcd61c3b91bbcde96e",
+    "tools/rhino_oracle/mesh_patch_probe.py": "6230259024281c068db4a456b57a03fe1512c8d89a3342d04c602764dfcd98b9",
+    "tools/rhino_oracle/generate_mesh_patch.py": "a60d07e832cbd919efbf3b143f730e62d4af23d86bc7684af81e2f831ccb0f4c",
+    "tools/rhino_oracle/report_mesh_patch.py": "6f300824e10a5fe1949a224d222492b9b6427394ad9622a811ecd4bf0d8dee4c",
+    "tools/rhino_oracle/test_mesh_patch.py": "94d38cd6581101eafbe686ab060c33b4f9152651c6de3b797b967c3c1a945d52",
+    "tools/rhino_oracle/fixtures/mesh_patch.json": "2a0884f05553efd4083b20f97dc1b985a4870fe644de8c09961911e25ad85400",
+    "tools/rhino_oracle/observations/mesh_patch.json": "79f352d68c46ab33e7842022ec0b14db87530d471915ef30837f9c8fe9e507b9",
+    "crates/viboceros-command/src/mesh_patch/tests.rs": "d76fee8b9d14f8ea618ef8078d81bd0b4d91a613e9f28a1f246035fe4e84140b",
+    "tools/rhino_oracle/client.py": "68b9aadbb31d4a5efed443252e29ae2d6dc50bc7266a1e33a4e05a579fcfcb86",
+    "tools/rhino_oracle/rhino_worker.py": "6c2f2a2a14911049981650181aba95641d18e692d308babf54bf651c05c753db",
+    "tools/rhino_oracle/structural_sdk.py": "8c4beb95ddb04a7084745bac5df4f84fd3740beb6b3e66e2bdc5bf32c1022d7b",
+    "tools/rhino_oracle/generate_mesh_patch_crossings.py": "6bfb246ba15a2eb8e2761ed58df9b15a6a3dced4be6c932d83008854842a05a2",
+    "tools/rhino_oracle/report_mesh_patch_crossings.py": "7f5acdd56b0c723df72218414e4b9c241cb1c8fd19c668a04b02b823d405d8b0",
+    "tools/rhino_oracle/test_mesh_patch_crossings.py": "2ac15fc163e6ee30d755c8bbd9f6d8535a0efb2b634c557662ba87695aab021c",
+    "tools/rhino_oracle/fixtures/mesh_patch_crossings.json": "e997bc5659bcbb41d5543cb1e883fc1b1f46b088af2611592585f5e2559cb1a7",
+    "tools/rhino_oracle/observations/mesh_patch_crossings.json": "28d346aaf5e1622a72b497ef97436f93cd214ccac1dcd8458c2b212f47988ec5",
+    "tools/rhino_oracle/fixtures/mesh_patch_crossings_verify.json": "d1857eda44c89cecc021c617f62a719fe2dd460d0795d26469f772ace461f93f",
+    "tools/rhino_oracle/observations/mesh_patch_crossings_verify.json": "6fd0c72285efa8b7fcf5f22a0f34029ff7fe0a3ae435f8c7bb49ade6fe3b5be4",
+    "tools/rhino_oracle/fixtures/mesh_patch_crossings_untrimmed.json": "107d529a311711b847d053aeb399921ea1a5b6c15f26f14edc521ca55d180a70",
+    "tools/rhino_oracle/observations/mesh_patch_crossings_untrimmed.json": "0422d9301d70141f6c3ad47f886a74acb485ce3eedf8f5d30f2588caf667b3ba",
+    "tools/rhino_oracle/fixtures/mesh_patch_crossings_seeded.json": "7d81cd98fa5b38e51731bb1f6916f9d05b3455606af03654a17188358e09279a",
+    "tools/rhino_oracle/observations/mesh_patch_crossings_seeded.json": "c990312b5ab9e2757a636b05d1fb4efdb9b74fb1326c0160c9f95d1800cd5767"
+  }
+}

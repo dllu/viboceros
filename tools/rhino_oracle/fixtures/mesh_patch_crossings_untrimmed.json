@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_axes_untrimmed",
+      "case": "cross_axes_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_diagonals_untrimmed",
+      "case": "cross_diagonals_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "shared_endpoint_untrimmed",
+      "case": "shared_endpoint_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_untrimmed",
+      "case": "overlap_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "self_cross_untrimmed",
+      "case": "self_cross_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_3d_untrimmed",
+      "case": "cross_3d_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_3d_reverse_untrimmed",
+      "case": "cross_3d_reverse_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_lifted_untrimmed",
+      "case": "cross_lifted_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_sloped_untrimmed",
+      "case": "cross_sloped_untrimmed"
+    }
+  ]
+}

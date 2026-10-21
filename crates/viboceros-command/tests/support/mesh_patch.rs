@@ -12,16 +12,67 @@ pub struct Scene {
     pub parents: Vec<(ObjectId, GeometrySnapshot)>,
 }
 pub fn rows() -> Vec<(Value, Value)> {
-    let q: Value = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/fixtures/mesh_patch.json"
-    ))
-    .unwrap();
-    let r: Value = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/observations/mesh_patch.json"
-    ))
-    .unwrap();
-    assert_eq!(q["operations"].as_array().unwrap().len(), 21);
-    assert_eq!(r["results"].as_array().unwrap().len(), 21);
+    captured(
+        include_str!("../../../../tools/rhino_oracle/fixtures/mesh_patch.json"),
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_patch.json"),
+        21,
+    )
+}
+pub fn crossing_groups() -> Vec<(&'static str, Vec<(Value, Value)>)> {
+    vec![
+        (
+            "CROSSING",
+            captured(
+                include_str!("../../../../tools/rhino_oracle/fixtures/mesh_patch_crossings.json"),
+                include_str!(
+                    "../../../../tools/rhino_oracle/observations/mesh_patch_crossings.json"
+                ),
+                11,
+            ),
+        ),
+        (
+            "VERIFY",
+            captured(
+                include_str!(
+                    "../../../../tools/rhino_oracle/fixtures/mesh_patch_crossings_verify.json"
+                ),
+                include_str!(
+                    "../../../../tools/rhino_oracle/observations/mesh_patch_crossings_verify.json"
+                ),
+                21,
+            ),
+        ),
+        (
+            "UNTRIMMED",
+            captured(
+                include_str!(
+                    "../../../../tools/rhino_oracle/fixtures/mesh_patch_crossings_untrimmed.json"
+                ),
+                include_str!(
+                    "../../../../tools/rhino_oracle/observations/mesh_patch_crossings_untrimmed.json"
+                ),
+                9,
+            ),
+        ),
+        (
+            "SEEDED",
+            captured(
+                include_str!(
+                    "../../../../tools/rhino_oracle/fixtures/mesh_patch_crossings_seeded.json"
+                ),
+                include_str!(
+                    "../../../../tools/rhino_oracle/observations/mesh_patch_crossings_seeded.json"
+                ),
+                7,
+            ),
+        ),
+    ]
+}
+fn captured(q: &str, r: &str, count: usize) -> Vec<(Value, Value)> {
+    let q: Value = serde_json::from_str(q).unwrap();
+    let r: Value = serde_json::from_str(r).unwrap();
+    assert_eq!(q["operations"].as_array().unwrap().len(), count);
+    assert_eq!(r["results"].as_array().unwrap().len(), count);
     q["operations"]
         .as_array()
         .unwrap()
@@ -33,6 +84,24 @@ pub fn rows() -> Vec<(Value, Value)> {
             (op.clone(), r["value"].clone())
         })
         .collect()
+}
+pub fn assert_known_gaps(failures: &[String]) {
+    let known = [
+        "shared_endpoint",
+        "overlap",
+        "self_cross",
+        "cross_h_reverse",
+        "two_crossings",
+        "cross_seed_axis",
+    ];
+    let unexpected = failures
+        .iter()
+        .filter(|id| !known.contains(&id.as_str()))
+        .collect::<Vec<_>>();
+    assert!(
+        unexpected.is_empty(),
+        "new MeshPatch compatibility gaps: {unexpected:?}"
+    );
 }
 fn point(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[Real; 3]>(v.clone()).unwrap()).unwrap()
@@ -223,6 +292,30 @@ pub fn check(
     v: &Value,
     phase: &str,
 ) -> Real {
+    let result = compare(doc, parents, v, phase);
+    assert!(result.counts_match);
+    result.error
+}
+#[derive(Default)]
+pub struct Comparison {
+    pub error: Real,
+    pub counts_match: bool,
+}
+impl Comparison {
+    pub fn merge(&mut self, other: Self) {
+        self.error = self.error.max(other.error);
+        self.counts_match &= other.counts_match;
+    }
+    pub fn qualified(&self) -> bool {
+        self.error < 1e-6 && self.counts_match
+    }
+}
+pub fn compare(
+    doc: &Document,
+    parents: &[(ObjectId, GeometrySnapshot)],
+    v: &Value,
+    phase: &str,
+) -> Comparison {
     let expected = v[phase].as_array().unwrap();
     assert_eq!(doc.objects().count(), expected.len());
     let native_sources = expected
@@ -246,20 +339,24 @@ pub fn check(
         .filter(|o| o["role"] == "output")
         .collect::<Vec<_>>();
     assert_eq!(outputs.len(), native_outputs.len());
-    let mut error: Real = 0.;
+    let mut result = Comparison {
+        error: 0.,
+        counts_match: true,
+    };
     for (o, native) in outputs.into_iter().zip(native_outputs) {
         attributes(doc, o.id(), native);
         let Geometry::Mesh(actual) = o.geometry() else {
             panic!("mesh output required")
         };
         let expected = mesh(&native["mesh"]);
-        assert_eq!(actual.vertices().len(), expected.vertices().len());
-        assert_eq!(actual.faces().len(), expected.faces().len());
-        error = error
+        result.counts_match &= actual.vertices().len() == expected.vertices().len()
+            && actual.faces().len() == expected.faces().len();
+        result.error = result
+            .error
             .max(directed(actual, &expected))
             .max(directed(&expected, actual));
     }
-    error
+    result
 }
 fn attributes(doc: &Document, id: ObjectId, native: &Value) {
     let o = doc.object(id).unwrap();

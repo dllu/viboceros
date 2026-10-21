@@ -65,7 +65,7 @@ fn holes_winding_scales_and_remote_origins_preserve_the_trimmed_region() {
     }
 }
 #[test]
-fn conflicting_sheets_crossing_guides_and_excessive_inputs_are_rejected() {
+fn conflicting_sheets_open_boundaries_and_excessive_inputs_are_rejected() {
     let points = [
         p(-10., -10., 0.),
         p(10., -10., 0.),
@@ -88,16 +88,6 @@ fn conflicting_sheets_crossing_guides_and_excessive_inputs_are_rejected() {
         Polyline3::try_new(vec![p(1., 1., 0.), p(4., 3., 0.)], Tolerance::DEFAULT).unwrap(),
         Polyline3::try_new(vec![p(1., 3., 0.), p(4., 1., 0.)], Tolerance::DEFAULT).unwrap(),
     ];
-    assert!(matches!(
-        TriangleMesh::try_patch(
-            &points[..4],
-            &guides,
-            &[],
-            MeshPatchOptions::default(),
-            Tolerance::DEFAULT
-        ),
-        Err(GeometryError::MeshPatchCrossingConstraints)
-    ));
     assert!(matches!(
         TriangleMesh::try_patch(
             &vec![p(0., 0., 0.); MAX_MESH_PATCH_POINTS + 1],
@@ -256,4 +246,166 @@ fn captured_mesh_patch_loci_are_compared_without_loosening_the_model_gate() {
         failures.is_empty(),
         "unqualified native mesh patches: {failures:?}"
     );
+}
+
+#[test]
+fn captured_crossing_guides_compare_the_command_and_sdk_separately() {
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/mesh_patch_crossings.json"
+    ))
+    .unwrap();
+    let failures = crossing_replay(&response, "MESH_PATCH_CROSSING_GEOMETRY");
+    assert_known_crossing_gaps(&failures);
+}
+#[test]
+fn captured_untrimmed_crossing_guides_keep_source_vertices_and_input_priority() {
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/mesh_patch_crossings_untrimmed.json"
+    ))
+    .unwrap();
+    let failures = crossing_replay(&response, "MESH_PATCH_UNTRIMMED_GEOMETRY");
+    assert!(
+        failures.is_empty(),
+        "Unqualified untrimmed crossings: {failures:?}"
+    );
+}
+#[test]
+fn captured_seeded_crossings_retain_point_regions() {
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/mesh_patch_crossings_seeded.json"
+    ))
+    .unwrap();
+    let failures = crossing_replay(&response, "MESH_PATCH_SEEDED_GEOMETRY");
+    assert_known_crossing_gaps(&failures);
+}
+#[test]
+fn repeated_native_crossings_and_direction_variants_remain_visible() {
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/mesh_patch_crossings_verify.json"
+    ))
+    .unwrap();
+    let failures = crossing_replay(&response, "MESH_PATCH_VERIFY_GEOMETRY");
+    assert_known_crossing_gaps(&failures);
+}
+fn assert_known_crossing_gaps(failures: &[Value]) {
+    let known = [
+        "shared_endpoint",
+        "overlap",
+        "self_cross",
+        "cross_h_reverse",
+        "two_crossings",
+        "cross_seed_axis",
+    ];
+    let unexpected = failures
+        .iter()
+        .filter(|id| !known.contains(&id.as_str().unwrap()))
+        .collect::<Vec<_>>();
+    assert!(
+        unexpected.is_empty(),
+        "new MeshPatch compatibility gaps: {unexpected:?}"
+    );
+}
+#[test]
+fn explicit_outer_boundaries_remain_hard_constraints() {
+    let outer = Polyline3::try_new(
+        vec![
+            p(-1., -1., 0.),
+            p(1., -1., 0.),
+            p(1., 1., 0.),
+            p(-1., 1., 0.),
+            p(-1., -1., 0.),
+        ],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let guide =
+        Polyline3::try_new(vec![p(-2., 0., 0.), p(2., 0., 0.)], Tolerance::DEFAULT).unwrap();
+    assert!(matches!(
+        TriangleMesh::try_patch(
+            &[],
+            &[guide],
+            &[],
+            MeshPatchOptions {
+                outer_boundary: Some(&outer),
+                ..Default::default()
+            },
+            Tolerance::DEFAULT
+        ),
+        Err(GeometryError::MeshPatchCrossingConstraints)
+    ));
+}
+#[test]
+fn repeated_long_constraints_exhaust_work_before_admission() {
+    let points = (0..60)
+        .flat_map(|x| (0..60).map(move |y| p(x as Real, y as Real, 0.)))
+        .collect::<Vec<_>>();
+    let diagonal =
+        Polyline3::try_new(vec![p(0., 0., 0.), p(59., 59., 0.)], Tolerance::DEFAULT).unwrap();
+    let guides = vec![diagonal; 35_000];
+    assert!(points.len() + 2 * guides.len() < MAX_MESH_PATCH_POINTS);
+    assert!(matches!(
+        TriangleMesh::try_patch(
+            &points,
+            &guides,
+            &[],
+            MeshPatchOptions {
+                trim_back: false,
+                ..Default::default()
+            },
+            Tolerance::DEFAULT
+        ),
+        Err(GeometryError::MeshPatchLimit)
+    ));
+}
+fn crossing_replay(response: &Value, prefix: &str) -> Vec<Value> {
+    let mut failures = Vec::new();
+    for row in response["results"].as_array().unwrap() {
+        let value = &row["value"];
+        let input = &value["input"];
+        let points = input["points"]
+            .as_array()
+            .map(|v| v.iter().map(point).collect::<Vec<_>>())
+            .unwrap_or_default();
+        let guides = lines(&input["curves"]);
+        let holes = lines(&input["holes"]);
+        let expected = mesh(
+            &value["after_script"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|o| o["role"] == "output")
+                .unwrap()["mesh"],
+        );
+        let sdk = mesh(&value["sdk"]);
+        let native_gap = sampled_error(&expected, &sdk).max(sampled_error(&sdk, &expected));
+        let options = MeshPatchOptions {
+            trim_back: input["trimback"].as_bool().unwrap_or(true),
+            divisions: input["divisions"].as_u64().unwrap_or(1) as usize,
+            ..Default::default()
+        };
+        match TriangleMesh::try_patch(&points, &guides, &holes, options, Tolerance::DEFAULT) {
+            Err(e) => {
+                println!(
+                    "{prefix} {}",
+                    serde_json::json!({"id":row["id"],"qualified":false,"error":e.to_string(),"sdk_command_difference":native_gap})
+                );
+                failures.push(row["id"].clone());
+            }
+            Ok(actual) => {
+                let error =
+                    sampled_error(&actual, &expected).max(sampled_error(&expected, &actual));
+                let qualified = error < 1e-6
+                    && actual.faces().len() == expected.faces().len()
+                    && actual.vertices().len() == expected.vertices().len();
+                println!(
+                    "{prefix} {}",
+                    serde_json::json!({"id":row["id"],"qualified":qualified,"maximum_bidirectional_sample_error":error,"sdk_command_difference":native_gap,"actual_faces":actual.faces().len(),"native_faces":expected.faces().len(),"actual_vertices":actual.vertices().len(),"native_vertices":expected.vertices().len()})
+                );
+                if !qualified {
+                    failures.push(row["id"].clone());
+                }
+            }
+        }
+    }
+    failures
 }

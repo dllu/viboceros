@@ -24,11 +24,63 @@ CASES['circle']=dict(circle=[0.,0.,0.,3.])
 CASES['cloud']=dict(deepcopy(CASES['raised']),cloud=True)
 CASES['surface']=dict(points=[[1.,1.,.1],[4.,1.,.4],[4.,3.,1.2],[1.,3.,.3],[2.,2.,.4]],surface=[[0.,0.,0.],[5.,0.,0.],[5.,4.,2.],[0.,4.,0.]],trimback=False,divisions=2)
 
+_OUTER=[[-4.,-3.,0.],[4.,-3.,0.],[4.,3.,0.],[-4.,3.,0.],[-4.,-3.,0.]]
+_AXES=[[[-3.,0.,0.],[3.,0.,0.]],[[0.,-2.,0.],[0.,2.,0.]]]
+CROSSING_CASES={
+    'cross_axes':dict(curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+    'cross_diagonals':dict(curves=[deepcopy(_OUTER),[[-3.,-2.,0.],[3.,2.,0.]],[[-3.,2.,0.],[3.,-2.,0.]]]),
+    'shared_endpoint':dict(curves=[deepcopy(_OUTER),[[-3.,0.,0.],[0.,0.,0.]],[[0.,0.,0.],[0.,2.,0.]],[[0.,0.,0.],[3.,-1.,0.]]]),
+    'point_at_crossing':dict(points=[[0.,0.,0.]],curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+    'overlap':dict(curves=[deepcopy(_OUTER),[[-3.,0.,0.],[1.,0.,0.]],[[-1.,0.,0.],[3.,0.,0.]]]),
+    'self_cross':dict(curves=[deepcopy(_OUTER),[[-3.,-2.,0.],[3.,2.,0.],[-3.,2.,0.],[3.,-2.,0.],[-3.,-2.,0.]]]),
+    'hole_cut':dict(curves=[deepcopy(_OUTER),deepcopy(_AXES[0])],holes=[[[-1.,-1.,0.],[1.,-1.,0.],[1.,1.,0.],[-1.,1.,0.],[-1.,-1.,0.]]]),
+    'cross_3d':dict(curves=[deepcopy(_OUTER),[[-3.,0.,1.],[3.,0.,1.]],[[0.,-2.,-1.],[0.,2.,-1.]]]),
+    'cross_3d_reverse':dict(curves=[deepcopy(_OUTER),[[0.,-2.,-1.],[0.,2.,-1.]],[[-3.,0.,1.],[3.,0.,1.]]]),
+    'cross_lifted':dict(curves=[deepcopy(_OUTER),[[-3.,0.,1.],[3.,0.,1.]],[[0.,-2.,1.],[0.,2.,1.]]]),
+    'cross_sloped':dict(curves=[deepcopy(_OUTER),[[-3.,-2.,0.],[3.,2.,2.]],[[-2.,2.,3.],[1.,-1.,0.]]]),
+}
+SCENES=CASES.copy();SCENES.update(CROSSING_CASES)
+CROSSING_VARIANTS={
+    'cross_v_reverse':dict(curves=[deepcopy(_OUTER),deepcopy(_AXES[0]),list(reversed(deepcopy(_AXES[1])))]),
+    'cross_h_reverse':dict(curves=[deepcopy(_OUTER),list(reversed(deepcopy(_AXES[0]))),deepcopy(_AXES[1])]),
+    'cross_both_reverse':dict(curves=[deepcopy(_OUTER),list(reversed(deepcopy(_AXES[0]))),list(reversed(deepcopy(_AXES[1])))]),
+    'cross_v_first':dict(curves=[deepcopy(_OUTER),deepcopy(_AXES[1]),deepcopy(_AXES[0])]),
+    'cross_asymmetric':dict(curves=[deepcopy(_OUTER),[[-3.,-.4,0.],[3.,1.2,0.]],[[-1.,-2.,0.],[1.5,2.,0.]]]),
+    'two_crossings':dict(curves=[deepcopy(_OUTER),deepcopy(_AXES[0]),[[-1.,-2.,0.],[-1.,2.,0.]],[[1.,-2.,0.],[1.,2.,0.]]]),
+    'cross_seed':dict(points=[[2.,1.,0.]],curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+    'cross_untrimmed':dict(curves=[deepcopy(_OUTER)]+deepcopy(_AXES),trimback=False,divisions=1),
+    'hole_cut_reverse':dict(curves=[deepcopy(_OUTER),list(reversed(deepcopy(_AXES[0])))],holes=deepcopy(CROSSING_CASES['hole_cut']['holes'])),
+    'hole_cut_raised':dict(curves=[deepcopy(_OUTER),[[-3.,0.,1.],[3.,0.,1.]]],holes=deepcopy(CROSSING_CASES['hole_cut']['holes'])),
+}
+SCENES.update(CROSSING_VARIANTS)
+UNTRIMMED_CROSSING_CASES={}
+for _name in ['cross_axes','cross_diagonals','shared_endpoint','overlap','self_cross','cross_3d','cross_3d_reverse','cross_lifted','cross_sloped']:
+    UNTRIMMED_CROSSING_CASES[_name+'_untrimmed']=dict(deepcopy(CROSSING_CASES[_name]),trimback=False,divisions=1)
+SCENES.update(UNTRIMMED_CROSSING_CASES)
+SEEDED_CROSSING_CASES={
+    'cross_seed_top':dict(points=[[2.,1.,0.]],curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+    'cross_seed_bottom':dict(points=[[2.,-1.,0.]],curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+    'cross_seed_left':dict(points=[[-2.,1.,0.]],curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+    'cross_seed_outside':dict(points=[[6.,1.,0.]],curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+    'cross_seed_axis':dict(points=[[1.,0.,0.]],curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+    'cross_seed_3d':dict(points=[[2.,1.,.2]],curves=deepcopy(CROSSING_CASES['cross_3d']['curves'])),
+    'cross_seed_cloud':dict(points=[[2.,1.,0.],[-2.,-1.,0.]],cloud=True,curves=[deepcopy(_OUTER)]+deepcopy(_AXES)),
+}
+SCENES.update(SEEDED_CROSSING_CASES)
+def crossing_request():
+    q=request();q['operations']=[dict(op='mesh_patch_command',id=name,case=name)for name in CROSSING_CASES];return q
+def crossing_verify_request():
+    q=crossing_request();q['operations']+=[dict(op='mesh_patch_command',id=name,case=name)for name in CROSSING_VARIANTS];return q
+def untrimmed_crossing_request():
+    q=request();q['operations']=[dict(op='mesh_patch_command',id=name,case=name)for name in UNTRIMMED_CROSSING_CASES];return q
+def seeded_crossing_request():
+    q=request();q['operations']=[dict(op='mesh_patch_command',id=name,case=name)for name in SEEDED_CROSSING_CASES];return q
+
 def request():
     return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='mesh_patch_command',id=name,case=name)for name in CASES])
 
 def validate(op):
-    if not isinstance(op,dict)or set(op)!={'op','id','case'}or op['op']!='mesh_patch_command'or op['case']not in CASES or op['id']!=op['case']:
+    if not isinstance(op,dict)or set(op)!={'op','id','case'}or op['op']!='mesh_patch_command'or op['case']not in SCENES or op['id']!=op['case']:
         raise ValueError('fixed MeshPatch case required')
 
 def run(op,host,iterations,tolerance):
@@ -37,7 +89,7 @@ def run(op,host,iterations,tolerance):
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
     if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:
         raise ValueError('empty owned idle document required')
-    case=deepcopy(CASES[op['case']]);points=[G.Point3d(*p)for p in case.get('points',[])]
+    case=deepcopy(SCENES[op['case']]);points=[G.Point3d(*p)for p in case.get('points',[])]
     curves=[G.PolylineCurve([G.Point3d(*p)for p in line])for line in case.get('curves',[])]
     if 'circle'in case:
         c=case['circle'];curves.append(G.Circle(G.Point3d(*c[:3]),c[3]).ToNurbsCurve())

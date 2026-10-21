@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_axes",
+      "case": "cross_axes"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_diagonals",
+      "case": "cross_diagonals"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "shared_endpoint",
+      "case": "shared_endpoint"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "point_at_crossing",
+      "case": "point_at_crossing"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap",
+      "case": "overlap"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "self_cross",
+      "case": "self_cross"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "hole_cut",
+      "case": "hole_cut"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_3d",
+      "case": "cross_3d"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_3d_reverse",
+      "case": "cross_3d_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_lifted",
+      "case": "cross_lifted"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_sloped",
+      "case": "cross_sloped"
+    }
+  ]
+}

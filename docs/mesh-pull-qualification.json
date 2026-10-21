@@ -46,7 +46,6 @@
     "Fresh Rhino geometry, native command/getter parity, vertex counts and comparative speed remain unqualified. The pre-existing Wine SSPI startup issue prevents fresh capture."
   ],
   "source_sha256": {
-    "crates/viboceros-geometry/src/mesh/projection.rs": "8f4a27d1f03ba2353d78199928b45a057bcf543f427e0ae627a6142ce23df4e9",
     "crates/viboceros-geometry/src/mesh/projection/pull/feature.rs": "737a3463a86d7616fcc824599f7426e1807f129afd0d3668e2f9ac821a2fada5",
     "tools/rhino_oracle/test_mesh_pull.py": "132048a6e4fc68da87c8e595fb2c3baea357c9049ea7911745a75b9260c528b5",
     "tools/rhino_oracle/fixtures/pull_curve_mesh.json": "3df93446f72ffe6e694969483784c29cc3d43775785b815040969271af3e6b44"
@@ -56,6 +55,7 @@
     "tools/rhino_oracle/observations/pull_curve_mesh_viboceros_native.json": "b6c920e6110fa015cd34a802bf387e360bea9888b85b9382501be1d4953a2f2a"
   },
   "source_git_sha256": {
+    "151fd7d5f9dfa7eeb836466e015c06abc4af067e:crates/viboceros-geometry/src/mesh/projection.rs": "8f4a27d1f03ba2353d78199928b45a057bcf543f427e0ae627a6142ce23df4e9",
     "151fd7d5f9dfa7eeb836466e015c06abc4af067e:docs/commands/pull-mesh.md": "b7145ab49064a36af297155bcab397e04ae54d48d9c98f55a177370a32fa8183",
     "151fd7d5f9dfa7eeb836466e015c06abc4af067e:crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "1fe66c6f212f3f1131ab39ee31ba6abdef1a7283b627c232e9110049d90cf3d0",
     "151fd7d5f9dfa7eeb836466e015c06abc4af067e:docs/curve-approximation.md": "0636e5b96233bb30ed3c81dc6205119c635dd12fc55ba125bb6aa154d54ff9f1",

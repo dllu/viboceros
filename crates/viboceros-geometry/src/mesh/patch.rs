@@ -3,6 +3,7 @@ use super::*;
 use crate::exact_scalar::{Rational, rational};
 use num_traits::Zero;
 use std::cmp::Ordering;
+mod constraints;
 #[cfg(test)]
 mod tests;
 
@@ -61,7 +62,10 @@ impl TriangleMesh {
     /// regions survive. The temporary rectangular perimeter is then removed.
     /// Holes and an explicit outer boundary trim connected triangulation regions.
     /// A starting surface supplies closest-point UV coordinates, not a universal
-    /// unfolding: chart collisions and intersecting constraints are rejected.
+    /// unfolding: conflicting chart locations and unresolved boundaries fail.
+    /// Earlier guide edges take priority at crossings, without adding spatial
+    /// samples there. Failed recovery trims adjacent endpoint faces; incomplete
+    /// holes trim only the faces beside their recovered boundary edges.
     pub fn try_patch(
         points: &[Point3],
         guides: &[Polyline3],
@@ -225,65 +229,18 @@ impl TriangleMesh {
         if triangulation.num_inner_faces() == 0 {
             return Err(invalid("mesh patch needs three noncollinear locations"));
         }
-        let mut handles = vec![None; vertices.len()];
-        for v in triangulation.vertices() {
-            handles[v.data().source] = Some(v.fix());
-        }
-        let mut barriers = BTreeSet::new();
-        let mut hole_seeds = Vec::new();
-        let mut thin_guides = BTreeSet::new();
-        for (chain_index, (range, barrier)) in chains.iter().enumerate() {
-            let area = if *barrier {
-                boundary_orientation(
-                    &range
-                        .clone()
-                        .map(|i| coordinates[remap[i]])
-                        .collect::<Vec<_>>(),
-                )
-            } else {
-                Ordering::Equal
-            };
-            let is_hole = chain_index >= guides.len() && chain_index < guides.len() + holes.len();
-            let mut seed = None;
-            let is_guide = chain_index < guides.len();
-            let mut pairs = remap[range.clone()]
-                .windows(2)
-                .map(|p| [p[0], p[1]])
-                .collect::<Vec<_>>();
-            if is_guide && automatic_trim && remap[range.start] != remap[range.end - 1] {
-                pairs.push([remap[range.end - 1], remap[range.start]]);
-            }
-            for pair in pairs {
-                if pair[0] == pair[1] {
-                    continue;
-                }
-                let edges = triangulation
-                    .try_add_constraint(handles[pair[0]].unwrap(), handles[pair[1]].unwrap());
-                if edges.is_empty() {
-                    return Err(GeometryError::MeshPatchCrossingConstraints);
-                }
-                if *barrier {
-                    if is_hole && seed.is_none() {
-                        seed = Some((edges[0], area == Ordering::Greater));
-                    }
-                    for edge in edges {
-                        barriers.insert(edge.as_undirected().index());
-                        if is_guide && area == Ordering::Equal {
-                            thin_guides.insert(edge.as_undirected().index());
-                        }
-                    }
-                }
-            }
-            if *barrier && !is_guide && area == Ordering::Equal {
-                return Err(invalid("mesh patch boundary area"));
-            }
-            if let Some(seed) = seed {
-                hole_seeds.push(seed);
-            }
-        }
+        let constraints = constraints::Constraints::install(
+            &mut triangulation,
+            &coordinates,
+            &remap,
+            &chains,
+            guides.len(),
+            holes.len(),
+            automatic_trim,
+        )?;
         let mut neighbors = vec![Vec::new(); triangulation.num_all_faces()];
         for edge in triangulation.directed_edges() {
-            if !barriers.contains(&edge.as_undirected().index()) {
+            if !constraints.barriers.contains(&edge.as_undirected().index()) {
                 neighbors[edge.face().index()].push(edge.rev().face().index());
             }
         }
@@ -292,7 +249,7 @@ impl TriangleMesh {
         if options.outer_boundary.is_some() {
             queue.push_back(triangulation.outer_face().index());
         }
-        for (edge, left) in hole_seeds {
+        for &(edge, left) in &constraints.holes {
             let edge = triangulation.directed_edge(edge);
             queue.push_back(if left {
                 edge.face().index()
@@ -314,6 +271,11 @@ impl TriangleMesh {
             .iter()
             .copied()
             .collect::<BTreeSet<_>>();
+        let outer_seeds = if automatic_trim && !points.is_empty() {
+            constraints.outer_seeds(&triangulation, &coordinates, &remap, source_count)?
+        } else {
+            vec![]
+        };
         let mut has_point = vec![false; neighbors.len()];
         let mut has_perimeter = vec![false; neighbors.len()];
         has_perimeter[triangulation.outer_face().index()] = true;
@@ -326,6 +288,9 @@ impl TriangleMesh {
                 .vertices()
                 .iter()
                 .any(|v| perimeter_nodes.contains(&v.data().source));
+        }
+        for face in outer_seeds {
+            has_point[face] = true;
         }
         let mut reaches_perimeter = vec![false; neighbors.len()];
         if automatic_trim {
@@ -362,6 +327,7 @@ impl TriangleMesh {
                 }
             }
         }
+        constraints.mark_partial_faces(&triangulation, &source_nodes, &mut removed);
         let triangles = triangulation
             .inner_faces()
             .filter(|f| !removed[f.index()])
@@ -370,14 +336,14 @@ impl TriangleMesh {
                     || !f
                         .adjacent_edges()
                         .iter()
-                        .any(|e| thin_guides.contains(&e.as_undirected().index()))
+                        .any(|e| constraints.thin_guides.contains(&e.as_undirected().index()))
             })
             .filter(|f| {
                 !options.trim_back
                     || !f
                         .vertices()
                         .iter()
-                        .any(|v| remap[source_count..].contains(&v.data().source))
+                        .any(|v| perimeter_nodes.contains(&v.data().source))
             })
             .map(|f| f.vertices().map(|v| v.data().source as u32))
             .collect::<Vec<_>>();

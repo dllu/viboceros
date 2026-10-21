@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_top",
+      "case": "cross_seed_top"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_bottom",
+      "case": "cross_seed_bottom"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_left",
+      "case": "cross_seed_left"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_outside",
+      "case": "cross_seed_outside"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_axis",
+      "case": "cross_seed_axis"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_3d",
+      "case": "cross_seed_3d"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_cloud",
+      "case": "cross_seed_cloud"
+    }
+  ]
+}

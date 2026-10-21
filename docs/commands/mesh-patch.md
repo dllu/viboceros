@@ -31,6 +31,14 @@ would otherwise remain empty. Open guides can also remove adjacent faces.
 This follows the captured native behavior; a convex hull alone does not
 reproduce it.
 
+Guides recover in input order. At a crossing, an earlier edge takes priority;
+the mesh keeps the original samples without adding an intersection vertex.
+Automatic trimming can remove a face beside the competing guide's endpoint.
+Input points seed retained regions, and closed guides touching the input hull
+can retain their interiors during crossing recovery. If a guide crosses a hole,
+only the immediate inside faces of recovered hole edges are removed; a complete
+hole boundary still removes its connected interior.
+
 Scripts can provide `Sources`, `Holes`, and `StartingSurface` object IDs. A
 multi-face starting B-rep requires `Face=<zero-based-index>`. `OuterBoundary`
 provides an explicit closed outer polyline and bypasses automatic guide-region
@@ -38,7 +46,8 @@ trimming. References remain unchanged. The result has no name, is unselected,
 and uses the current layer. Source selection is released. One Undo removes the
 mesh, and Redo restores it.
 
-Construction is bounded to 100,000 input/perimeter records. Crossing constraints,
+Construction is bounded to 100,000 input/perimeter records and 4,000,000
+constraint walk/recovery steps. Crossings of an explicit outer boundary,
 conflicting samples at the same chart location, open hole boundaries and
 unresolved approximations fail before geometry edits. Angular approximation
 rejects rational poles and knot discontinuities, and uses existing exact Bézier
@@ -48,10 +57,20 @@ variation, not a universal positional distance to the original curve.
 The [qualification report](../mesh-patch-qualification.json) records 21 public
 Rhino command/SDK scenes, including one matching construction failure. Geometry
 comparisons retain the `1e-6` model gate and check metadata, immutable sources and
-Undo/Redo. Full compatibility is unproven: general curved guide sampling,
-periodic or folded starting charts, intersecting constraints, trim boundaries
-of starting B-reps, native triangle ordering and performance need broader
-qualification. These sampled comparisons do not certify universal mesh topology.
+Undo/Redo. The [crossing report](../mesh-patch-crossings-qualification.json)
+adds 48 captures covering 37 distinct scenes, including an independent repeat
+of the first 11 scenes. All captures are replayed through geometry, scripted
+commands and staged selection. Both native SDK and command meshes are retained:
+they differ for several identical inputs, so this report targets the public
+command and records the SDK difference separately.
+
+Six crossing scenes remain unqualified: shared endpoints, overlapping guides,
+a self-crossing loop, one direction reversal, multiple crossings and an input
+point on a guide. The report preserves each measured difference and topology
+count mismatch. General curved guide sampling, periodic or folded starting
+charts, starting B-rep trims, native triangle ordering and performance also
+need broader qualification. Sampled comparisons do not certify universal mesh
+topology.
 
 References: [McNeel MeshPatch](https://docs.mcneel.com/rhino/8/help/en-us/commands/meshpatch.htm)
 and [public Mesh.CreatePatch API](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Geometry_Mesh_CreatePatch.htm).

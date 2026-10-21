@@ -8,7 +8,21 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 #[test]
 fn native_mesh_patch_getters_preserve_sources_attributes_and_grouped_history() {
-    for (op, v) in native::rows() {
+    getter_replay(native::rows(), "MESH_PATCH_GETTER", false);
+}
+#[test]
+fn native_mesh_patch_crossing_getters_keep_compatibility_gaps_visible() {
+    for (group, rows) in native::crossing_groups() {
+        getter_replay(rows, &format!("MESH_PATCH_{group}_GETTER"), true);
+    }
+}
+fn getter_replay(
+    rows: Vec<(serde_json::Value, serde_json::Value)>,
+    prefix: &str,
+    diagnostic: bool,
+) {
+    let mut failures = Vec::new();
+    for (op, v) in rows {
         let scene = native::setup(&v);
         let command = native::command(&scene, &v);
         let mut app = test_app();
@@ -53,21 +67,28 @@ fn native_mesh_patch_getters_preserve_sources_attributes_and_grouped_history() {
             assert!(app.document.undo_label().is_none());
             let error = native::check(&app.document, &scene.parents, &v, "after_script");
             println!(
-                "MESH_PATCH_GETTER {}",
+                "{prefix} {}",
                 serde_json::json!({"id":op["id"],"qualified":true,"native_failure":true,"maximum_bidirectional_sample_error":error})
             );
             continue;
         }
-        let mut error = native::check(&app.document, &scene.parents, &v, "after_script");
+        let mut comparison = native::compare(&app.document, &scene.parents, &v, "after_script");
         app.document.undo().unwrap();
-        error = error.max(native::check(&app.document, &scene.parents, &v, "undo"));
+        comparison.merge(native::compare(&app.document, &scene.parents, &v, "undo"));
         app.document.redo().unwrap();
-        error = error.max(native::check(&app.document, &scene.parents, &v, "redo"));
+        comparison.merge(native::compare(&app.document, &scene.parents, &v, "redo"));
         println!(
-            "MESH_PATCH_GETTER {}",
-            serde_json::json!({"id":op["id"],"qualified":error<1e-6,"maximum_bidirectional_sample_error":error})
+            "{prefix} {}",
+            serde_json::json!({"id":op["id"],"qualified":comparison.qualified(),"maximum_bidirectional_sample_error":comparison.error,"counts_match":comparison.counts_match,"source_metadata_preserved":true,"grouped_history":true})
         );
-        assert!(error < 1e-6, "{} {error:e}", op["id"]);
+        if !comparison.qualified() {
+            failures.push(op["id"].as_str().unwrap().to_owned());
+        }
+    }
+    if diagnostic {
+        native::assert_known_gaps(&failures);
+    } else {
+        assert!(failures.is_empty(), "{failures:?}");
     }
 }
 #[test]

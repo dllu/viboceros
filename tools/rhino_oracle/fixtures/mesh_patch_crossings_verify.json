@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_axes",
+      "case": "cross_axes"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_diagonals",
+      "case": "cross_diagonals"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "shared_endpoint",
+      "case": "shared_endpoint"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "point_at_crossing",
+      "case": "point_at_crossing"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap",
+      "case": "overlap"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "self_cross",
+      "case": "self_cross"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "hole_cut",
+      "case": "hole_cut"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_3d",
+      "case": "cross_3d"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_3d_reverse",
+      "case": "cross_3d_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_lifted",
+      "case": "cross_lifted"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_sloped",
+      "case": "cross_sloped"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_v_reverse",
+      "case": "cross_v_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_h_reverse",
+      "case": "cross_h_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_both_reverse",
+      "case": "cross_both_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_v_first",
+      "case": "cross_v_first"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_asymmetric",
+      "case": "cross_asymmetric"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "two_crossings",
+      "case": "two_crossings"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed",
+      "case": "cross_seed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_untrimmed",
+      "case": "cross_untrimmed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "hole_cut_reverse",
+      "case": "hole_cut_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "hole_cut_raised",
+      "case": "hole_cut_raised"
+    }
+  ]
+}

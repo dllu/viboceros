@@ -1,0 +1,6152 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "results": [
+    {
+      "id": "cross_seed_top",
+      "value": {
+        "redo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3410683848,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  5
+                ],
+                [
+                  6,
+                  2,
+                  3
+                ],
+                [
+                  0,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  8,
+                  6
+                ],
+                [
+                  8,
+                  1,
+                  4
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  5,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  8
+                ],
+                [
+                  6,
+                  3,
+                  7
+                ],
+                [
+                  3,
+                  2,
+                  0
+                ],
+                [
+                  8,
+                  4,
+                  5
+                ],
+                [
+                  4,
+                  1,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              2.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "curves": [
+            [
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "success": true,
+        "sdk_signature": "CreatePatch(outerBoundary: Polyline, angleToleranceRadians: float, pullbackSurface: Surface, innerBoundaryCurves: IEnumerable[Curve], innerBothSideCurves: IEnumerable[Curve], innerPoints: IEnumerable[Point3d], trimback: bool, divisions: int) -> Mesh\r\n",
+        "events": [
+          {
+            "name": "MeshPatch",
+            "objects": [
+              {
+                "role": "source",
+                "crc": 0,
+                "layer": "MeshPatch source",
+                "point": [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 711043149,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 1105792029,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 4156639855,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "output",
+                "crc": 3410683848,
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      6,
+                      5
+                    ],
+                    [
+                      6,
+                      2,
+                      3
+                    ],
+                    [
+                      0,
+                      7,
+                      3
+                    ],
+                    [
+                      7,
+                      8,
+                      6
+                    ],
+                    [
+                      8,
+                      1,
+                      4
+                    ],
+                    [
+                      1,
+                      0,
+                      2
+                    ],
+                    [
+                      2,
+                      5,
+                      4
+                    ],
+                    [
+                      5,
+                      6,
+                      8
+                    ],
+                    [
+                      6,
+                      3,
+                      7
+                    ],
+                    [
+                      3,
+                      2,
+                      0
+                    ],
+                    [
+                      8,
+                      4,
+                      5
+                    ],
+                    [
+                      4,
+                      1,
+                      2
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "layer": "MeshPatch output",
+                "selected": false,
+                "name": null
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3410683848,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  5
+                ],
+                [
+                  6,
+                  2,
+                  3
+                ],
+                [
+                  0,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  8,
+                  6
+                ],
+                [
+                  8,
+                  1,
+                  4
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  5,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  8
+                ],
+                [
+                  6,
+                  3,
+                  7
+                ],
+                [
+                  3,
+                  2,
+                  0
+                ],
+                [
+                  8,
+                  4,
+                  5
+                ],
+                [
+                  4,
+                  1,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "undo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          }
+        ],
+        "history": "Command: _-MeshPatch\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _TrimBack=Yes\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _AngleTolerance=15\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _Enter\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes )\nCreating mesh... Press Esc to cancel",
+        "before": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          }
+        ],
+        "sdk": {
+          "faces": [
+            [
+              0,
+              7,
+              3
+            ],
+            [
+              7,
+              8,
+              6
+            ],
+            [
+              8,
+              1,
+              4
+            ],
+            [
+              1,
+              0,
+              2
+            ],
+            [
+              3,
+              4,
+              2
+            ],
+            [
+              4,
+              3,
+              5
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              3,
+              7,
+              6
+            ],
+            [
+              6,
+              8,
+              5
+            ],
+            [
+              8,
+              4,
+              5
+            ],
+            [
+              4,
+              1,
+              2
+            ],
+            [
+              5,
+              3,
+              6
+            ]
+          ],
+          "vertices": [
+            [
+              -4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              -4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -3.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        "after": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3410683848,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  5
+                ],
+                [
+                  6,
+                  2,
+                  3
+                ],
+                [
+                  0,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  8,
+                  6
+                ],
+                [
+                  8,
+                  1,
+                  4
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  5,
+                  4
+                ],
+                [
+                  5,
+                  6,
+                  8
+                ],
+                [
+                  6,
+                  3,
+                  7
+                ],
+                [
+                  3,
+                  2,
+                  0
+                ],
+                [
+                  8,
+                  4,
+                  5
+                ],
+                [
+                  4,
+                  1,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "surface": null
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "cross_seed_bottom",
+      "value": {
+        "redo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3318198976,
+            "mesh": {
+              "faces": [
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  0,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  8,
+                  6
+                ],
+                [
+                  8,
+                  1,
+                  4
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  4,
+                  1
+                ],
+                [
+                  4,
+                  6,
+                  8
+                ],
+                [
+                  6,
+                  5,
+                  7
+                ],
+                [
+                  5,
+                  2,
+                  3
+                ],
+                [
+                  0,
+                  3,
+                  2
+                ],
+                [
+                  3,
+                  7,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              2.0,
+              -1.0,
+              0.0
+            ]
+          ],
+          "curves": [
+            [
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "success": true,
+        "sdk_signature": "CreatePatch(outerBoundary: Polyline, angleToleranceRadians: float, pullbackSurface: Surface, innerBoundaryCurves: IEnumerable[Curve], innerBothSideCurves: IEnumerable[Curve], innerPoints: IEnumerable[Point3d], trimback: bool, divisions: int) -> Mesh\r\n",
+        "events": [
+          {
+            "name": "MeshPatch",
+            "objects": [
+              {
+                "role": "source",
+                "crc": 0,
+                "layer": "MeshPatch source",
+                "point": [
+                  2.0,
+                  -1.0,
+                  0.0
+                ],
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 711043149,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 1105792029,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 4156639855,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "output",
+                "crc": 3318198976,
+                "mesh": {
+                  "faces": [
+                    [
+                      6,
+                      2,
+                      5
+                    ],
+                    [
+                      0,
+                      7,
+                      3
+                    ],
+                    [
+                      7,
+                      8,
+                      6
+                    ],
+                    [
+                      8,
+                      1,
+                      4
+                    ],
+                    [
+                      1,
+                      0,
+                      2
+                    ],
+                    [
+                      2,
+                      4,
+                      1
+                    ],
+                    [
+                      4,
+                      6,
+                      8
+                    ],
+                    [
+                      6,
+                      5,
+                      7
+                    ],
+                    [
+                      5,
+                      2,
+                      3
+                    ],
+                    [
+                      0,
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      7,
+                      5
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "layer": "MeshPatch output",
+                "selected": false,
+                "name": null
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3318198976,
+            "mesh": {
+              "faces": [
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  0,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  8,
+                  6
+                ],
+                [
+                  8,
+                  1,
+                  4
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  4,
+                  1
+                ],
+                [
+                  4,
+                  6,
+                  8
+                ],
+                [
+                  6,
+                  5,
+                  7
+                ],
+                [
+                  5,
+                  2,
+                  3
+                ],
+                [
+                  0,
+                  3,
+                  2
+                ],
+                [
+                  3,
+                  7,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "undo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          }
+        ],
+        "history": "Command: _-MeshPatch\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _TrimBack=Yes\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _AngleTolerance=15\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _Enter\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes )\nCreating mesh... Press Esc to cancel",
+        "before": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              -1.0,
+              0.0
+            ],
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          }
+        ],
+        "sdk": {
+          "faces": [
+            [
+              0,
+              7,
+              3
+            ],
+            [
+              7,
+              8,
+              6
+            ],
+            [
+              8,
+              1,
+              4
+            ],
+            [
+              1,
+              0,
+              2
+            ],
+            [
+              3,
+              4,
+              2
+            ],
+            [
+              4,
+              3,
+              5
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              3,
+              7,
+              5
+            ],
+            [
+              7,
+              6,
+              5
+            ],
+            [
+              6,
+              8,
+              4
+            ],
+            [
+              4,
+              1,
+              2
+            ],
+            [
+              4,
+              5,
+              6
+            ]
+          ],
+          "vertices": [
+            [
+              -4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              -4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -3.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              -1.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        "after": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3318198976,
+            "mesh": {
+              "faces": [
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  0,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  8,
+                  6
+                ],
+                [
+                  8,
+                  1,
+                  4
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  4,
+                  1
+                ],
+                [
+                  4,
+                  6,
+                  8
+                ],
+                [
+                  6,
+                  5,
+                  7
+                ],
+                [
+                  5,
+                  2,
+                  3
+                ],
+                [
+                  0,
+                  3,
+                  2
+                ],
+                [
+                  3,
+                  7,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "surface": null
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "cross_seed_left",
+      "value": {
+        "redo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2091350117,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  4
+                ],
+                [
+                  6,
+                  2,
+                  3
+                ],
+                [
+                  7,
+                  0,
+                  4
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  5
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  4,
+                  0
+                ],
+                [
+                  4,
+                  6,
+                  7
+                ],
+                [
+                  6,
+                  3,
+                  5
+                ],
+                [
+                  3,
+                  2,
+                  1
+                ],
+                [
+                  8,
+                  6,
+                  5
+                ],
+                [
+                  1,
+                  5,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              -2.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "curves": [
+            [
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "success": true,
+        "sdk_signature": "CreatePatch(outerBoundary: Polyline, angleToleranceRadians: float, pullbackSurface: Surface, innerBoundaryCurves: IEnumerable[Curve], innerBothSideCurves: IEnumerable[Curve], innerPoints: IEnumerable[Point3d], trimback: bool, divisions: int) -> Mesh\r\n",
+        "events": [
+          {
+            "name": "MeshPatch",
+            "objects": [
+              {
+                "role": "source",
+                "crc": 0,
+                "layer": "MeshPatch source",
+                "point": [
+                  -2.0,
+                  1.0,
+                  0.0
+                ],
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 711043149,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 1105792029,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 4156639855,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "output",
+                "crc": 2091350117,
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      6,
+                      4
+                    ],
+                    [
+                      6,
+                      2,
+                      3
+                    ],
+                    [
+                      7,
+                      0,
+                      4
+                    ],
+                    [
+                      8,
+                      7,
+                      6
+                    ],
+                    [
+                      1,
+                      8,
+                      5
+                    ],
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      4,
+                      0
+                    ],
+                    [
+                      4,
+                      6,
+                      7
+                    ],
+                    [
+                      6,
+                      3,
+                      5
+                    ],
+                    [
+                      3,
+                      2,
+                      1
+                    ],
+                    [
+                      8,
+                      6,
+                      5
+                    ],
+                    [
+                      1,
+                      5,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      -2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "layer": "MeshPatch output",
+                "selected": false,
+                "name": null
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2091350117,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  4
+                ],
+                [
+                  6,
+                  2,
+                  3
+                ],
+                [
+                  7,
+                  0,
+                  4
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  5
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  4,
+                  0
+                ],
+                [
+                  4,
+                  6,
+                  7
+                ],
+                [
+                  6,
+                  3,
+                  5
+                ],
+                [
+                  3,
+                  2,
+                  1
+                ],
+                [
+                  8,
+                  6,
+                  5
+                ],
+                [
+                  1,
+                  5,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "undo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          }
+        ],
+        "history": "Command: _-MeshPatch\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _TrimBack=Yes\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _AngleTolerance=15\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _Enter\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes )\nCreating mesh... Press Esc to cancel",
+        "before": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          }
+        ],
+        "sdk": {
+          "faces": [
+            [
+              0,
+              7,
+              4
+            ],
+            [
+              7,
+              8,
+              6
+            ],
+            [
+              8,
+              1,
+              5
+            ],
+            [
+              1,
+              0,
+              2
+            ],
+            [
+              4,
+              5,
+              3
+            ],
+            [
+              0,
+              4,
+              2
+            ],
+            [
+              4,
+              7,
+              6
+            ],
+            [
+              6,
+              8,
+              5
+            ],
+            [
+              5,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              3,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              -4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              -4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -3.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        "after": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2091350117,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  4
+                ],
+                [
+                  6,
+                  2,
+                  3
+                ],
+                [
+                  7,
+                  0,
+                  4
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  5
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  4,
+                  0
+                ],
+                [
+                  4,
+                  6,
+                  7
+                ],
+                [
+                  6,
+                  3,
+                  5
+                ],
+                [
+                  3,
+                  2,
+                  1
+                ],
+                [
+                  8,
+                  6,
+                  5
+                ],
+                [
+                  1,
+                  5,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "surface": null
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "cross_seed_outside",
+      "value": {
+        "redo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              6.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2243047905,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  5,
+                  3
+                ],
+                [
+                  6,
+                  0,
+                  3
+                ],
+                [
+                  6,
+                  7,
+                  8
+                ],
+                [
+                  7,
+                  6,
+                  5
+                ],
+                [
+                  1,
+                  7,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  5,
+                  6
+                ],
+                [
+                  5,
+                  4,
+                  7
+                ],
+                [
+                  4,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  1.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              6.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "curves": [
+            [
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "success": true,
+        "sdk_signature": "CreatePatch(outerBoundary: Polyline, angleToleranceRadians: float, pullbackSurface: Surface, innerBoundaryCurves: IEnumerable[Curve], innerBothSideCurves: IEnumerable[Curve], innerPoints: IEnumerable[Point3d], trimback: bool, divisions: int) -> Mesh\r\n",
+        "events": [
+          {
+            "name": "MeshPatch",
+            "objects": [
+              {
+                "role": "source",
+                "crc": 0,
+                "layer": "MeshPatch source",
+                "point": [
+                  6.0,
+                  1.0,
+                  0.0
+                ],
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 711043149,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 1105792029,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 4156639855,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "output",
+                "crc": 2243047905,
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      5,
+                      3
+                    ],
+                    [
+                      6,
+                      0,
+                      3
+                    ],
+                    [
+                      6,
+                      7,
+                      8
+                    ],
+                    [
+                      7,
+                      6,
+                      5
+                    ],
+                    [
+                      1,
+                      7,
+                      4
+                    ],
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3,
+                      0
+                    ],
+                    [
+                      3,
+                      5,
+                      6
+                    ],
+                    [
+                      5,
+                      4,
+                      7
+                    ],
+                    [
+                      4,
+                      2,
+                      1
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      6.0,
+                      1.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "layer": "MeshPatch output",
+                "selected": false,
+                "name": null
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              6.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2243047905,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  5,
+                  3
+                ],
+                [
+                  6,
+                  0,
+                  3
+                ],
+                [
+                  6,
+                  7,
+                  8
+                ],
+                [
+                  7,
+                  6,
+                  5
+                ],
+                [
+                  1,
+                  7,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  5,
+                  6
+                ],
+                [
+                  5,
+                  4,
+                  7
+                ],
+                [
+                  4,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  1.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "undo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              6.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          }
+        ],
+        "history": "Command: _-MeshPatch\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _TrimBack=Yes\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _AngleTolerance=15\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _Enter\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes )\nCreating mesh... Press Esc to cancel",
+        "before": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              6.0,
+              1.0,
+              0.0
+            ],
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          }
+        ],
+        "sdk": {
+          "faces": [
+            [
+              0,
+              6,
+              3
+            ],
+            [
+              6,
+              7,
+              5
+            ],
+            [
+              7,
+              6,
+              8
+            ],
+            [
+              7,
+              1,
+              4
+            ],
+            [
+              1,
+              0,
+              2
+            ],
+            [
+              3,
+              4,
+              2
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              3,
+              6,
+              5
+            ],
+            [
+              5,
+              7,
+              4
+            ],
+            [
+              4,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              -4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              -4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -3.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              6.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "after": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              6.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2243047905,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  5,
+                  3
+                ],
+                [
+                  6,
+                  0,
+                  3
+                ],
+                [
+                  6,
+                  7,
+                  8
+                ],
+                [
+                  7,
+                  6,
+                  5
+                ],
+                [
+                  1,
+                  7,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  5,
+                  6
+                ],
+                [
+                  5,
+                  4,
+                  7
+                ],
+                [
+                  4,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  1.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "surface": null
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "cross_seed_axis",
+      "value": {
+        "redo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2276649832,
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  7,
+                  0,
+                  3
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  5,
+                  6
+                ],
+                [
+                  5,
+                  4,
+                  6
+                ],
+                [
+                  7,
+                  3,
+                  6
+                ],
+                [
+                  3,
+                  0,
+                  2
+                ],
+                [
+                  8,
+                  6,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "curves": [
+            [
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "success": true,
+        "sdk_signature": "CreatePatch(outerBoundary: Polyline, angleToleranceRadians: float, pullbackSurface: Surface, innerBoundaryCurves: IEnumerable[Curve], innerBothSideCurves: IEnumerable[Curve], innerPoints: IEnumerable[Point3d], trimback: bool, divisions: int) -> Mesh\r\n",
+        "events": [
+          {
+            "name": "MeshPatch",
+            "objects": [
+              {
+                "role": "source",
+                "crc": 0,
+                "layer": "MeshPatch source",
+                "point": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 711043149,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 1105792029,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 4156639855,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "output",
+                "crc": 2276649832,
+                "mesh": {
+                  "faces": [
+                    [
+                      3,
+                      4,
+                      5
+                    ],
+                    [
+                      7,
+                      0,
+                      3
+                    ],
+                    [
+                      8,
+                      7,
+                      6
+                    ],
+                    [
+                      1,
+                      8,
+                      4
+                    ],
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      5,
+                      6
+                    ],
+                    [
+                      5,
+                      4,
+                      6
+                    ],
+                    [
+                      7,
+                      3,
+                      6
+                    ],
+                    [
+                      3,
+                      0,
+                      2
+                    ],
+                    [
+                      8,
+                      6,
+                      4
+                    ],
+                    [
+                      1,
+                      4,
+                      2
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "layer": "MeshPatch output",
+                "selected": false,
+                "name": null
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2276649832,
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  7,
+                  0,
+                  3
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  5,
+                  6
+                ],
+                [
+                  5,
+                  4,
+                  6
+                ],
+                [
+                  7,
+                  3,
+                  6
+                ],
+                [
+                  3,
+                  0,
+                  2
+                ],
+                [
+                  8,
+                  6,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "undo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          }
+        ],
+        "history": "Command: _-MeshPatch\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _TrimBack=Yes\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _AngleTolerance=15\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _Enter\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes )\nCreating mesh... Press Esc to cancel",
+        "before": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          }
+        ],
+        "sdk": {
+          "faces": [
+            [
+              0,
+              7,
+              3
+            ],
+            [
+              7,
+              8,
+              6
+            ],
+            [
+              8,
+              1,
+              4
+            ],
+            [
+              1,
+              0,
+              2
+            ],
+            [
+              3,
+              4,
+              2
+            ],
+            [
+              4,
+              3,
+              5
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              3,
+              7,
+              6
+            ],
+            [
+              6,
+              8,
+              4
+            ],
+            [
+              4,
+              1,
+              2
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              5,
+              3,
+              6
+            ]
+          ],
+          "vertices": [
+            [
+              -4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              -4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -3.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        "after": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2276649832,
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  4,
+                  5
+                ],
+                [
+                  7,
+                  0,
+                  3
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  3,
+                  5,
+                  6
+                ],
+                [
+                  5,
+                  4,
+                  6
+                ],
+                [
+                  7,
+                  3,
+                  6
+                ],
+                [
+                  3,
+                  0,
+                  2
+                ],
+                [
+                  8,
+                  6,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "surface": null
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "cross_seed_3d",
+      "value": {
+        "redo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.2
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 3994097590,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 2141114454,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2791233479,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  3
+                ],
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  7,
+                  0,
+                  3
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  6,
+                  7
+                ],
+                [
+                  6,
+                  5,
+                  8
+                ],
+                [
+                  5,
+                  2,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  2
+                ],
+                [
+                  4,
+                  8,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  -1.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.2
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "input": {
+          "points": [
+            [
+              2.0,
+              1.0,
+              0.2
+            ]
+          ],
+          "curves": [
+            [
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.0,
+                0.0,
+                1.0
+              ],
+              [
+                3.0,
+                0.0,
+                1.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                -2.0,
+                -1.0
+              ],
+              [
+                0.0,
+                2.0,
+                -1.0
+              ]
+            ]
+          ]
+        },
+        "success": true,
+        "sdk_signature": "CreatePatch(outerBoundary: Polyline, angleToleranceRadians: float, pullbackSurface: Surface, innerBoundaryCurves: IEnumerable[Curve], innerBothSideCurves: IEnumerable[Curve], innerPoints: IEnumerable[Point3d], trimback: bool, divisions: int) -> Mesh\r\n",
+        "events": [
+          {
+            "name": "MeshPatch",
+            "objects": [
+              {
+                "role": "source",
+                "crc": 0,
+                "layer": "MeshPatch source",
+                "point": [
+                  2.0,
+                  1.0,
+                  0.2
+                ],
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 711043149,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 3994097590,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 2141114454,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "output",
+                "crc": 2791233479,
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      6,
+                      3
+                    ],
+                    [
+                      6,
+                      2,
+                      5
+                    ],
+                    [
+                      7,
+                      0,
+                      3
+                    ],
+                    [
+                      8,
+                      7,
+                      6
+                    ],
+                    [
+                      1,
+                      8,
+                      4
+                    ],
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3,
+                      0
+                    ],
+                    [
+                      3,
+                      6,
+                      7
+                    ],
+                    [
+                      6,
+                      5,
+                      8
+                    ],
+                    [
+                      5,
+                      2,
+                      4
+                    ],
+                    [
+                      1,
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      8,
+                      5
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -3.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      -2.0,
+                      -1.0
+                    ],
+                    [
+                      0.0,
+                      2.0,
+                      -1.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.2
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "layer": "MeshPatch output",
+                "selected": false,
+                "name": null
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.2
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 3994097590,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 2141114454,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2791233479,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  3
+                ],
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  7,
+                  0,
+                  3
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  6,
+                  7
+                ],
+                [
+                  6,
+                  5,
+                  8
+                ],
+                [
+                  5,
+                  2,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  2
+                ],
+                [
+                  4,
+                  8,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  -1.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.2
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "undo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.2
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 3994097590,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 2141114454,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          }
+        ],
+        "history": "Command: _-MeshPatch\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _TrimBack=Yes\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _AngleTolerance=15\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _Enter\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes )\nCreating mesh... Press Esc to cancel",
+        "before": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.2
+            ],
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 3994097590,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 2141114454,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          }
+        ],
+        "sdk": {
+          "faces": [
+            [
+              0,
+              7,
+              3
+            ],
+            [
+              7,
+              8,
+              6
+            ],
+            [
+              8,
+              1,
+              4
+            ],
+            [
+              1,
+              0,
+              2
+            ],
+            [
+              3,
+              4,
+              2
+            ],
+            [
+              4,
+              3,
+              5
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              3,
+              7,
+              6
+            ],
+            [
+              6,
+              8,
+              5
+            ],
+            [
+              8,
+              4,
+              5
+            ],
+            [
+              4,
+              1,
+              2
+            ],
+            [
+              5,
+              3,
+              6
+            ]
+          ],
+          "vertices": [
+            [
+              -4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              -4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -3.0,
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              -2.0,
+              -1.0
+            ],
+            [
+              0.0,
+              2.0,
+              -1.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.2
+            ],
+            [
+              3.0,
+              0.0,
+              1.0
+            ],
+            [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        "after": [
+          {
+            "role": "source",
+            "crc": 0,
+            "layer": "MeshPatch source",
+            "point": [
+              2.0,
+              1.0,
+              0.2
+            ],
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 3994097590,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 2141114454,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 2791233479,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  6,
+                  3
+                ],
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  7,
+                  0,
+                  3
+                ],
+                [
+                  8,
+                  7,
+                  6
+                ],
+                [
+                  1,
+                  8,
+                  4
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  6,
+                  7
+                ],
+                [
+                  6,
+                  5,
+                  8
+                ],
+                [
+                  5,
+                  2,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  2
+                ],
+                [
+                  4,
+                  8,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  -1.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.2
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "surface": null
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "cross_seed_cloud",
+      "value": {
+        "redo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "points": [
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3069471664,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  2,
+                  6
+                ],
+                [
+                  8,
+                  0,
+                  4
+                ],
+                [
+                  9,
+                  8,
+                  7
+                ],
+                [
+                  1,
+                  9,
+                  5
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  7,
+                  4
+                ],
+                [
+                  7,
+                  6,
+                  9
+                ],
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  8,
+                  4,
+                  7
+                ],
+                [
+                  4,
+                  0,
+                  3
+                ],
+                [
+                  1,
+                  5,
+                  2
+                ],
+                [
+                  5,
+                  9,
+                  6
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "input": {
+          "cloud": true,
+          "points": [
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -1.0,
+              0.0
+            ]
+          ],
+          "curves": [
+            [
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                3.0,
+                0.0
+              ],
+              [
+                -4.0,
+                -3.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "success": true,
+        "sdk_signature": "CreatePatch(outerBoundary: Polyline, angleToleranceRadians: float, pullbackSurface: Surface, innerBoundaryCurves: IEnumerable[Curve], innerBothSideCurves: IEnumerable[Curve], innerPoints: IEnumerable[Point3d], trimback: bool, divisions: int) -> Mesh\r\n",
+        "events": [
+          {
+            "name": "MeshPatch",
+            "objects": [
+              {
+                "role": "source",
+                "crc": 0,
+                "points": [
+                  [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  [
+                    -2.0,
+                    -1.0,
+                    0.0
+                  ]
+                ],
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 711043149,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 1105792029,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "source",
+                "crc": 4156639855,
+                "layer": "MeshPatch source",
+                "selected": false,
+                "name": "Input"
+              },
+              {
+                "role": "output",
+                "crc": 3069471664,
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      7,
+                      3
+                    ],
+                    [
+                      7,
+                      2,
+                      6
+                    ],
+                    [
+                      8,
+                      0,
+                      4
+                    ],
+                    [
+                      9,
+                      8,
+                      7
+                    ],
+                    [
+                      1,
+                      9,
+                      5
+                    ],
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3,
+                      0
+                    ],
+                    [
+                      3,
+                      7,
+                      4
+                    ],
+                    [
+                      7,
+                      6,
+                      9
+                    ],
+                    [
+                      6,
+                      2,
+                      5
+                    ],
+                    [
+                      8,
+                      4,
+                      7
+                    ],
+                    [
+                      4,
+                      0,
+                      3
+                    ],
+                    [
+                      1,
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      9,
+                      6
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      -2.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "layer": "MeshPatch output",
+                "selected": false,
+                "name": null
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "role": "source",
+            "crc": 0,
+            "points": [
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3069471664,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  2,
+                  6
+                ],
+                [
+                  8,
+                  0,
+                  4
+                ],
+                [
+                  9,
+                  8,
+                  7
+                ],
+                [
+                  1,
+                  9,
+                  5
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  7,
+                  4
+                ],
+                [
+                  7,
+                  6,
+                  9
+                ],
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  8,
+                  4,
+                  7
+                ],
+                [
+                  4,
+                  0,
+                  3
+                ],
+                [
+                  1,
+                  5,
+                  2
+                ],
+                [
+                  5,
+                  9,
+                  6
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "undo": [
+          {
+            "role": "source",
+            "crc": 0,
+            "points": [
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          }
+        ],
+        "history": "Command: _-MeshPatch\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _TrimBack=Yes\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _AngleTolerance=15\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes ): _Enter\nSelect holes. ( AngleTolerance=15  StartingSurface  TrimBack=Yes )\nCreating mesh... Press Esc to cancel",
+        "before": [
+          {
+            "role": "source",
+            "crc": 0,
+            "points": [
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": true,
+            "name": "Input"
+          }
+        ],
+        "sdk": {
+          "faces": [
+            [
+              0,
+              8,
+              4
+            ],
+            [
+              8,
+              9,
+              7
+            ],
+            [
+              9,
+              1,
+              5
+            ],
+            [
+              1,
+              0,
+              2
+            ],
+            [
+              4,
+              5,
+              3
+            ],
+            [
+              5,
+              4,
+              6
+            ],
+            [
+              0,
+              4,
+              3
+            ],
+            [
+              4,
+              8,
+              7
+            ],
+            [
+              7,
+              9,
+              6
+            ],
+            [
+              9,
+              5,
+              6
+            ],
+            [
+              5,
+              1,
+              2
+            ],
+            [
+              2,
+              0,
+              3
+            ],
+            [
+              3,
+              5,
+              2
+            ],
+            [
+              6,
+              4,
+              7
+            ]
+          ],
+          "vertices": [
+            [
+              -4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              -4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -3.0,
+              0.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        "after": [
+          {
+            "role": "source",
+            "crc": 0,
+            "points": [
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 711043149,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 1105792029,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "source",
+            "crc": 4156639855,
+            "layer": "MeshPatch source",
+            "selected": false,
+            "name": "Input"
+          },
+          {
+            "role": "output",
+            "crc": 3069471664,
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  7,
+                  3
+                ],
+                [
+                  7,
+                  2,
+                  6
+                ],
+                [
+                  8,
+                  0,
+                  4
+                ],
+                [
+                  9,
+                  8,
+                  7
+                ],
+                [
+                  1,
+                  9,
+                  5
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  3,
+                  7,
+                  4
+                ],
+                [
+                  7,
+                  6,
+                  9
+                ],
+                [
+                  6,
+                  2,
+                  5
+                ],
+                [
+                  8,
+                  4,
+                  7
+                ],
+                [
+                  4,
+                  0,
+                  3
+                ],
+                [
+                  1,
+                  5,
+                  2
+                ],
+                [
+                  5,
+                  9,
+                  6
+                ]
+              ],
+              "vertices": [
+                [
+                  -4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "layer": "MeshPatch output",
+            "selected": false,
+            "name": null
+          }
+        ],
+        "surface": null
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "protocol_version": 1,
+  "engine": "rhino",
+  "iterations": 1,
+  "provenance": {
+    "request_sha256": "7d81cd98fa5b38e51731bb1f6916f9d05b3455606af03654a17188358e09279a",
+    "sources": {
+      "generate_mesh_patch_crossings.py": "6bfb246ba15a2eb8e2761ed58df9b15a6a3dced4be6c932d83008854842a05a2",
+      "mesh_patch_probe.py": "6230259024281c068db4a456b57a03fe1512c8d89a3342d04c602764dfcd98b9",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "68b9aadbb31d4a5efed443252e29ae2d6dc50bc7266a1e33a4e05a579fcfcb86",
+      "rhino_worker.py": "6c2f2a2a14911049981650181aba95641d18e692d308babf54bf651c05c753db",
+      "structural_sdk.py": "8c4beb95ddb04a7084745bac5df4f84fd3740beb6b3e66e2bdc5bf32c1022d7b"
+    }
+  }
+}
