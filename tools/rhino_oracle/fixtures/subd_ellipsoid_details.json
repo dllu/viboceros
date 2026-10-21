@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_focal_default",
+      "case": "subd_ellipsoid_focal_default"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_focal_quad",
+      "case": "subd_ellipsoid_focal_quad"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_focal_odd",
+      "case": "subd_ellipsoid_focal_odd"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_focal_small",
+      "case": "subd_ellipsoid_focal_small"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_focal_offset",
+      "case": "subd_ellipsoid_focal_offset"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_focal_toggle",
+      "case": "subd_ellipsoid_focal_toggle"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_focal_tilted",
+      "case": "subd_ellipsoid_focal_tilted"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_zero_center",
+      "case": "subd_ellipsoid_zero_center"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_zero_first",
+      "case": "subd_ellipsoid_zero_first"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_zero_second",
+      "case": "subd_ellipsoid_zero_second"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_count_defaults",
+      "case": "subd_ellipsoid_count_defaults"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_around_spatial",
+      "case": "subd_ellipsoid_around_spatial"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_cancel_picked_guide",
+      "case": "subd_ellipsoid_cancel_picked_guide"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_retry_second",
+      "case": "subd_ellipsoid_retry_second"
+    }
+  ]
+}

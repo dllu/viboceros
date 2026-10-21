@@ -36,8 +36,8 @@ Immutable source snapshots and tolerance checks detect stale prepared inputs.
 Commands stage a complete edit before atomic admission. Interactive tools keep
 unfinished points, reference contacts and previews outside the document, then
 commit one constructive history group. Undo/Redo restores document snapshots;
-camera, prompt and hover state remain transient. Round SubD primitives share
-circle/axis input and history controllers with independent remembered settings.
+camera, prompt and hover state remain transient. Primitive commands reuse
+rectangle, circle, ellipse and axis getters with independent remembered settings.
 
 ## Viewport and drafting boundaries
 

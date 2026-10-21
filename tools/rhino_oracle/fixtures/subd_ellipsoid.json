@@ -1,0 +1,261 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_default",
+      "case": "subd_ellipsoid_default"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_grid",
+      "case": "subd_ellipsoid_grid"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_quad",
+      "case": "subd_ellipsoid_quad"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_diameter",
+      "case": "subd_ellipsoid_diameter"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_corner",
+      "case": "subd_ellipsoid_corner"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_centered_corner",
+      "case": "subd_ellipsoid_centered_corner"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_spatial",
+      "case": "subd_ellipsoid_spatial"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_negative",
+      "case": "subd_ellipsoid_negative"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_third_point",
+      "case": "subd_ellipsoid_third_point"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_foci_no",
+      "case": "subd_ellipsoid_foci_no"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_foci_yes",
+      "case": "subd_ellipsoid_foci_yes"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_foci_spatial",
+      "case": "subd_ellipsoid_foci_spatial"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_foci_collinear",
+      "case": "subd_ellipsoid_foci_collinear"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_diameter_vertical",
+      "case": "subd_ellipsoid_diameter_vertical"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_zero_offset",
+      "case": "subd_ellipsoid_zero_offset"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_locked",
+      "case": "subd_ellipsoid_locked"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_locked_diameter",
+      "case": "subd_ellipsoid_locked_diameter"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_four_tri",
+      "case": "subd_ellipsoid_four_tri"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_four_quad",
+      "case": "subd_ellipsoid_four_quad"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_six_quad",
+      "case": "subd_ellipsoid_six_quad"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_around_z",
+      "case": "subd_ellipsoid_around_z"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_around_x",
+      "case": "subd_ellipsoid_around_x"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_odd",
+      "case": "subd_ellipsoid_odd"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_unit_default",
+      "case": "subd_ellipsoid_shapes_unit_default"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_unit_grid",
+      "case": "subd_ellipsoid_shapes_unit_grid"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_unit_odd",
+      "case": "subd_ellipsoid_shapes_unit_odd"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_unit_small",
+      "case": "subd_ellipsoid_shapes_unit_small"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_long_first",
+      "case": "subd_ellipsoid_shapes_long_first"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_long_second",
+      "case": "subd_ellipsoid_shapes_long_second"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_long_third",
+      "case": "subd_ellipsoid_shapes_long_third"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_equal_default",
+      "case": "subd_ellipsoid_shapes_equal_default"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_odd_long_first",
+      "case": "subd_ellipsoid_shapes_odd_long_first"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_odd_long_second",
+      "case": "subd_ellipsoid_shapes_odd_long_second"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_odd_long_third",
+      "case": "subd_ellipsoid_shapes_odd_long_third"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_five_seven",
+      "case": "subd_ellipsoid_shapes_five_seven"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_six_three",
+      "case": "subd_ellipsoid_shapes_six_three"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_shapes_twelve_nine",
+      "case": "subd_ellipsoid_shapes_twelve_nine"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_tilted",
+      "case": "subd_ellipsoid_tilted"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_offset_odd",
+      "case": "subd_ellipsoid_offset_odd"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_diameter_point",
+      "case": "subd_ellipsoid_diameter_point"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_third_negative_point",
+      "case": "subd_ellipsoid_third_negative_point"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_cancel_center",
+      "case": "subd_ellipsoid_cancel_center"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_cancel_first_axis",
+      "case": "subd_ellipsoid_cancel_first_axis"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_cancel_second_axis",
+      "case": "subd_ellipsoid_cancel_second_axis"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_cancel_third_axis",
+      "case": "subd_ellipsoid_cancel_third_axis"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_enter_third_axis",
+      "case": "subd_ellipsoid_enter_third_axis"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_zero_third_axis",
+      "case": "subd_ellipsoid_zero_third_axis"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_zero_third_point",
+      "case": "subd_ellipsoid_zero_third_point"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_cancel_foci",
+      "case": "subd_ellipsoid_cancel_foci"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "subd_ellipsoid_cancel_around",
+      "case": "subd_ellipsoid_cancel_around"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_default",
+      "case": "ellipsoid_default"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_grid",
+      "case": "ellipsoid_grid"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_numbers",
+      "case": "ellipsoid_numbers"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_radius",
+      "case": "ellipsoid_radius"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_quad",
+      "case": "ellipsoid_quad"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_odd",
+      "case": "ellipsoid_odd"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_small",
+      "case": "ellipsoid_small"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_diameter",
+      "case": "ellipsoid_diameter"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_corner",
+      "case": "ellipsoid_corner"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_centered_corner",
+      "case": "ellipsoid_centered_corner"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_foci",
+      "case": "ellipsoid_foci"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_vertical",
+      "case": "ellipsoid_vertical"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_spatial",
+      "case": "ellipsoid_spatial"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_negative",
+      "case": "ellipsoid_negative"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_third_point",
+      "case": "ellipsoid_third_point"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_cancel",
+      "case": "ellipsoid_cancel"
+    }
+  ]
+}

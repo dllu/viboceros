@@ -1,6 +1,5 @@
-#[path = "../../../crates/viboceros-command/tests/support/subd_torus_surface.rs"]
-mod torus_surface;
 use super::*;
+use crate::app::subd_native_tests as subd_native;
 use crate::app::subd_primitives::tests::native as box_native;
 use crate::app::tests::test_app;
 #[path = "../../../crates/viboceros-command/tests/support/subd_torus.rs"]

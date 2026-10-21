@@ -138,3 +138,33 @@ pub fn check(scene: &Scene, value: &Value, phase: &str) -> Value {
     }
     json!({"qualified":true,"objects":objects,"attributes_selection_and_source":true})
 }
+
+#[allow(dead_code)] // Used by torus and ellipsoid capture adapters.
+pub fn macro_actions(value: &Value, source: Option<viboceros_document::ObjectId>) -> Vec<String> {
+    let mut words = actions(value, source);
+    // Replay the actual numeric tokens emitted by IronPython, which may round
+    // JSON recipe values. Boundary admission depends on these exact inputs.
+    let macro_words = value["macro"]
+        .as_str()
+        .unwrap()
+        .split_whitespace()
+        .collect::<Vec<_>>();
+    let case = &value["input"];
+    let mut at = 1 + if case["counts_at_end"] == true {
+        0
+    } else {
+        case["counts"].as_array().map_or(0, Vec::len)
+    };
+    for (index, action) in value["input"]["actions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+    {
+        if action.is_number() {
+            words[index] = macro_words[at].into();
+        }
+        at += if action.is_object() { 2 } else { 1 };
+    }
+    words
+}

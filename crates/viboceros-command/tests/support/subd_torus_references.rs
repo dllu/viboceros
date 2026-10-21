@@ -1,5 +1,5 @@
 use super::cylinder_native;
-use super::torus_surface as surface;
+use super::subd_native::facets as surface;
 pub use cylinder_native::{Scene, actions, point, token};
 use serde_json::Value;
 pub fn rows() -> Vec<Value> {

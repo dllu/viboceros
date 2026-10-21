@@ -1,5 +1,3 @@
-#[path = "support/subd_torus_surface.rs"]
-mod torus_surface;
 use viboceros_command::{CommandContext, CommandRegistry};
 #[path = "support/subd_box.rs"]
 #[allow(dead_code)]

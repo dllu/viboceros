@@ -1,0 +1,2887 @@
+{
+  "model_epsilon": 1e-06,
+  "captured_recipes": 64,
+  "successful_constructions": 53,
+  "command_cases": 54,
+  "getter_cases": 64,
+  "zero_axis_cases": 2,
+  "getter_only_recoveries": 1,
+  "native_engine_version": "8.32.26160.13001",
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "maximum_native_history_evaluation_error": 1.7763568394002505e-15,
+  "maximum_control_or_limit_point_error": 9.36961642850065e-07,
+  "maximum_sampled_surface_error": 7.62939455967171e-07,
+  "stages": {
+    "command": [
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 1.989128069720283e-15,
+              "maximum_sampled_surface_error": 2.678952363880807e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_grid"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 384,
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.790180836524724e-15,
+              "maximum_sampled_surface_error": 2.2650998591337196e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_diameter"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_corner"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_centered_corner"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.0914391600145933e-07,
+              "maximum_sampled_surface_error": 1.7029954913567487e-07,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_negative"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_third_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.664644241777495e-15,
+              "maximum_sampled_surface_error": 3.55287164693321e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_foci_no"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.664644241777495e-15,
+              "maximum_sampled_surface_error": 3.55287164693321e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_foci_yes"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 7.341126757918118e-15,
+              "maximum_sampled_surface_error": 8.263520563790825e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_foci_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 4.39625888431457e-15,
+              "maximum_sampled_surface_error": 7.993653975683386e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_foci_collinear"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_diameter_vertical"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.1554856477198506e-14,
+              "maximum_sampled_surface_error": 1.422645865968639e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_offset"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 5.856010201199524e-08,
+              "maximum_sampled_surface_error": 4.76837155982679e-08,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_locked"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_locked_diameter"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 96,
+              "edges": 12,
+              "faces": 8,
+              "maximum_control_or_limit_point_error": 1.7763568394002505e-15,
+              "maximum_sampled_surface_error": 1.776604215940296e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_four_tri"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 64,
+              "edges": 8,
+              "faces": 4,
+              "maximum_control_or_limit_point_error": 3.552713678800501e-15,
+              "maximum_sampled_surface_error": 1.3323399077344022e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_four_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 192,
+              "edges": 24,
+              "faces": 12,
+              "maximum_control_or_limit_point_error": 1.88411095042053e-15,
+              "maximum_sampled_surface_error": 1.887379141862766e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 14
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_six_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.7012892057857038e-15,
+              "maximum_sampled_surface_error": 3.614694635594955e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_around_z"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.7012892057857038e-15,
+              "maximum_sampled_surface_error": 3.614694635594955e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_around_x"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 5.347542221830668e-15,
+              "maximum_sampled_surface_error": 7.105503275832046e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 8.95090418262362e-16,
+              "maximum_sampled_surface_error": 1.1129951213863744e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_unit_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.3322676295501878e-15,
+              "maximum_sampled_surface_error": 1.3345785898812087e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_unit_grid"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 1.3323615233730317e-15,
+              "maximum_sampled_surface_error": 1.1157603309187458e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_unit_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 72,
+              "edges": 9,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+              "maximum_sampled_surface_error": 4.476662236260899e-16,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_unit_small"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 7.161583958246236e-15,
+              "maximum_sampled_surface_error": 1.0661754450970026e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_long_first"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 7.108895957933346e-15,
+              "maximum_sampled_surface_error": 1.066796660708005e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_long_second"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 7.160723346098895e-15,
+              "maximum_sampled_surface_error": 7.182207712846219e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_long_third"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 2.094764613337708e-15,
+              "maximum_sampled_surface_error": 2.737549743767154e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_equal_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 2.1320907500235726e-14,
+              "maximum_sampled_surface_error": 2.8421728410056826e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_odd_long_first"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 1.0716384253463368e-14,
+              "maximum_sampled_surface_error": 1.4239016068304867e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_odd_long_second"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 5.9580819677934555e-15,
+              "maximum_sampled_surface_error": 7.756635187002085e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_odd_long_third"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 520,
+              "edges": 65,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 3.5596458096434965e-15,
+              "maximum_sampled_surface_error": 4.447393176540772e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 32
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_five_seven"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 192,
+              "edges": 24,
+              "faces": 12,
+              "maximum_control_or_limit_point_error": 1.88411095042053e-15,
+              "maximum_sampled_surface_error": 1.887379141862766e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 14
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_six_three"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1536,
+              "edges": 192,
+              "faces": 96,
+              "maximum_control_or_limit_point_error": 2.676075093342767e-15,
+              "maximum_sampled_surface_error": 2.676075093342767e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 98
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_twelve_nine"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 9.36961642850065e-07,
+              "maximum_sampled_surface_error": 7.62939455967171e-07,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_tilted"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 2.089859716411603e-11,
+              "maximum_sampled_surface_error": 2.2426007500940526e-11,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_offset_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_diameter_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_third_negative_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "declined": true,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_third_axis"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "declined": true,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_third_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 9.565974336450906e-15,
+              "maximum_sampled_surface_error": 9.240897845457147e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 384,
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 7.384652433345353e-15,
+              "maximum_sampled_surface_error": 8.296271088900922e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 7.70465983141898e-15,
+              "maximum_sampled_surface_error": 7.793734002518811e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 72,
+              "edges": 9,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 3.552713678800501e-15,
+              "maximum_sampled_surface_error": 2.710399819191012e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_small"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 3.136059698700285e-08,
+              "maximum_sampled_surface_error": 3.136366599830711e-08,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_offset"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.664644241777495e-15,
+              "maximum_sampled_surface_error": 3.55287164693321e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_toggle"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.999555732989934e-07,
+              "maximum_sampled_surface_error": 1.7623573165259658e-07,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_tilted"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_center"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.9423519842514664e-07,
+              "maximum_sampled_surface_error": 1.5815983324609313e-07,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_first"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_count_defaults"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.7012892057857038e-15,
+              "maximum_sampled_surface_error": 3.614694635594955e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "declined": false,
+        "grouped_history": true,
+        "id": "subd_ellipsoid_around_spatial"
+      }
+    ],
+    "getter": [
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 1.989128069720283e-15,
+              "maximum_sampled_surface_error": 2.678952363880807e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_grid"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 384,
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 1.790180836524724e-15,
+              "maximum_sampled_surface_error": 2.2650998591337196e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_diameter"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_corner"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_centered_corner"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.0914391600145933e-07,
+              "maximum_sampled_surface_error": 1.7029954913567487e-07,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_negative"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_third_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.664644241777495e-15,
+              "maximum_sampled_surface_error": 3.55287164693321e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_foci_no"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.664644241777495e-15,
+              "maximum_sampled_surface_error": 3.55287164693321e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_foci_yes"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 7.341126757918118e-15,
+              "maximum_sampled_surface_error": 8.263520563790825e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_foci_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 4.39625888431457e-15,
+              "maximum_sampled_surface_error": 7.993653975683386e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_foci_collinear"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_diameter_vertical"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.1554856477198506e-14,
+              "maximum_sampled_surface_error": 1.422645865968639e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_offset"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 5.856010201199524e-08,
+              "maximum_sampled_surface_error": 4.76837155982679e-08,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_locked"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_locked_diameter"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 96,
+              "edges": 12,
+              "faces": 8,
+              "maximum_control_or_limit_point_error": 1.7763568394002505e-15,
+              "maximum_sampled_surface_error": 1.776604215940296e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_four_tri"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 64,
+              "edges": 8,
+              "faces": 4,
+              "maximum_control_or_limit_point_error": 3.552713678800501e-15,
+              "maximum_sampled_surface_error": 1.3323399077344022e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 6
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_four_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 192,
+              "edges": 24,
+              "faces": 12,
+              "maximum_control_or_limit_point_error": 1.88411095042053e-15,
+              "maximum_sampled_surface_error": 1.887379141862766e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 14
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_six_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.7012892057857038e-15,
+              "maximum_sampled_surface_error": 3.614694635594955e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_around_z"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.7012892057857038e-15,
+              "maximum_sampled_surface_error": 3.614694635594955e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_around_x"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 5.347542221830668e-15,
+              "maximum_sampled_surface_error": 7.105503275832046e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 8.95090418262362e-16,
+              "maximum_sampled_surface_error": 1.1129951213863744e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_unit_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.3322676295501878e-15,
+              "maximum_sampled_surface_error": 1.3345785898812087e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_unit_grid"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 1.3323615233730317e-15,
+              "maximum_sampled_surface_error": 1.1157603309187458e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_unit_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 72,
+              "edges": 9,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+              "maximum_sampled_surface_error": 4.476662236260899e-16,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_unit_small"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 7.161583958246236e-15,
+              "maximum_sampled_surface_error": 1.0661754450970026e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_long_first"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 7.108895957933346e-15,
+              "maximum_sampled_surface_error": 1.066796660708005e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_long_second"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 7.160723346098895e-15,
+              "maximum_sampled_surface_error": 7.182207712846219e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_long_third"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 2.094764613337708e-15,
+              "maximum_sampled_surface_error": 2.737549743767154e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_equal_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 2.1320907500235726e-14,
+              "maximum_sampled_surface_error": 2.8421728410056826e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_odd_long_first"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 1.0716384253463368e-14,
+              "maximum_sampled_surface_error": 1.4239016068304867e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_odd_long_second"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 5.9580819677934555e-15,
+              "maximum_sampled_surface_error": 7.756635187002085e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_odd_long_third"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 520,
+              "edges": 65,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 3.5596458096434965e-15,
+              "maximum_sampled_surface_error": 4.447393176540772e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 32
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_five_seven"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 192,
+              "edges": 24,
+              "faces": 12,
+              "maximum_control_or_limit_point_error": 1.88411095042053e-15,
+              "maximum_sampled_surface_error": 1.887379141862766e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 14
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_six_three"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1536,
+              "edges": 192,
+              "faces": 96,
+              "maximum_control_or_limit_point_error": 2.676075093342767e-15,
+              "maximum_sampled_surface_error": 2.676075093342767e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 98
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_shapes_twelve_nine"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 9.36961642850065e-07,
+              "maximum_sampled_surface_error": 7.62939455967171e-07,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_tilted"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 2.089859716411603e-11,
+              "maximum_sampled_surface_error": 2.2426007500940526e-11,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_offset_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_diameter_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_third_negative_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_cancel_center"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_cancel_first_axis"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_cancel_second_axis"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_cancel_third_axis"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_enter_third_axis"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_third_axis"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_third_point"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_cancel_foci"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_cancel_around"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 1440,
+              "edges": 180,
+              "faces": 90,
+              "maximum_control_or_limit_point_error": 9.565974336450906e-15,
+              "maximum_sampled_surface_error": 9.240897845457147e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 92
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_default"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 384,
+              "edges": 48,
+              "faces": 24,
+              "maximum_control_or_limit_point_error": 7.384652433345353e-15,
+              "maximum_sampled_surface_error": 8.296271088900922e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_quad"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 7.70465983141898e-15,
+              "maximum_sampled_surface_error": 7.793734002518811e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_odd"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 72,
+              "edges": 9,
+              "faces": 6,
+              "maximum_control_or_limit_point_error": 3.552713678800501e-15,
+              "maximum_sampled_surface_error": 2.710399819191012e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 5
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_small"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 504,
+              "edges": 63,
+              "faces": 35,
+              "maximum_control_or_limit_point_error": 3.136059698700285e-08,
+              "maximum_sampled_surface_error": 3.136366599830711e-08,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 30
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_offset"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.664644241777495e-15,
+              "maximum_sampled_surface_error": 3.55287164693321e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_toggle"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.999555732989934e-07,
+              "maximum_sampled_surface_error": 1.7623573165259658e-07,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_focal_tilted"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_center"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.9423519842514664e-07,
+              "maximum_sampled_surface_error": 1.5815983324609313e-07,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_first"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_zero_second"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.6645375178539443e-15,
+              "maximum_sampled_surface_error": 3.5527852788328234e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_count_defaults"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 2.7012892057857038e-15,
+              "maximum_sampled_surface_error": 3.614694635594955e-15,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_around_spatial"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_cancel_picked_guide"
+      },
+      {
+        "check": {
+          "attributes_selection_and_source": true,
+          "objects": [
+            {
+              "common_facet_triangulation": true,
+              "compared_surface_faces": 448,
+              "edges": 56,
+              "faces": 32,
+              "maximum_control_or_limit_point_error": 1.1554856477198506e-14,
+              "maximum_sampled_surface_error": 1.423338825515805e-14,
+              "qualified": true,
+              "surface_facets_correspond": true,
+              "surface_sampled": true,
+              "vertices": 26
+            }
+          ],
+          "qualified": true
+        },
+        "grouped_history": true,
+        "id": "subd_ellipsoid_retry_second"
+      }
+    ]
+  },
+  "exploratory_recipes": [
+    {
+      "id": "ellipsoid_default",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_grid",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_numbers",
+      "native_success": false,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_radius",
+      "native_success": false,
+      "rejected_option": true
+    },
+    {
+      "id": "ellipsoid_quad",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_odd",
+      "native_success": true,
+      "rejected_option": true
+    },
+    {
+      "id": "ellipsoid_small",
+      "native_success": true,
+      "rejected_option": true
+    },
+    {
+      "id": "ellipsoid_diameter",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_corner",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_centered_corner",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_foci",
+      "native_success": true,
+      "rejected_option": true
+    },
+    {
+      "id": "ellipsoid_vertical",
+      "native_success": false,
+      "rejected_option": true
+    },
+    {
+      "id": "ellipsoid_spatial",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_negative",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_third_point",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_cancel",
+      "native_success": false,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_foci_no",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_foci_yes",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_foci_spatial",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_foci_collinear",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_diameter_vertical",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_zero",
+      "native_success": false,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_zero_offset",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_enter",
+      "native_success": false,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_third_diameter",
+      "native_success": false,
+      "rejected_option": true
+    },
+    {
+      "id": "ellipsoid_options_locked",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_locked_diameter",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_four_tri",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_four_quad",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_six_quad",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_around_z",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_around_x",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_options_late_counts",
+      "native_success": true,
+      "rejected_option": true
+    },
+    {
+      "id": "ellipsoid_options_odd",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_unit_default",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_unit_grid",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_unit_odd",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_unit_small",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_long_first",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_long_second",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_long_third",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_equal_default",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_odd_long_first",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_odd_long_second",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_odd_long_third",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_five_seven",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_six_three",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "ellipsoid_shapes_twelve_nine",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_focal_default",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_focal_quad",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_focal_odd",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_focal_small",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_focal_offset",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_focal_toggle",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_focal_tilted",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_zero_center",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_zero_first",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_zero_second",
+      "native_success": false,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_count_defaults",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_around_spatial",
+      "native_success": true,
+      "rejected_option": false
+    },
+    {
+      "id": "subd_ellipsoid_cancel_picked_guide",
+      "native_success": false,
+      "rejected_option": false
+    }
+  ],
+  "guarantees": [
+    "SubDEllipsoid reuses the rational MeshEllipsoid sampler and public OpenNURBS evaluation. Ordinary cages compensate local extents using density-two limit spans. Identity placement retains double source bounds; transformed placement follows the native float-bound path. Odd counts retain triangular caps; even counts support triangle and quad pole fans.",
+    "Corner, centered Corner, Diameter, Diameter Vertical, locked axis lengths, spatial axes, tilted CPlanes, projected AroundCurve picks and signed third sizes match captured controls, tags, winding, vertex limit stations and density-two facet corners. Numeric diameters halve the second and third sizes; picked distances are unhalved.",
+    "FromFoci completes a spheroid immediately. Its compensation uses density-three spans in the captured CPlane and scales about that reference origin, preserving native center shifts and axis changes for translated or spatial input. MarkFoci is independently remembered, but these native SubDEllipsoid captures produce no point objects.",
+    "Numeric zero denotes the original CPlane origin at the center, first axis and third axis. At the second axis it is an invalid length and leaves the getter staged. The corrected recovery capture supplies a new length and direction; complete scripts reject its invalid token atomically.",
+    "Shared ellipse picking retains source identity, layer, name and selection. Previews and cancellation preserve model history and pending Redo; history, tolerance and guide edits invalidate both parent and base getters. Successful construction has one object and one grouped Undo/Redo, with exact restored document objects checked independently of evaluation rounding.",
+    "Every corresponding density-two quad has an oriented one-to-one corner match under a common triangulation. The reported facet bound uses corresponding barycentric points; native renderer diagonal choices and the continuous smooth surface are not certified by this check."
+  ],
+  "limits": [
+    "The 61 exploratory recipes preserve raw histories and archived producers and are excluded from supported totals. The first detail batch lacked explicit cancellation after an invalid second-axis zero. Its corrected capture includes cancellation and a separate successful retry.",
+    "At least three around and two vertical faces, at most 100000 control vertices/faces, and at most 1000000 evaluated facets. Density-three focal compensation can reach the facet budget earlier. Unrepresentable float extents are declined before admission.",
+    "Bare Radius, initial Vertical, late topology options and Deformable are unsupported primitive options in the captured build. Vertical is supported inside Diameter. Enter cancels the third-axis prompt; a zero third measurement ends without geometry.",
+    "Arbitrary option timing, every guide type and fit seam, native packing, material/texture channels and comparative performance remain unqualified. Sampled facet correspondence is not a continuous Hausdorff certificate."
+  ],
+  "sha256": {
+    "crates/viboceros-command/src/subd_plane.rs": "2e819e710086a5a3c33a77ca7ec3572d8844abd3b0cd2b38d2f8db1338d33173",
+    "crates/viboceros-command/tests/support/subd_plane.rs": "a37cc2f1131dd8af1837e24bd8ce5ad1f120fb244d22e33803409d87b5afc80d",
+    "crates/viboceros-opennurbs/native/subd.cpp": "fda56ab3d3a37c3e005b4f9d19366eab1fecdae0f53a75c1f54bdf19e388f1fd",
+    "crates/viboceros-opennurbs/native/subd.h": "ed1285813c51c34cdf2fc89d45a6c32b288d53586f4ee14fc73b72180809abad",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "692893eb5c4447a582d43aca0c78413b8622ed19600975057ec15fddacad5fd0",
+    "crates/viboceros-opennurbs/src/subd.rs": "e82017ae6f93d52d3e63a356239d9cb5682aced8107d0085a329df697f55e54e",
+    "crates/viboceros-opennurbs/src/lib.rs": "ccf94e0b2c07a1c1d3a1be341cd7f1feaae08d1543417e65e0ea7519ccb7ea6e",
+    "crates/viboceros-geometry/src/subd.rs": "72b05a9a65d8206e6a798c9c2b3abb2c8a3c3c0c8a46838b34f88d3bfa04bf4b",
+    "crates/viboceros-geometry/src/subd/primitives.rs": "b85bfac843c76139954dfc48806527e75f4e511eee340a3bcf24c48b7e5192fb",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
+    "crates/viboceros-command/src/lib.rs": "1bfb0eb273a3649dcfef42493728d6852a09b6eff5d964a1774448f233eab7d7",
+    "crates/viboceros-command/src/subd_box.rs": "b33686863c705ab9e4fbdf7e4defec3418f95cd781cc6077476de022f471ed8f",
+    "crates/viboceros-command/src/rectangle_input.rs": "eff9a3e8a2cfc1f6872675b60edab741a5f4d9632ce0e65f28e48a5400943322",
+    "crates/viboceros-command/src/curve_reference.rs": "47d7e8fadb36a2d50517c32b23eef15dfec8b777e06967068e44b09f52e9159d",
+    "crates/viboceros-command/tests/subd_box_native.rs": "a997b25ee17b58329f8fd98f57e214820d14438914ff355b1f96b4bfc9830fd6",
+    "crates/viboceros-command/tests/support/subd_box.rs": "bda025b8c108b08000240dcc7402ff56f961875f341da7e2533c1b3850126b83",
+    "crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
+    "src/app.rs": "9050c2a1790f0c4ffbd61833aa81cf7210ab19fe5a37786f8e3aa68f219323c6",
+    "src/app/subd_primitives.rs": "ec60147e39f0c66fe0e7be127ba53526e22030f404fb06621bf8bdc0880a079f",
+    "src/app/subd_primitives/tests.rs": "41943b5553f0180611e05734771d0c624b5f1a9d0bc3ade5d7d5cadf39dbd22e",
+    "src/app/rectangle.rs": "45984c55d0ad2ccbc3437afd7618078c935f3fc148b5cd2db14ebec66b611dfb",
+    "src/app/point_input.rs": "37a651259d9cfd2c89aa935c791ae2b264047e09ef277e0c7856a49c56bc512a",
+    "tools/rhino_oracle/subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+    "tools/rhino_oracle/generate_subd_box.py": "055f46a8b6ddcd56c52975e96b2e1166ae7bfceef2483f4044deed4eca7036c5",
+    "tools/rhino_oracle/structural_sdk.py": "ee55be6832d3b1147890cf699fc0fc941950d4104f52f633d9cd858004fa5dc3",
+    "tools/rhino_oracle/rhino_worker.py": "a59ce3ec98a716bd4d91b5393e3e7a8b2af67d242e3e50c4e608e506589a3285",
+    "tools/rhino_oracle/fixtures/subd_box.json": "fb3bddad8c7d23347a25e31da1b7b702c18de1ddb0b2b4f63561fab073eabf23",
+    "tools/rhino_oracle/observations/subd_box.json": "22740b74ce7b370b50148d7b4fbdfd4a20fcb07725926fa5a78d2d1f1c2e637a",
+    "tools/rhino_oracle/report_subd_box.py": "183ae17edbd0d237020b8eeb1cc2bc59c99c13c2888e542983933d493ba7ec2a",
+    "tools/rhino_oracle/test_subd_box.py": "361f693c7d7d55763c4f638d2d428217630ad7675cb2b9913dffe0271af2fa72",
+    "crates/viboceros-geometry/src/subd/ellipsoid.rs": "3ab9d00b439a6b7dfc973507619258ea0116b3aa8c7b4afcdccb52a508628655",
+    "crates/viboceros-geometry/src/mesh.rs": "393e9621f61a20ae9e64bb3f132fd51284e93d4c178355617d11ca30a2d7b41d",
+    "crates/viboceros-geometry/src/ellipse.rs": "a60c3f7739870be8e8d0f9bdb0aecf5df8e7c8223e4c0f47f551d5ea86b737c5",
+    "crates/viboceros-command/src/ellipse_input.rs": "5a90f561279866202f9fdaee87ad9de6d52d2abace8ef8c19cb1903a3f664d4c",
+    "crates/viboceros-command/src/subd_ellipsoid.rs": "d41c5a425b68fe31d6d18726b60d2c977048f7735ba62e199af65fcee28f55ed",
+    "crates/viboceros-command/src/subd_ellipsoid/input.rs": "d41eeb055335a1ce7a304cee2440356911be126c584697df165a78adbea6cdc1",
+    "crates/viboceros-command/src/subd_ellipsoid/arguments.rs": "9709014999127304d3ff415ab2bc46675d62ff2243b4d8e0ef0d26679afc2f20",
+    "crates/viboceros-command/tests/subd_ellipsoid_native.rs": "4a1668a4dc4eca81da1b68b9b85e9111a47b9d72ff600cfeb0a8cdc6bcde7d07",
+    "crates/viboceros-command/tests/support/subd_ellipsoid.rs": "e445fa3ad58a89914a375cc5b27326413aace492acd4ad9323df18080ff40570",
+    "crates/viboceros-command/tests/support/subd_facets.rs": "ad0be23c4f68083f9b43a85266d0c9e8dcb8d82f00c90c88affa4849472781ff",
+    "src/app/ellipse.rs": "82c56a0c75eda6f1ffeffdf64b92d5930061bf1ea7e79549189448db538e79f9",
+    "src/app/ellipse/guides.rs": "9f006bcc3e6fc9ffc3817b65750cfae81979c79ab6ccd3f9b0f0d5effa5badc7",
+    "src/app/subd_ellipsoid.rs": "b139b992e485f0ece628b0a12d5b0aa483fd62cc012a78bf5f47872dc797b613",
+    "src/app/subd_ellipsoid/tests.rs": "1ac2ab01ec406cdb0deef1841b79f5c1587cd511a9641097a4f1625a5da29110",
+    "tools/rhino_oracle/subd_ellipsoid_probe.py": "9eea6bf708e5ea9245edc424dbd7430fdc107cce794ac5c634fde5fa7dcac149",
+    "tools/rhino_oracle/generate_subd_ellipsoid.py": "51b8c3716c2dca75946a1df874e27a126c0192c25ea549c9381bdfc615a60d3d",
+    "tools/rhino_oracle/report_subd_ellipsoid.py": "ffc431acda63796f57841cb7d44199a77c089a4de19d88e763024303ae43c2fa",
+    "tools/rhino_oracle/test_subd_ellipsoid.py": "9393f323866486178483ca97a59c4b0acc69bc8d2e21d959ee9665d3160fb231",
+    "tools/rhino_oracle/fixtures/subd_ellipsoid.json": "90bcdbfd8bef7739d2340825d97726fc24e73eee4a1afd6276927990f6b5115c",
+    "tools/rhino_oracle/observations/subd_ellipsoid.json": "5a8ef8e034942dbb58b663cfca583a2611a7b2156c2d77e0ec71ed0184465f0a",
+    "tools/rhino_oracle/fixtures/subd_ellipsoid_details.json": "ff409b193ccde02e13497b26973e29fcadd8f4dc0218ea8d7d967b89606c4a0a",
+    "tools/rhino_oracle/observations/subd_ellipsoid_details.json": "b912917f5d11b9104d2b50df1f0ed357976b0f09f3e1ba4dc92e06a411089b40",
+    "tools/rhino_oracle/fixtures/subd_ellipsoid_discovery.json": "3b414346814c3b67ae9ba8940d0a108d9697d38d93e11c0210964602824e5709",
+    "tools/rhino_oracle/observations/subd_ellipsoid_discovery.json": "1092bf89a9fcc45cd0c53ab27f4aaec850a33fba205315a50e691c1a524f67e6",
+    "tools/rhino_oracle/fixtures/subd_ellipsoid_options.json": "3f2b39b62551186833bc75e6c2b412cc3f52bfe40aa261b085e17b556422b4eb",
+    "tools/rhino_oracle/observations/subd_ellipsoid_options.json": "cfc119b2bc5381175d3d5039053f0b7e1e6f197024fe7cd9bf9efea326c2175a",
+    "tools/rhino_oracle/fixtures/subd_ellipsoid_shapes.json": "7ca8a148a67cfd01f05f264c186378c3db415887b4767a26e6caeb7f252ec759",
+    "tools/rhino_oracle/observations/subd_ellipsoid_shapes.json": "1913f4785da32e8979b9193b12010f189ddef8122267fc406eac7975f713e67e",
+    "tools/rhino_oracle/fixtures/subd_ellipsoid_detail_diagnostics.json": "aae5e1adf7445eddd9cc4c98cc1219c1ea3527339885562203d4d886cfac9825",
+    "tools/rhino_oracle/observations/subd_ellipsoid_detail_diagnostics.json": "7d45d659ddbba0e861c75b258346dbf461a3e148ee52a8257c0dd999a2c910a1"
+  }
+}

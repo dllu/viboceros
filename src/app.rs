@@ -235,6 +235,7 @@ mod subcurve_direction;
 mod subcurve_preview;
 mod subcurve_prompt;
 mod subd_axial;
+mod subd_ellipsoid;
 #[cfg(test)]
 #[path = "../crates/viboceros-command/tests/support/subd.rs"]
 #[allow(dead_code)]
@@ -611,6 +612,9 @@ enum InteractiveCommand {
     SubDTorus {
         anchor: Option<Point3>,
     },
+    SubDEllipsoid {
+        anchor: Option<Point3>,
+    },
     SubDSphere {
         anchor: Option<Point3>,
     },
@@ -983,6 +987,7 @@ impl InteractiveCommand {
             Self::Box { .. } => "Box",
             Self::SubDSphere { .. } => "SubDSphere",
             Self::SubDTorus { .. } => "SubDTorus",
+            Self::SubDEllipsoid { .. } => "SubDEllipsoid",
             Self::SubDCylinder { .. } => "SubDCylinder",
             Self::SubDCone { .. } => "SubDCone",
             Self::SubDTruncatedCone { .. } => "SubDTruncatedCone",
@@ -1506,6 +1511,9 @@ impl InteractiveCommand {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
             }
             Self::SubDTorus { .. } => "SubDTorus: pick a base circle and tube size; Esc cancels",
+            Self::SubDEllipsoid { .. } => {
+                "SubDEllipsoid: pick a base ellipse and third axis; Esc cancels"
+            }
             Self::SubDSphere { .. } => "SubDSphere: pick sphere references; Esc cancels",
             Self::SubDTruncatedCone { .. } => {
                 "SubDTruncatedCone: pick a base circle, height and end size; Esc cancels"
@@ -1979,6 +1987,7 @@ impl InteractiveCommand {
             | Self::PolylineOnMesh { anchor: base }
             | Self::FaceCreate { anchor: base }
             | Self::SubDTorus { anchor: base }
+            | Self::SubDEllipsoid { anchor: base }
             | Self::SubDSphere { anchor: base }
             | Self::SubDTruncatedCone { anchor: base }
             | Self::SubDCone { anchor: base }
@@ -2556,6 +2565,7 @@ pub struct VibocerosApp {
     subd_axial_session: Option<subd_axial::Session>,
     subd_sphere_session: Option<subd_sphere::Session>,
     subd_torus_session: Option<subd_torus::Session>,
+    subd_ellipsoid_session: Option<subd_ellipsoid::Session>,
     orient_points_session: Option<orient_points::Session>,
     remap_cplane_session: Option<remap_cplane::Session>,
     orient_surface_session: Option<orient_surface::Session>,
@@ -2709,6 +2719,7 @@ impl VibocerosApp {
             subd_axial_session: None,
             subd_sphere_session: None,
             subd_torus_session: None,
+            subd_ellipsoid_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,
@@ -2840,6 +2851,7 @@ impl VibocerosApp {
             || self.try_continue_tangent(&input)
             || self.try_continue_arc(&input)
             || self.try_continue_circle_around(&input)
+            || self.continue_subd_ellipsoid(&input)
             || self.try_continue_ellipse(&input)
             || self.try_continue_catenary(&input)
             || self.try_continue_spiral(&input)
@@ -3044,6 +3056,7 @@ impl VibocerosApp {
             || self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
             || self.try_start_intersection_prompt(&input)
+            || self.start_subd_ellipsoid(&input)
             || self.start_subd_torus(&input)
             || self.start_subd_sphere(&input)
             || self.start_subd_axial(&input)
@@ -3674,6 +3687,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_conic(input) {
+            return true;
+        }
+        if self.start_subd_ellipsoid(input) {
             return true;
         }
         if self.start_subd_torus(input) {
@@ -6178,6 +6194,7 @@ impl VibocerosApp {
         self.subd_axial_session = None;
         self.subd_sphere_session = None;
         self.subd_torus_session = None;
+        self.subd_ellipsoid_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
         self.finish_stretch_session(false);
@@ -6273,6 +6290,9 @@ impl VibocerosApp {
             return accepted;
         }
         if let Some(accepted) = self.accept_circle_around_point(point) {
+            return accepted;
+        }
+        if let Some(accepted) = self.accept_subd_ellipsoid_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_ellipse_point(point) {
@@ -6404,6 +6424,7 @@ impl VibocerosApp {
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::SubDTorus { .. }
+            | InteractiveCommand::SubDEllipsoid { .. }
             | InteractiveCommand::SubDSphere { .. }
             | InteractiveCommand::SubDTruncatedCone { .. }
             | InteractiveCommand::SubDCone { .. }
@@ -9827,6 +9848,7 @@ impl VibocerosApp {
             }
             self.update_subd_sphere_hover(point);
             self.update_subd_torus_hover(point);
+            self.update_subd_ellipsoid_hover(point);
             self.update_subd_axial_hover(point);
             self.update_subd_primitive_hover(point);
             self.update_face_create_hover(point);
@@ -11120,6 +11142,11 @@ impl eframe::App for VibocerosApp {
                 .and_then(viboceros_command::circle_input::CircleInput::mouse_plane)
         });
         let angle_plane = angle_plane
+            .or_else(|| {
+                self.subd_ellipsoid_session
+                    .as_ref()
+                    .and(self.drafting_plane)
+            })
             .or_else(|| self.subd_torus_session.as_ref().and(self.drafting_plane))
             .or_else(|| self.subd_sphere_session.as_ref().and(self.drafting_plane))
             .or_else(|| self.subd_axial_session.as_ref().and(self.drafting_plane))
@@ -11447,6 +11474,11 @@ impl eframe::App for VibocerosApp {
                                 .face_create_session
                                 .as_ref()
                                 .map(face_create::Session::preview_curves)
+                                .or_else(|| {
+                                    self.subd_ellipsoid_session
+                                        .as_ref()
+                                        .map(subd_ellipsoid::Session::preview_curves)
+                                })
                                 .or_else(|| {
                                     self.subd_torus_session
                                         .as_ref()
@@ -12065,6 +12097,7 @@ mod tests {
             subd_axial_session: None,
             subd_sphere_session: None,
             subd_torus_session: None,
+            subd_ellipsoid_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,

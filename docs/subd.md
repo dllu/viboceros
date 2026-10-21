@@ -23,20 +23,9 @@ the source's control positions may move. Exact source control coordinates still
 identify vertices to join. InPlane constrains the entered targets before fitting.
 Interpolation is remembered and affects only SubD output.
 
-Use [SubDBox](commands/subd-box.md) for closed smooth boxes with editable face
-counts, Center/3Point/Vertical bases and bases perpendicular to guide curves.
-[SubDPlane](commands/subd-plane.md) makes open rectangular grids with crease
-boundaries, including their rounded corner limit stations.
-[SubDCone](commands/subd-cone.md) adds rounded smooth cones, signed axes, angle
-inputs and tangent/fitted circle bases. Its [qualification](subd-cone-qualification.json)
-records construction, source state and history comparisons against Rhino.
-[SubDCylinder](commands/subd-cylinder.md) adds open or capped cylinders,
-circle construction modes, tangent and fitted references, free-axis endpoints
-and BothSides. [SubDTruncatedCone](commands/subd-truncated-cone.md) adds a
-staged top Radius/Diameter getter, including zero ends and reverse fitted cones.
-These round primitives share the `subd_axial` input controller,
-with separate modules for staged input, script parsing and command admission.
-Each command instance owns its remembered settings.
+The [mesh and SubD command index](commands/meshes-index.md) lists primitive
+construction guides and their native qualifications. Primitive commands reuse
+shared rectangle, circle, ellipse and axis getters, with independent settings.
 
 Select a SubD before `3DFace`, choose `Append` in the point getter, or supply
 `Append=<id>` to add faces to it. Without an explicit `Output` option, the target
@@ -102,8 +91,3 @@ comparisons cover standalone faces, append, source tags, disconnected pieces,
 chains, tilted/concave InPlane faces, Undo and cancellation. Each compares the
 native control net, vertex limit stations and sampled density-two surface.
 General imported sharpness and arbitrary nonmanifold fits remain unqualified.
-
-[SubDSphere](commands/subd-sphere.md) adds Quad, Triangle and UV sphere nets,
-shared sphere construction, Tangent, FitPoints and AroundCurve input. Its
-[qualification](subd-sphere-qualification.json) retains 54 native recipes and
-compares geometry, source state and grouped history at `1e-6`.

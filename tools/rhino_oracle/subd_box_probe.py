@@ -61,6 +61,7 @@ def run_scene(op,host,iterations,tolerance,command,recipe):
   for obj in sorted(list(doc.Objects),key=lambda o:o.RuntimeSerialNumber):
    row=dict(role='source'if obj.Id==guide else'output',selected=bool(obj.IsSelected(False)),layer=doc.Layers[obj.Attributes.LayerIndex].Name,name=obj.Attributes.Name,crc=int(obj.Geometry.DataCRC(0)))
    if isinstance(obj.Geometry,G.SubD):row['subd']=subd_value(obj.Geometry,host)
+   elif isinstance(obj.Geometry,G.Point):row['point']=host['_xyz'](obj.Geometry.Location)
    else:row['curve_points']=[host['_xyz'](obj.Geometry.PointAtStart),host['_xyz'](obj.Geometry.PointAtEnd)]
    rows.append(row)
   return rows

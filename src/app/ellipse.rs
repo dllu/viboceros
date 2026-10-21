@@ -1,5 +1,6 @@
 //! Ellipse construction uses the same edit-free getter for previews and commits.
 use super::*;
+mod guides;
 use viboceros_command::{
     curve_reference::CapturedCurve,
     ellipse_input::{Input, Mode, Slot},
@@ -7,6 +8,7 @@ use viboceros_command::{
 
 pub(super) struct Session {
     pub(super) input: Input,
+    subd_ellipsoid: bool,
     pub(super) cursor: Option<Point3>,
     curve: Option<CapturedCurve>,
     postselected: bool,
@@ -21,125 +23,16 @@ impl Session {
     }
 }
 impl VibocerosApp {
-    pub(super) fn release_ellipse_picks(&mut self) {
-        if let Some(s) = &self.ellipse_session
-            && s.postselected
-            && let Some(curve) = &s.curve
-            && self.document.is_selected(curve.object_id())
-        {
-            let _ = self
-                .document
-                .select_object(curve.object_id(), SelectionMode::Remove);
-        }
-    }
-    pub(super) fn picking_ellipse_curve(&self) -> bool {
-        self.ellipse_session
-            .as_ref()
-            .is_some_and(|s| s.input.requests_curve() && s.curve.is_none())
-    }
-    fn bind_ellipse_preselection(&mut self) {
-        if !self.picking_ellipse_curve() {
-            return;
-        }
-        let selected = self.document.selected_object_ids().collect::<Vec<_>>();
-        if let [id] = selected.as_slice()
-            && self
-                .document
-                .object(*id)
-                .is_some_and(|o| o.geometry().curve_ref().is_some())
-            && let Ok(curve) = CapturedCurve::capture(&self.document, *id, None)
-        {
-            self.ellipse_session.as_mut().unwrap().curve = Some(curve);
-        }
-    }
-    pub(super) fn pick_ellipse_curve(&mut self, id: Option<ObjectId>, edge: Option<usize>) -> bool {
-        if !self.picking_ellipse_curve() {
-            return false;
-        }
-        let result = id
-            .ok_or_else(|| "Select a curve or surface edge".to_owned())
-            .and_then(|id| {
-                CapturedCurve::capture(&self.document, id, edge).map_err(|e| e.to_string())
-            });
-        match result {
-            Ok(curve) => {
-                let id = curve.object_id();
-                let postselected = edge.is_none() && !self.document.is_selected(id);
-                let s = self.ellipse_session.as_mut().unwrap();
-                s.curve = Some(curve);
-                s.postselected = postselected;
-                if edge.is_none() {
-                    self.document
-                        .select_object(id, SelectionMode::Add)
-                        .expect("selectable Ellipse guide");
-                }
-                self.component_selection.clear_choices();
-                self.ellipse_prompt();
-            }
-            Err(error) => self.push_log(format!("Error: {error}")),
-        }
-        true
-    }
-    pub(super) fn validate_ellipse_curve(&mut self) {
-        if self
-            .ellipse_session
-            .as_ref()
-            .and_then(|s| s.curve.as_ref())
-            .is_some_and(|c| !c.current(&self.document))
-        {
-            self.release_ellipse_picks();
-            let s = self.ellipse_session.as_mut().unwrap();
-            s.curve = None;
-            s.cursor = None;
-            s.postselected = false;
-            let deformable = s.input.deformable();
-            s.input = Input::new(
-                s.input.options(),
-                self.viewports[self.active_viewport].construction_plane(),
-                self.document.tolerance(),
-            );
-            if deformable {
-                s.input.option("Deformable").expect("Ellipse output option");
-            }
-            s.input.option("AroundCurve").expect("first Ellipse option");
-            self.point_filter = None;
-            self.point_constraint = None;
-            self.component_selection.clear_choices();
-            self.push_log("Ellipse guide changed or became unavailable; select it again".into());
-            self.ellipse_prompt();
-        }
-    }
-    pub(super) fn resolve_ellipse_point(
-        &mut self,
-        point: Point3,
-    ) -> Result<Point3, viboceros_geometry::GeometryError> {
-        self.validate_ellipse_curve();
-        let Some(s) = &self.ellipse_session else {
-            return Ok(point);
-        };
-        if let Some(curve) = &s.curve
-            && s.input.requests_curve()
-        {
-            return viboceros_command::curve_reference::perpendicular_frame(
-                curve.curve_ref(),
-                point,
-            )
-            .map(|frame| frame.origin());
-        }
-        s.input.resolve_point(point)
-    }
-    pub(super) fn accept_ellipse_parameter(&mut self, parameter: f64) -> bool {
-        let point = self
-            .ellipse_session
-            .as_ref()
-            .and_then(Session::cursor_curve)
-            .and_then(|c| c.evaluate(parameter).ok());
-        if let Some(point) = point {
-            self.accept_filtered_drafting_point(point, false);
-            true
-        } else {
-            false
-        }
+    pub(super) fn start_subd_ellipsoid_ellipse(&mut self, input: Input) {
+        self.ellipse_session = Some(Session {
+            input,
+            subd_ellipsoid: true,
+            cursor: None,
+            curve: None,
+            postselected: false,
+        });
+        self.bind_ellipse_preselection();
+        self.ellipse_prompt();
     }
     pub(super) fn try_start_ellipse(&mut self, text: &str) -> bool {
         let mut words = text.split_whitespace();
@@ -161,6 +54,7 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.ellipse_session = Some(Session {
             input,
+            subd_ellipsoid: false,
             cursor: None,
             curve: None,
             postselected: false,
@@ -174,6 +68,11 @@ impl VibocerosApp {
             return;
         };
         let input = s.input;
+        let subd_ellipsoid = s.subd_ellipsoid;
+        if subd_ellipsoid {
+            self.sync_subd_ellipsoid_base(input);
+        }
+        let s = self.ellipse_session.as_ref().unwrap();
         let slot = if self.picking_ellipse_curve() {
             "select curve or surface edge"
         } else if s.input.requests_curve() && s.curve.is_some() {
@@ -201,12 +100,20 @@ impl VibocerosApp {
                 Slot::Complete => "complete",
             }
         };
-        self.active_command = Some(InteractiveCommand::Ellipse {
-            center: input.anchor(),
-            first_axis: input.reference(),
+        self.active_command = Some(if subd_ellipsoid {
+            InteractiveCommand::SubDEllipsoid {
+                anchor: input.anchor(),
+            }
+        } else {
+            InteractiveCommand::Ellipse {
+                center: input.anchor(),
+                first_axis: input.reference(),
+            }
         });
         self.drafting_plane = Some(input.mouse_plane());
-        let options = if input.slot() == Slot::First {
+        let options = if subd_ellipsoid && input.slot() == Slot::First {
+            "; Corner, Diameter, FromFoci, AroundCurve"
+        } else if input.slot() == Slot::First {
             "; Default, Vertical, Corner, Diameter, FromFoci, AroundCurve"
         } else {
             ""
@@ -231,7 +138,9 @@ impl VibocerosApp {
         } else {
             ""
         };
-        let output = if input.deformable() {
+        let output = if subd_ellipsoid {
+            String::new()
+        } else if input.deformable() {
             format!("; Deformable; PointCount={}", input.options().point_count)
         } else if input.slot() == Slot::First {
             "; Deformable".into()
@@ -239,7 +148,12 @@ impl VibocerosApp {
             String::new()
         };
         self.push_log(format!(
-            "Ellipse {}{vertical}: {slot}{options}{foci}{length}{output}; Esc cancels",
+            "{} {}{vertical}: {slot}{options}{foci}{length}{output}; Esc cancels",
+            if subd_ellipsoid {
+                "SubDEllipsoid"
+            } else {
+                "Ellipse"
+            },
             input.mode().name()
         ));
     }
@@ -248,6 +162,9 @@ impl VibocerosApp {
             return false;
         }
         self.validate_ellipse_curve();
+        if self.ellipse_session.is_none() {
+            return true;
+        }
         let picking = self.picking_ellipse_curve();
         let s = self.ellipse_session.as_mut().unwrap();
         let word = text.trim().trim_start_matches(['_', '-']);
@@ -373,6 +290,9 @@ impl VibocerosApp {
     pub(super) fn accept_ellipse_point(&mut self, point: Point3) -> Option<bool> {
         self.ellipse_session.as_ref()?;
         self.validate_ellipse_curve();
+        if self.ellipse_session.is_none() {
+            return Some(false);
+        }
         if self.picking_ellipse_curve() {
             self.ellipse_prompt();
             return Some(false);
@@ -399,6 +319,20 @@ impl VibocerosApp {
             .set_initial_plane(self.viewports[self.active_viewport].construction_plane());
         Some(match s.input.point(point) {
             Ok(Some(_)) => {
+                if s.subd_ellipsoid {
+                    let input = s.input;
+                    let release = if s.postselected {
+                        s.curve
+                            .as_ref()
+                            .map(|c| vec![c.object_id()])
+                            .unwrap_or_default()
+                    } else {
+                        vec![]
+                    };
+                    self.release_ellipse_picks();
+                    self.ellipse_session = None;
+                    return Some(self.accept_subd_ellipsoid_base(input, release));
+                }
                 let command = if let Some(curve) = &s.curve {
                     s.input
                         .command_with_guide(curve.object_id(), curve.source().1, s.postselected)

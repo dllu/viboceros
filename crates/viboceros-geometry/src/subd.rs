@@ -7,6 +7,7 @@ use std::sync::Arc;
 mod append;
 mod cone;
 mod cylinder;
+mod ellipsoid;
 mod interpolation;
 mod primitives;
 mod sphere;

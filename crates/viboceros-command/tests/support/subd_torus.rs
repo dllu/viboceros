@@ -1,6 +1,6 @@
 use super::box_native;
-use super::torus_surface as surface;
-pub use box_native::{Scene, plane};
+use super::subd_native::facets as surface;
+pub use box_native::{Scene, macro_actions as actions, plane};
 use serde_json::Value;
 pub fn rows() -> Vec<Value> {
     let data: Value = serde_json::from_str(include_str!(
@@ -17,29 +17,6 @@ pub fn setup(value: &Value) -> Scene {
 #[allow(dead_code)]
 pub fn getter_only(row: &Value) -> bool {
     row["id"] == "subd_torus_default_small_retry"
-}
-pub fn actions(value: &Value, source: Option<viboceros_document::ObjectId>) -> Vec<String> {
-    let mut words = box_native::actions(value, source);
-    // Replay the actual numeric tokens emitted by IronPython, which may round
-    // JSON recipe values. Boundary admission depends on these exact inputs.
-    let macro_words = value["macro"]
-        .as_str()
-        .unwrap()
-        .split_whitespace()
-        .collect::<Vec<_>>();
-    let mut at = 1;
-    for (index, action) in value["input"]["actions"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .enumerate()
-    {
-        if action.is_number() {
-            words[index] = macro_words[at].into();
-        }
-        at += if action.is_object() { 2 } else { 1 };
-    }
-    words
 }
 #[allow(dead_code)]
 pub fn command(value: &Value, source: Option<viboceros_document::ObjectId>) -> String {

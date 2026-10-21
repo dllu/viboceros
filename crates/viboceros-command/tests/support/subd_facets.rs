@@ -1,4 +1,4 @@
-//! Corresponding quad bounds avoid ill-conditioned closest-point queries at a horn.
+//! Oriented quad correspondence bounds sampled surfaces without closest queries.
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use viboceros_geometry::{Point3, SubD};
@@ -50,6 +50,12 @@ pub fn without_surface(value: &Value, phase: &str) -> Value {
     value
 }
 pub fn certify(subd: &SubD, native: &Value, check: &mut Value) {
+    certify_impl(subd, native, check, false)
+}
+pub fn certify_common_triangulation(subd: &SubD, native: &Value, check: &mut Value) {
+    certify_impl(subd, native, check, true)
+}
+fn certify_impl(subd: &SubD, native: &Value, check: &mut Value, common: bool) {
     let mesh = &native["surface_mesh"];
     let points = mesh["vertices"]
         .as_array()
@@ -108,14 +114,24 @@ pub fn certify(subd: &SubD, native: &Value, check: &mut Value) {
                 }
             }
         }
-        assert!(best.0 <= EPSILON, "unmatched torus facet, error {}", best.0);
+        assert!(best.0 <= EPSILON, "unmatched SubD facet, error {}", best.0);
         matched[best.1] = true;
         // Convex barycentric correspondence bounds each common triangulation.
-        // Quad warp also bounds a change of diagonal in the regular torus grid.
-        maximum = maximum.max(best.0 + warp(corners) + warp(faces[best.1]));
+        // Quad warp also bounds a change of diagonal in the corresponding quad grid.
+        maximum = maximum.max(
+            best.0
+                + if common {
+                    0.
+                } else {
+                    warp(corners) + warp(faces[best.1])
+                },
+        );
     }
     assert!(matched.iter().all(|&v| v));
-    assert!(maximum <= EPSILON, "torus facet bound {maximum}");
+    assert!(maximum <= EPSILON, "SubD facet bound {maximum}");
+    if common {
+        check["common_facet_triangulation"] = json!(true);
+    }
     check["surface_sampled"] = json!(true);
     check["maximum_sampled_surface_error"] = json!(maximum);
     check["surface_facets_correspond"] = json!(true);

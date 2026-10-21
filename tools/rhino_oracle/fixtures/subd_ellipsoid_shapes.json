@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_unit_default",
+      "case": "ellipsoid_shapes_unit_default"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_unit_grid",
+      "case": "ellipsoid_shapes_unit_grid"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_unit_odd",
+      "case": "ellipsoid_shapes_unit_odd"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_unit_small",
+      "case": "ellipsoid_shapes_unit_small"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_long_first",
+      "case": "ellipsoid_shapes_long_first"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_long_second",
+      "case": "ellipsoid_shapes_long_second"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_long_third",
+      "case": "ellipsoid_shapes_long_third"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_equal_default",
+      "case": "ellipsoid_shapes_equal_default"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_odd_long_first",
+      "case": "ellipsoid_shapes_odd_long_first"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_odd_long_second",
+      "case": "ellipsoid_shapes_odd_long_second"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_odd_long_third",
+      "case": "ellipsoid_shapes_odd_long_third"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_five_seven",
+      "case": "ellipsoid_shapes_five_seven"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_six_three",
+      "case": "ellipsoid_shapes_six_three"
+    },
+    {
+      "op": "subd_ellipsoid_command",
+      "id": "ellipsoid_shapes_twelve_nine",
+      "case": "ellipsoid_shapes_twelve_nine"
+    }
+  ]
+}

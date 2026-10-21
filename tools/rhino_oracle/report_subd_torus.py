@@ -23,7 +23,7 @@ SOURCES = list(dict.fromkeys(BASE_SOURCES + [
     'crates/viboceros-command/tests/subd_torus_references_native.rs',
     'crates/viboceros-command/tests/support/subd_torus.rs',
     'crates/viboceros-command/tests/support/subd_torus_references.rs',
-    'crates/viboceros-command/tests/support/subd_torus_surface.rs',
+    'crates/viboceros-command/tests/support/subd_facets.rs',
     'src/app/subd_torus.rs', 'src/app/subd_torus/tests.rs',
     'src/app/circle_around.rs',
     'tools/rhino_oracle/subd_torus_probe.py',

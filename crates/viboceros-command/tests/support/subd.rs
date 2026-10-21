@@ -1,3 +1,6 @@
+#[allow(dead_code)]
+#[path = "subd_facets.rs"]
+pub mod facets;
 use serde_json::{Value, json};
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{MeshFace, MeshProjectionIndex, Point3, SubD, TriangleMesh};
