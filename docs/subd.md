@@ -27,9 +27,14 @@ Use [SubDBox](commands/subd-box.md) for closed smooth boxes with editable face
 counts, Center/3Point/Vertical bases and bases perpendicular to guide curves.
 [SubDPlane](commands/subd-plane.md) makes open rectangular grids with crease
 boundaries, including their rounded corner limit stations.
+[SubDCone](commands/subd-cone.md) adds rounded smooth cones, signed axes, angle
+inputs and tangent/fitted circle bases. Its [qualification](subd-cone-qualification.json)
+records construction, source state and history comparisons against Rhino.
 [SubDCylinder](commands/subd-cylinder.md) adds open or capped cylinders,
 circle construction modes, tangent and fitted references, free-axis endpoints
-and BothSides.
+and BothSides. Cone and cylinder share the `subd_axial` input controller,
+with separate modules for staged input, script parsing and command admission.
+Each command instance owns its remembered settings.
 
 Select a SubD before `3DFace`, choose `Append` in the point getter, or supply
 `Append=<id>` to add faces to it. Without an explicit `Output` option, the target

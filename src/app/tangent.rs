@@ -7,6 +7,7 @@ enum Kind {
     Arc,
     Splop,
     SubDCylinder,
+    SubDCone,
     SubDSphere,
 }
 impl Kind {
@@ -16,6 +17,7 @@ impl Kind {
             Self::Arc => "Arc",
             Self::Splop => "Splop",
             Self::SubDCylinder => "SubDCylinder",
+            Self::SubDCone => "SubDCone",
             Self::SubDSphere => "SubDSphere",
         }
     }
@@ -52,7 +54,16 @@ impl VibocerosApp {
         self.start_tangent(Kind::SubDSphere, None);
     }
     pub(super) fn start_subd_cylinder_tangent(&mut self) {
-        self.start_tangent(Kind::SubDCylinder, None);
+        let kind = if self
+            .subd_cylinder_session
+            .as_ref()
+            .is_some_and(|s| s.kind() == viboceros_command::subd_axial::Kind::Cone)
+        {
+            Kind::SubDCone
+        } else {
+            Kind::SubDCylinder
+        };
+        self.start_tangent(kind, None);
     }
     pub(super) fn start_tangent_arc(&mut self) {
         self.start_tangent(Kind::Arc, None);
@@ -71,7 +82,10 @@ impl VibocerosApp {
         let plane = self
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
-        if !matches!(kind, Kind::Splop | Kind::SubDCylinder | Kind::SubDSphere) {
+        if !matches!(
+            kind,
+            Kind::Splop | Kind::SubDCylinder | Kind::SubDCone | Kind::SubDSphere
+        ) {
             self.cancel_interactive_command(false);
         }
         let preferences = if kind == Kind::Arc {
@@ -79,9 +93,13 @@ impl VibocerosApp {
                 radius: self.commands.arc_tangent_radius(),
                 ..Default::default()
             }
-        } else if kind == Kind::SubDCylinder {
+        } else if matches!(kind, Kind::SubDCylinder | Kind::SubDCone) {
             viboceros_command::circle_around_input::Preferences {
-                radius: self.commands.subd_cylinder_preferences().radius,
+                radius: if kind == Kind::SubDCone {
+                    self.commands.subd_cone_preferences().radius
+                } else {
+                    self.commands.subd_cylinder_preferences().radius
+                },
                 ..Default::default()
             }
         } else if matches!(kind, Kind::Splop | Kind::SubDSphere) {
@@ -137,6 +155,7 @@ impl VibocerosApp {
             Kind::Circle => InteractiveCommand::CircleTangent { anchor },
             Kind::Splop => InteractiveCommand::Splop { last: anchor },
             Kind::SubDCylinder => InteractiveCommand::SubDCylinder { anchor },
+            Kind::SubDCone => InteractiveCommand::SubDCone { anchor },
             Kind::SubDSphere => InteractiveCommand::SubDSphere { anchor },
         });
         self.drafting_plane = s
@@ -172,7 +191,7 @@ impl VibocerosApp {
         if self
             .tangent_session
             .as_ref()
-            .is_some_and(|s| s.kind == Kind::SubDCylinder)
+            .is_some_and(|s| matches!(s.kind, Kind::SubDCylinder | Kind::SubDCone))
             && !self.valid_subd_cylinder()
         {
             return false;
@@ -213,7 +232,7 @@ impl VibocerosApp {
                 }
             };
         }
-        if s.kind == Kind::SubDCylinder {
+        if matches!(s.kind, Kind::SubDCylinder | Kind::SubDCone) {
             let result = s.input.finish();
             return match result {
                 Ok(circle) => self.accept_subd_cylinder_reference(circle),

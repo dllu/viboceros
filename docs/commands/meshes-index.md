@@ -10,6 +10,7 @@
 - [SubDBox primitives and rectangle construction modes](subd-box.md)
 - [SubDPlane grids and rectangle construction modes](subd-plane.md)
 - [SubDSphere styles, sphere construction and reference inputs](subd-sphere.md)
+- [SubDCone: rounded cones, caps, angle and reference inputs](subd-cone.md)
 - [SubDCylinder](subd-cylinder.md): circle bases, caps, face counts and spatial axes.
 - [PlanarMesh from planar curve regions](planar-mesh.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)

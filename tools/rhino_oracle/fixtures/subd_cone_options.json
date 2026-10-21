@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orbaseangle_30",
+      "case": "cone_option_orbaseangle_30"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orbaseangle_45",
+      "case": "cone_option_orbaseangle_45"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orbaseangle_60",
+      "case": "cone_option_orbaseangle_60"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orbaseangle_minus30",
+      "case": "cone_option_orbaseangle_minus30"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orbaseangle_0",
+      "case": "cone_option_orbaseangle_0"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orbaseangle_90",
+      "case": "cone_option_orbaseangle_90"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orapexangle_30",
+      "case": "cone_option_orapexangle_30"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orapexangle_90",
+      "case": "cone_option_orapexangle_90"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orapexangle_120",
+      "case": "cone_option_orapexangle_120"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orapexangle_minus90",
+      "case": "cone_option_orapexangle_minus90"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orapexangle_0",
+      "case": "cone_option_orapexangle_0"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_orapexangle_180",
+      "case": "cone_option_orapexangle_180"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_base_separate",
+      "case": "cone_option_base_separate"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_apex_separate",
+      "case": "cone_option_apex_separate"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_option_around",
+      "case": "cone_option_around"
+    }
+  ]
+}

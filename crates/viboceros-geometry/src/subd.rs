@@ -5,6 +5,7 @@ use crate::{
 };
 use std::sync::Arc;
 mod append;
+mod cone;
 mod cylinder;
 mod interpolation;
 mod primitives;

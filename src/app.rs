@@ -610,6 +610,9 @@ enum InteractiveCommand {
     SubDSphere {
         anchor: Option<Point3>,
     },
+    SubDCone {
+        anchor: Option<Point3>,
+    },
     SubDCylinder {
         anchor: Option<Point3>,
     },
@@ -973,6 +976,7 @@ impl InteractiveCommand {
             Self::Box { .. } => "Box",
             Self::SubDSphere { .. } => "SubDSphere",
             Self::SubDCylinder { .. } => "SubDCylinder",
+            Self::SubDCone { .. } => "SubDCone",
             Self::SubDPrimitive { kind, .. } => kind.name(),
             Self::SelBox { .. } => "SelBox",
             Self::PointGrid { .. } => "PointGrid",
@@ -1493,6 +1497,7 @@ impl InteractiveCommand {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
             }
             Self::SubDSphere { .. } => "SubDSphere: pick sphere references; Esc cancels",
+            Self::SubDCone { .. } => "SubDCone: pick a base circle or cone end; Esc cancels",
             Self::SubDCylinder { .. } => {
                 "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
             }
@@ -1961,6 +1966,7 @@ impl InteractiveCommand {
             | Self::PolylineOnMesh { anchor: base }
             | Self::FaceCreate { anchor: base }
             | Self::SubDSphere { anchor: base }
+            | Self::SubDCone { anchor: base }
             | Self::SubDCylinder { anchor: base }
             | Self::SubDPrimitive { anchor: base, .. } => base,
             Self::RemapCPlane => None,
@@ -6372,6 +6378,7 @@ impl VibocerosApp {
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::SubDSphere { .. }
+            | InteractiveCommand::SubDCone { .. }
             | InteractiveCommand::SubDCylinder { .. }
             | InteractiveCommand::SubDPrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
@@ -9816,6 +9823,7 @@ impl VibocerosApp {
                     prompt.description.command,
                     "Circle FitPoints"
                         | "SubDCylinder FitPoints"
+                        | "SubDCone FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
@@ -10029,6 +10037,7 @@ impl VibocerosApp {
                         prompt.description.command,
                         "Circle FitPoints"
                             | "SubDCylinder FitPoints"
+                            | "SubDCone FitPoints"
                             | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"

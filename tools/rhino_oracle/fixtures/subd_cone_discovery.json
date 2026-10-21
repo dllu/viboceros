@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_default",
+      "case": "cone_discovery_default"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_quad",
+      "case": "cone_discovery_quad"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_tri",
+      "case": "cone_discovery_tri"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_open",
+      "case": "cone_discovery_open"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_three",
+      "case": "cone_discovery_three"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_four",
+      "case": "cone_discovery_four"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_odd",
+      "case": "cone_discovery_odd"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_one",
+      "case": "cone_discovery_one"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_three_bands",
+      "case": "cone_discovery_three_bands"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_negative",
+      "case": "cone_discovery_negative"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_free",
+      "case": "cone_discovery_free"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_both",
+      "case": "cone_discovery_both"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_orientation",
+      "case": "cone_discovery_orientation"
+    },
+    {
+      "op": "subd_cone_command",
+      "id": "cone_discovery_vertical",
+      "case": "cone_discovery_vertical"
+    }
+  ]
+}

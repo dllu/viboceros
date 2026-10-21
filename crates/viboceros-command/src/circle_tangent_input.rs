@@ -50,6 +50,10 @@ impl Input {
             ..Self::new(plane, tolerance, Preferences::default())
         }
     }
+    /// Native cone height menus distinguish curve contacts from free points.
+    pub fn has_curve_contacts(&self) -> bool {
+        self.picks.iter().any(|p| matches!(p, Pick::Curve { .. }))
+    }
     pub fn wants_curve(&self) -> bool {
         !self.point && !self.radius_pending
     }

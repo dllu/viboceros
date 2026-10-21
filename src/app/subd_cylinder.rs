@@ -1,8 +1,10 @@
-//! Staged radial input and grouped history for native subdivision cylinders.
+//! Shared staged construction and grouped history for round SubD primitives.
 use super::*;
-use viboceros_command::subd_cylinder::Input;
+use viboceros_command::subd_axial::{Input, Kind};
 use viboceros_document::HistoryGroup;
 use viboceros_geometry::{Circle3, NurbsCurve, Polyline3, Tolerance};
+#[cfg(test)]
+mod cone_tests;
 #[cfg(test)]
 pub(super) mod tests;
 pub(super) struct Session {
@@ -14,6 +16,9 @@ pub(super) struct Session {
     release_picks: Vec<ObjectId>,
 }
 impl Session {
+    pub(super) fn kind(&self) -> Kind {
+        self.input.kind
+    }
     pub(super) fn preview_curves(&self) -> &[NurbsCurve] {
         &self.preview
     }
@@ -47,7 +52,22 @@ impl Session {
         {
             self.circle(d.frame, c.radius);
             if let Ok(end) = d.frame.point_at([0., 0., d.height]) {
-                self.circle(d.frame.with_origin(end), c.radius);
+                if self.input.kind == Kind::Cylinder {
+                    self.circle(d.frame.with_origin(end), c.radius);
+                } else {
+                    for x in [-c.radius, c.radius] {
+                        if let Ok(curve) = d
+                            .frame
+                            .point_at([x, 0., 0.])
+                            .and_then(|p| {
+                                Polyline3::try_new(vec![p, end], Tolerance::NUMERICAL_VALIDATION)
+                            })
+                            .and_then(|p| p.to_nurbs())
+                        {
+                            self.preview.push(curve);
+                        }
+                    }
+                }
                 if let Ok(line) =
                     Polyline3::try_new(vec![d.frame.origin(), end], Tolerance::NUMERICAL_VALIDATION)
                         .and_then(|p| p.to_nurbs())
@@ -68,21 +88,27 @@ impl VibocerosApp {
         });
         if !valid {
             self.cancel_interactive_command(false);
-            self.push_log("SubDCylinder inputs or history changed; restart the command".into());
+            self.push_log(
+                "SubD construction inputs or history changed; restart the command".into(),
+            );
         }
         valid
     }
     pub(super) fn start_subd_cylinder(&mut self, input: &str) -> bool {
         let words = input.split_whitespace().collect::<Vec<_>>();
-        if !words.first().is_some_and(|w| {
-            w.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("SubDCylinder")
-        }) {
-            return false;
-        }
-        let mut getter = Input::new(
+        let kind = match words
+            .first()
+            .map(|w| w.trim_start_matches(['_', '-']).to_ascii_lowercase())
+            .as_deref()
+        {
+            Some("subdcylinder") => Kind::Cylinder,
+            Some("subdcone") => Kind::Cone,
+            _ => return false,
+        };
+        let mut getter = Input::new_for(
+            kind,
             self.viewports[self.active_viewport].construction_plane(),
-            self.commands.subd_cylinder_preferences(),
+            kind.preferences(&self.commands),
         );
         let mode = words.last().copied().filter(|w| {
             ["Tangent", "FitPoints"]
@@ -99,7 +125,7 @@ impl VibocerosApp {
             }
         }
         self.cancel_interactive_command(false);
-        let group = match self.document.begin_history_group("SubDCylinder") {
+        let group = match self.document.begin_history_group(kind.name()) {
             Ok(g) => g,
             Err(e) => {
                 self.push_log(format!("Error: {e}"));
@@ -124,12 +150,16 @@ impl VibocerosApp {
         let Some(s) = self.subd_cylinder_session.as_mut() else {
             return;
         };
-        self.commands
-            .remember_subd_cylinder_preferences(s.input.preferences);
-        let message = format!("SubDCylinder: {}; Esc cancels", s.input.prompt());
+        s.input.kind.remember(&self.commands, s.input.preferences);
+        let message = format!("{}: {}; Esc cancels", s.input.kind.name(), s.input.prompt());
         self.drafting_plane = s.input.mouse_plane();
-        self.active_command = Some(InteractiveCommand::SubDCylinder {
-            anchor: s.input.anchor(),
+        self.active_command = Some(match s.input.kind {
+            Kind::Cylinder => InteractiveCommand::SubDCylinder {
+                anchor: s.input.anchor(),
+            },
+            Kind::Cone => InteractiveCommand::SubDCone {
+                anchor: s.input.anchor(),
+            },
         });
         s.refresh(None);
         self.command_input.clear();
@@ -190,9 +220,8 @@ impl VibocerosApp {
         self.command_input.clear();
         match result {
             Ok(()) => {
-                self.commands
-                    .remember_subd_cylinder_preferences(s.input.preferences);
-                self.push_log("Created SubDCylinder".into());
+                s.input.kind.remember(&self.commands, s.input.preferences);
+                self.push_log(format!("Created {}", s.input.kind.name()));
                 true
             }
             Err(e) => {
@@ -243,8 +272,17 @@ impl VibocerosApp {
             return true;
         }
         let s = self.subd_cylinder_session.as_mut().unwrap();
-        match s.input.option(word) {
+        if word.is_empty() || word.eq_ignore_ascii_case("Enter") {
+            let result = s.input.enter();
+            self.advance_subd_cylinder(result);
+            return true;
+        }
+        match s.input.option(input) {
             Ok(true) => {
+                if s.input.definition.is_some() {
+                    self.advance_subd_cylinder(Ok(()));
+                    return true;
+                }
                 self.point_filter = None;
                 self.point_constraint = None;
                 self.subd_cylinder_prompt();
@@ -256,9 +294,7 @@ impl VibocerosApp {
             }
             Ok(false) => (),
         }
-        let result = if word.is_empty() || word.eq_ignore_ascii_case("Enter") {
-            Some(s.input.enter())
-        } else if s.input.wants_number() {
+        let result = if s.input.wants_number() {
             let scalar_units = viboceros_geometry::LengthUnitSystem::Unset;
             let units = if s.input.uses_scalar_units() {
                 &scalar_units
@@ -317,25 +353,39 @@ impl VibocerosApp {
             self.active_command = None;
             self.drafting_plane = None;
             self.object_prompt = Some(object_selection::PendingObjectCommand::selecting(
-                viboceros_command::subd_cylinder::selection_prompt(),
+                viboceros_command::subd_axial::selection_prompt_for(
+                    self.subd_cylinder_session.as_ref().unwrap().input.kind,
+                ),
             ));
             self.command_input.clear();
-            self.push_log("SubDCylinder FitPoints: select points or control points; Enter accepts, Esc cancels".into());
+            self.push_log(format!(
+                "{} FitPoints: select points or control points; Enter accepts, Esc cancels",
+                self.subd_cylinder_session
+                    .as_ref()
+                    .unwrap()
+                    .input
+                    .kind
+                    .name()
+            ));
         }
     }
     pub(super) fn accept_subd_cylinder_reference(&mut self, circle: Circle3) -> bool {
         if !self.valid_subd_cylinder() {
             return false;
         }
+        let curve_contacts = self
+            .tangent_session
+            .as_ref()
+            .is_some_and(|s| s.input.has_curve_contacts());
         self.tangent_session = None;
         self.point_filter = None;
         self.point_constraint = None;
-        let result = self
-            .subd_cylinder_session
-            .as_mut()
-            .unwrap()
-            .input
-            .reference_circle(circle);
+        let input = &mut self.subd_cylinder_session.as_mut().unwrap().input;
+        let result = if curve_contacts {
+            input.tangent_curve_circle(circle)
+        } else {
+            input.reference_circle(circle)
+        };
         self.advance_subd_cylinder(result)
     }
     pub(super) fn accept_subd_cylinder_fit(&mut self, postselected: bool) -> bool {
