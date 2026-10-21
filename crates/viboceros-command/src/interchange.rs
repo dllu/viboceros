@@ -805,6 +805,7 @@ pub(super) fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, Co
         Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
         Geometry::Brep(brep) => ThreeDmGeometry::Brep(brep.clone()),
         Geometry::Mesh(mesh) => ThreeDmGeometry::Mesh(mesh.clone()),
+        Geometry::SubD(subd) => ThreeDmGeometry::SubD(subd.clone()),
     })
 }
 
@@ -823,6 +824,7 @@ pub(super) fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry 
         ThreeDmGeometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface),
         ThreeDmGeometry::Brep(brep) => Geometry::Brep(brep),
         ThreeDmGeometry::Mesh(mesh) => Geometry::Mesh(mesh),
+        ThreeDmGeometry::SubD(subd) => Geometry::SubD(subd),
     }
 }
 

@@ -41,6 +41,7 @@ const OBJECT_POLYCURVE: c_int = 8;
 const OBJECT_POLYLINE: c_int = 9;
 const OBJECT_ARC: c_int = 10;
 const OBJECT_INSTANCE: c_int = 11;
+const OBJECT_SUBD: c_int = 12;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -164,6 +165,7 @@ pub enum ThreeDmGeometry {
     NurbsSurface(NurbsSurface),
     Brep(Brep),
     Mesh(TriangleMesh),
+    SubD(viboceros_geometry::SubD),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1395,6 +1397,14 @@ fn decode_object(
                 curve
             })
         }
+        OBJECT_SUBD
+            if coordinates.is_empty()
+                && indices.is_empty()
+                && knots_u.is_empty()
+                && knots_v.is_empty() =>
+        {
+            ThreeDmGeometry::SubD(viboceros_geometry::SubD::try_from_archive(geometry_data)?)
+        }
         OBJECT_NURBS_SURFACE
             if info.degree_u > 0
                 && info.degree_v > 0
@@ -1903,6 +1913,18 @@ impl ObjectPayload {
                         _ => ThreeDmError::InvalidModel("invalid native arc payload".into()),
                     },
                 )?,
+            },
+            ThreeDmGeometry::SubD(subd) => Self {
+                object_type: OBJECT_SUBD,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: subd.archive().to_vec(),
             },
             ThreeDmGeometry::Mesh(mesh) => Self {
                 object_type: OBJECT_TRIANGLE_MESH,

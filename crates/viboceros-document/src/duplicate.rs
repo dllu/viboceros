@@ -85,6 +85,7 @@ impl Geometry {
             Self::NurbsSurface(_) => DuplicateGeometryFamily::NurbsSurface,
             Self::Brep(_) => DuplicateGeometryFamily::Brep,
             Self::Mesh(_) => DuplicateGeometryFamily::Mesh,
+            Self::SubD(_) => DuplicateGeometryFamily::SubD,
             Self::BlockInstance(_) => DuplicateGeometryFamily::BlockInstance,
         }
     }
@@ -100,6 +101,7 @@ impl Geometry {
 
     fn duplicate_key(&self) -> Result<DuplicateGeometryKey, GeometryError> {
         Ok(match self {
+            Self::SubD(subd) => DuplicateGeometryKey::SubD(subd.archive().to_vec()),
             Self::BlockInstance(_) => {
                 return Err(GeometryError::UnsupportedBlockInstanceOperation {
                     operation: "duplicate shape comparison",
@@ -220,10 +222,12 @@ pub(super) enum DuplicateGeometryFamily {
     NurbsSurface,
     Brep,
     Mesh,
+    SubD,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 enum DuplicateGeometryKey {
+    SubD(Vec<u8>),
     Point([u64; 3]),
     PointCloud(Vec<[u64; 3]>),
     PiecewiseLinear(Vec<[u64; 3]>),

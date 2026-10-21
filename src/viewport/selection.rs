@@ -459,7 +459,10 @@ impl Viewport {
                         .get(object, document.tolerance());
                     let surface = matches!(
                         object.geometry(),
-                        Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                        Geometry::NurbsSurface(_)
+                            | Geometry::Brep(_)
+                            | Geometry::Mesh(_)
+                            | Geometry::SubD(_)
                     );
                     if surface
                         && self.display_mode != DisplayMode::Wireframe
@@ -792,7 +795,10 @@ impl Viewport {
             geometry => {
                 let surface = matches!(
                     geometry,
-                    Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                    Geometry::NurbsSurface(_)
+                        | Geometry::Brep(_)
+                        | Geometry::Mesh(_)
+                        | Geometry::SubD(_)
                 );
                 if surface
                     && self.display_mode != DisplayMode::Wireframe
@@ -975,6 +981,17 @@ impl Viewport {
                     for curve in &curves {
                         self.add_projected_nurbs_curve(&mut projected, viewport_rect, curve);
                     }
+                }
+            }
+            Geometry::SubD(subd) => {
+                if let Ok(mesh) = subd.display_mesh() {
+                    self.add_projected_mesh(
+                        &mut projected,
+                        viewport_rect,
+                        &mesh,
+                        self.display_mode != DisplayMode::Wireframe,
+                        tolerance,
+                    );
                 }
             }
             Geometry::Mesh(mesh) => self.add_projected_mesh(

@@ -44,6 +44,12 @@ SCENES.update(CONTROLS)
 if __package__:from .face_draft_cases import ALL_DRAFTS as DRAFTS
 else:from face_draft_cases import ALL_DRAFTS as DRAFTS
 SCENES.update(DRAFTS)
+SUBD_CASES={}
+for _name in ['quad','triangle','triangle_enter','reverse','concave','twisted','in_plane','ngon','ngon_spatial','multiple']:
+ SUBD_CASES['subd_'+_name]=dict(deepcopy(CASES[_name]),output='SubD',interpolated=False)
+SUBD_SURFACE_CASES={name.replace("subd_","subd_surface_",1):dict(deepcopy(case),surface_mesh=True)for name,case in SUBD_CASES.items()}
+SCENES.update(SUBD_CASES)
+SCENES.update(SUBD_SURFACE_CASES)
 
 
 def request():
@@ -53,6 +59,14 @@ def request():
 
 def variant_request():
  q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in VARIANTS];return q
+
+
+def subd_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_CASES];return q
+
+
+def subd_surface_request():
+ q=request();q['operations']=[dict(op='face_create_command',id=name,case=name)for name in SUBD_SURFACE_CASES];return q
 
 
 def control_request():
@@ -84,6 +98,21 @@ def run(op,host,iterations,tolerance):
      valid,log=obj.Geometry.IsValidWithLog();row['native_validity']=dict(valid=bool(valid),diagnostics=str(log or''))
      row['vertex_normals']=[[float(n.X),float(n.Y),float(n.Z)]for n in obj.Geometry.Normals]
      row['face_normals']=[[float(n.X),float(n.Y),float(n.Z)]for n in obj.Geometry.FaceNormals]
+   elif isinstance(obj.Geometry,G.SubD):
+    subd=obj.Geometry
+    vertices=[];vertex=subd.Vertices.First
+    while vertex is not None:
+     vertices.append(vertex);vertex=vertex.Next
+    index={int(v.Id):i for i,v in enumerate(vertices)}
+    point=lambda p:[float(p.X),float(p.Y),float(p.Z)]
+    row['subd']=dict(points=[point(v.ControlNetPoint)for v in vertices],vertex_tags=[int(v.Tag)for v in vertices],surface_points=[point(v.SurfacePoint())for v in vertices],
+                     edges=[[index[int(e.VertexFrom.Id)],index[int(e.VertexTo.Id)]]for e in subd.Edges],edge_tags=[int(e.Tag)for e in subd.Edges],
+                     faces=[[index[int(f.VertexAt(i).Id)]for i in range(f.EdgeCount)]for f in subd.Faces],valid=bool(subd.IsValid))
+    if case.get('surface_mesh'):
+     mesh=G.Mesh.CreateFromSubD(subd,2)
+     if mesh is None:raise ValueError('SubD limit meshing failed')
+     try:row['subd']['surface_mesh']=host['_polygon_mesh_value'](mesh)
+     finally:mesh.Dispose()
    rows.append(row)
   return rows
  try:
@@ -103,9 +132,11 @@ def run(op,host,iterations,tolerance):
   finally:doc.EndUndoRecord(record)
   doc.ClearUndoRecords(True);before=snapshot()
   marker='Owned 3DFace '+str(S.Guid.NewGuid());R.RhinoApp.WriteLine(marker)
-  command='_-3DFace _Output=Mesh _PolygonType='+case.get('polygon','Quad')
+  command='_-3DFace _Output='+case.get('output','Mesh')
+  if case.get('output')=='SubD':command+=' _Interpolated='+('Yes'if case.get('interpolated')else'No')
+  command+=' _PolygonType='+case.get('polygon','Quad')
   command+=' _InPlane='+('Yes'if case.get('in_plane')else'No')
-  command+=' _WeldAngle='+str(case.get('weld_angle',180.))
+  if case.get('output','Mesh')=='Mesh':command+=' _WeldAngle='+str(case.get('weld_angle',180.))
   command+=' _Mode='+('MultipleFaces'if case.get('multiple')else'SingleFace')
   command+=' _FromEdge='+('Yes'if op['case']in DRAFTS and case.get('from_edge',True)else'No'if op['case']in DRAFTS else'Yes _Pause'if case.get('edge_pick')else'No')
   if op['case']in DRAFTS and case.get('from_edge',True)and case.get('polygon','Quad')=='Quad':command+=' _Chain='+('Yes'if case.get('chain')else'No')

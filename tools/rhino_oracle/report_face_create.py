@@ -102,7 +102,7 @@ def summarize(log):
    'Ordered n-gons reuse the existing constrained polygon triangulator and validated mesh n-gon overlays. InPlane projects later corners onto the first-three-corner plane.',
   ],limits=[
    'Zero polygon normals remain stored data. Boundary continuation requires a defined reference normal, and welding still rejects a seam whose required normal is undefined.',
-   'SubD output is explicitly unsupported. Public Rhino IsValidWithLog accepts the reconstructed eighteen draft records and all twenty-five captured corner meshes.',
+   'SubD output has a separate qualification report. Public Rhino IsValidWithLog accepts the reconstructed eighteen draft records and all twenty-five captured corner meshes.',
    'Quad surface comparisons use the shared shortest-diagonal triangulation on both sides. Native display tessellation of warped quads, raw vertex/face ordering, and stored normal arrays are not certified.',
    'General self-intersecting polygons, nonmanifold append neighborhoods, texture/vertex-color channels and native comparative speed require further qualification.',
    'Construction retains at most 100000 corners, including automatically reused chain corners. Validated mesh parts and per-face settings are retained; the usual constant-angle path appends and welds once.',

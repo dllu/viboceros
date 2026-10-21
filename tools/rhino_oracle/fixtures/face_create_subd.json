@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "subd_quad",
+      "case": "subd_quad"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_triangle",
+      "case": "subd_triangle"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_triangle_enter",
+      "case": "subd_triangle_enter"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_reverse",
+      "case": "subd_reverse"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_concave",
+      "case": "subd_concave"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_twisted",
+      "case": "subd_twisted"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_in_plane",
+      "case": "subd_in_plane"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_ngon",
+      "case": "subd_ngon"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_ngon_spatial",
+      "case": "subd_ngon_spatial"
+    },
+    {
+      "op": "face_create_command",
+      "id": "subd_multiple",
+      "case": "subd_multiple"
+    }
+  ]
+}

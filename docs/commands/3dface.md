@@ -1,6 +1,6 @@
 # 3DFace
 
-`3DFace` constructs mesh triangles, quads and n-gons from ordered corner points.
+`3DFace` constructs mesh or SubD triangles, quads and n-gons from ordered corner points.
 Start the command and click corners or type coordinates. Triangles finish after
 three corners and quads after four; Enter accepts a three-corner quad or finishes
 an n-gon. `Undo` removes the last corner. Escape clears the unfinished face;
@@ -43,7 +43,12 @@ remaining points can form a fresh face.
 `Edge=<index>` can also appear between point sequences to choose another boundary
 in a script. Its index refers to the mesh including completed draft faces.
 A standalone MultipleFaces draft can switch to FromEdge mode before admission.
-SubD output remains unsupported.
+
+`Output=SubD Interpolated=No` creates standalone subdivision faces. Triangle,
+quad, n-gon, InPlane, MultipleFaces and corner Undo share the point getter.
+Adjacent faces share exact-coordinate vertices and smooth interior edges.
+See [SubD geometry](../subd.md) for display and interchange behavior.
+Appending to existing SubDs and `Interpolated=Yes` remain unsupported.
 
 The [qualification report](../face-create-qualification.json) retains 73 native
 recipes. The command and viewport getter comparisons match sampled surfaces
@@ -60,10 +65,15 @@ The quad's starting corner is preserved when its order changes, because a tied
 diagonal can otherwise change the sampled surface. Boundary continuation needs
 a defined reference normal; welding requests normals only for affected seams.
 
-SubD output, stored normal-array parity, arbitrary nonmanifold neighborhoods,
+Stored mesh normal-array parity, arbitrary nonmanifold neighborhoods,
 texture/vertex-color channels and comparative speed remain unqualified.
 Construction retains at most 100,000 corners, including automatically reused
 chain corners. Ambiguous source boundary loops are rejected; a nonunique
 continuation returns to boundary selection.
+
+SubD qualification is separate: [report](../subd-qualification.json), with ten
+standalone recipes captured twice (control topology and density-two limit meshes).
+Both command and point-getter tests compare tags, winding, surface stations,
+current-layer output, selection and grouped history at `1e-6`.
 
 Reference: [McNeel 3DFace command](https://docs.mcneel.com/rhino/8/help/en-us/commands/3dface.htm).

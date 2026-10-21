@@ -506,3 +506,48 @@ fn viewport_double_click_reports_one_block_hit_without_triggering_title_maximiza
     assert_eq!(second.object_double_click, Some(root));
     assert!(!second.toggle_maximized);
 }
+
+#[test]
+fn subd_limit_surface_reaches_display_and_object_picking() {
+    let mut document = Document::default();
+    let subd = viboceros_geometry::SubD::try_from_polygons(
+        vec![
+            point(0., 0., 0.),
+            point(4., 0., 0.),
+            point(4., 3., 1.),
+            point(0., 3., 0.),
+        ],
+        vec![vec![0, 1, 2, 3]],
+    )
+    .unwrap();
+    let id = document.add_geometry(Geometry::SubD(subd)).unwrap();
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+    for kind in [ViewKind::Top, ViewKind::Perspective] {
+        let mut view = Viewport::new(kind);
+        for mode in [
+            DisplayMode::Wireframe,
+            DisplayMode::Shaded,
+            DisplayMode::Ghosted,
+        ] {
+            view.display_mode = mode;
+            let display = view
+                .display_cache
+                .borrow_mut()
+                .get(document.object(id).unwrap(), document.tolerance());
+            let mesh = display.mesh().unwrap();
+            assert_eq!(mesh.faces().len(), 64);
+            assert!(!display.wires().is_empty());
+            let pixel = view.project(mesh.vertices()[0], rect).unwrap();
+            assert_eq!(view.pick_object(pixel, rect, &document), Some(id));
+            let scene = view.object_scene(rect, &document);
+            assert!(!scene.lines.is_empty());
+            if mode != DisplayMode::Wireframe {
+                assert!(!scene.triangles.is_empty());
+            }
+        }
+    }
+    document.set_objects_locked([id], true).unwrap();
+    let view = Viewport::new(ViewKind::Top);
+    let pixel = view.project(point(2., 1.5, 0.), rect).unwrap();
+    assert_eq!(view.pick_object(pixel, rect, &document), None);
+}

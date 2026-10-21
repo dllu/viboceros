@@ -23,6 +23,7 @@ pub enum Geometry {
     NurbsSurface(NurbsSurface),
     Brep(Brep),
     Mesh(TriangleMesh),
+    SubD(viboceros_geometry::SubD),
     BlockInstance(crate::BlockInstance),
 }
 
@@ -35,6 +36,9 @@ impl Geometry {
             curve.tight_bounds(tolerance)
         } else {
             match self {
+                Self::SubD(_) => Err(GeometryError::UnsupportedSubDOperation {
+                    operation: "certified tight bounds",
+                }),
                 Self::NurbsSurface(surface) => surface.tight_bounds(tolerance),
                 Self::Brep(brep) => brep.tight_bounds(tolerance),
                 Self::BlockInstance(instance) => instance.tight_bounds(tolerance),
@@ -70,6 +74,7 @@ impl Geometry {
             Self::NurbsSurface(surface) => surface.control_point_bounds(),
             Self::Brep(brep) => brep.bounds(),
             Self::Mesh(mesh) => mesh.bounds(),
+            Self::SubD(subd) => subd.bounds(),
             Self::BlockInstance(instance) => instance.bounds(),
         }
     }
@@ -136,6 +141,7 @@ impl Geometry {
             Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
             Self::Brep(brep) => Self::Brep(brep.transformed(transform, tolerance)?),
             Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
+            Self::SubD(subd) => Self::SubD(subd.transformed(transform)?),
             Self::BlockInstance(instance) => {
                 Self::BlockInstance(instance.transformed(transform, tolerance)?)
             }
@@ -212,6 +218,15 @@ impl Geometry {
             }
             Self::Brep(brep) => Self::Brep(morph.morph_brep(brep, tolerance)?),
             Self::Mesh(mesh) => Self::Mesh(morph.morph_mesh(mesh, tolerance)?),
+            Self::SubD(subd) => Self::SubD(
+                subd.try_with_control_points(
+                    &subd
+                        .control_points()
+                        .iter()
+                        .map(|p| morph.morph_point(*p))
+                        .collect::<Result<Vec<_>, _>>()?,
+                )?,
+            ),
         })
     }
 
@@ -247,6 +262,7 @@ impl Geometry {
                 .map(|vertex| vertex.point())
                 .collect(),
             Self::Mesh(mesh) => mesh.vertices().to_vec(),
+            Self::SubD(subd) => subd.control_points().to_vec(),
         })
     }
 }

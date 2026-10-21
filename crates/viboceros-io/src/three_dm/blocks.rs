@@ -253,6 +253,7 @@ fn bounds(
             ThreeDmGeometry::NurbsSurface(g) => g.control_point_bounds(),
             ThreeDmGeometry::Brep(g) => g.bounds(),
             ThreeDmGeometry::Mesh(g) => g.bounds(),
+            ThreeDmGeometry::SubD(g) => g.bounds(),
         };
         result = Some(match result {
             Some(previous) => next.union(previous)?,

@@ -13,7 +13,7 @@ set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 add_subdirectory("${OPENNURBS_ROOT}" opennurbs EXCLUDE_FROM_ALL)
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/opennurbs-merge-face-holes.cmake")
 
-add_library(viboceros_opennurbs STATIC viboceros_opennurbs.cpp mesh_modeling.cpp)
+add_library(viboceros_opennurbs STATIC viboceros_opennurbs.cpp mesh_modeling.cpp subd.cpp)
 target_include_directories(viboceros_opennurbs PRIVATE "${OPENNURBS_ROOT}")
 target_compile_definitions(viboceros_opennurbs PRIVATE ON_CMAKE_BUILD)
 target_link_libraries(viboceros_opennurbs PRIVATE opennurbsStatic)

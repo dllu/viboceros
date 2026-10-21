@@ -501,7 +501,7 @@ impl VibocerosApp {
             return false;
         };
         self.commands.accept_face_create_preferences(s.preferences);
-        let mesh = match s.draft.as_ref().map(solver::Draft::mesh).transpose() {
+        let mesh = match s.draft.as_ref().map(solver::Draft::geometry).transpose() {
             Ok(Some(Some(m))) => m,
             Ok(_) => return false,
             Err(e) => {
@@ -511,7 +511,7 @@ impl VibocerosApp {
         };
         let result = (|| -> Result<(), viboceros_command::CommandError> {
             self.document.begin_group_transaction(&s.group)?;
-            match solver::apply(&mut self.document, s.target, mesh) {
+            match solver::apply_geometry(&mut self.document, s.target, mesh) {
                 Ok(_) => {
                     self.document.commit_group_transaction(&mut s.group)?;
                     Ok(())
@@ -524,7 +524,7 @@ impl VibocerosApp {
         })();
         match result {
             Ok(()) => {
-                self.push_log("Created mesh face(s)".into());
+                self.push_log("Created face(s)".into());
                 true
             }
             Err(e) => {

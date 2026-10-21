@@ -1,0 +1,4601 @@
+{
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "subd_quad",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 514801974,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 514801974,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 514801974,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "points": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      0.6666666666666666,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      2.5,
+                      0.0
+                    ],
+                    [
+                      0.6666666666666666,
+                      2.5,
+                      0.0
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,3,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w0,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 514801974,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_triangle",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1121452120,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  1.3333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1121452120,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  1.3333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "polygon": "Triangle",
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 1121452120,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      0
+                    ],
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2
+                    ]
+                  ],
+                  "points": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      1.3333333333333333,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      2.0,
+                      0.0
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Triangle\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1121452120,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  1.3333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_triangle_enter",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1121452120,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  1.3333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1121452120,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  1.3333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 1121452120,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      0
+                    ],
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2
+                    ]
+                  ],
+                  "points": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      1.3333333333333333,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      2.0,
+                      0.0
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Triangle  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,3,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): _Enter\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo )\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1121452120,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  1.3333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_reverse",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 2990530940,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 2990530940,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 2990530940,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "points": [
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      0.6666666666666666,
+                      2.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      2.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      0.6666666666666666,
+                      0.5,
+                      0.0
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): w0,3,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,3,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w0,0,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 2990530940,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_concave",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 343336929,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  2.833333333333333,
+                  0.16666666666666666,
+                  0.0
+                ],
+                [
+                  1.3333333333333333,
+                  1.1666666666666665,
+                  0.0
+                ],
+                [
+                  0.16666666666666666,
+                  2.1666666666666665,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 343336929,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  2.833333333333333,
+                  0.16666666666666666,
+                  0.0
+                ],
+                [
+                  1.3333333333333333,
+                  1.1666666666666665,
+                  0.0
+                ],
+                [
+                  0.16666666666666666,
+                  2.1666666666666665,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 343336929,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "points": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      0.6666666666666666,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      2.833333333333333,
+                      0.16666666666666666,
+                      0.0
+                    ],
+                    [
+                      1.3333333333333333,
+                      1.1666666666666665,
+                      0.0
+                    ],
+                    [
+                      0.16666666666666666,
+                      2.1666666666666665,
+                      0.0
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w1,1,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w0,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 343336929,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  2.833333333333333,
+                  0.16666666666666666,
+                  0.0
+                ],
+                [
+                  1.3333333333333333,
+                  1.1666666666666665,
+                  0.0
+                ],
+                [
+                  0.16666666666666666,
+                  2.1666666666666665,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_twisted",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 291731123,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.3333333333333333
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  1.3333333333333335
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.3333333333333333
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 291731123,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.3333333333333333
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  1.3333333333333335
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.3333333333333333
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              2.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 291731123,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "points": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      2.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      0.6666666666666666,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      3.333333333333333,
+                      0.5,
+                      0.3333333333333333
+                    ],
+                    [
+                      3.333333333333333,
+                      2.5,
+                      1.3333333333333335
+                    ],
+                    [
+                      0.6666666666666666,
+                      2.5,
+                      0.3333333333333333
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,3,2\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w0,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 291731123,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.3333333333333333
+                ],
+                [
+                  3.333333333333333,
+                  2.5,
+                  1.3333333333333335
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.3333333333333333
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_in_plane",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 3359742211,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  0.0,
+                  2.076923076923077,
+                  1.3846153846153848
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.34615384615384615,
+                  0.23076923076923078
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.3333333333333333
+                ],
+                [
+                  3.333333333333333,
+                  2.346153846153846,
+                  1.564102564102564
+                ],
+                [
+                  0.6666666666666666,
+                  1.8846153846153846,
+                  1.2564102564102564
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 3359742211,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  0.0,
+                  2.076923076923077,
+                  1.3846153846153848
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.34615384615384615,
+                  0.23076923076923078
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.3333333333333333
+                ],
+                [
+                  3.333333333333333,
+                  2.346153846153846,
+                  1.564102564102564
+                ],
+                [
+                  0.6666666666666666,
+                  1.8846153846153846,
+                  1.2564102564102564
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "in_plane": true,
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              2.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 3359742211,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "points": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      2.0
+                    ],
+                    [
+                      0.0,
+                      2.076923076923077,
+                      1.3846153846153848
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      0.6666666666666666,
+                      0.34615384615384615,
+                      0.23076923076923078
+                    ],
+                    [
+                      3.333333333333333,
+                      0.5,
+                      0.3333333333333333
+                    ],
+                    [
+                      3.333333333333333,
+                      2.346153846153846,
+                      1.564102564102564
+                    ],
+                    [
+                      0.6666666666666666,
+                      1.8846153846153846,
+                      1.2564102564102564
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=Yes\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace  Undo ): w4,3,2\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace  Undo ): w0,3,0\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 3359742211,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  3
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  0.0,
+                  2.076923076923077,
+                  1.3846153846153848
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.34615384615384615,
+                  0.23076923076923078
+                ],
+                [
+                  3.333333333333333,
+                  0.5,
+                  0.3333333333333333
+                ],
+                [
+                  3.333333333333333,
+                  2.346153846153846,
+                  1.564102564102564
+                ],
+                [
+                  0.6666666666666666,
+                  1.8846153846153846,
+                  1.2564102564102564
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_ngon",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 3968588502,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  3
+                ],
+                [
+                  4,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  3,
+                  4,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  -1.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  -0.3333333333333333,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.3333333333333333,
+                  0.3333333333333333,
+                  0.0
+                ],
+                [
+                  1.8333333333333333,
+                  3.333333333333333,
+                  0.0
+                ],
+                [
+                  2.6666666666666665,
+                  0.3333333333333333,
+                  0.0
+                ],
+                [
+                  3.5,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 3968588502,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  3
+                ],
+                [
+                  4,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  3,
+                  4,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  -1.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  -0.3333333333333333,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.3333333333333333,
+                  0.3333333333333333,
+                  0.0
+                ],
+                [
+                  1.8333333333333333,
+                  3.333333333333333,
+                  0.0
+                ],
+                [
+                  2.6666666666666665,
+                  0.3333333333333333,
+                  0.0
+                ],
+                [
+                  3.5,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "polygon": "Ngon",
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              4.0,
+              0.0
+            ],
+            [
+              -1.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 3968588502,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      0
+                    ],
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      3,
+                      4,
+                      2
+                    ]
+                  ],
+                  "points": [
+                    [
+                      -1.0,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      4.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      2.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      -0.3333333333333333,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      0.3333333333333333,
+                      0.3333333333333333,
+                      0.0
+                    ],
+                    [
+                      1.8333333333333333,
+                      3.333333333333333,
+                      0.0
+                    ],
+                    [
+                      2.6666666666666665,
+                      0.3333333333333333,
+                      0.0
+                    ],
+                    [
+                      3.5,
+                      2.0,
+                      0.0
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=Yes  Mode=SingleFace ): _PolygonType=Ngon\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=Yes  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w3,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,2,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w2,4,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w-1,2,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): _Enter\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo )\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 3968588502,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  3
+                ],
+                [
+                  4,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  3,
+                  4,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  -1.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  -0.3333333333333333,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.3333333333333333,
+                  0.3333333333333333,
+                  0.0
+                ],
+                [
+                  1.8333333333333333,
+                  3.333333333333333,
+                  0.0
+                ],
+                [
+                  2.6666666666666665,
+                  0.3333333333333333,
+                  0.0
+                ],
+                [
+                  3.5,
+                  2.0,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_ngon_spatial",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1949991336,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  3
+                ],
+                [
+                  4,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  3,
+                  4,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  -1.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.0,
+                  1.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  -0.3333333333333333,
+                  2.0,
+                  0.16666666666666666
+                ],
+                [
+                  0.3333333333333333,
+                  0.3333333333333333,
+                  0.16666666666666666
+                ],
+                [
+                  1.8333333333333333,
+                  3.333333333333333,
+                  0.6666666666666667
+                ],
+                [
+                  2.6666666666666665,
+                  0.3333333333333333,
+                  0.6666666666666667
+                ],
+                [
+                  3.5,
+                  2.0,
+                  0.3333333333333333
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1949991336,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  3
+                ],
+                [
+                  4,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  3,
+                  4,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  -1.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.0,
+                  1.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  -0.3333333333333333,
+                  2.0,
+                  0.16666666666666666
+                ],
+                [
+                  0.3333333333333333,
+                  0.3333333333333333,
+                  0.16666666666666666
+                ],
+                [
+                  1.8333333333333333,
+                  3.333333333333333,
+                  0.6666666666666667
+                ],
+                [
+                  2.6666666666666665,
+                  0.3333333333333333,
+                  0.6666666666666667
+                ],
+                [
+                  3.5,
+                  2.0,
+                  0.3333333333333333
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "polygon": "Ngon",
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              1.0
+            ],
+            [
+              4.0,
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              4.0,
+              1.0
+            ],
+            [
+              -1.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 1949991336,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      0
+                    ],
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      3,
+                      4,
+                      2
+                    ]
+                  ],
+                  "points": [
+                    [
+                      -1.0,
+                      2.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      4.0,
+                      1.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      4.0,
+                      2.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      -0.3333333333333333,
+                      2.0,
+                      0.16666666666666666
+                    ],
+                    [
+                      0.3333333333333333,
+                      0.3333333333333333,
+                      0.16666666666666666
+                    ],
+                    [
+                      1.8333333333333333,
+                      3.333333333333333,
+                      0.6666666666666667
+                    ],
+                    [
+                      2.6666666666666665,
+                      0.3333333333333333,
+                      0.6666666666666667
+                    ],
+                    [
+                      3.5,
+                      2.0,
+                      0.3333333333333333
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Ngon\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w3,0,1\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w4,2,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w2,4,1\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): w-1,2,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo ): _Enter\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace  Undo )\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 1949991336,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  1,
+                  3
+                ],
+                [
+                  4,
+                  2
+                ],
+                [
+                  3,
+                  4
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  3,
+                  4,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  -1.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.0,
+                  1.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  -0.3333333333333333,
+                  2.0,
+                  0.16666666666666666
+                ],
+                [
+                  0.3333333333333333,
+                  0.3333333333333333,
+                  0.16666666666666666
+                ],
+                [
+                  1.8333333333333333,
+                  3.333333333333333,
+                  0.6666666666666667
+                ],
+                [
+                  2.6666666666666665,
+                  0.3333333333333333,
+                  0.6666666666666667
+                ],
+                [
+                  3.5,
+                  2.0,
+                  0.3333333333333333
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "subd_multiple",
+      "value": {
+        "before": [],
+        "after_script": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 808414923,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                4,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  2,
+                  1
+                ],
+                [
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3
+                ],
+                [
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  5
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.833333333333333,
+                  0.0,
+                  0.0
+                ],
+                [
+                  3.833333333333333,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ],
+                [
+                  6.499999999999999,
+                  0.5,
+                  0.0
+                ],
+                [
+                  6.5,
+                  2.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "undo": [],
+        "after": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 808414923,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                4,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  2,
+                  1
+                ],
+                [
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3
+                ],
+                [
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  5
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.833333333333333,
+                  0.0,
+                  0.0
+                ],
+                [
+                  3.833333333333333,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ],
+                [
+                  6.499999999999999,
+                  0.5,
+                  0.0
+                ],
+                [
+                  6.5,
+                  2.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ],
+        "input": {
+          "multiple": true,
+          "output": "SubD",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "interpolated": false
+        },
+        "events": [
+          {
+            "result": "Success",
+            "name": "3DFace",
+            "selected": [],
+            "objects": [
+              {
+                "role": "output",
+                "name": null,
+                "layer": "3DFace output",
+                "crc": 808414923,
+                "selected": false,
+                "subd": {
+                  "edge_tags": [
+                    2,
+                    2,
+                    4,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      4,
+                      5
+                    ]
+                  ],
+                  "vertex_tags": [
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "valid": true,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      4,
+                      5,
+                      2
+                    ]
+                  ],
+                  "points": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      0.0
+                    ]
+                  ],
+                  "surface_points": [
+                    [
+                      0.6666666666666666,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      3.833333333333333,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      3.833333333333333,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.6666666666666666,
+                      2.5,
+                      0.0
+                    ],
+                    [
+                      6.499999999999999,
+                      0.5,
+                      0.0
+                    ],
+                    [
+                      6.5,
+                      2.5,
+                      0.0
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "success": true,
+        "history": "Command: _-3DFace\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _Output=SubD\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _Interpolated=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _InPlane=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=SingleFace ): _Mode=MultipleFaces\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces ): _FromEdge=No\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces ): w0,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo ): w4,3,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo ): w0,3,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo ): w4,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo ): w7,0,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo ): w7,3,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo ): w4,3,0\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo ): _Enter\nPick point ( Output=SubD  Interpolated=No  Append  PolygonType=Quad  FromEdge=No  InPlane=No  Mode=MultipleFaces  Undo )\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "output",
+            "name": null,
+            "layer": "3DFace output",
+            "crc": 808414923,
+            "selected": false,
+            "subd": {
+              "edge_tags": [
+                2,
+                2,
+                4,
+                2,
+                2,
+                2,
+                2
+              ],
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  3,
+                  0
+                ],
+                [
+                  2,
+                  1
+                ],
+                [
+                  1,
+                  4
+                ],
+                [
+                  2,
+                  3
+                ],
+                [
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  5
+                ]
+              ],
+              "vertex_tags": [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "valid": true,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ],
+              "points": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "surface_points": [
+                [
+                  0.6666666666666666,
+                  0.5,
+                  0.0
+                ],
+                [
+                  3.833333333333333,
+                  0.0,
+                  0.0
+                ],
+                [
+                  3.833333333333333,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.6666666666666666,
+                  2.5,
+                  0.0
+                ],
+                [
+                  6.499999999999999,
+                  0.5,
+                  0.0
+                ],
+                [
+                  6.5,
+                  2.5,
+                  0.0
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "engine": "rhino",
+  "protocol_version": 1,
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "provenance": {
+    "request_sha256": "551db14e859a1096dfba03083866f341808649b341a9433d6260c1aad502770a",
+    "sources": {
+      "generate_face_create.py": "27e447779630cd5ca50c25e679e13ec5da374f948a246a25f5050b9a7e4b987e",
+      "face_create_probe.py": "0f9434cef3a87e7d1973022e33725e4a57a73f9f9e95ccdf7cd12be550cca01a",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "6f6665f05b44ef50557b3a8f29a2ff349c63143a96f31b6d469b94a324a5910b",
+      "rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
+      "structural_sdk.py": "0d65afb6def8b45f942f8b449245af4e90d1c85c785e7b1685a67b26b7a6592d",
+      "face_create_input.py": "987f33c447ade5b71c178804bf3ba26035e2888f6107d829f8e5ac3797ab21c1",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "face_draft_cases.py": "8d4e594d1f4ab0c8457cba0b0b2f6494cb078bcb95904f69a4abca5dc96d51e2",
+      "face_draft_input.py": "bb0e0d8e4a7cdd1b5b0488a0d09b1ec63b6caf94196cdd9a8e6cc3c54762e56e"
+    }
+  }
+}

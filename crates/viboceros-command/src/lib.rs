@@ -8109,7 +8109,8 @@ impl Command for ExtractControlPolygonCommand {
                 | Geometry::BlockInstance(_)
                 | Geometry::PointCloud(_)
                 | Geometry::Brep(_)
-                | Geometry::Mesh(_) => {
+                | Geometry::Mesh(_)
+                | Geometry::SubD(_) => {
                     return Err(CommandError::UnsupportedExtractControlPolygonGeometry);
                 }
             };
@@ -8546,7 +8547,7 @@ impl Command for DuplicateEdgeCommand {
             .selected_objects()
             .map(|object| {
                 let edges = match object.geometry() {
-                    Geometry::BlockInstance(_) => {
+                    Geometry::SubD(_) | Geometry::BlockInstance(_) => {
                         return Err(CommandError::UnsupportedDuplicateEdgeGeometry);
                     }
                     Geometry::NurbsSurface(surface) => surface
@@ -8797,7 +8798,8 @@ impl Command for DuplicateMeshEdgeCommand {
                 | Geometry::PolyCurve(_)
                 | Geometry::NurbsSurface(_)
                 | Geometry::BlockInstance(_)
-                | Geometry::Brep(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
+                | Geometry::Brep(_)
+                | Geometry::SubD(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
             })
             .collect::<Result<Vec<_>, _>>()?;
         if meshes.is_empty() {
@@ -9188,7 +9190,7 @@ impl Command for ExtractWireframeCommand {
                 }
             };
             let wires = match geometry {
-                Geometry::BlockInstance(_) => {
+                Geometry::SubD(_) | Geometry::BlockInstance(_) => {
                     return Err(CommandError::UnsupportedExtractWireframeGeometry);
                 }
                 Geometry::NurbsSurface(surface) => surface

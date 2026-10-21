@@ -4,6 +4,8 @@
 //! or produce degenerate geometry return [`GeometryError`] rather than letting
 //! invalid values enter the model.
 
+mod subd;
+pub use subd::SubD;
 mod area_mass_properties;
 mod mass_integration;
 pub use area_mass_properties::AreaMassProperties;

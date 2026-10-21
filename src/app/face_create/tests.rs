@@ -586,3 +586,58 @@ fn reversed_edge_hover_uses_the_corner_order_that_will_be_committed() {
         true
     );
 }
+
+#[path = "../../../crates/viboceros-command/tests/support/subd.rs"]
+mod subd_native;
+#[test]
+fn subd_point_getters_keep_native_geometry_and_grouped_history() {
+    for row in subd_native::rows() {
+        let value = &row["value"];
+        let mut app = test_app();
+        app.document = subd_native::setup();
+        enter(&mut app, &subd_native::header(value));
+        for point in subd_native::actions(value) {
+            enter(&mut app, &point);
+        }
+        if app.face_create_session.is_some() {
+            enter(&mut app, "");
+        }
+        assert!(app.face_create_session.is_none(), "{:?}", app.command_log);
+        let check = subd_native::check(&app.document, value);
+        assert_eq!(app.document.undo_label(), Some("3DFace"));
+        app.document.undo().unwrap();
+        assert_eq!(app.document.objects().count(), 0);
+        app.document.redo().unwrap();
+        assert_eq!(subd_native::check(&app.document, value), check);
+        println!(
+            "SUBD_GETTER {}",
+            serde_json::json!({"id":row["id"],"check":check,"grouped_history":true})
+        );
+    }
+}
+
+#[test]
+fn subd_output_option_and_cancellation_preserve_the_redo_branch() {
+    let mut app = test_app();
+    enter(&mut app, "Point 9,9,9");
+    app.document.undo().unwrap();
+    enter(&mut app, "3DFace");
+    enter(&mut app, "Output");
+    enter(&mut app, "SubD");
+    enter(&mut app, "0,0,0");
+    enter(&mut app, "4,0,0");
+    assert!(app.cancel_face_corner());
+    assert!(app.cancel_face_corner());
+    assert!(app.face_create_session.is_none());
+    assert_eq!(app.document.objects().count(), 0);
+    assert_eq!(app.document.redo_label(), Some("Point"));
+    enter(&mut app, "3DFace Output=SubD PolygonType=Triangle");
+    enter(&mut app, "0,0,0");
+    enter(&mut app, "4,0,0");
+    enter(&mut app, "4,3,0");
+    assert!(matches!(
+        app.document.objects().next().unwrap().geometry(),
+        Geometry::SubD(_)
+    ));
+    assert_eq!(app.document.redo_label(), None);
+}

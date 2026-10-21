@@ -532,6 +532,7 @@ fn nearest_object_snap_with_metric(
             Geometry::Mesh(_)
             | Geometry::NurbsSurface(_)
             | Geometry::Brep(_)
+            | Geometry::SubD(_)
             | Geometry::BlockInstance(_) => {}
         }
         // Mid and Center share source discovery. Each expensive feature is

@@ -153,6 +153,7 @@ impl SelectionObject<'_> {
             Geometry::Line(line) => self.classify_polyline(&[line.start(), line.end()]),
             Geometry::Polyline(polyline) => self.classify_polyline(polyline.vertices()),
             Geometry::Mesh(mesh) => self.classify_mesh(mesh),
+            Geometry::SubD(subd) => self.classify_mesh(&subd.display_mesh()?),
             Geometry::NurbsSurface(surface) => {
                 self.classify_mesh(&surface.tessellate(SURFACE_SAMPLES_PER_SPAN, self.tolerance)?)
             }

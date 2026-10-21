@@ -6,7 +6,7 @@ Rhinoceros 3D. It combines a modular geometry kernel with a command-driven
 egui/wgpu interface, multiple viewports, snapping, layers, groups, and undo/redo.
 
 The project is in early development. Analytic and NURBS geometry, trimmed B-reps,
-meshes, and 3DM/STL/STEP interchange are supported with limitations; full Rhino
+meshes, SubDs, and 3DM/STL/STEP interchange are supported with limitations; full Rhino
 compatibility is still in progress.
 
 ## Build and run
@@ -41,7 +41,8 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Mesh patches from curves and points](docs/commands/mesh-patch.md), with point-seeded and overlapping guides, hole regions, starting surfaces, staged selection and Undo
 - [Meshes from connected lines](docs/commands/mesh-from-lines.md), with 3D region recovery, face-size limits, input deletion, crease separation and grouped Undo
 - [Meshes from closed polylines](docs/commands/mesh-polyline.md), with concave and spatial boundaries, source attributes, staged selection and grouped Undo
-- [Direct mesh faces](docs/commands/3dface.md), with triangles, quads, n-gons, append, repeated boundary picks, quad chains, corner Undo, previews and grouped history
+- [Direct mesh and SubD faces](docs/commands/3dface.md), with triangles, quads, n-gons, append, repeated boundary picks, quad chains, corner Undo, previews and grouped history
+- [SubD geometry](docs/subd.md), with limit-surface display, control-point edits, transforms and native 3DM preservation
 - [Planar meshes from curves](docs/commands/planar-mesh.md), with joined boundaries, holes, islands, current-layer output and grouped Undo
 - [Interpolated curves on surfaces](docs/commands/interp-crv-on-srf.md), with periodic seams, closed drafts, constrained points, previews and Undo
 - [Offset curves on surfaces](docs/commands/offset-crv-on-srf.md), with normal sections, periodic seams, general NURBS sections via the native kernel, planar corner joins, ThroughPoint, previews and grouped Undo

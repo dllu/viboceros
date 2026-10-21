@@ -17,6 +17,7 @@ pub(crate) fn transform_geometry(
         viboceros_geometry::Tolerance::NUMERICAL_VALIDATION
     };
     Ok(match geometry {
+        G::SubD(subd) => G::SubD(subd.transformed(transform)?),
         G::InstanceReference {
             definition_index,
             transform: placement,

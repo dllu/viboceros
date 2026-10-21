@@ -2,15 +2,21 @@
 use super::*;
 use viboceros_geometry::{MeshFaceBoundaryGraph, UnitVector3};
 
-pub const USAGE: &str = "3DFace [Output=Mesh] [PolygonType=Triangle|Quad|Ngon] [InPlane=Yes|No] [WeldAngle=degrees] [Mode=SingleFace|MultipleFaces] [Append=id] [FromEdge=Yes|No Chain=Yes|No Edge=n] points...";
+pub const USAGE: &str = "3DFace [Output=Mesh|SubD] [Interpolated=No] [PolygonType=Triangle|Quad|Ngon] [InPlane=Yes|No] [WeldAngle=degrees] [Mode=SingleFace|MultipleFaces] [Append=id] [FromEdge=Yes|No Chain=Yes|No Edge=n] points...";
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Polygon {
     Triangle,
     Quad,
     Ngon,
 }
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Output {
+    Mesh,
+    SubD,
+}
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Preferences {
+    pub output: Output,
     pub polygon: Polygon,
     pub in_plane: bool,
     pub weld_angle: Real,
@@ -22,6 +28,7 @@ pub struct Preferences {
 impl Default for Preferences {
     fn default() -> Self {
         Self {
+            output: Output::Mesh,
             polygon: Polygon::Quad,
             in_plane: false,
             weld_angle: 180.,
@@ -74,10 +81,17 @@ pub fn parse(args: &[&str], preferences: Preferences) -> Result<Input, CommandEr
                 return Err(CommandError::Usage(USAGE));
             }
             match key.to_ascii_lowercase().as_str() {
-                "output" if value.eq_ignore_ascii_case("Mesh") => (),
                 "output" => {
+                    input.preferences.output = match value.to_ascii_lowercase().as_str() {
+                        "mesh" => Output::Mesh,
+                        "subd" => Output::SubD,
+                        _ => return Err(CommandError::Usage(USAGE)),
+                    }
+                }
+                "interpolated" if value.eq_ignore_ascii_case("No") => (),
+                "interpolated" => {
                     return Err(CommandError::Usage(
-                        "3DFace currently supports Output=Mesh; SubD geometry is not implemented",
+                        "3DFace SubD surface-point interpolation is not implemented; use Interpolated=No",
                     ));
                 }
                 "polygontype" => {
@@ -191,6 +205,11 @@ impl Draft {
         source: Option<TriangleMesh>,
         edge: Option<usize>,
     ) -> Result<Self, CommandError> {
+        if preferences.output == Output::SubD && source.is_some() {
+            return Err(CommandError::Usage(
+                "3DFace SubD output currently requires a standalone draft",
+            ));
+        }
         if !preferences.weld_angle.is_finite() || !(0. ..=180.).contains(&preferences.weld_angle) {
             return Err(CommandError::Usage(USAGE));
         }
@@ -264,6 +283,14 @@ impl Draft {
         Ok(())
     }
     pub fn update_preferences(&mut self, preferences: Preferences) -> Result<(), CommandError> {
+        if preferences.output != self.preferences.output
+            && (!self.faces.is_empty() || !self.points.is_empty() || self.source.is_some())
+        {
+            return Err(CommandError::Usage(
+                "Clear the face draft before changing Output",
+            ));
+        }
+
         if !preferences.weld_angle.is_finite() || !(0. ..=180.).contains(&preferences.weld_angle) {
             return Err(CommandError::Usage(USAGE));
         }
@@ -527,6 +554,40 @@ impl Draft {
         }
         Ok(())
     }
+    /// Produces the native document family; mesh drafts remain useful for shared
+    /// corner constraints and boundary picking, independently of final output.
+    pub fn geometry(&self) -> Result<Option<Geometry>, CommandError> {
+        if self.preferences.output == Output::Mesh {
+            return self.mesh().map(|m| m.map(Geometry::Mesh));
+        }
+        if self.faces.is_empty() {
+            return Ok(None);
+        }
+        let mut points = Vec::new();
+        let mut indices = BTreeMap::new();
+        let faces = self
+            .faces
+            .iter()
+            .map(|face| {
+                face.points
+                    .iter()
+                    .map(|&point| {
+                        let key = point
+                            .to_array()
+                            .map(|x| if x == 0. { 0 } else { x.to_bits() });
+                        *indices.entry(key).or_insert_with(|| {
+                            let i = points.len() as u32;
+                            points.push(point);
+                            i
+                        })
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .collect();
+        Ok(Some(Geometry::SubD(
+            viboceros_geometry::SubD::try_from_polygons(points, faces)?,
+        )))
+    }
     pub fn mesh(&self) -> Result<Option<TriangleMesh>, CommandError> {
         if self.faces.is_empty() {
             return Ok(None);
@@ -579,6 +640,14 @@ pub fn target(
             .ok_or(CommandError::Usage(USAGE))?;
         return Ok(Some(id));
     }
+    if document
+        .selected_objects()
+        .any(|o| matches!(o.geometry(), Geometry::SubD(_)))
+    {
+        return Err(CommandError::Usage(
+            "3DFace appending to existing SubDs is not implemented",
+        ));
+    }
     let mut selected = document
         .selected_objects()
         .filter(|o| matches!(o.geometry(), Geometry::Mesh(_)))
@@ -602,14 +671,19 @@ pub fn apply(
     target: Option<ObjectId>,
     mesh: TriangleMesh,
 ) -> Result<ObjectId, CommandError> {
+    apply_geometry(document, target, Geometry::Mesh(mesh))
+}
+pub fn apply_geometry(
+    document: &mut Document,
+    target: Option<ObjectId>,
+    geometry: Geometry,
+) -> Result<ObjectId, CommandError> {
     if let Some(id) = target {
         document.select_objects_direct([id], SelectionMode::Remove)?;
-        document.replace_object_geometries(vec![(id, Geometry::Mesh(mesh))])?;
+        document.replace_object_geometries(vec![(id, geometry)])?;
         Ok(id)
     } else {
-        document
-            .add_geometry(Geometry::Mesh(mesh))
-            .map_err(Into::into)
+        document.add_geometry(geometry).map_err(Into::into)
     }
 }
 pub(super) struct FaceCreateCommand(pub std::sync::Arc<remembered::Remembered<Preferences>>);
@@ -631,13 +705,13 @@ impl Command for FaceCreateCommand {
         if !draft.finished {
             draft.accept(Token::Enter)?;
         }
-        let Some(mesh) = draft.mesh()? else {
+        let Some(geometry) = draft.geometry()? else {
             return Err(CommandError::Usage(USAGE));
         };
-        let id = apply(document, target, mesh)?;
+        let id = apply_geometry(document, target, geometry)?;
         self.0.set(input.preferences);
         Ok(format!(
-            "Created {} mesh face(s) on object {id}",
+            "Created {} face(s) on object {id}",
             draft.face_count()
         ))
     }

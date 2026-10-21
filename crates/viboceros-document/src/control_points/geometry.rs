@@ -177,6 +177,9 @@ impl Geometry {
                     tolerance,
                 )?)
             }
+            Self::SubD(subd) => {
+                Self::SubD(subd.try_with_control_points(&map(subd.control_points(), false)?)?)
+            }
             Self::Mesh(mesh) => {
                 Self::Mesh(mesh.try_with_edited_vertices(map(mesh.vertices(), false)?)?)
             }

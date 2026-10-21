@@ -216,6 +216,7 @@ impl SelectionSphere {
             Geometry::Arc(arc) => self.classify_arc(*arc),
             Geometry::Ellipse(ellipse) => self.classify_ellipse(*ellipse),
             Geometry::Mesh(mesh) => self.classify_mesh(mesh),
+            Geometry::SubD(subd) => self.classify_mesh(&subd.display_mesh()?),
             Geometry::NurbsSurface(surface) => {
                 self.classify_mesh(&surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
             }
@@ -540,6 +541,7 @@ impl SelectionBox {
                 self.classify_oval_interval(center, cosine_point, sine_point, arc.sweep_radians())
             }
             Geometry::Mesh(mesh) => self.classify_mesh(mesh),
+            Geometry::SubD(subd) => self.classify_mesh(&subd.display_mesh()?),
             Geometry::NurbsSurface(surface) => {
                 self.classify_mesh(&surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
             }

@@ -9281,6 +9281,7 @@ impl VibocerosApp {
                                 viboceros_document::Geometry::NurbsSurface(_) => "surface",
                                 viboceros_document::Geometry::Brep(_) => "polysurface",
                                 viboceros_document::Geometry::Mesh(_) => "mesh",
+                                viboceros_document::Geometry::SubD(_) => "SubD",
                                 viboceros_document::Geometry::BlockInstance(_) => "block instance",
                             };
                             let label = object.attributes().name().map_or_else(

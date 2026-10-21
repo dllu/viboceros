@@ -261,6 +261,15 @@ impl DisplayGeometry {
                         }
                     }
                 }
+                Geometry::SubD(_) => {
+                    if let Some(mesh) = self.mesh()
+                        && let Ok(edges) = mesh.visible_wireframe_lines(self.tolerance)
+                    {
+                        for edge in edges {
+                            visit(edge.start(), edge.end());
+                        }
+                    }
+                }
                 Geometry::Mesh(mesh) => {
                     if let Ok(edges) = mesh.visible_wireframe_lines(self.tolerance) {
                         for edge in edges {
@@ -288,6 +297,10 @@ impl DisplayGeometry {
     fn generated_mesh(&self) -> Option<&GeneratedDisplayMesh> {
         self.mesh
             .get_or_init(|| match &*self.geometry {
+                Geometry::SubD(subd) => subd.display_mesh().ok().map(|mesh| GeneratedDisplayMesh {
+                    mesh,
+                    face_sources: None,
+                }),
                 Geometry::NurbsSurface(surface) => surface
                     .tessellate(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
                     .ok()

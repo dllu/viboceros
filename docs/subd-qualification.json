@@ -1,0 +1,637 @@
+{
+  "model_epsilon": 1e-06,
+  "recipes": 10,
+  "captured_cases": 20,
+  "surface_mesh_cases": 10,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "maximum_control_or_limit_point_error": 0.0,
+  "maximum_sampled_surface_error": 1.831026719408895e-15,
+  "opennurbs_commit": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+  "stages": {
+    "command": [
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_quad"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 3,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 3
+        },
+        "grouped_history": true,
+        "id": "subd_triangle"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 3,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 3
+        },
+        "grouped_history": true,
+        "id": "subd_triangle_enter"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_reverse"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_concave"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_twisted"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_in_plane"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 5,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 5
+        },
+        "grouped_history": true,
+        "id": "subd_ngon"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 5,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 5
+        },
+        "grouped_history": true,
+        "id": "subd_ngon_spatial"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 6
+        },
+        "grouped_history": true,
+        "id": "subd_multiple"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_quad"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 3,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.965068306494546e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 3
+        },
+        "grouped_history": true,
+        "id": "subd_surface_triangle"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 3,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.965068306494546e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 3
+        },
+        "grouped_history": true,
+        "id": "subd_surface_triangle_enter"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_reverse"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 5.900916318210353e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_concave"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_twisted"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_in_plane"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 5,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.280369834735101e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 5
+        },
+        "grouped_history": true,
+        "id": "subd_surface_ngon"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 5,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.304854800243425e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 5
+        },
+        "grouped_history": true,
+        "id": "subd_surface_ngon_spatial"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.831026719408895e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "grouped_history": true,
+        "id": "subd_surface_multiple"
+      }
+    ],
+    "getter": [
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_quad"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 3,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 3
+        },
+        "grouped_history": true,
+        "id": "subd_triangle"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 3,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 3
+        },
+        "grouped_history": true,
+        "id": "subd_triangle_enter"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_reverse"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_concave"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_twisted"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_in_plane"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 5,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 5
+        },
+        "grouped_history": true,
+        "id": "subd_ngon"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 5,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 5
+        },
+        "grouped_history": true,
+        "id": "subd_ngon_spatial"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 0.0,
+          "qualified": true,
+          "surface_sampled": false,
+          "vertices": 6
+        },
+        "grouped_history": true,
+        "id": "subd_multiple"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_quad"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 3,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.965068306494546e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 3
+        },
+        "grouped_history": true,
+        "id": "subd_surface_triangle"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 3,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.965068306494546e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 3
+        },
+        "grouped_history": true,
+        "id": "subd_surface_triangle_enter"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_reverse"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 5.900916318210353e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_concave"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_twisted"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "grouped_history": true,
+        "id": "subd_surface_in_plane"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 5,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.280369834735101e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 5
+        },
+        "grouped_history": true,
+        "id": "subd_surface_ngon"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 5,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.304854800243425e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 5
+        },
+        "grouped_history": true,
+        "id": "subd_surface_ngon_spatial"
+      },
+      {
+        "check": {
+          "attributes_and_selection": true,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.831026719408895e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "grouped_history": true,
+        "id": "subd_surface_multiple"
+      }
+    ]
+  },
+  "guarantees": [
+    "Standalone noninterpolated triangle, quad, concave, twisted and n-gon faces, reverse winding, InPlane and adjacent multiple faces match captured control topology and tags.",
+    "Every control-vertex limit station matches Rhino. Ten density-two limit meshes pass bidirectional facet sampling at model epsilon.",
+    "Command and interactive getters preserve native current-layer attributes, output selection and grouped Undo/Redo.",
+    "Public OpenNURBS owns subdivision evaluation and the full SubD archive. SubD geometry survives 3DM Save/Open, affine transforms and control-point edits."
+  ],
+  "limits": [
+    "Appending to existing SubDs and Interpolated=Yes are not implemented.",
+    "Display tessellation samples exact limit points; linear facets between samples do not carry a Hausdorff or model-tolerance certificate.",
+    "Certified tight bounds and exact SubD projection, intersections, border extraction and surface snaps are not implemented.",
+    "Imported tags and sharpness remain in the archive; editing those properties, nonmanifold construction, texture/material channels and comparative speed remain unqualified.",
+    "Construction permits 100000 vertices and faces, 400000 corners and a 64 MiB archive. Tessellation accepts density 1..6 with a one-million-quad budget."
+  ],
+  "sha256": {
+    "crates/viboceros-opennurbs/src/subd.rs": "4a12026119b302991ef841656f9a61a4ec9b08a50cfefd0421ab6974965f9d56",
+    "crates/viboceros-opennurbs/src/lib.rs": "1ed8beb34ba1ebccf1b8ed9ec3809c8a8800fed5f7f26570ffc3573db9ffa61c",
+    "crates/viboceros-opennurbs/build.rs": "61433c36e5106291681d1d76d27da26864bcddf726bbacd63b65130e37c41442",
+    "crates/viboceros-opennurbs/native/subd.cpp": "a55b4d1172a3fb57e7a4ba4ccacf80d1c6e2308b927b95e5d066e81ede873466",
+    "crates/viboceros-opennurbs/native/subd.h": "c4cab3f9daa09edaf523cad60476caa233800f6287c54815f57b118c7247152c",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "692893eb5c4447a582d43aca0c78413b8622ed19600975057ec15fddacad5fd0",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "e832471a1568b5b3b47b698d3d9f55530dccd36b2687d44ba4cac36beab5af24",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "64c2ef86c7e04754e5d63c87ede409cb887617e71f08625a7fe5ef7f4530e486",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "e3dac3e45514143c449d516f7f1c3af2730af6c9a028fc538255e7125cb663e1",
+    "crates/viboceros-geometry/src/subd.rs": "08dd52fefcc6a022596356294f9acfe8fd7dd21d656d44cb54b10f75f9429d97",
+    "crates/viboceros-geometry/src/lib.rs": "f9171a3b5adbfde817dec26e1931503d54659fbec705e7c2c48dc3525321803c",
+    "crates/viboceros-geometry/src/error.rs": "2601d5711d8c2402fbaa2bcde04b7c9ec46a8194bcf44b6c723032e42168ca88",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/transform.rs": "e8b24486c8963c14828765f7d29ab5e4ce1c79006eef1b912508374e4da8ac9f",
+    "crates/viboceros-geometry/src/mesh.rs": "393e9621f61a20ae9e64bb3f132fd51284e93d4c178355617d11ca30a2d7b41d",
+    "crates/viboceros-geometry/src/mesh/face_create.rs": "8e30235e97616ce91117e6ed0477edcc0bfea75a7b766a1c9ef41a9910da57e8",
+    "crates/viboceros-geometry/src/mesh/face_records.rs": "09545428f12dabd55bc4e07ab993c9699fc6c934936d73a48f0f90df49d4514d",
+    "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
+    "crates/viboceros-geometry/src/mesh/closest.rs": "c151524d33d932ad5288ff72db2daed5a61234490157f34528056d7632ad1fbb",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
+    "crates/viboceros-document/src/geometry.rs": "80718e3423f59adee298d55dee7f017e1027a7213e2a409ebb0dc0e772655f65",
+    "crates/viboceros-document/src/control_points.rs": "9a920e0979f173ae43bdad34f43737e4cc46776df17c69bc4da978a30997cd95",
+    "crates/viboceros-document/src/control_points/geometry.rs": "cf5cbda50d47b3f25d1a564bfee83d089858a102839013019935af285b621bf9",
+    "crates/viboceros-command/src/lib.rs": "53bacaea2cf20e4d779722e7b08ca576b1240b89e43ea19319be761e344b0f39",
+    "crates/viboceros-command/src/face_create.rs": "f28768b10dfa545f64694e662c3d65d0a6172a73e9c73594d7269e476b70814b",
+    "crates/viboceros-command/src/interchange.rs": "6f9df72cd4882fcd3d0f4e791117545daa500dca6564f6859c5bfb2f7409a67f",
+    "crates/viboceros-command/tests/subd_native.rs": "39e2e11ba9c32798010f9f2971e579e1c07922f6cd8b685eed9aadb766245221",
+    "crates/viboceros-command/tests/support/subd.rs": "ff6cbab27e827ee7b3774ddc53e0a2aa7d951cc98eaa5d442162fb72039973b2",
+    "crates/viboceros-io/src/three_dm.rs": "760e02b441c17ea65df39d73837e5cb09490494c809a063aee71f099f5f8dacc",
+    "crates/viboceros-io/src/three_dm_units.rs": "c2586509c7ce6195af2929095af219321df79cdb97195ff451b4faeff66d77f8",
+    "crates/viboceros-io/src/three_dm/blocks.rs": "3d4262a301c78ac39117c5d1226bb34fdfa07fffe9bc6fe43e97fcf6c02d1373",
+    "src/app.rs": "fddd5ff98554ee64582607ec4663f8485a3262e9e547c1e850d0980b96a47a14",
+    "src/app/face_create.rs": "f2a0cc1d6ff258fc2d49b24e6fe92c3687693db4aa6b377a68fdf51cdad18809",
+    "src/app/face_create/tests.rs": "8c5aaecf0ff00a58215704729daf4bee7ab182f1552b191ef5dadd630e160d28",
+    "src/viewport/display_cache.rs": "c6078cd7bb650b3078f2b03e558c32f6bed1a1bec44b808c7e7f36a0f647b721",
+    "src/viewport/selection.rs": "97a0c529b7e43b496a55c38bfe3be56e78dcd30535ef8480902db6bab0acc1b6",
+    "src/viewport/tests/object_selection.rs": "b76ad395089f3f89ce7953037547007d214181277642e6c7af136f068c5479ed",
+    "tools/rhino_oracle/face_create_probe.py": "d57f804e5924a54e40a61dde7192a0bdc42823f51505df9bff917bda661ad54c",
+    "tools/rhino_oracle/generate_face_create.py": "58ac6fb6a597df477d451b0c28c9b25149ec32406f5a9e0890ff293b4de6b0c5",
+    "tools/rhino_oracle/report_subd.py": "a4383074cbc9cfebbce1453dc5421cd0410b28d8e5d1e42074f5f6136d72b910",
+    "tools/rhino_oracle/test_subd.py": "16ed7481e8d31839e9df4c4922188d7adbe315386772ce56ac6132689d1315f1",
+    "tools/rhino_oracle/fixtures/face_create_subd.json": "551db14e859a1096dfba03083866f341808649b341a9433d6260c1aad502770a",
+    "tools/rhino_oracle/observations/face_create_subd.json": "a9708420831c8280cb9570854365e651284045d1fc1e6df1a867f56ce1d3848d",
+    "tools/rhino_oracle/fixtures/face_create_subd_surface.json": "b9caa28a9a344255783fb6afdbac4af622839eaaad89a632cadcf6edee1a6a9a",
+    "tools/rhino_oracle/observations/face_create_subd_surface.json": "08f576e7af7815a93f10e84f2c4cd7b1f21e195c471cf06e74a93a8f9618b6c3"
+  }
+}

@@ -11,6 +11,9 @@ fn main() {
     }
 
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
+    for file in ["subd.cpp", "subd.h", "subd_codec.h"] {
+        println!("cargo:rerun-if-changed=native/{file}");
+    }
     println!("cargo:rerun-if-changed=native/mesh_modeling.cpp");
     println!("cargo:rerun-if-changed=../../third_party/patches/opennurbs-merge-face-holes.cmake");
     println!("cargo:rerun-if-changed=native/mesh_modeling.h");
