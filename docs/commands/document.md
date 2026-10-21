@@ -157,3 +157,7 @@ definitions are implemented.
 or the current layer. `CopyToLayer` skips selected objects already on the target,
 copies each remaining group subset into a fresh automatic group, and leaves the
 original selection unchanged. Hidden and locked target layers are supported.
+
+`SelSubD`, `SelOpenSubD` and `SelClosedSubD` add visible, unlocked SubDs
+to the selection. Open/closed classification uses control-net boundary edges.
+See [SubDivide](subdivide.md) for subdivision and component selection.

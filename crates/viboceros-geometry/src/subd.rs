@@ -11,6 +11,7 @@ mod ellipsoid;
 mod interpolation;
 mod primitives;
 mod sphere;
+mod subdivision;
 mod torus;
 mod truncated_cone;
 pub use append::SubDAppendResult;
@@ -22,6 +23,8 @@ pub use sphere::SubDSphereStyle;
 #[derive(Clone, Debug)]
 pub struct SubDDisplayMesh {
     pub mesh: TriangleMesh,
+    /// Corresponding active control-face ordinal for each display quad.
+    pub face_sources: Vec<usize>,
     pub face_corner_normals: Vec<[Vector3; 4]>,
 }
 #[derive(Clone, Debug, PartialEq)]
@@ -48,7 +51,8 @@ impl SubD {
     pub fn try_from_archive(bytes: &[u8]) -> Result<Self, GeometryError> {
         Self::from_native(viboceros_opennurbs::subd_from_archive(bytes)?)
     }
-    fn from_native(data: viboceros_opennurbs::SubDData) -> Result<Self, GeometryError> {
+    fn from_native(mut data: viboceros_opennurbs::SubDData) -> Result<Self, GeometryError> {
+        data.selected_faces.clear();
         let points = data
             .points
             .iter()
@@ -214,6 +218,7 @@ impl SubD {
         Ok(SubDDisplayMesh {
             mesh: TriangleMesh::try_from_face_records(vertices, faces)?,
             face_corner_normals,
+            face_sources: data.face_sources.into_iter().map(|f| f as usize).collect(),
         })
     }
     /// Adapts the display density to stay within the native quad budget.

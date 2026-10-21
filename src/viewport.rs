@@ -85,6 +85,7 @@ mod raster_tests;
 use camera::zoom_pan;
 mod component_picking;
 mod parametric_reference;
+mod polygon_components;
 pub(crate) use component_picking::mesh_face_outline;
 pub use parametric_reference::ParametricPick;
 mod control_points;
@@ -323,6 +324,7 @@ pub enum LassoSelectionInput<'a> {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FacePickMode {
+    Any,
     Mesh,
     MeshAndBrepAny,
     MeshAndBrep,
@@ -1379,6 +1381,10 @@ impl Viewport {
                                     == Some(ObjectSelectionFilter::SurfaceComponents)
                                 {
                                     ComponentPickFilter::Faces
+                                } else if input.object_filter
+                                    == Some(ObjectSelectionFilter::MeshAndSubD)
+                                {
+                                    ComponentPickFilter::MeshAndSubDFaces
                                 } else {
                                     ComponentPickFilter::Any
                                 },

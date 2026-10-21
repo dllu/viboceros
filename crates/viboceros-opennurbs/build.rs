@@ -17,6 +17,7 @@ fn main() {
         "subd_codec.h",
         "subd_append.h",
         "subd_interpolation.h",
+        "subd_subdivision.h",
     ] {
         println!("cargo:rerun-if-changed=native/{file}");
     }

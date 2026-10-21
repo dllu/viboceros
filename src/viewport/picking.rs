@@ -203,7 +203,7 @@ impl Viewport {
                 .get(object, document.tolerance());
             display.mesh().is_none()
                 || (matches!(object.geometry(), Geometry::Brep(_))
-                    && display.brep_face_sources().is_none())
+                    && display.face_sources().is_none())
         })
     }
 
@@ -219,6 +219,7 @@ impl Viewport {
             .map(|(object, face, _)| (object, face))
     }
 
+    #[cfg(test)]
     pub(super) fn pick_selected_face_with_point(
         &self,
         pointer: Pos2,
@@ -229,6 +230,7 @@ impl Viewport {
         self.pick_selected_face_with_point_excluding(pointer, rect, document, mode, None)
     }
 
+    #[cfg(test)]
     pub(super) fn pick_selected_face_with_point_excluding(
         &self,
         pointer: Pos2,
@@ -252,7 +254,7 @@ impl Viewport {
         let mut nearest: Option<(PickHit, ObjectId, usize, Option<Point3>)> = None;
         let candidates: Box<dyn Iterator<Item = &viboceros_document::Object> + '_> = if matches!(
             mode,
-            FacePickMode::MeshAndBrepAny | FacePickMode::SurfaceAndBrepAny
+            FacePickMode::Any | FacePickMode::MeshAndBrepAny | FacePickMode::SurfaceAndBrepAny
         ) {
             Box::new(document.selectable_objects())
         } else {
@@ -267,15 +269,19 @@ impl Viewport {
             }
             let display = if matches!(
                 mode,
-                FacePickMode::MeshAndBrep
+                FacePickMode::Any
+                    | FacePickMode::MeshAndBrep
                     | FacePickMode::MeshAndBrepAny
                     | FacePickMode::SurfaceAndBrepAny
                     | FacePickMode::SurfaceAndBrep
             ) && matches!(object.geometry(), Geometry::Brep(_))
                 || matches!(
                     mode,
-                    FacePickMode::SurfaceAndBrep | FacePickMode::SurfaceAndBrepAny
+                    FacePickMode::Any
+                        | FacePickMode::SurfaceAndBrep
+                        | FacePickMode::SurfaceAndBrepAny
                 ) && matches!(object.geometry(), Geometry::NurbsSurface(_))
+                || mode == FacePickMode::Any && matches!(object.geometry(), Geometry::SubD(_))
             {
                 Some(
                     self.display_cache
@@ -298,7 +304,17 @@ impl Viewport {
                     let Some(display) = display.as_ref() else {
                         continue;
                     };
-                    let (Some(mesh), Some(sources)) = (display.mesh(), display.brep_face_sources())
+                    let (Some(mesh), Some(sources)) = (display.mesh(), display.face_sources())
+                    else {
+                        continue;
+                    };
+                    (mesh, Some(sources), false)
+                }
+                Geometry::SubD(_) if mode == FacePickMode::Any => {
+                    let Some(display) = display.as_ref() else {
+                        continue;
+                    };
+                    let (Some(mesh), Some(sources)) = (display.mesh(), display.face_sources())
                     else {
                         continue;
                     };
@@ -307,7 +323,9 @@ impl Viewport {
                 Geometry::NurbsSurface(_)
                     if matches!(
                         mode,
-                        FacePickMode::SurfaceAndBrep | FacePickMode::SurfaceAndBrepAny
+                        FacePickMode::Any
+                            | FacePickMode::SurfaceAndBrep
+                            | FacePickMode::SurfaceAndBrepAny
                     ) =>
                 {
                     let Some(mesh) = display.as_ref().and_then(|display| display.mesh()) else {
@@ -534,6 +552,33 @@ mod tests {
             .select_objects_direct([surface_id, mesh_id], SelectionMode::Replace)
             .unwrap();
         let pointer = view.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        // Surface-only command prompts must still reach the surface behind a
+        // mesh. General preselection and SubDivide use their own filters.
+        let faces = view.pick_components(pointer, rect, &document, ComponentPickFilter::Faces);
+        assert_eq!(faces.len(), 1);
+        assert_eq!(faces[0].object, surface_id);
+        assert_eq!(
+            faces[0].kind,
+            viboceros_command::ComponentSelectionKind::BrepFace
+        );
+        let window = view.components_in_rectangle(
+            rect,
+            rect,
+            &document,
+            ComponentPickFilter::Faces,
+            true,
+            false,
+        );
+        assert_eq!(window.len(), 1);
+        assert_eq!(window[0].object, surface_id);
+        let polygon = view.pick_components(
+            pointer,
+            rect,
+            &document,
+            ComponentPickFilter::MeshAndSubDFaces,
+        );
+        assert_eq!(polygon.len(), 1);
+        assert_eq!(polygon[0].object, mesh_id);
         assert_eq!(
             view.pick_selected_face(pointer, rect, &document, FacePickMode::SurfaceAndBrep),
             Some((surface_id, 0))

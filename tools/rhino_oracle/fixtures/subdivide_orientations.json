@@ -1,0 +1,381 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_1",
+      "case": "subdivide_mask_tri_1"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_1_reverse",
+      "case": "subdivide_mask_tri_1_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_2",
+      "case": "subdivide_mask_tri_2"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_2_reverse",
+      "case": "subdivide_mask_tri_2_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_3",
+      "case": "subdivide_mask_tri_3"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_3_reverse",
+      "case": "subdivide_mask_tri_3_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_4",
+      "case": "subdivide_mask_tri_4"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_4_reverse",
+      "case": "subdivide_mask_tri_4_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_5",
+      "case": "subdivide_mask_tri_5"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_5_reverse",
+      "case": "subdivide_mask_tri_5_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_6",
+      "case": "subdivide_mask_tri_6"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_6_reverse",
+      "case": "subdivide_mask_tri_6_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_7",
+      "case": "subdivide_mask_tri_7"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_tri_7_reverse",
+      "case": "subdivide_mask_tri_7_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_1",
+      "case": "subdivide_mask_quad_1"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_1_reverse",
+      "case": "subdivide_mask_quad_1_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_2",
+      "case": "subdivide_mask_quad_2"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_2_reverse",
+      "case": "subdivide_mask_quad_2_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_3",
+      "case": "subdivide_mask_quad_3"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_3_reverse",
+      "case": "subdivide_mask_quad_3_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_4",
+      "case": "subdivide_mask_quad_4"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_4_reverse",
+      "case": "subdivide_mask_quad_4_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_5",
+      "case": "subdivide_mask_quad_5"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_5_reverse",
+      "case": "subdivide_mask_quad_5_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_6",
+      "case": "subdivide_mask_quad_6"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_6_reverse",
+      "case": "subdivide_mask_quad_6_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_7",
+      "case": "subdivide_mask_quad_7"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_7_reverse",
+      "case": "subdivide_mask_quad_7_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_8",
+      "case": "subdivide_mask_quad_8"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_8_reverse",
+      "case": "subdivide_mask_quad_8_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_9",
+      "case": "subdivide_mask_quad_9"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_9_reverse",
+      "case": "subdivide_mask_quad_9_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_10",
+      "case": "subdivide_mask_quad_10"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_10_reverse",
+      "case": "subdivide_mask_quad_10_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_11",
+      "case": "subdivide_mask_quad_11"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_11_reverse",
+      "case": "subdivide_mask_quad_11_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_12",
+      "case": "subdivide_mask_quad_12"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_12_reverse",
+      "case": "subdivide_mask_quad_12_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_13",
+      "case": "subdivide_mask_quad_13"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_13_reverse",
+      "case": "subdivide_mask_quad_13_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_14",
+      "case": "subdivide_mask_quad_14"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_14_reverse",
+      "case": "subdivide_mask_quad_14_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_15",
+      "case": "subdivide_mask_quad_15"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_quad_15_reverse",
+      "case": "subdivide_mask_quad_15_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_1",
+      "case": "subdivide_mask_warped_1"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_1_reverse",
+      "case": "subdivide_mask_warped_1_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_2",
+      "case": "subdivide_mask_warped_2"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_2_reverse",
+      "case": "subdivide_mask_warped_2_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_3",
+      "case": "subdivide_mask_warped_3"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_3_reverse",
+      "case": "subdivide_mask_warped_3_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_4",
+      "case": "subdivide_mask_warped_4"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_4_reverse",
+      "case": "subdivide_mask_warped_4_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_5",
+      "case": "subdivide_mask_warped_5"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_5_reverse",
+      "case": "subdivide_mask_warped_5_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_6",
+      "case": "subdivide_mask_warped_6"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_6_reverse",
+      "case": "subdivide_mask_warped_6_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_7",
+      "case": "subdivide_mask_warped_7"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_7_reverse",
+      "case": "subdivide_mask_warped_7_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_8",
+      "case": "subdivide_mask_warped_8"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_8_reverse",
+      "case": "subdivide_mask_warped_8_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_9",
+      "case": "subdivide_mask_warped_9"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_9_reverse",
+      "case": "subdivide_mask_warped_9_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_10",
+      "case": "subdivide_mask_warped_10"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_10_reverse",
+      "case": "subdivide_mask_warped_10_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_11",
+      "case": "subdivide_mask_warped_11"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_11_reverse",
+      "case": "subdivide_mask_warped_11_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_12",
+      "case": "subdivide_mask_warped_12"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_12_reverse",
+      "case": "subdivide_mask_warped_12_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_13",
+      "case": "subdivide_mask_warped_13"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_13_reverse",
+      "case": "subdivide_mask_warped_13_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_14",
+      "case": "subdivide_mask_warped_14"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_14_reverse",
+      "case": "subdivide_mask_warped_14_reverse"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_15",
+      "case": "subdivide_mask_warped_15"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mask_warped_15_reverse",
+      "case": "subdivide_mask_warped_15_reverse"
+    }
+  ]
+}

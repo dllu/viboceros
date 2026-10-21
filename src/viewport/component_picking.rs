@@ -14,6 +14,7 @@ pub enum ComponentPickFilter {
     Any,
     Edges,
     Faces,
+    MeshAndSubDFaces,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -61,20 +62,55 @@ impl Viewport {
         if !pointer.is_finite() || !rect.contains(pointer) {
             return Vec::new();
         }
-        if filter != ComponentPickFilter::Faces {
+        if matches!(
+            filter,
+            ComponentPickFilter::Any | ComponentPickFilter::Edges
+        ) {
             let edges = self.pick_edges(pointer, rect, document);
             if !edges.is_empty() || filter == ComponentPickFilter::Edges {
                 return edges.into_iter().map(ComponentPick::from).collect();
             }
         }
-        self.pick_selected_face_with_point(pointer, rect, document, FacePickMode::SurfaceAndBrepAny)
-            .map_or_else(Vec::new, |(object, face, _)| {
-                vec![ComponentPick {
-                    object,
-                    kind: ComponentSelectionKind::BrepFace,
-                    index: face,
-                }]
-            })
+        let allowed = (filter == ComponentPickFilter::MeshAndSubDFaces).then(|| {
+            document
+                .selectable_objects()
+                .filter(|o| matches!(o.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)))
+                .map(|o| o.id())
+                .collect::<std::collections::BTreeSet<_>>()
+        });
+        self.pick_selected_face_with_point_restricted(
+            pointer,
+            rect,
+            document,
+            if filter == ComponentPickFilter::Faces {
+                FacePickMode::SurfaceAndBrepAny
+            } else {
+                FacePickMode::Any
+            },
+            None,
+            allowed.as_ref(),
+        )
+        .map_or_else(Vec::new, |(object, face, _)| {
+            let source = document.object(object).unwrap();
+            let face = if matches!(source.geometry(), Geometry::Mesh(_)) {
+                self.display_cache
+                    .borrow_mut()
+                    .get(source, document.tolerance())
+                    .component_face_representative(face)
+                    .unwrap_or(face)
+            } else {
+                face
+            };
+            vec![ComponentPick {
+                object,
+                kind: match document.object(object).unwrap().geometry() {
+                    Geometry::Mesh(_) => ComponentSelectionKind::MeshFace,
+                    Geometry::SubD(_) => ComponentSelectionKind::SubDFace,
+                    _ => ComponentSelectionKind::BrepFace,
+                },
+                index: face,
+            }]
+        })
     }
 
     pub(super) fn components_in_rectangle(
@@ -95,6 +131,20 @@ impl Viewport {
         }
         let mut result = Vec::new();
         for object in document.selectable_objects() {
+            if matches!(object.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)) {
+                if matches!(
+                    filter,
+                    ComponentPickFilter::Any | ComponentPickFilter::MeshAndSubDFaces
+                ) {
+                    result.extend(self.polygon_components_in_rectangle(
+                        viewport, selection, document, object, crossing, inverted,
+                    ));
+                }
+                continue;
+            }
+            if filter == ComponentPickFilter::MeshAndSubDFaces {
+                continue;
+            }
             if !matches!(
                 object.geometry(),
                 Geometry::NurbsSurface(_) | Geometry::Brep(_)
@@ -120,7 +170,10 @@ impl Viewport {
                     });
                 }
             };
-            if filter != ComponentPickFilter::Faces {
+            if matches!(
+                filter,
+                ComponentPickFilter::Any | ComponentPickFilter::Edges
+            ) {
                 for (index, segments) in display.edges().iter().enumerate() {
                     let mut primitives = ProjectedPrimitives::default();
                     for &[a, b] in segments {
@@ -151,7 +204,7 @@ impl Viewport {
             if self.display_mode != DisplayMode::Wireframe
                 && let Some(mesh) = display.mesh()
             {
-                let sources = display.brep_face_sources();
+                let sources = display.face_sources();
                 let mut triangle = 0;
                 for (mesh_face, face) in mesh.faces().iter().enumerate() {
                     let index = sources.and_then(|s| s.get(mesh_face)).copied().unwrap_or(0);
@@ -191,6 +244,7 @@ impl Viewport {
         picks: &[ComponentPick],
     ) {
         let mut edges = Vec::new();
+        let mut polygon_regions = std::collections::BTreeSet::new();
         for pick in picks {
             let Some(object) = document
                 .object(pick.object)
@@ -203,15 +257,30 @@ impl Viewport {
                     object: pick.object,
                     edge: pick.index,
                 }),
-                ComponentSelectionKind::MeshFace => {
-                    if let Geometry::Mesh(mesh) = object.geometry() {
-                        for [a, b] in mesh_face_outline(mesh, pick.index) {
-                            if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
-                                painter.line_segment(
-                                    [a, b],
-                                    Stroke::new(3., Color32::from_rgb(245, 160, 20)),
-                                );
-                            }
+                ComponentSelectionKind::SubDFace | ComponentSelectionKind::MeshFace => {
+                    if !matches!(
+                        (pick.kind, object.geometry()),
+                        (ComponentSelectionKind::SubDFace, Geometry::SubD(_))
+                            | (ComponentSelectionKind::MeshFace, Geometry::Mesh(_))
+                    ) {
+                        continue;
+                    }
+                    let display = self
+                        .display_cache
+                        .borrow_mut()
+                        .get(object, document.tolerance());
+                    let Some(region) = display.component_face_region(pick.index) else {
+                        continue;
+                    };
+                    if !polygon_regions.insert((pick.object, region)) {
+                        continue;
+                    }
+                    for &[a, b] in display.component_face_outline(pick.index) {
+                        if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
+                            painter.line_segment(
+                                [a, b],
+                                Stroke::new(3., Color32::from_rgb(245, 160, 20)),
+                            );
                         }
                     }
                 }

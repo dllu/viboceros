@@ -737,6 +737,9 @@ pub enum GeometryError {
     #[error("a polygon mesh contains too many faces")]
     TooManyMeshFaces,
 
+    #[error("mesh subdivision exceeded its vertex or face budget")]
+    MeshSubdivisionLimit,
+
     #[error("mesh-plane face counts must be positive, got {x_count} by {y_count}")]
     InvalidMeshPlaneFaceCount { x_count: usize, y_count: usize },
 

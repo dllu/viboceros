@@ -118,7 +118,7 @@ impl Viewport {
             let face = match &*display.geometry {
                 Geometry::Brep(_) => {
                     let Some(index) = display
-                        .brep_face_sources()
+                        .face_sources()
                         .and_then(|indices| indices.get(triangle))
                     else {
                         continue;

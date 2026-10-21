@@ -71,6 +71,9 @@ pub(super) enum GeometrySelectionFilter {
     OpenMesh,
     ClosedMesh,
     NonManifold,
+    SubD,
+    OpenSubD,
+    ClosedSubD,
 }
 
 impl GeometrySelectionFilter {
@@ -146,6 +149,11 @@ impl GeometrySelectionFilter {
             },
             Self::ClosedPolysurface => match geometry {
                 Geometry::Brep(brep) => brep.faces().len() > 1 && brep.is_closed(),
+                _ => false,
+            },
+            Self::SubD => matches!(geometry, Geometry::SubD(_)),
+            Self::OpenSubD | Self::ClosedSubD => match geometry {
+                Geometry::SubD(subd) => subd.has_boundary() == matches!(self, Self::OpenSubD),
                 _ => false,
             },
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),

@@ -35,6 +35,7 @@ mod ngon;
 mod nonplanar_quads;
 mod normals;
 mod smoothing;
+mod subdivision;
 pub use nonplanar_quads::{NonPlanarQuadCriterion, QuadSplitMethod};
 mod coplanar_merge;
 mod degenerate_faces;

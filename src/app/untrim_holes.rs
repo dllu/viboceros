@@ -135,7 +135,13 @@ impl VibocerosApp {
             .component_selection
             .valid_picks(&self.document)
             .into_iter()
-            .filter(|p| p.kind != viboceros_command::ComponentSelectionKind::MeshFace)
+            .filter(|p| {
+                !matches!(
+                    p.kind,
+                    viboceros_command::ComponentSelectionKind::MeshFace
+                        | viboceros_command::ComponentSelectionKind::SubDFace
+                )
+            })
             .map(|pick| {
                 (
                     pick.object,
@@ -143,7 +149,8 @@ impl VibocerosApp {
                         viboceros_command::ComponentSelectionKind::BrepEdge => {
                             UntrimHolesComponent::Edge(pick.index)
                         }
-                        viboceros_command::ComponentSelectionKind::MeshFace => {
+                        viboceros_command::ComponentSelectionKind::MeshFace
+                        | viboceros_command::ComponentSelectionKind::SubDFace => {
                             unreachable!("filtered mesh faces")
                         }
                         viboceros_command::ComponentSelectionKind::BrepFace => {
@@ -412,7 +419,13 @@ impl VibocerosApp {
         prompt.candidates = None;
         let picks = picks
             .into_iter()
-            .filter(|p| p.kind != viboceros_command::ComponentSelectionKind::MeshFace)
+            .filter(|p| {
+                !matches!(
+                    p.kind,
+                    viboceros_command::ComponentSelectionKind::MeshFace
+                        | viboceros_command::ComponentSelectionKind::SubDFace
+                )
+            })
             .map(|pick| {
                 (
                     pick.object,
@@ -420,7 +433,8 @@ impl VibocerosApp {
                         viboceros_command::ComponentSelectionKind::BrepEdge => {
                             UntrimHolesComponent::Edge(pick.index)
                         }
-                        viboceros_command::ComponentSelectionKind::MeshFace => {
+                        viboceros_command::ComponentSelectionKind::MeshFace
+                        | viboceros_command::ComponentSelectionKind::SubDFace => {
                             unreachable!("filtered mesh faces")
                         }
                         viboceros_command::ComponentSelectionKind::BrepFace => {

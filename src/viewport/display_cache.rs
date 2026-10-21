@@ -151,6 +151,7 @@ pub(super) struct DisplayGeometry {
     normals: OnceCell<Vec<[NaVector3<Real>; 3]>>,
     edges: OnceCell<Vec<Vec<[Point3; 2]>>>,
     block_members: OnceCell<Vec<Rc<DisplayGeometry>>>,
+    pub(super) component_regions: OnceCell<super::polygon_components::FaceRegions>,
 }
 
 struct GeneratedDisplayMesh {
@@ -186,6 +187,7 @@ impl DisplayGeometry {
             normals: OnceCell::new(),
             edges: OnceCell::new(),
             block_members: OnceCell::new(),
+            component_regions: OnceCell::new(),
         }
     }
 
@@ -291,7 +293,7 @@ impl DisplayGeometry {
         self.generated_mesh().map(|generated| &generated.mesh)
     }
 
-    pub(super) fn brep_face_sources(&self) -> Option<&[usize]> {
+    pub(super) fn face_sources(&self) -> Option<&[usize]> {
         self.generated_mesh()?.face_sources.as_deref()
     }
 
@@ -323,7 +325,9 @@ impl DisplayGeometry {
     fn subd_display(subd: &viboceros_geometry::SubD) -> Option<GeneratedDisplayMesh> {
         let display = subd.display_mesh_with_normals().ok()?;
         let mesh = display.mesh;
-        if display.face_corner_normals.len() != mesh.faces().len() {
+        if display.face_corner_normals.len() != mesh.faces().len()
+            || display.face_sources.len() != mesh.face_count()
+        {
             return None;
         }
         let mut normals = Vec::with_capacity(mesh.triangles().len());
@@ -353,7 +357,7 @@ impl DisplayGeometry {
         Some(GeneratedDisplayMesh {
             mesh,
             normals: Some(normals),
-            face_sources: None,
+            face_sources: Some(display.face_sources),
         })
     }
     pub(super) fn normals(&self) -> &[[NaVector3<Real>; 3]] {

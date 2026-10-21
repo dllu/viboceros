@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_tri_0",
+      "case": "subdivide_neighbor_tri_0"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_tri_0_1",
+      "case": "subdivide_neighbor_tri_0_1"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_tri_0_1_2",
+      "case": "subdivide_neighbor_tri_0_1_2"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_quad_0",
+      "case": "subdivide_neighbor_quad_0"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_quad_0_1",
+      "case": "subdivide_neighbor_quad_0_1"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_quad_0_2",
+      "case": "subdivide_neighbor_quad_0_2"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_quad_0_1_2",
+      "case": "subdivide_neighbor_quad_0_1_2"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_quad_0_1_2_3",
+      "case": "subdivide_neighbor_quad_0_1_2_3"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_warped_0",
+      "case": "subdivide_neighbor_warped_0"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_warped_0_1",
+      "case": "subdivide_neighbor_warped_0_1"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_warped_0_2",
+      "case": "subdivide_neighbor_warped_0_2"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_warped_0_1_2",
+      "case": "subdivide_neighbor_warped_0_1_2"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_warped_0_1_2_3",
+      "case": "subdivide_neighbor_warped_0_1_2_3"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_local_twice",
+      "case": "subdivide_subd_local_twice"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_raw_ngon",
+      "case": "subdivide_mesh_raw_ngon"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_whole_ngon",
+      "case": "subdivide_mesh_whole_ngon"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_odd_colors",
+      "case": "subdivide_mesh_odd_colors"
+    }
+  ]
+}

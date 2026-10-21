@@ -10,11 +10,13 @@
 
 #include "subd_append.h"
 #include "subd_interpolation.h"
+#include "subd_subdivision.h"
 
 struct ViboSubDResult {
   std::vector<uint8_t> archive, vertex_tags, edge_tags;
   std::vector<double> points, surface_points, corner_normals;
-  std::vector<uint32_t> edges, face_sizes, face_vertices;
+  std::vector<uint32_t> edges, face_sizes, face_vertices, face_sources, selected_faces;
+  size_t boundary_edge_count=0;
 };
 namespace {
 using vibo_subd::require;
@@ -22,27 +24,39 @@ void point(std::vector<double>& out, const ON_3dPoint& p) {
   require(p.IsValid(), "Nonfinite SubD point");
   out.insert(out.end(),{p.x,p.y,p.z});
 }
-std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=false, bool normals=false) {
+std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=false, bool normals=false, const std::unordered_map<unsigned,uint32_t>* sources=nullptr, const std::unordered_set<unsigned>* retained_faces=nullptr) {
   auto out=std::make_unique<ViboSubDResult>();
   if (!evaluated) out->archive=vibo_subd::encode(subd);
   std::unordered_map<const ON_SubDVertex*,uint32_t> indices;
+  std::vector<const ON_SubDVertex*> vertices;
   auto vit=subd.VertexIterator();
-  for (auto* v=vit.FirstVertex(); v; v=vit.NextVertex()) {
+  for(auto* v=vit.FirstVertex();v;v=vit.NextVertex()) vertices.push_back(v);
+  if(!evaluated) std::sort(vertices.begin(),vertices.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
+  for (auto* v:vertices) {
     indices.emplace(v,static_cast<uint32_t>(indices.size()));
     const auto surface=v->SurfacePoint();
     point(out->points,evaluated ? surface : v->ControlNetPoint());
     point(out->surface_points,surface);
     out->vertex_tags.push_back(static_cast<uint8_t>(v->m_vertex_tag));
   }
+  std::vector<const ON_SubDEdge*> edges;
   auto eit=subd.EdgeIterator();
-  for (auto* e=eit.FirstEdge(); e; e=eit.NextEdge()) {
+  for(auto* e=eit.FirstEdge();e;e=eit.NextEdge()) edges.push_back(e);
+  if(!evaluated) std::sort(edges.begin(),edges.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
+  for (auto* e:edges) {
     out->edges.push_back(indices.at(e->m_vertex[0]));
     out->edges.push_back(indices.at(e->m_vertex[1]));
     out->edge_tags.push_back(static_cast<uint8_t>(e->m_edge_tag));
+    if(e->FaceCount()==1) ++out->boundary_edge_count;
   }
+  std::vector<const ON_SubDFace*> faces;
   auto fit=subd.FaceIterator();
-  for (auto* f=fit.FirstFace(); f; f=fit.NextFace()) {
+  for(auto* f=fit.FirstFace();f;f=fit.NextFace()) faces.push_back(f);
+  if(!evaluated) std::sort(faces.begin(),faces.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
+  for (auto* f:faces) {
+    if(retained_faces && retained_faces->count(f->m_id)==0) out->selected_faces.push_back(static_cast<uint32_t>(out->face_sizes.size()));
     out->face_sizes.push_back(f->EdgeCount());
+    if(sources) out->face_sources.push_back(sources->at(f->m_level_zero_face_id));
     for (unsigned i=0; i<f->EdgeCount(); ++i) {
       out->face_vertices.push_back(indices.at(f->Vertex(i)));
       if(normals) {
@@ -196,14 +210,22 @@ extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned densi
     for(auto* f=fit.FirstFace();f;f=fit.NextFace()) quads+=f->EdgeCount();
     for(unsigned i=1;i<density;++i) quads*=4;
     require(quads<=1000000,"SubD tessellation face budget exceeded");
+    std::unordered_map<unsigned,uint32_t> sources;
+    auto source_it=subd->FaceIterator();
+    for(auto* f=source_it.FirstFace();f;f=source_it.NextFace()) {
+      sources.emplace(f->m_id,static_cast<uint32_t>(sources.size()));
+      // This is a private display copy. Reset lineage to its current active net,
+      // including archives whose active level is already globally subdivided.
+      const_cast<ON_SubDFace*>(f)->m_level_zero_face_id=f->m_id;
+    }
     require(subd->GlobalSubdivide(density),"SubD subdivision failed");
-    return extract(*subd,true,normals!=0);
+    return extract(*subd,true,normals!=0,&sources);
   });
 }
 extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
   if(!r || !v) return 0;
   *v={r->archive.size(),r->points.size()/3,r->edges.size()/2,r->face_sizes.size(),r->face_vertices.size(),r->corner_normals.size()/3,
-    r->archive.data(),r->points.data(),r->surface_points.data(),r->vertex_tags.data(),r->edges.data(),r->edge_tags.data(),r->face_sizes.data(),r->face_vertices.data(),r->corner_normals.data()};return 1;
+    r->archive.data(),r->points.data(),r->surface_points.data(),r->vertex_tags.data(),r->edges.data(),r->edge_tags.data(),r->face_sizes.data(),r->face_vertices.data(),r->corner_normals.data(),r->boundary_edge_count,r->face_sources.size(),r->face_sources.data(),r->selected_faces.size(),r->selected_faces.data()};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 
@@ -252,3 +274,25 @@ extern "C" int vibo_subd_weights_view(const ViboSubDWeights* w,ViboSubDWeightsVi
   *view={w->offsets.size()-1,w->values.size(),w->offsets.data(),w->columns.data(),w->values.data()};return 1;
 }
 extern "C" void vibo_subd_weights_free(ViboSubDWeights* w) {delete w;}
+
+extern "C" int vibo_subd_subdivide(const uint8_t* bytes,size_t n,unsigned count,
+    const size_t* faces,size_t face_count,int local,ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{
+    require(local==0 || local==1,"Invalid SubD subdivision mode");
+    auto subd=vibo_subd::decode(bytes,n);
+    std::unordered_set<unsigned> retained;
+    if(local) {
+      std::vector<unsigned> ids;auto fit=subd->FaceIterator();
+      for(auto* f=fit.FirstFace();f;f=fit.NextFace()) ids.push_back(f->m_id);
+      std::unordered_set<size_t> selected;
+      require(faces && face_count>0 && face_count<=vibo_subd::component_limit,"Invalid SubD face selection");
+      for(size_t i=0;i<face_count;++i) {require(faces[i]<ids.size(),"SubD subdivision face index out of range");selected.insert(faces[i]);}
+      for(size_t i=0;i<ids.size();++i) if(selected.count(i)==0) retained.insert(ids[i]);
+    }
+    vibo_subd::subdivide(*subd,count,faces,face_count,local!=0);
+    // Persist the refined net as level zero. Otherwise Write/Read can restore
+    // an older level, and subsequent local edits can mix level indices.
+    subd->ClearInactiveLevels();
+    return extract(*subd,false,false,nullptr,local?&retained:nullptr);
+  });
+}

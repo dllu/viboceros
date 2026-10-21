@@ -14,6 +14,7 @@ For current command support, use the [command reference](../commands/README.md).
 ## Modeling and editing
 
 - [Modeling comparisons](modeling-evidence.md): transforms, fitting and Booleans.
+- [SubDivide qualification](../commands/subdivide.md): local and whole mesh/SubD refinement.
 - [Editing comparisons](editing-evidence.md): curves, meshes, B-reps and selection.
 - [Curve input](curve-input.md): interpolation and getter behavior.
 - [Geometry representation](geometry-evidence.md): mass properties, morphs and intersections.

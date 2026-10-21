@@ -1,0 +1,216 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_quad",
+      "case": "subdivide_subd_quad"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_triangle",
+      "case": "subdivide_subd_triangle"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_preselected",
+      "case": "subdivide_subd_preselected"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_twice",
+      "case": "subdivide_subd_twice"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_cancel",
+      "case": "subdivide_subd_cancel"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_strip",
+      "case": "subdivide_subd_strip"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_strip_local",
+      "case": "subdivide_subd_strip_local"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_strip_all_faces",
+      "case": "subdivide_subd_strip_all_faces"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_cube",
+      "case": "subdivide_subd_cube"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_cube_local",
+      "case": "subdivide_subd_cube_local"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_cube_all_faces",
+      "case": "subdivide_subd_cube_all_faces"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_warped",
+      "case": "subdivide_subd_warped"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_disconnected_local",
+      "case": "subdivide_subd_disconnected_local"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_translated_triangle",
+      "case": "subdivide_subd_translated_triangle"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_mixed_polygon",
+      "case": "subdivide_subd_mixed_polygon"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_multiple",
+      "case": "subdivide_subd_multiple"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_quad",
+      "case": "subdivide_mesh_quad"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_triangle",
+      "case": "subdivide_mesh_triangle"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_preselected",
+      "case": "subdivide_mesh_preselected"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_twice",
+      "case": "subdivide_mesh_twice"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_cancel",
+      "case": "subdivide_mesh_cancel"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_strip",
+      "case": "subdivide_mesh_strip"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_strip_local",
+      "case": "subdivide_mesh_strip_local"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_strip_all_faces",
+      "case": "subdivide_mesh_strip_all_faces"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_cube",
+      "case": "subdivide_mesh_cube"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_cube_local",
+      "case": "subdivide_mesh_cube_local"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_cube_all_faces",
+      "case": "subdivide_mesh_cube_all_faces"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_warped",
+      "case": "subdivide_mesh_warped"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_disconnected_local",
+      "case": "subdivide_mesh_disconnected_local"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_translated_triangle",
+      "case": "subdivide_mesh_translated_triangle"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_mixed_polygon",
+      "case": "subdivide_mesh_mixed_polygon"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_multiple",
+      "case": "subdivide_mesh_multiple"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mixed_objects",
+      "case": "subdivide_mixed_objects"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_corners",
+      "case": "subdivide_subd_corners"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_subd_creased_cube",
+      "case": "subdivide_subd_creased_cube"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_colors",
+      "case": "subdivide_mesh_colors"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_ngon",
+      "case": "subdivide_mesh_ngon"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_seam",
+      "case": "subdivide_mesh_seam"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_nonmanifold",
+      "case": "subdivide_mesh_nonmanifold"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_seam_local",
+      "case": "subdivide_mesh_seam_local"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_nonmanifold_local",
+      "case": "subdivide_mesh_nonmanifold_local"
+    }
+  ]
+}

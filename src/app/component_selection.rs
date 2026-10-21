@@ -70,6 +70,22 @@ impl ComponentSelection {
         }
         Ok(self.order.clone())
     }
+    pub(super) fn replace_subdivision_faces(
+        &mut self,
+        document: &Document,
+        faces: Vec<(ObjectId, usize)>,
+    ) -> Result<(), &'static str> {
+        let picks = faces
+            .into_iter()
+            .map(|(object, index)| ComponentPick {
+                object,
+                index,
+                kind: ComponentSelectionKind::SubDFace,
+            })
+            .collect();
+        self.clear();
+        self.apply(document, picks, ComponentAction::Add)
+    }
     pub(super) fn clear(&mut self) {
         self.picks.clear();
         self.order.clear();
@@ -122,12 +138,19 @@ fn source(document: &Document, pick: ComponentPick) -> Result<GeometrySnapshot, 
         .object(pick.object)
         .filter(|_| document.is_object_selectable(pick.object))
         .ok_or("component source is unavailable")?;
-    if pick.kind == ComponentSelectionKind::MeshFace {
-        return match object.geometry() {
-            Geometry::Mesh(m) if pick.index < m.face_count() => {
-                Ok(object.geometry_snapshot().clone())
-            }
-            _ => Err("mesh face source is unavailable"),
+    if matches!(
+        pick.kind,
+        ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace
+    ) {
+        let count = match (pick.kind, object.geometry()) {
+            (ComponentSelectionKind::MeshFace, Geometry::Mesh(m)) => m.face_count(),
+            (ComponentSelectionKind::SubDFace, Geometry::SubD(s)) => s.faces().len(),
+            _ => return Err("polygon face source is unavailable"),
+        };
+        return if pick.index < count {
+            Ok(object.geometry_snapshot().clone())
+        } else {
+            Err("polygon face index is outside its source")
         };
     }
     let converted;
@@ -144,7 +167,9 @@ fn source(document: &Document, pick: ComponentPick) -> Result<GeometrySnapshot, 
     let count = match pick.kind {
         ComponentSelectionKind::BrepEdge => brep.edges().len(),
         ComponentSelectionKind::BrepFace => brep.faces().len(),
-        ComponentSelectionKind::MeshFace => unreachable!("handled mesh face"),
+        ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace => {
+            unreachable!("handled polygon face")
+        }
     };
     if pick.index >= count {
         return Err("component index is outside its source");
@@ -168,6 +193,7 @@ impl VibocerosApp {
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
             && (self.object_prompt.is_none()
+                || self.picking_subdivide()
                 || self.shrink_prompt_mode()
                     == Some(viboceros_geometry::BrepSurfaceShrinkMode::Standard))
             && self.group_prompt.is_none()
@@ -279,6 +305,19 @@ impl VibocerosApp {
         } else {
             click.picks
         };
+        let picks = if self.picking_subdivide() {
+            picks
+                .into_iter()
+                .filter(|p| {
+                    matches!(
+                        p.kind,
+                        ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace
+                    )
+                })
+                .collect()
+        } else {
+            picks
+        };
         let action = if click.preselection {
             ComponentAction::Toggle
         } else if click.modifiers.ctrl || click.modifiers.command {
@@ -305,6 +344,7 @@ impl VibocerosApp {
                                 ComponentSelectionKind::BrepEdge => "edge",
                                 ComponentSelectionKind::BrepFace => "face",
                                 ComponentSelectionKind::MeshFace => "mesh face",
+                                ComponentSelectionKind::SubDFace => "SubD face",
                             };
                             self.push_log(format!(
                                 "{}: object {} {kind} {}",
@@ -440,7 +480,15 @@ impl VibocerosApp {
         }
     }
 
-    pub(super) fn accept_component_window(&mut self, window: ComponentWindow) {
+    pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
+        if self.picking_subdivide() {
+            window.picks.retain(|p| {
+                matches!(
+                    p.kind,
+                    ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace
+                )
+            });
+        }
         if window.preselection {
             if self.component_preselection_available() {
                 self.select_components(window.picks, ComponentAction::Add);

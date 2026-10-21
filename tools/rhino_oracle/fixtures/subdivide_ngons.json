@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_ngon_members_first",
+      "case": "subdivide_ngon_members_first"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_ngon_members_middle",
+      "case": "subdivide_ngon_members_middle"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_ngon_members_ends",
+      "case": "subdivide_ngon_members_ends"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_ngon_members_two_middle",
+      "case": "subdivide_ngon_members_two_middle"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_ngon_members_all",
+      "case": "subdivide_ngon_members_all"
+    }
+  ]
+}

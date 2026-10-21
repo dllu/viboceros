@@ -1091,6 +1091,9 @@ impl VibocerosApp {
             return self.continue_cloud_removal(input, pending);
         }
         if input.is_empty() {
+            if self.finish_subdivide(pending.postselected) {
+                return true;
+            }
             if self.finish_shrink_faces(pending.postselected) {
                 return true;
             }
@@ -1390,7 +1393,7 @@ impl VibocerosApp {
             }
             if normalized == "selnone" {
                 self.document.clear_selection();
-                if self.shrink_prompt_mode().is_some() {
+                if self.shrink_prompt_mode().is_some() || self.picking_subdivide() {
                     self.component_selection.clear();
                 }
             } else {
@@ -1693,7 +1696,7 @@ impl VibocerosApp {
             }
             if matches!(
                 pending.description.command,
-                "ShrinkTrimmedSrf" | "ShrinkTrimmedSrfToEdge"
+                "ShrinkTrimmedSrf" | "ShrinkTrimmedSrfToEdge" | "SubDivide"
             ) {
                 self.component_selection.clear();
             }

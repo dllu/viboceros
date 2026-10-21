@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_unrelated_ngon_partial",
+      "case": "subdivide_unrelated_ngon_partial"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_unrelated_ngon_whole",
+      "case": "subdivide_unrelated_ngon_whole"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_neighbor_existing_ngon",
+      "case": "subdivide_neighbor_existing_ngon"
+    },
+    {
+      "op": "subdivide_command",
+      "id": "subdivide_mesh_seam_twice",
+      "case": "subdivide_mesh_seam_twice"
+    }
+  ]
+}

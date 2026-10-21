@@ -10,6 +10,11 @@ pub struct SubDError(pub String);
 /// OpenNURBS fields that are not yet exposed as editable Rust properties.
 #[derive(Clone, Debug, PartialEq)]
 pub struct SubDData {
+    /// Newly refined face ordinals for a local subdivision result only.
+    pub selected_faces: Vec<u32>,
+    pub boundary_edge_count: usize,
+    /// Display quad to active control face ordinal, present for tessellations.
+    pub face_sources: Vec<u32>,
     pub archive: Vec<u8>,
     pub points: Vec<[f64; 3]>,
     pub surface_points: Vec<[f64; 3]>,
@@ -38,12 +43,28 @@ struct View {
     face_sizes: *const u32,
     face_vertices: *const u32,
     corner_normals: *const f64,
+    boundary_edge_count: usize,
+    face_source_count: usize,
+    face_sources: *const u32,
+    selected_face_count: usize,
+    selected_faces: *const u32,
 }
 #[repr(C)]
 struct NativeResult {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vibo_subd_subdivide(
+        bytes: *const u8,
+        n: usize,
+        count: u32,
+        faces: *const usize,
+        face_count: usize,
+        local: c_int,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_subd_cylinder(
         frame: *const f64,
         radius: f64,
@@ -217,6 +238,9 @@ fn call(
         })
         .collect();
     Ok(SubDData {
+        selected_faces: unsafe { copy(v.selected_faces, v.selected_face_count) },
+        boundary_edge_count: v.boundary_edge_count,
+        face_sources: unsafe { copy(v.face_sources, v.face_source_count) },
         archive: unsafe { copy(v.archive, v.archive_count) },
         points: unsafe { copy(v.points.cast(), v.point_count) },
         surface_points: unsafe { copy(v.surface_points.cast(), v.point_count) },
@@ -401,5 +425,36 @@ pub fn subd_control_mesh(bytes: &[u8]) -> Result<SubDData, SubDError> {
     check_archive(bytes)?;
     call(|out, error, n| unsafe {
         vibo_subd_control_mesh(bytes.as_ptr(), bytes.len(), out, error, n)
+    })
+}
+
+/// Refines a private archive copy; local face indices address its active table.
+/// None selects the whole net, while an empty explicit selection is invalid.
+pub fn subd_subdivide(
+    bytes: &[u8],
+    count: u32,
+    faces: Option<&[usize]>,
+) -> Result<SubDData, SubDError> {
+    check_archive(bytes)?;
+    if !(1..=8).contains(&count)
+        || faces.is_some_and(|f| count != 1 || f.is_empty() || f.len() > 100_000)
+    {
+        return Err(SubDError(
+            "Invalid subdivision count or face selection".into(),
+        ));
+    }
+    let indices = faces.unwrap_or(&[]);
+    call(|out, error, n| unsafe {
+        vibo_subd_subdivide(
+            bytes.as_ptr(),
+            bytes.len(),
+            count,
+            indices.as_ptr(),
+            indices.len(),
+            faces.is_some().into(),
+            out,
+            error,
+            n,
+        )
     })
 }
