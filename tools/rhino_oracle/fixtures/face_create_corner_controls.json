@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "chain_frame_tilted",
+      "case": "chain_frame_tilted"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_frame_near_tilted",
+      "case": "chain_frame_near_tilted"
+    },
+    {
+      "op": "face_create_command",
+      "id": "edge_overlap_tilted",
+      "case": "edge_overlap_tilted"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_frame_backface",
+      "case": "chain_frame_backface"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_frame_undo_one",
+      "case": "chain_frame_undo_one"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_frame_undo_two",
+      "case": "chain_frame_undo_two"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_frame_mirror",
+      "case": "chain_frame_mirror"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_frame_no_weld",
+      "case": "chain_frame_no_weld"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_frame_right_follow",
+      "case": "chain_frame_right_follow"
+    }
+  ]
+}

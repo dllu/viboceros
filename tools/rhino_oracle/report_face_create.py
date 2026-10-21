@@ -8,9 +8,12 @@ import re
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
-GROUPS=[('',18),('_variants',7),('_controls',5),('_drafts',12),('_draft_extras',6)]
+GROUPS=[('',18),('_variants',7),('_controls',5),('_drafts',12),('_draft_extras',6),('_corners',12),('_corner_controls',9),('_corner_finish',4)]
 SOURCES=[
+ 'crates/viboceros-geometry/src/lib.rs','crates/viboceros-geometry/src/vector.rs','crates/viboceros-geometry/src/vector/cross_direction.rs','crates/viboceros-geometry/src/point.rs','crates/viboceros-geometry/src/exact_scalar.rs','crates/viboceros-geometry/src/tolerance.rs',
  'crates/viboceros-geometry/src/mesh.rs','crates/viboceros-geometry/src/mesh/face_create.rs',
+ 'crates/viboceros-geometry/src/mesh/face_boundary.rs','crates/viboceros-geometry/src/mesh/face_records.rs','crates/viboceros-geometry/src/mesh/closest.rs','crates/viboceros-geometry/src/mesh/mass_triangles.rs',
+ 'crates/viboceros-geometry/src/transform.rs','crates/viboceros-geometry/src/transform/orientation.rs','crates/viboceros-geometry/src/binary_accumulator.rs',
  'crates/viboceros-geometry/src/mesh/append.rs','crates/viboceros-geometry/src/mesh/ngon.rs',
  'crates/viboceros-geometry/src/mesh/closed_polyline.rs','crates/viboceros-geometry/src/mesh/patch.rs',
  'crates/viboceros-geometry/src/mesh/normals.rs','crates/viboceros-geometry/src/mesh/projection.rs',
@@ -39,7 +42,7 @@ def check(row,value,allow_gaps=False):
   same=all(actual['actual_'+k]==actual['native_'+k]for k in ['vertices','faces','ngons'])
   error=actual.get('maximum_bidirectional_sample_error')
   if type(error)not in (int,float)or not math.isfinite(error)or error<0:raise ValueError('invalid mesh-face comparison')
-  mesh_qualified=error<=1e-6 and same and actual['counts_match']is True and actual['ngons_match']is True
+  mesh_qualified=error<=1e-6 and same and actual['counts_match']is True and actual['ngons_match']is True and actual['quad_cycles_match']is True
   if actual['qualified']is not mesh_qualified:raise ValueError('hidden mesh-face comparison gap')
   qualified &= mesh_qualified
  qualified &= c['attributes_and_identity_preserved']is True
@@ -55,7 +58,7 @@ def summarize(log):
   ids=[op['id']for op in q['operations']]
   if len(ids)!=count or len(set(ids))!=count or [r['id']for r in native['results']]!=ids:raise ValueError('incomplete native face capture')
   stages={}
-  for stage in (['draft_command','draft_getter']if suffix.startswith('_draft')else['controls']if suffix=='_controls'else['command','getter']):
+  for stage in (['draft_command','draft_getter']if (suffix.startswith('_draft')or suffix.startswith('_corner'))else['controls']if suffix=='_controls'else['command','getter']):
    marker=('FACE_'+stage.upper())if stage.startswith('draft_')else'FACE_CREATE_'+stage.upper()
    wanted_ids=[id_ for id_ in ids if not(stage=='draft_command'and id_=='chain_cancel')]
    rows=[json.loads(s)for s in re.findall(marker+r' (\{[^\n]+\})',log)]
@@ -63,7 +66,7 @@ def summarize(log):
    if [r['id']for r in rows]!=wanted_ids:raise ValueError('missing or duplicate '+marker+' replay')
    values={r['id']:r['value']for r in native['results']}
    for row in rows:
-    check(row,values[row['id']],suffix.startswith('_draft'));maximum=max(maximum,max((m['maximum_bidirectional_sample_error']for m in row['check']['meshes']),default=0.))
+    check(row,values[row['id']],(suffix.startswith('_draft')or suffix.startswith('_corner')));maximum=max(maximum,max((m['maximum_bidirectional_sample_error']for m in row['check']['meshes']),default=0.))
    stages[stage]=dict(recipes=len(rows),qualified_recipes=sum(row['qualified']for row in rows),unqualified_recipes=[row['id']for row in rows if not row['qualified']],cases=rows)
   groups[suffix.lstrip('_')or'base']=dict(native_engine_version=native['engine_version'],**stages)
  for stage in ['controls']:
@@ -79,25 +82,31 @@ def summarize(log):
   found=[json.loads(row)['id']for row in re.findall('FACE_'+stage.upper()+r' (\{[^\n]+\})',log)]
   if found!=expected:raise ValueError('extra, reordered or missing chain replay')
  validity=json.loads((HERE/'observations/face_draft_validity.json').read_text())
- expected=[op['id']for suffix,_ in GROUPS[3:]for op in json.loads((HERE/f'fixtures/face_create{suffix}.json').read_text())['operations']]
+ expected=[op['id']for suffix,_ in GROUPS[3:5]for op in json.loads((HERE/f'fixtures/face_create{suffix}.json').read_text())['operations']]
  if [row['id']for row in validity['results']]!=expected:raise ValueError('missing native mesh validity controls')
  statuses={row['id']:row['value']['status']for row in validity['results']}
  if any(status not in ('valid','invalid')for status in statuses.values()):raise ValueError('unknown mesh validity result')
- return dict(native_record_validity=statuses,model_epsilon=1e-6,full_native_parity=False,performance_qualified=False,recipes=48,maximum_sample_difference=maximum,groups=groups,
+ for suffix,_ in GROUPS[5:]:
+  for row in json.loads((HERE/f'observations/face_create{suffix}.json').read_text())['results']:
+   valid=row['value']['after_script'][0]['native_validity']['valid']
+   if type(valid)is not bool:raise ValueError('missing captured corner validity')
+   statuses[row['id']]='valid'if valid else'invalid'
+ return dict(native_record_validity=statuses,model_epsilon=1e-6,full_native_parity=False,performance_qualified=False,recipes=sum(count for _,count in GROUPS),maximum_sample_difference=maximum,groups=groups,
   guarantees=[
-   'Twenty-five captured mesh recipes match command and point-getter samples, raw vertex/face counts, triangle/quad kinds and cyclic n-gon boundary winding.',
-   'Five physical native input controls compare edge attachment and cancellation through the interactive getter. Eighteen additional physical edge-chain scenes retain every command and viewport-getter result, including unresolved comparisons.',
+   'Twenty-five captured mesh recipes match command and point-getter samples, raw vertex/face counts, triangle/quad kinds, cyclic quad ordering and n-gon boundary winding.',
+   'Five physical native input controls compare edge attachment and cancellation through the interactive getter. Forty-three additional edge-chain and corner scenes retain every command and viewport-getter result, including rotated, tilted, scaled, opposite-side, repeated Undo and direct crossing-quad controls.',
    'Append keeps source identity, name and layer; output selection and grouped Undo/Redo match each captured result.',
    'Zero-degree welding joins coplanar seams. Welding uses exact coordinate adjacency and preserves unrelated pre-existing unwelded seams.',
    'Draft corners and previews leave the model and Redo unchanged until completion. History or source changes invalidate a stale draft.',
-   'Continuous chain walks cache an oriented source boundary loop; reverse walks retain coherent winding. Completed loops can continue onto newly created boundaries. Screen-space picks target current draft boundaries without admitting temporary document objects.',
+   'Continuous chain walks update exact-location edge incidence incrementally and roll it back through point Undo. Each next edge is taken from the current boundary, including newly created edges. Screen-space picks target current draft boundaries without admitting temporary document objects.',
    'Ordered n-gons reuse the existing constrained polygon triangulator and validated mesh n-gon overlays. InPlane projects later corners onto the first-three-corner plane.',
   ],limits=[
-   'SubD output is explicitly unsupported. chain_wrap, edge_collinear_inner and chain_wrap_shift remain unqualified geometry or topology comparisons. Public Rhino IsValidWithLog accepts all eighteen captured draft mesh records.',
+   'Zero polygon normals remain stored data. Boundary continuation requires a defined reference normal, and welding still rejects a seam whose required normal is undefined.',
+   'SubD output is explicitly unsupported. Public Rhino IsValidWithLog accepts the reconstructed eighteen draft records and all twenty-five captured corner meshes.',
    'Quad surface comparisons use the shared shortest-diagonal triangulation on both sides. Native display tessellation of warped quads, raw vertex/face ordering, and stored normal arrays are not certified.',
    'General self-intersecting polygons, nonmanifold append neighborhoods, texture/vertex-color channels and native comparative speed require further qualification.',
-   'Construction retains at most 100000 corners, including automatically reused chain corners. Per-face option changes retain prior completed faces; the usual constant-angle path appends and welds once.',
-   'Legacy A-C diagonal rejection is recorded for native quads. Comparisons use nondegenerate triangles from the shortest-diagonal split; original native vertex, face and n-gon counts remain the topology targets.',
+   'Construction retains at most 100000 corners, including automatically reused chain corners. Validated mesh parts and per-face settings are retained; the usual constant-angle path appends and welds once.',
+   'Legacy A-C diagonal rejection is recorded for native quads. Comparisons retain all shortest-diagonal facets, including collapsed ones handled by the exact segment/point fallback. Original native vertex, face and n-gon counts remain the topology targets.',
   ],sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in SOURCES})
 
 

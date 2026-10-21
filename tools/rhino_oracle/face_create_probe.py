@@ -80,6 +80,10 @@ def run(op,host,iterations,tolerance):
     row['mesh']=host['_polygon_mesh_value'](obj.Geometry)
     row['ngons']=[dict(vertices=[int(i)for i in n.BoundaryVertexIndexList()],faces=[int(i)for i in n.FaceIndexList()])for n in obj.Geometry.Ngons]
     row['normal_count']=int(obj.Geometry.Normals.Count)
+    if case.get('native_validity'):
+     valid,log=obj.Geometry.IsValidWithLog();row['native_validity']=dict(valid=bool(valid),diagnostics=str(log or''))
+     row['vertex_normals']=[[float(n.X),float(n.Y),float(n.Z)]for n in obj.Geometry.Normals]
+     row['face_normals']=[[float(n.X),float(n.Y),float(n.Z)]for n in obj.Geometry.FaceNormals]
    rows.append(row)
   return rows
  try:
@@ -103,8 +107,8 @@ def run(op,host,iterations,tolerance):
   command+=' _InPlane='+('Yes'if case.get('in_plane')else'No')
   command+=' _WeldAngle='+str(case.get('weld_angle',180.))
   command+=' _Mode='+('MultipleFaces'if case.get('multiple')else'SingleFace')
-  command+=' _FromEdge='+('Yes'if op['case']in DRAFTS else'Yes _Pause'if case.get('edge_pick')else'No')
-  if op['case']in DRAFTS and case.get('polygon','Quad')=='Quad':command+=' _Chain='+('Yes'if case.get('chain')else'No')
+  command+=' _FromEdge='+('Yes'if op['case']in DRAFTS and case.get('from_edge',True)else'No'if op['case']in DRAFTS else'Yes _Pause'if case.get('edge_pick')else'No')
+  if op['case']in DRAFTS and case.get('from_edge',True)and case.get('polygon','Quad')=='Quad':command+=' _Chain='+('Yes'if case.get('chain')else'No')
   for point in case['points']:
    if isinstance(point,dict):command+=' _Pause'
    elif isinstance(point,str):command+=' _'+point

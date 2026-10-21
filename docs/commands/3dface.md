@@ -36,29 +36,34 @@ For quads, `FromEdge=Yes Chain=Yes Mode=MultipleFaces` starts an edge chain.
 Pick a boundary and two points for the first face, then one point for each
 following face. Either walking direction is supported. Enter ends the current
 chain and returns to boundary picking; Enter there finishes the command. Closed
-walks can continue onto newly created boundaries. `Undo` can remove the reused
-point of the pending face while leaving the completed face in place.
+walks can continue onto newly created boundaries. `Undo` removes the reused point and then the seeded edge corners of the
+pending face, leaving completed faces in place. After removing an edge corner,
+remaining points can form a fresh face.
 
 `Edge=<index>` can also appear between point sequences to choose another boundary
 in a script. Its index refers to the mesh including completed draft faces.
 A standalone MultipleFaces draft can switch to FromEdge mode before admission.
 SubD output remains unsupported.
 
-The [qualification report](../face-create-qualification.json) retains 48 native
-recipes: the original 25 mesh constructions, five physical edge/Escape controls,
-and 18 additional edge and chain scenes. The original cases and 15 of the 18
-new scenes match geometry, raw topology counts, attributes and history within
-`1e-6`. Viewport tests exercise pointer press/release events and projected boundary
-clicks against session-owned edges without temporary document objects.
+The [qualification report](../face-create-qualification.json) retains 73 native
+recipes. The command and viewport getter comparisons match sampled surfaces
+within `1e-6`, vertex/face counts, cyclic quad ordering, n-gon boundary winding,
+attributes and grouped history. The corner controls include collinear and
+overlapping quads, near-edge side changes, reversed source faces, rotation,
+scaling, tilted planes and repeated point Undo. Viewport tests exercise pointer
+press/release events and projected boundary picks without temporary document
+objects.
 
-Three collinear or overlapping cases (`chain_wrap`, `edge_collinear_inner`,
-`chain_wrap_shift`) remain unqualified geometry or topology comparisons. Rhino's
-public `IsValidWithLog` accepts records reconstructed from all 18 captured draft meshes; these three cases
-are local compatibility gaps. Native raw face ordering, stored normal arrays,
-arbitrary nonmanifold neighborhoods and comparative speed remain unqualified.
-Quad surface samples use the same shortest-diagonal split on both sides,
-omitting zero-area reference facets. Construction retains at most 100,000
-corners, including automatically reused chain corners; ambiguous boundary
-branches are rejected.
+Quad records retain collapsed facets and zero polygon normals. Mesh projection
+uses the existing exact triangle, segment and point queries for these records.
+The quad's starting corner is preserved when its order changes, because a tied
+diagonal can otherwise change the sampled surface. Boundary continuation needs
+a defined reference normal; welding requests normals only for affected seams.
+
+SubD output, stored normal-array parity, arbitrary nonmanifold neighborhoods,
+texture/vertex-color channels and comparative speed remain unqualified.
+Construction retains at most 100,000 corners, including automatically reused
+chain corners. Ambiguous source boundary loops are rejected; a nonunique
+continuation returns to boundary selection.
 
 Reference: [McNeel 3DFace command](https://docs.mcneel.com/rhino/8/help/en-us/commands/3dface.htm).

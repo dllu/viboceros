@@ -1,7 +1,7 @@
 use nalgebra::Matrix3;
 mod inverse;
 mod normal;
-mod orientation;
+pub(crate) mod orientation;
 mod rotation_cleanup;
 pub use normal::AffineNormalTransform3;
 

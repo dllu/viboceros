@@ -1,5 +1,6 @@
 //! Direct mesh-face drafts are shared by command scripts and point getters.
 use super::*;
+use viboceros_geometry::{MeshFaceBoundaryGraph, UnitVector3};
 
 pub const USAGE: &str = "3DFace [Output=Mesh] [PolygonType=Triangle|Quad|Ngon] [InPlane=Yes|No] [WeldAngle=degrees] [Mode=SingleFace|MultipleFaces] [Append=id] [FromEdge=Yes|No Chain=Yes|No Edge=n] points...";
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -152,19 +153,23 @@ pub struct CompletedFace {
     pub weld_angle: Real,
     resume: Resume,
     flipped: bool,
+    part: TriangleMesh,
+    input_last: Point3,
+    start_swapped: bool,
 }
 #[derive(Clone, Debug)]
 struct Chain {
-    boundary: std::sync::Arc<Vec<Point3>>,
-    edge: usize,
-    direction: Option<bool>,
-    consumed: usize,
+    reverse: Option<bool>,
+    reference: UnitVector3,
 }
+
 #[derive(Clone, Debug)]
 struct Resume {
     seed: usize,
     chain: Option<Chain>,
     from_edge: bool,
+    edge_same_order: bool,
+    boundary_checkpoint: usize,
 }
 #[derive(Clone, Debug)]
 pub struct Draft {
@@ -172,6 +177,8 @@ pub struct Draft {
     pub points: Vec<Point3>,
     faces: Vec<CompletedFace>,
     source: Option<TriangleMesh>,
+    boundaries: MeshFaceBoundaryGraph,
+    edge_same_order: bool,
     seed: usize,
     chain: Option<Chain>,
     waiting_edge: bool,
@@ -187,11 +194,18 @@ impl Draft {
         if !preferences.weld_angle.is_finite() || !(0. ..=180.).contains(&preferences.weld_angle) {
             return Err(CommandError::Usage(USAGE));
         }
+        let boundaries = source
+            .as_ref()
+            .map(MeshFaceBoundaryGraph::from_mesh)
+            .transpose()?
+            .unwrap_or_default();
         let mut draft = Self {
             preferences,
             points: vec![],
             faces: vec![],
             source,
+            boundaries,
+            edge_same_order: true,
             seed: 0,
             chain: None,
             waiting_edge: preferences.from_edge,
@@ -219,12 +233,22 @@ impl Draft {
         }
         let mesh = self.current_mesh()?.ok_or(CommandError::Usage(USAGE))?;
         let seed = mesh.boundary_face_seed(index)?;
+        let physical = mesh
+            .diagnostic_edges()
+            .into_iter()
+            .find(|e| e.index == index)
+            .unwrap()
+            .points;
+        self.edge_same_order = seed[0] == physical[0];
         let chain = if self.preferences.chain && self.preferences.polygon == Polygon::Quad {
+            mesh.boundary_face_loop(index)?;
+            let reference = self
+                .boundaries
+                .boundary_normal(seed)
+                .ok_or(CommandError::Usage(USAGE))?;
             Some(Chain {
-                boundary: std::sync::Arc::new(mesh.boundary_face_loop(index)?),
-                edge: 0,
-                direction: None,
-                consumed: 0,
+                reverse: None,
+                reference,
             })
         } else {
             None
@@ -269,7 +293,7 @@ impl Draft {
         self.points
             .last()
             .copied()
-            .or_else(|| self.faces.last()?.points.last().copied())
+            .or_else(|| self.faces.last().map(|face| face.input_last))
     }
     pub fn clear_points(&mut self) {
         self.total -= self.points.len();
@@ -327,7 +351,7 @@ impl Draft {
                     let mut candidate = self.points.clone();
                     candidate.push(p);
                     if candidate.len() >= 3 {
-                        let (ordered, _) = self.ordered_face(&candidate)?;
+                        let (ordered, _, _) = self.ordered_face(&candidate)?;
                         TriangleMesh::try_face_from_points(&ordered, self.preferences.in_plane)?;
                     }
                 }
@@ -343,16 +367,37 @@ impl Draft {
                 }
             }
             Token::Undo => {
-                if self.points.len() > self.seed {
+                if self.preferences.from_edge && !self.points.is_empty() {
+                    if self.points.len() == 2 && self.seed == 2 && !self.edge_same_order {
+                        self.points.remove(0);
+                    } else {
+                        self.points.pop();
+                    }
+                    self.total -= 1;
+                    self.seed = self.seed.min(self.points.len());
+                    if self.seed < 2 {
+                        self.chain = None;
+                    }
+                    if self.points.is_empty() {
+                        self.waiting_edge = true;
+                    }
+                } else if self.points.len() > self.seed {
                     self.points.pop();
                     self.total -= 1;
                 } else if let Some(mut previous) = self.faces.pop() {
                     if previous.flipped {
+                        previous.points.rotate_right(1);
                         previous.points.swap(2, 3);
+                    }
+                    if previous.start_swapped {
+                        previous.points.swap(0, 1);
                     }
                     self.total -= self.points.len() + 1;
                     previous.points.pop();
                     self.points = previous.points;
+                    self.boundaries
+                        .rollback(previous.resume.boundary_checkpoint)?;
+                    self.edge_same_order = previous.resume.edge_same_order;
                     self.seed = previous.resume.seed;
                     self.chain = previous.resume.chain;
                     self.preferences.from_edge = previous.resume.from_edge;
@@ -385,42 +430,72 @@ impl Draft {
                 points.push(point);
             }
         }
-        self.ordered_face(&points).map(|(points, _)| points)
+        self.ordered_face(&points).map(|(points, _, _)| points)
     }
-    fn ordered_face(&self, input: &[Point3]) -> Result<(Vec<Point3>, bool), CommandError> {
+    fn ordered_face(&self, input: &[Point3]) -> Result<(Vec<Point3>, bool, bool), CommandError> {
         let mut points = input.to_vec();
-        let flipped = if self.preferences.from_edge && points.len() == 4 {
-            if let Some(direction) = self.chain.as_ref().and_then(|c| c.direction) {
-                !direction
+        let flipped = if self.preferences.from_edge && self.seed >= 2 && points.len() == 4 {
+            if let Some(chain) = self.chain.as_ref().filter(|c| c.reverse.is_some()) {
+                let positive = TriangleMesh::face_corner_side(
+                    [points[0], points[1], points[2]],
+                    chain.reference,
+                )?
+                .is_gt();
+                let reverse = if positive {
+                    chain.reverse.unwrap()
+                } else {
+                    !chain.reverse.unwrap()
+                };
+                reverse
+                    || TriangleMesh::face_quad_crosses([
+                        points[0], points[1], points[2], points[3],
+                    ])?
             } else {
-                let area = points[0]
-                    .vector_to(points[1])?
-                    .cross(points[0].vector_to(points[2])?)?
-                    .length()?;
-                area > 0. && points[2].distance_to(points[0])? < points[2].distance_to(points[1])?
+                let mut physical = [points[0], points[1], points[2], points[3]];
+                if !self.edge_same_order {
+                    physical.swap(0, 1);
+                }
+                TriangleMesh::face_quad_crosses(physical)? ^ !self.edge_same_order
             }
         } else {
             false
         };
         if flipped {
             points.swap(2, 3);
+            points.rotate_left(1);
         }
-        Ok((points, flipped))
+        let start_swapped = points.len() == 4
+            && (!self.preferences.from_edge || self.seed < 2)
+            && TriangleMesh::face_quad_reverses_start([
+                points[0], points[1], points[2], points[3],
+            ])?;
+        if start_swapped {
+            points.swap(0, 1);
+        }
+        Ok((points, flipped, start_swapped))
     }
     fn complete(&mut self) -> Result<(), CommandError> {
-        let (points, flipped) = self.ordered_face(&self.points)?;
-        TriangleMesh::try_face_from_points(&points, self.preferences.in_plane)?;
+        let (points, flipped, start_swapped) = self.ordered_face(&self.points)?;
+        let part = TriangleMesh::try_face_from_points(&points, self.preferences.in_plane)?;
         let resume = Resume {
             seed: self.seed,
             chain: self.chain.clone(),
             from_edge: self.preferences.from_edge,
+            edge_same_order: self.edge_same_order,
+            boundary_checkpoint: self.boundaries.checkpoint(),
         };
+        self.boundaries.append(&part)?;
+        let corner = self.points[usize::from(flipped)];
+        let carry = *self.points.last().unwrap();
         self.faces.push(CompletedFace {
             points,
             in_plane: self.preferences.in_plane,
             weld_angle: self.preferences.weld_angle,
             resume,
             flipped,
+            part,
+            input_last: carry,
+            start_swapped,
         });
         self.points.clear();
         self.finished = !self.preferences.multiple;
@@ -429,76 +504,25 @@ impl Draft {
         }
         self.waiting_edge = self.preferences.from_edge;
         if let Some(chain) = self.chain.as_mut() {
-            let direction = *chain.direction.get_or_insert(!flipped);
-            chain.consumed += 1;
-            if chain.consumed < chain.boundary.len() {
-                let n = chain.boundary.len();
-                chain.edge = if direction {
-                    (chain.edge + 1) % n
-                } else {
-                    (chain.edge + n - 1) % n
-                };
-                let last = self.faces.last().unwrap();
-                let carry = if flipped {
-                    last.points[2]
-                } else {
-                    last.points[3]
-                };
-                let seed = [
-                    chain.boundary[(chain.edge + 1) % n],
-                    chain.boundary[chain.edge],
-                    carry,
-                ];
+            chain.reverse.get_or_insert(flipped);
+            if let Some((seed, reference)) = self.boundaries.next_seed(corner, !flipped) {
                 if self.total + 3 > viboceros_geometry::MAX_MESH_PATCH_POINTS {
                     return Err(GeometryError::MeshPatchLimit.into());
                 }
-                self.points = seed.to_vec();
+                self.points = vec![seed[0], seed[1], carry];
                 self.seed = 2;
+                self.edge_same_order = true;
                 self.total += 3;
+                chain.reference = if chain.reverse != Some(flipped) {
+                    let normal = self.faces.last().unwrap().part.polygon_face_normal(0)?;
+                    normal.as_vector().scaled(-1.)?.normalized_nonzero()?
+                } else {
+                    reference
+                };
                 self.waiting_edge = false;
             } else {
-                let n = chain.boundary.len();
-                let corner = chain.boundary[if direction {
-                    (chain.edge + 1) % n
-                } else {
-                    chain.edge
-                }];
-                let last = self.faces.last().unwrap();
-                let carry = if flipped {
-                    last.points[2]
-                } else {
-                    last.points[3]
-                };
                 self.chain = None;
                 self.seed = 0;
-                let mesh = self.current_mesh()?.unwrap();
-                let edge = mesh
-                    .diagnostic_edges()
-                    .into_iter()
-                    .filter(|e| {
-                        e.face_count == 1
-                            && e.points.contains(&corner)
-                            && !e.points.contains(&carry)
-                    })
-                    .collect::<Vec<_>>();
-                if edge.len() == 1
-                    && let Ok(boundary) = mesh.boundary_face_loop(edge[0].index)
-                {
-                    let seed = mesh.boundary_face_seed(edge[0].index)?;
-                    if self.total + 3 > viboceros_geometry::MAX_MESH_PATCH_POINTS {
-                        return Err(GeometryError::MeshPatchLimit.into());
-                    }
-                    self.points = vec![seed[0], seed[1], carry];
-                    self.seed = 2;
-                    self.total += 3;
-                    self.waiting_edge = false;
-                    self.chain = Some(Chain {
-                        boundary: std::sync::Arc::new(boundary),
-                        edge: 0,
-                        direction: Some(direction),
-                        consumed: 0,
-                    });
-                }
             }
         }
         Ok(())
@@ -507,11 +531,7 @@ impl Draft {
         if self.faces.is_empty() {
             return Ok(None);
         }
-        let parts = self
-            .faces
-            .iter()
-            .map(|f| TriangleMesh::try_face_from_points(&f.points, f.in_plane))
-            .collect::<Result<Vec<_>, _>>()?;
+        let parts = self.faces.iter().map(|face| &face.part).collect::<Vec<_>>();
         if self
             .faces
             .iter()
@@ -521,9 +541,9 @@ impl Draft {
             for (face, part) in self.faces.iter().zip(parts) {
                 let count = mesh.as_ref().map_or(0, |m| m.faces().len());
                 let added = if let Some(original) = mesh {
-                    TriangleMesh::try_append(&[&original, &part])?
+                    TriangleMesh::try_append(&[&original, part])?
                 } else {
-                    part
+                    part.clone()
                 };
                 mesh = Some(
                     added
@@ -533,7 +553,11 @@ impl Draft {
             }
             return Ok(mesh);
         }
-        let refs = self.source.iter().chain(parts.iter()).collect::<Vec<_>>();
+        let refs = self
+            .source
+            .iter()
+            .chain(parts.iter().copied())
+            .collect::<Vec<_>>();
         let mesh = TriangleMesh::try_append(&refs)?;
         let first = self.source.as_ref().map_or(0, |m| m.faces().len());
         let angle = self.faces[0].weld_angle;

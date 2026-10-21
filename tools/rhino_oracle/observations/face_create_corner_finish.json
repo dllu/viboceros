@@ -1,0 +1,1904 @@
+{
+  "results": [
+    {
+      "id": "face_free_cross",
+      "value": {
+        "input_trace": {
+          "edge_requests": 0,
+          "prompts": [],
+          "requests": 0,
+          "input": "typed getter points"
+        },
+        "document_tolerance": 1e-06,
+        "input": {
+          "from_edge": false,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "native_validity": true
+        },
+        "after": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": true,
+            "crc": 1008154325,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "success": true,
+        "before": [],
+        "undo": [],
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  Append  PolygonType=Ngon  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _WeldAngle=180.0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): w0,0,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w4,3,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w0,3,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w4,0,0\nCommand: _Enter\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": false,
+            "crc": 1008154325,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "native_validity": {
+                  "valid": true,
+                  "diagnostics": ""
+                },
+                "mesh": {
+                  "faces": [
+                    [
+                      1,
+                      0,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "face_normals": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "layer": "3DFace output",
+                "ngons": [],
+                "normal_count": 4,
+                "name": null,
+                "selected": true,
+                "crc": 1008154325,
+                "role": "output",
+                "vertex_normals": [
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ]
+              }
+            ],
+            "name": "3DFace",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Enter",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Enter",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": false,
+            "crc": 1008154325,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "face_free_cross_reverse",
+      "value": {
+        "input_trace": {
+          "edge_requests": 0,
+          "prompts": [],
+          "requests": 0,
+          "input": "typed getter points"
+        },
+        "document_tolerance": 1e-06,
+        "input": {
+          "from_edge": false,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              -4.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "native_validity": true
+        },
+        "after": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": true,
+            "crc": 76667390,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "success": true,
+        "before": [],
+        "undo": [],
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _WeldAngle=180.0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): w0,0,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w-4,3,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w0,3,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w-4,0,0\nCommand: _Enter\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": false,
+            "crc": 76667390,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "native_validity": {
+                  "valid": true,
+                  "diagnostics": ""
+                },
+                "mesh": {
+                  "faces": [
+                    [
+                      1,
+                      0,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -4.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "face_normals": [
+                  [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "layer": "3DFace output",
+                "ngons": [],
+                "normal_count": 4,
+                "name": null,
+                "selected": true,
+                "crc": 76667390,
+                "role": "output",
+                "vertex_normals": [
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ]
+              }
+            ],
+            "name": "3DFace",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Enter",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Enter",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": false,
+            "crc": 76667390,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "face_free_overlap",
+      "value": {
+        "input_trace": {
+          "edge_requests": 0,
+          "prompts": [],
+          "requests": 0,
+          "input": "typed getter points"
+        },
+        "document_tolerance": 1e-06,
+        "input": {
+          "from_edge": false,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              -3.0,
+              0.0
+            ],
+            [
+              -3.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "native_validity": true
+        },
+        "after": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                -0.0,
+                -0.0,
+                -1.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": true,
+            "crc": 3987176490,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            ]
+          }
+        ],
+        "success": true,
+        "before": [],
+        "undo": [],
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _WeldAngle=180.0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _FromEdge=No\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): w0,0,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w0,3,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w0,-3,0\nPick point ( Output=Mesh  Append  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w-3,3,0\nCommand: _Enter\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                -0.0,
+                -0.0,
+                -1.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": false,
+            "crc": 3987176490,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            ]
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "native_validity": {
+                  "valid": true,
+                  "diagnostics": ""
+                },
+                "mesh": {
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -3.0,
+                      0.0
+                    ],
+                    [
+                      -3.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "face_normals": [
+                  [
+                    -0.0,
+                    -0.0,
+                    -1.0
+                  ]
+                ],
+                "layer": "3DFace output",
+                "ngons": [],
+                "normal_count": 4,
+                "name": null,
+                "selected": true,
+                "crc": 3987176490,
+                "role": "output",
+                "vertex_normals": [
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ]
+                ]
+              }
+            ],
+            "name": "3DFace",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Enter",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Enter",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                -0.0,
+                -0.0,
+                -1.0
+              ]
+            ],
+            "layer": "3DFace output",
+            "ngons": [],
+            "normal_count": 4,
+            "name": null,
+            "selected": false,
+            "crc": 3987176490,
+            "role": "output",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "edge_undo_seed",
+      "value": {
+        "input_trace": {
+          "edge_requests": 1,
+          "prompts": [
+            "Pick point ( Output=Mesh  PolygonType=Quad  FromEdge=Yes  Chain=No  FromEdgeReset=Yes  InPlane=No  WeldAngle=180  Mode=SingleFace )"
+          ],
+          "requests": 1,
+          "input": "owned physical boundary clicks"
+        },
+        "document_tolerance": 1e-06,
+        "input": {
+          "points": [
+            {
+              "edge_pick": [
+                4.0,
+                1.5,
+                0.0
+              ]
+            },
+            "Undo",
+            [
+              7.0,
+              0.0,
+              0.0
+            ],
+            [
+              7.0,
+              3.0,
+              0.0
+            ],
+            [
+              10.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "append": true,
+          "native_validity": true
+        },
+        "after": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                -0.0,
+                1.0
+              ]
+            ],
+            "layer": "3DFace source",
+            "ngons": [],
+            "normal_count": 8,
+            "name": "Input",
+            "selected": true,
+            "crc": 905288892,
+            "role": "source",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "success": true,
+        "before": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                -0.0,
+                1.0
+              ]
+            ],
+            "layer": "3DFace source",
+            "ngons": [],
+            "normal_count": 4,
+            "name": "Input",
+            "selected": true,
+            "crc": 2647301299,
+            "role": "source",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "undo": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                -0.0,
+                1.0
+              ]
+            ],
+            "layer": "3DFace source",
+            "ngons": [],
+            "normal_count": 4,
+            "name": "Input",
+            "selected": false,
+            "crc": 2647301299,
+            "role": "source",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-3DFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Output=Mesh\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _PolygonType=Quad\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _InPlane=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _WeldAngle=180.0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Mode=SingleFace\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=No  InPlane=No  WeldAngle=180  Mode=SingleFace ): _FromEdge=Yes\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=Yes  Chain=No  FromEdgeReset=Yes  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Chain=No\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=Yes  Chain=No  FromEdgeReset=Yes  InPlane=No  WeldAngle=180  Mode=SingleFace ): _Pause\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=Yes  Chain=No  FromEdgeReset=Yes  InPlane=No  WeldAngle=180  Mode=SingleFace )\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=Yes  Chain=No  FromEdgeReset=Yes  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): _Undo\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=Yes  Chain=No  FromEdgeReset=Yes  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w7,0,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=Yes  Chain=No  FromEdgeReset=Yes  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w7,3,0\nPick point ( Output=Mesh  PolygonType=Quad  FromEdge=Yes  Chain=No  FromEdgeReset=Yes  InPlane=No  WeldAngle=180  Mode=SingleFace  Undo ): w10,3,0\nCommand: _Enter\nCommand: _Enter\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                -0.0,
+                1.0
+              ]
+            ],
+            "layer": "3DFace source",
+            "ngons": [],
+            "normal_count": 8,
+            "name": "Input",
+            "selected": false,
+            "crc": 905288892,
+            "role": "source",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "objects": [
+              {
+                "native_validity": {
+                  "valid": true,
+                  "diagnostics": ""
+                },
+                "mesh": {
+                  "faces": [
+                    [
+                      1,
+                      0,
+                      2,
+                      3
+                    ],
+                    [
+                      4,
+                      5,
+                      6,
+                      7
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      7.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "face_normals": [
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  [
+                    0.0,
+                    -0.0,
+                    1.0
+                  ]
+                ],
+                "layer": "3DFace source",
+                "ngons": [],
+                "normal_count": 8,
+                "name": "Input",
+                "selected": true,
+                "crc": 905288892,
+                "role": "source",
+                "vertex_normals": [
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ]
+              }
+            ],
+            "name": "3DFace",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Enter",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Enter",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "after_script": [
+          {
+            "native_validity": {
+              "valid": true,
+              "diagnostics": ""
+            },
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2,
+                  3
+                ],
+                [
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              ],
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "face_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                -0.0,
+                1.0
+              ]
+            ],
+            "layer": "3DFace source",
+            "ngons": [],
+            "normal_count": 8,
+            "name": "Input",
+            "selected": false,
+            "crc": 905288892,
+            "role": "source",
+            "vertex_normals": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "engine": "rhino",
+  "protocol_version": 1,
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "provenance": {
+    "request_sha256": "1115c8d44ce0687d81640e4dc126f8a80dfd632d018ea5e5edcfe97e578c8850",
+    "sources": {
+      "generate_face_create.py": "992dc5a9fa126cdd46c32431d7b214d9b609e4fd00f5f790bbbdaad148ab761a",
+      "face_create_probe.py": "a34981dd3cd3fdfc684287e35489401c161ee5abf2dadbb7c6a55d9540647c12",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "6f6665f05b44ef50557b3a8f29a2ff349c63143a96f31b6d469b94a324a5910b",
+      "rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
+      "structural_sdk.py": "0d65afb6def8b45f942f8b449245af4e90d1c85c785e7b1685a67b26b7a6592d",
+      "face_create_input.py": "987f33c447ade5b71c178804bf3ba26035e2888f6107d829f8e5ac3797ab21c1",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "face_draft_cases.py": "8d4e594d1f4ab0c8457cba0b0b2f6494cb078bcb95904f69a4abca5dc96d51e2",
+      "face_draft_input.py": "bb0e0d8e4a7cdd1b5b0488a0d09b1ec63b6caf94196cdd9a8e6cc3c54762e56e"
+    }
+  }
+}

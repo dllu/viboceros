@@ -11,7 +11,7 @@ from unittest import mock
 from . import face_create_probe as probe
 from .client import OracleClient, OracleProtocolError
 from .report_face_create import GROUPS, summarize
-from .face_draft_cases import request as draft_request,extra_request
+from .face_draft_cases import request as draft_request,extra_request,corner_request,corner_control_request,corner_finish_request
 from .structural_sdk import stage_helpers, validate_operations
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
@@ -19,7 +19,7 @@ ROOT=HERE.parents[1]
 
 class FaceCreateTests(unittest.TestCase):
  def test_native_recipes_and_immutable_capture_sources(self):
-  for (suffix,count),factory in zip(GROUPS,[probe.request,probe.variant_request,probe.control_request,draft_request,extra_request]):
+  for (suffix,count),factory in zip(GROUPS,[probe.request,probe.variant_request,probe.control_request,draft_request,extra_request,corner_request,corner_control_request,corner_finish_request]):
    path=HERE/f'fixtures/face_create{suffix}.json';q=json.loads(path.read_text())
    self.assertEqual(q,factory());validate_operations(q)
    response=json.loads((HERE/f'observations/face_create{suffix}.json').read_text())
@@ -36,8 +36,9 @@ class FaceCreateTests(unittest.TestCase):
     self.assertIn(events[0]['result'],['Success','Cancel','Nothing'])
     self.assertNotIn('Unknown command:',value['history'])
     self.assertEqual(value['after_script'],value['redo'])
-    if suffix in ('_controls','_drafts','_draft_extras'):
-     self.assertGreater(value['input_trace']['requests'],0)
+    if suffix in ('_controls','_drafts','_draft_extras','_corners','_corner_controls','_corner_finish'):
+     self.assertGreaterEqual(value['input_trace']['requests'],0)
+     if any(isinstance(p,dict)for p in value['input']['points'])or value['input'].get('edge_pick')or value['input'].get('cancel'):self.assertGreater(value['input_trace']['requests'],0)
      self.assertTrue(all(p.startswith('Pick point')for p in value['input_trace']['prompts']))
  def test_captured_native_mesh_validity_and_source_closure(self):
   from .generate_face_draft_validity import request
@@ -62,7 +63,7 @@ class FaceCreateTests(unittest.TestCase):
   with mock.patch.dict(os.environ,{'DISPLAY':':999','VIBOCEROS_ORACLE_HEADLESS':':999'}),mock.patch('subprocess.Popen')as spawn:
    with self.assertRaises(OracleProtocolError):OracleClient().run_rhino(probe.request())
    client=OracleClient(settings_scheme='VibocerosOracleFaceCreateTest20261021')
-   for kind in ['repeat','boolean','count','duplicate','reordered_controls','mixed_controls','reordered_drafts','mixed_drafts','reordered_extras']:
+   for kind in ['repeat','boolean','count','duplicate','reordered_controls','mixed_controls','reordered_drafts','mixed_drafts','reordered_extras','reordered_corners','mixed_corners','reordered_corner_controls','reordered_corner_finish']:
     q=probe.request()
     if kind=='repeat':q['iterations']=2
     elif kind=='boolean':q['iterations']=True
@@ -72,7 +73,11 @@ class FaceCreateTests(unittest.TestCase):
     elif kind=='mixed_controls':q=probe.control_request();q['operations'].append(probe.request()['operations'][0])
     elif kind=='reordered_drafts':q=draft_request();q['operations'].reverse()
     elif kind=='reordered_extras':q=extra_request();q['operations'].reverse()
-    else:q=draft_request();q['operations'].append(probe.request()['operations'][0])
+    elif kind=='mixed_drafts':q=draft_request();q['operations'].append(probe.request()['operations'][0])
+    elif kind=='reordered_corners':q=corner_request();q['operations'].reverse()
+    elif kind=='mixed_corners':q=corner_request();q['operations'].append(probe.request()['operations'][0])
+    elif kind=='reordered_corner_controls':q=corner_control_request();q['operations'].reverse()
+    else:q=corner_finish_request();q['operations'].reverse()
     with self.assertRaises(OracleProtocolError):client.run_rhino(q)
    spawn.assert_not_called()
  def test_helper_staging_closes_worker_dependencies(self):
@@ -89,10 +94,10 @@ class FaceCreateTests(unittest.TestCase):
   return report,lines
  def test_complete_current_qualification_preserves_limits(self):
   report,lines=self.lines();self.assertEqual(summarize('\n'.join(lines)),report)
-  self.assertEqual(report['recipes'],48);self.assertEqual(report['model_epsilon'],1e-6)
+  self.assertEqual(report['recipes'],73);self.assertEqual(report['model_epsilon'],1e-6)
   self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
   gaps={id_ for group in report['groups'].values()for stage in ['draft_command','draft_getter']if stage in group for id_ in group[stage]['unqualified_recipes']}
-  self.assertEqual(gaps,{'chain_wrap','edge_collinear_inner','chain_wrap_shift'})
+  self.assertEqual(gaps,set())
   self.assertTrue(all(status=='valid'for status in report['native_record_validity'].values()))
   for path,sha in report['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
  def test_report_rejects_missing_duplicate_invalid_errors_and_hidden_topology(self):
@@ -111,7 +116,7 @@ class FaceCreateTests(unittest.TestCase):
  def test_report_rejects_a_hidden_chain_gap_or_unrecognized_physical_control(self):
   report,lines=self.lines()
   index=next(i for i,line in enumerate(lines)if line.startswith('FACE_DRAFT_GETTER ')and json.loads(line.split(' ',1)[1])['id']=='chain_wrap')
-  row=json.loads(lines[index].split(' ',1)[1]);row['qualified']=True
+  row=json.loads(lines[index].split(' ',1)[1]);row['check']['meshes'][0]['maximum_bidirectional_sample_error']=1.1e-6;row['qualified']=True
   invalid=lines[:];invalid[index]='FACE_DRAFT_GETTER '+json.dumps(row)
   with self.assertRaises(ValueError):summarize('\n'.join(invalid))
   extra=copy.deepcopy(report['groups']['controls']['controls']['cases'][0]);extra['id']='unexpected'

@@ -44,7 +44,9 @@ mod offset;
 mod planar_ngons;
 pub use offset::MeshOffsetDirection;
 mod closed_polyline;
+mod face_boundary;
 mod face_create;
+pub use face_boundary::MeshFaceBoundaryGraph;
 mod from_lines;
 mod patch;
 mod patch_single_face;
@@ -3350,7 +3352,15 @@ impl TriangleMesh {
             return Err(GeometryError::InvalidMeshWeldAngle);
         }
         let data = self.topology_data();
-        let face_normals = self.polygon_face_normals()?;
+        let mut face_normals = vec![None; self.faces.len()];
+        let mut normal = |face: usize| -> Result<UnitVector3, GeometryError> {
+            if let Some(value) = face_normals[face] {
+                return Ok(value);
+            }
+            let value = self.polygon_face_normal(face)?;
+            face_normals[face] = Some(value);
+            Ok(value)
+        };
         let minimum_dot = angle_tolerance_radians.cos();
         let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
         for incidence in data.edges.values() {
@@ -3364,10 +3374,10 @@ impl TriangleMesh {
             if first.face < first_new_face && second.face < first_new_face {
                 continue;
             }
-            let dot = face_normals[first.face]
+            let dot = normal(first.face)?
                 .as_vector()
-                .dot(face_normals[second.face].as_vector())?
-                .clamp(-1.0, 1.0);
+                .dot(normal(second.face)?.as_vector())?
+                .clamp(-1., 1.);
             if dot < minimum_dot {
                 continue;
             }

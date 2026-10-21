@@ -180,28 +180,19 @@ fn edge_chain_scripts_retain_all_native_mesh_and_rejection_results() {
             );
         } else {
             assert!(scene.document.undo_label().is_none());
-            assert!(
-                scene.original.as_ref().unwrap().shares_storage_with(
-                    scene
-                        .document
-                        .object(scene.source.unwrap())
-                        .unwrap()
-                        .geometry_snapshot()
-                )
-            );
+            if let Some(source) = scene.source {
+                assert!(scene.original.as_ref().unwrap().shares_storage_with(
+                    scene.document.object(source).unwrap().geometry_snapshot()
+                ));
+            } else {
+                assert_eq!(scene.document.objects().count(), 0);
+            }
         }
         println!(
             "FACE_DRAFT_COMMAND {}",
             serde_json::json!({"id":row["id"],"qualified":check["qualified"],"check":check,"grouped_history":true,"local_error":result.err().map(|e|e.to_string())})
         );
     }
-    assert_eq!(
-        gaps,
-        vec![
-            serde_json::json!("chain_wrap"),
-            serde_json::json!("edge_collinear_inner"),
-            serde_json::json!("chain_wrap_shift")
-        ]
-    );
+    assert!(gaps.is_empty(), "{gaps:?}");
     println!("FACE_DRAFT_COMMAND_GAPS {gaps:?}");
 }

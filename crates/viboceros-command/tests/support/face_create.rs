@@ -53,6 +53,22 @@ pub fn drafts() -> Vec<Value> {
             ),
             6,
         ),
+        (
+            include_str!("../../../../tools/rhino_oracle/observations/face_create_corners.json"),
+            12,
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/face_create_corner_controls.json"
+            ),
+            9,
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/face_create_corner_finish.json"
+            ),
+            4,
+        ),
     ] {
         let data: Value = serde_json::from_str(source).unwrap();
         let group = data["results"].as_array().unwrap();
@@ -86,7 +102,11 @@ pub fn edge_index(mesh: &TriangleMesh, pick: &Value) -> usize {
 pub fn draft_header(value: &Value) -> String {
     format!(
         "{} Chain={}",
-        header(value).replace("FromEdge=No", "FromEdge=Yes"),
+        if value["input"]["from_edge"] == false {
+            header(value)
+        } else {
+            header(value).replace("FromEdge=No", "FromEdge=Yes")
+        },
         if value["input"]["chain"] == true {
             "Yes"
         } else {
@@ -98,7 +118,7 @@ fn point(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[Real; 3]>(v.clone()).unwrap()).unwrap()
 }
 fn try_mesh(v: &Value, ngons: &Value) -> Result<TriangleMesh, viboceros_geometry::GeometryError> {
-    let mesh = TriangleMesh::try_new_faces(
+    let mesh = TriangleMesh::try_from_face_records(
         v["vertices"]
             .as_array()
             .unwrap()
@@ -117,7 +137,6 @@ fn try_mesh(v: &Value, ngons: &Value) -> Result<TriangleMesh, viboceros_geometry
                 }
             })
             .collect(),
-        Tolerance::MESH_VALIDATION,
     )?;
     mesh.try_with_ngons(
         ngons
@@ -137,45 +156,14 @@ fn mesh(v: &Value, ngons: &Value) -> TriangleMesh {
     try_mesh(v, ngons).unwrap()
 }
 fn comparison_mesh(v: &Value, ngons: &Value) -> (TriangleMesh, Option<String>) {
-    match try_mesh(v, ngons) {
-        Ok(mesh) => (mesh, None),
-        Err(error) => {
-            let vertices = v["vertices"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(point)
-                .collect::<Vec<_>>();
-            let mut parts = vec![];
-            for face in v["faces"].as_array().unwrap() {
-                let indices: Vec<usize> = serde_json::from_value(face.clone()).unwrap();
-                let splits = if indices.len() == 3 {
-                    vec![[indices[0], indices[1], indices[2]]]
-                } else {
-                    let [a, b, c, d]: [usize; 4] = indices.try_into().unwrap();
-                    if vertices[a].distance_to(vertices[c]).unwrap()
-                        <= vertices[b].distance_to(vertices[d]).unwrap()
-                    {
-                        vec![[a, b, c], [a, c, d]]
-                    } else {
-                        vec![[a, b, d], [b, c, d]]
-                    }
-                };
-                for face in splits {
-                    if let Ok(mesh) = TriangleMesh::try_new(
-                        face.map(|i| vertices[i]).to_vec(),
-                        vec![[0, 1, 2]],
-                        Tolerance::MESH_VALIDATION,
-                    ) {
-                        parts.push(mesh);
-                    }
-                }
-            }
-            let mesh = TriangleMesh::try_append(&parts.iter().collect::<Vec<_>>()).unwrap();
-            (mesh, Some(error.to_string()))
-        }
-    }
+    let mesh = mesh(v, ngons);
+    let admission = mesh
+        .validate_face_geometry(Tolerance::MESH_VALIDATION)
+        .err()
+        .map(|e| e.to_string());
+    (mesh, admission)
 }
+
 pub fn setup(value: &Value) -> Scene {
     let mut document = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap());
     let source_layer = document
@@ -304,7 +292,43 @@ pub fn check(
                             .all(|(a, b)| a.distance_to(*b).unwrap() < 1e-6)
                     })
             });
-        comparisons.push(json!({"qualified":error<=1e-6&&counts&&ngons,"native_legacy_diagonal_error":admission,"maximum_bidirectional_sample_error":error,"counts_match":counts,"ngons_match":ngons,
+        let native_quads = target["mesh"]["faces"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|f| f.as_array().unwrap().len() == 4)
+            .map(|f| {
+                f.as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|i| point(&target["mesh"]["vertices"][i.as_u64().unwrap() as usize]))
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        let mut used = std::collections::BTreeSet::new();
+        let quad_cycles = actual.faces().iter().filter(|f| f.is_quad()).all(|face| {
+            let points = face
+                .indices()
+                .iter()
+                .map(|&i| actual.vertices()[i as usize])
+                .collect::<Vec<_>>();
+            let candidate = native_quads.iter().enumerate().find(|(i, q)| {
+                !used.contains(i)
+                    && (0..4).any(|start| {
+                        points
+                            .iter()
+                            .zip(q.iter().cycle().skip(start))
+                            .all(|(a, b)| a.distance_to(*b).unwrap() <= 1e-6)
+                    })
+            });
+            if let Some((i, _)) = candidate {
+                used.insert(i);
+                true
+            } else {
+                false
+            }
+        }) && used.len() == native_quads.len();
+        comparisons.push(json!({"qualified":error<=1e-6&&counts&&ngons&&quad_cycles,"quad_cycles_match":quad_cycles,"native_legacy_diagonal_error":admission,"maximum_bidirectional_sample_error":error,"counts_match":counts,"ngons_match":ngons,
             "actual_vertices":actual.vertices().len(),"native_vertices":target["mesh"]["vertices"].as_array().unwrap().len(),"actual_faces":actual.faces().len(),"native_faces":target["mesh"]["faces"].as_array().unwrap().len(),
             "actual_ngons":actual.ngons().len(),"native_ngons":expected.ngons().len()}));
     }
@@ -313,10 +337,9 @@ pub fn check(
 fn directed(a: &TriangleMesh, b: &TriangleMesh) -> Real {
     let index = MeshProjectionIndex::new(b).unwrap();
     let mut maximum: Real = 0.;
-    let (triangulated, _) = a.triangulate_quads(Tolerance::MESH_VALIDATION).unwrap();
-    let a = &triangulated;
-    for face in a.triangles() {
-        let [a, b, c] = face.map(|i| a.vertices()[i as usize].to_array());
+    let source = MeshProjectionIndex::new(a).unwrap();
+    for face in 0..a.triangles().len() {
+        let [a, b, c] = source.triangle_points(face).unwrap().map(|p| p.to_array());
         for i in 0..=8 {
             for j in 0..=8 - i {
                 let u = i as Real / 8.;

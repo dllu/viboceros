@@ -484,14 +484,7 @@ fn edge_chain_getters_replay_physical_native_inputs_through_screen_space_picks()
             serde_json::json!({"id":row["id"],"qualified":check["qualified"],"check":check,"grouped_history":true,"errors":failures,"accepted_native_tokens":accepted_native_tokens})
         );
     }
-    assert_eq!(
-        gaps,
-        vec![
-            serde_json::json!("chain_wrap"),
-            serde_json::json!("edge_collinear_inner"),
-            serde_json::json!("chain_wrap_shift")
-        ]
-    );
+    assert!(gaps.is_empty(), "{gaps:?}");
     println!("FACE_DRAFT_GAPS {gaps:?}");
 }
 
@@ -563,22 +556,25 @@ fn reversed_edge_hover_uses_the_corner_order_that_will_be_committed() {
         .preview_curves()
         .last()
         .unwrap();
-    for (point, expected) in preview.control_points().iter().zip([
-        [4., 3., 0.],
-        [4., 0., 0.],
-        [7., 0., 0.],
-        [7., 3., 0.],
-        [4., 3., 0.],
-    ]) {
-        assert!(
-            point
-                .point()
-                .distance_to(Point3::try_from(expected).unwrap())
-                .unwrap()
-                < 1e-12
-        );
+    let native_mesh = &value["after_script"][0]["mesh"];
+    let native_face = native_mesh["faces"][0].as_array().unwrap();
+    assert_eq!(preview.control_points().len(), 5);
+    for (point, index) in preview
+        .control_points()
+        .iter()
+        .zip(native_face.iter().chain(native_face.first()))
+    {
+        let expected = Point3::try_from(
+            serde_json::from_value::<[f64; 3]>(
+                native_mesh["vertices"][index.as_u64().unwrap() as usize].clone(),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(point.point().distance_to(expected).unwrap() < 1e-12);
     }
     enter(&mut app, "7,0,0");
+    assert_eq!(app.last_point, Some(Point3::try_new(7., 0., 0.).unwrap()));
     assert_eq!(
         native::check(
             &app.document,

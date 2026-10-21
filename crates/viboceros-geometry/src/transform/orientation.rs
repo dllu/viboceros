@@ -2,7 +2,7 @@
 use crate::binary_accumulator::{add_product, decompose};
 use std::cmp::Ordering;
 
-pub(super) fn determinant_sign(rows: [[f64; 3]; 3]) -> Ordering {
+pub(crate) fn determinant_sign(rows: [[f64; 3]; 3]) -> Ordering {
     // Triangular matrices need only diagonal signs, never a floating product.
     // This includes ordinary scales/reflections and coordinate-axis shears.
     if (rows[1][0] == 0. && rows[2][0] == 0. && rows[2][1] == 0.)

@@ -10,7 +10,7 @@ def drive(op,case,command,host):
  picks=[p['edge_pick']for p in case['points']if isinstance(p,dict)]
  view=doc.Views.ActiveView;vp=view.ActiveViewport
  vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned 3DFace chain',False)
- vp.ZoomBoundingBox(R.Geometry.BoundingBox(R.Geometry.Point3d(-5.,-4.,-2.),R.Geometry.Point3d(12.,8.,5.)));view.Redraw()
+ vp.ZoomBoundingBox(R.Geometry.BoundingBox(R.Geometry.Point3d(-5.,-4.,-20.),R.Geometry.Point3d(12.,8.,20.)));view.Redraw()
  markers=[];names=[]
  for i,p in enumerate(picks):
   pixel=vp.WorldToClient(R.Geometry.Point3d(*p));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
@@ -46,4 +46,4 @@ def drive(op,case,command,host):
  try:returned=R.RhinoApp.RunScript(command,True)
  finally:state[1]=0;timer.Dispose()
  if state[0]<len(picks):raise ValueError('incomplete owned 3DFace boundary input')
- return bool(returned),dict(requests=int(state[0]),edge_requests=len(picks),prompts=list(observed)[:state[0]],input='owned physical boundary clicks and Escape'if case.get('cancel')else'owned physical boundary clicks')
+ return bool(returned),dict(requests=int(state[0]),edge_requests=len(picks),prompts=list(observed)[:state[0]],input='owned physical boundary clicks and Escape'if case.get('cancel')else'owned physical boundary clicks'if picks else'typed getter points')

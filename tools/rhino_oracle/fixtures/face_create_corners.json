@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "chain_collinear_stop",
+      "case": "chain_collinear_stop"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_collinear_follow",
+      "case": "chain_collinear_follow"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_collinear_left",
+      "case": "chain_collinear_left"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_collinear_right",
+      "case": "chain_collinear_right"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_near_positive",
+      "case": "chain_near_positive"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_near_negative",
+      "case": "chain_near_negative"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_collinear_rotated",
+      "case": "chain_collinear_rotated"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_collinear_scaled",
+      "case": "chain_collinear_scaled"
+    },
+    {
+      "op": "face_create_command",
+      "id": "edge_overlap_plain",
+      "case": "edge_overlap_plain"
+    },
+    {
+      "op": "face_create_command",
+      "id": "edge_overlap_reversed",
+      "case": "edge_overlap_reversed"
+    },
+    {
+      "op": "face_create_command",
+      "id": "edge_overlap_near_positive",
+      "case": "edge_overlap_near_positive"
+    },
+    {
+      "op": "face_create_command",
+      "id": "edge_overlap_near_negative",
+      "case": "edge_overlap_near_negative"
+    }
+  ]
+}

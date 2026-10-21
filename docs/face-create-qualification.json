@@ -17,13 +17,38 @@
     "edge_flip_plain": "valid",
     "chain_corner_turn": "valid",
     "chain_wrap_shift": "valid",
-    "chain_closed_regular": "valid"
+    "chain_closed_regular": "valid",
+    "chain_collinear_stop": "valid",
+    "chain_collinear_follow": "valid",
+    "chain_collinear_left": "valid",
+    "chain_collinear_right": "valid",
+    "chain_near_positive": "valid",
+    "chain_near_negative": "valid",
+    "chain_collinear_rotated": "valid",
+    "chain_collinear_scaled": "valid",
+    "edge_overlap_plain": "valid",
+    "edge_overlap_reversed": "valid",
+    "edge_overlap_near_positive": "valid",
+    "edge_overlap_near_negative": "valid",
+    "chain_frame_tilted": "valid",
+    "chain_frame_near_tilted": "valid",
+    "edge_overlap_tilted": "valid",
+    "chain_frame_backface": "valid",
+    "chain_frame_undo_one": "valid",
+    "chain_frame_undo_two": "valid",
+    "chain_frame_mirror": "valid",
+    "chain_frame_no_weld": "valid",
+    "chain_frame_right_follow": "valid",
+    "face_free_cross": "valid",
+    "face_free_cross_reverse": "valid",
+    "face_free_overlap": "valid",
+    "edge_undo_seed": "valid"
   },
   "model_epsilon": 1e-06,
   "full_native_parity": false,
   "performance_qualified": false,
-  "recipes": 48,
-  "maximum_sample_difference": 3.0,
+  "recipes": 73,
+  "maximum_sample_difference": 1.9860273225978185e-15,
   "groups": {
     "base": {
       "native_engine_version": "8.32.26160.13001",
@@ -47,6 +72,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -71,6 +97,7 @@
                   "native_ngons": 0,
                   "native_vertices": 3,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -95,6 +122,7 @@
                   "native_ngons": 0,
                   "native_vertices": 3,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -119,6 +147,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -143,6 +172,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -167,6 +197,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -191,6 +222,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -215,6 +247,7 @@
                   "native_ngons": 1,
                   "native_vertices": 5,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -239,6 +272,7 @@
                   "native_ngons": 0,
                   "native_vertices": 3,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -263,6 +297,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -287,6 +322,7 @@
                   "native_ngons": 1,
                   "native_vertices": 5,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -311,6 +347,7 @@
                   "native_ngons": 1,
                   "native_vertices": 5,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -335,6 +372,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -359,6 +397,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -383,6 +422,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -407,6 +447,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -431,6 +472,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -455,6 +497,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -486,6 +529,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -510,6 +554,7 @@
                   "native_ngons": 0,
                   "native_vertices": 3,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -534,6 +579,7 @@
                   "native_ngons": 0,
                   "native_vertices": 3,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -558,6 +604,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -582,6 +629,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -606,6 +654,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -630,6 +679,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -654,6 +704,7 @@
                   "native_ngons": 1,
                   "native_vertices": 5,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -678,6 +729,7 @@
                   "native_ngons": 0,
                   "native_vertices": 3,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -702,6 +754,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -726,6 +779,7 @@
                   "native_ngons": 1,
                   "native_vertices": 5,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -750,6 +804,7 @@
                   "native_ngons": 1,
                   "native_vertices": 5,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -774,6 +829,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -798,6 +854,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -822,6 +879,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -846,6 +904,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -870,6 +929,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -894,6 +954,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -928,6 +989,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -952,6 +1014,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -976,6 +1039,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1000,6 +1064,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1024,6 +1089,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1048,6 +1114,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1072,6 +1139,7 @@
                   "native_ngons": 0,
                   "native_vertices": 10,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1103,6 +1171,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1127,6 +1196,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1151,6 +1221,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1175,6 +1246,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1199,6 +1271,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1223,6 +1296,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1247,6 +1321,7 @@
                   "native_ngons": 0,
                   "native_vertices": 10,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1281,6 +1356,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1315,6 +1391,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1349,6 +1426,7 @@
                   "native_ngons": 0,
                   "native_vertices": 4,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1365,10 +1443,8 @@
       "native_engine_version": "8.32.26160.13001",
       "draft_command": {
         "recipes": 11,
-        "qualified_recipes": 10,
-        "unqualified_recipes": [
-          "chain_wrap"
-        ],
+        "qualified_recipes": 11,
+        "unqualified_recipes": [],
         "cases": [
           {
             "check": {
@@ -1385,6 +1461,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1410,6 +1487,7 @@
                   "native_ngons": 0,
                   "native_vertices": 12,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1435,6 +1513,7 @@
                   "native_ngons": 0,
                   "native_vertices": 12,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1454,21 +1533,22 @@
                   "actual_ngons": 0,
                   "actual_vertices": 9,
                   "counts_match": true,
-                  "maximum_bidirectional_sample_error": 1.5,
+                  "maximum_bidirectional_sample_error": 6.661338147750939e-16,
                   "native_faces": 5,
                   "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
                   "native_ngons": 0,
                   "native_vertices": 9,
                   "ngons_match": true,
-                  "qualified": false
+                  "quad_cycles_match": true,
+                  "qualified": true
                 }
               ],
-              "qualified": false
+              "qualified": true
             },
             "grouped_history": true,
             "id": "chain_wrap",
             "local_error": null,
-            "qualified": false
+            "qualified": true
           },
           {
             "check": {
@@ -1485,6 +1565,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1510,6 +1591,7 @@
                   "native_ngons": 0,
                   "native_vertices": 12,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1535,6 +1617,7 @@
                   "native_ngons": 0,
                   "native_vertices": 16,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1560,6 +1643,7 @@
                   "native_ngons": 0,
                   "native_vertices": 13,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1585,6 +1669,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1610,6 +1695,7 @@
                   "native_ngons": 2,
                   "native_vertices": 10,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1635,6 +1721,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1649,10 +1736,8 @@
       },
       "draft_getter": {
         "recipes": 12,
-        "qualified_recipes": 11,
-        "unqualified_recipes": [
-          "chain_wrap"
-        ],
+        "qualified_recipes": 12,
+        "unqualified_recipes": [],
         "cases": [
           {
             "accepted_native_tokens": true,
@@ -1670,6 +1755,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1696,6 +1782,7 @@
                   "native_ngons": 0,
                   "native_vertices": 12,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1722,6 +1809,7 @@
                   "native_ngons": 0,
                   "native_vertices": 12,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1742,21 +1830,22 @@
                   "actual_ngons": 0,
                   "actual_vertices": 9,
                   "counts_match": true,
-                  "maximum_bidirectional_sample_error": 1.5,
+                  "maximum_bidirectional_sample_error": 6.661338147750939e-16,
                   "native_faces": 5,
                   "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
                   "native_ngons": 0,
                   "native_vertices": 9,
                   "ngons_match": true,
-                  "qualified": false
+                  "quad_cycles_match": true,
+                  "qualified": true
                 }
               ],
-              "qualified": false
+              "qualified": true
             },
             "errors": [],
             "grouped_history": true,
             "id": "chain_wrap",
-            "qualified": false
+            "qualified": true
           },
           {
             "accepted_native_tokens": true,
@@ -1774,6 +1863,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1800,6 +1890,7 @@
                   "native_ngons": 0,
                   "native_vertices": 12,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1826,6 +1917,7 @@
                   "native_ngons": 0,
                   "native_vertices": 16,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1852,6 +1944,7 @@
                   "native_ngons": 0,
                   "native_vertices": 13,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1878,6 +1971,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1904,6 +1998,7 @@
                   "native_ngons": 2,
                   "native_vertices": 10,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1930,6 +2025,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1956,6 +2052,7 @@
                   "native_ngons": 0,
                   "native_vertices": 8,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -1973,11 +2070,8 @@
       "native_engine_version": "8.32.26160.13001",
       "draft_command": {
         "recipes": 6,
-        "qualified_recipes": 4,
-        "unqualified_recipes": [
-          "edge_collinear_inner",
-          "chain_wrap_shift"
-        ],
+        "qualified_recipes": 6,
+        "unqualified_recipes": [],
         "cases": [
           {
             "check": {
@@ -1994,6 +2088,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -2006,28 +2101,29 @@
           },
           {
             "check": {
-              "attributes_and_identity_preserved": false,
+              "attributes_and_identity_preserved": true,
               "meshes": [
                 {
-                  "actual_faces": 1,
+                  "actual_faces": 2,
                   "actual_ngons": 0,
-                  "actual_vertices": 4,
-                  "counts_match": false,
-                  "maximum_bidirectional_sample_error": 3.0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.005932084973442e-16,
                   "native_faces": 2,
                   "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
-                  "qualified": false
+                  "quad_cycles_match": true,
+                  "qualified": true
                 }
               ],
-              "qualified": false
+              "qualified": true
             },
             "grouped_history": true,
             "id": "edge_collinear_inner",
-            "local_error": "triangle 0 is degenerate at the requested tolerance",
-            "qualified": false
+            "local_error": null,
+            "qualified": true
           },
           {
             "check": {
@@ -2044,6 +2140,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -2069,6 +2166,7 @@
                   "native_ngons": 0,
                   "native_vertices": 9,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -2086,23 +2184,24 @@
                 {
                   "actual_faces": 5,
                   "actual_ngons": 0,
-                  "actual_vertices": 9,
-                  "counts_match": false,
-                  "maximum_bidirectional_sample_error": 1.5,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.881784197001252e-16,
                   "native_faces": 5,
                   "native_legacy_diagonal_error": "quad 3 is degenerate at the requested tolerance",
                   "native_ngons": 0,
                   "native_vertices": 10,
                   "ngons_match": true,
-                  "qualified": false
+                  "quad_cycles_match": true,
+                  "qualified": true
                 }
               ],
-              "qualified": false
+              "qualified": true
             },
             "grouped_history": true,
             "id": "chain_wrap_shift",
             "local_error": null,
-            "qualified": false
+            "qualified": true
           },
           {
             "check": {
@@ -2119,6 +2218,7 @@
                   "native_ngons": 0,
                   "native_vertices": 10,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -2133,11 +2233,8 @@
       },
       "draft_getter": {
         "recipes": 6,
-        "qualified_recipes": 4,
-        "unqualified_recipes": [
-          "edge_collinear_inner",
-          "chain_wrap_shift"
-        ],
+        "qualified_recipes": 6,
+        "unqualified_recipes": [],
         "cases": [
           {
             "accepted_native_tokens": true,
@@ -2155,6 +2252,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -2166,32 +2264,31 @@
             "qualified": true
           },
           {
-            "accepted_native_tokens": false,
+            "accepted_native_tokens": true,
             "check": {
               "attributes_and_identity_preserved": true,
               "meshes": [
                 {
-                  "actual_faces": 1,
+                  "actual_faces": 2,
                   "actual_ngons": 0,
-                  "actual_vertices": 4,
-                  "counts_match": false,
-                  "maximum_bidirectional_sample_error": 3.0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.005932084973442e-16,
                   "native_faces": 2,
                   "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
-                  "qualified": false
+                  "quad_cycles_match": true,
+                  "qualified": true
                 }
               ],
-              "qualified": false
+              "qualified": true
             },
-            "errors": [
-              "Error: triangle 0 is degenerate at the requested tolerance"
-            ],
+            "errors": [],
             "grouped_history": true,
             "id": "edge_collinear_inner",
-            "qualified": false
+            "qualified": true
           },
           {
             "accepted_native_tokens": true,
@@ -2209,6 +2306,7 @@
                   "native_ngons": 0,
                   "native_vertices": 6,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -2235,6 +2333,7 @@
                   "native_ngons": 0,
                   "native_vertices": 9,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -2253,23 +2352,24 @@
                 {
                   "actual_faces": 5,
                   "actual_ngons": 0,
-                  "actual_vertices": 9,
-                  "counts_match": false,
-                  "maximum_bidirectional_sample_error": 1.5,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.881784197001252e-16,
                   "native_faces": 5,
                   "native_legacy_diagonal_error": "quad 3 is degenerate at the requested tolerance",
                   "native_ngons": 0,
                   "native_vertices": 10,
                   "ngons_match": true,
-                  "qualified": false
+                  "quad_cycles_match": true,
+                  "qualified": true
                 }
               ],
-              "qualified": false
+              "qualified": true
             },
             "errors": [],
             "grouped_history": true,
             "id": "chain_wrap_shift",
-            "qualified": false
+            "qualified": true
           },
           {
             "accepted_native_tokens": true,
@@ -2287,6 +2387,7 @@
                   "native_ngons": 0,
                   "native_vertices": 10,
                   "ngons_match": true,
+                  "quad_cycles_match": true,
                   "qualified": true
                 }
               ],
@@ -2299,27 +2400,1417 @@
           }
         ]
       }
+    },
+    "corners": {
+      "native_engine_version": "8.32.26160.13001",
+      "draft_command": {
+        "recipes": 12,
+        "qualified_recipes": 12,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 4,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.485749680535094e-16,
+                  "native_faces": 4,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_collinear_stop",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_collinear_follow",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 7.447602459741819e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_collinear_left",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.661338147750939e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_collinear_right",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_near_positive",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": "quad 3 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_near_negative",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_collinear_rotated",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 3.1401849173675503e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_collinear_scaled",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.005932084973442e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "edge_overlap_plain",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 7.447602459741819e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "edge_overlap_reversed",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.684427777288335e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "edge_overlap_near_positive",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 1.1102230246251565e-15,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "edge_overlap_near_negative",
+            "local_error": null,
+            "qualified": true
+          }
+        ]
+      },
+      "draft_getter": {
+        "recipes": 12,
+        "qualified_recipes": 12,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 4,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.485749680535094e-16,
+                  "native_faces": 4,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_collinear_stop",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_collinear_follow",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 7.447602459741819e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_collinear_left",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.661338147750939e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_collinear_right",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_near_positive",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": "quad 3 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_near_negative",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_collinear_rotated",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 3.1401849173675503e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_collinear_scaled",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.005932084973442e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "edge_overlap_plain",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 7.447602459741819e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "edge_overlap_reversed",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.684427777288335e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "edge_overlap_near_positive",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 1.1102230246251565e-15,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "edge_overlap_near_negative",
+            "qualified": true
+          }
+        ]
+      }
+    },
+    "corner_controls": {
+      "native_engine_version": "8.32.26160.13001",
+      "draft_command": {
+        "recipes": 9,
+        "qualified_recipes": 9,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 1.709166621382058e-15,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_frame_tilted",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 1.9860273225978185e-15,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_frame_near_tilted",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.28523286437215e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "edge_overlap_tilted",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_frame_backface",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 12,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.155133597044475e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 12,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_frame_undo_one",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 13,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.485749680535094e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 13,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_frame_undo_two",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_frame_mirror",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 15,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 15,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_frame_no_weld",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 1.2560739669470201e-15,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "chain_frame_right_follow",
+            "local_error": null,
+            "qualified": true
+          }
+        ]
+      },
+      "draft_getter": {
+        "recipes": 9,
+        "qualified_recipes": 9,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 1.709166621382058e-15,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_frame_tilted",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 9,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 1.9860273225978185e-15,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 9,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_frame_near_tilted",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 6,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.28523286437215e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 6,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "edge_overlap_tilted",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_frame_backface",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 12,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.155133597044475e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 12,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_frame_undo_one",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 5,
+                  "actual_ngons": 0,
+                  "actual_vertices": 13,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 9.485749680535094e-16,
+                  "native_faces": 5,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 13,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_frame_undo_two",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_frame_mirror",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 15,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 15,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_frame_no_weld",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 6,
+                  "actual_ngons": 0,
+                  "actual_vertices": 10,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 1.2560739669470201e-15,
+                  "native_faces": 6,
+                  "native_legacy_diagonal_error": "quad 2 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 10,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "chain_frame_right_follow",
+            "qualified": true
+          }
+        ]
+      }
+    },
+    "corner_finish": {
+      "native_engine_version": "8.32.26160.13001",
+      "draft_command": {
+        "recipes": 4,
+        "qualified_recipes": 4,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "face_free_cross",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "face_free_cross_reverse",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.005932084973442e-16,
+                  "native_faces": 1,
+                  "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "face_free_overlap",
+            "local_error": null,
+            "qualified": true
+          },
+          {
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "grouped_history": true,
+            "id": "edge_undo_seed",
+            "local_error": null,
+            "qualified": true
+          }
+        ]
+      },
+      "draft_getter": {
+        "recipes": 4,
+        "qualified_recipes": 4,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "face_free_cross",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 1,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "face_free_cross_reverse",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 1,
+                  "actual_ngons": 0,
+                  "actual_vertices": 4,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 8.005932084973442e-16,
+                  "native_faces": 1,
+                  "native_legacy_diagonal_error": "quad 0 is degenerate at the requested tolerance",
+                  "native_ngons": 0,
+                  "native_vertices": 4,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "face_free_overlap",
+            "qualified": true
+          },
+          {
+            "accepted_native_tokens": true,
+            "check": {
+              "attributes_and_identity_preserved": true,
+              "meshes": [
+                {
+                  "actual_faces": 2,
+                  "actual_ngons": 0,
+                  "actual_vertices": 8,
+                  "counts_match": true,
+                  "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+                  "native_faces": 2,
+                  "native_legacy_diagonal_error": null,
+                  "native_ngons": 0,
+                  "native_vertices": 8,
+                  "ngons_match": true,
+                  "quad_cycles_match": true,
+                  "qualified": true
+                }
+              ],
+              "qualified": true
+            },
+            "errors": [],
+            "grouped_history": true,
+            "id": "edge_undo_seed",
+            "qualified": true
+          }
+        ]
+      }
     }
   },
   "guarantees": [
-    "Twenty-five captured mesh recipes match command and point-getter samples, raw vertex/face counts, triangle/quad kinds and cyclic n-gon boundary winding.",
-    "Five physical native input controls compare edge attachment and cancellation through the interactive getter. Eighteen additional physical edge-chain scenes retain every command and viewport-getter result, including unresolved comparisons.",
+    "Twenty-five captured mesh recipes match command and point-getter samples, raw vertex/face counts, triangle/quad kinds, cyclic quad ordering and n-gon boundary winding.",
+    "Five physical native input controls compare edge attachment and cancellation through the interactive getter. Forty-three additional edge-chain and corner scenes retain every command and viewport-getter result, including rotated, tilted, scaled, opposite-side, repeated Undo and direct crossing-quad controls.",
     "Append keeps source identity, name and layer; output selection and grouped Undo/Redo match each captured result.",
     "Zero-degree welding joins coplanar seams. Welding uses exact coordinate adjacency and preserves unrelated pre-existing unwelded seams.",
     "Draft corners and previews leave the model and Redo unchanged until completion. History or source changes invalidate a stale draft.",
-    "Continuous chain walks cache an oriented source boundary loop; reverse walks retain coherent winding. Completed loops can continue onto newly created boundaries. Screen-space picks target current draft boundaries without admitting temporary document objects.",
+    "Continuous chain walks update exact-location edge incidence incrementally and roll it back through point Undo. Each next edge is taken from the current boundary, including newly created edges. Screen-space picks target current draft boundaries without admitting temporary document objects.",
     "Ordered n-gons reuse the existing constrained polygon triangulator and validated mesh n-gon overlays. InPlane projects later corners onto the first-three-corner plane."
   ],
   "limits": [
-    "SubD output is explicitly unsupported. chain_wrap, edge_collinear_inner and chain_wrap_shift remain unqualified geometry or topology comparisons. Public Rhino IsValidWithLog accepts all eighteen captured draft mesh records.",
+    "Zero polygon normals remain stored data. Boundary continuation requires a defined reference normal, and welding still rejects a seam whose required normal is undefined.",
+    "SubD output is explicitly unsupported. Public Rhino IsValidWithLog accepts the reconstructed eighteen draft records and all twenty-five captured corner meshes.",
     "Quad surface comparisons use the shared shortest-diagonal triangulation on both sides. Native display tessellation of warped quads, raw vertex/face ordering, and stored normal arrays are not certified.",
     "General self-intersecting polygons, nonmanifold append neighborhoods, texture/vertex-color channels and native comparative speed require further qualification.",
-    "Construction retains at most 100000 corners, including automatically reused chain corners. Per-face option changes retain prior completed faces; the usual constant-angle path appends and welds once.",
-    "Legacy A-C diagonal rejection is recorded for native quads. Comparisons use nondegenerate triangles from the shortest-diagonal split; original native vertex, face and n-gon counts remain the topology targets."
+    "Construction retains at most 100000 corners, including automatically reused chain corners. Validated mesh parts and per-face settings are retained; the usual constant-angle path appends and welds once.",
+    "Legacy A-C diagonal rejection is recorded for native quads. Comparisons retain all shortest-diagonal facets, including collapsed ones handled by the exact segment/point fallback. Original native vertex, face and n-gon counts remain the topology targets."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/mesh.rs": "ac43d26835e9819d05fb66cd70d5d433d34ad00f1049f4ca52ef11cdcd2f2e84",
-    "crates/viboceros-geometry/src/mesh/face_create.rs": "c9c29cfb07032cba56c9ace43100eef9614e54cb13e536a1c7a258d7907f105b",
+    "crates/viboceros-geometry/src/lib.rs": "f2392ca7cb69087106ef5c4abf296ccd7cc3de72887746c8f4e5168fd4baee9b",
+    "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
+    "crates/viboceros-geometry/src/vector/cross_direction.rs": "b2d21dc2509bea847f6fc97185b87a552f5062ff9050ab9df853524de3667d33",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "crates/viboceros-geometry/src/tolerance.rs": "a5d8ff84321ee02cabcdac0666c9965aa7d1211f893c0321b05cf9a30a420123",
+    "crates/viboceros-geometry/src/mesh.rs": "393e9621f61a20ae9e64bb3f132fd51284e93d4c178355617d11ca30a2d7b41d",
+    "crates/viboceros-geometry/src/mesh/face_create.rs": "8e30235e97616ce91117e6ed0477edcc0bfea75a7b766a1c9ef41a9910da57e8",
+    "crates/viboceros-geometry/src/mesh/face_boundary.rs": "d8a06bd95b77b23d5fc0b77e93b58ad2b69006d997ac5adc5f03305071c65ce7",
+    "crates/viboceros-geometry/src/mesh/face_records.rs": "09545428f12dabd55bc4e07ab993c9699fc6c934936d73a48f0f90df49d4514d",
+    "crates/viboceros-geometry/src/mesh/closest.rs": "c151524d33d932ad5288ff72db2daed5a61234490157f34528056d7632ad1fbb",
+    "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
+    "crates/viboceros-geometry/src/transform.rs": "e8b24486c8963c14828765f7d29ab5e4ce1c79006eef1b912508374e4da8ac9f",
+    "crates/viboceros-geometry/src/transform/orientation.rs": "b524fe65c3f2c612da78de80f9e2ba18a31671a3151f71c36afeddbce0a51ecb",
+    "crates/viboceros-geometry/src/binary_accumulator.rs": "990ae206b583200f382617b97b3a28aa00e0d8519bce52423155988e35f8481f",
     "crates/viboceros-geometry/src/mesh/append.rs": "41165b744bd8e4093b0c255fe4d219222639b655a160f701b65cce9e9971b843",
     "crates/viboceros-geometry/src/mesh/ngon.rs": "2dcd7295247c7a899b42e278096dfcdefe20851c091c0d61280dc421428f5aae",
     "crates/viboceros-geometry/src/mesh/closed_polyline.rs": "d85306f3d7b31e80aa842bd48d29e70fc67c244f064c5104e6836834e7cbb361",
@@ -2329,28 +3820,28 @@
     "crates/viboceros-geometry/src/mesh/union_find.rs": "6940de0d881901613f3263f895c5e438fb79aad50599de4ea2322738c2f8f8ce",
     "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
     "crates/viboceros-command/src/lib.rs": "24f7f101657ee8f4d23e76db439518088c6a4c0ae0bce7be45c9f0e8c6f3c76b",
-    "crates/viboceros-command/src/face_create.rs": "0eed5f4b40615a456bfe57d82b525aeee521bdd56443b94906f18431819bb417",
-    "crates/viboceros-command/tests/face_create_native.rs": "a3064efcf2c02f8b2282c031e4701e4779810531f889a11dbacebd06401e76e6",
-    "crates/viboceros-command/tests/support/face_create.rs": "adea599635a2270a7518793494c8de448618fd24f6246275b25618b934223c18",
+    "crates/viboceros-command/src/face_create.rs": "58792794ec51de75c9fd03dc13582807ed8f96b82543037ebace16e19605b855",
+    "crates/viboceros-command/tests/face_create_native.rs": "ad14921320e8d543ad535f52943e60084f7a47da669f485e4eeee2ddaf3701ff",
+    "crates/viboceros-command/tests/support/face_create.rs": "ce7f28adf99109bcdc79bfda1068b7215c3157413051f412f462fe1941348e99",
     "src/viewport.rs": "667d8553e8480632a887febd0776b3d58b4ec80258042bf517869f958c2a76ed",
     "src/viewport/edge_picking.rs": "e4d0fc43a49e5fac80479f091c580779f4c079deb2ea93fbcd8dc3829743ab89",
     "src/viewport/edge_picking/tests.rs": "f260f150bf085c1bf6204a8acd074db42ac8e221ff92b96e4ca1a08a59575356",
     "src/app.rs": "e121b5dcd8c5efa6c258edfa35b7d4d172d67dbc255d63e25b7029a0ccb87493",
     "src/app/face_create.rs": "9291e3d2b8c86e0797930a000543f0a4ecaad88f1f76a36301c664cacf4c9682",
-    "src/app/face_create/tests.rs": "ba946203be8b960c227f4404a19c3e258d7be7a647e32bd9568ce2936c7001bd",
+    "src/app/face_create/tests.rs": "91f6864c3be8c5e171c9cb661697f3753815edf257498825df6f26f7dde58a0e",
     "src/app/mesh_face_prompt.rs": "8a6fe1e583489d85aa27f626debebae3ff4bf34d632b16b4eea36fc4ffbfc735",
     "tools/rhino_oracle/generate_face_draft_validity.py": "58ca0f4a288ce133721c48bb43412201eda7d65360f5b409a3e1c204733496f4",
     "tools/rhino_oracle/fixtures/face_draft_validity.json": "c157c4acb1ee021590c9efd0e3c3e64e3e7338fda263c1a49cc7c02f53c695d3",
     "tools/rhino_oracle/observations/face_draft_validity.json": "c16bcf9b200aec82cf4ea551eb948d169acbe4ced193d928bfce9ae54c156a36",
-    "tools/rhino_oracle/face_draft_cases.py": "605d14767c6b902c1680888599bd5698fee90b48b9b8d518b5eeb8c8a29cf32f",
-    "tools/rhino_oracle/face_draft_input.py": "ebb0e9e3924db926080bac7e001ca2ff29508a99382b2254ed8df0bbaef66b75",
-    "tools/rhino_oracle/face_create_probe.py": "2d1a1ef0278250199ecd99661092580db3585cd4701531515dbb8aa386946b78",
+    "tools/rhino_oracle/face_draft_cases.py": "8d4e594d1f4ab0c8457cba0b0b2f6494cb078bcb95904f69a4abca5dc96d51e2",
+    "tools/rhino_oracle/face_draft_input.py": "bb0e0d8e4a7cdd1b5b0488a0d09b1ec63b6caf94196cdd9a8e6cc3c54762e56e",
+    "tools/rhino_oracle/face_create_probe.py": "a34981dd3cd3fdfc684287e35489401c161ee5abf2dadbb7c6a55d9540647c12",
     "tools/rhino_oracle/face_create_input.py": "987f33c447ade5b71c178804bf3ba26035e2888f6107d829f8e5ac3797ab21c1",
-    "tools/rhino_oracle/generate_face_create.py": "409abc669f1be35cb9d7c3cde09d531a8373d4d1882e7a899501eb503e08499e",
-    "tools/rhino_oracle/report_face_create.py": "9c2415018b7e70d66c756ee2d4fdacea53e8d5d3a65427fa92eccd467b8c144c",
-    "tools/rhino_oracle/test_face_create.py": "70af37dffcca0456b0ab3b0c1a737911b99dde3fd1d5bcae2019f8c19b1d9208",
+    "tools/rhino_oracle/generate_face_create.py": "992dc5a9fa126cdd46c32431d7b214d9b609e4fd00f5f790bbbdaad148ab761a",
+    "tools/rhino_oracle/report_face_create.py": "47b6bead32f0497532805c86f255ef56d7726e015a8502cf14ef07c5560b084c",
+    "tools/rhino_oracle/test_face_create.py": "2752f7792144e28d4da8d51323fcc1f4cfe93491b287b0d5f5e3669b20a66226",
     "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
-    "tools/rhino_oracle/client.py": "605a33391adf071a384dad8aecbe4b8d6f86a06cc2b419d9d6ae2e6ffab9e229",
+    "tools/rhino_oracle/client.py": "6f6665f05b44ef50557b3a8f29a2ff349c63143a96f31b6d469b94a324a5910b",
     "tools/rhino_oracle/structural_sdk.py": "0d65afb6def8b45f942f8b449245af4e90d1c85c785e7b1685a67b26b7a6592d",
     "tools/rhino_oracle/rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
     "tools/rhino_oracle/fixtures/face_create.json": "26fc3b89bd149d5506fb6f95c3fd75d30b01a2b46099739fc54f20af8057d8e1",
@@ -2362,6 +3853,12 @@
     "tools/rhino_oracle/fixtures/face_create_drafts.json": "30ea6d81ac0beaaabc66c3c0586fee4c5867a0cfb50b9762ce5400a90745c496",
     "tools/rhino_oracle/observations/face_create_drafts.json": "b3f349ea6a6e989557dd0f02422eb7e9274527f63a2c07da4ed2807cb365667c",
     "tools/rhino_oracle/fixtures/face_create_draft_extras.json": "e159c8bc34db74764e755b532b4da254ed1948a9a950ce73760dfc64c63af077",
-    "tools/rhino_oracle/observations/face_create_draft_extras.json": "c503c8a380b268a98f5432746fa4be80b9c0f4851fea1d7fb4c7425dd57901d1"
+    "tools/rhino_oracle/observations/face_create_draft_extras.json": "c503c8a380b268a98f5432746fa4be80b9c0f4851fea1d7fb4c7425dd57901d1",
+    "tools/rhino_oracle/fixtures/face_create_corners.json": "6d3157918a6f536b54f427abb8d35a430b585452673bce98261ae8755ab77223",
+    "tools/rhino_oracle/observations/face_create_corners.json": "0063a6f871d155703383239e8e04c77ec4c3456377c6cf42d7dd2c2ca40f3d3c",
+    "tools/rhino_oracle/fixtures/face_create_corner_controls.json": "552433a4edf6f0f3b007285e83eeaedbf62b234740673f3a1c73cda84ca1ac52",
+    "tools/rhino_oracle/observations/face_create_corner_controls.json": "99d25259691d6702863f7df7e2e0e60211e238d83ea4d038dadd574052f50112",
+    "tools/rhino_oracle/fixtures/face_create_corner_finish.json": "1115c8d44ce0687d81640e4dc126f8a80dfd632d018ea5e5edcfe97e578c8850",
+    "tools/rhino_oracle/observations/face_create_corner_finish.json": "8c4c98e242002171dc2d903075ff5378f348a735546fea701c0681a90bf141ec"
   }
 }
