@@ -1,0 +1,4050 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "id": "saddle_reverse",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3794048141,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 3794048141,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      1,
+                      3
+                    ],
+                    [
+                      1,
+                      2,
+                      0
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      2.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      2.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 3839480207,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3794048141,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  3
+                ],
+                [
+                  1,
+                  2,
+                  0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3839480207,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                2,
+                1,
+                3
+              ],
+              [
+                1,
+                2,
+                0
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ],
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3794048141,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  3
+                ],
+                [
+                  1,
+                  2,
+                  0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3839480207,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3794048141,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  3
+                ],
+                [
+                  1,
+                  2,
+                  0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3839480207,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                0.0,
+                3.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3794048141,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "saddle_seam",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3440363225,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 3440363225,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      1,
+                      2,
+                      3
+                    ],
+                    [
+                      2,
+                      1,
+                      0
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      2.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      2.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 2020168092,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3440363225,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  2,
+                  1,
+                  0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2020168092,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                2,
+                1,
+                0
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ],
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3440363225,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  2,
+                  1,
+                  0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2020168092,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3440363225,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  2,
+                  1,
+                  0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2020168092,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                2.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3440363225,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "high_corner",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1790725397,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 1790725397,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      3,
+                      1
+                    ],
+                    [
+                      1,
+                      0,
+                      2
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      8.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 2470868536,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1790725397,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  3,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  8.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2470868536,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                2,
+                3,
+                1
+              ],
+              [
+                1,
+                0,
+                2
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                8.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1790725397,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  3,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  8.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2470868536,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1790725397,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  3,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  8.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2470868536,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                8.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1790725397,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "asymmetric_quad",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1757714650,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 1757714650,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      0,
+                      3
+                    ],
+                    [
+                      0,
+                      2,
+                      1
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      1.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.5
+                    ],
+                    [
+                      5.0,
+                      0.0,
+                      2.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 675279538,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1757714650,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.5
+                ],
+                [
+                  5.0,
+                  0.0,
+                  2.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 675279538,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                2,
+                0,
+                3
+              ],
+              [
+                0,
+                2,
+                1
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.5
+              ],
+              [
+                5.0,
+                0.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1757714650,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.5
+                ],
+                [
+                  5.0,
+                  0.0,
+                  2.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 675279538,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1757714650,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.5
+                ],
+                [
+                  5.0,
+                  0.0,
+                  2.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 675279538,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                5.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.5
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1757714650,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "asymmetric_reverse",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2929110086,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 2929110086,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      3,
+                      0
+                    ],
+                    [
+                      0,
+                      1,
+                      2
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      1.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.5
+                    ],
+                    [
+                      5.0,
+                      0.0,
+                      2.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 3719948709,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2929110086,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.5
+                ],
+                [
+                  5.0,
+                  0.0,
+                  2.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3719948709,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                2,
+                3,
+                0
+              ],
+              [
+                0,
+                1,
+                2
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.5
+              ],
+              [
+                5.0,
+                0.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2929110086,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.5
+                ],
+                [
+                  5.0,
+                  0.0,
+                  2.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3719948709,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2929110086,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  3,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  1.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.5
+                ],
+                [
+                  5.0,
+                  0.0,
+                  2.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3719948709,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                0.0,
+                3.0,
+                1.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.5
+              ],
+              [
+                5.0,
+                0.0,
+                2.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2929110086,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "concave_quad",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1454785340,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 1454785340,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      1,
+                      0
+                    ],
+                    [
+                      0,
+                      3,
+                      2
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 1968597075,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1454785340,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 1968597075,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                0,
+                3,
+                2
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1454785340,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 1968597075,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1454785340,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  2
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 1968597075,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1454785340,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "spatial_concave_quad",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 506632229,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 506632229,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      0,
+                      3
+                    ],
+                    [
+                      0,
+                      2,
+                      1
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.3
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 67353723,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 506632229,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.3
+                ],
+                [
+                  4.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 67353723,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                2,
+                0,
+                3
+              ],
+              [
+                0,
+                2,
+                1
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                0.3
+              ],
+              [
+                4.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 506632229,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.3
+                ],
+                [
+                  4.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 67353723,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 506632229,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  2,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.3
+                ],
+                [
+                  4.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 67353723,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                1.0,
+                0.3
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 506632229,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "spatial_hexagon",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1419940061,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 1419940061,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      3,
+                      0,
+                      1
+                    ],
+                    [
+                      5,
+                      0,
+                      3
+                    ],
+                    [
+                      0,
+                      5,
+                      2
+                    ],
+                    [
+                      4,
+                      2,
+                      5
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -1.0,
+                      2.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      4.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      3.0,
+                      4.0,
+                      2.0
+                    ],
+                    [
+                      4.0,
+                      2.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 2365949096,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1419940061,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1
+                ],
+                [
+                  5,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  2,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  2.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  4.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  3.0,
+                  4.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2365949096,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                3,
+                0,
+                1
+              ],
+              [
+                5,
+                0,
+                3
+              ],
+              [
+                0,
+                5,
+                2
+              ],
+              [
+                4,
+                2,
+                5
+              ]
+            ],
+            "vertices": [
+              [
+                -1.0,
+                2.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                1.0
+              ],
+              [
+                3.0,
+                4.0,
+                2.0
+              ],
+              [
+                4.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1419940061,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1
+                ],
+                [
+                  5,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  2,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  2.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  4.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  3.0,
+                  4.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2365949096,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1419940061,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  3,
+                  0,
+                  1
+                ],
+                [
+                  5,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  2,
+                  5
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  2.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  4.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  3.0,
+                  4.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 2365949096,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                1.0
+              ],
+              [
+                4.0,
+                2.0,
+                0.0
+              ],
+              [
+                3.0,
+                4.0,
+                2.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 1419940061,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "thin_rectangle",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2375536921,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 2375536921,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      2,
+                      1,
+                      0
+                    ],
+                    [
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.001,
+                      0.0
+                    ],
+                    [
+                      20.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      20.0,
+                      0.001,
+                      0.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 1648186009,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2375536921,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.001,
+                  0.0
+                ],
+                [
+                  20.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  20.0,
+                  0.001,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 1648186009,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.001,
+                0.0
+              ],
+              [
+                20.0,
+                0.0,
+                0.0
+              ],
+              [
+                20.0,
+                0.001,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2375536921,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.001,
+                  0.0
+                ],
+                [
+                  20.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  20.0,
+                  0.001,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 1648186009,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2375536921,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  2,
+                  1,
+                  0
+                ],
+                [
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.001,
+                  0.0
+                ],
+                [
+                  20.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  20.0,
+                  0.001,
+                  0.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 1648186009,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                20.0,
+                0.0,
+                0.0
+              ],
+              [
+                20.0,
+                0.001,
+                0.0
+              ],
+              [
+                0.0,
+                0.001,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 2375536921,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "translated_quad",
+      "value": {
+        "before": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": true,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3916286430,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "objects": [
+              {
+                "role": "source",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "source_index": 0,
+                "crc": 3916286430,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              },
+              {
+                "role": "output",
+                "color_source": "ColorFromObject",
+                "selected": false,
+                "layer": "MeshPolyline source",
+                "name": "Input 0",
+                "mesh": {
+                  "faces": [
+                    [
+                      1,
+                      0,
+                      2
+                    ],
+                    [
+                      2,
+                      3,
+                      1
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      10000000.0,
+                      10000000.0,
+                      2.0
+                    ],
+                    [
+                      10000000.0,
+                      10000003.0,
+                      2.0
+                    ],
+                    [
+                      10000004.0,
+                      10000000.0,
+                      2.0
+                    ],
+                    [
+                      10000004.0,
+                      10000003.0,
+                      4.0
+                    ]
+                  ]
+                },
+                "source_index": null,
+                "crc": 3714286622,
+                "color": [
+                  37,
+                  83,
+                  149
+                ]
+              }
+            ],
+            "result": "Success",
+            "name": "MeshPolyline"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Enter"
+          },
+          {
+            "selected": [],
+            "result": "Success",
+            "name": "Cancel"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after_script": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3916286430,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  10000000.0,
+                  10000000.0,
+                  2.0
+                ],
+                [
+                  10000000.0,
+                  10000003.0,
+                  2.0
+                ],
+                [
+                  10000004.0,
+                  10000000.0,
+                  2.0
+                ],
+                [
+                  10000004.0,
+                  10000003.0,
+                  4.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3714286622,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "sdk": [
+          {
+            "faces": [
+              [
+                1,
+                0,
+                2
+              ],
+              [
+                2,
+                3,
+                1
+              ]
+            ],
+            "vertices": [
+              [
+                10000000.0,
+                10000000.0,
+                2.0
+              ],
+              [
+                10000000.0,
+                10000003.0,
+                2.0
+              ],
+              [
+                10000004.0,
+                10000000.0,
+                2.0
+              ],
+              [
+                10000004.0,
+                10000003.0,
+                4.0
+              ]
+            ]
+          }
+        ],
+        "history": "Command: _-MeshPolyline\nCreating meshes... Press Esc to cancel\nCommand: _Enter\nCommand: _Cancel",
+        "redo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3916286430,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  10000000.0,
+                  10000000.0,
+                  2.0
+                ],
+                [
+                  10000000.0,
+                  10000003.0,
+                  2.0
+                ],
+                [
+                  10000004.0,
+                  10000000.0,
+                  2.0
+                ],
+                [
+                  10000004.0,
+                  10000003.0,
+                  4.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3714286622,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "success": true,
+        "after": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3916286430,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          },
+          {
+            "role": "output",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  2,
+                  3,
+                  1
+                ]
+              ],
+              "vertices": [
+                [
+                  10000000.0,
+                  10000000.0,
+                  2.0
+                ],
+                [
+                  10000000.0,
+                  10000003.0,
+                  2.0
+                ],
+                [
+                  10000004.0,
+                  10000000.0,
+                  2.0
+                ],
+                [
+                  10000004.0,
+                  10000003.0,
+                  4.0
+                ]
+              ]
+            },
+            "source_index": null,
+            "crc": 3714286622,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ],
+        "input": {
+          "polylines": [
+            [
+              [
+                10000000.0,
+                10000000.0,
+                2.0
+              ],
+              [
+                10000004.0,
+                10000000.0,
+                2.0
+              ],
+              [
+                10000004.0,
+                10000003.0,
+                4.0
+              ],
+              [
+                10000000.0,
+                10000003.0,
+                2.0
+              ],
+              [
+                10000000.0,
+                10000000.0,
+                2.0
+              ]
+            ]
+          ]
+        },
+        "sdk_signature": "CreateFromClosedPolyline(polyline: Polyline) -> Mesh\r\n\r\n    Attempts to create a Mesh that is a triangulation of a simple closed polyline \r\n     that projects onto a plane.\r\n\r\n\r\n    polyline: must be closed\r\n    Returns: New mesh on success or null on failure.\r\n",
+        "undo": [
+          {
+            "role": "source",
+            "color_source": "ColorFromObject",
+            "selected": false,
+            "layer": "MeshPolyline source",
+            "name": "Input 0",
+            "source_index": 0,
+            "crc": 3916286430,
+            "color": [
+              37,
+              83,
+              149
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "provenance": {
+    "request_sha256": "a0a61db2beb32f4746b1ab5c2b9162a4446ed7e8f0c5085f92d031e6199bedef",
+    "sources": {
+      "generate_mesh_polyline.py": "c52ae5bc96d8128dfd29635beaa468053e913af27f24696d36e876ff249c626c",
+      "mesh_polyline_probe.py": "35ad0722d914333b9a67590408e392ad9c7c688b73c0ab86103eec1d56de2545",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "cbdd7d4fe69c550f2144be1c0210402b3faf734ce32273d4d87a797cf69ff102",
+      "rhino_worker.py": "5af381a7a233030560b7403ca4af18e27b9f1cee844bc54bfabd863562cc6097",
+      "structural_sdk.py": "6b83b349b254511631bec6fcea1d791e1c635cc8d2eb0cec1497d46875cd104c"
+    }
+  }
+}

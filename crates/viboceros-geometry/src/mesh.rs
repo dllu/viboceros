@@ -43,6 +43,7 @@ pub use degenerate_faces::MeshFaceCullResult;
 mod offset;
 mod planar_ngons;
 pub use offset::MeshOffsetDirection;
+mod closed_polyline;
 mod from_lines;
 mod patch;
 mod patch_single_face;
@@ -4311,6 +4312,28 @@ fn triangulate_projected_mesh_region(
         .map_err(|_| GeometryError::TooManyMeshFaces)?;
     let mut actual_area = 0.0;
     let mut area_correction = 0.0;
+    // A single constrained boundary separates the disk from the exterior.
+    // Flood once instead of testing every triangle against every boundary
+    // segment, which makes large closed-polyline triangulation quadratic.
+    let exterior = if loops.len() == 1 {
+        let mut neighbors = vec![Vec::new(); triangulation.num_all_faces()];
+        for edge in triangulation.directed_edges() {
+            if !edge.is_constraint_edge() {
+                neighbors[edge.face().index()].push(edge.rev().face().index());
+            }
+        }
+        let mut visited = vec![false; neighbors.len()];
+        let mut queue = VecDeque::from([triangulation.outer_face().index()]);
+        while let Some(face) = queue.pop_front() {
+            if !visited[face] {
+                visited[face] = true;
+                queue.extend(neighbors[face].iter().copied());
+            }
+        }
+        Some(visited)
+    } else {
+        None
+    };
     for face in triangulation.inner_faces() {
         let face_vertices = face.vertices();
         let face_points = face_vertices.map(|vertex| {
@@ -4321,15 +4344,21 @@ fn triangulate_projected_mesh_region(
             (face_points[0][0] + face_points[1][0] + face_points[2][0]) / 3.0,
             (face_points[0][1] + face_points[1][1] + face_points[2][1]) / 3.0,
         ];
-        if !point_in_mesh_hole_polygon(centroid, loop_points[0], epsilon)
-            || loop_points[1..]
-                .iter()
-                .any(|hole| point_in_mesh_hole_polygon(centroid, hole, epsilon))
-        {
+        let outside = if let Some(exterior) = &exterior {
+            exterior[face.index()]
+        } else {
+            !point_in_mesh_hole_polygon(centroid, loop_points[0], epsilon)
+                || loop_points[1..]
+                    .iter()
+                    .any(|hole| point_in_mesh_hole_polygon(centroid, hole, epsilon))
+        };
+        if outside {
             continue;
         }
         let triangle_area = mesh_hole_cross(face_points[0], face_points[1], face_points[2]);
-        if triangle_area <= epsilon {
+        // Face orientation is local: the polygon-wide area tolerance grows
+        // with vertex count and would discard valid ears of dense boundaries.
+        if triangle_area <= 0.0 {
             return Ok(None);
         }
         compensated_mesh_hole_sum(&mut actual_area, &mut area_correction, triangle_area);

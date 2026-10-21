@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_polyline_command",
+      "id": "saddle_reverse",
+      "case": "saddle_reverse"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "saddle_seam",
+      "case": "saddle_seam"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "high_corner",
+      "case": "high_corner"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "asymmetric_quad",
+      "case": "asymmetric_quad"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "asymmetric_reverse",
+      "case": "asymmetric_reverse"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "concave_quad",
+      "case": "concave_quad"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "spatial_concave_quad",
+      "case": "spatial_concave_quad"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "spatial_hexagon",
+      "case": "spatial_hexagon"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "thin_rectangle",
+      "case": "thin_rectangle"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "translated_quad",
+      "case": "translated_quad"
+    }
+  ]
+}

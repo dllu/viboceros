@@ -6,6 +6,8 @@ use viboceros_document::{Geometry, ObjectId, SelectionMode};
 mod divide;
 mod mesh_from_lines;
 mod mesh_patch;
+#[cfg(test)]
+mod mesh_polyline_tests;
 mod modify_radius;
 mod reduce_polyline;
 

@@ -20,6 +20,7 @@ pub enum ObjectSelectionFilter {
     MeshPatchSources,
     MeshPatchHoles,
     LineCurves,
+    ClosedPolylines,
     Smooth,
     PolygonCount,
     CoplanarFaces,
@@ -58,6 +59,10 @@ impl ObjectSelectionFilter {
     pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
         let geometry = object.geometry();
         match self {
+            Self::ClosedPolylines => geometry.curve_ref().is_some_and(|curve| {
+                curve.is_closed().unwrap_or(false)
+                    && curve.polyline_vertices().is_ok_and(|p| p.is_some())
+            }),
             Self::LineCurves => match geometry {
                 Geometry::Line(_) => true,
                 Geometry::NurbsCurve(curve) => curve.is_linear_at_zero_tolerance().unwrap_or(false),

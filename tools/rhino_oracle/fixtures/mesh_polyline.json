@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_polyline_command",
+      "id": "triangle",
+      "case": "triangle"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "rectangle",
+      "case": "rectangle"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "reverse",
+      "case": "reverse"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "shifted_seam",
+      "case": "shifted_seam"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "concave",
+      "case": "concave"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "concave_reverse",
+      "case": "concave_reverse"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "collinear_edge",
+      "case": "collinear_edge"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "tilted",
+      "case": "tilted"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "vertical",
+      "case": "vertical"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "shallow",
+      "case": "shallow"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "folded",
+      "case": "folded"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "saddle",
+      "case": "saddle"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "spatial_concave",
+      "case": "spatial_concave"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "disconnected",
+      "case": "disconnected"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "nested",
+      "case": "nested"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "degree_one_nurbs",
+      "case": "degree_one_nurbs"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "mixed_open",
+      "case": "mixed_open"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "self_crossing",
+      "case": "self_crossing"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "collinear",
+      "case": "collinear"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "near_closed",
+      "case": "near_closed"
+    },
+    {
+      "op": "mesh_polyline_command",
+      "id": "far_closed",
+      "case": "far_closed"
+    }
+  ]
+}
