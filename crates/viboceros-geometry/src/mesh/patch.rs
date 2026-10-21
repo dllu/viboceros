@@ -31,6 +31,7 @@ impl Default for MeshPatchOptions<'_> {
 struct Vertex {
     position: TriangulationPoint2<Real>,
     source: usize,
+    point: Point3,
 }
 impl HasPosition for Vertex {
     type Scalar = Real;
@@ -63,8 +64,10 @@ impl TriangleMesh {
     /// Holes and an explicit outer boundary trim connected triangulation regions.
     /// A starting surface supplies closest-point UV coordinates, not a universal
     /// unfolding: conflicting chart locations and unresolved boundaries fail.
-    /// Earlier guide edges take priority at crossings, without adding spatial
-    /// samples there. Failed recovery trims adjacent endpoint faces; incomplete
+    /// With automatic trimming, unsplit guides recover before paths through
+    /// explicit point seeds.
+    /// Earlier recovered edges take priority without generated spatial samples.
+    /// Failed recovery trims adjacent endpoint faces; incomplete
     /// holes trim only the faces beside their recovered boundary edges.
     pub fn try_patch(
         points: &[Point3],
@@ -222,6 +225,7 @@ impl TriangleMesh {
             .map(|(source, q)| Vertex {
                 position: TriangulationPoint2::new(q[0], q[1]),
                 source,
+                point: vertices[source],
             })
             .collect();
         let mut triangulation = ConstrainedDelaunayTriangulation::<Vertex>::bulk_load(input)
@@ -229,14 +233,18 @@ impl TriangleMesh {
         if triangulation.num_inner_faces() == 0 {
             return Err(invalid("mesh patch needs three noncollinear locations"));
         }
+        let source_nodes = remap[..points.len()]
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>();
         let constraints = constraints::Constraints::install(
             &mut triangulation,
             &coordinates,
             &remap,
             &chains,
-            guides.len(),
-            holes.len(),
+            (guides.len(), holes.len()),
             automatic_trim,
+            &source_nodes,
         )?;
         let mut neighbors = vec![Vec::new(); triangulation.num_all_faces()];
         for edge in triangulation.directed_edges() {
@@ -263,16 +271,12 @@ impl TriangleMesh {
                 queue.extend(neighbors[face].iter().copied());
             }
         }
-        let source_nodes = remap[..points.len()]
-            .iter()
-            .copied()
-            .collect::<BTreeSet<_>>();
         let perimeter_nodes = remap[source_count..]
             .iter()
             .copied()
             .collect::<BTreeSet<_>>();
         let outer_seeds = if automatic_trim && !points.is_empty() {
-            constraints.outer_seeds(&triangulation, &coordinates, &remap, source_count)?
+            constraints.outer_seeds(&triangulation, &remap, source_count)?
         } else {
             vec![]
         };
@@ -346,6 +350,14 @@ impl TriangleMesh {
                         .any(|v| perimeter_nodes.contains(&v.data().source))
             })
             .map(|f| f.vertices().map(|v| v.data().source as u32))
+            // A fitted chart can create numerical slivers between collinear
+            // spatial samples. Keep the existing mesh validation policy.
+            .filter(|face| {
+                !matches!(
+                    validate_triangle(&vertices, *face, 0, false, Tolerance::MESH_VALIDATION),
+                    Err(GeometryError::DegenerateTriangle { .. })
+                )
+            })
             .collect::<Vec<_>>();
         if triangles.is_empty() {
             return Err(GeometryError::EmptyMeshPatch);

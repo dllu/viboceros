@@ -3,16 +3,54 @@
   "full_native_parity": false,
   "performance_qualified": false,
   "native_target": "public MeshPatch command",
-  "captures": 48,
-  "unique_scenes": 37,
-  "qualified_unique_scenes": 31,
+  "captures": 106,
+  "unique_scenes": 80,
+  "qualified_unique_scenes": 48,
   "unqualified_scenes": [
     "shared_endpoint",
-    "overlap",
     "self_cross",
     "cross_h_reverse",
     "two_crossings",
-    "cross_seed_axis"
+    "junction_two",
+    "junction_two_out",
+    "junction_three_out",
+    "junction_three_in",
+    "junction_three_reverse",
+    "junction_chain",
+    "junction_chain_branch",
+    "junction_t",
+    "junction_t_reverse",
+    "junction_seed_center",
+    "junction_seed_side",
+    "overlap_touch",
+    "overlap_duplicate",
+    "overlap_duplicate_reverse",
+    "cross_seed_axis_reverse",
+    "shared_endpoint_sdk_after",
+    "self_cross_sdk_after",
+    "two_crossings_sdk_after",
+    "junction_two_sdk_after",
+    "junction_chain_sdk_after",
+    "overlap_duplicate_sdk_after",
+    "overlap_touch_sdk_after",
+    "overlap_first_reversed",
+    "overlap_tilted",
+    "overlap_seed_above",
+    "overlap_seed_below",
+    "overlap_vertical",
+    "point_guide_tilted"
+  ],
+  "original_scenes": 37,
+  "original_qualified_scenes": 33,
+  "original_unqualified_scenes": [
+    "shared_endpoint",
+    "self_cross",
+    "cross_h_reverse",
+    "two_crossings"
+  ],
+  "native_invalid_meshes": [
+    "overlap_tilted",
+    "point_guide_tilted"
   ],
   "maximum_qualified_sample_difference": 3.7345763888702946e-14,
   "groups": {
@@ -20,10 +58,9 @@
       "native_engine_version": "8.32.26160.13001",
       "geometry": {
         "recipes": 11,
-        "qualified_recipes": 8,
+        "qualified_recipes": 9,
         "unqualified_recipes": [
           "shared_endpoint",
-          "overlap",
           "self_cross"
         ],
         "cases": [
@@ -35,7 +72,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 0.8320502943378437
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -45,7 +83,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 2.0152543263816605
+            "sdk_command_difference": 2.0152543263816605,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 10,
@@ -55,7 +94,8 @@
             "native_faces": 5,
             "native_vertices": 7,
             "qualified": false,
-            "sdk_command_difference": 3.5355339059327378
+            "sdk_command_difference": 3.5355339059327378,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -65,17 +105,19 @@
             "native_faces": 12,
             "native_vertices": 9,
             "qualified": true,
-            "sdk_command_difference": 1.4043333874306805e-15
+            "sdk_command_difference": 1.4043333874306805e-15,
+            "sdk_mesh_error": null
           },
           {
-            "actual_faces": 10,
+            "actual_faces": 9,
             "actual_vertices": 8,
             "id": "overlap",
-            "maximum_bidirectional_sample_error": 0.3858718165706448,
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
             "native_faces": 9,
             "native_vertices": 8,
-            "qualified": false,
-            "sdk_command_difference": 0.375
+            "qualified": true,
+            "sdk_command_difference": 0.375,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -85,7 +127,8 @@
             "native_faces": 6,
             "native_vertices": 8,
             "qualified": false,
-            "sdk_command_difference": 0.9805806756909203
+            "sdk_command_difference": 0.9805806756909203,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -95,7 +138,8 @@
             "native_faces": 12,
             "native_vertices": 10,
             "qualified": true,
-            "sdk_command_difference": 1.3506446028928519e-15
+            "sdk_command_difference": 1.3506446028928519e-15,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -105,7 +149,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 1.6641005886756872
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -115,7 +160,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 1.6641005886756872
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -125,7 +171,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 0.8320502943378437
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -135,16 +182,16 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 1.256757435759363
+            "sdk_command_difference": 1.256757435759363,
+            "sdk_mesh_error": null
           }
         ]
       },
       "command": {
         "recipes": 11,
-        "qualified_recipes": 8,
+        "qualified_recipes": 9,
         "unqualified_recipes": [
           "shared_endpoint",
-          "overlap",
           "self_cross"
         ],
         "cases": [
@@ -153,6 +200,7 @@
             "grouped_history": true,
             "id": "cross_axes",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -161,6 +209,7 @@
             "grouped_history": true,
             "id": "cross_diagonals",
             "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -169,6 +218,7 @@
             "grouped_history": true,
             "id": "shared_endpoint",
             "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -177,15 +227,17 @@
             "grouped_history": true,
             "id": "point_at_crossing",
             "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
           {
-            "counts_match": false,
+            "counts_match": true,
             "grouped_history": true,
             "id": "overlap",
-            "maximum_bidirectional_sample_error": 0.3858718165706448,
-            "qualified": false,
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
             "source_metadata_preserved": true
           },
           {
@@ -193,6 +245,7 @@
             "grouped_history": true,
             "id": "self_cross",
             "maximum_bidirectional_sample_error": 2.0,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -201,6 +254,7 @@
             "grouped_history": true,
             "id": "hole_cut",
             "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -209,6 +263,7 @@
             "grouped_history": true,
             "id": "cross_3d",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -217,6 +272,7 @@
             "grouped_history": true,
             "id": "cross_3d_reverse",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -225,6 +281,7 @@
             "grouped_history": true,
             "id": "cross_lifted",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -233,6 +290,7 @@
             "grouped_history": true,
             "id": "cross_sloped",
             "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           }
@@ -240,10 +298,9 @@
       },
       "getter": {
         "recipes": 11,
-        "qualified_recipes": 8,
+        "qualified_recipes": 9,
         "unqualified_recipes": [
           "shared_endpoint",
-          "overlap",
           "self_cross"
         ],
         "cases": [
@@ -252,6 +309,7 @@
             "grouped_history": true,
             "id": "cross_axes",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -260,6 +318,7 @@
             "grouped_history": true,
             "id": "cross_diagonals",
             "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -268,6 +327,7 @@
             "grouped_history": true,
             "id": "shared_endpoint",
             "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -276,15 +336,17 @@
             "grouped_history": true,
             "id": "point_at_crossing",
             "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
           {
-            "counts_match": false,
+            "counts_match": true,
             "grouped_history": true,
             "id": "overlap",
-            "maximum_bidirectional_sample_error": 0.3858718165706448,
-            "qualified": false,
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
             "source_metadata_preserved": true
           },
           {
@@ -292,6 +354,7 @@
             "grouped_history": true,
             "id": "self_cross",
             "maximum_bidirectional_sample_error": 2.0,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -300,6 +363,7 @@
             "grouped_history": true,
             "id": "hole_cut",
             "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -308,6 +372,7 @@
             "grouped_history": true,
             "id": "cross_3d",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -316,6 +381,7 @@
             "grouped_history": true,
             "id": "cross_3d_reverse",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -324,6 +390,7 @@
             "grouped_history": true,
             "id": "cross_lifted",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -332,6 +399,7 @@
             "grouped_history": true,
             "id": "cross_sloped",
             "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           }
@@ -342,10 +410,9 @@
       "native_engine_version": "8.32.26160.13001",
       "geometry": {
         "recipes": 21,
-        "qualified_recipes": 16,
+        "qualified_recipes": 17,
         "unqualified_recipes": [
           "shared_endpoint",
-          "overlap",
           "self_cross",
           "cross_h_reverse",
           "two_crossings"
@@ -359,7 +426,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 0.8320502943378437
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -369,7 +437,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 2.0152543263816605
+            "sdk_command_difference": 2.0152543263816605,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 10,
@@ -379,7 +448,8 @@
             "native_faces": 5,
             "native_vertices": 7,
             "qualified": false,
-            "sdk_command_difference": 3.5355339059327378
+            "sdk_command_difference": 3.5355339059327378,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -389,17 +459,19 @@
             "native_faces": 12,
             "native_vertices": 9,
             "qualified": true,
-            "sdk_command_difference": 1.4043333874306805e-15
+            "sdk_command_difference": 1.4043333874306805e-15,
+            "sdk_mesh_error": null
           },
           {
-            "actual_faces": 10,
+            "actual_faces": 9,
             "actual_vertices": 8,
             "id": "overlap",
-            "maximum_bidirectional_sample_error": 0.3858718165706448,
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
             "native_faces": 9,
             "native_vertices": 8,
-            "qualified": false,
-            "sdk_command_difference": 0.375
+            "qualified": true,
+            "sdk_command_difference": 0.375,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -409,7 +481,8 @@
             "native_faces": 6,
             "native_vertices": 8,
             "qualified": false,
-            "sdk_command_difference": 0.9805806756909203
+            "sdk_command_difference": 0.9805806756909203,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -419,7 +492,8 @@
             "native_faces": 12,
             "native_vertices": 10,
             "qualified": true,
-            "sdk_command_difference": 1.3506446028928519e-15
+            "sdk_command_difference": 1.3506446028928519e-15,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -429,7 +503,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 1.6641005886756872
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -439,7 +514,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 1.6641005886756872
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -449,7 +525,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 0.8320502943378437
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -459,7 +536,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 1.256757435759363
+            "sdk_command_difference": 1.256757435759363,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -469,7 +547,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 0.8696263565463045
+            "sdk_command_difference": 0.8696263565463045,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -479,7 +558,8 @@
             "native_faces": 8,
             "native_vertices": 8,
             "qualified": false,
-            "sdk_command_difference": 0.8696263565463045
+            "sdk_command_difference": 0.8696263565463045,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -489,7 +569,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 0.8320502943378437
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -499,7 +580,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 0.8320502943378437
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 9,
@@ -509,7 +591,8 @@
             "native_faces": 9,
             "native_vertices": 8,
             "qualified": true,
-            "sdk_command_difference": 0.6246950475544242
+            "sdk_command_difference": 0.6246950475544242,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 13,
@@ -519,7 +602,8 @@
             "native_faces": 12,
             "native_vertices": 9,
             "qualified": false,
-            "sdk_command_difference": 2.1868857395626282e-15
+            "sdk_command_difference": 2.1868857395626282e-15,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -529,7 +613,8 @@
             "native_faces": 12,
             "native_vertices": 9,
             "qualified": true,
-            "sdk_command_difference": 3.1401849173675502e-15
+            "sdk_command_difference": 3.1401849173675502e-15,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -539,7 +624,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 3.072250108791504e-14
+            "sdk_command_difference": 3.072250108791504e-14,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -549,7 +635,8 @@
             "native_faces": 12,
             "native_vertices": 10,
             "qualified": true,
-            "sdk_command_difference": 1.3506446028928519e-15
+            "sdk_command_difference": 1.3506446028928519e-15,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -559,16 +646,16 @@
             "native_faces": 12,
             "native_vertices": 10,
             "qualified": true,
-            "sdk_command_difference": 1.2560739669470201e-15
+            "sdk_command_difference": 1.2560739669470201e-15,
+            "sdk_mesh_error": null
           }
         ]
       },
       "command": {
         "recipes": 21,
-        "qualified_recipes": 16,
+        "qualified_recipes": 17,
         "unqualified_recipes": [
           "shared_endpoint",
-          "overlap",
           "self_cross",
           "cross_h_reverse",
           "two_crossings"
@@ -579,6 +666,7 @@
             "grouped_history": true,
             "id": "cross_axes",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -587,6 +675,7 @@
             "grouped_history": true,
             "id": "cross_diagonals",
             "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -595,6 +684,7 @@
             "grouped_history": true,
             "id": "shared_endpoint",
             "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -603,15 +693,17 @@
             "grouped_history": true,
             "id": "point_at_crossing",
             "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
           {
-            "counts_match": false,
+            "counts_match": true,
             "grouped_history": true,
             "id": "overlap",
-            "maximum_bidirectional_sample_error": 0.3858718165706448,
-            "qualified": false,
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
             "source_metadata_preserved": true
           },
           {
@@ -619,6 +711,7 @@
             "grouped_history": true,
             "id": "self_cross",
             "maximum_bidirectional_sample_error": 2.0,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -627,6 +720,7 @@
             "grouped_history": true,
             "id": "hole_cut",
             "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -635,6 +729,7 @@
             "grouped_history": true,
             "id": "cross_3d",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -643,6 +738,7 @@
             "grouped_history": true,
             "id": "cross_3d_reverse",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -651,6 +747,7 @@
             "grouped_history": true,
             "id": "cross_lifted",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -659,6 +756,7 @@
             "grouped_history": true,
             "id": "cross_sloped",
             "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -667,6 +765,7 @@
             "grouped_history": true,
             "id": "cross_v_reverse",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -675,6 +774,7 @@
             "grouped_history": true,
             "id": "cross_h_reverse",
             "maximum_bidirectional_sample_error": 0.8696263565463045,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -683,6 +783,7 @@
             "grouped_history": true,
             "id": "cross_both_reverse",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -691,6 +792,7 @@
             "grouped_history": true,
             "id": "cross_v_first",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -699,6 +801,7 @@
             "grouped_history": true,
             "id": "cross_asymmetric",
             "maximum_bidirectional_sample_error": 2.0471501066083613e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -707,6 +810,7 @@
             "grouped_history": true,
             "id": "two_crossings",
             "maximum_bidirectional_sample_error": 0.75,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -715,6 +819,7 @@
             "grouped_history": true,
             "id": "cross_seed",
             "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -723,6 +828,7 @@
             "grouped_history": true,
             "id": "cross_untrimmed",
             "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -731,6 +837,7 @@
             "grouped_history": true,
             "id": "hole_cut_reverse",
             "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -739,6 +846,7 @@
             "grouped_history": true,
             "id": "hole_cut_raised",
             "maximum_bidirectional_sample_error": 1.2560739669470201e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           }
@@ -746,10 +854,9 @@
       },
       "getter": {
         "recipes": 21,
-        "qualified_recipes": 16,
+        "qualified_recipes": 17,
         "unqualified_recipes": [
           "shared_endpoint",
-          "overlap",
           "self_cross",
           "cross_h_reverse",
           "two_crossings"
@@ -760,6 +867,7 @@
             "grouped_history": true,
             "id": "cross_axes",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -768,6 +876,7 @@
             "grouped_history": true,
             "id": "cross_diagonals",
             "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -776,6 +885,7 @@
             "grouped_history": true,
             "id": "shared_endpoint",
             "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -784,15 +894,17 @@
             "grouped_history": true,
             "id": "point_at_crossing",
             "maximum_bidirectional_sample_error": 1.4043333874306805e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
           {
-            "counts_match": false,
+            "counts_match": true,
             "grouped_history": true,
             "id": "overlap",
-            "maximum_bidirectional_sample_error": 0.3858718165706448,
-            "qualified": false,
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
             "source_metadata_preserved": true
           },
           {
@@ -800,6 +912,7 @@
             "grouped_history": true,
             "id": "self_cross",
             "maximum_bidirectional_sample_error": 2.0,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -808,6 +921,7 @@
             "grouped_history": true,
             "id": "hole_cut",
             "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -816,6 +930,7 @@
             "grouped_history": true,
             "id": "cross_3d",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -824,6 +939,7 @@
             "grouped_history": true,
             "id": "cross_3d_reverse",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -832,6 +948,7 @@
             "grouped_history": true,
             "id": "cross_lifted",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -840,6 +957,7 @@
             "grouped_history": true,
             "id": "cross_sloped",
             "maximum_bidirectional_sample_error": 6.141450319825084e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -848,6 +966,7 @@
             "grouped_history": true,
             "id": "cross_v_reverse",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -856,6 +975,7 @@
             "grouped_history": true,
             "id": "cross_h_reverse",
             "maximum_bidirectional_sample_error": 0.8696263565463045,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -864,6 +984,7 @@
             "grouped_history": true,
             "id": "cross_both_reverse",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -872,6 +993,7 @@
             "grouped_history": true,
             "id": "cross_v_first",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -880,6 +1002,7 @@
             "grouped_history": true,
             "id": "cross_asymmetric",
             "maximum_bidirectional_sample_error": 2.0471501066083613e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -888,6 +1011,7 @@
             "grouped_history": true,
             "id": "two_crossings",
             "maximum_bidirectional_sample_error": 0.75,
+            "native_mesh_error": null,
             "qualified": false,
             "source_metadata_preserved": true
           },
@@ -896,6 +1020,7 @@
             "grouped_history": true,
             "id": "cross_seed",
             "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -904,6 +1029,7 @@
             "grouped_history": true,
             "id": "cross_untrimmed",
             "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -912,6 +1038,7 @@
             "grouped_history": true,
             "id": "hole_cut_reverse",
             "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -920,6 +1047,7 @@
             "grouped_history": true,
             "id": "hole_cut_raised",
             "maximum_bidirectional_sample_error": 1.2560739669470201e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           }
@@ -941,7 +1069,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 3.072250108791504e-14
+            "sdk_command_difference": 3.072250108791504e-14,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -951,7 +1080,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 3.072250108791504e-14
+            "sdk_command_difference": 3.072250108791504e-14,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -961,7 +1091,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 2.657703254624014e-14
+            "sdk_command_difference": 2.657703254624014e-14,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -971,7 +1102,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 2.9823698573254374e-14
+            "sdk_command_difference": 2.9823698573254374e-14,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -981,7 +1113,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 2.5232123460381468e-14
+            "sdk_command_difference": 2.5232123460381468e-14,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -991,7 +1124,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 1.6641005886756872
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -1001,7 +1135,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 1.6641005886756872
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -1011,7 +1146,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 1.9392568628436742e-14
+            "sdk_command_difference": 1.9392568628436742e-14,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 18,
@@ -1021,7 +1157,8 @@
             "native_faces": 18,
             "native_vertices": 12,
             "qualified": true,
-            "sdk_command_difference": 3.8778423131653425e-15
+            "sdk_command_difference": 3.8778423131653425e-15,
+            "sdk_mesh_error": null
           }
         ]
       },
@@ -1035,6 +1172,7 @@
             "grouped_history": true,
             "id": "cross_axes_untrimmed",
             "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1043,6 +1181,7 @@
             "grouped_history": true,
             "id": "cross_diagonals_untrimmed",
             "maximum_bidirectional_sample_error": 3.0757786665920847e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1051,6 +1190,7 @@
             "grouped_history": true,
             "id": "shared_endpoint_untrimmed",
             "maximum_bidirectional_sample_error": 3.7327276539370134e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1059,6 +1199,7 @@
             "grouped_history": true,
             "id": "overlap_untrimmed",
             "maximum_bidirectional_sample_error": 3.7345763888702946e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1067,6 +1208,7 @@
             "grouped_history": true,
             "id": "self_cross_untrimmed",
             "maximum_bidirectional_sample_error": 3.022927516559128e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1075,6 +1217,7 @@
             "grouped_history": true,
             "id": "cross_3d_untrimmed",
             "maximum_bidirectional_sample_error": 3.200216685294657e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1083,6 +1226,7 @@
             "grouped_history": true,
             "id": "cross_3d_reverse_untrimmed",
             "maximum_bidirectional_sample_error": 3.072267767741298e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1091,6 +1235,7 @@
             "grouped_history": true,
             "id": "cross_lifted_untrimmed",
             "maximum_bidirectional_sample_error": 1.934523798513661e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1099,6 +1244,7 @@
             "grouped_history": true,
             "id": "cross_sloped_untrimmed",
             "maximum_bidirectional_sample_error": 3.8778423131653425e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           }
@@ -1114,6 +1260,7 @@
             "grouped_history": true,
             "id": "cross_axes_untrimmed",
             "maximum_bidirectional_sample_error": 3.19867565419136e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1122,6 +1269,7 @@
             "grouped_history": true,
             "id": "cross_diagonals_untrimmed",
             "maximum_bidirectional_sample_error": 3.0757786665920847e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1130,6 +1278,7 @@
             "grouped_history": true,
             "id": "shared_endpoint_untrimmed",
             "maximum_bidirectional_sample_error": 3.7327276539370134e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1138,6 +1287,7 @@
             "grouped_history": true,
             "id": "overlap_untrimmed",
             "maximum_bidirectional_sample_error": 3.7345763888702946e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1146,6 +1296,7 @@
             "grouped_history": true,
             "id": "self_cross_untrimmed",
             "maximum_bidirectional_sample_error": 3.022927516559128e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1154,6 +1305,7 @@
             "grouped_history": true,
             "id": "cross_3d_untrimmed",
             "maximum_bidirectional_sample_error": 3.200216685294657e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1162,6 +1314,7 @@
             "grouped_history": true,
             "id": "cross_3d_reverse_untrimmed",
             "maximum_bidirectional_sample_error": 3.072267767741298e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1170,6 +1323,7 @@
             "grouped_history": true,
             "id": "cross_lifted_untrimmed",
             "maximum_bidirectional_sample_error": 1.934523798513661e-14,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1178,6 +1332,7 @@
             "grouped_history": true,
             "id": "cross_sloped_untrimmed",
             "maximum_bidirectional_sample_error": 3.8778423131653425e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           }
@@ -1188,10 +1343,8 @@
       "native_engine_version": "8.32.26160.13001",
       "geometry": {
         "recipes": 7,
-        "qualified_recipes": 6,
-        "unqualified_recipes": [
-          "cross_seed_axis"
-        ],
+        "qualified_recipes": 7,
+        "unqualified_recipes": [],
         "cases": [
           {
             "actual_faces": 12,
@@ -1201,7 +1354,8 @@
             "native_faces": 12,
             "native_vertices": 9,
             "qualified": true,
-            "sdk_command_difference": 3.1401849173675502e-15
+            "sdk_command_difference": 3.1401849173675502e-15,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 11,
@@ -1211,7 +1365,8 @@
             "native_faces": 11,
             "native_vertices": 9,
             "qualified": true,
-            "sdk_command_difference": 0.8320502943378436
+            "sdk_command_difference": 0.8320502943378436,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -1221,7 +1376,8 @@
             "native_faces": 12,
             "native_vertices": 9,
             "qualified": true,
-            "sdk_command_difference": 0.9013878188659973
+            "sdk_command_difference": 0.9013878188659973,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 10,
@@ -1231,17 +1387,19 @@
             "native_faces": 10,
             "native_vertices": 9,
             "qualified": true,
-            "sdk_command_difference": 0.8320502943378437
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 11,
             "actual_vertices": 9,
             "id": "cross_seed_axis",
-            "maximum_bidirectional_sample_error": 1.0,
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
             "native_faces": 11,
             "native_vertices": 9,
-            "qualified": false,
-            "sdk_command_difference": 0.8320502943378437
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 12,
@@ -1251,7 +1409,8 @@
             "native_faces": 12,
             "native_vertices": 9,
             "qualified": true,
-            "sdk_command_difference": 1.6641005886756872
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
           },
           {
             "actual_faces": 14,
@@ -1261,22 +1420,22 @@
             "native_faces": 14,
             "native_vertices": 10,
             "qualified": true,
-            "sdk_command_difference": 1.3340734093775516e-15
+            "sdk_command_difference": 1.3340734093775516e-15,
+            "sdk_mesh_error": null
           }
         ]
       },
       "command": {
         "recipes": 7,
-        "qualified_recipes": 6,
-        "unqualified_recipes": [
-          "cross_seed_axis"
-        ],
+        "qualified_recipes": 7,
+        "unqualified_recipes": [],
         "cases": [
           {
             "counts_match": true,
             "grouped_history": true,
             "id": "cross_seed_top",
             "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1285,6 +1444,7 @@
             "grouped_history": true,
             "id": "cross_seed_bottom",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1293,6 +1453,7 @@
             "grouped_history": true,
             "id": "cross_seed_left",
             "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1301,6 +1462,7 @@
             "grouped_history": true,
             "id": "cross_seed_outside",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1308,8 +1470,9 @@
             "counts_match": true,
             "grouped_history": true,
             "id": "cross_seed_axis",
-            "maximum_bidirectional_sample_error": 1.0,
-            "qualified": false,
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
             "source_metadata_preserved": true
           },
           {
@@ -1317,6 +1480,7 @@
             "grouped_history": true,
             "id": "cross_seed_3d",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1325,6 +1489,7 @@
             "grouped_history": true,
             "id": "cross_seed_cloud",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           }
@@ -1332,16 +1497,15 @@
       },
       "getter": {
         "recipes": 7,
-        "qualified_recipes": 6,
-        "unqualified_recipes": [
-          "cross_seed_axis"
-        ],
+        "qualified_recipes": 7,
+        "unqualified_recipes": [],
         "cases": [
           {
             "counts_match": true,
             "grouped_history": true,
             "id": "cross_seed_top",
             "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1350,6 +1514,7 @@
             "grouped_history": true,
             "id": "cross_seed_bottom",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1358,6 +1523,7 @@
             "grouped_history": true,
             "id": "cross_seed_left",
             "maximum_bidirectional_sample_error": 1.6335753826937261e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1366,6 +1532,7 @@
             "grouped_history": true,
             "id": "cross_seed_outside",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1373,8 +1540,9 @@
             "counts_match": true,
             "grouped_history": true,
             "id": "cross_seed_axis",
-            "maximum_bidirectional_sample_error": 1.0,
-            "qualified": false,
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
             "source_metadata_preserved": true
           },
           {
@@ -1382,6 +1550,7 @@
             "grouped_history": true,
             "id": "cross_seed_3d",
             "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
             "qualified": true,
             "source_metadata_preserved": true
           },
@@ -1390,7 +1559,1884 @@
             "grouped_history": true,
             "id": "cross_seed_cloud",
             "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
             "qualified": true,
+            "source_metadata_preserved": true
+          }
+        ]
+      }
+    },
+    "junctions": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 24,
+        "qualified_recipes": 7,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "two_crossings",
+          "junction_two",
+          "junction_two_out",
+          "junction_three_out",
+          "junction_three_in",
+          "junction_three_reverse",
+          "junction_chain",
+          "junction_chain_branch",
+          "junction_t",
+          "junction_t_reverse",
+          "junction_seed_center",
+          "junction_seed_side",
+          "overlap_touch",
+          "overlap_duplicate",
+          "overlap_duplicate_reverse",
+          "cross_seed_axis_reverse"
+        ],
+        "cases": [
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 3.5355339059327378,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.375,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 13,
+            "actual_vertices": 10,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 2.1868857395626282e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "junction_two",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 2.8460498941515415,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "junction_two_out",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 0.8,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "junction_three_out",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_faces": 6,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.5303300858899106,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "junction_three_in",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_faces": 7,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.5303300858899106,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "junction_three_reverse",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_faces": 6,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 2.8460498941515415,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "junction_chain",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_faces": 6,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 1.3322676295501878e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "junction_chain_branch",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_faces": 7,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 1.3322676295501878e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "junction_t",
+            "maximum_bidirectional_sample_error": 0.6240377207533828,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.6240377207533828,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "junction_t_reverse",
+            "maximum_bidirectional_sample_error": 0.6240377207533827,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.7115124735378852,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "junction_seed_center",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 3.5355339059327378,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 12,
+            "actual_vertices": 9,
+            "id": "junction_seed_side",
+            "maximum_bidirectional_sample_error": 3.0,
+            "native_faces": 7,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 3.0,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "overlap_order",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_faces": 10,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.375,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "overlap_reverse",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 10,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.5303300858899105,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "overlap_nested",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 8.881784197001252e-16,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "overlap_nested_reverse",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 10,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.7717436331412896,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "overlap_touch",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_faces": 6,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 2.5724787771376323,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 6,
+            "actual_vertices": 6,
+            "id": "overlap_duplicate",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_faces": 4,
+            "native_vertices": 6,
+            "qualified": false,
+            "sdk_command_difference": 0.9847982464479191,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 6,
+            "actual_vertices": 6,
+            "id": "overlap_duplicate_reverse",
+            "maximum_bidirectional_sample_error": 3.794733192202055,
+            "native_faces": 3,
+            "native_vertices": 6,
+            "qualified": false,
+            "sdk_command_difference": 5.514870180108347,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "cross_seed_axis_left",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 1.3322676295501878e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "cross_seed_axis_reverse",
+            "maximum_bidirectional_sample_error": 1.333945937699831,
+            "native_faces": 10,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 1.333945937699831,
+            "sdk_mesh_error": null
+          }
+        ]
+      },
+      "command": {
+        "recipes": 24,
+        "qualified_recipes": 7,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "two_crossings",
+          "junction_two",
+          "junction_two_out",
+          "junction_three_out",
+          "junction_three_in",
+          "junction_three_reverse",
+          "junction_chain",
+          "junction_chain_branch",
+          "junction_t",
+          "junction_t_reverse",
+          "junction_seed_center",
+          "junction_seed_side",
+          "overlap_touch",
+          "overlap_duplicate",
+          "overlap_duplicate_reverse",
+          "cross_seed_axis_reverse"
+        ],
+        "cases": [
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_two",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_two_out",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_three_out",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_three_in",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_three_reverse",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_chain",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_chain_branch",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_t",
+            "maximum_bidirectional_sample_error": 0.6240377207533828,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_t_reverse",
+            "maximum_bidirectional_sample_error": 0.6240377207533827,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_seed_center",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_seed_side",
+            "maximum_bidirectional_sample_error": 3.0,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_order",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_reverse",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_nested",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_nested_reverse",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_touch",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_duplicate",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_duplicate_reverse",
+            "maximum_bidirectional_sample_error": 3.794733192202055,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis_left",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "cross_seed_axis_reverse",
+            "maximum_bidirectional_sample_error": 1.333945937699831,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 24,
+        "qualified_recipes": 7,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "two_crossings",
+          "junction_two",
+          "junction_two_out",
+          "junction_three_out",
+          "junction_three_in",
+          "junction_three_reverse",
+          "junction_chain",
+          "junction_chain_branch",
+          "junction_t",
+          "junction_t_reverse",
+          "junction_seed_center",
+          "junction_seed_side",
+          "overlap_touch",
+          "overlap_duplicate",
+          "overlap_duplicate_reverse",
+          "cross_seed_axis_reverse"
+        ],
+        "cases": [
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_two",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_two_out",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_three_out",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_three_in",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_three_reverse",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_chain",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_chain_branch",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_t",
+            "maximum_bidirectional_sample_error": 0.6240377207533828,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_t_reverse",
+            "maximum_bidirectional_sample_error": 0.6240377207533827,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_seed_center",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_seed_side",
+            "maximum_bidirectional_sample_error": 3.0,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_order",
+            "maximum_bidirectional_sample_error": 1.3506446028928519e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_reverse",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_nested",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_nested_reverse",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_touch",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_duplicate",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_duplicate_reverse",
+            "maximum_bidirectional_sample_error": 3.794733192202055,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis_left",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "cross_seed_axis_reverse",
+            "maximum_bidirectional_sample_error": 1.333945937699831,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          }
+        ]
+      }
+    },
+    "sdk_order_audit": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 22,
+        "qualified_recipes": 8,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "self_cross",
+          "two_crossings",
+          "junction_two",
+          "junction_chain",
+          "overlap_duplicate",
+          "overlap_touch",
+          "shared_endpoint_sdk_after",
+          "self_cross_sdk_after",
+          "two_crossings_sdk_after",
+          "junction_two_sdk_after",
+          "junction_chain_sdk_after",
+          "overlap_duplicate_sdk_after",
+          "overlap_touch_sdk_after"
+        ],
+        "cases": [
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 3.5355339059327378,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.375,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "native_faces": 6,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.9805806756909203,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 13,
+            "actual_vertices": 10,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 2.1868857395626282e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "junction_two",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 2.8460498941515415,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "junction_chain",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_faces": 6,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 1.3322676295501878e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 6,
+            "actual_vertices": 6,
+            "id": "overlap_duplicate",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_faces": 4,
+            "native_vertices": 6,
+            "qualified": false,
+            "sdk_command_difference": 0.9847982464479191,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "overlap_touch",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_faces": 6,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 2.5724787771376323,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "shared_endpoint_sdk_after",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 3.5355339059327378,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "overlap_sdk_after",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.375,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_axes_sdk_after",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "cross_3d_sdk_after",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 1.6641005886756872,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "self_cross_sdk_after",
+            "maximum_bidirectional_sample_error": 2.0,
+            "native_faces": 6,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.9805806756909203,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "cross_seed_axis_sdk_after",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 13,
+            "actual_vertices": 10,
+            "id": "two_crossings_sdk_after",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 2.1868857395626282e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "junction_two_sdk_after",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_faces": 5,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 2.8460498941515415,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "junction_chain_sdk_after",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_faces": 6,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 1.3322676295501878e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 6,
+            "actual_vertices": 6,
+            "id": "overlap_duplicate_sdk_after",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_faces": 4,
+            "native_vertices": 6,
+            "qualified": false,
+            "sdk_command_difference": 0.9847982464479191,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 8,
+            "actual_vertices": 7,
+            "id": "overlap_touch_sdk_after",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_faces": 6,
+            "native_vertices": 7,
+            "qualified": false,
+            "sdk_command_difference": 2.5724787771376323,
+            "sdk_mesh_error": null
+          }
+        ]
+      },
+      "command": {
+        "recipes": 22,
+        "qualified_recipes": 8,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "self_cross",
+          "two_crossings",
+          "junction_two",
+          "junction_chain",
+          "overlap_duplicate",
+          "overlap_touch",
+          "shared_endpoint_sdk_after",
+          "self_cross_sdk_after",
+          "two_crossings_sdk_after",
+          "junction_two_sdk_after",
+          "junction_chain_sdk_after",
+          "overlap_duplicate_sdk_after",
+          "overlap_touch_sdk_after"
+        ],
+        "cases": [
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_two",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_chain",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_duplicate",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_touch",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint_sdk_after",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_sdk_after",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes_sdk_after",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_sdk_after",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "self_cross_sdk_after",
+            "maximum_bidirectional_sample_error": 2.0,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis_sdk_after",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "two_crossings_sdk_after",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_two_sdk_after",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_chain_sdk_after",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_duplicate_sdk_after",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_touch_sdk_after",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 22,
+        "qualified_recipes": 8,
+        "unqualified_recipes": [
+          "shared_endpoint",
+          "self_cross",
+          "two_crossings",
+          "junction_two",
+          "junction_chain",
+          "overlap_duplicate",
+          "overlap_touch",
+          "shared_endpoint_sdk_after",
+          "self_cross_sdk_after",
+          "two_crossings_sdk_after",
+          "junction_two_sdk_after",
+          "junction_chain_sdk_after",
+          "overlap_duplicate_sdk_after",
+          "overlap_touch_sdk_after"
+        ],
+        "cases": [
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "self_cross",
+            "maximum_bidirectional_sample_error": 2.0,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "two_crossings",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_two",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_chain",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_duplicate",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_touch",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "shared_endpoint_sdk_after",
+            "maximum_bidirectional_sample_error": 3.5355339059327378,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_sdk_after",
+            "maximum_bidirectional_sample_error": 1.5543122344752192e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_axes_sdk_after",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_3d_sdk_after",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "self_cross_sdk_after",
+            "maximum_bidirectional_sample_error": 2.0,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "cross_seed_axis_sdk_after",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "two_crossings_sdk_after",
+            "maximum_bidirectional_sample_error": 0.75,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_two_sdk_after",
+            "maximum_bidirectional_sample_error": 2.8460498941515415,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "junction_chain_sdk_after",
+            "maximum_bidirectional_sample_error": 0.8667190566019206,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_duplicate_sdk_after",
+            "maximum_bidirectional_sample_error": 1.181757895737503,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_touch_sdk_after",
+            "maximum_bidirectional_sample_error": 2.5724787771376323,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          }
+        ]
+      }
+    },
+    "point_guides": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 12,
+        "qualified_recipes": 6,
+        "unqualified_recipes": [
+          "overlap_first_reversed",
+          "overlap_tilted",
+          "overlap_seed_above",
+          "overlap_seed_below",
+          "overlap_vertical",
+          "point_guide_tilted"
+        ],
+        "cases": [
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "point_guide_quarter",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "point_guide_diagonal",
+            "maximum_bidirectional_sample_error": 6.343834181149101e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 2.209708691207961,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "point_guide_cloud",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.8320502943378437,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 14,
+            "actual_vertices": 10,
+            "id": "point_guide_two",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_faces": 14,
+            "native_vertices": 10,
+            "qualified": true,
+            "sdk_command_difference": 1.3322676295501878e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "point_guide_raised",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": true,
+            "sdk_command_difference": 0.894427190999916,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 10,
+            "actual_vertices": 8,
+            "id": "overlap_first_reversed",
+            "maximum_bidirectional_sample_error": 0.5303300858899106,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 0.5303300858899106,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "overlap_shifted",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_faces": 9,
+            "native_vertices": 8,
+            "qualified": true,
+            "sdk_command_difference": 0.375,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "overlap_tilted",
+            "maximum_bidirectional_sample_error": null,
+            "native_faces": 9,
+            "native_mesh_error": "triangle 3 is degenerate at the requested tolerance",
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": null,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "overlap_seed_above",
+            "maximum_bidirectional_sample_error": 0.375,
+            "native_faces": 11,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 0.3858718165706448,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "overlap_seed_below",
+            "maximum_bidirectional_sample_error": 0.3535533905932739,
+            "native_faces": 12,
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": 9.930136612989092e-16,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 9,
+            "actual_vertices": 8,
+            "id": "overlap_vertical",
+            "maximum_bidirectional_sample_error": 0.37499999999999983,
+            "native_faces": 10,
+            "native_vertices": 8,
+            "qualified": false,
+            "sdk_command_difference": 1.5543122344752192e-15,
+            "sdk_mesh_error": null
+          },
+          {
+            "actual_faces": 11,
+            "actual_vertices": 9,
+            "id": "point_guide_tilted",
+            "maximum_bidirectional_sample_error": null,
+            "native_faces": 11,
+            "native_mesh_error": "triangle 0 is degenerate at the requested tolerance",
+            "native_vertices": 9,
+            "qualified": false,
+            "sdk_command_difference": null,
+            "sdk_mesh_error": null
+          }
+        ]
+      },
+      "command": {
+        "recipes": 12,
+        "qualified_recipes": 6,
+        "unqualified_recipes": [
+          "overlap_first_reversed",
+          "overlap_tilted",
+          "overlap_seed_above",
+          "overlap_seed_below",
+          "overlap_vertical",
+          "point_guide_tilted"
+        ],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_quarter",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_diagonal",
+            "maximum_bidirectional_sample_error": 6.343834181149101e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_cloud",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_two",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_raised",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_first_reversed",
+            "maximum_bidirectional_sample_error": 0.5303300858899106,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_shifted",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_tilted",
+            "maximum_bidirectional_sample_error": null,
+            "native_mesh_error": "triangle 3 is degenerate at the requested tolerance",
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_seed_above",
+            "maximum_bidirectional_sample_error": 0.375,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_seed_below",
+            "maximum_bidirectional_sample_error": 0.3535533905932739,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_vertical",
+            "maximum_bidirectional_sample_error": 0.37499999999999983,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_tilted",
+            "maximum_bidirectional_sample_error": null,
+            "native_mesh_error": "triangle 0 is degenerate at the requested tolerance",
+            "qualified": false,
+            "source_metadata_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 12,
+        "qualified_recipes": 6,
+        "unqualified_recipes": [
+          "overlap_first_reversed",
+          "overlap_tilted",
+          "overlap_seed_above",
+          "overlap_seed_below",
+          "overlap_vertical",
+          "point_guide_tilted"
+        ],
+        "cases": [
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_quarter",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_diagonal",
+            "maximum_bidirectional_sample_error": 6.343834181149101e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_cloud",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_two",
+            "maximum_bidirectional_sample_error": 1.3322676295501878e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_raised",
+            "maximum_bidirectional_sample_error": 1.4432899320127037e-15,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_first_reversed",
+            "maximum_bidirectional_sample_error": 0.5303300858899106,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_shifted",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_mesh_error": null,
+            "qualified": true,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_tilted",
+            "maximum_bidirectional_sample_error": null,
+            "native_mesh_error": "triangle 3 is degenerate at the requested tolerance",
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "overlap_seed_above",
+            "maximum_bidirectional_sample_error": 0.375,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_seed_below",
+            "maximum_bidirectional_sample_error": 0.3535533905932739,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": false,
+            "grouped_history": true,
+            "id": "overlap_vertical",
+            "maximum_bidirectional_sample_error": 0.37499999999999983,
+            "native_mesh_error": null,
+            "qualified": false,
+            "source_metadata_preserved": true
+          },
+          {
+            "counts_match": true,
+            "grouped_history": true,
+            "id": "point_guide_tilted",
+            "maximum_bidirectional_sample_error": null,
+            "native_mesh_error": "triangle 0 is degenerate at the requested tolerance",
+            "qualified": false,
             "source_metadata_preserved": true
           }
         ]
@@ -1400,19 +3446,25 @@
   "guarantees": [
     "Every capture is replayed in geometry, scripted command and interactive getter tests; unresolved results remain explicit.",
     "Source storage, names, layers, selection and grouped Undo/Redo match the captured command even for geometry gaps.",
-    "Earlier guide constraints take priority without generated intersection vertices. Point seeds and recovered parts of crossing holes participate in trimming.",
-    "Constraint walks and recovered edges have a cumulative 4000000 work limit; input and perimeter records remain capped at 100000."
+    "Earlier recovered guide constraints take priority without generated intersection vertices. Point seeds and recovered parts of crossing holes participate in trimming.",
+    "With automatic trimming, guides passing through explicit point seeds recover after unsplit guides, using exact spatial collinearity to preserve intended seed stations after chart rounding.",
+    "Forward overlaps beginning inside an earlier guide trim the recovered adjacent face. Source directions and earlier guide ownership remain explicit.",
+    "Constraint walks, recovered edges and weighted exact spatial checks have a cumulative 4000000 work limit; input and perimeter records remain capped at 100000.",
+    "The SDK ownership and execution-order audit retains input polylines and confirms unchanged command meshes in 11 before/after call pairs."
   ],
   "limits": [
     "Native SDK and command meshes can differ for identical inputs. Command qualification does not imply SDK parity; every SDK/command sample difference is recorded.",
     "Shared endpoints, overlapping or self-crossing guides, some direction changes, multiple crossings and points on guides retain measured compatibility gaps.",
+    "Two tilted native command meshes contain exactly collinear facets. Their invalid artifacts and unavailable comparison distances remain explicit; local patches omit degenerate facets.",
     "The 1e-6 gate uses bidirectional barycentric triangle samples and vertex/face counts; it does not certify universal topology or native face ordering.",
     "General curved guides, folded or periodic charts, starting B-rep trims and native performance need further qualification."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/mesh/patch.rs": "e376c27ade78b4cdd9f0f067e5566b088797b4308e25fef04285877007d0411a",
-    "crates/viboceros-geometry/src/mesh/patch/tests.rs": "b7c44410dfebbd44acba52ca0612535d1363304e7276ab06ff69f31022df55ac",
-    "crates/viboceros-geometry/src/mesh/patch/constraints.rs": "1a32dbaf58e45b9578353adfd8efe8acfe90cf8a9d5cfaccf5055b238482515e",
+    "crates/viboceros-geometry/src/mesh/patch.rs": "e4564970793c796f812d6d4f4e04d09e3bd13b7814df0cf715144197c4cd59de",
+    "crates/viboceros-geometry/src/mesh/patch/tests.rs": "12f7390c171c2d9a3eaaf562921e7ba02a2e0d06c6f149e046ece4c5ed1231de",
+    "crates/viboceros-geometry/src/mesh/patch/constraints.rs": "f31640dfefbfa6710b665e3791f37dff93e0f0c4dc456a1ade85a0219c5eb5a2",
+    "crates/viboceros-geometry/src/mesh/patch/constraints/segments.rs": "c9105387bc0c95faf22e69daab4874bf5ba07e6c74b3d82dbcf385735418c1a4",
+    "tools/rhino_oracle/mesh_patch_crossing_gaps.json": "cf5e1b692c6442f2a6fcdde9006648f88860fe9eb6c4f966f17bf8590a8b3a28",
     "crates/viboceros-geometry/src/curve/polyline.rs": "af769a36f117448e43eb4f0c435dd908e1532f95b5e2779ca3e5b095d1fc6676",
     "crates/viboceros-geometry/src/curve/polyline/angle.rs": "1332c312e6b38cc3e1795d364060fa7e417c7c7c203a449d0adc2681290f246d",
     "crates/viboceros-geometry/src/mesh.rs": "ea0646902ff93b8d808afa2cdb54c5f27cee91985265e831016077649b015183",
@@ -1429,16 +3481,16 @@
     "crates/viboceros-command/src/object_selection.rs": "d1cefdd0da1a26943f705b0df33764f5b210bc4e34286e5428bdbf43598a085b",
     "crates/viboceros-command/src/mesh_patch.rs": "1d0c35fa81f30b6f47f1a1a9c5f5dad1c486cab860f5fb8cfa400172b7376653",
     "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",
-    "crates/viboceros-command/tests/mesh_patch_native.rs": "c8a2d4eb577f6eb1c36b0200a9917319a8ea74bbe9504dece968db6216da3e8e",
-    "crates/viboceros-command/tests/support/mesh_patch.rs": "95a9aed3287e7c46bd86498511ce914bcc818efaef3e4f48c38c8ef1231051a2",
+    "crates/viboceros-command/tests/mesh_patch_native.rs": "0340528dfaba64e917d9dc6ceabdd053cebfc6c9169f93c0d053691b5bcae0e5",
+    "crates/viboceros-command/tests/support/mesh_patch.rs": "652360289115ab497f9c2ba2ae00e205a44ed6e0299c37cae1453f9ae56a04ff",
     "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
     "src/app/object_selection.rs": "6a478969808c4ec6a08ff406425a27ee7b50316b25efd9a90ab7c3988da751ad",
     "src/app/transform_sources.rs": "65841394f479b7bd99bbbaf9c7a69ab3242b1cf0c42a98edc8f47fa01057fff2",
     "src/app/object_selection/mesh_patch.rs": "aab85e841a3339466c4d77b2f60c440efeffb26dde8a99a522d866e80d32eacb",
-    "src/app/object_selection/mesh_patch/tests.rs": "43896f0e68b5b38684dccd878cf35d8fba9f20377af2c8bcd61c3b91bbcde96e",
-    "tools/rhino_oracle/mesh_patch_probe.py": "6230259024281c068db4a456b57a03fe1512c8d89a3342d04c602764dfcd98b9",
+    "src/app/object_selection/mesh_patch/tests.rs": "0461e579b402be172de9fe75993db4e4afb0dba78411fc8e9f1b4274225d7cba",
+    "tools/rhino_oracle/mesh_patch_probe.py": "ae326f27c09b6ab26747ec5895b247212a2286fbf53933ad616b52aadf61e5bf",
     "tools/rhino_oracle/generate_mesh_patch.py": "a60d07e832cbd919efbf3b143f730e62d4af23d86bc7684af81e2f831ccb0f4c",
-    "tools/rhino_oracle/report_mesh_patch.py": "6f300824e10a5fe1949a224d222492b9b6427394ad9622a811ecd4bf0d8dee4c",
+    "tools/rhino_oracle/report_mesh_patch.py": "d417df91f7a9627e1434c7a4d8255c58f7b9f4a45f815944952e458c2395c557",
     "tools/rhino_oracle/test_mesh_patch.py": "94d38cd6581101eafbe686ab060c33b4f9152651c6de3b797b967c3c1a945d52",
     "tools/rhino_oracle/fixtures/mesh_patch.json": "2a0884f05553efd4083b20f97dc1b985a4870fe644de8c09961911e25ad85400",
     "tools/rhino_oracle/observations/mesh_patch.json": "79f352d68c46ab33e7842022ec0b14db87530d471915ef30837f9c8fe9e507b9",
@@ -1446,9 +3498,9 @@
     "tools/rhino_oracle/client.py": "68b9aadbb31d4a5efed443252e29ae2d6dc50bc7266a1e33a4e05a579fcfcb86",
     "tools/rhino_oracle/rhino_worker.py": "6c2f2a2a14911049981650181aba95641d18e692d308babf54bf651c05c753db",
     "tools/rhino_oracle/structural_sdk.py": "8c4beb95ddb04a7084745bac5df4f84fd3740beb6b3e66e2bdc5bf32c1022d7b",
-    "tools/rhino_oracle/generate_mesh_patch_crossings.py": "6bfb246ba15a2eb8e2761ed58df9b15a6a3dced4be6c932d83008854842a05a2",
-    "tools/rhino_oracle/report_mesh_patch_crossings.py": "7f5acdd56b0c723df72218414e4b9c241cb1c8fd19c668a04b02b823d405d8b0",
-    "tools/rhino_oracle/test_mesh_patch_crossings.py": "2ac15fc163e6ee30d755c8bbd9f6d8535a0efb2b634c557662ba87695aab021c",
+    "tools/rhino_oracle/generate_mesh_patch_crossings.py": "9c4d9ed75c160214f6e0642f42c6ff7b77609243969c6e0c28dd49046a10a134",
+    "tools/rhino_oracle/report_mesh_patch_crossings.py": "4c65af70da6927cf9375a4a277a14ab7283b1f3d7b7fcbcfea2acb5513ad427a",
+    "tools/rhino_oracle/test_mesh_patch_crossings.py": "51ea0af8b64b659efa525d9be9600eaf0859ae40aa4dba293cdbcdece12987ef",
     "tools/rhino_oracle/fixtures/mesh_patch_crossings.json": "e997bc5659bcbb41d5543cb1e883fc1b1f46b088af2611592585f5e2559cb1a7",
     "tools/rhino_oracle/observations/mesh_patch_crossings.json": "28d346aaf5e1622a72b497ef97436f93cd214ccac1dcd8458c2b212f47988ec5",
     "tools/rhino_oracle/fixtures/mesh_patch_crossings_verify.json": "d1857eda44c89cecc021c617f62a719fe2dd460d0795d26469f772ace461f93f",
@@ -1456,6 +3508,12 @@
     "tools/rhino_oracle/fixtures/mesh_patch_crossings_untrimmed.json": "107d529a311711b847d053aeb399921ea1a5b6c15f26f14edc521ca55d180a70",
     "tools/rhino_oracle/observations/mesh_patch_crossings_untrimmed.json": "0422d9301d70141f6c3ad47f886a74acb485ce3eedf8f5d30f2588caf667b3ba",
     "tools/rhino_oracle/fixtures/mesh_patch_crossings_seeded.json": "7d81cd98fa5b38e51731bb1f6916f9d05b3455606af03654a17188358e09279a",
-    "tools/rhino_oracle/observations/mesh_patch_crossings_seeded.json": "c990312b5ab9e2757a636b05d1fb4efdb9b74fb1326c0160c9f95d1800cd5767"
+    "tools/rhino_oracle/observations/mesh_patch_crossings_seeded.json": "c990312b5ab9e2757a636b05d1fb4efdb9b74fb1326c0160c9f95d1800cd5767",
+    "tools/rhino_oracle/fixtures/mesh_patch_crossings_junctions.json": "ca46bfbbf165166e1900a586981ce465a8f0ac1a9f8adf7a6ea86d4d27553118",
+    "tools/rhino_oracle/observations/mesh_patch_crossings_junctions.json": "deb76ffea68de36545a1e4de405fce21afb24785389050cef567da92b602377e",
+    "tools/rhino_oracle/fixtures/mesh_patch_crossings_audit.json": "29909ee097172972f72c40d67287f3fe60cf26198099932d86b5f76acd844b4b",
+    "tools/rhino_oracle/observations/mesh_patch_crossings_audit.json": "b0a6e8edaea74a1250f8c9cbd72669b153925ad9a84e10a550e65145bba3dd92",
+    "tools/rhino_oracle/fixtures/mesh_patch_crossings_points.json": "c4fcbe03ad3baf7ec02005587f293d24e0256ca4663bd24814b8b208a2bdef56",
+    "tools/rhino_oracle/observations/mesh_patch_crossings_points.json": "c21805a456780bc622defc471a1c17b0d67e804990bd96723addef85d43a0ac1"
   }
 }

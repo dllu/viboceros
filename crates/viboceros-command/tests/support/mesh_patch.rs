@@ -66,6 +66,42 @@ pub fn crossing_groups() -> Vec<(&'static str, Vec<(Value, Value)>)> {
                 7,
             ),
         ),
+        (
+            "JUNCTION",
+            captured(
+                include_str!(
+                    "../../../../tools/rhino_oracle/fixtures/mesh_patch_crossings_junctions.json"
+                ),
+                include_str!(
+                    "../../../../tools/rhino_oracle/observations/mesh_patch_crossings_junctions.json"
+                ),
+                24,
+            ),
+        ),
+        (
+            "AUDIT",
+            captured(
+                include_str!(
+                    "../../../../tools/rhino_oracle/fixtures/mesh_patch_crossings_audit.json"
+                ),
+                include_str!(
+                    "../../../../tools/rhino_oracle/observations/mesh_patch_crossings_audit.json"
+                ),
+                22,
+            ),
+        ),
+        (
+            "POINTS",
+            captured(
+                include_str!(
+                    "../../../../tools/rhino_oracle/fixtures/mesh_patch_crossings_points.json"
+                ),
+                include_str!(
+                    "../../../../tools/rhino_oracle/observations/mesh_patch_crossings_points.json"
+                ),
+                12,
+            ),
+        ),
     ]
 }
 fn captured(q: &str, r: &str, count: usize) -> Vec<(Value, Value)> {
@@ -86,17 +122,17 @@ fn captured(q: &str, r: &str, count: usize) -> Vec<(Value, Value)> {
         .collect()
 }
 pub fn assert_known_gaps(failures: &[String]) {
-    let known = [
-        "shared_endpoint",
-        "overlap",
-        "self_cross",
-        "cross_h_reverse",
-        "two_crossings",
-        "cross_seed_axis",
-    ];
+    let known: Vec<String> = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/mesh_patch_crossing_gaps.json"
+    ))
+    .unwrap();
     let unexpected = failures
         .iter()
-        .filter(|id| !known.contains(&id.as_str()))
+        .filter(|id| {
+            !known
+                .iter()
+                .any(|gap| gap == id.strip_suffix("_sdk_after").unwrap_or(id))
+        })
         .collect::<Vec<_>>();
     assert!(
         unexpected.is_empty(),
@@ -251,7 +287,7 @@ pub fn command(scene: &Scene, v: &Value) -> String {
     }
     s
 }
-fn mesh(v: &Value) -> TriangleMesh {
+fn mesh(v: &Value) -> Result<TriangleMesh, viboceros_geometry::GeometryError> {
     TriangleMesh::try_new(
         v["vertices"]
             .as_array()
@@ -262,7 +298,6 @@ fn mesh(v: &Value) -> TriangleMesh {
         serde_json::from_value(v["faces"].clone()).unwrap(),
         Tolerance::MESH_VALIDATION,
     )
-    .unwrap()
 }
 fn directed(a: &TriangleMesh, b: &TriangleMesh) -> Real {
     let index = MeshProjectionIndex::new(b).unwrap();
@@ -294,20 +329,27 @@ pub fn check(
 ) -> Real {
     let result = compare(doc, parents, v, phase);
     assert!(result.counts_match);
-    result.error
+    assert!(result.native_mesh_error.is_none());
+    result.error.unwrap()
 }
 #[derive(Default)]
 pub struct Comparison {
-    pub error: Real,
+    pub error: Option<Real>,
     pub counts_match: bool,
+    pub native_mesh_error: Option<String>,
 }
 impl Comparison {
     pub fn merge(&mut self, other: Self) {
-        self.error = self.error.max(other.error);
+        self.error = self.error.zip(other.error).map(|(a, b)| a.max(b));
         self.counts_match &= other.counts_match;
+        if self.native_mesh_error.is_none() {
+            self.native_mesh_error = other.native_mesh_error;
+        }
     }
     pub fn qualified(&self) -> bool {
-        self.error < 1e-6 && self.counts_match
+        self.error.is_some_and(|error| error < 1e-6)
+            && self.counts_match
+            && self.native_mesh_error.is_none()
     }
 }
 pub fn compare(
@@ -340,21 +382,31 @@ pub fn compare(
         .collect::<Vec<_>>();
     assert_eq!(outputs.len(), native_outputs.len());
     let mut result = Comparison {
-        error: 0.,
+        error: Some(0.),
         counts_match: true,
+        native_mesh_error: None,
     };
     for (o, native) in outputs.into_iter().zip(native_outputs) {
         attributes(doc, o.id(), native);
         let Geometry::Mesh(actual) = o.geometry() else {
             panic!("mesh output required")
         };
-        let expected = mesh(&native["mesh"]);
-        result.counts_match &= actual.vertices().len() == expected.vertices().len()
-            && actual.faces().len() == expected.faces().len();
-        result.error = result
-            .error
-            .max(directed(actual, &expected))
-            .max(directed(&expected, actual));
+        let raw = &native["mesh"];
+        result.counts_match &= actual.vertices().len() == raw["vertices"].as_array().unwrap().len()
+            && actual.faces().len() == raw["faces"].as_array().unwrap().len();
+        match mesh(raw) {
+            Ok(expected) => {
+                result.error = result.error.map(|error| {
+                    error
+                        .max(directed(actual, &expected))
+                        .max(directed(&expected, actual))
+                });
+            }
+            Err(error) => {
+                result.error = None;
+                result.native_mesh_error = Some(error.to_string());
+            }
+        }
     }
     result
 }

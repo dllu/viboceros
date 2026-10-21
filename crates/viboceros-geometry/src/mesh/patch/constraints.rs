@@ -1,9 +1,15 @@
 //! Ordered guide recovery and boundary metadata, without generated vertices.
 use super::*;
 use spade::handles::{FixedDirectedEdgeHandle, FixedVertexHandle};
-use spade::{DelaunayTriangulation, LineIntersectionIterator};
+use spade::{DelaunayTriangulation, Intersection, LineIntersectionIterator};
+mod segments;
 type Cdt = ConstrainedDelaunayTriangulation<Vertex>;
 const MAX_WORK: usize = 4_000_000;
+struct Recovered {
+    edge: FixedDirectedEdgeHandle,
+    original_ends: [usize; 2],
+    chain: usize,
+}
 fn charge(work: &mut usize, amount: usize) -> Result<(), GeometryError> {
     *work = work
         .checked_add(amount)
@@ -18,6 +24,7 @@ pub(super) struct Constraints {
     pub(super) thin_guides: BTreeSet<usize>,
     partial_holes: Vec<(FixedDirectedEdgeHandle, bool)>,
     guide_cuts: Vec<(FixedDirectedEdgeHandle, FixedVertexHandle)>,
+    overlap_cuts: Vec<FixedDirectedEdgeHandle>,
     outer_candidates: Vec<(Vec<usize>, Vec<FixedDirectedEdgeHandle>, bool)>,
 }
 impl Constraints {
@@ -26,17 +33,28 @@ impl Constraints {
         coordinates: &[[Real; 2]],
         remap: &[usize],
         chains: &[(Range<usize>, bool)],
-        guide_count: usize,
-        hole_count: usize,
+        (guide_count, hole_count): (usize, usize),
         automatic: bool,
+        point_nodes: &BTreeSet<usize>,
     ) -> Result<Self, GeometryError> {
         let mut result = Self::default();
         let mut work = 0usize;
+        let mut recovered = BTreeMap::<usize, Recovered>::new();
         let mut handles = vec![None; coordinates.len()];
         for v in cdt.vertices() {
             handles[v.data().source] = Some(v.fix());
         }
-        for (chain_index, (range, barrier)) in chains.iter().enumerate() {
+        let prepared = segments::prepare(
+            cdt,
+            remap,
+            chains,
+            guide_count,
+            point_nodes,
+            automatic,
+            &mut work,
+        )?;
+        for chain_index in prepared.order {
+            let (range, barrier) = &chains[chain_index];
             let area = if *barrier {
                 boundary_orientation(
                     &range
@@ -49,32 +67,33 @@ impl Constraints {
             };
             let is_guide = chain_index < guide_count;
             let is_hole = chain_index >= guide_count && chain_index < guide_count + hole_count;
-            let original_count = range.len() - 1;
-            let mut pairs = remap[range.clone()]
-                .windows(2)
-                .map(|p| [p[0], p[1]])
-                .collect::<Vec<_>>();
-            if is_guide
-                && automatic
-                && range.len() > 2
-                && remap[range.start] != remap[range.end - 1]
-            {
-                pairs.push([remap[range.end - 1], remap[range.start]]);
-            }
             let mut accepted = Vec::new();
             let mut complete = true;
-            for (pair_index, pair) in pairs.into_iter().enumerate() {
+            for segment in &prepared.pairs[chain_index] {
+                let pair = segment.nodes;
                 if pair[0] == pair[1] {
                     continue;
                 }
                 let from = handles[pair[0]].unwrap();
                 let to = handles[pair[1]].unwrap();
                 let mut blocked = None;
+                let mut overlap_cut = None;
                 // Charge the actual traversal before Spade performs recovery.
                 // A conflicting edge keeps its earlier source priority; there
                 // is no spatial sample from which to create a crossing vertex.
                 for intersection in LineIntersectionIterator::new_from_handles(cdt, from, to) {
                     charge(&mut work, 1)?;
+                    if automatic
+                        && is_guide
+                        && let Intersection::EdgeOverlap(edge) = intersection
+                        && edge.from().data().source == pair[0]
+                        && let Some(prior) = recovered.get(&edge.as_undirected().index())
+                        && prior.chain != chain_index
+                        && prior.edge == edge.fix()
+                        && !prior.original_ends.contains(&pair[0])
+                    {
+                        overlap_cut = Some(edge.fix());
+                    }
                     if let Some(edge) = intersection
                         .as_edge_intersection()
                         .filter(|e| e.is_constraint_edge())
@@ -86,8 +105,15 @@ impl Constraints {
                 if let Some(edge) = blocked {
                     complete = false;
                     if is_guide {
-                        if automatic && pair_index < original_count {
-                            result.guide_cuts.push((edge, to));
+                        if automatic && segment.original {
+                            let endpoint = if point_nodes.contains(&pair[1])
+                                && !point_nodes.contains(&pair[0])
+                            {
+                                from
+                            } else {
+                                to
+                            };
+                            result.guide_cuts.push((edge, endpoint));
                         }
                         continue;
                     }
@@ -101,6 +127,20 @@ impl Constraints {
                     return Err(GeometryError::MeshPatchCrossingConstraints);
                 }
                 charge(&mut work, edges.len())?;
+                if let Some(edge) = overlap_cut {
+                    result.overlap_cuts.push(edge);
+                }
+                if is_guide {
+                    for &edge in &edges {
+                        recovered
+                            .entry(edge.as_undirected().index())
+                            .or_insert(Recovered {
+                                edge,
+                                original_ends: segment.original_ends,
+                                chain: chain_index,
+                            });
+                    }
+                }
                 if *barrier {
                     for &edge in &edges {
                         result.barriers.insert(edge.as_undirected().index());
@@ -144,7 +184,6 @@ impl Constraints {
     pub(super) fn outer_seeds(
         &self,
         cdt: &Cdt,
-        coordinates: &[[Real; 2]],
         remap: &[usize],
         source_count: usize,
     ) -> Result<Vec<usize>, GeometryError> {
@@ -156,15 +195,9 @@ impl Constraints {
             .copied()
             .collect::<BTreeSet<_>>();
         let hull = DelaunayTriangulation::<Vertex>::bulk_load(
-            source
-                .into_iter()
-                .map(|source| Vertex {
-                    position: TriangulationPoint2::new(
-                        coordinates[source][0],
-                        coordinates[source][1],
-                    ),
-                    source,
-                })
+            cdt.vertices()
+                .filter(|vertex| source.contains(&vertex.data().source))
+                .map(|vertex| vertex.data().clone())
                 .collect(),
         )
         .map_err(|_| GeometryError::MeshPatchCrossingConstraints)?;
@@ -195,6 +228,9 @@ impl Constraints {
         points: &BTreeSet<usize>,
         removed: &mut [bool],
     ) {
+        for edge in &self.overlap_cuts {
+            removed[cdt.directed_edge(*edge).rev().face().index()] = true;
+        }
         for (edge, left) in &self.partial_holes {
             let edge = cdt.directed_edge(*edge);
             removed[if *left {

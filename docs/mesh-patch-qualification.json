@@ -239,6 +239,7 @@
         "grouped_history": true,
         "id": "points",
         "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -247,6 +248,7 @@
         "grouped_history": true,
         "id": "raised",
         "maximum_bidirectional_sample_error": 6.66133814775094e-16,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -255,6 +257,7 @@
         "grouped_history": true,
         "id": "tilted",
         "maximum_bidirectional_sample_error": 1.2609709600486848e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -263,6 +266,7 @@
         "grouped_history": true,
         "id": "concave",
         "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -271,6 +275,7 @@
         "grouped_history": true,
         "id": "hole",
         "maximum_bidirectional_sample_error": 1.1102230246251565e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -279,6 +284,7 @@
         "grouped_history": true,
         "id": "constraint",
         "maximum_bidirectional_sample_error": 4.440892098500626e-16,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -293,6 +299,7 @@
         "grouped_history": true,
         "id": "untrimmed",
         "maximum_bidirectional_sample_error": 1.2212453270876722e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -301,6 +308,7 @@
         "grouped_history": true,
         "id": "line3",
         "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -309,6 +317,7 @@
         "grouped_history": true,
         "id": "guide_with_outer",
         "maximum_bidirectional_sample_error": 1.7979101253009106e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -317,6 +326,7 @@
         "grouped_history": true,
         "id": "inner_closed",
         "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -325,6 +335,7 @@
         "grouped_history": true,
         "id": "untrimmed_raised",
         "maximum_bidirectional_sample_error": 1.7979101253009106e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -333,6 +344,7 @@
         "grouped_history": true,
         "id": "untrimmed_constraint",
         "maximum_bidirectional_sample_error": 2.114508575119069e-14,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -341,6 +353,7 @@
         "grouped_history": true,
         "id": "untrimmed_concave",
         "maximum_bidirectional_sample_error": 2.1316282072803006e-14,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -349,6 +362,7 @@
         "grouped_history": true,
         "id": "untrimmed_inner_closed",
         "maximum_bidirectional_sample_error": 2.1041582237448136e-14,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -357,6 +371,7 @@
         "grouped_history": true,
         "id": "filled_inner",
         "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -365,6 +380,7 @@
         "grouped_history": true,
         "id": "filled_open3",
         "maximum_bidirectional_sample_error": 1.8610729195778454e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -373,6 +389,7 @@
         "grouped_history": true,
         "id": "concave_outside",
         "maximum_bidirectional_sample_error": 1.3394761424494089e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -381,6 +398,7 @@
         "grouped_history": true,
         "id": "circle",
         "maximum_bidirectional_sample_error": 2.4424906541753444e-15,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -389,6 +407,7 @@
         "grouped_history": true,
         "id": "cloud",
         "maximum_bidirectional_sample_error": 6.66133814775094e-16,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       },
@@ -397,6 +416,7 @@
         "grouped_history": true,
         "id": "surface",
         "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+        "native_mesh_error": null,
         "qualified": true,
         "source_metadata_preserved": true
       }
@@ -412,14 +432,16 @@
   "limits": [
     "The geometry comparisons use barycentric triangle samples; they do not prove universal mesh topology or triangle ordering.",
     "General curved guide sampling, periodic/folded starting charts and starting B-rep trim boundaries need broader qualification.",
-    "The projection chart must resolve distinct spatial samples. Guides recover in input order without generating crossing vertices; the separate crossing report retains unresolved native trimming differences.",
+    "The projection chart must resolve distinct spatial samples. Unsplit guides recover before paths through explicit point seeds, without generated crossing vertices; the crossing report retains unresolved native trimming and invalid-facet differences.",
     "Angular approximation controls direction variation and has bounded work/subdivision/output budgets; no universal positional certificate is claimed.",
-    "Input/perimeter records are capped at 100000, constraint walk/recovery work at 4000000. Performance is not yet compared against native Rhino."
+    "Input/perimeter records are capped at 100000, weighted constraint work at 4000000. Performance is not yet compared against native Rhino."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/mesh/patch.rs": "e376c27ade78b4cdd9f0f067e5566b088797b4308e25fef04285877007d0411a",
-    "crates/viboceros-geometry/src/mesh/patch/tests.rs": "b7c44410dfebbd44acba52ca0612535d1363304e7276ab06ff69f31022df55ac",
-    "crates/viboceros-geometry/src/mesh/patch/constraints.rs": "1a32dbaf58e45b9578353adfd8efe8acfe90cf8a9d5cfaccf5055b238482515e",
+    "crates/viboceros-geometry/src/mesh/patch.rs": "e4564970793c796f812d6d4f4e04d09e3bd13b7814df0cf715144197c4cd59de",
+    "crates/viboceros-geometry/src/mesh/patch/tests.rs": "12f7390c171c2d9a3eaaf562921e7ba02a2e0d06c6f149e046ece4c5ed1231de",
+    "crates/viboceros-geometry/src/mesh/patch/constraints.rs": "f31640dfefbfa6710b665e3791f37dff93e0f0c4dc456a1ade85a0219c5eb5a2",
+    "crates/viboceros-geometry/src/mesh/patch/constraints/segments.rs": "c9105387bc0c95faf22e69daab4874bf5ba07e6c74b3d82dbcf385735418c1a4",
+    "tools/rhino_oracle/mesh_patch_crossing_gaps.json": "cf5e1b692c6442f2a6fcdde9006648f88860fe9eb6c4f966f17bf8590a8b3a28",
     "crates/viboceros-geometry/src/curve/polyline.rs": "af769a36f117448e43eb4f0c435dd908e1532f95b5e2779ca3e5b095d1fc6676",
     "crates/viboceros-geometry/src/curve/polyline/angle.rs": "1332c312e6b38cc3e1795d364060fa7e417c7c7c203a449d0adc2681290f246d",
     "crates/viboceros-geometry/src/mesh.rs": "ea0646902ff93b8d808afa2cdb54c5f27cee91985265e831016077649b015183",
@@ -436,16 +458,16 @@
     "crates/viboceros-command/src/object_selection.rs": "d1cefdd0da1a26943f705b0df33764f5b210bc4e34286e5428bdbf43598a085b",
     "crates/viboceros-command/src/mesh_patch.rs": "1d0c35fa81f30b6f47f1a1a9c5f5dad1c486cab860f5fb8cfa400172b7376653",
     "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",
-    "crates/viboceros-command/tests/mesh_patch_native.rs": "c8a2d4eb577f6eb1c36b0200a9917319a8ea74bbe9504dece968db6216da3e8e",
-    "crates/viboceros-command/tests/support/mesh_patch.rs": "95a9aed3287e7c46bd86498511ce914bcc818efaef3e4f48c38c8ef1231051a2",
+    "crates/viboceros-command/tests/mesh_patch_native.rs": "0340528dfaba64e917d9dc6ceabdd053cebfc6c9169f93c0d053691b5bcae0e5",
+    "crates/viboceros-command/tests/support/mesh_patch.rs": "652360289115ab497f9c2ba2ae00e205a44ed6e0299c37cae1453f9ae56a04ff",
     "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
     "src/app/object_selection.rs": "6a478969808c4ec6a08ff406425a27ee7b50316b25efd9a90ab7c3988da751ad",
     "src/app/transform_sources.rs": "65841394f479b7bd99bbbaf9c7a69ab3242b1cf0c42a98edc8f47fa01057fff2",
     "src/app/object_selection/mesh_patch.rs": "aab85e841a3339466c4d77b2f60c440efeffb26dde8a99a522d866e80d32eacb",
-    "src/app/object_selection/mesh_patch/tests.rs": "43896f0e68b5b38684dccd878cf35d8fba9f20377af2c8bcd61c3b91bbcde96e",
-    "tools/rhino_oracle/mesh_patch_probe.py": "6230259024281c068db4a456b57a03fe1512c8d89a3342d04c602764dfcd98b9",
+    "src/app/object_selection/mesh_patch/tests.rs": "0461e579b402be172de9fe75993db4e4afb0dba78411fc8e9f1b4274225d7cba",
+    "tools/rhino_oracle/mesh_patch_probe.py": "ae326f27c09b6ab26747ec5895b247212a2286fbf53933ad616b52aadf61e5bf",
     "tools/rhino_oracle/generate_mesh_patch.py": "a60d07e832cbd919efbf3b143f730e62d4af23d86bc7684af81e2f831ccb0f4c",
-    "tools/rhino_oracle/report_mesh_patch.py": "6f300824e10a5fe1949a224d222492b9b6427394ad9622a811ecd4bf0d8dee4c",
+    "tools/rhino_oracle/report_mesh_patch.py": "d417df91f7a9627e1434c7a4d8255c58f7b9f4a45f815944952e458c2395c557",
     "tools/rhino_oracle/test_mesh_patch.py": "94d38cd6581101eafbe686ab060c33b4f9152651c6de3b797b967c3c1a945d52",
     "tools/rhino_oracle/fixtures/mesh_patch.json": "2a0884f05553efd4083b20f97dc1b985a4870fe644de8c09961911e25ad85400",
     "tools/rhino_oracle/observations/mesh_patch.json": "79f352d68c46ab33e7842022ec0b14db87530d471915ef30837f9c8fe9e507b9",

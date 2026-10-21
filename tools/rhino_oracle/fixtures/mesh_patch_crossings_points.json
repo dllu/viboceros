@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_patch_command",
+      "id": "point_guide_quarter",
+      "case": "point_guide_quarter"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "point_guide_diagonal",
+      "case": "point_guide_diagonal"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "point_guide_cloud",
+      "case": "point_guide_cloud"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "point_guide_two",
+      "case": "point_guide_two"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "point_guide_raised",
+      "case": "point_guide_raised"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_first_reversed",
+      "case": "overlap_first_reversed"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_shifted",
+      "case": "overlap_shifted"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_tilted",
+      "case": "overlap_tilted"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_seed_above",
+      "case": "overlap_seed_above"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_seed_below",
+      "case": "overlap_seed_below"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_vertical",
+      "case": "overlap_vertical"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "point_guide_tilted",
+      "case": "point_guide_tilted"
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_patch_command",
+      "id": "shared_endpoint",
+      "case": "shared_endpoint"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap",
+      "case": "overlap"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_axis",
+      "case": "cross_seed_axis"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "two_crossings",
+      "case": "two_crossings"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_two",
+      "case": "junction_two"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_two_out",
+      "case": "junction_two_out"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_three_out",
+      "case": "junction_three_out"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_three_in",
+      "case": "junction_three_in"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_three_reverse",
+      "case": "junction_three_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_chain",
+      "case": "junction_chain"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_chain_branch",
+      "case": "junction_chain_branch"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_t",
+      "case": "junction_t"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_t_reverse",
+      "case": "junction_t_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_seed_center",
+      "case": "junction_seed_center"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_seed_side",
+      "case": "junction_seed_side"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_order",
+      "case": "overlap_order"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_reverse",
+      "case": "overlap_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_nested",
+      "case": "overlap_nested"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_nested_reverse",
+      "case": "overlap_nested_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_touch",
+      "case": "overlap_touch"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_duplicate",
+      "case": "overlap_duplicate"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_duplicate_reverse",
+      "case": "overlap_duplicate_reverse"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_axis_left",
+      "case": "cross_seed_axis_left"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_axis_reverse",
+      "case": "cross_seed_axis_reverse"
+    }
+  ]
+}

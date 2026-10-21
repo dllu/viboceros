@@ -31,13 +31,18 @@ would otherwise remain empty. Open guides can also remove adjacent faces.
 This follows the captured native behavior; a convex hull alone does not
 reproduce it.
 
-Guides recover in input order. At a crossing, an earlier edge takes priority;
+With automatic trimming, guides recover in input order, with paths through
+explicit point seeds deferred until unsplit guides have recovered. Those paths split at the existing seeds;
+exact spatial checks recognize stations affected by chart rounding. At a
+crossing, an earlier recovered edge takes priority;
 the mesh keeps the original samples without adding an intersection vertex.
 Automatic trimming can remove a face beside the competing guide's endpoint.
 Input points seed retained regions, and closed guides touching the input hull
 can retain their interiors during crossing recovery. If a guide crosses a hole,
 only the immediate inside faces of recovered hole edges are removed; a complete
 hole boundary still removes its connected interior.
+Forward overlaps beginning inside an earlier guide can also remove an adjacent
+face. Direction changes and shared endpoints need further qualification.
 
 Scripts can provide `Sources`, `Holes`, and `StartingSurface` object IDs. A
 multi-face starting B-rep requires `Face=<zero-based-index>`. `OuterBoundary`
@@ -47,7 +52,8 @@ and uses the current layer. Source selection is released. One Undo removes the
 mesh, and Redo restores it.
 
 Construction is bounded to 100,000 input/perimeter records and 4,000,000
-constraint walk/recovery steps. Crossings of an explicit outer boundary,
+constraint work units, including weighted exact spatial checks. Crossings of
+an explicit outer boundary,
 conflicting samples at the same chart location, open hole boundaries and
 unresolved approximations fail before geometry edits. Angular approximation
 rejects rational poles and knot discontinuities, and uses existing exact Bézier
@@ -58,16 +64,24 @@ The [qualification report](../mesh-patch-qualification.json) records 21 public
 Rhino command/SDK scenes, including one matching construction failure. Geometry
 comparisons retain the `1e-6` model gate and check metadata, immutable sources and
 Undo/Redo. The [crossing report](../mesh-patch-crossings-qualification.json)
-adds 48 captures covering 37 distinct scenes, including an independent repeat
-of the first 11 scenes. All captures are replayed through geometry, scripted
+contains 106 captures covering 80 named recipes, including an independent repeat
+of the first 11 scenes and 11 pairs checking SDK-call order. All captures are
+replayed through geometry, scripted
 commands and staged selection. Both native SDK and command meshes are retained:
 they differ for several identical inputs, so this report targets the public
 command and records the SDK difference separately.
 
-Six crossing scenes remain unqualified: shared endpoints, overlapping guides,
-a self-crossing loop, one direction reversal, multiple crossings and an input
-point on a guide. The report preserves each measured difference and topology
-count mismatch. General curved guide sampling, periodic or folded starting
+Of the original 37 crossing scenes, 33 now match the fixed model gate and
+vertex/face counts. Shared endpoints, a self-crossing loop, one direction
+reversal and multiple crossings remain unqualified. Expanded junction, overlap
+direction and point-seed controls retain additional measured gaps. The report
+preserves every result; no scene is excluded by its qualification status.
+
+Two tilted native command meshes contain exactly collinear facets. Their raw
+artifacts remain in the captures, with invalid-reference errors and unavailable
+distance measurements in the report. Local patches omit degenerate facets and
+retain the existing mesh validator. General curved guide sampling, periodic or
+folded starting
 charts, starting B-rep trims, native triangle ordering and performance also
 need broader qualification. Sampled comparisons do not certify universal mesh
 topology.

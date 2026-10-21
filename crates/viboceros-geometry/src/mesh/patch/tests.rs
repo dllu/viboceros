@@ -130,6 +130,9 @@ fn lines(value: &Value) -> Vec<Polyline3> {
         .unwrap_or_default()
 }
 fn mesh(value: &Value) -> TriangleMesh {
+    try_mesh(value).unwrap()
+}
+fn try_mesh(value: &Value) -> Result<TriangleMesh, GeometryError> {
     TriangleMesh::try_new(
         value["vertices"]
             .as_array()
@@ -140,7 +143,6 @@ fn mesh(value: &Value) -> TriangleMesh {
         serde_json::from_value(value["faces"].clone()).unwrap(),
         Tolerance::MESH_VALIDATION,
     )
-    .unwrap()
 }
 fn sampled_error(a: &TriangleMesh, b: &TriangleMesh) -> Real {
     let index = MeshProjectionIndex::new(b).unwrap();
@@ -279,6 +281,33 @@ fn captured_seeded_crossings_retain_point_regions() {
     assert_known_crossing_gaps(&failures);
 }
 #[test]
+fn captured_junctions_and_overlaps_retain_all_comparison_results() {
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/mesh_patch_crossings_junctions.json"
+    ))
+    .unwrap();
+    let failures = crossing_replay(&response, "MESH_PATCH_JUNCTION_GEOMETRY");
+    assert_known_crossing_gaps(&failures);
+}
+#[test]
+fn captured_sdk_order_audit_preserves_command_comparisons() {
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/mesh_patch_crossings_audit.json"
+    ))
+    .unwrap();
+    let failures = crossing_replay(&response, "MESH_PATCH_AUDIT_GEOMETRY");
+    assert_known_crossing_gaps(&failures);
+}
+#[test]
+fn captured_point_guide_variations_keep_the_fixed_model_gate() {
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/mesh_patch_crossings_points.json"
+    ))
+    .unwrap();
+    let failures = crossing_replay(&response, "MESH_PATCH_POINTS_GEOMETRY");
+    assert_known_crossing_gaps(&failures);
+}
+#[test]
 fn repeated_native_crossings_and_direction_variants_remain_visible() {
     let response: Value = serde_json::from_str(include_str!(
         "../../../../../tools/rhino_oracle/observations/mesh_patch_crossings_verify.json"
@@ -288,17 +317,18 @@ fn repeated_native_crossings_and_direction_variants_remain_visible() {
     assert_known_crossing_gaps(&failures);
 }
 fn assert_known_crossing_gaps(failures: &[Value]) {
-    let known = [
-        "shared_endpoint",
-        "overlap",
-        "self_cross",
-        "cross_h_reverse",
-        "two_crossings",
-        "cross_seed_axis",
-    ];
+    let known: Vec<String> = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/mesh_patch_crossing_gaps.json"
+    ))
+    .unwrap();
     let unexpected = failures
         .iter()
-        .filter(|id| !known.contains(&id.as_str().unwrap()))
+        .filter(|id| {
+            let id = id.as_str().unwrap();
+            !known
+                .iter()
+                .any(|gap| gap == id.strip_suffix("_sdk_after").unwrap_or(id))
+        })
         .collect::<Vec<_>>();
     assert!(
         unexpected.is_empty(),
@@ -343,19 +373,21 @@ fn repeated_long_constraints_exhaust_work_before_admission() {
         Polyline3::try_new(vec![p(0., 0., 0.), p(59., 59., 0.)], Tolerance::DEFAULT).unwrap();
     let guides = vec![diagonal; 35_000];
     assert!(points.len() + 2 * guides.len() < MAX_MESH_PATCH_POINTS);
-    assert!(matches!(
-        TriangleMesh::try_patch(
-            &points,
-            &guides,
-            &[],
-            MeshPatchOptions {
-                trim_back: false,
-                ..Default::default()
-            },
-            Tolerance::DEFAULT
-        ),
-        Err(GeometryError::MeshPatchLimit)
-    ));
+    for trim_back in [true, false] {
+        assert!(matches!(
+            TriangleMesh::try_patch(
+                &points,
+                &guides,
+                &[],
+                MeshPatchOptions {
+                    trim_back,
+                    ..Default::default()
+                },
+                Tolerance::DEFAULT
+            ),
+            Err(GeometryError::MeshPatchLimit)
+        ));
+    }
 }
 fn crossing_replay(response: &Value, prefix: &str) -> Vec<Value> {
     let mut failures = Vec::new();
@@ -368,26 +400,44 @@ fn crossing_replay(response: &Value, prefix: &str) -> Vec<Value> {
             .unwrap_or_default();
         let guides = lines(&input["curves"]);
         let holes = lines(&input["holes"]);
-        let expected = mesh(
-            &value["after_script"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .find(|o| o["role"] == "output")
-                .unwrap()["mesh"],
-        );
-        let sdk = mesh(&value["sdk"]);
-        let native_gap = sampled_error(&expected, &sdk).max(sampled_error(&sdk, &expected));
+        let native = &value["after_script"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|o| o["role"] == "output")
+            .unwrap()["mesh"];
+        let expected = try_mesh(native);
+        let sdk = try_mesh(&value["sdk"]);
+        let sdk_error = sdk.as_ref().err().map(ToString::to_string);
         let options = MeshPatchOptions {
             trim_back: input["trimback"].as_bool().unwrap_or(true),
             divisions: input["divisions"].as_u64().unwrap_or(1) as usize,
             ..Default::default()
         };
-        match TriangleMesh::try_patch(&points, &guides, &holes, options, Tolerance::DEFAULT) {
+        let actual = TriangleMesh::try_patch(&points, &guides, &holes, options, Tolerance::DEFAULT);
+        let expected = match expected {
+            Ok(mesh) => mesh,
+            Err(error) => {
+                // Native zero-area facets are retained as an explicit gap.
+                // These fixed scenes must still produce a valid local mesh.
+                let actual = actual.unwrap();
+                println!(
+                    "{prefix} {}",
+                    serde_json::json!({"id":row["id"],"qualified":false,"maximum_bidirectional_sample_error":null,"sdk_command_difference":null,"native_mesh_error":error.to_string(),"sdk_mesh_error":sdk_error,"actual_faces":actual.faces().len(),"actual_vertices":actual.vertices().len(),"native_faces":native["faces"].as_array().unwrap().len(),"native_vertices":native["vertices"].as_array().unwrap().len()})
+                );
+                failures.push(row["id"].clone());
+                continue;
+            }
+        };
+        let native_gap = sdk
+            .as_ref()
+            .ok()
+            .map(|sdk| sampled_error(&expected, sdk).max(sampled_error(sdk, &expected)));
+        match actual {
             Err(e) => {
                 println!(
                     "{prefix} {}",
-                    serde_json::json!({"id":row["id"],"qualified":false,"error":e.to_string(),"sdk_command_difference":native_gap})
+                    serde_json::json!({"id":row["id"],"qualified":false,"error":e.to_string(),"sdk_command_difference":native_gap,"sdk_mesh_error":sdk_error})
                 );
                 failures.push(row["id"].clone());
             }
@@ -397,9 +447,15 @@ fn crossing_replay(response: &Value, prefix: &str) -> Vec<Value> {
                 let qualified = error < 1e-6
                     && actual.faces().len() == expected.faces().len()
                     && actual.vertices().len() == expected.vertices().len();
+                if !qualified && std::env::var_os("VIBOCEROS_MESH_PATCH_DEBUG").is_some() {
+                    println!(
+                        "MESH_PATCH_DETAIL {}",
+                        serde_json::json!({"id":row["id"],"vertices":actual.vertices().iter().map(|p|p.to_array()).collect::<Vec<_>>(),"faces":actual.triangles()})
+                    );
+                }
                 println!(
                     "{prefix} {}",
-                    serde_json::json!({"id":row["id"],"qualified":qualified,"maximum_bidirectional_sample_error":error,"sdk_command_difference":native_gap,"actual_faces":actual.faces().len(),"native_faces":expected.faces().len(),"actual_vertices":actual.vertices().len(),"native_vertices":expected.vertices().len()})
+                    serde_json::json!({"id":row["id"],"qualified":qualified,"maximum_bidirectional_sample_error":error,"sdk_command_difference":native_gap,"sdk_mesh_error":sdk_error,"actual_faces":actual.faces().len(),"native_faces":expected.faces().len(),"actual_vertices":actual.vertices().len(),"native_vertices":expected.vertices().len()})
                 );
                 if !qualified {
                     failures.push(row["id"].clone());

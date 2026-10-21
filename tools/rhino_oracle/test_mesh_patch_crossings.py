@@ -6,7 +6,7 @@ import json
 import unittest
 from pathlib import Path
 from . import mesh_patch_probe as probe
-from .report_mesh_patch_crossings import GROUPS, summarize
+from .report_mesh_patch_crossings import GROUPS, summarize, degenerate_faces
 from .structural_sdk import validate_operations
 
 HERE = Path(__file__).resolve().parent
@@ -25,8 +25,10 @@ def canonical(mesh):
 class MeshPatchCrossingTests(unittest.TestCase):
     def test_fixed_capture_requests_sources_and_history(self):
         factories = [probe.crossing_request, probe.crossing_verify_request,
-                     probe.untrimmed_crossing_request, probe.seeded_crossing_request]
-        for (_, _, suffix), factory, count in zip(GROUPS, factories, [11, 21, 9, 7]):
+                     probe.untrimmed_crossing_request, probe.seeded_crossing_request,
+                     probe.junction_request, probe.audit_request, probe.point_guide_request]
+        self.assertEqual(len(GROUPS), len(factories))
+        for (_, _, suffix), factory, count in zip(GROUPS, factories, [11, 21, 9, 7, 24, 22, 12]):
             path = HERE / f'fixtures/mesh_patch_crossings{suffix}.json'
             request = json.loads(path.read_text())
             self.assertEqual(request, factory())
@@ -71,12 +73,35 @@ class MeshPatchCrossingTests(unittest.TestCase):
 
     def test_only_named_scenes_can_reach_the_probe(self):
         for factory in [probe.crossing_request, probe.crossing_verify_request,
-                        probe.untrimmed_crossing_request, probe.seeded_crossing_request]:
+                        probe.untrimmed_crossing_request, probe.seeded_crossing_request,
+                        probe.junction_request, probe.audit_request, probe.point_guide_request]:
             for change in [{'case': 'arbitrary'}, {'id': 'arbitrary'}, {'script': 'arbitrary'}, {'points': [[0, 0, 0]]}]:
                 q = factory()
                 q['operations'][0].update(change)
                 with self.assertRaises(ValueError):
                     validate_operations(q)
+
+    def test_sdk_ownership_and_execution_order_leave_the_intended_inputs_intact(self):
+        rows = {row['id']: row['value'] for row in capture('_audit')['results']}
+        self.assertEqual(len(rows), 22)
+        for id_, value in rows.items():
+            self.assertEqual(value['sdk_inputs']['before'], value['sdk_inputs']['after'])
+            curves = [o['polyline'] for o in value['before'] if 'polyline' in o]
+            self.assertEqual(curves, value['input']['curves'])
+            points = [o['point'] for o in value['before'] if 'point' in o]
+            self.assertEqual(points, value['input'].get('points', []))
+            if id_.endswith('_sdk_after'):
+                before = rows[id_.removesuffix('_sdk_after')]
+                self.assertEqual(canonical(value['sdk']), canonical(before['sdk']))
+                command = lambda v: next(o['mesh'] for o in v['after_script'] if o['role'] == 'output')
+                self.assertEqual(canonical(command(value)), canonical(command(before)))
+
+    def test_native_tilted_degenerate_facets_remain_in_the_immutable_capture(self):
+        rows = {row['id']: row['value'] for row in capture('_points')['results']}
+        for id_, expected in [('overlap_tilted', [3, 8]), ('point_guide_tilted', [0])]:
+            mesh = next(o['mesh'] for o in rows[id_]['after_script'] if o['role'] == 'output')
+            self.assertEqual(degenerate_faces(mesh), expected)
+            self.assertEqual(degenerate_faces(rows[id_]['sdk']), [])
 
     def report_lines(self):
         report = json.loads((ROOT / 'docs/mesh-patch-crossings-qualification.json').read_text())
@@ -91,10 +116,15 @@ class MeshPatchCrossingTests(unittest.TestCase):
         self.assertEqual(report['model_epsilon'], 1e-6)
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        self.assertEqual(report['captures'], 48)
-        self.assertEqual(report['unique_scenes'], 37)
-        self.assertEqual(report['qualified_unique_scenes'], 31)
-        self.assertEqual(set(report['unqualified_scenes']), {'shared_endpoint', 'overlap', 'self_cross', 'cross_h_reverse', 'two_crossings', 'cross_seed_axis'})
+        self.assertEqual(report['captures'], 106)
+        self.assertEqual(report['unique_scenes'], 80)
+        self.assertGreaterEqual(report['qualified_unique_scenes'], 48)
+        self.assertEqual(report['original_scenes'], 37)
+        self.assertEqual(report['original_qualified_scenes'], 33)
+        self.assertEqual(set(report['original_unqualified_scenes']), {'shared_endpoint', 'self_cross', 'cross_h_reverse', 'two_crossings'})
+        self.assertEqual(set(report['native_invalid_meshes']), {'overlap_tilted', 'point_guide_tilted'})
+        known = json.loads((HERE / 'mesh_patch_crossing_gaps.json').read_text())
+        self.assertEqual(set(known), {id_.removesuffix('_sdk_after') for id_ in report['unqualified_scenes']})
         first = report['groups']['crossings']['geometry']['cases'][0]
         self.assertTrue(first['qualified'])
         self.assertGreater(first['sdk_command_difference'], report['model_epsilon'])
@@ -126,5 +156,12 @@ class MeshPatchCrossingTests(unittest.TestCase):
         row = json.loads(invalid[index].split(' ', 1)[1])
         row['qualified'] = True
         invalid[index] = 'MESH_PATCH_CROSSING_GEOMETRY ' + json.dumps(row)
+        with self.assertRaises(ValueError):
+            summarize('\n'.join(invalid))
+        invalid = lines[:]
+        index = next(i for i, line in enumerate(invalid) if line.startswith('MESH_PATCH_POINTS_GEOMETRY ') and json.loads(line.split(' ', 1)[1])['id'] == 'overlap_tilted')
+        row = json.loads(invalid[index].split(' ', 1)[1])
+        row.update(native_mesh_error=None, maximum_bidirectional_sample_error=0., sdk_command_difference=0., qualified=True)
+        invalid[index] = 'MESH_PATCH_POINTS_GEOMETRY ' + json.dumps(row)
         with self.assertRaises(ValueError):
             summarize('\n'.join(invalid))

@@ -1,0 +1,121 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_patch_command",
+      "id": "shared_endpoint",
+      "case": "shared_endpoint"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap",
+      "case": "overlap"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_axes",
+      "case": "cross_axes"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_3d",
+      "case": "cross_3d"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "self_cross",
+      "case": "self_cross"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_axis",
+      "case": "cross_seed_axis"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "two_crossings",
+      "case": "two_crossings"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_two",
+      "case": "junction_two"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_chain",
+      "case": "junction_chain"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_duplicate",
+      "case": "overlap_duplicate"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_touch",
+      "case": "overlap_touch"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "shared_endpoint_sdk_after",
+      "case": "shared_endpoint_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_sdk_after",
+      "case": "overlap_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_axes_sdk_after",
+      "case": "cross_axes_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_3d_sdk_after",
+      "case": "cross_3d_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "self_cross_sdk_after",
+      "case": "self_cross_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "cross_seed_axis_sdk_after",
+      "case": "cross_seed_axis_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "two_crossings_sdk_after",
+      "case": "two_crossings_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_two_sdk_after",
+      "case": "junction_two_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "junction_chain_sdk_after",
+      "case": "junction_chain_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_duplicate_sdk_after",
+      "case": "overlap_duplicate_sdk_after"
+    },
+    {
+      "op": "mesh_patch_command",
+      "id": "overlap_touch_sdk_after",
+      "case": "overlap_touch_sdk_after"
+    }
+  ]
+}

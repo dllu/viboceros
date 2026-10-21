@@ -6,6 +6,8 @@ ROOT=HERE.parents[1]
 SOURCES=[
  'crates/viboceros-geometry/src/mesh/patch.rs','crates/viboceros-geometry/src/mesh/patch/tests.rs',
  'crates/viboceros-geometry/src/mesh/patch/constraints.rs',
+ 'crates/viboceros-geometry/src/mesh/patch/constraints/segments.rs',
+ 'tools/rhino_oracle/mesh_patch_crossing_gaps.json',
  'crates/viboceros-geometry/src/curve/polyline.rs','crates/viboceros-geometry/src/curve/polyline/angle.rs',
  'crates/viboceros-geometry/src/mesh.rs','crates/viboceros-geometry/src/lib.rs','crates/viboceros-geometry/src/error.rs',
  'crates/viboceros-geometry/src/point_projection.rs','crates/viboceros-geometry/src/point_projection/fit.rs','crates/viboceros-geometry/src/point_projection/fit/normalized.rs',
@@ -36,7 +38,7 @@ def summarize(log):
         maximum_sample_difference=max(r.get('maximum_bidirectional_sample_error',0)for group in groups.values()for r in group['cases']),
         geometry_cases=groups['geometry'],command_cases=groups['command'],getter_cases=groups['getter'],
         guarantees=['The 21 captured public SDK/command inputs retain geometry, source snapshots, names, layers, selection and grouped Undo/Redo through command and staged getter replays.','Automatic guide-region trimming, explicit holes, temporary fitted perimeters, point clouds, circle approximation and a curved starting surface are exercised.','A source/guide duplicate that leaves no trimmed faces fails before admission, with native selection release and no Undo record.','Projection conflicts, crossings of explicit outer boundaries, open hole boundaries and resource exhaustion are rejected before geometry edits.','A staged prompt retains immutable source snapshots and a history token; cancellation preserves Redo and stale inputs cannot create a patch.'],
-        limits=['The geometry comparisons use barycentric triangle samples; they do not prove universal mesh topology or triangle ordering.','General curved guide sampling, periodic/folded starting charts and starting B-rep trim boundaries need broader qualification.','The projection chart must resolve distinct spatial samples. Guides recover in input order without generating crossing vertices; the separate crossing report retains unresolved native trimming differences.','Angular approximation controls direction variation and has bounded work/subdivision/output budgets; no universal positional certificate is claimed.','Input/perimeter records are capped at 100000, constraint walk/recovery work at 4000000. Performance is not yet compared against native Rhino.'],
+        limits=['The geometry comparisons use barycentric triangle samples; they do not prove universal mesh topology or triangle ordering.','General curved guide sampling, periodic/folded starting charts and starting B-rep trim boundaries need broader qualification.','The projection chart must resolve distinct spatial samples. Unsplit guides recover before paths through explicit point seeds, without generated crossing vertices; the crossing report retains unresolved native trimming and invalid-facet differences.','Angular approximation controls direction variation and has bounded work/subdivision/output budgets; no universal positional certificate is claimed.','Input/perimeter records are capped at 100000, weighted constraint work at 4000000. Performance is not yet compared against native Rhino.'],
         sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in SOURCES})
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('logs',type=Path,nargs='+');a=p.parse_args()

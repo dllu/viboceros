@@ -30,7 +30,7 @@ fn native_crossings_preserve_metadata_sources_and_history_with_visible_geometry_
             ));
             println!(
                 "MESH_PATCH_{group}_COMMAND {}",
-                serde_json::json!({"id":op["id"],"qualified":comparison.qualified(),"maximum_bidirectional_sample_error":comparison.error,"counts_match":comparison.counts_match,"source_metadata_preserved":true,"grouped_history":true})
+                serde_json::json!({"id":op["id"],"qualified":comparison.qualified(),"maximum_bidirectional_sample_error":comparison.error,"native_mesh_error":comparison.native_mesh_error,"counts_match":comparison.counts_match,"source_metadata_preserved":true,"grouped_history":true})
             );
             if !comparison.qualified() {
                 failures.push(op["id"].as_str().unwrap().to_owned());
