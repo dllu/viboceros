@@ -3010,6 +3010,7 @@ impl VibocerosApp {
             || self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
             || self.try_start_intersection_prompt(&input)
+            || self.start_subd_cylinder(&input)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)
         {
@@ -9794,6 +9795,7 @@ impl VibocerosApp {
                 matches!(
                     prompt.description.command,
                     "Circle FitPoints"
+                        | "SubDCylinder FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
@@ -10005,6 +10007,7 @@ impl VibocerosApp {
                     (matches!(
                         prompt.description.command,
                         "Circle FitPoints"
+                            | "SubDCylinder FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"
                             | "Sphere FitPoints"

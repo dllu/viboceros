@@ -44,7 +44,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Direct mesh and SubD faces](docs/commands/3dface.md), with triangles, quads, n-gons, append, repeated boundary picks, quad chains, corner Undo, previews and grouped history
 - [SubD geometry](docs/subd.md), with interpolated faces, append and boundary chains, detached components, limit-surface display, control-point edits and native 3DM preservation
 - [SubD boxes](docs/commands/subd-box.md), with rectangle construction modes, face counts, guide curves, previews and grouped Undo
-- [SubD cylinders](docs/commands/subd-cylinder.md), with open or capped ends, circle construction, spatial axes and grouped Undo
+- [SubD cylinders](docs/commands/subd-cylinder.md), with open or capped ends, tangent and fitted circle bases, spatial axes and grouped Undo
 - [SubD planes](docs/commands/subd-plane.md), with crease boundaries, face counts and shared rectangle input
 - [Planar meshes from curves](docs/commands/planar-mesh.md), with joined boundaries, holes, islands, current-layer output and grouped Undo
 - [Interpolated curves on surfaces](docs/commands/interp-crv-on-srf.md), with periodic seams, closed drafts, constrained points, previews and Undo

@@ -21,16 +21,7 @@ pub(super) fn run_with_output(
     postselected: bool,
     output: Option<crate::circle_deform_input::Output>,
 ) -> Result<String, CommandError> {
-    let points = document
-        .selected_objects()
-        .filter_map(|object| match object.geometry() {
-            Geometry::Point(point) => Some(*point),
-            _ => None,
-        })
-        .chain(document.selected_control_points().map(|(_, point)| point))
-        .take(viboceros_geometry::MAX_CIRCLE_FIT_POINTS + 1)
-        .collect::<Vec<_>>();
-    let Some(circle) = Circle3::try_fit_to_points(&points)? else {
+    let Some(circle) = selected_circle(document)? else {
         // Native collinear/coincident selections finish without any model edit.
         // The replay-only marker folds into prior history, preserving Redo.
         if postselected {
@@ -49,6 +40,25 @@ pub(super) fn run_with_output(
         document.clear_selection();
     }
     Ok(format!("Added circle {id} (radius {radius:.6})"))
+}
+
+/// Fit selected point objects and visible selected grips without changing the document.
+pub fn selected_circle(document: &Document) -> Result<Option<Circle3>, CommandError> {
+    let points = selected_points(document)
+        .take(viboceros_geometry::MAX_CIRCLE_FIT_POINTS + 1)
+        .collect::<Vec<_>>();
+    Ok(Circle3::try_fit_to_points(&points)?)
+}
+
+/// Selected point occurrences used by Circle FitPoints and reference getters.
+pub fn selected_points(document: &Document) -> impl Iterator<Item = Point3> + '_ {
+    document
+        .selected_objects()
+        .filter_map(|object| match object.geometry() {
+            Geometry::Point(point) => Some(*point),
+            _ => None,
+        })
+        .chain(document.selected_control_points().map(|(_, point)| point))
 }
 
 #[cfg(test)]

@@ -626,6 +626,15 @@ class OracleClient:
             for op in operations:validate(op)
             click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in op['actions']])for op in operations])
             interaction=CatenaryPointPicker(click_request)
+        if any(op.get('op') == 'subd_cylinder_references' for op in request.get('operations', [])):
+            from .subd_cylinder_references_probe import validate, SCENES, EXTRA_CASES
+            from .catenary_point_picker import CatenaryPointPicker
+            operations=request['operations']
+            if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1)!=1 or any(op.get('op')!='subd_cylinder_references'for op in operations):
+                raise OracleProtocolError('SubDCylinder reference input requires a private dedicated one-iteration capture')
+            for op in operations: validate(op)
+            click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in (SCENES|EXTRA_CASES)[op['case']]['actions']])for op in operations])
+            interaction=CatenaryPointPicker(click_request)
         if any(op.get('op') in ('circle_around','circle_deform','circle_tangent') for op in request.get('operations', [])):
             from .circle_around_probe import validate
             operations=request['operations']

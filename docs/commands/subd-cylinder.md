@@ -18,8 +18,11 @@ single faces where appropriate. Open boundary rings have crease tags.
 
 The shared Circle getter supports center/radius, a point on the radius,
 `Diameter`, `Circumference`, `Area`, `2Point`, and spatial `3Point` bases.
-`Tangent` and `FitPoints` are not implemented for this command. Circle's
-`Vertical` and `Orientation` base modes are unavailable in the captured Rhino
+`Tangent` accepts curves, surface edges or Point contacts, with a fixed radius,
+late Radius, FromFirstPoint, or Enter for two contacts. `FitPoints` uses selected
+point objects and displayed control points; with fewer than three eligible
+preselected points, pick points or grips and press Enter. Reference circles are
+staged without adding temporary geometry. Circle's `Vertical` and `Orientation` base modes are unavailable in the captured Rhino
 build. Use a spatial 3Point base or change the construction plane instead.
 
 After the base, enter a signed height or pick an end point.
@@ -49,3 +52,13 @@ from supported comparisons. Remembered-size sequences, cursor-driven numeric
 free-axis input, every mouse trajectory, native material/texture channels and
 comparative speed need further native qualification. Facet sampling carries no
 continuous Hausdorff certificate.
+
+The [reference qualification report](../subd-cylinder-references-qualification.json)
+adds 22 native captures for Tangent and FitPoints: 14 successful constructions,
+six cancellations and two degenerate-fit failures. It checks source geometry,
+selection, rational grip locations, display and grouped history as well as SubD
+geometry. Native mouse picks are compared at their captured projected contacts.
+Collinear/coincident fits reach the height prompt, then fail without a model edit.
+Captured tangencies use planar straight guides; general fitted-circle seam and
+normal parity, curved guides, surface-edge branches and other input clocks need
+further cylinder-specific qualification.

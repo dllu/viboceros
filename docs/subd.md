@@ -28,7 +28,8 @@ counts, Center/3Point/Vertical bases and bases perpendicular to guide curves.
 [SubDPlane](commands/subd-plane.md) makes open rectangular grids with crease
 boundaries, including their rounded corner limit stations.
 [SubDCylinder](commands/subd-cylinder.md) adds open or capped cylinders,
-circle construction modes, free-axis endpoints and BothSides.
+circle construction modes, tangent and fitted references, free-axis endpoints
+and BothSides.
 
 Select a SubD before `3DFace`, choose `Append` in the point getter, or supply
 `Append=<id>` to add faces to it. Without an explicit `Output` option, the target

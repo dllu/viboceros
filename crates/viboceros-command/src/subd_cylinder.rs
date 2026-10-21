@@ -2,7 +2,9 @@
 use crate::circle_input::{CircleDefinition, CircleInput, CircleSizeMode};
 use crate::{Command, CommandContext, CommandError, CommandRegistry, remembered};
 use viboceros_document::{Document, Geometry};
-use viboceros_geometry::{Frame3, GeometryError, Point3, SubD, SubDCylinderCap, Tolerance};
+use viboceros_geometry::{
+    Circle3, Frame3, GeometryError, Point3, SubD, SubDCylinderCap, Tolerance,
+};
 pub const USAGE: &str = "SubDCylinder [AroundFaces=n VerticalFaces=n Solid=Yes|No CapFaceStyle=Tri|Quad] circle-input [DirectionConstraint=Vertical|None BothSides=Yes|No] height-or-point";
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Direction {
@@ -155,6 +157,39 @@ impl Input {
             cursor: None,
         }
     }
+    /// Accept an independently solved reference without adding a temporary circle.
+    pub fn reference_circle(&mut self, circle: Circle3) -> Result<(), CommandError> {
+        if !self.at_start() || self.pending.is_some() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        self.circle = Some(CircleDefinition::from_circle(circle)?);
+        self.preferences.radius = circle.radius();
+        self.cursor = None;
+        Ok(())
+    }
+    /// The native cylinder still requests a height for a zero-radius point fit.
+    /// Keep that base staged; geometry admission rejects it without a model edit.
+    pub fn fit_points(&mut self, document: &Document) -> Result<(), CommandError> {
+        if !self.at_start() || self.pending.is_some() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        if let Some(circle) = crate::circle_fit_points::selected_circle(document)? {
+            return self.reference_circle(circle);
+        }
+        let mut sums: [viboceros_geometry::FiniteSum; 3] =
+            std::array::from_fn(|_| Default::default());
+        for point in crate::circle_fit_points::selected_points(document) {
+            for (sum, value) in sums.iter_mut().zip(point.to_array()) {
+                sum.add(value)?;
+            }
+        }
+        let center = Point3::try_new(sums[0].mean()?, sums[1].mean()?, sums[2].mean()?)?;
+        self.circle = Some(CircleDefinition {
+            frame: self.getter.construction_plane().with_origin(center),
+            radius: 0.,
+        });
+        Ok(())
+    }
     pub fn set_initial_plane(&mut self, plane: Frame3) {
         if self.circle.is_none() {
             self.getter.set_initial_plane(plane);
@@ -214,7 +249,7 @@ impl Input {
         format!(
             "{}; AroundFaces={} VerticalFaces={} Solid={} CapFaceStyle={}",
             if self.at_start() {
-                "center of base circle; 2Point, 3Point"
+                "center of base circle; 2Point, 3Point, Tangent, FitPoints"
             } else {
                 self.getter.prompt()
             },
@@ -305,14 +340,6 @@ impl Input {
             return Ok(true);
         }
         if self.circle.is_none() {
-            if ["Tangent", "FitPoints"]
-                .iter()
-                .any(|m| name.eq_ignore_ascii_case(m))
-            {
-                return Err(CommandError::Usage(
-                    "SubDCylinder Tangent and FitPoints are not implemented yet",
-                ));
-            }
             if ["Vertical", "Orientation"]
                 .iter()
                 .any(|m| name.eq_ignore_ascii_case(m))
@@ -481,6 +508,39 @@ pub fn from_arguments(
             return Err(CommandError::Usage(USAGE));
         }
         let word = args[i];
+        if input.at_start()
+            && word
+                .trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("Tangent")
+        {
+            let mut tangent = crate::circle_tangent_input::Input::new(
+                plane,
+                doc.tolerance(),
+                crate::circle_around_input::Preferences {
+                    radius: input.preferences.radius,
+                    ..Default::default()
+                },
+            );
+            i += 1;
+            loop {
+                let (n, circle) = tangent.argument(doc, &args[i..])?;
+                i += n;
+                if let Some(circle) = circle {
+                    input.reference_circle(circle)?;
+                    break;
+                }
+            }
+            continue;
+        }
+        if input.at_start()
+            && word
+                .trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("FitPoints")
+        {
+            i += 1;
+            input.fit_points(doc)?;
+            continue;
+        }
         if input.option(word)? {
             i += 1;
             continue;
@@ -503,7 +563,6 @@ pub fn from_arguments(
             i += 1;
         }
     }
-    let _ = doc;
     if input.definition.is_none() {
         return Err(CommandError::Usage(USAGE));
     }
@@ -521,6 +580,24 @@ impl Command for SubDCylinderCommand {
     fn remember_subd_cylinder_preferences(&self, p: Preferences) -> bool {
         self.0.set(p);
         true
+    }
+    fn object_selection_prompt(
+        &self,
+        args: &[&str],
+    ) -> Result<Option<crate::ObjectSelectionPrompt>, CommandError> {
+        Ok(matches!(args, [s] if s.trim_start_matches(['_', '-']).eq_ignore_ascii_case("FitPoints")).then(selection_prompt))
+    }
+    fn run_postselected(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
+        let result = self.run_in_context(doc, args, context)?;
+        let selection = doc.selected_object_ids().collect::<Vec<_>>();
+        doc.release_command_selection_on_history_replay(selection)?;
+        doc.clear_selection();
+        Ok(result)
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         self.run_in_context(doc, args, CommandContext::default())
@@ -548,5 +625,16 @@ impl CommandRegistry {
         self.lookup
             .get(&crate::normalize_command_name("SubDCylinder"))
             .is_some_and(|i| self.commands[*i].remember_subd_cylinder_preferences(p))
+    }
+}
+
+pub fn selection_prompt() -> crate::ObjectSelectionPrompt {
+    crate::ObjectSelectionPrompt {
+        command: "SubDCylinder FitPoints",
+        filter: crate::ObjectSelectionFilter::Points,
+        options: vec![],
+        menus: vec![],
+        choices: vec![],
+        workflow: crate::ObjectSelectionWorkflow::OptionsDuringSelection,
     }
 }

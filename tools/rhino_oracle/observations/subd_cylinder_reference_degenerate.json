@@ -1,0 +1,700 @@
+{
+  "iterations": 1,
+  "results": [
+    {
+      "value": {
+        "after_script": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          }
+        ],
+        "input": {
+          "selected": [
+            0,
+            1,
+            2
+          ],
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "no_output": true,
+          "actions": [
+            "Solid=Yes",
+            "AroundFaces=8",
+            "CapFaceStyle=Quad",
+            "VerticalFaces=2",
+            "FitPoints",
+            5.0
+          ]
+        },
+        "macro": "_-SubDCylinder _Solid=Yes _AroundFaces=8 _CapFaceStyle=Quad _VerticalFaces=2 _FitPoints 5.0",
+        "undo": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          }
+        ],
+        "success": false,
+        "events": [
+          {
+            "selected": [],
+            "name": "SubDCylinder",
+            "objects": [
+              {
+                "crc": 0,
+                "layer": "SubDCylinder output",
+                "selected": true,
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "name": "reference 0",
+                "role": "source",
+                "source": 0
+              },
+              {
+                "crc": 0,
+                "layer": "SubDCylinder output",
+                "selected": true,
+                "point": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "name": "reference 1",
+                "role": "source",
+                "source": 1
+              },
+              {
+                "crc": 0,
+                "layer": "SubDCylinder output",
+                "selected": true,
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "name": "reference 2",
+                "role": "source",
+                "source": 2
+              }
+            ],
+            "result": "Cancel"
+          }
+        ],
+        "input_trace": [],
+        "before": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          }
+        ],
+        "history": "Command: _-SubDCylinder\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=4  AroundFaces=8  CapFaceStyle=Tri ): _Solid=Yes\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=4  AroundFaces=8  CapFaceStyle=Tri ): _AroundFaces=8\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=4  AroundFaces=8  CapFaceStyle=Tri ): _CapFaceStyle=Quad\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=4  AroundFaces=8  CapFaceStyle=Quad ): _VerticalFaces=2\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=2  AroundFaces=8  CapFaceStyle=Quad ): _FitPoints\nEnd of cylinder <1.000> ( DirectionConstraint=Vertical  BothSides=No ): 5.0",
+        "after": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          }
+        ],
+        "redo": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          }
+        ]
+      },
+      "id": "cylinder_fit_collinear_finish",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "after_script": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 3",
+            "role": "source",
+            "source": 3
+          }
+        ],
+        "input": {
+          "selected": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "points": [
+            [
+              1.0,
+              2.0,
+              3.0
+            ],
+            [
+              1.0,
+              2.0,
+              3.0
+            ],
+            [
+              1.0,
+              2.0,
+              3.0
+            ],
+            [
+              1.0,
+              2.0,
+              3.0
+            ]
+          ],
+          "no_output": true,
+          "actions": [
+            "Solid=Yes",
+            "AroundFaces=8",
+            "CapFaceStyle=Quad",
+            "VerticalFaces=2",
+            "FitPoints",
+            5.0
+          ]
+        },
+        "macro": "_-SubDCylinder _Solid=Yes _AroundFaces=8 _CapFaceStyle=Quad _VerticalFaces=2 _FitPoints 5.0",
+        "undo": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 3",
+            "role": "source",
+            "source": 3
+          }
+        ],
+        "success": false,
+        "events": [
+          {
+            "selected": [],
+            "name": "SubDCylinder",
+            "objects": [
+              {
+                "crc": 0,
+                "layer": "SubDCylinder output",
+                "selected": true,
+                "point": [
+                  1.0,
+                  2.0,
+                  3.0
+                ],
+                "name": "reference 0",
+                "role": "source",
+                "source": 0
+              },
+              {
+                "crc": 0,
+                "layer": "SubDCylinder output",
+                "selected": true,
+                "point": [
+                  1.0,
+                  2.0,
+                  3.0
+                ],
+                "name": "reference 1",
+                "role": "source",
+                "source": 1
+              },
+              {
+                "crc": 0,
+                "layer": "SubDCylinder output",
+                "selected": true,
+                "point": [
+                  1.0,
+                  2.0,
+                  3.0
+                ],
+                "name": "reference 2",
+                "role": "source",
+                "source": 2
+              },
+              {
+                "crc": 0,
+                "layer": "SubDCylinder output",
+                "selected": true,
+                "point": [
+                  1.0,
+                  2.0,
+                  3.0
+                ],
+                "name": "reference 3",
+                "role": "source",
+                "source": 3
+              }
+            ],
+            "result": "Cancel"
+          }
+        ],
+        "input_trace": [],
+        "before": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 3",
+            "role": "source",
+            "source": 3
+          }
+        ],
+        "history": "Command: _-SubDCylinder\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=4  AroundFaces=8  CapFaceStyle=Tri ): _Solid=Yes\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=4  AroundFaces=8  CapFaceStyle=Tri ): _AroundFaces=8\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=4  AroundFaces=8  CapFaceStyle=Tri ): _CapFaceStyle=Quad\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=4  AroundFaces=8  CapFaceStyle=Quad ): _VerticalFaces=2\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints  VerticalFaces=2  AroundFaces=8  CapFaceStyle=Quad ): _FitPoints\nEnd of cylinder <1.000> ( DirectionConstraint=Vertical  BothSides=No ): 5.0",
+        "after": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 3",
+            "role": "source",
+            "source": 3
+          }
+        ],
+        "redo": [
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 0",
+            "role": "source",
+            "source": 0
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 1",
+            "role": "source",
+            "source": 1
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 2",
+            "role": "source",
+            "source": 2
+          },
+          {
+            "crc": 0,
+            "layer": "SubDCylinder output",
+            "selected": true,
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "name": "reference 3",
+            "role": "source",
+            "source": 3
+          }
+        ]
+      },
+      "id": "cylinder_fit_coincident_finish",
+      "elapsed_ns": 0
+    }
+  ],
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "provenance": {
+    "request_sha256": "2a6a58897ef1c95e41bfcecdf28feb6d52ce7deea07d2ad767eb7ca404e4f0a5",
+    "sources": {
+      "generate_subd_cylinder_reference_degenerate.py": "07b3d4fd62ab153220d357e2423f31af66b709b6f80ab50f55072dcfa0fa7186",
+      "subd_cylinder_references_probe.py": "077f7f69c728bc9dd4e866daa7be725e62e55713590f2da359d4e4252fef37f1",
+      "subd_box_probe.py": "2618ad79ea476573b9a13b60990127e5e55a3aa975f79dfdb98c58bb62ce0e5d",
+      "conic_getter_input.py": "9159f38558f1985aad1b0470f5be475203fee0c3562d60595a619ae6eae44460",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "6c261d7f0e5ece7a3e828ed46994a9147308841ebe5ed438f37255a960d7311b",
+      "structural_sdk.py": "7e5558cf5bc019010e462f511a9efab52c5d73434866392bac201f45ecf09b7f",
+      "rhino_worker.py": "b67a6ad1379b09791f09e453187cf8efe3f43daab270bedc1445e8e46114ba8c"
+    }
+  }
+}

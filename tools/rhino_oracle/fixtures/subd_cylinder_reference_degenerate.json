@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_collinear_finish",
+      "case": "cylinder_fit_collinear_finish"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_coincident_finish",
+      "case": "cylinder_fit_coincident_finish"
+    }
+  ]
+}

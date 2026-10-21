@@ -144,6 +144,9 @@ impl CircleInput {
             plane,
         }
     }
+    pub fn construction_plane(&self) -> Frame3 {
+        self.plane
+    }
     /// Latch the viewport construction plane before the first construction pick.
     pub fn set_initial_plane(&mut self, plane: Frame3) {
         if self.anchor().is_none() {

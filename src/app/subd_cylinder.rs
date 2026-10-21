@@ -10,6 +10,8 @@ pub(super) struct Session {
     group: HistoryGroup,
     tolerance: Tolerance,
     preview: Vec<NurbsCurve>,
+    fit_pending: bool,
+    release_picks: Vec<ObjectId>,
 }
 impl Session {
     pub(super) fn preview_curves(&self) -> &[NurbsCurve] {
@@ -59,7 +61,7 @@ impl Session {
     }
 }
 impl VibocerosApp {
-    fn valid_subd_cylinder(&mut self) -> bool {
+    pub(super) fn valid_subd_cylinder(&mut self) -> bool {
         let valid = self.subd_cylinder_session.as_ref().is_none_or(|s| {
             self.document.history_group_is_current(&s.group)
                 && s.tolerance == self.document.tolerance()
@@ -82,7 +84,13 @@ impl VibocerosApp {
             self.viewports[self.active_viewport].construction_plane(),
             self.commands.subd_cylinder_preferences(),
         );
-        for word in &words[1..] {
+        let mode = words.last().copied().filter(|w| {
+            ["Tangent", "FitPoints"]
+                .iter()
+                .any(|m| w.trim_start_matches(['_', '-']).eq_ignore_ascii_case(m))
+        });
+        let end = words.len() - usize::from(mode.is_some());
+        for word in &words[1..end] {
             // Complete scripts go through the command registry; partial option
             // prefixes start the same point getter as a bare command.
             match getter.option(word) {
@@ -103,8 +111,13 @@ impl VibocerosApp {
             group,
             tolerance: self.document.tolerance(),
             preview: vec![],
+            fit_pending: false,
+            release_picks: vec![],
         });
         self.subd_cylinder_prompt();
+        if let Some(mode) = mode {
+            self.subd_cylinder_reference_mode(mode);
+        }
         true
     }
     fn subd_cylinder_prompt(&mut self) {
@@ -138,6 +151,11 @@ impl VibocerosApp {
         let geometry = match definition.geometry(s.input.preferences) {
             Ok(g) => g,
             Err(e) => {
+                if definition.circle.radius == 0. {
+                    self.cancel_interactive_command(false);
+                    self.push_log(format!("Error: {e}"));
+                    return false;
+                }
                 self.subd_cylinder_session
                     .as_mut()
                     .unwrap()
@@ -150,7 +168,11 @@ impl VibocerosApp {
         let mut s = self.subd_cylinder_session.take().unwrap();
         let result = (|| -> Result<(), viboceros_command::CommandError> {
             self.document.begin_group_transaction(&s.group)?;
-            match self.document.add_geometry(geometry) {
+            let result = self
+                .document
+                .release_command_selection_on_history_replay(s.release_picks.iter().copied())
+                .and_then(|()| self.document.add_geometry(geometry));
+            match result {
                 Ok(_) => {
                     self.document.commit_group_transaction(&mut s.group)?;
                     Ok(())
@@ -197,7 +219,25 @@ impl VibocerosApp {
         if !self.valid_subd_cylinder() {
             return true;
         }
+        if self.subd_cylinder_session.as_ref().unwrap().fit_pending
+            || self.tangent_session.is_some()
+        {
+            return false;
+        }
         let word = input.trim().trim_start_matches(['_', '-']);
+        if self
+            .subd_cylinder_session
+            .as_ref()
+            .unwrap()
+            .input
+            .at_start()
+            && ["Tangent", "FitPoints"]
+                .iter()
+                .any(|m| word.eq_ignore_ascii_case(m))
+        {
+            self.subd_cylinder_reference_mode(word);
+            return true;
+        }
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);
             return true;
@@ -254,5 +294,71 @@ impl VibocerosApp {
             s.input.observe_cursor(point);
             s.refresh(Some(point));
         }
+    }
+}
+
+impl VibocerosApp {
+    fn subd_cylinder_reference_mode(&mut self, mode: &str) {
+        self.point_filter = None;
+        self.point_constraint = None;
+        if mode.eq_ignore_ascii_case("Tangent") {
+            self.start_subd_cylinder_tangent();
+            return;
+        }
+        self.subd_cylinder_session.as_mut().unwrap().fit_pending = true;
+        if viboceros_command::circle_fit_points::selected_points(&self.document)
+            .take(3)
+            .count()
+            >= 3
+        {
+            self.accept_subd_cylinder_fit(false);
+        } else {
+            self.document.clear_selection();
+            self.active_command = None;
+            self.drafting_plane = None;
+            self.object_prompt = Some(object_selection::PendingObjectCommand::selecting(
+                viboceros_command::subd_cylinder::selection_prompt(),
+            ));
+            self.command_input.clear();
+            self.push_log("SubDCylinder FitPoints: select points or control points; Enter accepts, Esc cancels".into());
+        }
+    }
+    pub(super) fn accept_subd_cylinder_reference(&mut self, circle: Circle3) -> bool {
+        if !self.valid_subd_cylinder() {
+            return false;
+        }
+        self.tangent_session = None;
+        self.point_filter = None;
+        self.point_constraint = None;
+        let result = self
+            .subd_cylinder_session
+            .as_mut()
+            .unwrap()
+            .input
+            .reference_circle(circle);
+        self.advance_subd_cylinder(result)
+    }
+    pub(super) fn accept_subd_cylinder_fit(&mut self, postselected: bool) -> bool {
+        if !self.valid_subd_cylinder() {
+            return false;
+        }
+        let result = self
+            .subd_cylinder_session
+            .as_mut()
+            .unwrap()
+            .input
+            .fit_points(&self.document);
+        if let Err(e) = result {
+            self.push_log(format!("Error: {e}"));
+            return false;
+        }
+        self.object_prompt = None;
+        let s = self.subd_cylinder_session.as_mut().unwrap();
+        s.fit_pending = false;
+        if postselected {
+            s.release_picks = self.document.selected_object_ids().collect();
+            self.document.clear_selection();
+        }
+        self.advance_subd_cylinder(Ok(()))
     }
 }

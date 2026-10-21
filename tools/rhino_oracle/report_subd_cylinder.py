@@ -39,7 +39,7 @@ def summarize(text):
    'Free-axis endpoint picks rotate the base circle perpendicular to the axis, with native seam orientation also checked on odd around-face counts. Changing DirectionConstraint resets BothSides.',
    'Command and interactive getter comparisons preserve current-layer output, object attributes, selection and one grouped Undo/Redo. Previews and cancellation leave model geometry and Redo untouched; history or tolerance changes invalidate a draft.',
   ],limits=[
-   'Tangent and FitPoints base construction are not implemented for this command. Radius/height defaults and cursor-driven numeric free-axis input have regression tests but need separate native sequence captures; arbitrary input clocks and every mouse trajectory remain unqualified.',
+   'Tangent and FitPoints have a separate qualification report, docs/subd-cylinder-references-qualification.json. Radius/height defaults and cursor-driven numeric free-axis input have regression tests but need separate native sequence captures; arbitrary input clocks and every mouse trajectory remain unqualified.',
    'Three raw diagnostics retain rejected VerticalFaces=1, Vertical and Orientation tokens and their fallback macro effects. The cylinder has no Circle Vertical/Orientation base mode in the captured Rhino build; Vertical resolves to VerticalFaces. Diagnostics are excluded from supported comparisons.',
    'At least three around faces and two vertical faces are required by the command. At most 100000 control vertices and faces are allowed.',
    'The preview shows construction circles and the axis; the smooth surface appears on completion. Sampled facets carry no continuous Hausdorff certificate. Comparative speed and native texture/material parity remain unqualified.',

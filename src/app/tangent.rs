@@ -6,6 +6,7 @@ enum Kind {
     Circle,
     Arc,
     Splop,
+    SubDCylinder,
 }
 impl Kind {
     fn name(self) -> &'static str {
@@ -13,6 +14,7 @@ impl Kind {
             Self::Circle => "Circle",
             Self::Arc => "Arc",
             Self::Splop => "Splop",
+            Self::SubDCylinder => "SubDCylinder",
         }
     }
 }
@@ -44,6 +46,9 @@ impl VibocerosApp {
     ) {
         self.start_tangent(Kind::Circle, output);
     }
+    pub(super) fn start_subd_cylinder_tangent(&mut self) {
+        self.start_tangent(Kind::SubDCylinder, None);
+    }
     pub(super) fn start_tangent_arc(&mut self) {
         self.start_tangent(Kind::Arc, None);
     }
@@ -61,12 +66,17 @@ impl VibocerosApp {
         let plane = self
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
-        if kind != Kind::Splop {
+        if !matches!(kind, Kind::Splop | Kind::SubDCylinder) {
             self.cancel_interactive_command(false);
         }
         let preferences = if kind == Kind::Arc {
             viboceros_command::circle_around_input::Preferences {
                 radius: self.commands.arc_tangent_radius(),
+                ..Default::default()
+            }
+        } else if kind == Kind::SubDCylinder {
+            viboceros_command::circle_around_input::Preferences {
+                radius: self.commands.subd_cylinder_preferences().radius,
                 ..Default::default()
             }
         } else if kind == Kind::Splop {
@@ -121,6 +131,7 @@ impl VibocerosApp {
             Kind::Arc => InteractiveCommand::ArcTangent { anchor },
             Kind::Circle => InteractiveCommand::CircleTangent { anchor },
             Kind::Splop => InteractiveCommand::Splop { last: anchor },
+            Kind::SubDCylinder => InteractiveCommand::SubDCylinder { anchor },
         });
         self.drafting_plane = s
             .support
@@ -142,7 +153,15 @@ impl VibocerosApp {
         };
         self.push_log(format!("{} Tangent: {prompt}; Esc cancels", s.kind.name()));
     }
-    pub(super) fn validate_tangent_sources(&mut self) {
+    pub(super) fn validate_tangent_sources(&mut self) -> bool {
+        if self
+            .tangent_session
+            .as_ref()
+            .is_some_and(|s| s.kind == Kind::SubDCylinder)
+            && !self.valid_subd_cylinder()
+        {
+            return false;
+        }
         if self
             .tangent_session
             .as_ref()
@@ -162,9 +181,20 @@ impl VibocerosApp {
             );
             self.tangent_prompt();
         }
+        true
     }
     fn finish_tangent(&mut self, choice: Option<Point3>) -> bool {
         let s = self.tangent_session.as_ref().unwrap();
+        if s.kind == Kind::SubDCylinder {
+            let result = s.input.finish();
+            return match result {
+                Ok(circle) => self.accept_subd_cylinder_reference(circle),
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            };
+        }
         if s.sphere() {
             let result = s.input.finish();
             return match result {
@@ -233,7 +263,9 @@ impl VibocerosApp {
         if !self.picking_tangent_curve() {
             return false;
         }
-        self.validate_tangent_sources();
+        if !self.validate_tangent_sources() {
+            return true;
+        }
         let result =
             self.tangent_session
                 .as_mut()
@@ -251,7 +283,9 @@ impl VibocerosApp {
         if !self.picking_tangent_curve() {
             return true;
         }
-        self.validate_tangent_sources();
+        if !self.validate_tangent_sources() {
+            return true;
+        }
         let point = id.and_then(|id| {
             let object = self.document.object(id)?;
             let pointer = self.tangent_session.as_ref()?.pointer?;
@@ -271,7 +305,9 @@ impl VibocerosApp {
     }
     pub(super) fn accept_tangent_point(&mut self, point: Point3) -> Option<bool> {
         self.tangent_session.as_ref()?;
-        self.validate_tangent_sources();
+        if !self.validate_tangent_sources() {
+            return Some(false);
+        }
         if let Some(support) = self
             .tangent_session
             .as_ref()
@@ -292,7 +328,9 @@ impl VibocerosApp {
         if self.tangent_session.is_none() {
             return false;
         }
-        self.validate_tangent_sources();
+        if !self.validate_tangent_sources() {
+            return true;
+        }
         let word = text.trim().trim_start_matches(['_', '-']);
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);

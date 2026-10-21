@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_points",
+      "case": "cylinder_tangent_points"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_spatial",
+      "case": "cylinder_tangent_spatial"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_two",
+      "case": "cylinder_tangent_two"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_radius",
+      "case": "cylinder_tangent_radius"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_late_radius",
+      "case": "cylinder_tangent_late_radius"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_from_first",
+      "case": "cylinder_tangent_from_first"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_three",
+      "case": "cylinder_tangent_three"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_cancel_contact",
+      "case": "cylinder_tangent_cancel_contact"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_tangent_cancel_height",
+      "case": "cylinder_tangent_cancel_height"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_preselected",
+      "case": "cylinder_fit_preselected"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_postselected",
+      "case": "cylinder_fit_postselected"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_partial",
+      "case": "cylinder_fit_partial"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_spatial",
+      "case": "cylinder_fit_spatial"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_collinear",
+      "case": "cylinder_fit_collinear"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_insufficient",
+      "case": "cylinder_fit_insufficient"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_cancel_selection",
+      "case": "cylinder_fit_cancel_selection"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_cancel_height",
+      "case": "cylinder_fit_cancel_height"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_grips",
+      "case": "cylinder_fit_grips"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_mixed",
+      "case": "cylinder_fit_mixed"
+    },
+    {
+      "op": "subd_cylinder_references",
+      "id": "cylinder_fit_grips_postselected",
+      "case": "cylinder_fit_grips_postselected"
+    }
+  ]
+}

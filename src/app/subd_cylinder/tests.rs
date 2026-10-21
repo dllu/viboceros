@@ -279,3 +279,207 @@ fn filters_constraints_and_dimensionless_area_follow_the_common_point_tools() {
     assert!(app.point_constraint.is_none());
     assert_eq!(app.document.objects().count(), 0);
 }
+
+use crate::app::subd_native_tests as subd_native;
+#[path = "../../../crates/viboceros-command/tests/support/subd_cylinder_references.rs"]
+mod references_native;
+#[test]
+fn native_reference_getters_match_contacts_fit_selection_grips_and_grouped_history() {
+    for row in references_native::rows() {
+        let value = &row["value"];
+        let mut scene = references_native::setup(value);
+        let mut app = test_app();
+        references_native::check(&scene, value, "before");
+        std::mem::swap(&mut scene.document, &mut app.document);
+        enter(&mut app, "SubDCylinder");
+        for action in references_native::actions(value) {
+            if action.is_object() {
+                assert!(app.pick_tangent_at(
+                    scene.sources[action["curve"].as_u64().unwrap() as usize],
+                    None,
+                    references_native::point(&action["pick"])
+                ));
+            } else {
+                let word = references_native::token(&action);
+                let word = if action.is_array() {
+                    format!("w{word}")
+                } else {
+                    word
+                };
+                enter(&mut app, if word == "Enter" { "" } else { &word });
+            }
+            if action == "FitPoints" && value["input"]["no_output"] == true {
+                assert_eq!(
+                    app.subd_cylinder_session
+                        .as_ref()
+                        .unwrap()
+                        .input
+                        .circle
+                        .unwrap()
+                        .radius,
+                    0.
+                );
+                assert!(app.active_command.is_some());
+            }
+            if app.subd_cylinder_session.is_some() {
+                assert_eq!(app.document.objects().count(), scene.sources.len());
+                assert_eq!(app.document.undo_label(), None);
+            }
+        }
+        assert!(
+            app.subd_cylinder_session.is_none(),
+            "{} {:?}",
+            row["id"],
+            app.command_log
+        );
+        std::mem::swap(&mut scene.document, &mut app.document);
+        let check = references_native::check(&scene, value, "after_script");
+        if value["success"] == true {
+            assert_eq!(scene.document.undo_label(), Some("SubDCylinder"));
+            scene.document.undo().unwrap();
+            references_native::check(&scene, value, "undo");
+            scene.document.redo().unwrap();
+            assert_eq!(references_native::check(&scene, value, "redo"), check);
+        } else {
+            assert_eq!(scene.document.undo_label(), None);
+        }
+        println!(
+            "SUBD_CYLINDER_REFERENCE_GETTER {}",
+            serde_json::json!({"id":row["id"],"check":check,"grouped_history":true})
+        );
+    }
+}
+
+#[test]
+fn inline_reference_modes_and_stale_tangent_sources_keep_the_draft_atomic() {
+    for name in [
+        "cylinder_tangent_points",
+        "cylinder_fit_preselected",
+        "cylinder_fit_postselected",
+    ] {
+        let row = references_native::rows()
+            .into_iter()
+            .find(|r| r["id"] == name)
+            .unwrap();
+        let value = &row["value"];
+        let mut scene = references_native::setup(value);
+        let mut app = test_app();
+        std::mem::swap(&mut scene.document, &mut app.document);
+        let actions = references_native::actions(value);
+        let header = format!(
+            "SubDCylinder {}",
+            actions[..5]
+                .iter()
+                .map(references_native::token)
+                .collect::<Vec<_>>()
+                .join(" ")
+        );
+        enter(&mut app, &header);
+        for a in &actions[5..] {
+            let word = references_native::token(a);
+            let word = if a.is_array() {
+                format!("w{word}")
+            } else {
+                word
+            };
+            enter(&mut app, if word == "Enter" { "" } else { &word });
+        }
+        assert!(
+            app.subd_cylinder_session.is_none(),
+            "{name} {:?}",
+            app.command_log
+        );
+        std::mem::swap(&mut scene.document, &mut app.document);
+        references_native::check(&scene, value, "after_script");
+    }
+    let row = references_native::rows()
+        .into_iter()
+        .find(|r| r["id"] == "cylinder_tangent_two")
+        .unwrap();
+    let mut scene = references_native::setup(&row["value"]);
+    let mut app = test_app();
+    std::mem::swap(&mut scene.document, &mut app.document);
+    enter(&mut app, "Point 99,99,99");
+    app.document.undo().unwrap();
+    enter(&mut app, "SubDCylinder Tangent");
+    assert!(app.pick_tangent_at(scene.sources[0], None, Point3::try_new(3., 0., 0.).unwrap()));
+    assert_eq!(app.document.redo_label(), Some("Point"));
+    enter(&mut app, "Cancel");
+    assert_eq!(app.document.redo_label(), Some("Point"));
+    enter(&mut app, "SubDCylinder Tangent");
+    assert!(app.pick_tangent_at(scene.sources[0], None, Point3::try_new(3., 0., 0.).unwrap()));
+    app.document.delete_objects([scene.sources[0]]).unwrap();
+    assert!(app.pick_tangent_at(scene.sources[1], None, Point3::try_new(0., 4., 0.).unwrap()));
+    assert!(app.subd_cylinder_session.is_none());
+    assert!(app.tangent_session.is_none());
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn fitted_grip_clicks_and_degenerate_fits_preserve_pending_redo() {
+    let row = references_native::rows()
+        .into_iter()
+        .find(|r| r["id"] == "cylinder_fit_grips_postselected")
+        .unwrap();
+    let value = &row["value"];
+    let mut scene = references_native::setup(value);
+    let mut app = test_app();
+    std::mem::swap(&mut scene.document, &mut app.document);
+    enter(&mut app, "Point 99,99,99");
+    app.document.undo().unwrap();
+    enter(
+        &mut app,
+        "SubDCylinder Solid=Yes AroundFaces=8 CapFaceStyle=Quad VerticalFaces=2 FitPoints",
+    );
+    assert!(app.control_point_picking_available());
+    for index in 0..4 {
+        assert!(app.handle_viewport_action(crate::viewport::ViewportOutput {
+            control_point_selection: Some(crate::viewport::ControlPointSelection {
+                picks: vec![viboceros_document::ControlPointId {
+                    object: scene.sources[0],
+                    index
+                }],
+                mode: viboceros_document::SelectionMode::Replace
+            }),
+            ..Default::default()
+        }));
+        assert_eq!(app.document.selected_control_points().count(), index + 1);
+    }
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    assert_eq!(app.document.objects().count(), 1);
+    assert_eq!(app.document.redo_label(), Some("Point"));
+    assert!((app.commands.subd_cylinder_preferences().radius - 2.).abs() < 1e-12);
+    assert_eq!(app.commands.circle_preferences().radius, 1.);
+    enter(&mut app, "5");
+    std::mem::swap(&mut scene.document, &mut app.document);
+    references_native::check(&scene, value, "after_script");
+    for row in references_native::rows()
+        .into_iter()
+        .filter(|r| r["id"].as_str().unwrap().ends_with("_finish"))
+    {
+        let value = &row["value"];
+        let mut scene = references_native::setup(value);
+        let mut app = test_app();
+        std::mem::swap(&mut scene.document, &mut app.document);
+        enter(&mut app, "Point 99,99,99");
+        app.document.undo().unwrap();
+        enter(&mut app, "SubDCylinder FitPoints");
+        assert_eq!(
+            app.subd_cylinder_session
+                .as_ref()
+                .unwrap()
+                .input
+                .circle
+                .unwrap()
+                .radius,
+            0.
+        );
+        assert_eq!(app.document.redo_label(), Some("Point"));
+        enter(&mut app, "5");
+        assert!(app.subd_cylinder_session.is_none());
+        assert_eq!(app.document.redo_label(), Some("Point"));
+        std::mem::swap(&mut scene.document, &mut app.document);
+        references_native::check(&scene, value, "after_script");
+    }
+}
