@@ -1,0 +1,1901 @@
+{
+  "model_epsilon": 1e-06,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "recipes": 60,
+  "native_inline_option_gaps": [
+    "current_layer",
+    "input_layer",
+    "source_layer",
+    "layer_index",
+    "layer_input_name"
+  ],
+  "maximum_sample_difference": 8.000000004670937e-07,
+  "groups": {
+    "base": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 18,
+        "qualified_recipes": 18,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "actual_faces": 1,
+            "actual_vertices": 3,
+            "id": "triangle",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_faces": 1,
+            "native_vertices": 3,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "quad",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "id": "quad_three",
+            "native_empty": true,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 4,
+            "id": "quad_diagonal",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 2,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 4,
+            "actual_vertices": 4,
+            "id": "quad_crossing",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 4,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "id": "pentagon_four",
+            "native_empty": true,
+            "qualified": true
+          },
+          {
+            "actual_faces": 3,
+            "actual_vertices": 5,
+            "id": "pentagon_five",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 3,
+            "native_vertices": 5,
+            "qualified": true
+          },
+          {
+            "id": "open",
+            "native_empty": true,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "dangling",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "duplicate",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "two_regions",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "disconnected",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "delete",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "near_endpoint",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "far_endpoint",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 5,
+            "actual_vertices": 8,
+            "id": "cube",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 5,
+            "native_vertices": 8,
+            "qualified": true
+          },
+          {
+            "actual_faces": 4,
+            "actual_vertices": 4,
+            "id": "tetrahedron",
+            "maximum_bidirectional_sample_error": 6.304854800243425e-16,
+            "native_faces": 4,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "current_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          }
+        ]
+      },
+      "command": {
+        "recipes": 18,
+        "qualified_recipes": 17,
+        "unqualified_recipes": [
+          "current_layer"
+        ],
+        "cases": [
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "triangle",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "quad",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "quad_three",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "quad_diagonal",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "quad_crossing",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "pentagon_four",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "pentagon_five",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "open",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "dangling",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "duplicate",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "two_regions",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "disconnected",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "delete",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "near_endpoint",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "far_endpoint",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "cube",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "tetrahedron",
+            "maximum_bidirectional_sample_error": 6.304854800243425e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "current_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 18,
+        "qualified_recipes": 17,
+        "unqualified_recipes": [
+          "current_layer"
+        ],
+        "cases": [
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "triangle",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "quad",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "quad_three",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "quad_diagonal",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "quad_crossing",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "pentagon_four",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "pentagon_five",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "open",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "dangling",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "duplicate",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "two_regions",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "disconnected",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "delete",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "near_endpoint",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "far_endpoint",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "cube",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "tetrahedron",
+            "maximum_bidirectional_sample_error": 6.304854800243425e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "current_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          }
+        ]
+      }
+    },
+    "variants": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 16,
+        "qualified_recipes": 16,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "gap_20u",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "gap_200u",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "gap_2m",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "gap_20m",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "sdk_tight",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "sdk_loose",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 5,
+            "actual_vertices": 8,
+            "id": "cube_order",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 5,
+            "native_vertices": 8,
+            "qualified": true
+          },
+          {
+            "actual_faces": 5,
+            "actual_vertices": 8,
+            "id": "cube_directions",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 5,
+            "native_vertices": 8,
+            "qualified": true
+          },
+          {
+            "actual_faces": 5,
+            "actual_vertices": 8,
+            "id": "cube_six",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 5,
+            "native_vertices": 8,
+            "qualified": true
+          },
+          {
+            "actual_faces": 4,
+            "actual_vertices": 6,
+            "id": "hexagon",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_faces": 4,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 3,
+            "actual_vertices": 5,
+            "id": "concave",
+            "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+            "native_faces": 3,
+            "native_vertices": 5,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "input_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "output_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "shallow",
+            "maximum_bidirectional_sample_error": 9.93014040103487e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold",
+            "maximum_bidirectional_sample_error": 9.104505742017336e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "flat",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          }
+        ]
+      },
+      "command": {
+        "recipes": 16,
+        "qualified_recipes": 15,
+        "unqualified_recipes": [
+          "input_layer"
+        ],
+        "cases": [
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "gap_20u",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "gap_200u",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "gap_2m",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "gap_20m",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "sdk_tight",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "sdk_loose",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "cube_order",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "cube_directions",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "cube_six",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "hexagon",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "concave",
+            "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "input_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "output_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "shallow",
+            "maximum_bidirectional_sample_error": 9.93014040103487e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold",
+            "maximum_bidirectional_sample_error": 9.104505742017336e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "flat",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 16,
+        "qualified_recipes": 15,
+        "unqualified_recipes": [
+          "input_layer"
+        ],
+        "cases": [
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "gap_20u",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "gap_200u",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "gap_2m",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "gap_20m",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "sdk_tight",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "sdk_loose",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "cube_order",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "cube_directions",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "cube_six",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "hexagon",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "concave",
+            "maximum_bidirectional_sample_error": 4.965068306494546e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "input_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "output_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "shallow",
+            "maximum_bidirectional_sample_error": 9.93014040103487e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold",
+            "maximum_bidirectional_sample_error": 9.104505742017336e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "flat",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          }
+        ]
+      }
+    },
+    "controls": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 18,
+        "qualified_recipes": 18,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "actual_gap_small",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "id": "actual_gap_equal",
+            "native_empty": true,
+            "qualified": true
+          },
+          {
+            "id": "actual_gap_large",
+            "native_empty": true,
+            "qualified": true
+          },
+          {
+            "id": "actual_gap_huge",
+            "native_empty": true,
+            "qualified": true
+          },
+          {
+            "id": "actual_sdk_tight",
+            "native_empty": true,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "actual_sdk_loose",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "transitive",
+            "maximum_bidirectional_sample_error": 8.000000004670937e-07,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold_29",
+            "maximum_bidirectional_sample_error": 9.42055475210265e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold_30",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold_31",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold_34",
+            "maximum_bidirectional_sample_error": 1.0877919644084148e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold_35",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold_36",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold_45",
+            "maximum_bidirectional_sample_error": 1.0175362097255202e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "fold_63",
+            "maximum_bidirectional_sample_error": 1.5383701491068513e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "source_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "restore_current",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 3,
+            "id": "mixed_polyline",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_faces": 1,
+            "native_vertices": 3,
+            "qualified": true
+          }
+        ]
+      },
+      "command": {
+        "recipes": 18,
+        "qualified_recipes": 17,
+        "unqualified_recipes": [
+          "source_layer"
+        ],
+        "cases": [
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_gap_small",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_gap_equal",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_gap_large",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_gap_huge",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_sdk_tight",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_sdk_loose",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "transitive",
+            "maximum_bidirectional_sample_error": 8.000000004670937e-07,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_29",
+            "maximum_bidirectional_sample_error": 9.42055475210265e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_30",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_31",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_34",
+            "maximum_bidirectional_sample_error": 1.0877919644084148e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_35",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_36",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_45",
+            "maximum_bidirectional_sample_error": 1.0175362097255202e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_63",
+            "maximum_bidirectional_sample_error": 1.5383701491068513e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "source_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "restore_current",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "mixed_polyline",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 18,
+        "qualified_recipes": 17,
+        "unqualified_recipes": [
+          "source_layer"
+        ],
+        "cases": [
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_gap_small",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_gap_equal",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_gap_large",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_gap_huge",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_sdk_tight",
+            "maximum_bidirectional_sample_error": 8.881784197001252e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "actual_sdk_loose",
+            "maximum_bidirectional_sample_error": 0.0,
+            "native_empty": true,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "transitive",
+            "maximum_bidirectional_sample_error": 8.000000004670937e-07,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_29",
+            "maximum_bidirectional_sample_error": 9.42055475210265e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_30",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_31",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_34",
+            "maximum_bidirectional_sample_error": 1.0877919644084148e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_35",
+            "maximum_bidirectional_sample_error": 9.930136612989092e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_36",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_45",
+            "maximum_bidirectional_sample_error": 1.0175362097255202e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "fold_63",
+            "maximum_bidirectional_sample_error": 1.5383701491068513e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "source_layer",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "restore_current",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "mixed_polyline",
+            "maximum_bidirectional_sample_error": 5.551115123125783e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          }
+        ]
+      }
+    },
+    "edges": {
+      "native_engine_version": "8.32.26160.13001",
+      "geometry": {
+        "recipes": 8,
+        "qualified_recipes": 8,
+        "unqualified_recipes": [],
+        "cases": [
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "crease_46",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "crease_50",
+            "maximum_bidirectional_sample_error": 8.005932084973442e-16,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "crease_55",
+            "maximum_bidirectional_sample_error": 1.2755491433176288e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "crease_59",
+            "maximum_bidirectional_sample_error": 1.4895204919483639e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "crease_60",
+            "maximum_bidirectional_sample_error": 1.3280813526864938e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 2,
+            "actual_vertices": 6,
+            "id": "crease_61",
+            "maximum_bidirectional_sample_error": 2.094764613337708e-15,
+            "native_faces": 2,
+            "native_vertices": 6,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "layer_index",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          },
+          {
+            "actual_faces": 1,
+            "actual_vertices": 4,
+            "id": "layer_input_name",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_faces": 1,
+            "native_vertices": 4,
+            "qualified": true
+          }
+        ]
+      },
+      "command": {
+        "recipes": 8,
+        "qualified_recipes": 6,
+        "unqualified_recipes": [
+          "layer_index",
+          "layer_input_name"
+        ],
+        "cases": [
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_46",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_50",
+            "maximum_bidirectional_sample_error": 8.005932084973442e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_55",
+            "maximum_bidirectional_sample_error": 1.2755491433176288e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_59",
+            "maximum_bidirectional_sample_error": 1.4895204919483639e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_60",
+            "maximum_bidirectional_sample_error": 1.3280813526864938e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_61",
+            "maximum_bidirectional_sample_error": 2.094764613337708e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "layer_index",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "layer_input_name",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          }
+        ]
+      },
+      "getter": {
+        "recipes": 8,
+        "qualified_recipes": 6,
+        "unqualified_recipes": [
+          "layer_index",
+          "layer_input_name"
+        ],
+        "cases": [
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_46",
+            "maximum_bidirectional_sample_error": 1.0175362097255204e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_50",
+            "maximum_bidirectional_sample_error": 8.005932084973442e-16,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_55",
+            "maximum_bidirectional_sample_error": 1.2755491433176288e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_59",
+            "maximum_bidirectional_sample_error": 1.4895204919483639e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_60",
+            "maximum_bidirectional_sample_error": 1.3280813526864938e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "crease_61",
+            "maximum_bidirectional_sample_error": 2.094764613337708e-15,
+            "native_empty": false,
+            "native_options_supported": true,
+            "qualified": true,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "layer_index",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          },
+          {
+            "geometry_qualified": true,
+            "grouped_history": true,
+            "id": "layer_input_name",
+            "maximum_bidirectional_sample_error": 6.280369834735101e-16,
+            "native_empty": false,
+            "native_options_supported": false,
+            "qualified": false,
+            "sources_and_attributes_preserved": true
+          }
+        ]
+      }
+    }
+  },
+  "guarantees": [
+    "All 60 fixed SDK inputs match bidirectional mesh samples and vertex/face counts at the unchanged 1e-6 gate.",
+    "Command and staged getter replays match effective accepted settings, output geometry, attributes, source snapshots, selection, deletion and grouped Undo/Redo. Rejected native inline spellings remain unqualified token rows.",
+    "Endpoint clustering uses the supplied SDK tolerance or the captured command document tolerance. Interior line crossings are not split. Open chains and dangling branches do not form mesh faces.",
+    "Triangles and independent longer chordless graph cycles recover three-dimensional regions; larger polygons reuse constrained patch triangulation. Command meshes unweld at the captured 60-degree threshold.",
+    "Construction is capped at 100000 line records and 4000000 work units. Dense graphs fail before admission; 5000 disconnected triangular regions exercise linear output charging.",
+    "Preferences belong to the command registry outside model Undo. Staged cancellation preserves Redo, and changed source/history state rejects stale construction."
+  ],
+  "limits": [
+    "Sampling and vertex/face counts do not certify universal face order, orientation, or unique topology for ambiguous networks. A recovered cycle set need not be a closed shell.",
+    "The captured native inline CurrentLayer, Input, source-name and numeric output-layer spellings are rejected. Accepted Current-layer settings are replayed, and unsupported token rows remain explicit. Local layer-ID targeting is an application extension.",
+    "The initial near_endpoint/far_endpoint and gap_* setup moved coincident endpoints together. Those immutable closed-shape captures are retained; actual_gap_* and actual_sdk_* controls independently move only one endpoint.",
+    "Two controls deliberately supply different SDK and document tolerances. Their SDK and command results are compared against their corresponding inputs.",
+    "General nonmanifold and nonorientable networks, nonplanar quad tessellation, projection-ambiguous large polygons, input-order effects beyond the captures, and native comparative speed require further qualification."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/mesh/from_lines.rs": "391439086194f767041c8205cdd54538825b2707adb6f5cca2e7b218b4f5830a",
+    "crates/viboceros-geometry/src/mesh/from_lines/cycles.rs": "648fca0e23005ba95dd2e644e7a71cae8eb0b0d637e5cc9541f17088895c46db",
+    "crates/viboceros-geometry/src/mesh/from_lines/tests.rs": "03a8739d323577ac0beef6716c0b77c70113d2f4c7bab770387637567a6bee76",
+    "crates/viboceros-geometry/src/mesh.rs": "52eb3f888d1da4352cf4608eafe5f992405a236cfdf584f0bfb3c90caa5e8917",
+    "crates/viboceros-geometry/src/mesh/union_find.rs": "6940de0d881901613f3263f895c5e438fb79aad50599de4ea2322738c2f8f8ce",
+    "crates/viboceros-geometry/src/mesh/patch.rs": "e4564970793c796f812d6d4f4e04d09e3bd13b7814df0cf715144197c4cd59de",
+    "crates/viboceros-geometry/src/mesh/patch/constraints.rs": "f31640dfefbfa6710b665e3791f37dff93e0f0c4dc456a1ade85a0219c5eb5a2",
+    "crates/viboceros-geometry/src/mesh/patch/constraints/segments.rs": "c9105387bc0c95faf22e69daab4874bf5ba07e6c74b3d82dbcf385735418c1a4",
+    "crates/viboceros-geometry/src/error.rs": "9c64e4c49ff46151badf89c79303e858deda3f397e38d7ef6db15932be86802e",
+    "crates/viboceros-geometry/src/mesh/normals.rs": "e4cbcef46e287067a0364d7ad440c93d05d6bb77ac82aa1f9f21ad4dd97cd322",
+    "crates/viboceros-geometry/src/mesh/radial.rs": "2048def0e4605cb0153a13437b2bc705b9b6c7552fca51fa0ade62e3dffab03a",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
+    "crates/viboceros-geometry/src/point_projection.rs": "f297f74f124a39cb6dd80abc2abe37cb16f302d23cc71f464004bb44c54a4556",
+    "crates/viboceros-geometry/src/point_projection/fit.rs": "ff9b24930ffdd88aa820d62037fc7c435aeaaa32aeca15040d3bd634e11cba91",
+    "crates/viboceros-geometry/src/point_projection/fit/normalized.rs": "e94962bae969e4480a3032f02edf9ff5c7ec97a4da64e335f352d2447094e9f7",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/line.rs": "a11a1c64fa364f5ee69b58e4b449bd1ab8441ff9bacaf96a7ebf8de54ca433d4",
+    "crates/viboceros-command/src/lib.rs": "d398b4ee6522472a1c007ccaaccfac0b8e880f0a6485a8b55daaa9e25e77b03e",
+    "crates/viboceros-command/src/mesh_from_lines.rs": "6101119d5a6a23aac935906dd066d66f2fee56b2c592465e6d377f8d320fca8b",
+    "crates/viboceros-command/src/object_selection.rs": "052821500a8187f02687e7a5ac59a751fca608cd12d5359966983523863008fc",
+    "crates/viboceros-command/tests/mesh_from_lines_native.rs": "1dc81f8ac57b022f5842eee91a05e958bc70f77e532fa9f7af0e5e6ee04288c3",
+    "crates/viboceros-command/tests/support/mesh_from_lines.rs": "7ae115ac5bba7a5131ba304a8027046bc735ef945e9220ae3fab201515ff8a7d",
+    "src/app.rs": "cfd009643295b65c951e990227fd0612aa80151c11b9412ac3fde621d17acb80",
+    "src/app/object_selection.rs": "6e082e8e82d0e6ff2938a3520c587f890268a180deabb57e390c4e0598877cc5",
+    "src/app/transform_sources.rs": "aec231cae3cfae46702f49ed92a0f54de1eee294e2720e77fc33d9696e02d7bc",
+    "src/app/object_selection/mesh_from_lines.rs": "e2506ba8239e63850e1d591f99ffa9ea4404f3cbb9b8406061b9a30ec9aa8deb",
+    "src/app/object_selection/mesh_from_lines/tests.rs": "76ddabbb09308b9718e19e0e7a838b8c76d48dd909b90ef959ee0c2a8d198d03",
+    "tools/rhino_oracle/mesh_from_lines_probe.py": "0db4e17dac8d503ac42aa475c8fce0c4b0d8f4a832f7596d4eb2f151905a4283",
+    "tools/rhino_oracle/generate_mesh_from_lines.py": "7eb608a97a510f80b2a6549a18667475c183163eaf2d6d41670d50166a2b755f",
+    "tools/rhino_oracle/report_mesh_from_lines.py": "21970715d447cf3754f35765300391230521a579a5cf43b431e3a4d9c90077d0",
+    "tools/rhino_oracle/test_mesh_from_lines.py": "e487e86d86a52823605aea40c938925b14f5dfd30b64fa65363c6203b2f6afd0",
+    "tools/rhino_oracle/client.py": "92eeacee3948e8adb1ec17433e071d01bd3bbd2d8e4aa34c5c4e4e5169958008",
+    "tools/rhino_oracle/structural_sdk.py": "a97c0064fe992227381508ab6c669cec3248e9099837387b4f37c90d5843ef94",
+    "tools/rhino_oracle/rhino_worker.py": "0287a0cc3cd59646849483c1c58cc390f62a635ad85795263c086f76e6bbc437",
+    "tools/rhino_oracle/fixtures/mesh_from_lines.json": "f269d35c1eb72c243437baf3d3dd779423ced8daf64a0ba32893ee3aa1978e8a",
+    "tools/rhino_oracle/observations/mesh_from_lines.json": "8f37832d16039b9751bcef2285c97e1099f5297f0bcc4c49c243260c501eee54",
+    "tools/rhino_oracle/fixtures/mesh_from_lines_variants.json": "ea4a5fcbb95ffb0d38b281478c476b1cd4c4103d4b6d53e4483826b08637ac1b",
+    "tools/rhino_oracle/observations/mesh_from_lines_variants.json": "ec7caac606c3dc6fd998b0245a2ee650863da6226ba0ad8a24eacb154ee284c4",
+    "tools/rhino_oracle/fixtures/mesh_from_lines_controls.json": "8aeab14ff4bd4f6399d2f1e18cd510b8c0c1f1f485377e7ebe32db171726b14f",
+    "tools/rhino_oracle/observations/mesh_from_lines_controls.json": "c049bc7966f0ac9ff7c4b6239fa25556cdb684eff1108dad1cd07307d3ec7905",
+    "tools/rhino_oracle/fixtures/mesh_from_lines_edges.json": "8bab4d96669b9f804b7a7621c5cacbef142f899e3dde57190b235097d96d48db",
+    "tools/rhino_oracle/observations/mesh_from_lines_edges.json": "bc383d42d21c896f1cbdc171626f051acc46364172a3cb868c78feb553e117dc"
+  }
+}

@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
 use viboceros_document::{Geometry, ObjectId, SelectionMode};
 mod divide;
+mod mesh_from_lines;
 mod mesh_patch;
 mod modify_radius;
 mod reduce_polyline;
@@ -36,6 +37,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) modify_radius: Option<modify_radius::Session>,
     pub(super) reduce_polyline: Option<reduce_polyline::Session>,
     pub(super) mesh_patch: Option<mesh_patch::Session>,
+    pub(super) mesh_from_lines: Option<mesh_from_lines::Session>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -63,6 +65,7 @@ impl PendingObjectCommand {
             modify_radius: None,
             reduce_polyline: None,
             mesh_patch: None,
+            mesh_from_lines: None,
         }
     }
     pub(super) fn selection_filter(&self) -> Option<ObjectSelectionFilter> {
@@ -73,6 +76,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn label(&self) -> &'static str {
+        if let Some(session) = &self.mesh_from_lines {
+            return session.label();
+        }
         if let Some(session) = &self.mesh_patch {
             return session.label();
         }
@@ -90,6 +96,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if let Some(session) = &self.mesh_from_lines {
+            return session.hint();
+        }
         if let Some(session) = &self.mesh_patch {
             return session.hint();
         }
@@ -515,6 +524,9 @@ impl VibocerosApp {
                 return true;
             }
         };
+        if description.command == "MeshFromLines" {
+            return self.start_mesh_from_lines_prompt(input, description);
+        }
         if description.command == "MeshPatch" {
             return self.start_mesh_patch_prompt(input, description);
         }
@@ -542,6 +554,7 @@ impl VibocerosApp {
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_patch: None,
+                mesh_from_lines: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -592,6 +605,7 @@ impl VibocerosApp {
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_patch: None,
+                mesh_from_lines: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -627,6 +641,7 @@ impl VibocerosApp {
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_patch: None,
+                mesh_from_lines: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -667,6 +682,7 @@ impl VibocerosApp {
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_patch: None,
+                mesh_from_lines: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -798,6 +814,7 @@ impl VibocerosApp {
                         modify_radius: None,
                         reduce_polyline: None,
                         mesh_patch: None,
+                        mesh_from_lines: None,
                     });
                 }
                 Ok(None) => return false,
@@ -865,6 +882,7 @@ impl VibocerosApp {
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_patch: None,
+                mesh_from_lines: None,
             });
         }
         self.command_input.clear();
@@ -905,6 +923,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_mesh_from_lines_prompt(input) {
+            return true;
+        }
         if self.continue_mesh_patch_prompt(input) {
             return true;
         }

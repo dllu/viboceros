@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_from_lines_command",
+      "id": "gap_20u",
+      "case": "gap_20u"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "gap_200u",
+      "case": "gap_200u"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "gap_2m",
+      "case": "gap_2m"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "gap_20m",
+      "case": "gap_20m"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "sdk_tight",
+      "case": "sdk_tight"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "sdk_loose",
+      "case": "sdk_loose"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "cube_order",
+      "case": "cube_order"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "cube_directions",
+      "case": "cube_directions"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "cube_six",
+      "case": "cube_six"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "hexagon",
+      "case": "hexagon"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "concave",
+      "case": "concave"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "input_layer",
+      "case": "input_layer"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "output_layer",
+      "case": "output_layer"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "shallow",
+      "case": "shallow"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold",
+      "case": "fold"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "flat",
+      "case": "flat"
+    }
+  ]
+}

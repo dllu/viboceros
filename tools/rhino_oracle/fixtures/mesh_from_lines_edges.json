@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_from_lines_command",
+      "id": "crease_46",
+      "case": "crease_46"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "crease_50",
+      "case": "crease_50"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "crease_55",
+      "case": "crease_55"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "crease_59",
+      "case": "crease_59"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "crease_60",
+      "case": "crease_60"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "crease_61",
+      "case": "crease_61"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "layer_index",
+      "case": "layer_index"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "layer_input_name",
+      "case": "layer_input_name"
+    }
+  ]
+}

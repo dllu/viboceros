@@ -79,7 +79,8 @@ class ShortPathTests(TestCase):
             for name in ['short_path_command_probe','surface_short_path_probe','conic_getter_input','join_probe','merge_edges_probe','number_token','managed_mouse_callback','snap_environment']:
                 self.assertEqual((destination/(name+'.py')).read_bytes(),(HERE/(name+'.py')).read_bytes())
     def test_qualification_keeps_native_gaps_and_source_hashes(self):
-        from .report_short_path import ROOT
+        from .report_short_path import ROOT,SOURCES
+        from tools.verify_provenance import verify
         r=json.loads((ROOT/'docs/short-path-qualification.json').read_text())
         self.assertEqual(r['model_epsilon'],1e-6);self.assertFalse(r['full_native_parity']);self.assertTrue(r['command_registered'])
         self.assertEqual(r['sdk_cases']['recipes'],14);self.assertEqual(r['sdk_cases']['qualified_recipes'],4)
@@ -88,4 +89,5 @@ class ShortPathTests(TestCase):
         self.assertEqual(r['trim_boundary_cases']['recipes'],8);self.assertEqual(r['trim_boundary_cases']['qualified_recipes'],8)
         self.assertEqual(r['trim_boundary_getter_cases']['recipes'],8);self.assertEqual(r['trim_boundary_getter_cases']['qualified_recipes'],8)
         self.assertLessEqual(r['maximum_surface_image_bound'],5e-7);self.assertGreater(r['native_cylinder_same_height_witness'],5e-4)
-        for path,sha in r['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+        pinned=set(r.get('sha256',{}))|{path.split(':',1)[1]for path in r.get('source_git_sha256',{})}
+        self.assertEqual(pinned,set(SOURCES));self.assertEqual(verify(r),len(pinned))

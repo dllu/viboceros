@@ -43,6 +43,7 @@ pub use degenerate_faces::MeshFaceCullResult;
 mod offset;
 mod planar_ngons;
 pub use offset::MeshOffsetDirection;
+mod from_lines;
 mod patch;
 mod patch_single_face;
 pub use patch::{MAX_MESH_PATCH_POINTS, MeshPatchOptions};
@@ -3443,6 +3444,24 @@ impl TriangleMesh {
         &self,
         angle_tolerance_radians: Real,
     ) -> Result<(Self, usize), GeometryError> {
+        self.unwelded_vertices_precision(angle_tolerance_radians, false)
+    }
+
+    /// Uses binary32 face-normal comparisons while retaining binary64 vertices.
+    /// Line-network command output uses this normal-channel precision at its
+    /// crease boundary; edge splitting shares the ordinary radial machinery.
+    pub fn unwelded_vertices_with_float_normals(
+        &self,
+        angle_tolerance_radians: Real,
+    ) -> Result<(Self, usize), GeometryError> {
+        self.unwelded_vertices_precision(angle_tolerance_radians, true)
+    }
+
+    fn unwelded_vertices_precision(
+        &self,
+        angle_tolerance_radians: Real,
+        float_normals: bool,
+    ) -> Result<(Self, usize), GeometryError> {
         if !(angle_tolerance_radians.is_finite()
             && (0.0..=std::f64::consts::PI).contains(&angle_tolerance_radians))
         {
@@ -3451,6 +3470,18 @@ impl TriangleMesh {
         let data = self.topology_data();
         let face_normals = self.polygon_face_normals()?;
         let maximum_dot = angle_tolerance_radians.cos();
+        let normal_dot = |left: usize, right: usize| -> Result<Real, GeometryError> {
+            Ok(if float_normals {
+                let a = face_normals[left].as_vector().to_array().map(|v| v as f32);
+                let b = face_normals[right].as_vector().to_array().map(|v| v as f32);
+                Real::from(a[0] * b[0] + a[1] * b[1] + a[2] * b[2])
+            } else {
+                face_normals[left]
+                    .as_vector()
+                    .dot(face_normals[right].as_vector())?
+            }
+            .clamp(-1., 1.))
+        };
         let edges = data
             .edges
             .iter()
@@ -3459,10 +3490,7 @@ impl TriangleMesh {
         let mut qualifying_edges = vec![false; edges.len()];
         for (edge_index, (_, incidence)) in edges.iter().enumerate() {
             for (left, right) in incidence.face_pairs() {
-                let dot = face_normals[left]
-                    .as_vector()
-                    .dot(face_normals[right].as_vector())?
-                    .clamp(-1.0, 1.0);
+                let dot = normal_dot(left, right)?;
                 if dot <= maximum_dot {
                     qualifying_edges[edge_index] = true;
                     break;
@@ -3542,10 +3570,7 @@ impl TriangleMesh {
                     if left.raw_vertices[endpoint] != right.raw_vertices[endpoint] {
                         continue;
                     }
-                    let dot = face_normals[left.face]
-                        .as_vector()
-                        .dot(face_normals[right.face].as_vector())?
-                        .clamp(-1.0, 1.0);
+                    let dot = normal_dot(left.face, right.face)?;
                     if dot > maximum_dot {
                         union_faces(&mut parents, &mut ranks, left_local, right_local);
                     }
@@ -3583,10 +3608,7 @@ impl TriangleMesh {
                     if raw_at_vertex(left) != raw_at_vertex(right) {
                         continue;
                     }
-                    let dot = face_normals[left]
-                        .as_vector()
-                        .dot(face_normals[right].as_vector())?
-                        .clamp(-1.0, 1.0);
+                    let dot = normal_dot(left, right)?;
                     if dot > maximum_dot {
                         union_faces(
                             &mut parents,

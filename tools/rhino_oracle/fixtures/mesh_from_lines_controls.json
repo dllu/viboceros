@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_from_lines_command",
+      "id": "actual_gap_small",
+      "case": "actual_gap_small"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "actual_gap_equal",
+      "case": "actual_gap_equal"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "actual_gap_large",
+      "case": "actual_gap_large"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "actual_gap_huge",
+      "case": "actual_gap_huge"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "actual_sdk_tight",
+      "case": "actual_sdk_tight"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "actual_sdk_loose",
+      "case": "actual_sdk_loose"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "transitive",
+      "case": "transitive"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold_29",
+      "case": "fold_29"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold_30",
+      "case": "fold_30"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold_31",
+      "case": "fold_31"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold_34",
+      "case": "fold_34"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold_35",
+      "case": "fold_35"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold_36",
+      "case": "fold_36"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold_45",
+      "case": "fold_45"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "fold_63",
+      "case": "fold_63"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "source_layer",
+      "case": "source_layer"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "restore_current",
+      "case": "restore_current"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "mixed_polyline",
+      "case": "mixed_polyline"
+    }
+  ]
+}

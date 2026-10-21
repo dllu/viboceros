@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_from_lines_command",
+      "id": "triangle",
+      "case": "triangle"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "quad",
+      "case": "quad"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "quad_three",
+      "case": "quad_three"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "quad_diagonal",
+      "case": "quad_diagonal"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "quad_crossing",
+      "case": "quad_crossing"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "pentagon_four",
+      "case": "pentagon_four"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "pentagon_five",
+      "case": "pentagon_five"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "open",
+      "case": "open"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "dangling",
+      "case": "dangling"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "duplicate",
+      "case": "duplicate"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "two_regions",
+      "case": "two_regions"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "disconnected",
+      "case": "disconnected"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "delete",
+      "case": "delete"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "near_endpoint",
+      "case": "near_endpoint"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "far_endpoint",
+      "case": "far_endpoint"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "cube",
+      "case": "cube"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "tetrahedron",
+      "case": "tetrahedron"
+    },
+    {
+      "op": "mesh_from_lines_command",
+      "id": "current_layer",
+      "case": "current_layer"
+    }
+  ]
+}
