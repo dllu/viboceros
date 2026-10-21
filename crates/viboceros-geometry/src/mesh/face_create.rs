@@ -2,6 +2,63 @@
 use super::*;
 
 impl TriangleMesh {
+    /// The oriented boundary loop starting with the selected incident-face edge.
+    /// Every boundary vertex on this loop must have one incoming and outgoing use.
+    /// The returned first pair is the reverse of `boundary_face_seed`.
+    pub fn boundary_face_loop(&self, index: usize) -> Result<Vec<Point3>, GeometryError> {
+        let data = self.topology_data();
+        let Some((&(a, b), incidence)) = data.edges.iter().nth(index) else {
+            return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: index,
+                edge_count: data.edges.len(),
+            });
+        };
+        let invalid = || GeometryError::Degenerate {
+            context: "mesh boundary chain is open or ambiguous",
+        };
+        if incidence.count != 1 {
+            return Err(invalid());
+        }
+        let (start, next) = if incidence.first_use.unwrap().forward {
+            (a, b)
+        } else {
+            (b, a)
+        };
+        let mut successors = vec![None; data.topological_points.len()];
+        let mut incoming = vec![0u8; data.topological_points.len()];
+        let mut outgoing = vec![0u8; data.topological_points.len()];
+        for (&(a, b), incidence) in &data.edges {
+            if incidence.count == 1 {
+                let (a, b) = if incidence.first_use.unwrap().forward {
+                    (a, b)
+                } else {
+                    (b, a)
+                };
+                successors[a] = Some(b);
+                outgoing[a] = outgoing[a].saturating_add(1);
+                incoming[b] = incoming[b].saturating_add(1);
+            }
+        }
+        let mut indices = vec![start];
+        let mut vertex = next;
+        while vertex != start {
+            if indices.len() >= MAX_MESH_PATCH_POINTS {
+                return Err(GeometryError::MeshPatchLimit);
+            }
+            if outgoing[vertex] != 1 || incoming[vertex] != 1 || indices.len() > data.edges.len() {
+                return Err(invalid());
+            }
+            indices.push(vertex);
+            vertex = successors[vertex].unwrap();
+        }
+        if outgoing[start] != 1 || incoming[start] != 1 {
+            return Err(invalid());
+        }
+        Ok(indices
+            .into_iter()
+            .map(|i| data.topological_points[i])
+            .collect())
+    }
     /// New-face winding starts opposite the sole face at a naked edge.
     pub fn boundary_face_seed(&self, index: usize) -> Result<[Point3; 2], GeometryError> {
         let data = self.topology_data();
@@ -47,11 +104,21 @@ impl TriangleMesh {
         }
         match points.len() {
             3 => Self::try_new(points, vec![[0, 1, 2]], Tolerance::MESH_VALIDATION),
-            4 => Self::try_new_faces(
-                points,
-                vec![MeshFace::Quad([0, 1, 2, 3])],
-                Tolerance::MESH_VALIDATION,
-            ),
+            4 => {
+                // A collinear corner can leave the alternate diagonal usable.
+                // Validate the same split used by projection and mass properties,
+                // retaining the original polygon record and winding.
+                let triangles = mass_triangles::split(&points, [0, 1, 2, 3]);
+                Self::try_new(
+                    points.clone(),
+                    triangles.to_vec(),
+                    Tolerance::MESH_VALIDATION,
+                )?;
+                let mesh = Self::try_from_face_records(points, vec![MeshFace::Quad([0, 1, 2, 3])])?;
+                mesh.polygon_face_normal(0)
+                    .map_err(|_| GeometryError::DegenerateQuad { face: 0 })?;
+                Ok(mesh)
+            }
             count => {
                 points.push(points[0]);
                 let boundary = Polyline3::try_new(points, Tolerance::NUMERICAL_VALIDATION)?;
@@ -131,6 +198,59 @@ mod tests {
                     point(0., 1., 0.)
                 ],
                 true
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn boundary_loops_retain_winding_and_decline_touching_vertex_branches() {
+        let square = |x: f64, y: f64| {
+            TriangleMesh::try_face_from_points(
+                &[
+                    point(x, y, 0.),
+                    point(x + 2., y, 0.),
+                    point(x + 2., y + 2., 0.),
+                    point(x, y + 2., 0.),
+                ],
+                false,
+            )
+            .unwrap()
+        };
+        let first = square(0., 0.);
+        let second = square(2., 2.);
+        let edge = first.diagnostic_edges()[0].index;
+        let path = first.boundary_face_loop(edge).unwrap();
+        let seed = first.boundary_face_seed(edge).unwrap();
+        assert_eq!(&path[..2], &[seed[1], seed[0]]);
+        assert_eq!(path.len(), 4);
+        let touching = TriangleMesh::try_append(&[&first, &second]).unwrap();
+        assert!(touching.boundary_face_loop(edge).is_err());
+    }
+    #[test]
+    fn collinear_corners_use_a_valid_shorter_diagonal_without_reordering_the_quad() {
+        let corners = [
+            point(0., 0., 0.),
+            point(0., 3., 0.),
+            point(0., 6., 0.),
+            point(-3., 0., 0.),
+        ];
+        let mesh = TriangleMesh::try_face_from_points(&corners, false).unwrap();
+        assert_eq!(mesh.vertices(), &corners);
+        assert_eq!(mesh.faces(), &[MeshFace::Quad([0, 1, 2, 3])]);
+        let (triangles, _) = mesh.triangulate_quads(Tolerance::MESH_VALIDATION).unwrap();
+        assert_eq!(triangles.faces().len(), 2);
+        assert!((mesh.area().unwrap() - 9.).abs() < 1e-12);
+        assert!(mesh.polygon_face_normal(0).unwrap().as_vector().z() > 0.);
+        assert!(
+            TriangleMesh::try_face_from_points(
+                &[
+                    point(0., 0., 0.),
+                    point(1., 0., 0.),
+                    point(2., 0., 0.),
+                    point(3., 0., 0.)
+                ],
+                false
             )
             .is_err()
         );

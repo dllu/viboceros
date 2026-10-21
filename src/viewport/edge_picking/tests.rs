@@ -246,3 +246,59 @@ fn diagnostic_edges_and_endpoint_markers_paint_without_model_changes_and_hide_wi
     ));
     output.drop_without_applying_deltas();
 }
+
+#[test]
+fn session_mesh_boundaries_deliver_real_viewport_clicks_without_document_objects() {
+    let doc = Document::default();
+    let edges = [(7, [point(4., 0., 0.), point(4., 3., 0.)])];
+    let mut view = Viewport::new(ViewKind::Top);
+    let context = egui::Context::default();
+    let mut frame = |events| {
+        let mut output = ViewportOutput::default();
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(rect()),
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    output = view.show(
+                        ui,
+                        &doc,
+                        ViewportInput {
+                            edge_pick: true,
+                            mesh_boundary_edges: Some(&edges),
+                            drafting: DraftingInput {
+                                active: true,
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        },
+                        &[],
+                        0,
+                        true,
+                    );
+                },
+            )
+            .drop_without_applying_deltas();
+        (output, view.last_rect.unwrap())
+    };
+    let (_, area) = frame(vec![]);
+    let pointer = Viewport::new(ViewKind::Top)
+        .project(point(4., 1.5, 0.), area)
+        .unwrap();
+    let button = |pressed| egui::Event::PointerButton {
+        pos: pointer,
+        button: PointerButton::Primary,
+        pressed,
+        modifiers: egui::Modifiers::NONE,
+    };
+    frame(vec![egui::Event::PointerMoved(pointer), button(true)]);
+    let (output, _) = frame(vec![button(false)]);
+    assert_eq!(output.mesh_boundary_edge_click, Some(vec![7]));
+    assert!(output.edge_click.is_none());
+    assert!(output.selection_click.is_none());
+    assert!(output.picked_point.is_none());
+    assert_eq!(doc.objects().count(), 0);
+}

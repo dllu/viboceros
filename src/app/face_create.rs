@@ -17,13 +17,41 @@ pub(super) struct Session {
     group: HistoryGroup,
     tolerance: Tolerance,
     preview: Vec<NurbsCurve>,
+    boundaries: Vec<(usize, [Point3; 2])>,
 }
 impl Session {
+    pub(super) fn boundary_pick(&self) -> bool {
+        !self.append_pick && self.draft.as_ref().is_none_or(solver::Draft::waiting_edge)
+    }
+    pub(super) fn boundary_segments(&self) -> &[(usize, [Point3; 2])] {
+        &self.boundaries
+    }
     pub(super) fn preview_curves(&self) -> &[NurbsCurve] {
         &self.preview
     }
     fn refresh(&mut self, cursor: Option<Point3>) {
         self.preview.clear();
+        self.boundaries.clear();
+        if !self.append_pick && self.draft.as_ref().is_none_or(solver::Draft::waiting_edge) {
+            let mesh = if let Some(draft) = &self.draft {
+                draft.current_mesh().ok().flatten()
+            } else {
+                self.original
+                    .as_ref()
+                    .and_then(|geometry| match &**geometry {
+                        Geometry::Mesh(mesh) => Some(mesh.clone()),
+                        _ => None,
+                    })
+            };
+            if let Some(mesh) = mesh {
+                self.boundaries = mesh
+                    .diagnostic_edges()
+                    .into_iter()
+                    .filter(|e| e.face_count == 1)
+                    .map(|e| (e.index, e.points))
+                    .collect();
+            }
+        }
         let Some(draft) = &self.draft else {
             return;
         };
@@ -33,14 +61,13 @@ impl Session {
             .map(|f| (&f.points, false))
             .chain(std::iter::once((&draft.points, true)))
         {
-            let mut points = points.clone();
-            if let Some(p) = cursor
-                .filter(|_| current)
-                .and_then(|p| draft.constrained_corner(p).ok())
-                && points.last() != Some(&p)
-            {
-                points.push(p);
-            }
+            let mut points = if current {
+                draft
+                    .preview_corners(cursor)
+                    .unwrap_or_else(|_| points.clone())
+            } else {
+                points.clone()
+            };
             if points.len() < 2 {
                 continue;
             }
@@ -89,9 +116,7 @@ impl VibocerosApp {
         let original = target
             .and_then(|id| self.document.object(id))
             .map(|o| o.geometry_snapshot().clone());
-        let draft = if input.preferences.from_edge && input.edge.is_none() {
-            None
-        } else {
+        let draft = {
             match solver::Draft::new(
                 input.preferences,
                 solver::source(&self.document, target),
@@ -115,6 +140,7 @@ impl VibocerosApp {
             group,
             tolerance: self.document.tolerance(),
             preview: vec![],
+            boundaries: vec![],
         });
         self.active_command = Some(InteractiveCommand::FaceCreate { anchor: None });
         for token in input.tokens {
@@ -159,10 +185,10 @@ impl VibocerosApp {
             format!("3DFace: enter {value}")
         } else if s.append_pick {
             "3DFace: select a mesh to append".into()
-        } else if s.draft.is_none() {
+        } else if s.draft.as_ref().is_none_or(solver::Draft::waiting_edge) {
             "3DFace: select a boundary edge".into()
         } else {
-            "3DFace: pick a corner; Enter accepts (PolygonType InPlane WeldAngle Mode Append Undo)"
+            "3DFace: pick a corner; Enter ends the chain (PolygonType FromEdge Chain InPlane WeldAngle Mode Undo)"
                 .into()
         };
         self.push_log(message);
@@ -173,9 +199,9 @@ impl VibocerosApp {
             .is_some_and(|s| s.append_pick)
     }
     pub(super) fn picking_face_edge(&self) -> bool {
-        self.face_create_session
-            .as_ref()
-            .is_some_and(|s| !s.append_pick && s.draft.is_none())
+        self.face_create_session.as_ref().is_some_and(|s| {
+            !s.append_pick && s.draft.as_ref().is_none_or(solver::Draft::waiting_edge)
+        })
     }
     pub(super) fn pick_face_append(&mut self, id: Option<ObjectId>) -> bool {
         if !self.picking_face_append() {
@@ -216,23 +242,42 @@ impl VibocerosApp {
         }
         true
     }
-    fn pick_face_edge(&mut self, index: usize) {
+    pub(super) fn pick_face_edge(&mut self, index: usize) {
         if !self.valid_face_create() {
             return;
         }
-        let s = self.face_create_session.as_mut().unwrap();
-        match solver::Draft::new(
-            s.preferences,
-            solver::source(&self.document, s.target),
-            Some(index),
-        ) {
-            Ok(d) => {
-                s.draft = Some(d);
+        let Some(s) = self.face_create_session.as_mut() else {
+            return;
+        };
+        let result = if let Some(draft) = s.draft.as_mut() {
+            draft.pick_edge(index)
+        } else {
+            solver::Draft::new(
+                s.preferences,
+                solver::source(&self.document, s.target),
+                Some(index),
+            )
+            .map(|draft| {
+                s.draft = Some(draft);
+            })
+        };
+        match result {
+            Ok(()) => {
                 s.edge = Some(index);
                 self.face_create_prompt();
             }
             Err(e) => self.push_log(format!("Error: {e}")),
         }
+    }
+    #[cfg(test)]
+    pub(super) fn face_boundary_edges(&self) -> Option<&[(usize, [Point3; 2])]> {
+        self.picking_face_edge().then(|| {
+            self.face_create_session
+                .as_ref()
+                .unwrap()
+                .boundaries
+                .as_slice()
+        })
     }
     pub(super) fn pick_face_edge_click(&mut self, picks: &[crate::viewport::EdgePick]) -> bool {
         if !self.picking_face_edge() {
@@ -263,6 +308,7 @@ impl VibocerosApp {
         };
         match draft.accept(token) {
             Ok(()) => {
+                s.preferences = draft.preferences;
                 self.last_point = draft.anchor().or(self.last_point);
                 if draft.finished {
                     self.finish_face_create();
@@ -313,7 +359,7 @@ impl VibocerosApp {
             return true;
         }
         if self.picking_face_edge()
-            && let Ok(index) = word.parse()
+            && let Ok(index) = word.strip_prefix("Edge=").unwrap_or(word).parse()
         {
             self.pick_face_edge(index);
             self.command_input.clear();
@@ -352,6 +398,13 @@ impl VibocerosApp {
             self.face_create_prompt();
             self.command_input.clear();
             return true;
+        } else if word.eq_ignore_ascii_case("Chain") {
+            option = format!("Chain={}", if s.preferences.chain { "No" } else { "Yes" });
+        } else if word.eq_ignore_ascii_case("FromEdge") {
+            option = format!(
+                "FromEdge={}",
+                if s.preferences.from_edge { "No" } else { "Yes" }
+            );
         } else if word.eq_ignore_ascii_case("InPlane") {
             option = format!(
                 "InPlane={}",
@@ -366,65 +419,47 @@ impl VibocerosApp {
             s.preferences,
         ) {
             Ok(input) => {
-                let rebuild = input.append.is_some()
-                    || input.edge.is_some_and(|edge| Some(edge) != s.edge)
-                    || input.preferences.from_edge != s.preferences.from_edge;
-                if rebuild
-                    && s.draft
-                        .as_ref()
-                        .is_some_and(|d| d.face_count() > 0 || !d.points.is_empty())
-                {
-                    self.push_log(
-                        "Undo the current corners before changing Append or FromEdge".into(),
-                    );
+                if let Some(edge) = input.edge {
+                    self.pick_face_edge(edge);
                     self.command_input.clear();
                     return true;
                 }
-                if rebuild {
-                    let target = match input
-                        .append
-                        .map(|id| solver::target(&self.document, Some(id)))
-                        .transpose()
+                if let Some(id) = input.append {
+                    if s.draft
+                        .as_ref()
+                        .is_some_and(|d| d.face_count() > 0 || !d.points.is_empty())
                     {
-                        Ok(target) => target.flatten().or(s.target),
-                        Err(e) => {
-                            self.push_log(format!("Error: {e}"));
-                            self.command_input.clear();
-                            return true;
-                        }
-                    };
-                    let edge = if input.preferences.from_edge {
-                        input.edge.or(s.edge)
-                    } else {
-                        None
-                    };
-                    let draft = if input.preferences.from_edge && edge.is_none() {
-                        None
-                    } else {
-                        match solver::Draft::new(
-                            input.preferences,
-                            solver::source(&self.document, target),
-                            edge,
-                        ) {
-                            Ok(draft) => Some(draft),
-                            Err(e) => {
-                                self.push_log(format!("Error: {e}"));
-                                self.command_input.clear();
-                                return true;
-                            }
-                        }
-                    };
-                    s.target = target;
-                    s.original = target
-                        .and_then(|id| self.document.object(id))
-                        .map(|o| o.geometry_snapshot().clone());
-                    s.edge = edge;
-                    s.append_pick = input.preferences.from_edge && target.is_none();
-                    s.draft = draft;
-                } else if let Some(draft) = &mut s.draft {
-                    draft.preferences = input.preferences;
+                        self.push_log("Clear the draft before changing its append target".into());
+                        self.command_input.clear();
+                        return true;
+                    }
+                    s.preferences = input.preferences;
+                    s.append_pick = true;
+                    self.pick_face_append(Some(id));
+                    self.command_input.clear();
+                    return true;
+                }
+                let result = if let Some(draft) = &mut s.draft {
+                    draft.update_preferences(input.preferences)
+                } else {
+                    solver::Draft::new(
+                        input.preferences,
+                        solver::source(&self.document, s.target),
+                        None,
+                    )
+                    .map(|d| {
+                        s.draft = Some(d);
+                    })
+                };
+                if let Err(e) = result {
+                    self.push_log(format!("Error: {e}"));
+                    self.command_input.clear();
+                    return true;
                 }
                 s.preferences = input.preferences;
+                s.append_pick = s.preferences.from_edge
+                    && s.target.is_none()
+                    && s.draft.as_ref().is_none_or(|d| d.face_count() == 0);
                 s.value = None;
                 self.commands.accept_face_create_preferences(s.preferences);
                 self.face_create_prompt();
@@ -439,12 +474,8 @@ impl VibocerosApp {
             return false;
         };
         if s.draft.as_ref().is_some_and(|d| !d.points.is_empty()) {
-            if s.preferences.from_edge {
-                s.draft = None;
-                s.edge = None;
-            } else {
-                s.draft.as_mut().unwrap().clear_points();
-            }
+            s.draft.as_mut().unwrap().clear_points();
+            s.edge = None;
             self.face_create_prompt();
             self.command_input.clear();
             return true;

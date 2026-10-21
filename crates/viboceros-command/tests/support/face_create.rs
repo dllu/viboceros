@@ -39,10 +39,65 @@ pub fn controls() -> Vec<Value> {
     assert_eq!(rows.len(), 5);
     rows.clone()
 }
+#[allow(dead_code)]
+pub fn drafts() -> Vec<Value> {
+    let mut rows = vec![];
+    for (source, count) in [
+        (
+            include_str!("../../../../tools/rhino_oracle/observations/face_create_drafts.json"),
+            12,
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/face_create_draft_extras.json"
+            ),
+            6,
+        ),
+    ] {
+        let data: Value = serde_json::from_str(source).unwrap();
+        let group = data["results"].as_array().unwrap();
+        assert_eq!(group.len(), count);
+        rows.extend(group.iter().cloned());
+    }
+    rows
+}
+#[allow(dead_code)]
+pub fn edge_index(mesh: &TriangleMesh, pick: &Value) -> usize {
+    let pick = point(pick);
+    mesh.diagnostic_edges()
+        .into_iter()
+        .filter(|e| e.face_count == 1)
+        .find(|e| {
+            let [a, b] = e.points;
+            let ab = a.vector_to(b).unwrap();
+            let ap = a.vector_to(pick).unwrap();
+            let t = ap.dot(ab).unwrap() / ab.dot(ab).unwrap();
+            (0. ..=1.).contains(&t)
+                && a.translated(ab.scaled(t).unwrap())
+                    .unwrap()
+                    .distance_to(pick)
+                    .unwrap()
+                    < 1e-8
+        })
+        .expect("captured boundary edge")
+        .index
+}
+#[allow(dead_code)]
+pub fn draft_header(value: &Value) -> String {
+    format!(
+        "{} Chain={}",
+        header(value).replace("FromEdge=No", "FromEdge=Yes"),
+        if value["input"]["chain"] == true {
+            "Yes"
+        } else {
+            "No"
+        }
+    )
+}
 fn point(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[Real; 3]>(v.clone()).unwrap()).unwrap()
 }
-fn mesh(v: &Value, ngons: &Value) -> TriangleMesh {
+fn try_mesh(v: &Value, ngons: &Value) -> Result<TriangleMesh, viboceros_geometry::GeometryError> {
     let mesh = TriangleMesh::try_new_faces(
         v["vertices"]
             .as_array()
@@ -63,8 +118,7 @@ fn mesh(v: &Value, ngons: &Value) -> TriangleMesh {
             })
             .collect(),
         Tolerance::MESH_VALIDATION,
-    )
-    .unwrap();
+    )?;
     mesh.try_with_ngons(
         ngons
             .as_array()
@@ -78,7 +132,49 @@ fn mesh(v: &Value, ngons: &Value) -> TriangleMesh {
             })
             .collect(),
     )
-    .unwrap()
+}
+fn mesh(v: &Value, ngons: &Value) -> TriangleMesh {
+    try_mesh(v, ngons).unwrap()
+}
+fn comparison_mesh(v: &Value, ngons: &Value) -> (TriangleMesh, Option<String>) {
+    match try_mesh(v, ngons) {
+        Ok(mesh) => (mesh, None),
+        Err(error) => {
+            let vertices = v["vertices"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(point)
+                .collect::<Vec<_>>();
+            let mut parts = vec![];
+            for face in v["faces"].as_array().unwrap() {
+                let indices: Vec<usize> = serde_json::from_value(face.clone()).unwrap();
+                let splits = if indices.len() == 3 {
+                    vec![[indices[0], indices[1], indices[2]]]
+                } else {
+                    let [a, b, c, d]: [usize; 4] = indices.try_into().unwrap();
+                    if vertices[a].distance_to(vertices[c]).unwrap()
+                        <= vertices[b].distance_to(vertices[d]).unwrap()
+                    {
+                        vec![[a, b, c], [a, c, d]]
+                    } else {
+                        vec![[a, b, d], [b, c, d]]
+                    }
+                };
+                for face in splits {
+                    if let Ok(mesh) = TriangleMesh::try_new(
+                        face.map(|i| vertices[i]).to_vec(),
+                        vec![[0, 1, 2]],
+                        Tolerance::MESH_VALIDATION,
+                    ) {
+                        parts.push(mesh);
+                    }
+                }
+            }
+            let mesh = TriangleMesh::try_append(&parts.iter().collect::<Vec<_>>()).unwrap();
+            (mesh, Some(error.to_string()))
+        }
+    }
 }
 pub fn setup(value: &Value) -> Scene {
     let mut document = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap());
@@ -160,19 +256,13 @@ pub fn check(
     let targets = value[phase].as_array().unwrap();
     assert_eq!(doc.objects().count(), targets.len());
     let mut comparisons = Vec::new();
+    let mut metadata = true;
     for (object, target) in doc.objects().zip(targets) {
-        if let Some(source) = source {
-            assert_eq!(object.id(), source);
-        }
-        assert_eq!(
-            doc.is_selected(object.id()),
-            target["selected"].as_bool().unwrap()
-        );
-        assert_eq!(object.attributes().name(), target["name"].as_str());
-        assert_eq!(
-            doc.layer(object.attributes().layer_id()).unwrap().name(),
-            target["layer"].as_str().unwrap()
-        );
+        metadata &= source.is_none_or(|id| object.id() == id)
+            && doc.is_selected(object.id()) == target["selected"].as_bool().unwrap()
+            && object.attributes().name() == target["name"].as_str()
+            && doc.layer(object.attributes().layer_id()).unwrap().name()
+                == target["layer"].as_str().unwrap();
         if phase == "undo" && source == Some(object.id()) {
             assert!(
                 original
@@ -183,12 +273,18 @@ pub fn check(
         let Geometry::Mesh(actual) = object.geometry() else {
             panic!("mesh required")
         };
-        let expected = mesh(&target["mesh"], &target["ngons"]);
+        let (expected, admission) = comparison_mesh(&target["mesh"], &target["ngons"]);
         let error = directed(actual, &expected).max(directed(&expected, actual));
-        let counts = actual.vertices().len() == expected.vertices().len()
-            && actual.faces().len() == expected.faces().len()
+        let counts = actual.vertices().len()
+            == target["mesh"]["vertices"].as_array().unwrap().len()
+            && actual.faces().len() == target["mesh"]["faces"].as_array().unwrap().len()
             && actual.faces().iter().filter(|f| f.is_triangle()).count()
-                == expected.faces().iter().filter(|f| f.is_triangle()).count();
+                == target["mesh"]["faces"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .filter(|f| f.as_array().unwrap().len() == 3)
+                    .count();
         let ngons = actual.ngons().len() == expected.ngons().len()
             && actual.ngons().iter().zip(expected.ngons()).all(|(a, b)| {
                 let a = a
@@ -208,11 +304,11 @@ pub fn check(
                             .all(|(a, b)| a.distance_to(*b).unwrap() < 1e-6)
                     })
             });
-        comparisons.push(json!({"qualified":error<=1e-6&&counts&&ngons,"maximum_bidirectional_sample_error":error,"counts_match":counts,"ngons_match":ngons,
-            "actual_vertices":actual.vertices().len(),"native_vertices":expected.vertices().len(),"actual_faces":actual.faces().len(),"native_faces":expected.faces().len(),
+        comparisons.push(json!({"qualified":error<=1e-6&&counts&&ngons,"native_legacy_diagonal_error":admission,"maximum_bidirectional_sample_error":error,"counts_match":counts,"ngons_match":ngons,
+            "actual_vertices":actual.vertices().len(),"native_vertices":target["mesh"]["vertices"].as_array().unwrap().len(),"actual_faces":actual.faces().len(),"native_faces":target["mesh"]["faces"].as_array().unwrap().len(),
             "actual_ngons":actual.ngons().len(),"native_ngons":expected.ngons().len()}));
     }
-    json!({"qualified":comparisons.iter().all(|r|r["qualified"]==true),"meshes":comparisons,"attributes_and_identity_preserved":true})
+    json!({"qualified":metadata&&comparisons.iter().all(|r|r["qualified"]==true),"meshes":comparisons,"attributes_and_identity_preserved":metadata})
 }
 fn directed(a: &TriangleMesh, b: &TriangleMesh) -> Real {
     let index = MeshProjectionIndex::new(b).unwrap();

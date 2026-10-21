@@ -482,6 +482,12 @@ class OracleClient:
             if request != control_request():
                 raise OracleProtocolError('3DFace physical inputs require the exact dedicated control sequence')
             interaction = IdlePicker()
+        if any(op.get('op')=='face_create_command' and op.get('case','').startswith(('chain_','edge_multiple','edge_triangles','edge_ngons','edge_collinear','edge_flip')) for op in request.get('operations', [])):
+            from .face_draft_cases import request as draft_request,extra_request
+            from .group_picking import IdlePicker
+            if request not in (draft_request(),extra_request()):
+                raise OracleProtocolError('3DFace chain inputs require the exact dedicated draft sequence')
+            interaction = IdlePicker()
         if any(op.get('op')=='reparameterize_block_command' for op in request.get('operations',[])):
             from .reparameterize_block_probe import validate
             from .reparameterize_block_picker import BlockReferencePicker

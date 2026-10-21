@@ -41,6 +41,28 @@ impl Viewport {
         }
     }
 
+    /// Pick supplied boundary segments using the same clipping and capture radius as B-rep edges.
+    pub(crate) fn pick_mesh_boundary_edges(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        edges: &[(usize, [Point3; 2])],
+    ) -> Vec<usize> {
+        if !pointer.is_finite() || !rect.contains(pointer) {
+            return vec![];
+        }
+        let mut hits = edges
+            .iter()
+            .filter_map(|(index, [a, b])| {
+                let distance = self.selection_line_distance(pointer, *a, *b, rect);
+                (distance.is_finite() && distance <= PICK_CAPTURE_PIXELS)
+                    .then_some((distance, *index))
+            })
+            .collect::<Vec<_>>();
+        hits.sort_by(|a, b| a.0.total_cmp(&b.0).then(a.1.cmp(&b.1)));
+        hits.into_iter().map(|(_, index)| index).collect()
+    }
+
     pub(super) fn pick_edges(
         &self,
         pointer: Pos2,

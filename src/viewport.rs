@@ -398,6 +398,8 @@ pub struct ViewportInput<'a> {
     pub parametric_pick: bool,
     pub parametric_highlights: &'a [ParametricPick],
     pub edge_pick: bool,
+    /// Session-owned mesh boundaries, including faces not yet in the document.
+    pub mesh_boundary_edges: Option<&'a [(usize, [Point3; 2])]>,
     /// Allow ordinary curve selection alongside edge hits in the source getter.
     pub curve_or_edge_pick: bool,
     pub component_preselection: bool,
@@ -509,6 +511,7 @@ impl Default for ViewportInput<'_> {
             parametric_pick: false,
             parametric_highlights: &[],
             edge_pick: false,
+            mesh_boundary_edges: None,
             curve_or_edge_pick: false,
             component_preselection: false,
             control_point_pick: false,
@@ -542,6 +545,7 @@ pub struct ViewportOutput {
     pub zoom_target_result: Option<Result<bool, &'static str>>,
     pub zoom_target_cancelled: bool,
     pub edge_click: Option<Vec<EdgePick>>,
+    pub mesh_boundary_edge_click: Option<Vec<usize>>,
     pub edge_parameter: Option<Real>,
     pub face_click: Option<(ObjectId, usize)>,
     pub face_hit_point: Option<Point3>,
@@ -2207,7 +2211,27 @@ impl Viewport {
                 }
             }
         }
-        let edge_hover = if input.edge_pick && !input.zoom_window && input.zoom_target.is_none() {
+        if let Some(edges) = input.mesh_boundary_edges {
+            if response.hovered() {
+                ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
+            }
+            let hits = response
+                .hover_pos()
+                .map(|p| self.pick_mesh_boundary_edges(p, rect, edges))
+                .unwrap_or_default();
+            for (index, [a, b]) in edges {
+                if hits.contains(index)
+                    && let Some([a, b]) = self.project_selection_segment(*a, *b, rect)
+                {
+                    painter.line_segment([a, b], Stroke::new(3., Color32::from_rgb(245, 160, 20)));
+                }
+            }
+        }
+        let edge_hover = if input.edge_pick
+            && input.mesh_boundary_edges.is_none()
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+        {
             if response.hovered() {
                 ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
             }
@@ -2767,7 +2791,21 @@ impl Viewport {
                 .clicked_by(PointerButton::Primary)
                 .then_some(edge_parameter)
                 .flatten(),
+            mesh_boundary_edge_click: input
+                .mesh_boundary_edges
+                .filter(|_| {
+                    !input.zoom_window
+                        && input.zoom_target.is_none()
+                        && response.clicked_by(PointerButton::Primary)
+                })
+                .map(|edges| {
+                    response
+                        .interact_pointer_pos()
+                        .map(|p| self.pick_mesh_boundary_edges(p, rect, edges))
+                        .unwrap_or_default()
+                }),
             edge_click: (input.edge_pick
+                && input.mesh_boundary_edges.is_none()
                 && component_mode.is_none()
                 && !input.zoom_window
                 && input.zoom_target.is_none()

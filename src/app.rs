@@ -9853,6 +9853,11 @@ impl VibocerosApp {
             self.accept_component_click(click);
         } else if let Some(window) = output.component_window {
             self.accept_component_window(window);
+        } else if let Some(picks) = output.mesh_boundary_edge_click {
+            if let Some(index) = picks.first() {
+                self.pick_face_edge(*index);
+            }
+            return true;
         } else if let Some(picks) = output.edge_click {
             if self.pick_face_edge_click(&picks) {
                 return true;
@@ -11165,6 +11170,11 @@ impl eframe::App for VibocerosApp {
             .rectangle_getter()
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let mesh_boundary_edges = self
+            .face_create_session
+            .as_ref()
+            .filter(|s| edge_pick && s.boundary_pick())
+            .map(|s| s.boundary_segments());
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -11401,6 +11411,7 @@ impl eframe::App for VibocerosApp {
                             component_highlights: &component_highlights,
                             component_highlight_segments: &component_highlight_segments,
                             edge_pick,
+                            mesh_boundary_edges,
                             curve_or_edge_pick,
                             point_deviation: deviation_view.as_ref(),
                             curve_deviation: curve_deviation_view.as_ref(),

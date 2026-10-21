@@ -41,6 +41,9 @@ CONTROLS={
  'append_after_face_cancel_partial':dict(append=True,multiple=True,points=[[4.,0.,0.],[7.,0.,0.],[7.,3.,0.],[4.,3.,0.],[8.,0.,0.],[9.,0.,0.]],cancel=True),
 }
 SCENES.update(CONTROLS)
+if __package__:from .face_draft_cases import ALL_DRAFTS as DRAFTS
+else:from face_draft_cases import ALL_DRAFTS as DRAFTS
+SCENES.update(DRAFTS)
 
 
 def request():
@@ -100,13 +103,19 @@ def run(op,host,iterations,tolerance):
   command+=' _InPlane='+('Yes'if case.get('in_plane')else'No')
   command+=' _WeldAngle='+str(case.get('weld_angle',180.))
   command+=' _Mode='+('MultipleFaces'if case.get('multiple')else'SingleFace')
-  command+=' _FromEdge='+('Yes _Pause'if case.get('edge_pick')else'No')
+  command+=' _FromEdge='+('Yes'if op['case']in DRAFTS else'Yes _Pause'if case.get('edge_pick')else'No')
+  if op['case']in DRAFTS and case.get('polygon','Quad')=='Quad':command+=' _Chain='+('Yes'if case.get('chain')else'No')
   for point in case['points']:
-   command+=' _Undo'if point=='Undo'else' w'+','.join(format(float(v),'.17g')for v in point)
+   if isinstance(point,dict):command+=' _Pause'
+   elif isinstance(point,str):command+=' _'+point
+   else:command+=' w'+','.join(format(float(v),'.17g')for v in point)
   if case.get('cancel'):command+=' _Pause'
-  else:command+=' _Enter _Cancel _Cancel _Cancel'
+  else:command+=' _Enter _Enter _Cancel _Cancel _Cancel'if op['case']in DRAFTS else' _Enter _Cancel _Cancel _Cancel'
   trace={}
   def execute():
+   if op['case']in DRAFTS:
+    from face_draft_input import drive
+    result,observed=drive(op,case,command,host);trace.update(observed);return result
    if op['case']in CONTROLS:
     from face_create_input import drive
     result,observed=drive(op,case,command,host);trace.update(observed);return result

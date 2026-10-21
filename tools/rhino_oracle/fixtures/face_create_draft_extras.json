@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "face_create_command",
+      "id": "edge_collinear_outer",
+      "case": "edge_collinear_outer"
+    },
+    {
+      "op": "face_create_command",
+      "id": "edge_collinear_inner",
+      "case": "edge_collinear_inner"
+    },
+    {
+      "op": "face_create_command",
+      "id": "edge_flip_plain",
+      "case": "edge_flip_plain"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_corner_turn",
+      "case": "chain_corner_turn"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_wrap_shift",
+      "case": "chain_wrap_shift"
+    },
+    {
+      "op": "face_create_command",
+      "id": "chain_closed_regular",
+      "case": "chain_closed_regular"
+    }
+  ]
+}

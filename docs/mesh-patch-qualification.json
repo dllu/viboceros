@@ -460,7 +460,7 @@
     "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",
     "crates/viboceros-command/tests/mesh_patch_native.rs": "0340528dfaba64e917d9dc6ceabdd053cebfc6c9169f93c0d053691b5bcae0e5",
     "crates/viboceros-command/tests/support/mesh_patch.rs": "652360289115ab497f9c2ba2ae00e205a44ed6e0299c37cae1453f9ae56a04ff",
-    "src/app.rs": "41849d7de92143bf74def7ebc35cf912a1e93664ca5841f90a9e565d8eee2f60",
+    "src/app.rs": "e121b5dcd8c5efa6c258edfa35b7d4d172d67dbc255d63e25b7029a0ccb87493",
     "src/app/object_selection.rs": "c768bf184d00ab0ff6515fb1aa48142d2a9980320cb2678ddc2eb98b75de72cc",
     "src/app/transform_sources.rs": "aec231cae3cfae46702f49ed92a0f54de1eee294e2720e77fc33d9696e02d7bc",
     "src/app/object_selection/mesh_patch.rs": "aab85e841a3339466c4d77b2f60c440efeffb26dde8a99a522d866e80d32eacb",
@@ -472,8 +472,8 @@
     "tools/rhino_oracle/fixtures/mesh_patch.json": "2a0884f05553efd4083b20f97dc1b985a4870fe644de8c09961911e25ad85400",
     "tools/rhino_oracle/observations/mesh_patch.json": "79f352d68c46ab33e7842022ec0b14db87530d471915ef30837f9c8fe9e507b9",
     "crates/viboceros-command/src/mesh_patch/tests.rs": "d76fee8b9d14f8ea618ef8078d81bd0b4d91a613e9f28a1f246035fe4e84140b",
-    "tools/rhino_oracle/client.py": "22816c7368e074d55c24ecfb361ca37f934e6451b7b5f26e34be0a6aa1c3289f",
+    "tools/rhino_oracle/client.py": "605a33391adf071a384dad8aecbe4b8d6f86a06cc2b419d9d6ae2e6ffab9e229",
     "tools/rhino_oracle/rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
-    "tools/rhino_oracle/structural_sdk.py": "25ac215ca4c4f02c56f03e1e88a10fc4afea4942688f7e7c22e331e0b159c933"
+    "tools/rhino_oracle/structural_sdk.py": "0d65afb6def8b45f942f8b449245af4e90d1c85c785e7b1685a67b26b7a6592d"
   }
 }

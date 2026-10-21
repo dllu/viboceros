@@ -1,7 +1,7 @@
 //! Direct mesh-face drafts are shared by command scripts and point getters.
 use super::*;
 
-pub const USAGE: &str = "3DFace [Output=Mesh] [PolygonType=Triangle|Quad|Ngon] [InPlane=Yes|No] [WeldAngle=degrees] [Mode=SingleFace|MultipleFaces] [Append=id] [FromEdge=Yes|No Edge=n] points...";
+pub const USAGE: &str = "3DFace [Output=Mesh] [PolygonType=Triangle|Quad|Ngon] [InPlane=Yes|No] [WeldAngle=degrees] [Mode=SingleFace|MultipleFaces] [Append=id] [FromEdge=Yes|No Chain=Yes|No Edge=n] points...";
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Polygon {
     Triangle,
@@ -15,6 +15,7 @@ pub struct Preferences {
     pub weld_angle: Real,
     pub multiple: bool,
     pub from_edge: bool,
+    pub chain: bool,
     pub from_edge_reset: bool,
 }
 impl Default for Preferences {
@@ -25,6 +26,7 @@ impl Default for Preferences {
             weld_angle: 180.,
             multiple: false,
             from_edge: false,
+            chain: false,
             from_edge_reset: true,
         }
     }
@@ -32,6 +34,7 @@ impl Default for Preferences {
 #[derive(Clone, Debug, PartialEq)]
 pub enum Token {
     Point(Point3),
+    Edge(usize),
     Undo,
     Enter,
     Cancel,
@@ -55,6 +58,17 @@ pub fn parse(args: &[&str], preferences: Preferences) -> Result<Input, CommandEr
     for word in args {
         let word = word.trim_start_matches('_');
         if let Some((key, value)) = word.split_once('=') {
+            if key.eq_ignore_ascii_case("Edge")
+                && (!input.tokens.is_empty() || input.edge.is_some())
+            {
+                if input.tokens.len() >= viboceros_geometry::MAX_MESH_PATCH_POINTS {
+                    return Err(GeometryError::MeshPatchLimit.into());
+                }
+                input.tokens.push(Token::Edge(
+                    value.parse().map_err(|_| CommandError::Usage(USAGE))?,
+                ));
+                continue;
+            }
             if !input.tokens.is_empty() || !seen.insert(key.to_ascii_lowercase()) {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -103,11 +117,9 @@ pub fn parse(args: &[&str], preferences: Preferences) -> Result<Input, CommandEr
                     input.append = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?)
                 }
                 "edge" => input.edge = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?),
-                "chain" if parse_yes_no(value) == Some(false) => (),
                 "chain" => {
-                    return Err(CommandError::Usage(
-                        "3DFace edge-chain drafting is not implemented",
-                    ));
+                    input.preferences.chain =
+                        parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?
                 }
                 _ => return Err(CommandError::Usage(USAGE)),
             }
@@ -130,11 +142,6 @@ pub fn parse(args: &[&str], preferences: Preferences) -> Result<Input, CommandEr
     if input.edge.is_some() && !input.preferences.from_edge {
         return Err(CommandError::Usage(USAGE));
     }
-    if input.preferences.from_edge && input.preferences.multiple {
-        return Err(CommandError::Usage(
-            "3DFace FromEdge currently requires Mode=SingleFace",
-        ));
-    }
     Ok(input)
 }
 
@@ -143,6 +150,21 @@ pub struct CompletedFace {
     pub points: Vec<Point3>,
     pub in_plane: bool,
     pub weld_angle: Real,
+    resume: Resume,
+    flipped: bool,
+}
+#[derive(Clone, Debug)]
+struct Chain {
+    boundary: std::sync::Arc<Vec<Point3>>,
+    edge: usize,
+    direction: Option<bool>,
+    consumed: usize,
+}
+#[derive(Clone, Debug)]
+struct Resume {
+    seed: usize,
+    chain: Option<Chain>,
+    from_edge: bool,
 }
 #[derive(Clone, Debug)]
 pub struct Draft {
@@ -151,6 +173,8 @@ pub struct Draft {
     faces: Vec<CompletedFace>,
     source: Option<TriangleMesh>,
     seed: usize,
+    chain: Option<Chain>,
+    waiting_edge: bool,
     total: usize,
     pub finished: bool,
 }
@@ -160,31 +184,80 @@ impl Draft {
         source: Option<TriangleMesh>,
         edge: Option<usize>,
     ) -> Result<Self, CommandError> {
-        if !preferences.weld_angle.is_finite()
-            || !(0. ..=180.).contains(&preferences.weld_angle)
-            || (preferences.from_edge && preferences.multiple)
-        {
+        if !preferences.weld_angle.is_finite() || !(0. ..=180.).contains(&preferences.weld_angle) {
             return Err(CommandError::Usage(USAGE));
         }
-        let points = if preferences.from_edge {
-            source
-                .as_ref()
-                .ok_or(CommandError::Usage(USAGE))?
-                .boundary_face_seed(edge.ok_or(CommandError::Usage(USAGE))?)?
-                .to_vec()
-        } else {
-            vec![]
-        };
-        let seed = points.len();
-        Ok(Self {
+        let mut draft = Self {
             preferences,
-            points,
+            points: vec![],
             faces: vec![],
             source,
-            seed,
-            total: seed,
+            seed: 0,
+            chain: None,
+            waiting_edge: preferences.from_edge,
+            total: 0,
             finished: false,
-        })
+        };
+        if let Some(edge) = edge {
+            draft.pick_edge(edge)?;
+        }
+        Ok(draft)
+    }
+    pub fn waiting_edge(&self) -> bool {
+        self.waiting_edge
+    }
+    pub fn current_mesh(&self) -> Result<Option<TriangleMesh>, CommandError> {
+        if self.faces.is_empty() {
+            Ok(self.source.clone())
+        } else {
+            self.mesh()
+        }
+    }
+    pub fn pick_edge(&mut self, index: usize) -> Result<(), CommandError> {
+        if !self.preferences.from_edge || !self.waiting_edge || self.finished {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let mesh = self.current_mesh()?.ok_or(CommandError::Usage(USAGE))?;
+        let seed = mesh.boundary_face_seed(index)?;
+        let chain = if self.preferences.chain && self.preferences.polygon == Polygon::Quad {
+            Some(Chain {
+                boundary: std::sync::Arc::new(mesh.boundary_face_loop(index)?),
+                edge: 0,
+                direction: None,
+                consumed: 0,
+            })
+        } else {
+            None
+        };
+        if self.total + 2 > viboceros_geometry::MAX_MESH_PATCH_POINTS {
+            return Err(GeometryError::MeshPatchLimit.into());
+        }
+        self.points = seed.to_vec();
+        self.seed = 2;
+        self.chain = chain;
+        self.waiting_edge = false;
+        self.total += 2;
+        Ok(())
+    }
+    pub fn update_preferences(&mut self, preferences: Preferences) -> Result<(), CommandError> {
+        if !preferences.weld_angle.is_finite() || !(0. ..=180.).contains(&preferences.weld_angle) {
+            return Err(CommandError::Usage(USAGE));
+        }
+        if preferences.from_edge != self.preferences.from_edge
+            || preferences.chain != self.preferences.chain
+            || preferences.polygon != self.preferences.polygon
+        {
+            if !self.points.is_empty() {
+                return Err(CommandError::Usage(
+                    "Clear the unfinished face before changing its edge or polygon mode",
+                ));
+            }
+            self.chain = None;
+            self.seed = 0;
+            self.waiting_edge = preferences.from_edge;
+        }
+        self.preferences = preferences;
+        Ok(())
     }
     pub fn face_count(&self) -> usize {
         self.faces.len()
@@ -202,6 +275,8 @@ impl Draft {
         self.total -= self.points.len();
         self.points.clear();
         self.seed = 0;
+        self.chain = None;
+        self.waiting_edge = self.preferences.from_edge;
     }
     /// Use the same corner constraint for previews and accepted picks.
     pub fn constrained_corner(&self, point: Point3) -> Result<Point3, CommandError> {
@@ -226,21 +301,34 @@ impl Draft {
             };
         }
         match token {
+            Token::Edge(index) => return self.pick_edge(index),
             Token::Point(p) => {
+                if self.waiting_edge {
+                    return Err(CommandError::Usage("3DFace: select a boundary edge"));
+                }
                 if self.total >= viboceros_geometry::MAX_MESH_PATCH_POINTS {
+                    return Err(GeometryError::MeshPatchLimit.into());
+                }
+                if self.chain.is_some()
+                    && self.preferences.multiple
+                    && self.points.len() == 3
+                    && self.total + 4 > viboceros_geometry::MAX_MESH_PATCH_POINTS
+                {
                     return Err(GeometryError::MeshPatchLimit.into());
                 }
                 let p = self.constrained_corner(p)?;
                 if self.points.last() == Some(&p) {
                     return Err(CommandError::Usage("3DFace corners must be distinct"));
                 }
-                if self.preferences.polygon != Polygon::Ngon
-                    || (self.preferences.in_plane && self.points.len() == 2)
+                if self.preferences.polygon == Polygon::Triangle
+                    || self.preferences.polygon == Polygon::Quad && self.points.len() == 3
+                    || self.preferences.in_plane && self.points.len() == 2
                 {
                     let mut candidate = self.points.clone();
                     candidate.push(p);
                     if candidate.len() >= 3 {
-                        TriangleMesh::try_face_from_points(&candidate, self.preferences.in_plane)?;
+                        let (ordered, _) = self.ordered_face(&candidate)?;
+                        TriangleMesh::try_face_from_points(&ordered, self.preferences.in_plane)?;
                     }
                 }
                 self.points.push(p);
@@ -259,13 +347,22 @@ impl Draft {
                     self.points.pop();
                     self.total -= 1;
                 } else if let Some(mut previous) = self.faces.pop() {
+                    if previous.flipped {
+                        previous.points.swap(2, 3);
+                    }
+                    self.total -= self.points.len() + 1;
                     previous.points.pop();
                     self.points = previous.points;
-                    self.total -= 1;
+                    self.seed = previous.resume.seed;
+                    self.chain = previous.resume.chain;
+                    self.preferences.from_edge = previous.resume.from_edge;
+                    self.waiting_edge = false;
                 }
             }
             Token::Enter => {
-                if self.points.len() >= 3 {
+                if self.chain.is_some() && self.points.len() <= 3 {
+                    self.clear_points();
+                } else if self.points.len() >= 3 {
                     self.complete()?;
                 } else {
                     self.points.clear();
@@ -280,16 +377,129 @@ impl Draft {
         }
         Ok(())
     }
+    pub fn preview_corners(&self, cursor: Option<Point3>) -> Result<Vec<Point3>, CommandError> {
+        let mut points = self.points.clone();
+        if let Some(point) = cursor {
+            let point = self.constrained_corner(point)?;
+            if points.last() != Some(&point) {
+                points.push(point);
+            }
+        }
+        self.ordered_face(&points).map(|(points, _)| points)
+    }
+    fn ordered_face(&self, input: &[Point3]) -> Result<(Vec<Point3>, bool), CommandError> {
+        let mut points = input.to_vec();
+        let flipped = if self.preferences.from_edge && points.len() == 4 {
+            if let Some(direction) = self.chain.as_ref().and_then(|c| c.direction) {
+                !direction
+            } else {
+                let area = points[0]
+                    .vector_to(points[1])?
+                    .cross(points[0].vector_to(points[2])?)?
+                    .length()?;
+                area > 0. && points[2].distance_to(points[0])? < points[2].distance_to(points[1])?
+            }
+        } else {
+            false
+        };
+        if flipped {
+            points.swap(2, 3);
+        }
+        Ok((points, flipped))
+    }
     fn complete(&mut self) -> Result<(), CommandError> {
-        TriangleMesh::try_face_from_points(&self.points, self.preferences.in_plane)?;
+        let (points, flipped) = self.ordered_face(&self.points)?;
+        TriangleMesh::try_face_from_points(&points, self.preferences.in_plane)?;
+        let resume = Resume {
+            seed: self.seed,
+            chain: self.chain.clone(),
+            from_edge: self.preferences.from_edge,
+        };
         self.faces.push(CompletedFace {
-            points: std::mem::take(&mut self.points),
+            points,
             in_plane: self.preferences.in_plane,
             weld_angle: self.preferences.weld_angle,
+            resume,
+            flipped,
         });
+        self.points.clear();
         self.finished = !self.preferences.multiple;
-        if !self.finished && self.preferences.from_edge {
-            self.finished = true;
+        if self.finished {
+            return Ok(());
+        }
+        self.waiting_edge = self.preferences.from_edge;
+        if let Some(chain) = self.chain.as_mut() {
+            let direction = *chain.direction.get_or_insert(!flipped);
+            chain.consumed += 1;
+            if chain.consumed < chain.boundary.len() {
+                let n = chain.boundary.len();
+                chain.edge = if direction {
+                    (chain.edge + 1) % n
+                } else {
+                    (chain.edge + n - 1) % n
+                };
+                let last = self.faces.last().unwrap();
+                let carry = if flipped {
+                    last.points[2]
+                } else {
+                    last.points[3]
+                };
+                let seed = [
+                    chain.boundary[(chain.edge + 1) % n],
+                    chain.boundary[chain.edge],
+                    carry,
+                ];
+                if self.total + 3 > viboceros_geometry::MAX_MESH_PATCH_POINTS {
+                    return Err(GeometryError::MeshPatchLimit.into());
+                }
+                self.points = seed.to_vec();
+                self.seed = 2;
+                self.total += 3;
+                self.waiting_edge = false;
+            } else {
+                let n = chain.boundary.len();
+                let corner = chain.boundary[if direction {
+                    (chain.edge + 1) % n
+                } else {
+                    chain.edge
+                }];
+                let last = self.faces.last().unwrap();
+                let carry = if flipped {
+                    last.points[2]
+                } else {
+                    last.points[3]
+                };
+                self.chain = None;
+                self.seed = 0;
+                let mesh = self.current_mesh()?.unwrap();
+                let edge = mesh
+                    .diagnostic_edges()
+                    .into_iter()
+                    .filter(|e| {
+                        e.face_count == 1
+                            && e.points.contains(&corner)
+                            && !e.points.contains(&carry)
+                    })
+                    .collect::<Vec<_>>();
+                if edge.len() == 1
+                    && let Ok(boundary) = mesh.boundary_face_loop(edge[0].index)
+                {
+                    let seed = mesh.boundary_face_seed(edge[0].index)?;
+                    if self.total + 3 > viboceros_geometry::MAX_MESH_PATCH_POINTS {
+                        return Err(GeometryError::MeshPatchLimit.into());
+                    }
+                    self.points = vec![seed[0], seed[1], carry];
+                    self.seed = 2;
+                    self.total += 3;
+                    self.waiting_edge = false;
+                    self.chain = Some(Chain {
+                        boundary: std::sync::Arc::new(boundary),
+                        edge: 0,
+                        direction: Some(direction),
+                        consumed: 0,
+                    });
+                }
+            }
         }
         Ok(())
     }

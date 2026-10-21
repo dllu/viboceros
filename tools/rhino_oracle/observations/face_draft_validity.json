@@ -1,0 +1,162 @@
+{
+  "protocol_version": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "results": [
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "edge_multiple",
+      "elapsed_ns": 5233765
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_strip",
+      "elapsed_ns": 2677917
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_reverse",
+      "elapsed_ns": 152588
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_wrap",
+      "elapsed_ns": 305176
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_single",
+      "elapsed_ns": 137329
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_fold",
+      "elapsed_ns": 144958
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_crease",
+      "elapsed_ns": 137329
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_undo",
+      "elapsed_ns": 99182
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "edge_triangles",
+      "elapsed_ns": 198364
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "edge_ngons",
+      "elapsed_ns": 221252
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_new_boundary",
+      "elapsed_ns": 129700
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_cancel",
+      "elapsed_ns": 122070
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "edge_collinear_outer",
+      "elapsed_ns": 91553
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "edge_collinear_inner",
+      "elapsed_ns": 106812
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "edge_flip_plain",
+      "elapsed_ns": 99182
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_corner_turn",
+      "elapsed_ns": 106812
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_wrap_shift",
+      "elapsed_ns": 755310
+    },
+    {
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "id": "chain_closed_regular",
+      "elapsed_ns": 1411438
+    }
+  ],
+  "provenance": {
+    "request_sha256": "c157c4acb1ee021590c9efd0e3c3e64e3e7338fda263c1a49cc7c02f53c695d3",
+    "sources": {
+      "generate_face_draft_validity.py": "58ca0f4a288ce133721c48bb43412201eda7d65360f5b409a3e1c204733496f4",
+      "geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
+      "client.py": "605a33391adf071a384dad8aecbe4b8d6f86a06cc2b419d9d6ae2e6ffab9e229",
+      "rhino_worker.py": "1e9ae22d6d54f11d66b357c20b7c04bdeecce23f525330d61856c8f2440597e2",
+      "structural_sdk.py": "0d65afb6def8b45f942f8b449245af4e90d1c85c785e7b1685a67b26b7a6592d"
+    }
+  }
+}

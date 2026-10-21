@@ -362,3 +362,231 @@ fn in_plane_hover_matches_the_projected_corner_before_admission() {
     };
     assert!(mesh.vertices()[3].distance_to(expected).unwrap() < 1e-12);
 }
+
+#[test]
+fn edge_chain_getters_replay_physical_native_inputs_through_screen_space_picks() {
+    let mut gaps = vec![];
+    for row in native::drafts() {
+        let value = &row["value"];
+        let scene = native::setup(value);
+        let mut app = test_app();
+        app.document = scene.document;
+        enter(&mut app, &native::draft_header(value));
+        let mut failures = vec![];
+        for action in value["input"]["points"].as_array().unwrap() {
+            if let Some(pick) = action.get("edge_pick") {
+                let pick =
+                    Point3::try_from(serde_json::from_value::<[f64; 3]>(pick.clone()).unwrap())
+                        .unwrap();
+                assert!(
+                    app.picking_face_edge(),
+                    "{} {:?}",
+                    row["id"],
+                    app.command_log
+                );
+                let view = crate::viewport::Viewport::new(crate::viewport::ViewKind::Top);
+                let rect = egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(800., 600.));
+                let pointer = view.project(pick, rect).unwrap();
+                let picks = view.pick_mesh_boundary_edges(
+                    pointer,
+                    rect,
+                    app.face_boundary_edges().unwrap(),
+                );
+                assert!(!picks.is_empty(), "{} missing actual edge hit", row["id"]);
+                let output = crate::viewport::ViewportOutput {
+                    mesh_boundary_edge_click: Some(picks),
+                    ..Default::default()
+                };
+                assert!(app.handle_viewport_action(output));
+            } else if let Some(word) = action.as_str() {
+                enter(&mut app, if word == "Enter" { "" } else { word });
+            } else {
+                let point: [f64; 3] = serde_json::from_value(action.clone()).unwrap();
+                let token = point
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(",");
+                enter(&mut app, &token);
+            }
+            if let Some(log) = app.command_log.back()
+                && log.starts_with("Error:")
+            {
+                failures.push(log.clone());
+            }
+        }
+        if value["input"]["cancel"] == true {
+            for _ in 0..4 {
+                if app.face_create_session.is_none() {
+                    break;
+                }
+                app.cancel_current_prompt_or_selection();
+            }
+        } else {
+            for _ in 0..2 {
+                if app.face_create_session.is_none() {
+                    break;
+                }
+                enter(&mut app, "");
+            }
+        }
+        let accepted_native_tokens = app.face_create_session.is_none();
+        if !accepted_native_tokens {
+            for _ in 0..3 {
+                if app.face_create_session.is_none() {
+                    break;
+                }
+                app.cancel_current_prompt_or_selection();
+            }
+        }
+        assert!(
+            app.face_create_session.is_none(),
+            "{} {:?}",
+            row["id"],
+            app.command_log
+        );
+        let check = native::check(
+            &app.document,
+            scene.source,
+            scene.original.as_ref(),
+            value,
+            "after_script",
+        );
+        if check["qualified"] != true {
+            gaps.push(row["id"].clone());
+        }
+        if app.document.undo_label().is_some() {
+            app.document.undo().unwrap();
+            assert_eq!(
+                native::check(
+                    &app.document,
+                    scene.source,
+                    scene.original.as_ref(),
+                    value,
+                    "undo"
+                )["qualified"],
+                true
+            );
+            app.document.redo().unwrap();
+            assert_eq!(
+                native::check(
+                    &app.document,
+                    scene.source,
+                    scene.original.as_ref(),
+                    value,
+                    "redo"
+                ),
+                check
+            );
+        }
+        println!(
+            "FACE_DRAFT_GETTER {}",
+            serde_json::json!({"id":row["id"],"qualified":check["qualified"],"check":check,"grouped_history":true,"errors":failures,"accepted_native_tokens":accepted_native_tokens})
+        );
+    }
+    assert_eq!(
+        gaps,
+        vec![
+            serde_json::json!("chain_wrap"),
+            serde_json::json!("edge_collinear_inner"),
+            serde_json::json!("chain_wrap_shift")
+        ]
+    );
+    println!("FACE_DRAFT_GAPS {gaps:?}");
+}
+
+#[test]
+fn a_standalone_mesh_can_start_an_edge_chain_before_document_admission() {
+    let mut app = test_app();
+    enter(&mut app, "3DFace Mode=MultipleFaces");
+    for p in ["0,0,0", "4,0,0", "4,3,0", "0,3,0"] {
+        enter(&mut app, p);
+    }
+    assert_eq!(app.document.objects().count(), 0);
+    enter(&mut app, "FromEdge=Yes");
+    enter(&mut app, "Chain=Yes");
+    assert!(app.picking_face_edge());
+    assert!(!app.picking_face_append());
+    let view = crate::viewport::Viewport::new(crate::viewport::ViewKind::Top);
+    let rect = egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(800., 600.));
+    let pointer = view
+        .project(Point3::try_new(4., 1.5, 0.).unwrap(), rect)
+        .unwrap();
+    let picks = view.pick_mesh_boundary_edges(pointer, rect, app.face_boundary_edges().unwrap());
+    assert!(app.handle_viewport_action(crate::viewport::ViewportOutput {
+        mesh_boundary_edge_click: Some(picks),
+        ..Default::default()
+    }));
+    enter(&mut app, "7,0,0");
+    enter(&mut app, "7,3,0");
+    assert_eq!(app.document.objects().count(), 0);
+    enter(&mut app, "");
+    enter(&mut app, "");
+    assert!(app.face_create_session.is_none());
+    let object = app.document.objects().next().unwrap();
+    let Geometry::Mesh(mesh) = object.geometry() else {
+        panic!("mesh")
+    };
+    assert_eq!(mesh.vertices().len(), 6);
+    assert_eq!(mesh.faces().len(), 2);
+    assert_eq!(app.document.undo_label(), Some("3DFace"));
+    app.document.undo().unwrap();
+    assert_eq!(app.document.objects().count(), 0);
+}
+
+#[test]
+fn reversed_edge_hover_uses_the_corner_order_that_will_be_committed() {
+    let rows = native::drafts();
+    let value = &rows.iter().find(|r| r["id"] == "edge_flip_plain").unwrap()["value"];
+    let scene = native::setup(value);
+    let mut app = test_app();
+    app.document = scene.document;
+    enter(&mut app, &native::draft_header(value));
+    let draft = app
+        .face_create_session
+        .as_ref()
+        .unwrap()
+        .draft
+        .as_ref()
+        .unwrap();
+    let edge = native::edge_index(
+        &draft.current_mesh().unwrap().unwrap(),
+        &serde_json::json!([4., 1.5, 0.]),
+    );
+    app.pick_face_edge(edge);
+    enter(&mut app, "7,3,0");
+    app.update_face_create_hover(Point3::try_new(7., 0., 0.).unwrap());
+    let preview = app
+        .face_create_session
+        .as_ref()
+        .unwrap()
+        .preview_curves()
+        .last()
+        .unwrap();
+    for (point, expected) in preview.control_points().iter().zip([
+        [4., 3., 0.],
+        [4., 0., 0.],
+        [7., 0., 0.],
+        [7., 3., 0.],
+        [4., 3., 0.],
+    ]) {
+        assert!(
+            point
+                .point()
+                .distance_to(Point3::try_from(expected).unwrap())
+                .unwrap()
+                < 1e-12
+        );
+    }
+    enter(&mut app, "7,0,0");
+    assert_eq!(
+        native::check(
+            &app.document,
+            scene.source,
+            scene.original.as_ref(),
+            value,
+            "after_script"
+        )["qualified"],
+        true
+    );
+}
