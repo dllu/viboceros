@@ -45,9 +45,8 @@
     "app::tests::insert_control_point::insert_control_point_rejects_both_and_preserves_the_staged_edit_on_invalid_options",
     "app::tests::insert_control_point::insert_surface_control_point_uses_the_rendered_hit_location_in_the_staged_getter"
   ],
-  "source_hash_note": "Current qualification source hashes were refreshed after the full application regressions. Existing numeric and performance measurements were retained unchanged; this follow-up made no fresh Rhino captures or performance measurements. The earlier creator integration receipt retains its original source bytes through Git references.",
+  "source_hash_note": "Current qualification source hashes were refreshed after the full application regressions. Existing numeric and performance measurements were retained unchanged; this follow-up made no fresh Rhino captures or performance measurements. The earlier creator integration receipt retains its original source bytes through Git references. The validated app.rs bytes are now retained through the recorded Git reference; subsequent Crease viewport changes have a separate validation record.",
   "sha256": {
-    "src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828",
     "src/app/curve_prompt.rs": "c8726107140783628be77b4badac4c3fe84205da5d4c8d61297d5a78ec800344",
     "src/app/mesh_face_prompt.rs": "df8247446ae4cca8690dad27b2e3f2c616e59f8f3d05d17b2f2710d1918ba2f5",
     "src/app/tests/curve_completion.rs": "6bd33a67a48c402992a67fa440c6cc06c4a0a30b8ce7e9fe40d11d39343da9d8",
@@ -62,5 +61,8 @@
     "aede095c128bc95bef36ba28c148b849abbf4bb1:src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
     "aede095c128bc95bef36ba28c148b849abbf4bb1:src/app/curve_prompt.rs": "bd59b672bc1a60f4d0dd35f9ac9996df8bd3e9f28d163add54f8ce6b28e4bfcc",
     "aede095c128bc95bef36ba28c148b849abbf4bb1:src/app/tests/insert_control_point.rs": "04ec4d00271f1430877dae3f17400849ced8d8d75f6684885d49db10af96bb3d"
+  },
+  "validation_git_sha256": {
+    "225a7d7a965e9cbfc6eea534f864c76eddd216b1:src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828"
   }
 }

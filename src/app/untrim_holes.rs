@@ -136,10 +136,10 @@ impl VibocerosApp {
             .valid_picks(&self.document)
             .into_iter()
             .filter(|p| {
-                !matches!(
+                matches!(
                     p.kind,
-                    viboceros_command::ComponentSelectionKind::MeshFace
-                        | viboceros_command::ComponentSelectionKind::SubDFace
+                    viboceros_command::ComponentSelectionKind::BrepEdge
+                        | viboceros_command::ComponentSelectionKind::BrepFace
                 )
             })
             .map(|pick| {
@@ -149,13 +149,10 @@ impl VibocerosApp {
                         viboceros_command::ComponentSelectionKind::BrepEdge => {
                             UntrimHolesComponent::Edge(pick.index)
                         }
-                        viboceros_command::ComponentSelectionKind::MeshFace
-                        | viboceros_command::ComponentSelectionKind::SubDFace => {
-                            unreachable!("filtered mesh faces")
-                        }
                         viboceros_command::ComponentSelectionKind::BrepFace => {
                             UntrimHolesComponent::Face(pick.index)
                         }
+                        _ => unreachable!("filtered non-Brep components"),
                     },
                 )
             });
@@ -420,10 +417,10 @@ impl VibocerosApp {
         let picks = picks
             .into_iter()
             .filter(|p| {
-                !matches!(
+                matches!(
                     p.kind,
-                    viboceros_command::ComponentSelectionKind::MeshFace
-                        | viboceros_command::ComponentSelectionKind::SubDFace
+                    viboceros_command::ComponentSelectionKind::BrepEdge
+                        | viboceros_command::ComponentSelectionKind::BrepFace
                 )
             })
             .map(|pick| {
@@ -433,13 +430,10 @@ impl VibocerosApp {
                         viboceros_command::ComponentSelectionKind::BrepEdge => {
                             UntrimHolesComponent::Edge(pick.index)
                         }
-                        viboceros_command::ComponentSelectionKind::MeshFace
-                        | viboceros_command::ComponentSelectionKind::SubDFace => {
-                            unreachable!("filtered mesh faces")
-                        }
                         viboceros_command::ComponentSelectionKind::BrepFace => {
                             UntrimHolesComponent::Face(pick.index)
                         }
+                        _ => unreachable!("filtered non-Brep components"),
                     },
                 )
             });

@@ -15,7 +15,8 @@ state into document transactions:
 | `viewport/screen` | Shared clipping, containment, and screen-distance predicates |
 | `viewport/selection` | Object filters, click dispatch, and window/crossing selection |
 | `viewport/picking` | Face hit metrics and depth interpolation |
-| `viewport/component_picking` | Surface/B-rep component clicks, rectangles, depth clipping, and highlight overlays |
+| `viewport/component_picking` | Typed component clicks, rectangles, depth clipping, and highlight overlays |
+| `viewport/polygon_edges` | Mesh/SubD topology edges and SubD vertex capture, including visible control cages |
 | `viewport/edge_picking`, `viewport/edge_point` | Boundary-component capture and constrained screen-space edge locations |
 | `viewport/scene` | Object display, shading, depth staging, and GPU buffers |
 | `viewport/drafting` | Cursor resolution, construction-plane grid, and drafting overlays |
@@ -40,12 +41,15 @@ It avoids uniform sampling for a straight locus with a projectable endpoint;
 see [straight-line snap correctness](../projected-line-snaps.md) for the exact
 reference corpus, numerical regressions and remaining projection limits.
 
-`app/component_selection` keeps transient surface/B-rep component picks and
+`app/component_selection` keeps transient B-rep, mesh and SubD component picks and
 ambiguity outside document history, with shared geometry snapshots to invalidate
 stale indices. `app/untrim_holes` consumes preselection with remembered options,
 then uses the same read-only preparation for postselection rectangles and its
 command history group for immediate edits. Component selection never selects a
 parent object or restores itself through Undo.
+`app/crease` collects mixed mesh edges and SubD edges/vertices before one atomic
+edit. Cached SubD edge samples follow public OpenNURBS refinement lineage; their
+source ordinals remain independent of coincident world positions.
 
 `brep/untrim/{selection,boundary,ordering}` classifies exact native UV trims,
 restores connected outer runs or joined interior holes, and remaps rectangular

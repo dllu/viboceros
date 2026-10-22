@@ -23,33 +23,60 @@ pub(super) struct ComponentSelection {
 }
 
 impl ComponentSelection {
+    pub(super) fn release_objects(&mut self, ids: &[ObjectId]) {
+        let ids = ids
+            .iter()
+            .copied()
+            .collect::<std::collections::BTreeSet<_>>();
+        self.picks.retain(|p, _| !ids.contains(&p.object));
+        self.order.retain(|p| !ids.contains(&p.object));
+        self.clear_choices();
+    }
+    pub(super) fn release_grip_vertices(&mut self, document: &Document) {
+        let owners = document
+            .all_control_points()
+            .map(|(g, _, _)| g.object)
+            .collect::<std::collections::BTreeSet<_>>();
+        self.picks.retain(|p, _| {
+            p.kind != ComponentSelectionKind::SubDVertex || !owners.contains(&p.object)
+        });
+        self.order.retain(|p| self.picks.contains_key(p));
+    }
     pub(super) fn has_choices(&self) -> bool {
         !self.candidates.is_empty()
     }
     pub(super) fn valid_picks(&mut self, document: &Document) -> Vec<ComponentPick> {
+        if self.picks.is_empty() {
+            return Vec::new();
+        }
+        let snapshots = selectable_snapshots(document);
         self.picks
-            .retain(|pick, snapshot| current(document, *pick, snapshot));
+            .retain(|pick, snapshot| snapshots.get(&pick.object) == Some(snapshot));
         self.order.retain(|pick| self.picks.contains_key(pick));
         self.picks.keys().copied().collect()
     }
     pub(super) fn highlights(&mut self, document: &Document) -> Vec<ComponentPick> {
+        if self.picks.is_empty() && self.candidates.is_empty() {
+            return Vec::new();
+        }
+        let snapshots = selectable_snapshots(document);
         let mut picks = self
             .picks
             .iter()
-            .filter(|(pick, snapshot)| current(document, **pick, snapshot))
+            .filter(|(pick, snapshot)| snapshots.get(&pick.object) == Some(*snapshot))
             .map(|(pick, _)| *pick)
             .collect::<Vec<_>>();
         if let Some(hover) = self.hover.filter(|hover| {
-            self.candidates
-                .iter()
-                .any(|(pick, snapshot)| pick == hover && current(document, *pick, snapshot))
+            self.candidates.iter().any(|(pick, snapshot)| {
+                pick == hover && snapshots.get(&pick.object) == Some(snapshot)
+            })
         }) {
             picks.push(hover);
         } else {
             picks.extend(
                 self.candidates
                     .iter()
-                    .filter(|(pick, snapshot)| current(document, *pick, snapshot))
+                    .filter(|(pick, snapshot)| snapshots.get(&pick.object) == Some(snapshot))
                     .map(|(pick, _)| *pick),
             );
         }
@@ -61,10 +88,14 @@ impl ComponentSelection {
         &self,
         document: &Document,
     ) -> Result<Vec<ComponentPick>, &'static str> {
+        if self.picks.is_empty() {
+            return Ok(Vec::new());
+        }
+        let snapshots = selectable_snapshots(document);
         if self
             .picks
             .iter()
-            .any(|(pick, snapshot)| !current(document, *pick, snapshot))
+            .any(|(pick, snapshot)| snapshots.get(&pick.object) != Some(snapshot))
         {
             return Err("component source changed; select the components again");
         }
@@ -102,12 +133,7 @@ impl ComponentSelection {
         picks: Vec<ComponentPick>,
         action: ComponentAction,
     ) -> Result<(), &'static str> {
-        let mut seen = std::collections::BTreeSet::new();
-        let staged = picks
-            .into_iter()
-            .filter(|pick| seen.insert(*pick))
-            .map(|pick| source(document, pick).map(|snapshot| (pick, snapshot)))
-            .collect::<Result<Vec<_>, _>>()?;
+        let staged = stage_sources(document, picks)?;
         self.clear_choices();
         for (pick, snapshot) in staged {
             if matches!(action, ComponentAction::Remove)
@@ -126,6 +152,13 @@ impl ComponentSelection {
     }
 }
 
+fn selectable_snapshots(document: &Document) -> BTreeMap<ObjectId, GeometrySnapshot> {
+    document
+        .selectable_objects()
+        .map(|o| (o.id(), o.geometry_snapshot().clone()))
+        .collect()
+}
+
 fn current(document: &Document, pick: ComponentPick, snapshot: &GeometrySnapshot) -> bool {
     document.is_object_selectable(pick.object)
         && document
@@ -133,48 +166,63 @@ fn current(document: &Document, pick: ComponentPick, snapshot: &GeometrySnapshot
             .is_some_and(|object| object.geometry_snapshot() == snapshot)
 }
 
-fn source(document: &Document, pick: ComponentPick) -> Result<GeometrySnapshot, &'static str> {
-    let object = document
-        .object(pick.object)
-        .filter(|_| document.is_object_selectable(pick.object))
-        .ok_or("component source is unavailable")?;
-    if matches!(
-        pick.kind,
-        ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace
-    ) {
-        let count = match (pick.kind, object.geometry()) {
-            (ComponentSelectionKind::MeshFace, Geometry::Mesh(m)) => m.face_count(),
-            (ComponentSelectionKind::SubDFace, Geometry::SubD(s)) => s.faces().len(),
-            _ => return Err("polygon face source is unavailable"),
-        };
-        return if pick.index < count {
-            Ok(object.geometry_snapshot().clone())
+fn stage_sources(
+    document: &Document,
+    picks: Vec<ComponentPick>,
+) -> Result<Vec<(ComponentPick, GeometrySnapshot)>, &'static str> {
+    if picks.is_empty() {
+        return Ok(Vec::new());
+    }
+    let objects = document
+        .selectable_objects()
+        .map(|o| (o.id(), o))
+        .collect::<BTreeMap<_, _>>();
+    let mut counts = BTreeMap::new();
+    let mut seen = std::collections::BTreeSet::new();
+    let mut staged = Vec::new();
+    for pick in picks.into_iter().filter(|p| seen.insert(*p)) {
+        let object = objects
+            .get(&pick.object)
+            .ok_or("component source is unavailable")?;
+        let count = if let Some(&count) = counts.get(&(pick.object, pick.kind)) {
+            count
         } else {
-            Err("polygon face index is outside its source")
+            let count = match (pick.kind, object.geometry()) {
+                (ComponentSelectionKind::MeshFace, Geometry::Mesh(m)) => m.face_count(),
+                (ComponentSelectionKind::MeshEdge, Geometry::Mesh(m)) => {
+                    m.topology_edge_points().len()
+                }
+                (ComponentSelectionKind::SubDFace, Geometry::SubD(s)) => s.faces().len(),
+                (ComponentSelectionKind::SubDEdge, Geometry::SubD(s)) => s.edges().len(),
+                (ComponentSelectionKind::SubDVertex, Geometry::SubD(s)) => s.control_points().len(),
+                (ComponentSelectionKind::BrepEdge, Geometry::Brep(b)) => b.edges().len(),
+                (ComponentSelectionKind::BrepFace, Geometry::Brep(b)) => b.faces().len(),
+                (ComponentSelectionKind::BrepEdge, Geometry::NurbsSurface(s)) => {
+                    viboceros_geometry::Brep::try_surface_face(s.clone(), document.tolerance())
+                        .map_err(|_| "invalid component surface")?
+                        .edges()
+                        .len()
+                }
+                (ComponentSelectionKind::BrepFace, Geometry::NurbsSurface(surface)) => {
+                    viboceros_geometry::Brep::try_surface_face(
+                        surface.clone(),
+                        document.tolerance(),
+                    )
+                    .map_err(|_| "invalid component surface")?
+                    .faces()
+                    .len()
+                }
+                _ => return Err("component kind does not match its source"),
+            };
+            counts.insert((pick.object, pick.kind), count);
+            count
         };
-    }
-    let converted;
-    let brep = match object.geometry() {
-        viboceros_document::Geometry::Brep(brep) => brep,
-        viboceros_document::Geometry::NurbsSurface(surface) => {
-            converted =
-                viboceros_geometry::Brep::try_surface_face(surface.clone(), document.tolerance())
-                    .map_err(|_| "invalid component surface")?;
-            &converted
+        if pick.index >= count {
+            return Err("component index is outside its source");
         }
-        _ => return Err("select a surface or B-rep component"),
-    };
-    let count = match pick.kind {
-        ComponentSelectionKind::BrepEdge => brep.edges().len(),
-        ComponentSelectionKind::BrepFace => brep.faces().len(),
-        ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace => {
-            unreachable!("handled polygon face")
-        }
-    };
-    if pick.index >= count {
-        return Err("component index is outside its source");
+        staged.push((pick, object.geometry_snapshot().clone()));
     }
-    Ok(object.geometry_snapshot().clone())
+    Ok(staged)
 }
 
 impl VibocerosApp {
@@ -203,6 +251,7 @@ impl VibocerosApp {
             && self.hole_prompt.is_none()
             && self.unjoin_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
+            && self.crease_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && self.end_analysis_pick.is_none()
@@ -218,6 +267,7 @@ impl VibocerosApp {
             && self.unjoin_prompt.is_none()
             && self.shell_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
+            && self.crease_prompt.is_none()
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
             && !self.picking_orient_curve()
@@ -293,6 +343,12 @@ impl VibocerosApp {
                 .into_iter()
                 .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
                 .collect()
+        } else if self.crease_prompt.is_some() {
+            click
+                .picks
+                .into_iter()
+                .filter(|p| crease::eligible(p.kind))
+                .collect()
         } else if self.shell_prompt.is_some() {
             self.shellable_picks(click.picks)
         } else if self.picking_extract_faces() {
@@ -338,34 +394,31 @@ impl VibocerosApp {
         match picks.as_slice() {
             [] => self.component_selection.clear_choices(),
             [_] => self.select_components(picks, action),
-            _ => {
-                match picks
-                    .into_iter()
-                    .map(|pick| source(&self.document, pick).map(|snapshot| (pick, snapshot)))
-                    .collect::<Result<Vec<_>, _>>()
-                {
-                    Ok(candidates) => {
-                        for (index, (pick, _)) in candidates.iter().enumerate() {
-                            let kind = match pick.kind {
-                                ComponentSelectionKind::BrepEdge => "edge",
-                                ComponentSelectionKind::BrepFace => "face",
-                                ComponentSelectionKind::MeshFace => "mesh face",
-                                ComponentSelectionKind::SubDFace => "SubD face",
-                            };
-                            self.push_log(format!(
-                                "{}: object {} {kind} {}",
-                                index + 1,
-                                pick.object,
-                                pick.index
-                            ));
-                        }
-                        self.component_selection.candidates = candidates;
-                        self.component_selection.choice_action = action;
-                        self.component_selection.hover = None;
+            _ => match stage_sources(&self.document, picks) {
+                Ok(candidates) => {
+                    for (index, (pick, _)) in candidates.iter().enumerate() {
+                        let kind = match pick.kind {
+                            ComponentSelectionKind::BrepEdge => "edge",
+                            ComponentSelectionKind::BrepFace => "face",
+                            ComponentSelectionKind::MeshFace => "mesh face",
+                            ComponentSelectionKind::SubDFace => "SubD face",
+                            ComponentSelectionKind::MeshEdge => "mesh edge",
+                            ComponentSelectionKind::SubDEdge => "SubD edge",
+                            ComponentSelectionKind::SubDVertex => "SubD vertex",
+                        };
+                        self.push_log(format!(
+                            "{}: object {} {kind} {}",
+                            index + 1,
+                            pick.object,
+                            pick.index
+                        ));
                     }
-                    Err(error) => self.push_log(format!("Error: {error}")),
+                    self.component_selection.candidates = candidates;
+                    self.component_selection.choice_action = action;
+                    self.component_selection.hover = None;
                 }
-            }
+                Err(error) => self.push_log(format!("Error: {error}")),
+            },
         }
     }
 
@@ -468,12 +521,39 @@ impl VibocerosApp {
             }
             return;
         }
+        let grips = picks
+            .iter()
+            .filter(|p| p.kind == ComponentSelectionKind::SubDVertex)
+            .filter(|p| self.document.grip_mode(p.object).is_some())
+            .map(|p| {
+                (
+                    *p,
+                    viboceros_document::ControlPointId {
+                        object: p.object,
+                        index: p.index,
+                    },
+                )
+            })
+            .collect::<Vec<_>>();
         let parents = picks.iter().map(|pick| pick.object).collect::<Vec<_>>();
         match self
             .component_selection
             .apply(&self.document, picks, action)
         {
             Ok(()) => {
+                for mode in [SelectionMode::Add, SelectionMode::Remove] {
+                    let selected = mode == SelectionMode::Add;
+                    let ids = grips
+                        .iter()
+                        .filter(|(p, _)| self.component_selection.picks.contains_key(p) == selected)
+                        .map(|(_, g)| *g)
+                        .collect::<Vec<_>>();
+                    if !ids.is_empty()
+                        && let Err(e) = self.document.select_control_points(ids, mode)
+                    {
+                        self.push_log(format!("Error: {e}"));
+                    }
+                }
                 let _ = self
                     .document
                     .select_objects_direct(parents, viboceros_document::SelectionMode::Remove);
@@ -500,10 +580,21 @@ impl VibocerosApp {
                 )
             });
         }
+        if self.crease_prompt.is_some() {
+            window.picks.retain(|p| crease::eligible(p.kind));
+        }
         if window.preselection {
             if self.component_preselection_available() {
                 self.select_components(window.picks, ComponentAction::Add);
             }
+        } else if self.crease_prompt.is_some() {
+            let action =
+                if (window.modifiers.ctrl || window.modifiers.command) && !window.modifiers.shift {
+                    ComponentAction::Remove
+                } else {
+                    ComponentAction::Add
+                };
+            self.select_components(window.picks, action);
         } else if self.unjoin_prompt.is_some()
             || self.edge_fillet_prompt.is_some()
             || self.shell_prompt.is_some()

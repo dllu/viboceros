@@ -265,11 +265,9 @@ impl DisplayGeometry {
                     }
                 }
                 Geometry::SubD(_) => {
-                    if let Some(mesh) = self.mesh()
-                        && let Ok(edges) = mesh.visible_wireframe_lines(self.tolerance)
-                    {
-                        for edge in edges {
-                            visit(edge.start(), edge.end());
+                    for edge in self.edges() {
+                        for &[a, b] in edge {
+                            visit(a, b);
                         }
                     }
                 }
@@ -374,10 +372,31 @@ impl DisplayGeometry {
         })
     }
 
-    /// Boundary components only: surface isocurves are display aids, not edges.
-    /// Sampling matches the displayed wires and is shared across viewports.
+    /// Original topology components only, in each geometry's source order.
+    /// Surface isocurves and SubD refinement interiors are excluded.
     pub(super) fn edges(&self) -> &[Vec<[Point3; 2]>] {
         self.edges.get_or_init(|| {
+            match &*self.geometry {
+                Geometry::Mesh(mesh) => {
+                    return mesh
+                        .topology_edge_points()
+                        .into_iter()
+                        .map(|edge| vec![edge])
+                        .collect();
+                }
+                Geometry::SubD(subd) => {
+                    return subd
+                        .display_edge_polylines()
+                        .map(|lines| {
+                            lines
+                                .into_iter()
+                                .map(|line| line.windows(2).map(|p| [p[0], p[1]]).collect())
+                                .collect()
+                        })
+                        .unwrap_or_default();
+                }
+                _ => {}
+            }
             let converted;
             let brep = match &*self.geometry {
                 Geometry::Brep(brep) => brep,

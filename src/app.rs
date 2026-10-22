@@ -130,6 +130,7 @@ impl SelectionMenu {
 mod command_line;
 mod component_selection;
 mod copy_options;
+mod crease;
 mod extract_surface;
 mod merge_coplanar_face;
 mod shell;
@@ -2504,6 +2505,7 @@ pub struct VibocerosApp {
     shell_prompt: Option<shell::ShellPrompt>,
     merge_face_prompt: Option<merge_coplanar_face::Prompt>,
     edge_fillet_prompt: Option<edge_fillet::Prompt>,
+    crease_prompt: Option<crease::Prompt>,
     component_selection: component_selection::ComponentSelection,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
@@ -2658,6 +2660,7 @@ impl VibocerosApp {
             shell_prompt: None,
             merge_face_prompt: None,
             edge_fillet_prompt: None,
+            crease_prompt: None,
             component_selection: Default::default(),
             curve_points: Vec::new(),
             points_session: None,
@@ -2935,6 +2938,7 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_component_choice(&input)
+            || self.try_continue_crease(&input)
             || self.try_continue_extract_faces(&input)
             || self.try_continue_edge_fillet(&input)
             || self.try_continue_unjoin_command(&input)
@@ -3032,6 +3036,7 @@ impl VibocerosApp {
             || self.start_boolean_two(&input)
             || self.try_start_remember_copy_options(&input)
             || self.try_start_to_subd(&input)
+            || self.try_start_crease(&input)
             || self.try_start_subdivide_faces(&input)
             || self.try_start_shrink_faces(&input)
             || self.try_start_hole_command(&input)
@@ -3076,6 +3081,7 @@ impl VibocerosApp {
         let input: &str = input.as_ref();
         self.selection_menu = None;
         if self.try_continue_component_choice(input)
+            || self.try_continue_crease(input)
             || self.try_continue_edge_fillet(input)
             || self.try_continue_unjoin_command(input)
             || self.try_continue_hole_command(input)
@@ -5685,6 +5691,7 @@ impl VibocerosApp {
                 .translation_session
                 .take()
                 .is_some_and(|session| session.applied);
+        self.cancel_crease();
         self.finish_edge_fillet(false);
         if self.unjoin_prompt.is_some() {
             self.finish_unjoin_command(false);
@@ -9745,6 +9752,7 @@ impl VibocerosApp {
             || self.hole_prompt.is_some()
             || self.unjoin_prompt.is_some()
             || self.edge_fillet_prompt.is_some()
+            || self.crease_prompt.is_some()
         {
             self.cancel_interactive_command(true);
         } else if self.component_selection.has_choices() {
@@ -9842,6 +9850,7 @@ impl eframe::App for VibocerosApp {
             && self.shell_prompt.is_none()
             && self.merge_face_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
+            && self.crease_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && !self.remember_copy_prompt
@@ -10349,6 +10358,7 @@ impl eframe::App for VibocerosApp {
             && self.shell_prompt.is_none()
             && self.merge_face_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
+            && self.crease_prompt.is_none()
             && self.shrink_prompt_mode().is_none()
             && !self.to_subd_pending()
             && !self.picking_subdivide()
@@ -10403,6 +10413,13 @@ impl eframe::App for VibocerosApp {
                     && !end_analysis_picking)
                     .then_some(crate::viewport::ComponentPickFilter::Edges)
             });
+        let component_pick = component_pick.or_else(|| {
+            (self.crease_prompt.is_some()
+                && model_input_active
+                && self.plane_prompt.is_none()
+                && !end_analysis_picking)
+                .then_some(crate::viewport::ComponentPickFilter::Crease)
+        });
         let component_pick = component_pick.or_else(|| {
             ((self.picking_extract_faces() || self.shell_prompt.is_some())
                 && model_input_active
@@ -11486,6 +11503,7 @@ mod tests {
             shell_prompt: None,
             merge_face_prompt: None,
             edge_fillet_prompt: None,
+            crease_prompt: None,
             component_selection: Default::default(),
             points_session: None,
             transform_session: None,

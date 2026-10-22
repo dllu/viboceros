@@ -17,6 +17,7 @@ fn main() {
         "subd_codec.h",
         "subd_append.h",
         "subd_crease.h",
+        "subd_edges.h",
         "subd_interpolation.h",
         "subd_subdivision.h",
         "mesh_codec.h",

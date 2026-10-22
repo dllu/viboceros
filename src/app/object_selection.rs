@@ -484,6 +484,7 @@ impl VibocerosApp {
             || self.hole_prompt.is_some()
             || self.unjoin_prompt.is_some()
             || self.edge_fillet_prompt.is_some()
+            || self.crease_prompt.is_some()
         {
             return None;
         }

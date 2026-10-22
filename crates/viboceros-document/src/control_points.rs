@@ -352,6 +352,15 @@ impl Document {
                 .contains(&grip.index),
         )
     }
+    /// Borrow hidden indices once for a complete owner query. This avoids
+    /// repeating owner validation for every point in a viewport window.
+    pub fn hidden_control_point_indices(
+        &self,
+        id: ObjectId,
+    ) -> Option<impl Iterator<Item = usize> + '_> {
+        self.control_point_locations(id)?;
+        Some(self.control_points[&id].hidden.iter().copied())
+    }
     pub fn is_control_point_selectable(&self, grip: ControlPointId) -> bool {
         self.is_control_point_hidden(grip) == Some(false)
     }

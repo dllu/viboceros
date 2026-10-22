@@ -79,7 +79,9 @@ class CreaseTests(unittest.TestCase):
 
     def report_lines(self):
         report = json.loads((ROOT / 'docs/crease-qualification.json').read_text())
-        return report, ['CREASE_COMMAND ' + json.dumps(row) for row in report['cases']]
+        lines = ['CREASE_COMMAND ' + json.dumps(row) for row in report['cases']]
+        lines.extend('CREASE_GETTER ' + json.dumps(row) for rows in report['getters'].values() for row in rows)
+        return report, lines
 
     def test_report_reconstructs_and_uses_current_sources(self):
         report, lines = self.report_lines()
@@ -87,6 +89,9 @@ class CreaseTests(unittest.TestCase):
         self.assertEqual(summarize('\n'.join(reversed(lines))), report)
         self.assertEqual(report['command_cases'], 110)
         self.assertEqual(report['captured_workflows'], 118)
+        self.assertEqual(report['getter_cases'], 220)
+        self.assertEqual({phase: len(rows) for phase, rows in report['getters'].items()},
+                         {'preselected': 110, 'postselected': 110})
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
 
@@ -110,6 +115,18 @@ class CreaseTests(unittest.TestCase):
             del changed[key]
             with self.assertRaises((ValueError, KeyError), msg=key):
                 summarize('\n'.join(['CREASE_COMMAND ' + json.dumps(changed)] + lines[1:]))
+
+    def test_invalid_getter_geometry_selection_or_phase_cannot_qualify(self):
+        report, lines = self.report_lines()
+        row = report['getters']['preselected'][0]
+        original = 'CREASE_GETTER ' + json.dumps(row)
+        for key, bad in [('phase', 'unknown'), ('id', 'unknown'), ('maximum_error', True),
+                         ('maximum_edge_sample_error', float('nan')),
+                         ('maximum_edge_sample_error', 1.1e-6), ('history', False),
+                         ('selection', False), ('identity', 1), ('attributes', False)]:
+            changed = dict(row, **{key: bad})
+            with self.assertRaises(ValueError, msg=key):
+                summarize('\n'.join('CREASE_GETTER ' + json.dumps(changed) if s == original else s for s in lines))
 
 
 if __name__ == '__main__':

@@ -54,6 +54,15 @@ int vibo_subd_subdivide(const uint8_t*, size_t, unsigned, const size_t*, size_t,
   ViboSubDResult**, char*, size_t);
 int vibo_subd_view(const ViboSubDResult*, ViboSubDView*);
 void vibo_subd_free(ViboSubDResult*);
+typedef struct ViboSubDEdgeSamples ViboSubDEdgeSamples;
+typedef struct {
+  size_t edge_count, point_count;
+  const size_t* offsets;
+  const double* points;
+} ViboSubDEdgeSamplesView;
+int vibo_subd_edge_samples(const uint8_t*, size_t, unsigned, ViboSubDEdgeSamples**, char*, size_t);
+int vibo_subd_edge_samples_view(const ViboSubDEdgeSamples*, ViboSubDEdgeSamplesView*);
+void vibo_subd_edge_samples_free(ViboSubDEdgeSamples*);
 #ifdef __cplusplus
 }
 #endif

@@ -2,7 +2,9 @@
 use std::ffi::{c_char, c_int};
 use std::ptr::NonNull;
 mod crease;
+mod edges;
 pub use crease::subd_crease_components;
+pub use edges::subd_edge_samples;
 
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 #[error("OpenNURBS SubD: {0}")]

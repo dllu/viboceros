@@ -86,6 +86,7 @@ use camera::zoom_pan;
 mod component_picking;
 mod parametric_reference;
 mod polygon_components;
+mod polygon_edges;
 pub(crate) use component_picking::mesh_face_outline;
 pub use parametric_reference::ParametricPick;
 mod control_points;

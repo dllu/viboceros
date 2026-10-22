@@ -15,6 +15,7 @@ pub enum ComponentPickFilter {
     Edges,
     Faces,
     MeshAndSubDFaces,
+    Crease,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -64,12 +65,54 @@ impl Viewport {
         }
         if matches!(
             filter,
-            ComponentPickFilter::Any | ComponentPickFilter::Edges
+            ComponentPickFilter::Any | ComponentPickFilter::Crease
         ) {
-            let edges = self.pick_edges(pointer, rect, document);
-            if !edges.is_empty() || filter == ComponentPickFilter::Edges {
-                return edges.into_iter().map(ComponentPick::from).collect();
+            let mut vertices = self.pick_polygon_vertices(pointer, rect, document);
+            let mut edges = self.pick_component_edges(
+                pointer,
+                rect,
+                document,
+                filter == ComponentPickFilter::Any,
+            );
+            if !vertices.is_empty() {
+                // Prefer a vertex over its incident edges, while keeping
+                // unrelated crossing edges as explicit ambiguity choices.
+                let selected = vertices
+                    .iter()
+                    .map(|p| (p.object, p.index))
+                    .collect::<std::collections::BTreeSet<_>>();
+                let subds = document
+                    .selectable_objects()
+                    .filter_map(|o| match o.geometry() {
+                        Geometry::SubD(s) => Some((o.id(), s)),
+                        _ => None,
+                    })
+                    .collect::<std::collections::BTreeMap<_, _>>();
+                edges.retain(|p| {
+                    if p.kind != ComponentSelectionKind::SubDEdge {
+                        return true;
+                    }
+                    let Some(subd) = subds.get(&p.object) else {
+                        return false;
+                    };
+                    subd.edges().get(p.index).is_some_and(|edge| {
+                        edge.iter()
+                            .all(|&v| !selected.contains(&(p.object, v as usize)))
+                    })
+                });
+                vertices.extend(edges);
+                return vertices;
             }
+            if !edges.is_empty() || filter == ComponentPickFilter::Crease {
+                return edges;
+            }
+        }
+        if filter == ComponentPickFilter::Edges {
+            return self
+                .pick_edges(pointer, rect, document)
+                .into_iter()
+                .map(ComponentPick::from)
+                .collect();
         }
         let allowed = (filter == ComponentPickFilter::MeshAndSubDFaces).then(|| {
             document
@@ -134,6 +177,14 @@ impl Viewport {
             if matches!(object.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)) {
                 if matches!(
                     filter,
+                    ComponentPickFilter::Any | ComponentPickFilter::Crease
+                ) {
+                    result.extend(self.polygon_edges_in_rectangle(
+                        viewport, selection, document, object, crossing, inverted,
+                    ));
+                }
+                if matches!(
+                    filter,
                     ComponentPickFilter::Any | ComponentPickFilter::MeshAndSubDFaces
                 ) {
                     result.extend(self.polygon_components_in_rectangle(
@@ -142,7 +193,10 @@ impl Viewport {
                 }
                 continue;
             }
-            if filter == ComponentPickFilter::MeshAndSubDFaces {
+            if matches!(
+                filter,
+                ComponentPickFilter::MeshAndSubDFaces | ComponentPickFilter::Crease
+            ) {
                 continue;
             }
             if !matches!(
@@ -253,6 +307,27 @@ impl Viewport {
                 continue;
             };
             match pick.kind {
+                ComponentSelectionKind::MeshEdge | ComponentSelectionKind::SubDEdge => {
+                    if matches!(
+                        (pick.kind, object.geometry()),
+                        (ComponentSelectionKind::MeshEdge, Geometry::Mesh(_))
+                            | (ComponentSelectionKind::SubDEdge, Geometry::SubD(_))
+                    ) {
+                        self.paint_polygon_edge(painter, rect, document, object, pick.index);
+                    }
+                }
+                ComponentSelectionKind::SubDVertex => {
+                    if let Some(point) =
+                        super::polygon_edges::vertex_points(document, object).get(pick.index)
+                        && document.is_control_point_hidden(viboceros_document::ControlPointId {
+                            object: pick.object,
+                            index: pick.index,
+                        }) != Some(true)
+                        && let Some(p) = self.project_selection_point(*point, rect)
+                    {
+                        painter.circle_filled(p, 5., Color32::from_rgb(245, 160, 20));
+                    }
+                }
                 ComponentSelectionKind::BrepEdge => edges.push(EdgePick {
                     object: pick.object,
                     edge: pick.index,

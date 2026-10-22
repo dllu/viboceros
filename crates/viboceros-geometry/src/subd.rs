@@ -8,6 +8,7 @@ mod append;
 mod cone;
 mod crease;
 mod cylinder;
+mod edges;
 mod ellipsoid;
 mod extrusion_conversion;
 mod interpolation;

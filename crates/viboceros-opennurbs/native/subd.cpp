@@ -242,6 +242,8 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 
+#include "subd_edges.h"
+
 extern "C" int vibo_subd_cylinder(const double* frame,double radius,double height,const uint32_t* counts,uint32_t cap,ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{
     require(frame && counts && counts[0]>=3 && counts[1]>=1 && counts[0]<=vibo_subd::component_limit && counts[1]<=vibo_subd::component_limit,

@@ -7,6 +7,9 @@ pub enum ComponentSelectionKind {
     BrepFace,
     MeshFace,
     SubDFace,
+    MeshEdge,
+    SubDEdge,
+    SubDVertex,
 }
 
 #[derive(Clone, Debug, PartialEq)]

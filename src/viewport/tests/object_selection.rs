@@ -537,8 +537,14 @@ fn subd_limit_surface_reaches_display_and_object_picking() {
             let mesh = display.mesh().unwrap();
             assert_eq!(mesh.faces().len(), 64);
             assert!(!display.wires().is_empty());
-            let pixel = view.project(mesh.vertices()[0], rect).unwrap();
+            // Only original control-edge limit curves are visible wires.
+            // Refined mesh vertices may instead lie inside a source face.
+            let pixel = view.project(display.edges()[0][0][0], rect).unwrap();
             assert_eq!(view.pick_object(pixel, rect, &document), Some(id));
+            if mode == DisplayMode::Wireframe {
+                let interior = view.project(point(2., 1.5, 0.25), rect).unwrap();
+                assert_eq!(view.pick_object(interior, rect, &document), None);
+            }
             assert_eq!(
                 view.pick_object_matching(
                     pixel,

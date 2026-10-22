@@ -58,6 +58,7 @@ impl VibocerosApp {
             && self.hole_prompt.is_none()
             && self.unjoin_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
+            && self.crease_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && !self.remember_copy_prompt
@@ -216,6 +217,8 @@ impl VibocerosApp {
                         prompt.name()
                     } else if let Some(prompt) = &self.hole_prompt {
                         prompt.name()
+                    } else if let Some(prompt) = self.crease_prompt {
+                        prompt.mode.command()
                     } else if let Some(prompt) = self.edge_fillet_prompt {
                         prompt.name()
                     } else if self.unjoin_prompt.is_some() {
@@ -321,6 +324,8 @@ impl VibocerosApp {
                             } else if let Some(prompt) = &self.edge_prompt {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.hole_prompt {
+                                prompt.hint()
+                            } else if let Some(prompt)=self.crease_prompt {
                                 prompt.hint()
                             } else if let Some(prompt)=self.edge_fillet_prompt {
                                 prompt.hint()
