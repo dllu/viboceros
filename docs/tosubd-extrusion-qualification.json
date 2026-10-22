@@ -1010,7 +1010,7 @@
     ]
   },
   "limits": [
-    "Kernel conversion only. ToSubD command/getter, document lifecycle and source creator representation integration remain pending.",
+    "Kernel conversion only. ToSubD command/getter and document lifecycle are qualified separately in tosubd-command-qualification.json; source creator representation updates remain pending.",
     "Fixed native comparisons cover controls, topology, tags, vertex limit stations and corresponding density-two facets within 1e-6; arbitrary profiles and continuous surface error are not certified.",
     "Complete-profile extrusion NURBS conversion follows public OpenNURBS joining. Closed complete profiles receive caps only when both ends are capped. Single-cap inputs retain only their walls; multiple profiles can produce an open joined-profile ribbon, matching the captures.",
     "Direct SDK cases distinguish degree-one and degree-two kink behavior before Rhino document insertion splits them into multi-face B-reps. These eight cases are excluded from constructive command totals.",
@@ -1064,7 +1064,7 @@
     "crates/viboceros-command/tests/tosubd_extrusions_native.rs": "ed2dc3c014f69d46a72bbe33c1aa553579219f2b3a838dd9805997b3662b067b",
     "crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
     "crates/viboceros-command/tests/support/subd_facets.rs": "ad0be23c4f68083f9b43a85266d0c9e8dcb8d82f00c90c88affa4849472781ff",
-    "tools/rhino_oracle/report_tosubd_extrusions.py": "1faee93ce4e89731d7ad97955624cc90217b144f529a6858e7299f7932ac080d",
+    "tools/rhino_oracle/report_tosubd_extrusions.py": "6356d4d076e476947c045cc85a667ca14241ad10c29fb138800170bd80cb5469",
     "tools/rhino_oracle/test_tosubd_extrusions.py": "dd8ef814867d4897b870bcf751507791f88a343007cc953985cf9a6817bebba4",
     "tools/rhino_oracle/creator_types_probe.py": "60284626efdb734a47a889af037d8ccc0b953fc88d1d8ccf47535ae557a97985",
     "tools/rhino_oracle/generate_creator_types.py": "aacb31055907de423f93896abeb70f2d0f7150856b7232167b8490d273c58831",

@@ -1,6 +1,6 @@
 use super::*;
-use crate::app::subd_native_tests as subd_native;
 use crate::app::tests::test_app;
+use crate::app::{subd_native_tests as subd_native, subdivision_native_tests as geometry_native};
 use crate::viewport::{ComponentClick, ComponentPick};
 #[allow(dead_code)]
 #[path = "../../../crates/viboceros-command/tests/support/subdivide.rs"]

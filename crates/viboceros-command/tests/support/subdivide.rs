@@ -1,5 +1,4 @@
-#[path = "../../../viboceros-geometry/tests/support/subdivision_native.rs"]
-mod geometry_native;
+use super::geometry_native;
 use super::subd_native;
 pub use geometry_native::{compare_mesh, indices, mesh, point};
 use serde_json::{Value, json};

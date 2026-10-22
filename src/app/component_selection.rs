@@ -193,6 +193,7 @@ impl VibocerosApp {
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
             && (self.object_prompt.is_none()
+                || self.picking_to_subd()
                 || self.picking_subdivide()
                 || self.shrink_prompt_mode()
                     == Some(viboceros_geometry::BrepSurfaceShrinkMode::Standard))
@@ -305,7 +306,12 @@ impl VibocerosApp {
         } else {
             click.picks
         };
-        let picks = if self.picking_subdivide() {
+        let picks = if self.picking_to_subd() {
+            picks
+                .into_iter()
+                .filter(|p| p.kind == ComponentSelectionKind::BrepFace)
+                .collect()
+        } else if self.picking_subdivide() {
             picks
                 .into_iter()
                 .filter(|p| {
@@ -481,6 +487,11 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
+        if self.picking_to_subd() {
+            window
+                .picks
+                .retain(|p| p.kind == ComponentSelectionKind::BrepFace);
+        }
         if self.picking_subdivide() {
             window.picks.retain(|p| {
                 matches!(

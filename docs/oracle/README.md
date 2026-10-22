@@ -16,7 +16,7 @@ For current command support, use the [command reference](../commands/README.md).
 - [Modeling comparisons](modeling-evidence.md): transforms, fitting and Booleans.
 - [SubDivide qualification](../commands/subdivide.md): local and whole mesh/SubD refinement.
 - [Extrusion interchange](../extrusions.md): native type retention and canonical B-rep checks.
-- [ToSubD kernel foundation](../tosubd-kernel.md): mesh and surface conversion comparisons.
+- [ToSubD](../tosubd-kernel.md): conversion kernels, document workflows and application prompts.
 - [Editing comparisons](editing-evidence.md): curves, meshes, B-reps and selection.
 - [Curve input](curve-input.md): interpolation and getter behavior.
 - [Geometry representation](geometry-evidence.md): mass properties, morphs and intersections.

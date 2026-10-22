@@ -76,7 +76,7 @@ def summarize(text):
         maximum_control_or_limit_point_error=control_error,maximum_sampled_surface_error=facet_error,
         command_qualified=False,getter_qualified=False,full_native_parity=False,performance_qualified=False,
         stages=stages,limits=[
-            'Kernel conversion only. ToSubD command/getter, document lifecycle and source creator representation integration remain pending.',
+            'Kernel conversion only. ToSubD command/getter and document lifecycle are qualified separately in tosubd-command-qualification.json; source creator representation updates remain pending.',
             'Fixed native comparisons cover controls, topology, tags, vertex limit stations and corresponding density-two facets within 1e-6; arbitrary profiles and continuous surface error are not certified.',
             'Complete-profile extrusion NURBS conversion follows public OpenNURBS joining. Closed complete profiles receive caps only when both ends are capped. Single-cap inputs retain only their walls; multiple profiles can produce an open joined-profile ribbon, matching the captures.',
             'Direct SDK cases distinguish degree-one and degree-two kink behavior before Rhino document insertion splits them into multi-face B-reps. These eight cases are excluded from constructive command totals.',

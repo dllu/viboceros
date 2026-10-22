@@ -42,6 +42,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) reduce_polyline: Option<reduce_polyline::Session>,
     pub(super) mesh_patch: Option<mesh_patch::Session>,
     pub(super) mesh_from_lines: Option<mesh_from_lines::Session>,
+    pub(super) to_subd: Option<super::to_subd::Session>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -70,6 +71,7 @@ impl PendingObjectCommand {
             reduce_polyline: None,
             mesh_patch: None,
             mesh_from_lines: None,
+            to_subd: None,
         }
     }
     pub(super) fn selection_filter(&self) -> Option<ObjectSelectionFilter> {
@@ -575,6 +577,7 @@ impl VibocerosApp {
                 reduce_polyline: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
+                to_subd: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -626,6 +629,7 @@ impl VibocerosApp {
                 reduce_polyline: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
+                to_subd: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -662,6 +666,7 @@ impl VibocerosApp {
                 reduce_polyline: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
+                to_subd: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -703,6 +708,7 @@ impl VibocerosApp {
                 reduce_polyline: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
+                to_subd: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -847,6 +853,7 @@ impl VibocerosApp {
                         reduce_polyline: None,
                         mesh_patch: None,
                         mesh_from_lines: None,
+                        to_subd: None,
                     });
                 }
                 Ok(None) => return false,
@@ -920,6 +927,7 @@ impl VibocerosApp {
                 reduce_polyline: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
+                to_subd: None,
             });
         }
         self.command_input.clear();
@@ -934,7 +942,7 @@ impl VibocerosApp {
         true
     }
 
-    fn log_object_prompt(&mut self) {
+    pub(super) fn log_object_prompt(&mut self) {
         if let Some(pending) = &self.object_prompt {
             let command = pending
                 .command_override
@@ -1091,6 +1099,9 @@ impl VibocerosApp {
             return self.continue_cloud_removal(input, pending);
         }
         if input.is_empty() {
+            if self.finish_to_subd() {
+                return true;
+            }
             if self.finish_subdivide(pending.postselected) {
                 return true;
             }
@@ -1696,7 +1707,7 @@ impl VibocerosApp {
             }
             if matches!(
                 pending.description.command,
-                "ShrinkTrimmedSrf" | "ShrinkTrimmedSrfToEdge" | "SubDivide"
+                "ShrinkTrimmedSrf" | "ShrinkTrimmedSrfToEdge" | "SubDivide" | "ToSubD"
             ) {
                 self.component_selection.clear();
             }

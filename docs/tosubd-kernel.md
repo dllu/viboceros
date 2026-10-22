@@ -1,12 +1,11 @@
-# Mesh and surface conversion to SubD
+# Conversion to SubD
 
 [Architecture](architecture.md) · [Compatibility evidence](oracle/README.md)
 
-The geometry API now provides the conversion foundation for `ToSubD`.
-The command and interactive workflow are still being implemented. Native
-[extrusion representation and file interchange](extrusions.md) are available;
-Extrusion conversion is available through `SubD::try_from_extrusion`; command
-and selection integration remain in progress.
+The [ToSubD command](commands/to-subd.md) exposes mesh, surface and typed
+extrusion conversion through scripted input and application prompts, including
+B-rep face selection. [Extrusion representation and file interchange](extrusions.md)
+are available; native creator representation updates remain in progress.
 
 - `SubD::try_from_mesh` accepts independent interpolation, corner and crease
   options through `SubDFromMeshOptions`.
@@ -36,10 +35,16 @@ profiles follow the native joined-profile interpretation, which can be open.
 Continuous surface error, arbitrary topology and comparative speed remain
 unqualified.
 
-The original corpus contains 139 corrected public command workflows and 43 initial
-diagnostic workflows. It also retains B-rep face selection, extrusion conversion,
-attributes, cancellation and Undo/Redo observations for subsequent integration.
-Those document workflows have not yet been qualified against Viboceros.
+The [document workflow record](tosubd-command-qualification.json) covers 201
+command and 200 application prompt replays from 206 corrected native workflows;
+five invalid profile diagnostics are excluded. They check output geometry,
+attributes, selection, identity, groups, cancellation and grouped Undo/Redo.
+An additional 43 initial diagnostic workflows retain the original incorrect
+option timing and remain excluded. Surface inputs reuse recorded NURBS tables;
+ordinary boxes retain full topology and extrusions load native 3DM sources.
+Trimmed source topology and cross-command native preference sequences remain
+unqualified. Local tests cover remembered options, stale sources and face picking
+after command startup.
 
 To rerun the kernel comparisons and report:
 
@@ -53,3 +58,15 @@ python3 -m unittest tools.rhino_oracle.test_tosubd
 The report rejects missing, duplicate, malformed and out-of-tolerance results.
 Capture recipes and archived producer sources are immutable; the initial
 incorrect option-phase experiments are excluded from kernel totals.
+
+To rerun document and prompt qualification:
+
+```sh
+cargo test -p viboceros-command --release --test tosubd_native --test tosubd \
+  -- --nocapture > /tmp/tosubd-command.log
+cargo test --release -p viboceros --bin viboceros app::to_subd::tests \
+  -- --nocapture > /tmp/tosubd-getter.log
+python3 -m tools.rhino_oracle.report_tosubd_commands \
+  /tmp/tosubd-command.log /tmp/tosubd-getter.log
+python3 -m unittest tools.rhino_oracle.test_tosubd_commands
+```

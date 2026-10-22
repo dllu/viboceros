@@ -135,6 +135,7 @@ mod merge_coplanar_face;
 mod shell;
 mod shrink_trimmed;
 mod subdivide;
+mod to_subd;
 #[cfg(test)]
 use command_line::command_completions;
 mod align;
@@ -246,6 +247,10 @@ mod subd_native_tests;
 mod subd_primitives;
 mod subd_sphere;
 mod subd_torus;
+#[cfg(test)]
+#[path = "../crates/viboceros-geometry/tests/support/subdivision_native.rs"]
+#[allow(dead_code)]
+mod subdivision_native_tests;
 mod surface_curve_offset;
 mod surface_flow;
 mod surface_interpolation;
@@ -3052,6 +3057,7 @@ impl VibocerosApp {
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)
             || self.try_start_remember_copy_options(&input)
+            || self.try_start_to_subd(&input)
             || self.try_start_subdivide_faces(&input)
             || self.try_start_shrink_faces(&input)
             || self.try_start_hole_command(&input)
@@ -10497,6 +10503,7 @@ impl eframe::App for VibocerosApp {
             && self.merge_face_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.shrink_prompt_mode().is_none()
+            && !self.to_subd_pending()
             && !self.picking_subdivide()
             && !self.picking_extract_faces()
         {

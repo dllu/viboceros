@@ -7,6 +7,7 @@
 - [MeshFromLines from connected line networks](mesh-from-lines.md)
 - [MeshPolyline from closed polylines](mesh-polyline.md)
 - [3DFace from corner points and boundary edges](3dface.md)
+- [ToSubD: mesh, surface, extrusion and selected-face conversion](to-subd.md)
 - [SubDivide: whole objects, selected faces and SubD selection](subdivide.md)
 - [SubDBox primitives and rectangle construction modes](subd-box.md)
 - [SubDPlane grids and rectangle construction modes](subd-plane.md)

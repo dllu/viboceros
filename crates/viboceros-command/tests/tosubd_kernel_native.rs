@@ -1,4 +1,4 @@
-//! Native conversion evidence shared by the future ToSubD command/getter.
+//! Native conversion evidence shared by the ToSubD command and getter.
 #[allow(dead_code)]
 #[path = "../../viboceros-geometry/tests/support/subdivision_native.rs"]
 mod mesh_native;

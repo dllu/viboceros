@@ -79,6 +79,7 @@ impl VibocerosApp {
             reduce_polyline: None,
             mesh_patch: None,
             mesh_from_lines: None,
+            to_subd: None,
         });
         self.command_input.clear();
         self.push_log(format!(

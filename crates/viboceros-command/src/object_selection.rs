@@ -33,6 +33,7 @@ pub enum ObjectSelectionFilter {
     ProjectTargets,
     Join,
     ToNurbs,
+    ToSubD,
     Beziers,
     Parametric,
     Cap,
@@ -156,6 +157,7 @@ impl ObjectSelectionFilter {
                         Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
                     )
             }
+            Self::ToSubD => crate::to_subd::accepts(geometry),
             Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
             Self::Cap => matches!(
                 geometry,

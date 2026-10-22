@@ -1,3 +1,6 @@
+#[allow(dead_code)]
+#[path = "../../viboceros-geometry/tests/support/subdivision_native.rs"]
+mod geometry_native;
 use viboceros_command::{CommandRegistry, subdivide::SubdivisionSelection};
 #[allow(dead_code)]
 #[path = "support/subdivide.rs"]
