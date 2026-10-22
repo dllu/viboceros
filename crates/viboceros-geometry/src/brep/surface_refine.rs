@@ -58,6 +58,7 @@ impl Brep {
                 .map_err(Into::into);
         }
         let mut result = self.clone();
+        result.extrusion = None;
         result.faces[0].surface = surface;
         Ok(result)
     }

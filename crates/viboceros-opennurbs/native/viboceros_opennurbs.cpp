@@ -4,6 +4,7 @@
 #include "opennurbs_public.h"
 #include "rational_coordinates.h"
 #include "subd_codec.h"
+#include "extrusion_codec.h"
 
 #include <algorithm>
 #include <array>
@@ -1408,6 +1409,10 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
   }
 
   switch (source.object_type) {
+    case VIBO_OBJECT_EXTRUSION: {
+      if(source.coordinate_count || source.index_count || source.knot_u_count || source.knot_v_count) {error="Unexpected extrusion auxiliary geometry";return nullptr;}
+      return vibo_extrusion::decode(source.geometry_data,source.geometry_data_count).release();
+    }
     case VIBO_OBJECT_SUBD: {
       if (source.coordinate_count || source.index_count || source.knot_u_count || source.knot_v_count) {
         error = "Unexpected SubD auxiliary geometry";
@@ -1899,6 +1904,8 @@ bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttribut
         supported = append_point_cloud(*cloud, object);
       } else if (const ON_LineCurve* line = ON_LineCurve::Cast(geometry)) {
         supported = append_line(*line, object);
+      } else if (const ON_Extrusion* extrusion = ON_Extrusion::Cast(geometry)) {
+        object.object_type=VIBO_OBJECT_EXTRUSION;object.geometry_data=vibo_extrusion::encode(*extrusion);supported=true;
       } else if (const ON_Brep* brep = ON_Brep::Cast(geometry)) {
         supported = append_brep(*brep, object);
       } else if (const ON_SubD* subd = ON_SubD::Cast(geometry)) {
@@ -1933,6 +1940,7 @@ bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttribut
 #include "geometry_check.h"
 #include "curve_queries.h"
 #include "surface_queries.h"
+#include "extrusion_queries.h"
 
 struct ViboThreeDmModel {
   std::vector<BridgeDefinition> definitions;

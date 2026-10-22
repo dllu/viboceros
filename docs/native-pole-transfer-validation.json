@@ -241,7 +241,6 @@
     "crates/viboceros-smlib/src/native/brep/poles/tests.rs": "a1be0f7b9efcd010c75ed0a44f6d2b6f9beb7eee7b13f5f7d271578ea649ad40",
     "crates/viboceros-smlib/tests/pole_transfer.rs": "65d2c46561acbc21586e9539f16463e7a54d1b0e1313012fd6c4b7e3c34c1be6",
     "crates/viboceros-smlib/tests/blend_edges.rs": "8aae6ec39a30d23dfe912885a7bd009e0cfa40aec84b2a4288595ead018329a0",
-    "crates/viboceros-geometry/src/brep/parameter_orientation.rs": "110d5ec099f3b6b32757c45149e9a341e404026d80866a811d23dff416c0b621",
     "crates/viboceros-command/src/coplanar_faces/tests.rs": "64915f192370acc470b908b2fea5febb2b10d41f9f0bcc4564bf630e3d5cd797",
     "crates/viboceros-command/src/planar_boolean.rs": "f2b20728494afb35a7f5f368ed0416fe8f70d874ba3eb54e8b2cdfdcdd45d86e",
     "crates/viboceros-document/src/lib.rs": "4eee7b7dcc777eb0d0918b628a9103285d56de9d2d92a0b7a2eaf0bbee76e8ca",
@@ -302,6 +301,7 @@
     "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/native/brep_import.cpp": "25ff30313d39ee9be201015a365be8c0201c65ef4730b7fe8631900fcb870901",
     "98feba44af87655d4d4fe96a793b686de7dd1e3e:crates/viboceros-smlib/build.rs": "a47e9483a9fde54ad376294db1f40f234b279a76c97e01ece62ad2052f08a42d",
     "98feba44af87655d4d4fe96a793b686de7dd1e3e:crates/viboceros-smlib/native/CMakeLists.txt": "c04ade9fcd5eab4e385285de898eda218e1530d591cb1ad075939fe5548a1946",
-    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/src/native/brep.rs": "e96a3aee3952e9df11fa273c7ad2194a7fb39a77ffaa7556bbedcc320b9a505a"
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/src/native/brep.rs": "e96a3aee3952e9df11fa273c7ad2194a7fb39a77ffaa7556bbedcc320b9a505a",
+    "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-geometry/src/brep/parameter_orientation.rs": "110d5ec099f3b6b32757c45149e9a341e404026d80866a811d23dff416c0b621"
   }
 }

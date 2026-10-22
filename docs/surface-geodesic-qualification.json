@@ -1799,7 +1799,6 @@
     "tools/rhino_oracle/observations/surface_offset_command.json": "6f500ba92c42f9725b11974da615c4d82c61ebf63318293b457b58d1e43fdf50",
     "crates/viboceros-geometry/src/surface_curve_offset/through_point.rs": "7336dfba49662075a5d19547f393e61aa8d14f9d894a06ca0e4d0270c794b52e",
     "crates/viboceros-command/src/surface_curve_offset/through_point.rs": "1eff1872e06276ac956ed14f71c814b0bf1c3ea61207738e9f22208e1af3da43",
-    "crates/viboceros-geometry/src/brep.rs": "c8b417cdb1da87f116ec337737c955c97f7c7de36d8c3f8dc3587af3a6b38c1a",
     "tools/rhino_oracle/fixtures/surface_offset_through_point.json": "7e20f4d1fc017ad8dd49aa480ece20ce37843aee7b2022bf22b5ac2df0f72ef6",
     "tools/rhino_oracle/observations/surface_offset_through_point.json": "20ca1ca59397d1c2f5770cd30f0b982ad62db25195ceb0abeb7b048094f877f5",
     "crates/viboceros-geometry/src/spline_collocation/axis.rs": "a6f8e271f52b5176429b9ff6b95cdb3397f58ebce399ed97d4dac93081805c34",
@@ -1861,7 +1860,8 @@
     "ea8ab922823387238e70373f90a0361f480d776b:crates/viboceros-geometry/src/lib.rs": "5f4a728dc9158efc5a38d6790914de5825bba95fbac746861b40d6a409720a6a",
     "ea8ab922823387238e70373f90a0361f480d776b:tools/rhino_oracle/structural_sdk.py": "8c4beb95ddb04a7084745bac5df4f84fd3740beb6b3e66e2bdc5bf32c1022d7b",
     "6e34823faa34d19f9d28cd4f0e9bc931a59d6c70:tools/rhino_oracle/test_surface_curve_offset.py": "a42d0e88016f15dfbd2afc81592179db753c4829df19a3f558223ded27beb64d",
-    "ea8ab922823387238e70373f90a0361f480d776b:crates/viboceros-geometry/src/error.rs": "ac102875d83beac9257ebbb5487de17d145321bcdee1c2278f4e4052f5d8742d"
+    "ea8ab922823387238e70373f90a0361f480d776b:crates/viboceros-geometry/src/error.rs": "ac102875d83beac9257ebbb5487de17d145321bcdee1c2278f4e4052f5d8742d",
+    "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-geometry/src/brep.rs": "c8b417cdb1da87f116ec337737c955c97f7c7de36d8c3f8dc3587af3a6b38c1a"
   },
   "historical_source_note": "Original qualification hashes are retained. Evolving source files use immutable Git revisions; captured artifacts remain local. These maps do not claim a fresh replay of the current implementation."
 }

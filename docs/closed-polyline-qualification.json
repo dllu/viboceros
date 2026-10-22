@@ -2662,7 +2662,7 @@
     "tools/rhino_oracle/test_mesh_polyline.py": "a9c899a21da65231ec92dfa1abfabea596b31068ba8e838923be2ef0486fa02e",
     "tools/rhino_oracle/client.py": "a21aa6dcc54d3671a3cb4781cbf291f51fd7b8f7c3d1d52b4115ae71808690fa",
     "tools/rhino_oracle/rhino_worker.py": "3022500a1371cb416de8c5e1c5985f54b27b95f3cb42477dc6c66e919c5604dc",
-    "tools/rhino_oracle/structural_sdk.py": "491d5f90d6fa00960bd01f50dbbab99058db98dbc7951ad333d72906a6ffc599",
+    "tools/rhino_oracle/structural_sdk.py": "3f70923a9dc0e0794e1feb56e8c1013683b356186399085d853f4646d393bf16",
     "tools/rhino_oracle/fixtures/mesh_polyline.json": "7adc422abd5729fdb652610777ce65e8efab60e14c3735f0cd87bc47c8fccdc9",
     "tools/rhino_oracle/observations/mesh_polyline.json": "2fce07a7571ecaf28bba93704b5292527ff3c2b4dc85995814a8486d331a2b2e",
     "tools/rhino_oracle/fixtures/mesh_polyline_variants.json": "a0a61db2beb32f4746b1ab5c2b9162a4446ed7e8f0c5085f92d031e6199bedef",

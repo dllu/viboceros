@@ -42,6 +42,7 @@ const OBJECT_POLYLINE: c_int = 9;
 const OBJECT_ARC: c_int = 10;
 const OBJECT_INSTANCE: c_int = 11;
 const OBJECT_SUBD: c_int = 12;
+const OBJECT_EXTRUSION: c_int = 13;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -1397,6 +1398,22 @@ fn decode_object(
                 curve
             })
         }
+        OBJECT_EXTRUSION
+            if coordinates.is_empty()
+                && indices.is_empty()
+                && knots_u.is_empty()
+                && knots_v.is_empty() =>
+        {
+            ThreeDmGeometry::Brep(Brep::try_from_extrusion_archive(
+                geometry_data,
+                Tolerance::try_new(
+                    tolerance.absolute() / coordinate_scale,
+                    tolerance.relative(),
+                    tolerance.angular(),
+                )
+                .map_err(|_| ThreeDmError::UnrepresentableSourceTolerance)?,
+            )?)
+        }
         OBJECT_SUBD
             if coordinates.is_empty()
                 && indices.is_empty()
@@ -1854,6 +1871,18 @@ impl ObjectPayload {
                 knots_v: surface.knots_v().to_vec(),
                 indices: Vec::new(),
                 geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::Brep(brep) if brep.is_extrusion() => Self {
+                object_type: OBJECT_EXTRUSION,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: brep.extrusion().unwrap().archive().to_vec(),
             },
             ThreeDmGeometry::Brep(brep) => Self {
                 object_type: OBJECT_BREP,

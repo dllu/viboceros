@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_000",
+      "case": "tosubd_pipe_000"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_001",
+      "case": "tosubd_pipe_001"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_010",
+      "case": "tosubd_pipe_010"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_011",
+      "case": "tosubd_pipe_011"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_100",
+      "case": "tosubd_pipe_100"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_101",
+      "case": "tosubd_pipe_101"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_110",
+      "case": "tosubd_pipe_110"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_111",
+      "case": "tosubd_pipe_111"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_pipe_profile_frame_diagnostic",
+      "case": "tosubd_pipe_profile_frame_diagnostic"
+    }
+  ]
+}

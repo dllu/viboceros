@@ -23,7 +23,8 @@ The [native modeling bridge](native-modeling.md) delegates supported B-rep and
 NURBS operations to usd-brep. Rust retains document and command policy; copied
 operands and serialized native calls keep ownership explicit. The OpenNURBS
 adapter supplies public SubD construction, evaluation and archives, and shares
-one native build with file interchange. Portable and native capabilities differ;
+one native build with file interchange. Native [extrusions](extrusions.md) retain
+an immutable archive alongside their validated canonical B-rep view. Portable and native capabilities differ;
 see the [file-format guide](file-formats.md) and individual command limits.
 
 ## Geometry and command integration

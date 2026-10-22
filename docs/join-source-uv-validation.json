@@ -226,7 +226,6 @@
     "policy": "Previously verifiable historical records retain original digests via full baseline Git blob references. Non-SHA claims are unchanged; 69 preexisting unverifiable records are left unchanged."
   },
   "source_sha256": {
-    "crates/viboceros-geometry/src/brep/parameter_orientation.rs": "110d5ec099f3b6b32757c45149e9a341e404026d80866a811d23dff416c0b621",
     "crates/viboceros-geometry/src/nurbs2.rs": "1c73a34a76741cdd0f663dc0c33660323ae6e4fda5ff3bac24e6a31b6f47cff0",
     "crates/viboceros-smlib/tests/stitching.rs": "fad0d5efd2c28656cbe0d122722d42c873fac399a0b9e3fab77ee9222f2f8cbb",
     "crates/viboceros-smlib/tests/sheets.rs": "750de01982a044d51524ad918e704175be4dba6b91048c292b1de062649c5432",
@@ -259,6 +258,7 @@
     "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
     "98feba44af87655d4d4fe96a793b686de7dd1e3e:docs/join-source-uv.md": "ae248d6b7c38bfa691db05aec532ce5ea04bb7165485228824c51bab9eeee809",
     "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
-    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/native/bridge.cpp": "d4a59b9a0961d835580abb48f842537bc9bdbeb0c81b04e527832b35eb8eb87f"
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/native/bridge.cpp": "d4a59b9a0961d835580abb48f842537bc9bdbeb0c81b04e527832b35eb8eb87f",
+    "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-geometry/src/brep/parameter_orientation.rs": "110d5ec099f3b6b32757c45149e9a341e404026d80866a811d23dff416c0b621"
   }
 }

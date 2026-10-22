@@ -19,6 +19,8 @@ fn main() {
         "subd_interpolation.h",
         "subd_subdivision.h",
         "mesh_codec.h",
+        "extrusion_codec.h",
+        "extrusion_queries.h",
     ] {
         println!("cargo:rerun-if-changed=native/{file}");
     }

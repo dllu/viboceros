@@ -359,7 +359,7 @@
   ],
   "sha256": {
     "crates/viboceros-command/src/lib.rs": "ba0f617aded9f3a8668ed1bc7ec2abfd31bd7661d7a2f48df14872f00b845f15",
-    "crates/viboceros-geometry/src/error.rs": "568e762fdf423b1d8e5731a61cd9fb45deede6e59acc1ebf9b2074148495662a",
+    "crates/viboceros-geometry/src/error.rs": "633250a4c718f091a9f3e7c9a1bbb0b6541fca30f97199122f45d6ae2fbf4b42",
     "crates/viboceros-geometry/src/mesh/normals.rs": "e4cbcef46e287067a0364d7ad440c93d05d6bb77ac82aa1f9f21ad4dd97cd322",
     "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
     "crates/viboceros-geometry/src/mesh/closest.rs": "c151524d33d932ad5288ff72db2daed5a61234490157f34528056d7632ad1fbb",

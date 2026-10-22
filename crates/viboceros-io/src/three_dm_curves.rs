@@ -24,6 +24,9 @@ pub(crate) fn prepare(
     tolerance: Tolerance,
 ) -> Result<Vec<Cow<'_, ThreeDmGeometry>>, ThreeDmError> {
     let pieces = match geometry {
+        ThreeDmGeometry::Brep(brep) if brep.is_extrusion() => {
+            return Ok(vec![Cow::Borrowed(geometry)]);
+        }
         ThreeDmGeometry::Brep(brep) => {
             let splits = brep
                 .edges()

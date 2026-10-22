@@ -13,6 +13,8 @@ use crate::{
     WeightedPoint2, WeightedPoint3, require_finite,
 };
 
+mod extrusion;
+pub use extrusion::ExtrusionRepresentation;
 mod boolean;
 mod borders;
 mod command_box;
@@ -510,6 +512,7 @@ impl BrepFace {
 /// exact face-local parameter-space trims.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Brep {
+    extrusion: Option<ExtrusionRepresentation>,
     vertices: Vec<BrepVertex>,
     edges: Vec<BrepEdge>,
     faces: Vec<BrepFace>,
@@ -564,6 +567,7 @@ impl Brep {
             });
         }
         let brep = Self {
+            extrusion: None,
             vertices,
             edges,
             faces,
@@ -3488,6 +3492,7 @@ impl Brep {
     /// surfaces, trims, vertices, or shared edge topology. As with `reversed`,
     /// global reversal preserves every oriented-incidence invariant.
     pub fn reverse_orientation(&mut self) {
+        self.extrusion = None;
         for face in &mut self.faces {
             face.reversed = !face.reversed;
         }
@@ -3536,6 +3541,20 @@ impl Brep {
         transform: AffineTransform3,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        if let Some(extrusion) = &self.extrusion {
+            let rows = transform.linear_rows();
+            let offset = transform.translation().to_array();
+            let mut matrix = [[0.; 4]; 4];
+            for i in 0..3 {
+                matrix[i][..3].copy_from_slice(&rows[i]);
+                matrix[i][3] = offset[i];
+            }
+            matrix[3][3] = 1.;
+            return Self::from_extrusion_data(
+                viboceros_opennurbs::extrusion_transform(extrusion.archive(), matrix)?,
+                tolerance,
+            );
+        }
         let orientation_reversing = transform.orientation_reversing()?;
         let scale = transform.maximum_linear_scale()?;
         let vertices = self

@@ -32,7 +32,6 @@
   ],
   "source_sha256": {
     "crates/viboceros-io/src/three_dm.rs": "5504c707b1f8a10d36e4028ccdecd9e320be6c7034582dac74fa6c659df40980",
-    "crates/viboceros-io/src/three_dm_geometry.rs": "28b64e507091b1f8c2f47324fe3f22b0478b23751d97b440b8a245894ea9d509",
     "crates/viboceros-io/src/three_dm/nested_codec_tests.rs": "dc949e048e9de425c05fa3fc498386dbe7611767cf7a881bc9b19003db87e848",
     "crates/viboceros-io/tests/nested_rational.rs": "e43a01b48e4698ceff454bb3b55938b737b7644ac545e53de7b5c54c7cdfda05",
     "crates/viboceros-io/examples/roundtrip_3dm.rs": "c07d6ef5e00f46befdc05049b13fc906427b5a636bc90010fd0f5dc9d9d30e29",
@@ -104,5 +103,8 @@
       "log": "docs/nested-rational-3dm-fmt.log.gz",
       "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
-  ]
+  ],
+  "source_git_sha256": {
+    "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-io/src/three_dm_geometry.rs": "28b64e507091b1f8c2f47324fe3f22b0478b23751d97b440b8a245894ea9d509"
+  }
 }

@@ -142,6 +142,7 @@ impl Brep {
             changed = true;
         }
         if changed {
+            result.extrusion = None;
             result.validate(tolerance)?;
         }
         Ok(result)

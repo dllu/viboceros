@@ -450,7 +450,6 @@
     }
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/brep/shrink.rs": "fdbba501cf03cf9fba82324f8be54cf6c798b377f91439a1c2ca3f7d1e4cdd03",
     "crates/viboceros-geometry/src/morph/rigid.rs": "f991aee484cd6a5fb1c2e61d27b6b73fd4df9c7f8c394aec3fad40796cf7edfe",
     "crates/viboceros-geometry/src/morph/surface_flow.rs": "0827783711a3fd18673a319af10c4211d2b920a52e5450430108d53ab6356ab4",
     "docs/flow-grips-validation.json": "531304131e60328841a95a34bb543e1cca3c2ca2d87ff82efa4f7e14d70fc1c3",
@@ -496,6 +495,7 @@
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/flow-local-validation.json": "9611d98df2dbc54bd3a6bbe99f00278f85ca220986d3a1c96db0ce769229af6a",
     "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/morph.rs": "83af5748a6b4846816607bbbee55b32851b4dbb9851c078801931cd10e97cd3e",
     "f6a107f761905d933e07ddb4ad84c623c8ba42e7:src/app/transform_sources.rs": "3251ad35896c44a4222910e4a3607d82e84fc742419276a90374ba3c346923a7",
-    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:src/app/mesh_face_prompt.rs": "44a9aa3a1bd2b76f42092ebc00ab7595e0da664655c080a261b7fc15505a7d62"
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:src/app/mesh_face_prompt.rs": "44a9aa3a1bd2b76f42092ebc00ab7595e0da664655c080a261b7fc15505a7d62",
+    "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-geometry/src/brep/shrink.rs": "fdbba501cf03cf9fba82324f8be54cf6c798b377f91439a1c2ca3f7d1e4cdd03"
   }
 }

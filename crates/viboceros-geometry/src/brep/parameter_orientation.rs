@@ -28,6 +28,7 @@ impl Brep {
             .iter()
             .map(|&i| Ok((i, self.faces[i].try_swapped_uv()?)))
             .collect::<Result<Vec<_>, GeometryError>>()?;
+        self.extrusion = None;
         for (index, face) in replacements {
             self.faces[index] = face;
         }

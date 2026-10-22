@@ -77,6 +77,7 @@ pub(super) fn apply(
         return Ok(None);
     }
     let mut result = source.clone();
+    result.extrusion = None;
     result.vertices = vertices;
     for edge in &mut result.edges {
         let moved = edge

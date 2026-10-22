@@ -3,7 +3,9 @@
 [Architecture](architecture.md) · [Compatibility evidence](oracle/README.md)
 
 The geometry API now provides the conversion foundation for `ToSubD`.
-The command and interactive workflow are still being implemented.
+The command and interactive workflow are still being implemented. Native
+[extrusion representation and file interchange](extrusions.md) are available;
+ToSubD extrusion conversion remains in progress.
 
 - `SubD::try_from_mesh` accepts independent interpolation, corner and crease
   options through `SubDFromMeshOptions`.

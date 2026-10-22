@@ -1,0 +1,211 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_00",
+      "case": "tosubd_extrusion_rectangle_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_01",
+      "case": "tosubd_extrusion_rectangle_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_10",
+      "case": "tosubd_extrusion_rectangle_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_11",
+      "case": "tosubd_extrusion_rectangle_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_open_00",
+      "case": "tosubd_extrusion_rectangle_open_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_open_01",
+      "case": "tosubd_extrusion_rectangle_open_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_open_10",
+      "case": "tosubd_extrusion_rectangle_open_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_open_11",
+      "case": "tosubd_extrusion_rectangle_open_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_negative_00",
+      "case": "tosubd_extrusion_rectangle_negative_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_negative_01",
+      "case": "tosubd_extrusion_rectangle_negative_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_negative_10",
+      "case": "tosubd_extrusion_rectangle_negative_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_negative_11",
+      "case": "tosubd_extrusion_rectangle_negative_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_00",
+      "case": "tosubd_extrusion_circle_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_01",
+      "case": "tosubd_extrusion_circle_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_10",
+      "case": "tosubd_extrusion_circle_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_11",
+      "case": "tosubd_extrusion_circle_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_open_00",
+      "case": "tosubd_extrusion_circle_open_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_open_01",
+      "case": "tosubd_extrusion_circle_open_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_open_10",
+      "case": "tosubd_extrusion_circle_open_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_open_11",
+      "case": "tosubd_extrusion_circle_open_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_open_kink_00",
+      "case": "tosubd_extrusion_open_kink_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_open_kink_01",
+      "case": "tosubd_extrusion_open_kink_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_open_kink_10",
+      "case": "tosubd_extrusion_open_kink_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_open_kink_11",
+      "case": "tosubd_extrusion_open_kink_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_arc_00",
+      "case": "tosubd_extrusion_arc_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_arc_01",
+      "case": "tosubd_extrusion_arc_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_arc_10",
+      "case": "tosubd_extrusion_arc_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_arc_11",
+      "case": "tosubd_extrusion_arc_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_tube_00",
+      "case": "tosubd_extrusion_tube_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_tube_01",
+      "case": "tosubd_extrusion_tube_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_tube_10",
+      "case": "tosubd_extrusion_tube_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_tube_11",
+      "case": "tosubd_extrusion_tube_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_miter_00",
+      "case": "tosubd_extrusion_rectangle_miter_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_miter_01",
+      "case": "tosubd_extrusion_rectangle_miter_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_miter_10",
+      "case": "tosubd_extrusion_rectangle_miter_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_rectangle_miter_11",
+      "case": "tosubd_extrusion_rectangle_miter_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_shear_00",
+      "case": "tosubd_extrusion_circle_shear_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_shear_01",
+      "case": "tosubd_extrusion_circle_shear_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_shear_10",
+      "case": "tosubd_extrusion_circle_shear_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_extrusion_circle_shear_11",
+      "case": "tosubd_extrusion_circle_shear_11"
+    }
+  ]
+}

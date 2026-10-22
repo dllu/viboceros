@@ -4,6 +4,7 @@
 //! or produce degenerate geometry return [`GeometryError`] rather than letting
 //! invalid values enter the model.
 
+pub mod interop;
 mod subd;
 pub use subd::{
     SubD, SubDAppendResult, SubDCylinderCap, SubDDisplayMesh, SubDFromMeshOptions,
@@ -181,9 +182,9 @@ pub use brep::{
     BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent,
     BrepPolyhedralRegion, BrepPolyhedralShell, BrepSetIntersection, BrepSolidOrientation,
     BrepSplitComponent, BrepSurfaceShrinkMode, BrepSurfaceSplitComponent, BrepTrim, BrepTrimType,
-    BrepUnionComponent, BrepVertex, BrepWireCage, RectangularSurfaceCorner,
-    RectangularSurfaceCornerCut, SurfaceIso, boolean_planar_breps, boolean_polyhedral_breps,
-    boolean_projected_planar_breps, convex_brep_boundary_interactions,
+    BrepUnionComponent, BrepVertex, BrepWireCage, ExtrusionRepresentation,
+    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso, boolean_planar_breps,
+    boolean_polyhedral_breps, boolean_projected_planar_breps, convex_brep_boundary_interactions,
     convex_brep_subtraction_interactions, intersect_convex_brep_sets, intersect_convex_breps,
     intersect_polyhedral_brep_sets, intersect_polyhedral_breps, join_breps, join_breps_with_report,
     polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,

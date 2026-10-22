@@ -20,6 +20,9 @@ block definition members. Import preserves unused source IDs; repeated imports,
 nil IDs, conflicts, and additional objects created by curve decomposition receive
 fresh IDs. Duplicating a document object also creates a new identity.
 
+Native [extrusions](extrusions.md) retain their type, caps and canonical B-rep view
+through 3DM import, supported affine transforms and export.
+
 ## Paths and export behavior
 
 File commands preserve internal filename whitespace. Use double quotes around

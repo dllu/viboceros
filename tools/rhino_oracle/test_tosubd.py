@@ -49,7 +49,7 @@ class ToSubDTests(unittest.TestCase):
             if 'op' not in edit:
                 with self.assertRaises(ValueError):
                     validate_operations(bad)
-        modules = ['tosubd_cases', 'tosubd_probe', 'tosubd_info', 'subd_box_probe', 'join_probe', 'merge_edges_probe']
+        modules = ['tosubd_extrusion_cases', 'tosubd_cases', 'tosubd_probe', 'tosubd_info', 'subd_box_probe', 'join_probe', 'merge_edges_probe']
         with tempfile.TemporaryDirectory() as directory:
             stage_helpers(query, HERE, Path(directory))
             self.assertEqual({p.name for p in Path(directory).iterdir()}, {m + '.py' for m in modules})

@@ -179,7 +179,6 @@
     "crates/viboceros-command/src/refinement.rs": "93a22d0ce217b24c48c39e5d4f5c506b24acd06935c1ae724d61e5a2d30c241d",
     "crates/viboceros-command/src/lib.rs": "8a7d43fa888af307293ff6fa8f25efac77c7346b05f7a587846a6e6176dcc291",
     "crates/viboceros-command/tests/insert_knot_command.rs": "3d07429af651eaed2be8191d4fe764e1689ed2fea810050170699011a6b3844a",
-    "crates/viboceros-geometry/src/brep/surface_refine.rs": "55bd9450b2715b06da5a4ccc62f206d7e11b8f66839aef10506bdc4bba0dac69",
     "src/app.rs": "b2e0b36c6d1d0ffb9ddcd195ad874ea5e43f1cf7a77347f0a03bfdd7396a769a",
     "src/app/refinement.rs": "9670fe4e07f62ae3657fea3f892affae61ca153c978171e32c029316d92f33bd",
     "src/app/refinement/subcurve.rs": "cd16c5962bdb11c2cef87cbbba8951fc3b5fd7350672c380cffce0ae911ab1b0",
@@ -1997,5 +1996,8 @@
       "ui-portable": 3.3232593448441795e-15,
       "ui-native": 3.3232593448441795e-15
     }
-  ]
+  ],
+  "current_source_git_sha256": {
+    "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-geometry/src/brep/surface_refine.rs": "55bd9450b2715b06da5a4ccc62f206d7e11b8f66839aef10506bdc4bba0dac69"
+  }
 }

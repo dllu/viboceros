@@ -18,6 +18,7 @@ def run(operation, host, iterations, tolerance):
     case = deepcopy(all_cases()[operation['case']])
     ids, layers = [], []
     sdk_inputs = []
+    source_files = []
     group = -1
     old_layer = doc.Layers.CurrentLayerIndex
     old_tolerance = doc.ModelAbsoluteTolerance
@@ -69,11 +70,50 @@ def run(operation, host, iterations, tolerance):
         if kind == 'box':
             return G.Brep.CreateFromBox(G.BoundingBox(G.Point3d(0, 0, 0), G.Point3d(4, 3, 2)))
         if kind == 'extrusion':
-            curve = G.Rectangle3d(G.Plane.WorldXY, 4., 3.).ToNurbsCurve()
+            profile = source.get('profile', 'rectangle')
+            if profile == 'pipe':
+                cylinder = G.Cylinder(G.Circle(G.Plane.WorldXY,2.), source.get('height',2.))
+                return G.Extrusion.CreatePipeExtrusion(cylinder,1.,source.get('cap',True),source.get('cap',True))
+            if profile == 'rectangle':
+                curve = G.Rectangle3d(G.Plane.WorldXY, 4., 3.).ToNurbsCurve()
+            elif profile == 'circle':
+                curve = G.Circle(G.Plane.WorldXY, 2.).ToNurbsCurve()
+            elif profile == 'arc':
+                import math
+                curve = G.Arc(G.Circle(G.Plane.WorldXY, 2.), math.pi / 2.).ToNurbsCurve()
+            elif profile == 'open_kink':
+                curve = G.PolylineCurve([G.Point3d(0.,0.,0.), G.Point3d(1.,1.,0.), G.Point3d(3.,0.,0.)])
+            else:
+                raise ValueError('unknown extrusion profile')
             try:
-                return G.Extrusion.Create(curve, 2., True)
+                extrusion = G.Extrusion.Create(curve, source.get('height', 2.), source.get('cap', True))
             finally:
                 curve.Dispose()
+            if extrusion is None:
+                raise ValueError('extrusion construction failed')
+            try:
+                if 'inner_radius' in source:
+                    inner = G.Circle(G.Plane.WorldXY, source['inner_radius']).ToNurbsCurve()
+                    try:
+                        if not extrusion.AddInnerProfile(inner):
+                            raise ValueError('inner extrusion profile failed')
+                    finally:
+                        inner.Dispose()
+                if 'miter_start' in source:
+                    extrusion.MiterPlaneNormalAtStart = G.Vector3d(*source['miter_start'])
+                if 'miter_end' in source:
+                    extrusion.MiterPlaneNormalAtEnd = G.Vector3d(*source['miter_end'])
+                if 'transform' in source:
+                    transform = G.Transform.Identity
+                    for r in range(4):
+                        for c in range(4):
+                            transform[r,c] = source['transform'][4*r+c]
+                    if not extrusion.Transform(transform):
+                        raise ValueError('extrusion transform failed')
+                return extrusion
+            except Exception:
+                extrusion.Dispose()
+                raise
         if kind == 'trimmed':
             outer = G.Rectangle3d(G.Plane.WorldXY, 4., 3.).ToNurbsCurve()
             hole = G.Circle(G.Point3d(2., 1.5, 0.), .5).ToNurbsCurve()
@@ -105,7 +145,14 @@ def run(operation, host, iterations, tolerance):
                 row['selected_faces'] = [i for i in range(g.Faces.Count) if obj.IsSubObjectSelected(G.ComponentIndex(G.ComponentIndexType.MeshFace, i))]
                 row['mesh']['ngons'] = [dict(vertices=[int(v) for v in n.BoundaryVertexIndexList()], faces=[int(f) for f in n.FaceIndexList()]) for n in g.Ngons]
             elif isinstance(g, G.Extrusion) or isinstance(g, G.Brep):
+                if isinstance(g, G.Extrusion) and case.get('record_extrusion'):
+                    row['extrusion'] = dict(profile_count=int(g.ProfileCount), cap_count=int(g.CapCount),
+                        path_start=[float(g.PathStart.X), float(g.PathStart.Y), float(g.PathStart.Z)],
+                        path_end=[float(g.PathEnd.X), float(g.PathEnd.Y), float(g.PathEnd.Z)],
+                        mitered=[bool(g.IsMiteredAtStart),bool(g.IsMiteredAtEnd)])
                 brep = g.ToBrep() if isinstance(g, G.Extrusion) else g
+                if 'extrusion' in row:
+                    row['extrusion']['brep_valid'] = bool(brep.IsValid)
                 try:
                     row['selected_faces'] = [i for i in range(brep.Faces.Count) if obj.IsSubObjectSelected(G.ComponentIndex(G.ComponentIndexType.BrepFace, i))]
                     row['brep'] = [dict(surface=host['_nurbs_surface_definition'](face.UnderlyingSurface()), reversed=bool(face.OrientationIsReversed), loops=int(face.Loops.Count)) for face in brep.Faces]
@@ -140,6 +187,28 @@ def run(operation, host, iterations, tolerance):
                     finally:
                         if converted is not None:
                             converted.Dispose()
+                if case.get('source_3dm'):
+                    import os, base64
+                    model = R.FileIO.File3dm()
+                    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'extrusion-' + str(S.Guid.NewGuid()) + '.3dm')
+                    decoded = None
+                    try:
+                        model.Layers.AddDefaultLayer('Default', S.Drawing.Color.Black)
+                        model.Objects.AddExtrusion(g)
+                        if not model.Write(path,8):
+                            raise ValueError('extrusion source 3DM write failed')
+                        decoded = R.FileIO.File3dm.Read(path)
+                        if decoded is None or len(list(decoded.Objects)) != 1 or not isinstance(list(decoded.Objects)[0].Geometry,G.Extrusion):
+                            raise ValueError('native source 3DM lost extrusion type')
+                        with open(path,'rb') as file:
+                            payload=base64.b64encode(file.read()).decode('ascii')
+                        source_files.append(dict(source=index,base64=payload))
+                    finally:
+                        if decoded is not None:
+                            decoded.Dispose()
+                        model.Dispose()
+                        if os.path.exists(path):
+                            os.unlink(path)
                 a = R.DocObjects.ObjectAttributes()
                 a.LayerIndex, a.Name = layers[0], 'Input ' + str(index)
                 a.ObjectColor = S.Drawing.Color.FromArgb(17, 43, 91)
@@ -198,7 +267,7 @@ def run(operation, host, iterations, tolerance):
         R.RhinoApp.RunScript('_Redo', False)
         redo = snapshot()
         return dict(input=case, success=success, macro=macro, history=history, events=events,
-                    sdk_inputs=sdk_inputs, document_tolerance=float(doc.ModelAbsoluteTolerance), before=before, after=after, after_script=after_script, undo=undo, redo=redo), 0
+                    source_files=source_files, sdk_inputs=sdk_inputs, document_tolerance=float(doc.ModelAbsoluteTolerance), before=before, after=after, after_script=after_script, undo=undo, redo=redo), 0
     finally:
         doc.ModelAbsoluteTolerance = old_tolerance
         doc.Layers.SetCurrentLayerIndex(old_layer, True)

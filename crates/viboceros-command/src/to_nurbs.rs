@@ -60,7 +60,7 @@ impl Command for ToNurbsCommand {
                     | Geometry::Polyline(_)
                     | Geometry::PolyCurve(_)
                     | Geometry::Mesh(_)
-            )
+            ) || matches!(o.geometry(), Geometry::Brep(b) if b.is_extrusion())
         });
         Ok(convertible.then(|| prompt(options, mesh)))
     }
@@ -110,6 +110,15 @@ impl ToNurbsCommand {
         let mut conversions = Vec::new();
         for object in document.objects().filter(|o| document.is_selected(o.id())) {
             let geometry = match object.geometry() {
+                Geometry::Brep(brep) if brep.is_extrusion() => {
+                    charge(
+                        &mut controls,
+                        brep.faces().iter().fold(0_usize, |n, f| {
+                            n.saturating_add(f.surface().control_points().len())
+                        }),
+                    )?;
+                    Geometry::Brep(brep.explicit_brep())
+                }
                 // Rhino stores an ellipse as a NURBS curve already. The compact
                 // native analytic representation must not turn this into a copy.
                 Geometry::Ellipse(_)
