@@ -24,6 +24,7 @@ APPLICATION_MODULES = [
     'src/app/soft_crease.rs',
     'src/app/soft_crease/tests.rs',
     'src/app/soft_crease/tests/native.rs',
+    'src/app/crease/tests/vertex_seams.rs',
     'src/viewport/soft_crease.rs',
     'src/app/drafting_input.rs',
     'src/app/interactive_cancel.rs',
@@ -65,6 +66,8 @@ SUBD_MODULES = [
     'crates/viboceros-opennurbs/native/subd_soft_crease.h',
     'crates/viboceros-opennurbs/src/subd/soft_crease.rs',
     'crates/viboceros-geometry/src/subd/soft_crease.rs',
+    'crates/viboceros-geometry/src/subd/interpolation.rs',
+    'crates/viboceros-geometry/src/subd/interpolation/grips.rs',
 ]
 
 MESH_MODULES = [
@@ -88,6 +91,8 @@ MESH_MODULES = [
 
 def with_shared_sources(paths):
     expanded = list(paths)
+    if 'crates/viboceros-document/src/control_points.rs' in expanded:
+        expanded.append('crates/viboceros-document/src/control_points/geometry.rs')
     if any(p in expanded for p in ['src/viewport.rs', 'src/viewport/scene.rs',
                                    'src/viewport/display_cache.rs']):
         expanded.extend(['src/viewport/mesh_normals.rs',
@@ -97,6 +102,8 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/mesh_seams.rs',
             'crates/viboceros-command/src/mesh_component_unweld.rs',
             'crates/viboceros-command/src/mesh_component_weld.rs',
+            'crates/viboceros-command/src/vertex_seams.rs',
+            'crates/viboceros-command/src/vertex_seams/arguments.rs',
             'crates/viboceros-command/src/extract_control_polygon.rs',
             'crates/viboceros-command/src/extract_control_polygon/options.rs',
             'crates/viboceros-command/src/extract_control_polygon/arguments.rs',

@@ -21,12 +21,16 @@ def validate(op):
 
 def run(op,host,iterations,tolerance):
     validate(op)
+    return run_scene(ALL_CASES[op['case']],host,iterations,tolerance,op['case']in DISCOVERY)
+
+
+def run_scene(recipe,host,iterations,tolerance,discovery=False):
     from join_probe import observe_command
     from subd_box_probe import subd_value
     R,S=host['Rhino'],host['System'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
     if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:
         raise ValueError('empty owned idle document required')
-    case=deepcopy(ALL_CASES[op['case']]);ids=[];layers=[];group=-1
+    case=deepcopy(recipe);ids=[];layers=[];group=-1
     def vertices(g):
         result=[];v=g.Vertices.First
         while v is not None:
@@ -88,7 +92,10 @@ def run(op,host,iterations,tolerance):
                 if isinstance(g,G.SubD):
                     vv=vertices(g);mapping={int(v.Id):i for i,v in enumerate(vv)}
                     if case.get('grips'):
-                        obj.GripsOn=True;grips=list(obj.GetGrips()or[])
+                        if case.get('edit_points'):
+                            obj.Select(True);R.RhinoApp.RunScript('_EditPtOn',False)
+                        else:obj.GripsOn=True
+                        grips=list(obj.GetGrips()or[])
                         for i in d.get('selected_vertices',[]):grips[i].Select(True)
                     else:
                         for i in d.get('selected_vertices',[]):
@@ -98,12 +105,14 @@ def run(op,host,iterations,tolerance):
                         if pair in d.get('edges',[]):
                             if not obj.SelectSubObject(edge.ComponentIndex(),True,True,False):raise ValueError('edge preselection failed')
                 else:
+                    for i in d.get('selected_vertices',[]):
+                        if not obj.SelectSubObject(G.ComponentIndex(G.ComponentIndexType.MeshTopologyVertex,i),True,True,False):raise ValueError('mesh vertex preselection failed')
                     for i in range(g.TopologyEdges.Count):
                         pair=g.TopologyEdges.GetTopologyVertices(i)
                         a=list(g.TopologyVertices.MeshVertexIndices(pair.I));b=list(g.TopologyVertices.MeshVertexIndices(pair.J))
                         if any(sorted([x,y])in d.get('edges',[])for x in a for y in b):
                             if not obj.SelectSubObject(G.ComponentIndex(G.ComponentIndexType.MeshTopologyEdge,i),True,True,False):raise ValueError('mesh edge preselection failed')
-        if op['case']not in DISCOVERY:
+        if not discovery:
             for key,d in zip(ids,case['sources']):
                 if not d.get('soft'):continue
                 obj=doc.Objects.FindId(key);g=obj.Geometry;vv=vertices(g);mapping={int(v.Id):i for i,v in enumerate(vv)}
@@ -124,13 +133,15 @@ def run(op,host,iterations,tolerance):
                 doc.Objects.AddPoint(G.Point3d(19.,23.,29.),attrs)
             finally:doc.EndUndoRecord(witness_record)
         else:doc.ClearUndoRecords(True)
+        if 'modify_normals'in case:
+            R.RhinoApp.RunScript('_-'+case['command']+' _ModifyNormals=_'+('Yes'if case['modify_normals']else 'No')+' _Enter',False)
         if not case.get('postselect'):select_components()
         if case.get('soft_vertex_only'):
             for obj in doc.Objects:
                 if isinstance(obj.Geometry,G.SubD):
                     for e in obj.Geometry.Edges:obj.SelectSubObject(e.ComponentIndex(),False,True,False)
         source_3dm=None
-        if op['case']not in DISCOVERY:
+        if not discovery:
             model=R.FileIO.File3dm()
             try:
                 source_layer=model.Layers.AddLayer('Default',S.Drawing.Color.Black)
@@ -144,6 +155,7 @@ def run(op,host,iterations,tolerance):
                 source_3dm=S.Convert.ToBase64String(model.ToByteArray())
             finally:model.Dispose()
         before=snapshot();macro='_-'+case['command']
+        if case.get('command_arguments'):macro+=' '+case['command_arguments']
         if case.get('whole')and not case.get('preselected'):
             for key in ids:macro+=" '_-SelID "+str(key)
         if not case.get('postselect'):

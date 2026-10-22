@@ -1,0 +1,5 @@
+{
+  "surface_move_soft_one": "Rhino 8.32 moves only selected controls but does not meet the requested weighted limit station.",
+  "surface_move_soft_pair": "Rhino 8.32 does not meet either requested weighted limit station.",
+  "surface_move_cube_all": "The captured all-selected native solve makes large control jumps and misses the requested translation. Viboceros applies the exact affine map."
+}

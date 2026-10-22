@@ -64,6 +64,9 @@ pub fn setup(row: &Value) -> (Document, Vec<ObjectId>) {
     } else {
         "crease_main_v3"
     };
+    setup_from_family(row, family)
+}
+pub fn setup_from_family(row: &Value, family: &str) -> (Document, Vec<ObjectId>) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
         .find(|p| p.join("tools/rhino_oracle/fixtures").is_dir())
@@ -126,7 +129,11 @@ pub fn setup(row: &Value) -> (Document, Vec<ObjectId>) {
         .filter(|s| s["grips_on"] == true)
     {
         let id = ids[source["source"].as_u64().unwrap() as usize];
-        doc.enable_control_points([id]).unwrap();
+        if native["input"]["edit_points"] == true {
+            doc.enable_edit_points([id]).unwrap();
+        } else {
+            doc.enable_control_points([id]).unwrap();
+        }
         doc.select_control_points(
             source["selected_grips"]
                 .as_array()
@@ -140,6 +147,16 @@ pub fn setup(row: &Value) -> (Document, Vec<ObjectId>) {
         )
         .unwrap();
     }
+    doc.select_objects_direct(
+        native["before"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|s| s["selected"] == true)
+            .map(|s| ids[s["source"].as_u64().unwrap() as usize]),
+        SelectionMode::Add,
+    )
+    .unwrap();
     (doc, ids)
 }
 pub fn targets(doc: &Document, ids: &[ObjectId], v: &Value) -> Vec<CreaseTarget> {

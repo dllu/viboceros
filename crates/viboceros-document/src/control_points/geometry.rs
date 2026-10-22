@@ -21,6 +21,17 @@ impl Geometry {
         tolerance: Tolerance,
         mode: GripMode,
     ) -> Result<Self, GeometryError> {
+        if mode == GripMode::Edit
+            && let Self::SubD(subd) = self
+            && indices.len() == subd.control_points().len()
+            && indices
+                .last()
+                .is_some_and(|&i| i < subd.control_points().len())
+        {
+            // A whole-object affine edit has an exact answer, including nets
+            // whose complete limit-station system has a null space.
+            return subd.transformed(transform).map(Self::SubD);
+        }
         self.with_grip_map(
             indices,
             |point| transform.transform_point(point),
@@ -62,6 +73,25 @@ impl Geometry {
         identity: bool,
     ) -> Result<Self, GeometryError> {
         if mode == GripMode::Edit {
+            if let Self::SubD(subd) = self {
+                let points = subd.surface_points();
+                if let Some(&index) = indices.last().filter(|&&i| i >= points.len()) {
+                    return Err(GeometryError::InvalidControlPointIndex {
+                        index,
+                        count: points.len(),
+                    });
+                }
+                if indices.is_empty() || identity {
+                    return Ok(self.clone());
+                }
+                let targets = indices
+                    .iter()
+                    .map(|&i| map_point(points[i]).map(|p| (i, p)))
+                    .collect::<Result<Vec<_>, _>>()?;
+                return subd
+                    .try_with_selected_limit_points(&targets, tolerance)
+                    .map(Self::SubD);
+            }
             if let Self::PolyCurve(curve) = self {
                 return curve
                     .with_mapped_edit_grips(indices, map_point, tolerance)

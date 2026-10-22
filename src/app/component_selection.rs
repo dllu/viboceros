@@ -351,11 +351,11 @@ impl VibocerosApp {
                 .into_iter()
                 .filter(|pick| soft_crease::eligible_edge(&self.document, pick))
                 .collect()
-        } else if self.crease_prompt.is_some() {
+        } else if let Some(prompt) = self.crease_prompt {
             click
                 .picks
                 .into_iter()
-                .filter(|p| crease::eligible(p.kind))
+                .filter(|p| prompt.eligible(p.kind))
                 .collect()
         } else if self.shell_prompt.is_some() {
             self.shellable_picks(click.picks)
@@ -543,7 +543,16 @@ impl VibocerosApp {
                 )
             })
             .collect::<Vec<_>>();
-        let parents = picks.iter().map(|pick| pick.object).collect::<Vec<_>>();
+        let parents = picks
+            .iter()
+            .filter(|pick| {
+                !(self
+                    .crease_prompt
+                    .is_some_and(|p| p.preserves_grip_owners())
+                    && self.document.grip_mode(pick.object).is_some())
+            })
+            .map(|pick| pick.object)
+            .collect::<Vec<_>>();
         match self
             .component_selection
             .apply(&self.document, picks, action)
@@ -588,8 +597,8 @@ impl VibocerosApp {
                 )
             });
         }
-        if self.crease_prompt.is_some() {
-            window.picks.retain(|p| crease::eligible(p.kind));
+        if let Some(prompt) = self.crease_prompt {
+            window.picks.retain(|p| prompt.eligible(p.kind));
         }
         if self.picking_soft_crease_edges() {
             window

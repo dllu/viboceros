@@ -3,6 +3,7 @@ use super::*;
 use crate::Tolerance;
 use faer::prelude::*;
 use faer::sparse::{SparseColMat, Triplet};
+mod grips;
 
 impl SubD {
     /// Moves the control net so each vertex limit station meets its target.

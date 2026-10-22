@@ -7,7 +7,7 @@ use viboceros_command::crease::CreaseTarget;
 use viboceros_geometry::{PointCloud3, PointCloudProjection};
 #[allow(dead_code)]
 #[path = "../../../../crates/viboceros-command/tests/support/crease.rs"]
-mod fixture;
+pub(super) mod fixture;
 
 fn pick_kind(document: &Document, target: CreaseTarget) -> ComponentPick {
     match target {

@@ -2,6 +2,9 @@
 
 [Mesh commands](meshes.md) · [Stored vertex channels](../geometry/mesh-channels.md)
 
+`WeldVertices` and `UnweldVertex` also support [SubD vertices](vertex-seams.md),
+with their own tag, grip-selection and history behavior.
+
 Seam edits preserve object identity, attributes, groups and selection, and commit
 one undo step. Invalid components or options reject the whole edit. Component
 selectors take unique indices; the geometry APIs also accept repeated indices.

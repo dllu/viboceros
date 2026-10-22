@@ -3,6 +3,7 @@ use crate::app::tests::test_app;
 use crate::viewport::{ComponentClick, ComponentPick};
 use viboceros_geometry::SubD;
 mod native;
+mod vertex_seams;
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

@@ -59,7 +59,7 @@ impl Command for EditPointsOnCommand {
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         Ok(arguments.is_empty().then_some(ObjectSelectionPrompt {
             command: "EditPtOn",
-            filter: ObjectSelectionFilter::Curves,
+            filter: ObjectSelectionFilter::EditPoints,
             options: Vec::new(),
             menus: Vec::new(),
             choices: Vec::new(),
@@ -67,7 +67,7 @@ impl Command for EditPointsOnCommand {
         }))
     }
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, "EditPtOn (select curves)")?;
+        require_consumed(arguments, 0, "EditPtOn (select curves or SubDs)")?;
         let ids = document.selected_object_ids().collect::<Vec<_>>();
         let count = document.enable_edit_points(ids.iter().copied())?;
         // Unlike PointsOn, native EditPtOn retains the preselected owners.

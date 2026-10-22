@@ -4,11 +4,12 @@ import hashlib
 import json
 from pathlib import Path
 import re
+from .qualification_sources import with_shared_sources
 from .report_subd_cylinder import ROOT, HERE, SOURCES as BASE_SOURCES
 from .report_subd_box import error
 
 FAMILIES = [('subd_cylinder_references', 20), ('subd_cylinder_reference_degenerate', 2)]
-SOURCES = list(dict.fromkeys(BASE_SOURCES + [
+SOURCES = with_shared_sources(BASE_SOURCES + [
     'crates/viboceros-command/src/circle_fit_points.rs',
     'crates/viboceros-command/src/circle_tangent_input.rs',
     'crates/viboceros-command/src/circle_around_input.rs',
@@ -33,7 +34,7 @@ SOURCES = list(dict.fromkeys(BASE_SOURCES + [
     'tools/rhino_oracle/report_subd_cylinder_references.py',
     'tools/rhino_oracle/test_subd_cylinder_references.py',
 ] + [f'tools/rhino_oracle/{directory}/{family}.json'
-     for family, _ in FAMILIES for directory in ['fixtures', 'observations']]))
+     for family, _ in FAMILIES for directory in ['fixtures', 'observations']])
 
 
 def without_selection(rows):

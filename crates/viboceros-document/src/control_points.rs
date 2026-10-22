@@ -91,9 +91,16 @@ impl Geometry {
         ) && !matches!(self, Self::Brep(brep) if brep.faces().len() != 1)
     }
 
+    pub fn supports_edit_points(&self) -> bool {
+        self.curve_ref().is_some() || matches!(self, Self::SubD(_))
+    }
+
     /// Source grip coordinates in the selected control/edit basis, independent of display overrides.
     pub fn grip_locations(&self, mode: GripMode) -> Result<Vec<Point3>, GeometryError> {
         if mode == GripMode::Edit {
+            if let Self::SubD(subd) = self {
+                return Ok(subd.surface_points().to_vec());
+            }
             if let Self::PolyCurve(curve) = self {
                 return curve.edit_point_locations();
             }
@@ -138,7 +145,6 @@ impl Document {
                 let id = self.objects[*index].id;
                 self.control_points
                     .get(&id)
-                    .filter(|state| !state.selected.is_empty())
                     .map(|state| (id, state.clone()))
             })
             .collect::<Vec<_>>();
@@ -210,7 +216,7 @@ impl Document {
             }
             if match mode {
                 GripMode::Control => object.geometry.supports_control_points(),
-                GripMode::Edit => object.geometry.curve_ref().is_some(),
+                GripMode::Edit => object.geometry.supports_edit_points(),
             } {
                 staged.push((
                     object.id,

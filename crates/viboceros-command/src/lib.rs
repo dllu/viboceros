@@ -14,6 +14,7 @@ pub mod blocks;
 pub mod contour;
 pub mod crease;
 pub mod extract_control_polygon;
+pub mod vertex_seams;
 use extract_control_polygon::ExtractControlPolygonCommand;
 mod create_unique_block;
 mod create_uv_curves;
@@ -13977,11 +13978,11 @@ pub enum CommandError {
     #[error("none of the selected mesh edges requires welding or compaction")]
     NoSelectedMeshEdgesToWeld,
 
-    #[error("WeldVertices supports selected meshes only")]
+    #[error("WeldVertices supports mesh and SubD vertices only")]
     UnsupportedWeldVerticesGeometry,
 
     #[error(
-        "WeldVertices vertex index {vertex} is outside the selected mesh's topology vertex count {vertex_count}"
+        "WeldVertices vertex index {vertex} is outside the selected object's vertex count {vertex_count}"
     )]
     WeldVertexIndexOutOfRange { vertex: usize, vertex_count: usize },
 
@@ -14003,16 +14004,22 @@ pub enum CommandError {
     #[error("none of the selected mesh edges requires unwelding or compaction")]
     NoSelectedMeshEdgesToUnweld,
 
-    #[error("UnweldVertex supports selected meshes only")]
+    #[error("UnweldVertex supports mesh and SubD vertices only")]
     UnsupportedUnweldVertexGeometry,
 
     #[error(
-        "UnweldVertex vertex index {vertex} is outside the selected mesh's topology vertex count {vertex_count}"
+        "UnweldVertex vertex index {vertex} is outside the selected object's vertex count {vertex_count}"
     )]
     UnweldVertexIndexOutOfRange { vertex: usize, vertex_count: usize },
 
     #[error("none of the selected mesh vertices requires unwelding or compaction")]
     NoSelectedMeshVerticesToUnweld,
+
+    #[error("vertex seam geometry, tolerance or editability changed; select again")]
+    VertexSeamStale,
+
+    #[error("vertex seam edit exceeds the component or geometry resource budget")]
+    VertexSeamResourceLimit,
 
     #[error("CombineIdenticalMeshVertices supports selected meshes only")]
     UnsupportedCombineIdenticalMeshVerticesGeometry,

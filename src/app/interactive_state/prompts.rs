@@ -620,13 +620,13 @@ impl InteractiveCommand {
                 "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
             }
             Self::WeldVertices => {
-                "WeldVertices: pick a topology vertex incident to mesh seams (Esc to cancel)"
+                "WeldVertices: pick a mesh topology vertex or SubD vertex on a selected object (Esc to cancel)"
             }
             Self::UnweldEdge { .. } => {
                 "UnweldEdge: pick a topology edge on a selected mesh (Esc to cancel)"
             }
             Self::UnweldVertex { .. } => {
-                "UnweldVertex: pick a topology vertex on a selected mesh (Esc to cancel)"
+                "UnweldVertex: pick a mesh topology vertex or SubD vertex on a selected object (Esc to cancel)"
             }
             Self::DupMeshEdge { .. } => {
                 "DupMeshEdge: pick a logical edge on a selected mesh (Esc to cancel)"

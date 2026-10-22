@@ -1,6 +1,6 @@
 # Control-point display and selection
 
-Select a curve, surface or mesh and run `PointsOn`. Its control points appear as
+Select a curve, surface, mesh or SubD and run `PointsOn`. Its control points appear as
 purple squares; selected points appear orange. `PointsOff` hides all control
 points and clears grip selection while retaining object selection. These display
 commands preserve model geometry, Undo and Redo.
@@ -12,7 +12,7 @@ window, SelPt or ordinary transform input. Logical U/V navigation can still
 select them. See [point visibility](commands/point-selection.md#hidept-and-showpt)
 for the command, mode-switch and Undo rules.
 
-[`EditPtOn`](commands/edit-points.md) displays curve Greville edit points through
+[`EditPtOn`](commands/edit-points.md) displays curve Greville points or SubD limit stations through
 the same picking and transform workflow. `PointsOn` switches back to control
 points; switching modes clears the owner's selected indices. `PointsOff` hides
 either mode. Grip mode is stored with the display snapshot and history.

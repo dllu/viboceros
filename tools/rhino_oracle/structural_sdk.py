@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'component_seams_subd': ('component_seams_subd_probe', ('component_seams_subd_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'mesh_component_weld_commands': ('mesh_component_weld_probe', ('mesh_component_weld_cases','mesh_component_weld_followup_cases','mesh_component_weld_holdout_cases','mesh_channel_capture')),
     'mesh_component_weld_followup': ('mesh_component_weld_probe', ('mesh_component_weld_cases','mesh_component_weld_followup_cases','mesh_component_weld_holdout_cases','mesh_channel_capture')),
     'mesh_component_weld_holdout': ('mesh_component_weld_probe', ('mesh_component_weld_cases','mesh_component_weld_followup_cases','mesh_component_weld_holdout_cases','mesh_channel_capture')),

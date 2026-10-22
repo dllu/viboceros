@@ -1,0 +1,291 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_smooth",
+      "case": "weldedge_smooth"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_hard",
+      "case": "weldedge_hard"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_boundary",
+      "case": "weldedge_boundary"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_corner",
+      "case": "weldedge_corner"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_cycle",
+      "case": "weldedge_cycle"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_soft",
+      "case": "weldedge_soft"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_multiple",
+      "case": "weldedge_multiple"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_neighbor_corners",
+      "case": "weldedge_neighbor_corners"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldedge_mixed",
+      "case": "weldedge_mixed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_smooth",
+      "case": "weldvertices_smooth"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_dart",
+      "case": "weldvertices_dart"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_crease",
+      "case": "weldvertices_crease"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_corner",
+      "case": "weldvertices_corner"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_boundary",
+      "case": "weldvertices_boundary"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_soft",
+      "case": "weldvertices_soft"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_overlap",
+      "case": "weldvertices_overlap"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_multiple",
+      "case": "weldvertices_multiple"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_mixed",
+      "case": "weldvertices_mixed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_control_grips",
+      "case": "weldvertices_control_grips"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "weldvertices_surface_grips",
+      "case": "weldvertices_surface_grips"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_smooth_modify",
+      "case": "unweldedge_smooth_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_hard_modify",
+      "case": "unweldedge_hard_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_boundary_modify",
+      "case": "unweldedge_boundary_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_corner_modify",
+      "case": "unweldedge_corner_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_cycle_modify",
+      "case": "unweldedge_cycle_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_soft_modify",
+      "case": "unweldedge_soft_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_multiple_modify",
+      "case": "unweldedge_multiple_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_neighbor_corners_modify",
+      "case": "unweldedge_neighbor_corners_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_smooth_preserve",
+      "case": "unweldedge_smooth_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_hard_preserve",
+      "case": "unweldedge_hard_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_boundary_preserve",
+      "case": "unweldedge_boundary_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_corner_preserve",
+      "case": "unweldedge_corner_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_cycle_preserve",
+      "case": "unweldedge_cycle_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_soft_preserve",
+      "case": "unweldedge_soft_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_multiple_preserve",
+      "case": "unweldedge_multiple_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_neighbor_corners_preserve",
+      "case": "unweldedge_neighbor_corners_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldedge_mixed",
+      "case": "unweldedge_mixed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_smooth_modify",
+      "case": "unweldvertex_smooth_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_dart_modify",
+      "case": "unweldvertex_dart_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_crease_modify",
+      "case": "unweldvertex_crease_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_corner_modify",
+      "case": "unweldvertex_corner_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_boundary_modify",
+      "case": "unweldvertex_boundary_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_soft_modify",
+      "case": "unweldvertex_soft_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_overlap_modify",
+      "case": "unweldvertex_overlap_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_multiple_modify",
+      "case": "unweldvertex_multiple_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_smooth_preserve",
+      "case": "unweldvertex_smooth_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_dart_preserve",
+      "case": "unweldvertex_dart_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_crease_preserve",
+      "case": "unweldvertex_crease_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_corner_preserve",
+      "case": "unweldvertex_corner_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_boundary_preserve",
+      "case": "unweldvertex_boundary_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_soft_preserve",
+      "case": "unweldvertex_soft_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_overlap_preserve",
+      "case": "unweldvertex_overlap_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_multiple_preserve",
+      "case": "unweldvertex_multiple_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_mixed",
+      "case": "unweldvertex_mixed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_control_grips",
+      "case": "unweldvertex_control_grips"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "unweldvertex_surface_grips",
+      "case": "unweldvertex_surface_grips"
+    }
+  ]
+}

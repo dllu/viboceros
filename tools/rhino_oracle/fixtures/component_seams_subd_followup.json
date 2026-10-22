@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "component_seams_subd",
+      "id": "followup_weldvertices_boundary_crease",
+      "case": "followup_weldvertices_boundary_crease"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_weldvertices_boundary_incident_crease",
+      "case": "followup_weldvertices_boundary_incident_crease"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_weldvertices_all",
+      "case": "followup_weldvertices_all"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_weldvertices_multiple_changed",
+      "case": "followup_weldvertices_multiple_changed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_weldvertices_mixed",
+      "case": "followup_weldvertices_mixed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_weldvertices_mixed_reverse",
+      "case": "followup_weldvertices_mixed_reverse"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_weldvertices_control_noop",
+      "case": "followup_weldvertices_control_noop"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_weldvertices_surface_noop",
+      "case": "followup_weldvertices_surface_noop"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_unweldvertex_boundary_crease",
+      "case": "followup_unweldvertex_boundary_crease"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_unweldvertex_boundary_incident_crease",
+      "case": "followup_unweldvertex_boundary_incident_crease"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_unweldvertex_all",
+      "case": "followup_unweldvertex_all"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_unweldvertex_multiple_changed",
+      "case": "followup_unweldvertex_multiple_changed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_unweldvertex_mixed",
+      "case": "followup_unweldvertex_mixed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_unweldvertex_mixed_reverse",
+      "case": "followup_unweldvertex_mixed_reverse"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_unweldvertex_control_noop",
+      "case": "followup_unweldvertex_control_noop"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "followup_unweldvertex_surface_noop",
+      "case": "followup_unweldvertex_surface_noop"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_cube_one",
+      "case": "surface_move_cube_one"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_cube_pair",
+      "case": "surface_move_cube_pair"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_boundary_one",
+      "case": "surface_move_boundary_one"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_boundary_pair",
+      "case": "surface_move_boundary_pair"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_corner_one",
+      "case": "surface_move_corner_one"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_corner_pair",
+      "case": "surface_move_corner_pair"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_soft_one",
+      "case": "surface_move_soft_one"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_soft_pair",
+      "case": "surface_move_soft_pair"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "surface_move_cube_all",
+      "case": "surface_move_cube_all"
+    }
+  ]
+}
