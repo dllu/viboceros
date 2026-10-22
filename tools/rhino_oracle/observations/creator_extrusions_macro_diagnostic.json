@@ -1,0 +1,18 @@
+{
+  "status": "failed_macro_diagnostic",
+  "excluded_from_qualification": true,
+  "error": "Capturing 42 creator geometry workflows\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/generate_creator_extrusions.py\", line 32, in <module>\n    if __name__=='__main__':main()\n                            ^^^^^^\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/generate_creator_extrusions.py\", line 19, in main\n    response=OracleClient(settings_scheme='VibocerosOracleCreatorExtrusions20261021').run_rhino(query,timeout=1200)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/client.py\", line 2021, in run_rhino\n    _validate_response(response, \"rhino\", request)\n  File \"/home/dllu/proj/viboceros/tools/rhino_oracle/client.py\", line 2473, in _validate_response\n    raise OracleError(f\"{engine} probe failed: {error}\")\ntools.rhino_oracle.client.OracleError: rhino probe failed: ValueError at operation creator_detail_cylinder_00n: start: creator failed: Command: _Cylinder\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints ): w1,2,3\nRadius <2.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes ): 2\nEnd of cylinder <3.000> ( DirectionConstraint=Vertical  BothSides=No ): _Solid=_No\nUnknown command: _Solid=_No\nEnd of cylinder <3.000> ( DirectionConstraint=Vertical  BothSides=No ): _BothSides=_No\nEnd of cylinder <3.000> ( DirectionConstraint=Vertical  BothSides=No ): -3.0\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel\n",
+  "provenance": {
+    "request_sha256": "50600e6a8985af98902b30da19fb83e1aab9865ee87e84ac7094e658b55e63a7",
+    "sources": {
+      "creator_extrusions_probe.py": "86bf7da7c5e88b29a13aeef499da1427b5847db12ad647161c9dcb16803f3dba",
+      "generate_creator_extrusions.py": "61bbdc41c1b081d3ca4e8681046093e2f5f00dce5662a8abdd22ef11fe09080c",
+      "subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "f9c029cec4311905df10046bffdcf27626cd35156f553ebeb329694d7055e0ba",
+      "rhino_worker.py": "2a13b40fa72e3ad5f139ab4da86fb166d997e1438083a9b3fb546a96b7844f75",
+      "client.py": "a21aa6dcc54d3671a3cb4781cbf291f51fd7b8f7c3d1d52b4115ae71808690fa"
+    }
+  }
+}

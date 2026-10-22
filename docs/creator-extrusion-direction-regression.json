@@ -1,0 +1,467 @@
+{
+  "baseline_revision": "c87464bf1b9245bdd21e4ed1a59342b0760a945d",
+  "scope": "Rust API replay against existing saved Rhino curve extrusion observations; no new native captures",
+  "reports": {
+    "curve_extrusion_directions": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "xy",
+          "comparison": {
+            "id": "xy",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 293633.0,
+            "rhino_ns_per_iteration": 71517944.0,
+            "rhino_to_viboceros_ratio": 243.5623516430374,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "xz",
+          "comparison": {
+            "id": "xz",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 186321.0,
+            "rhino_ns_per_iteration": 53176880.0,
+            "rhino_to_viboceros_ratio": 285.40465111286437,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "xz-reversed",
+          "comparison": {
+            "id": "xz-reversed",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 211360.0,
+            "rhino_ns_per_iteration": 70083618.0,
+            "rhino_to_viboceros_ratio": 331.58411241483725,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "yz",
+          "comparison": {
+            "id": "yz",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 162144.0,
+            "rhino_ns_per_iteration": 57365417.0,
+            "rhino_to_viboceros_ratio": 353.7930296526544,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "tilt-a",
+          "comparison": {
+            "id": "tilt-a",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 159856.0,
+            "rhino_ns_per_iteration": 60348511.0,
+            "rhino_to_viboceros_ratio": 377.51795991392254,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "tilt-b",
+          "comparison": {
+            "id": "tilt-b",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 156800.0,
+            "rhino_ns_per_iteration": 60569763.0,
+            "rhino_to_viboceros_ratio": 386.2867538265306,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "xz-negative",
+          "comparison": {
+            "id": "xz-negative",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 151921.0,
+            "rhino_ns_per_iteration": 68557739.0,
+            "rhino_to_viboceros_ratio": 451.27229941877687,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "xz-both",
+          "comparison": {
+            "id": "xz-both",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 149216.0,
+            "rhino_ns_per_iteration": 73753357.0,
+            "rhino_to_viboceros_ratio": 494.2724439738366,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line",
+          "comparison": {
+            "id": "line",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 121617.0,
+            "rhino_ns_per_iteration": 76484680.0,
+            "rhino_to_viboceros_ratio": 628.8979336770353,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "nonplanar",
+          "comparison": {
+            "id": "nonplanar",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 133104.0,
+            "rhino_ns_per_iteration": 74607849.0,
+            "rhino_to_viboceros_ratio": 560.5229670032455,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "mixed-xz-yz",
+          "comparison": {
+            "id": "mixed-xz-yz",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 183777.0,
+            "rhino_ns_per_iteration": 73173523.0,
+            "rhino_to_viboceros_ratio": 398.16474858116084,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "mixed-yz-xz",
+          "comparison": {
+            "id": "mixed-yz-xz",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 166608.0,
+            "rhino_ns_per_iteration": 66139221.0,
+            "rhino_to_viboceros_ratio": 396.97506122155,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "mixed-xz-nonplanar",
+          "comparison": {
+            "id": "mixed-xz-nonplanar",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 185648.0,
+            "rhino_ns_per_iteration": 68794250.0,
+            "rhino_to_viboceros_ratio": 370.56283935189174,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "mixed-line-xz",
+          "comparison": {
+            "id": "mixed-line-xz",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 240081.0,
+            "rhino_ns_per_iteration": 90156555.0,
+            "rhino_to_viboceros_ratio": 375.525572619241,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "nonplanar-front-cplane",
+          "comparison": {
+            "id": "nonplanar-front-cplane",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 124560.0,
+            "rhino_ns_per_iteration": 63079834.0,
+            "rhino_to_viboceros_ratio": 506.42127488760434,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "xz-back-cplane",
+          "comparison": {
+            "id": "xz-back-cplane",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 148176.0,
+            "rhino_ns_per_iteration": 54718018.0,
+            "rhino_to_viboceros_ratio": 369.27719738689126,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "tilt-positive-z-dominant",
+          "comparison": {
+            "id": "tilt-positive-z-dominant",
+            "passed": true,
+            "max_absolute_error": 2.220446049250313e-15,
+            "viboceros_ns_per_iteration": 151040.0,
+            "rhino_ns_per_iteration": 64384460.0,
+            "rhino_to_viboceros_ratio": 426.2742319915254,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "tilt-positive-z-small",
+          "comparison": {
+            "id": "tilt-positive-z-small",
+            "passed": true,
+            "max_absolute_error": 2.220446049250313e-15,
+            "viboceros_ns_per_iteration": 147392.0,
+            "rhino_ns_per_iteration": 62538147.0,
+            "rhino_to_viboceros_ratio": 424.2981098024316,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "xz-front-cplane",
+          "comparison": {
+            "id": "xz-front-cplane",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 145424.0,
+            "rhino_ns_per_iteration": 69915771.0,
+            "rhino_to_viboceros_ratio": 480.7718877214215,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "xy-upside-cplane",
+          "comparison": {
+            "id": "xy-upside-cplane",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 150160.0,
+            "rhino_ns_per_iteration": 89332581.0,
+            "rhino_to_viboceros_ratio": 594.915962972829,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "mixed-parallel-offset",
+          "comparison": {
+            "id": "mixed-parallel-offset",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 224881.0,
+            "rhino_ns_per_iteration": 65612793.0,
+            "rhino_to_viboceros_ratio": 291.76672551260447,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "mixed-line-off-plane",
+          "comparison": {
+            "id": "mixed-line-off-plane",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 216208.0,
+            "rhino_ns_per_iteration": 70030212.0,
+            "rhino_to_viboceros_ratio": 323.90203877747354,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-lines-plane",
+          "comparison": {
+            "id": "two-lines-plane",
+            "passed": true,
+            "max_absolute_error": 2.220446049250313e-16,
+            "viboceros_ns_per_iteration": 200624.0,
+            "rhino_ns_per_iteration": 90515137.0,
+            "rhino_to_viboceros_ratio": 451.16804071297554,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "parallel-lines-offset-xz",
+          "comparison": {
+            "id": "parallel-lines-offset-xz",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 200368.0,
+            "rhino_ns_per_iteration": 66566467.0,
+            "rhino_to_viboceros_ratio": 332.221048271181,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "parallel-lines-offset-xy",
+          "comparison": {
+            "id": "parallel-lines-offset-xy",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 208913.0,
+            "rhino_ns_per_iteration": 60798645.0,
+            "rhino_to_viboceros_ratio": 291.02375151378806,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "skew-lines",
+          "comparison": {
+            "id": "skew-lines",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 199248.0,
+            "rhino_ns_per_iteration": 65193176.0,
+            "rhino_to_viboceros_ratio": 327.1961374769132,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "three-spatial-lines",
+          "comparison": {
+            "id": "three-spatial-lines",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 203584.0,
+            "rhino_ns_per_iteration": 55603027.0,
+            "rhino_to_viboceros_ratio": 273.12081008330716,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 27,
+      "matched": 27,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+    },
+    "curve_native_extrusion": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "extrude-native-polyline-default",
+          "comparison": {
+            "id": "extrude-native-polyline-default",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 269504.0,
+            "rhino_ns_per_iteration": 80360413.0,
+            "rhino_to_viboceros_ratio": 298.1789249881263,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "extrude-native-polyline-domain",
+          "comparison": {
+            "id": "extrude-native-polyline-domain",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 226689.0,
+            "rhino_ns_per_iteration": 57609558.0,
+            "rhino_to_viboceros_ratio": 254.134774955997,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "extrude-native-line-domain",
+          "comparison": {
+            "id": "extrude-native-line-domain",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 160016.0,
+            "rhino_ns_per_iteration": 56152344.0,
+            "rhino_to_viboceros_ratio": 350.9170582941706,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 3,
+      "matched": 3,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+    }
+  },
+  "performance_qualified": false,
+  "sha256": {
+    "crates/viboceros-command/src/lib.rs": "24332a39853b327e6b5760324bb9bccf27706075193039afb58ac049e55a9150",
+    "crates/viboceros-command/src/extrude_curve.rs": "c2301b8c76103d1d603c69bdfdb7fe57c2bc999173335a4274549d75a595edfa",
+    "crates/viboceros-document/src/geometry.rs": "6b8a85eec1ead4ac5ce9255941cec005b3cd1b3eeee949892b9492777bae99d9",
+    "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",
+    "crates/viboceros-opennurbs/src/extrusion.rs": "5e1b07a7bd19d4a9b942cbeab47f0d706a8605bf57fab8ef1e9c809e985dd744",
+    "crates/viboceros-opennurbs/native/extrusion_queries.h": "3b93eeac4569272cba9fe2c30738daf52baba144f0544eab566d4ef7a006bb45",
+    "crates/viboceros-oracle/src/curve_native.rs": "d1a67adf4c2d85ea03e05d23b2e9ba70f0153b54c2482f3c2ac1d21fe56d281d",
+    "tools/rhino_oracle/fixtures/curve_extrusion_directions.json": "14147589b9b7b1ec049efe0a2bceb611928e7121b22f358d3753d7c3fcb1f16c",
+    "tools/rhino_oracle/observations/curve_extrusion_directions.json": "a466ddbc85cf0cc0beaafc069802975c9518e073a0acfc23e3456c69f2878428",
+    "tools/rhino_oracle/fixtures/curve_native_extrusion.json": "7a752f677fbeb9908829eb0f4e5d33215e418e23703f7a486c273493c661493e",
+    "tools/rhino_oracle/observations/curve_native_extrusion.json": "1508b66fd4659a2dcd29b88fbe7865953985f47b8d0bba3077c1986e2ec8dde2"
+  },
+  "source_hash_note": "Only the portable fallback gained shared kink splitting after this native-SMLib replay; source hashes refreshed after the 42 creator workflows passed in both build modes."
+}

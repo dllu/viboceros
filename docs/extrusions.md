@@ -31,7 +31,7 @@ invalid native B-rep form and remains an unsupported-file diagnostic.
 Native archives are limited to 64 MiB, with canonical transfers limited to
 256 MiB. ToSubD extrusion conversion is available through `SubD::try_from_extrusion` and
 the [command and application prompts](commands/to-subd.md).
-Native creator representation updates remain in progress. Command and prompt
+[Creator representation and geometry](creator-extrusions.md) and command/prompt
 comparisons are recorded separately from these file checks.
 The [ToSubD kernel guide](tosubd-kernel.md) describes the completed mesh and
 surface conversion APIs.

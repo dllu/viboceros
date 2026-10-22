@@ -100,14 +100,22 @@ fn affine_preview_pending_and_completed_geometry_match_60_native_captures() {
         assert_eq!(row["id"], label);
         let mut app = test_app();
         app.active_viewport = 1;
-        for input in [
-            "Point 3,3,0",
-            "Polyline 2,1,0 4,1,0 3,-1,0 2,1,0",
-            "Box 2,-5,0 4,-3,0 2",
-            "SelAll",
-        ] {
+        for input in ["Point 3,3,0", "Polyline 2,1,0 4,1,0 3,-1,0 2,1,0"] {
             enter(&mut app, input);
         }
+        // The native recipe inserts an SDK B-rep, rather than running Box.
+        // Match that input now that the command creates a typed extrusion.
+        let box_frame = viboceros_command::CommandContext::default()
+            .construction_plane
+            .with_origin(point(2., -5., 0.));
+        let brep = viboceros_geometry::Brep::try_command_box(
+            box_frame,
+            [[0., 2.]; 3],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        app.document.add_geometry(Geometry::Brep(brep)).unwrap();
+        enter(&mut app, "SelAll");
         let witness = (op["cursor"] == "Degenerate").then(|| {
             app.document
                 .add_geometry(Geometry::Point(point(0., 0., 0.)))

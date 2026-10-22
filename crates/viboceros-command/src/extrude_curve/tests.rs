@@ -1,4 +1,5 @@
 use super::*;
+mod legacy;
 
 #[test]
 fn signed_numeric_plane_extrusion_preserves_metadata_selection_and_history() {
@@ -23,9 +24,11 @@ fn signed_numeric_plane_extrusion_preserves_metadata_selection_and_history() {
         output.attributes(),
         &ObjectAttributes::on_layer(doc.current_layer_id())
     );
-    let Geometry::NurbsSurface(surface) = output.geometry() else {
-        panic!("sheet");
-    };
+    let surface = output
+        .geometry()
+        .nurbs_surface_representation()
+        .unwrap()
+        .unwrap();
     let u = *surface.domain_u().start();
     assert!(
         surface
@@ -85,11 +88,14 @@ fn nonplanar_numeric_input_uses_active_cplane_and_point_pairs_keep_their_vector(
         registry
             .execute_in_context(&mut doc, command, context)
             .unwrap();
-        let Geometry::NurbsSurface(surface) =
-            doc.objects().find(|o| o.id() != id).unwrap().geometry()
-        else {
-            panic!("sheet");
-        };
+        let surface = doc
+            .objects()
+            .find(|o| o.id() != id)
+            .unwrap()
+            .geometry()
+            .nurbs_surface_representation()
+            .unwrap()
+            .unwrap();
         let point = surface
             .evaluate(*surface.domain_u().start(), *surface.domain_v().end())
             .unwrap();
@@ -128,9 +134,11 @@ fn degenerate_line_extrusions_retain_sources_groups_and_history() {
     assert!(doc.is_selected(vertical));
     let output = doc.objects().find(|o| o.id() != vertical).unwrap();
     assert!(!doc.is_selected(output.id()));
-    let Geometry::NurbsSurface(surface) = output.geometry() else {
-        panic!("sheet");
-    };
+    let surface = output
+        .geometry()
+        .nurbs_surface_representation()
+        .unwrap()
+        .unwrap();
     assert_eq!(
         surface.evaluate(4., 5.).unwrap(),
         Point3::try_new(4., 0., 5.).unwrap()

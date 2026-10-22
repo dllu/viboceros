@@ -30,9 +30,9 @@ ToSubD Faces=All Object=selected-object-uuid
 `Faces=` addresses zero-based B-rep face indices; `Object=` restricts that request
 to one selected parent. Whole multi-face ordinary B-reps require face selection.
 Whole typed extrusions, including capped ones, are eligible directly. Imported
-3DM extrusions retain that representation. Viboceros's Box, Cylinder and planar
-ExtrudeCrv creators still need the corresponding representation update; their
-current ordinary B-rep outputs require selecting faces.
+3DM extrusions retain that representation. Box, Cylinder and perpendicular
+planar ExtrudeCrv outputs also convert whole; see [typed creators](../creator-extrusions.md).
+
 
 Copies preserve source layer, color and name, receive new identities and leave
 groups. Replacements retain source identity and groups. Multiple selected faces

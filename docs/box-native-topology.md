@@ -1,6 +1,6 @@
-# Native Box topology
+# Explicit SDK box topology
 
-`Box` now uses `Brep::try_command_box`. This constructor follows the public
+`Brep::try_command_box` follows the public
 OpenNURBS box layout: eight perimeter-ordered vertices, twelve directed edges,
 and faces ordered Y-min, X-max, Y-max, X-min, Z-min, Z-max in the construction
 frame. Each face retains its outward orientation and South/East/North/West
@@ -18,10 +18,11 @@ pinned OpenNURBS revision `23fc677ba06e49212296ca75fab7fb6c2851b4ce`.
 The Rust kernel independently validates frame intervals and constructs the
 geometry and shared topology. All work precedes document admission.
 
-`Brep::try_box` remains the generic normalized constructor. Native command
-output and the public-SDK box oracle use the command constructor, avoiding an
-input mismatch caused by different face order or UV intervals. This also
-allows Box-to-Contour output to match the recorded native closed seams.
+`Brep::try_box` remains the generic normalized constructor. Public-SDK box
+fixtures use `try_command_box` to retain matching face order and UV intervals.
+The `Box` command now creates a [typed extrusion](creator-extrusions.md); its
+canonical B-rep can have different seams and face ordering. This guide records
+the explicit B-rep API and its original qualification.
 
 Regression coverage includes connectivity, oriented faces, physical surface
 and trim domains, a rotated frame, tiny-box fallback, invalid intervals,

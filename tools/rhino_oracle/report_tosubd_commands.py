@@ -75,7 +75,7 @@ def summarize(text):
                     'Surface inputs use recorded underlying NURBS tables. Ordinary boxes use complete shared topology; other multi-face rejection inputs use disjoint face tables. Native trimmed-source topology is not reconstructed by these replays. Extrusions use native 3DM sources.',
                     'The viewport handler is exercised through component-click events, including selection after startup and stale-source rejection. Physical native pointer gestures and every selection modifier are not qualified.',
                     'Option values and defaults are observed natively. Preference retention on cancellation is tested locally; cross-command native preference sequences remain unqualified.',
-                    'Box, Cylinder and planar ExtrudeCrv still need creator representation updates to emit typed extrusions, as the captured native creators do. Whole conversion of imported or API-created typed extrusions is supported.',
+                    'Box, Cylinder and perpendicular planar ExtrudeCrv now emit typed extrusions; creator-extrusion-qualification.json records their geometry, 3DM type retention and whole ToSubD conversion.',
                     'Arbitrary topology, continuous surface error, full native parity and comparative speed remain unqualified.',
                 ], sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
                            for p in dict.fromkeys(SOURCES + files)})

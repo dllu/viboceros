@@ -5,6 +5,7 @@
 These pages describe geometry algorithms, numeric conventions and their
 validation. Command behavior belongs in the [command reference](../commands/README.md).
 
+- [Typed extrusion creators and native geometry qualification](../creator-extrusions.md)
 - [SubD geometry](../subd.md)
 - [Stretch fitting performance and native 3dm readback](../stretch-performance.md)
 - [Control and edit-point workflows, HidePt and ShowPt](../control-points.md)

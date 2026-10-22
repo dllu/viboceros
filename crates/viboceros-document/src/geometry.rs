@@ -112,6 +112,27 @@ impl Geometry {
         self.curve_ref().map(CurveRef::to_nurbs).transpose()
     }
 
+    /// The untrimmed NURBS surface underlying a surface or single-face B-rep,
+    /// or the joined wall surface of a typed extrusion. Extrusion caps and
+    /// B-rep trims are excluded. Use the canonical B-rep for solid or face edits.
+    /// Plain surfaces and single-face B-reps are borrowed; native extrusions
+    /// require decoding their public NURBS form.
+    pub fn nurbs_surface_representation(
+        &self,
+    ) -> Result<Option<std::borrow::Cow<'_, NurbsSurface>>, GeometryError> {
+        use std::borrow::Cow;
+        Ok(match self {
+            Self::NurbsSurface(surface) => Some(Cow::Borrowed(surface)),
+            Self::Brep(brep) if brep.is_extrusion() => {
+                Some(Cow::Owned(brep.extrusion().unwrap().nurbs_form()?.surface))
+            }
+            Self::Brep(brep) if brep.faces().len() == 1 => {
+                Some(Cow::Borrowed(brep.faces()[0].surface()))
+            }
+            _ => None,
+        })
+    }
+
     pub fn transformed(
         &self,
         transform: AffineTransform3,

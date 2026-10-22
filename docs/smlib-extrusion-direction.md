@@ -13,9 +13,10 @@ their world-space vector.
 Native builds import each curve once, translate its control directions to a
 common origin, and use usd-brep's existing `SmPointSet3d` plane classifier. This
 removes offset differences while retaining each curve's directional constraints.
-No new plane fitter or extrusion builder is added. The native handles serve
-both classification and the existing sheet/solid producers. BothSides placement
-uses the existing owned-geometry affine transform. Portable builds reuse the
+The native handles serve both classification and the sheet/solid producers.
+Eligible perpendicular planar sweeps now use the shared public OpenNURBS
+[typed extrusion factory](creator-extrusions.md); oblique and nonplanar sweeps
+retain the modeling-kernel producers. BothSides preserves the signed path. Portable builds reuse the
 geometry crate's existing control-polygon plane classifier through a shared
 normal-returning helper.
 

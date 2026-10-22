@@ -96,7 +96,6 @@
   },
   "replay_source_sha256": {
     "crates/viboceros-smlib/tests/sheets.rs": "750de01982a044d51524ad918e704175be4dba6b91048c292b1de062649c5432",
-    "crates/viboceros-command/src/offset_surface.rs": "ca73436c0b26bb3598593dfb87193034976aa2b6b4d2f4575880044d2a3aee8b",
     "crates/viboceros-command/src/offset_surface/native.rs": "d07b573bab1932381505670990f1c11a2e2b690492e910b568b50135ee30de57",
     "crates/viboceros-command/src/offset_surface/native/tests.rs": "ac865d5cfdc361aa974aa853d4d8a8106115677aca99c8898bacd56e11f02c0d",
     "src/app/tests/offset_surface.rs": "848104d99cdd58a00a473bb2054232619efec7b7ef0c5ed368255a5f6d02da7a",
@@ -109,6 +108,7 @@
     "57a3d5ab6405860ba5164a584c319b781382ce4c:crates/viboceros-smlib/native/brep_export.cpp": "286ca00b0c8787b027ac046b00ec239a48b7bc1514abbea728a676789e976003",
     "57a3d5ab6405860ba5164a584c319b781382ce4c:crates/viboceros-smlib/native/bridge.cpp": "5b0378ce60eafbdda0a5563de55bcae7f2428b141d86d6e47dc9d547e5561799",
     "57a3d5ab6405860ba5164a584c319b781382ce4c:src/app/object_selection.rs": "16cc4ad59cbaa652d41b7f6a68f9ba4c6e0e9cce988805c40ebcd18808f4fc0d",
-    "57a3d5ab6405860ba5164a584c319b781382ce4c:tools/rhino_oracle/rhino_worker.py": "503bb0244ffcc9d807c9d6bd3ab4d52774a694616db6949a26c20cff125787d7"
+    "57a3d5ab6405860ba5164a584c319b781382ce4c:tools/rhino_oracle/rhino_worker.py": "503bb0244ffcc9d807c9d6bd3ab4d52774a694616db6949a26c20cff125787d7",
+    "c87464bf1b9245bdd21e4ed1a59342b0760a945d:crates/viboceros-command/src/offset_surface.rs": "ca73436c0b26bb3598593dfb87193034976aa2b6b4d2f4575880044d2a3aee8b"
   }
 }

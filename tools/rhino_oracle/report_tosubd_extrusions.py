@@ -76,11 +76,11 @@ def summarize(text):
         maximum_control_or_limit_point_error=control_error,maximum_sampled_surface_error=facet_error,
         command_qualified=False,getter_qualified=False,full_native_parity=False,performance_qualified=False,
         stages=stages,limits=[
-            'Kernel conversion only. ToSubD command/getter and document lifecycle are qualified separately in tosubd-command-qualification.json; source creator representation updates remain pending.',
+            'Kernel conversion only. ToSubD command/getter and document lifecycle are qualified separately in tosubd-command-qualification.json; creator representation is qualified separately in creator-extrusion-qualification.json.',
             'Fixed native comparisons cover controls, topology, tags, vertex limit stations and corresponding density-two facets within 1e-6; arbitrary profiles and continuous surface error are not certified.',
             'Complete-profile extrusion NURBS conversion follows public OpenNURBS joining. Closed complete profiles receive caps only when both ends are capped. Single-cap inputs retain only their walls; multiple profiles can produce an open joined-profile ribbon, matching the captures.',
             'Direct SDK cases distinguish degree-one and degree-two kink behavior before Rhino document insertion splits them into multi-face B-reps. These eight cases are excluded from constructive command totals.',
-            'Eight public creator observations show native default Box, Cylinder and planar ExtrudeCrv produce extrusions. Their Viboceros creator updates remain pending; discovery is not command qualification.',
+            'Eight initial public creator observations show native default Box, Cylinder and planar ExtrudeCrv produce extrusions. Their full creator geometry and ToSubD qualification is recorded separately in creator-extrusion-qualification.json.',
             'Five misplaced-inner-profile workflows are retained as diagnostics and excluded from conversion comparisons; their invalid native B-rep form was recorded separately.',
         ],sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in dict.fromkeys(SOURCES+files)})
 

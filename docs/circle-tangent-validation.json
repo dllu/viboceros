@@ -311,7 +311,6 @@
   "historical_source_policy": "Previously verifiable SHA references to changed files are pinned to their full baseline Git blobs. Historical non-SHA outcomes are unchanged; 69 previously unverifiable records remain untouched.",
   "sha256": {
     "crates/viboceros-command/src/circle_deform_input.rs": "0e48b067a2ffc4d028a9d0d557811971badcb386247354daf6d808e200dd58e7",
-    "crates/viboceros-command/src/plane_primitives.rs": "1e1032ba3753307859c7c62d4785a434ea9a36bc37c0fc42b3693e95df553be3",
     "docs/commands/circle-around-curve.md": "c25feb67bbe017a68163eb6e98ec08485dc241183ca1374eb2756f31fbce64f2",
     "docs/commands/circle-deformable.md": "ceb0cb0bb94320ca3888f62b596e1256f497312b8b36f9e271932862448e82e1",
     "docs/commands/circle-tangent.md": "fa8611f384c1329106388f92a7057cfc8c4f5a55e117445d0b800248dd37dbd8",
@@ -358,6 +357,7 @@
     "7fd899f6a0c5b54892b256b00166a1528f578c9b:tools/rhino_oracle/rhino_worker.py": "851bd2157ced5becb217bc9e07c619c7b5de3df8e7635690bdf94ffb26ceeff2",
     "7fd899f6a0c5b54892b256b00166a1528f578c9b:tools/rhino_oracle/structural_sdk.py": "859c23b7b9a904be434658945f291637f73dac20b64905350cddbc5c557f50c7",
     "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/circle-clamped-validation.json": "a817f20100fdc7ba62720225374ab4ef164f32f9f122f8b9d2eb65794d3f2b18",
-    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/circle-deform-validation.json": "7435a6eb0fb74223d2958729b2d8faf35afc9914ac4c52b53e9a46e2521583e6"
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/circle-deform-validation.json": "7435a6eb0fb74223d2958729b2d8faf35afc9914ac4c52b53e9a46e2521583e6",
+    "c87464bf1b9245bdd21e4ed1a59342b0760a945d:crates/viboceros-command/src/plane_primitives.rs": "1e1032ba3753307859c7c62d4785a434ea9a36bc37c0fc42b3693e95df553be3"
   }
 }

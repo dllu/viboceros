@@ -128,7 +128,7 @@ def summarize(text):
         maximum_control_or_limit_point_error=control_error,
         maximum_sampled_surface_error=facet_error, stages=stages,
         limits=[
-            'Kernel-only record. ToSubD command, component selection and document lifecycle are qualified separately in tosubd-command-qualification.json, and extrusion conversion in tosubd-extrusion-qualification.json. Source creator representation updates remain pending.',
+            'Kernel-only record. ToSubD command, component selection and document lifecycle are qualified separately in tosubd-command-qualification.json, and extrusion conversion in tosubd-extrusion-qualification.json. Creator representation and end-to-end conversion are qualified separately in creator-extrusion-qualification.json.',
             'Controls, tags, vertex limit stations and corresponding density-two facets qualify the fixed cases within 1e-6; continuous smooth-surface error and arbitrary topology remain unqualified.',
             'Surface Location fitting samples Greville stations with natural or periodic sparse cubic systems; singular boundaries and recorded G1 crease cases are covered, not every possible knot/weight configuration.',
             'Multi-face B-reps, B-rep component workflows, whole extrusion captures and rejected mesh-face selection are preserved as evidence but excluded from kernel comparisons.',

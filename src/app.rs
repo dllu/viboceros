@@ -15071,9 +15071,11 @@ mod tests {
         assert!(app.document.is_selected(source));
         let output = app.document.objects().nth(1).unwrap();
         assert!(!app.document.is_selected(output.id()));
-        let Geometry::NurbsSurface(surface) = output.geometry() else {
-            panic!("expected an extruded NURBS surface")
-        };
+        let surface = output
+            .geometry()
+            .nurbs_surface_representation()
+            .unwrap()
+            .unwrap();
         assert_eq!(surface.domain_v(), 0.0..=4.0);
         assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), point(0.0, -2.0, 0.0));
         assert_eq!(surface.evaluate(0.0, 4.0).unwrap(), point(0.0, 2.0, 0.0));

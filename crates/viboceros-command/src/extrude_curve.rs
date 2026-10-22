@@ -95,8 +95,17 @@ impl Command for ExtrudeCurveCommand {
                     continue;
                 }
             }
+            let typed = Brep::try_command_curve_extrusion(
+                &curve,
+                start_offset,
+                end_offset,
+                solid,
+                document.tolerance(),
+            )?;
             #[cfg(not(feature = "native-smlib"))]
-            let geometry =
+            let geometry = if let Some(extrusion) = typed {
+                Geometry::Brep(extrusion)
+            } else {
                 if solid && curve.is_closed()? && curve.is_planar(document.tolerance())? {
                     Geometry::Brep(Brep::try_extruded_curve(
                         &curve,
@@ -110,16 +119,36 @@ impl Command for ExtrudeCurveCommand {
                         start_offset,
                         end_offset,
                     )?)
-                };
+                }
+            };
             #[cfg(feature = "native-smlib")]
-            let geometry = native::extrude(
-                &curve,
-                &profiles[index],
-                start_offset,
-                end_offset,
-                solid,
-                document.tolerance(),
-            )?;
+            let geometry = if let Some(extrusion) = typed {
+                Geometry::Brep(extrusion)
+            } else {
+                native::extrude(
+                    &curve,
+                    &profiles[index],
+                    start_offset,
+                    end_offset,
+                    solid,
+                    document.tolerance(),
+                )?
+            };
+            let geometry = match geometry {
+                Geometry::NurbsSurface(surface) => {
+                    Geometry::Brep(Brep::try_surface_face(surface, document.tolerance())?)
+                }
+                other => other,
+            };
+            #[cfg(not(feature = "native-smlib"))]
+            let geometry = match geometry {
+                Geometry::Brep(brep) if !brep.is_extrusion() => {
+                    let split = brep
+                        .try_split_kinky_faces(std::f64::consts::PI / 180., document.tolerance())?;
+                    Geometry::Brep(split.unwrap_or(brep))
+                }
+                other => other,
+            };
             extrusions.push((id, geometry));
         }
         if extrusions.is_empty() {
@@ -129,7 +158,7 @@ impl Command for ExtrudeCurveCommand {
         let output_count = extrusions.len();
         let solid_count = extrusions
             .iter()
-            .filter(|(_, geometry)| matches!(geometry, Geometry::Brep(_)))
+            .filter(|(_, geometry)| matches!(geometry, Geometry::Brep(b) if b.is_solid()))
             .count();
         for (_, geometry) in &extrusions {
             document.add_geometry(geometry.clone())?;
@@ -141,7 +170,7 @@ impl Command for ExtrudeCurveCommand {
         }
         let surface_count = output_count - solid_count;
         Ok(format!(
-            "Extruded {output_count} curve object(s) into {solid_count} exact capped B-rep solid(s) and {surface_count} exact NURBS surface(s){}{}",
+            "Extruded {output_count} curve object(s) into {solid_count} exact capped solid(s) and {surface_count} exact surface(s){}{}",
             if both_sides { " on both sides" } else { "" },
             if delete_input {
                 ", deleting the input curves"

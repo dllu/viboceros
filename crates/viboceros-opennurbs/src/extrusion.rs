@@ -36,6 +36,7 @@ unsafe extern "C" {
         frame: *const f64,
         height: f64,
         cap: c_int,
+        preserve_domain: c_int,
         out: *mut *mut NativeResult,
         error: *mut c_char,
         capacity: usize,
@@ -140,6 +141,24 @@ pub fn extrusion_create(
     height: f64,
     cap: bool,
 ) -> Result<ExtrusionData, ExtrusionError> {
+    create_profile(profile, frame, height, cap, false)
+}
+/// Command construction keeps an uncapped closed profile's original interval.
+pub fn extrusion_create_command(
+    profile: ExtrusionProfile<'_>,
+    frame: [f64; 9],
+    height: f64,
+    cap: bool,
+) -> Result<ExtrusionData, ExtrusionError> {
+    create_profile(profile, frame, height, cap, !cap)
+}
+fn create_profile(
+    profile: ExtrusionProfile<'_>,
+    frame: [f64; 9],
+    height: f64,
+    cap: bool,
+    preserve_domain: bool,
+) -> Result<ExtrusionData, ExtrusionError> {
     let n = profile.controls.len();
     if profile.degree == 0
         || profile.degree as usize >= n
@@ -167,6 +186,7 @@ pub fn extrusion_create(
             frame.as_ptr(),
             height,
             cap.into(),
+            preserve_domain.into(),
             out,
             error,
             capacity,

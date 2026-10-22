@@ -1,0 +1,221 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_box",
+      "case": "creator_detail_box"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_box_negative",
+      "case": "creator_detail_box_negative"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_box_reversed",
+      "case": "creator_detail_box_reversed"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_box_tilted",
+      "case": "creator_detail_box_tilted"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_default",
+      "case": "creator_detail_cylinder_default"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_00n",
+      "case": "creator_detail_cylinder_00n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_00p",
+      "case": "creator_detail_cylinder_00p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_01n",
+      "case": "creator_detail_cylinder_01n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_01p",
+      "case": "creator_detail_cylinder_01p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_10n",
+      "case": "creator_detail_cylinder_10n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_10p",
+      "case": "creator_detail_cylinder_10p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_11n",
+      "case": "creator_detail_cylinder_11n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_cylinder_11p",
+      "case": "creator_detail_cylinder_11p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_rectangle_00n",
+      "case": "creator_detail_extrude_rectangle_00n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_rectangle_00p",
+      "case": "creator_detail_extrude_rectangle_00p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_rectangle_01n",
+      "case": "creator_detail_extrude_rectangle_01n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_rectangle_01p",
+      "case": "creator_detail_extrude_rectangle_01p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_rectangle_10n",
+      "case": "creator_detail_extrude_rectangle_10n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_rectangle_10p",
+      "case": "creator_detail_extrude_rectangle_10p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_rectangle_11n",
+      "case": "creator_detail_extrude_rectangle_11n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_rectangle_11p",
+      "case": "creator_detail_extrude_rectangle_11p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_circle_00n",
+      "case": "creator_detail_extrude_circle_00n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_circle_00p",
+      "case": "creator_detail_extrude_circle_00p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_circle_01n",
+      "case": "creator_detail_extrude_circle_01n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_circle_01p",
+      "case": "creator_detail_extrude_circle_01p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_circle_10n",
+      "case": "creator_detail_extrude_circle_10n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_circle_10p",
+      "case": "creator_detail_extrude_circle_10p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_circle_11n",
+      "case": "creator_detail_extrude_circle_11n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_circle_11p",
+      "case": "creator_detail_extrude_circle_11p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_open_kink_00n",
+      "case": "creator_detail_extrude_open_kink_00n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_open_kink_00p",
+      "case": "creator_detail_extrude_open_kink_00p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_open_kink_01n",
+      "case": "creator_detail_extrude_open_kink_01n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_open_kink_01p",
+      "case": "creator_detail_extrude_open_kink_01p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_open_kink_10n",
+      "case": "creator_detail_extrude_open_kink_10n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_open_kink_10p",
+      "case": "creator_detail_extrude_open_kink_10p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_open_kink_11n",
+      "case": "creator_detail_extrude_open_kink_11n"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_open_kink_11p",
+      "case": "creator_detail_extrude_open_kink_11p"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_xz",
+      "case": "creator_detail_extrude_xz"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_line",
+      "case": "creator_detail_extrude_line"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_extrude_nonplanar",
+      "case": "creator_detail_extrude_nonplanar"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_oblique_rectangle",
+      "case": "creator_detail_oblique_rectangle"
+    },
+    {
+      "op": "creator_extrusions",
+      "id": "creator_detail_oblique_circle",
+      "case": "creator_detail_oblique_circle"
+    }
+  ]
+}

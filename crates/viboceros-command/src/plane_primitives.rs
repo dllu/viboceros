@@ -708,16 +708,16 @@ impl Command for BoxCommand {
         let frame = plane.with_origin(base_corner);
         let base_delta = frame.coordinates_of(opposite_corner)?;
         let increasing_interval = |value: Real| [value.min(0.0), value.max(0.0)];
-        let brep = Brep::try_command_box(
+        let brep = Brep::try_box_extrusion(
             frame,
             [
                 increasing_interval(base_delta[0]),
                 increasing_interval(base_delta[1]),
-                increasing_interval(height),
             ],
+            height,
             document.tolerance(),
         )?;
         let id = document.add_geometry(Geometry::Brep(brep))?;
-        Ok(format!("Added closed B-rep box {id}"))
+        Ok(format!("Added closed extrusion box {id}"))
     }
 }

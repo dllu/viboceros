@@ -510,12 +510,11 @@ fn generated_surface_command(
             .objects()
             .filter(|object| !source_ids.contains(&object.id()))
             .map(|object| {
-                let Geometry::NurbsSurface(surface) = object.geometry() else {
-                    return Err(ProbeError::FixtureInvariant(
-                        "sheet construction must produce a surface",
-                    ));
-                };
-                Ok(surface)
+                object.geometry().nurbs_surface_representation()?.ok_or(
+                    ProbeError::FixtureInvariant(
+                        "sheet construction must provide an underlying surface",
+                    ),
+                )
             })
             .collect::<Result<Vec<_>, _>>()?;
         let mut record = json!({"surfaces": surfaces.iter().map(|s| super::nurbs_surface_definition_value(s)).collect::<Vec<_>>()});

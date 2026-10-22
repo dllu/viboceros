@@ -28,5 +28,5 @@ pub use subd_interpolation::{SubDWeights, subd_interpolation_weights};
 mod extrusion;
 pub use extrusion::{
     ExtrusionData, ExtrusionError, ExtrusionProfile, ExtrusionSurfaceData, extrusion_create,
-    extrusion_read, extrusion_surface, extrusion_transform,
+    extrusion_create_command, extrusion_read, extrusion_surface, extrusion_transform,
 };

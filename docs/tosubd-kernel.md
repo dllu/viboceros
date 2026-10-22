@@ -5,7 +5,7 @@
 The [ToSubD command](commands/to-subd.md) exposes mesh, surface and typed
 extrusion conversion through scripted input and application prompts, including
 B-rep face selection. [Extrusion representation and file interchange](extrusions.md)
-are available; native creator representation updates remain in progress.
+are available, including [typed creator integration](creator-extrusions.md).
 
 - `SubD::try_from_mesh` accepts independent interpolation, corner and crease
   options through `SubDFromMeshOptions`.

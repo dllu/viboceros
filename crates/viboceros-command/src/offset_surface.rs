@@ -997,9 +997,14 @@ mod tests {
         registry
             .execute(&mut document, "OffsetSrf 0.5 DeleteInput=Yes")
             .unwrap();
-        let Geometry::NurbsSurface(offset) = document.objects().next().unwrap().geometry() else {
-            panic!("open cylindrical offset is a NURBS surface")
-        };
+        let offset = document
+            .objects()
+            .next()
+            .unwrap()
+            .geometry()
+            .nurbs_surface_representation()
+            .unwrap()
+            .unwrap();
         let (_, radius, height) = offset
             .canonical_cylinder(document.tolerance())
             .unwrap()
@@ -1013,9 +1018,14 @@ mod tests {
         registry
             .execute(&mut document, "OffsetSrf -0.5 DeleteInput=Yes")
             .unwrap();
-        let Geometry::NurbsSurface(offset) = document.objects().next().unwrap().geometry() else {
-            panic!("inward cylindrical offset is a NURBS surface")
-        };
+        let offset = document
+            .objects()
+            .next()
+            .unwrap()
+            .geometry()
+            .nurbs_surface_representation()
+            .unwrap()
+            .unwrap();
         let (_, radius, _) = offset
             .canonical_cylinder(document.tolerance())
             .unwrap()

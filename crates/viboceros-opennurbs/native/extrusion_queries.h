@@ -30,7 +30,7 @@ extern "C" int vibo_extrusion_transform(const uint8_t* bytes,size_t count,const 
   });
 }
 extern "C" int vibo_extrusion_create(uint32_t degree,size_t count,const double* controls,
-    size_t knot_count,const double* knots,const double* frame,double height,int cap,
+    size_t knot_count,const double* knots,const double* frame,double height,int cap,int preserve_domain,
     ViboExtrusionResult** out,char* error,size_t capacity) {
   return extrusion_guard(out,error,capacity,[&]{
     vibo_extrusion::require(frame && count>1 && count<=100000 && ON_IsValid(height) && height!=0. && (cap==0 || cap==1),"Invalid extrusion construction input");
@@ -41,7 +41,14 @@ extern "C" int vibo_extrusion_create(uint32_t degree,size_t count,const double* 
     const auto* curve=ON_Curve::Cast(owned.get());vibo_extrusion::require(curve,"Invalid extrusion profile");
     ON_Plane plane(ON_3dPoint(frame[0],frame[1],frame[2]),ON_3dVector(frame[3],frame[4],frame[5]),ON_3dVector(frame[6],frame[7],frame[8]));
     vibo_extrusion::require(plane.IsValid(),"Invalid extrusion profile plane");
-    return std::unique_ptr<ON_Extrusion>(ON_Extrusion::CreateFrom3dCurve(*curve,&plane,height,cap!=0,nullptr));
+    auto result=std::unique_ptr<ON_Extrusion>(ON_Extrusion::CreateFrom3dCurve(*curve,&plane,height,cap!=0,nullptr));
+    // Uncapped command extrusions retain the original parameter interval even
+    // when SetOuterProfile reverses a closed clockwise profile.
+    if(result && preserve_domain) {
+      const auto domain=curve->Domain();
+      vibo_extrusion::require(result->SetDomain(1-result->PathParameter(),domain[0],domain[1]),"Cannot retain extrusion profile interval");
+    }
+    return result;
   });
 }
 extern "C" int vibo_extrusion_view(const ViboExtrusionResult* result,const uint8_t** archive,size_t* archive_count,const uint8_t** brep,size_t* brep_count) {

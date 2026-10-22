@@ -30,12 +30,10 @@ scaling that sphere along three orthogonal semi-axes. Supply three numeric
 radii in World XY, or center and three axis-radius points for an oriented
 ellipsoid; entering it without arguments starts the four-pick viewport workflow.
 
-`Box` follows Rhino's default two-opposite-base-corners and height workflow in
-the active construction plane. The height may be a signed number or a point, and the result is one
-closed B-rep with eight shared vertices, twelve shared edges, six outward
-bilinear faces, and exact rational parameter-space trims. Box uses the native
-OpenNURBS vertex/edge/face order and length-based surface and trim intervals;
-see [native box topology](../box-native-topology.md).
+`Box` follows Rhino's two-opposite-base-corners and signed-height workflow in
+the active construction plane. It creates one closed typed extrusion with an
+exact shared-topology B-rep view; see [typed creators](../creator-extrusions.md).
+The explicit B-rep constructor remains available for SDK-style box topology.
 Entering `Box` without arguments starts a three-point interactive workflow;
 see [construction planes](../construction-planes.md) for projection and height rules.
 
@@ -137,11 +135,12 @@ group; `OutputLayer=TargetObject` currently uses the selected target's layer.
 
 ## Cylinders and cones
 
-`Cylinder` creates an exact 9-by-2 rational NURBS wall from a center, radius
-(or base-circle point), and signed height. `Axis=` accepts an arbitrary axis,
-while `BothSides=Yes` makes the height symmetric about the base center.
-`Solid=Yes` adds exact rational polar-disk caps and shared rim/seam topology as
-a closed B-rep; `Solid=No` retains the single open wall surface.
+`Cylinder` creates a typed circular extrusion from a center, radius (or
+base-circle point), and signed height. `Axis=` accepts an arbitrary axis;
+`BothSides=Yes` sweeps in both signed directions from the base center.
+`Solid=Yes` is the default, with exact trimmed planar caps; `Solid=No` leaves
+an open wall. The profile interval is the circumference, and the path interval
+runs from zero to its length. See [typed creators](../creator-extrusions.md).
 
 `Cone` uses the same center, numeric radius or base-point radius, signed height,
 and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
@@ -178,8 +177,9 @@ major radius (or point on the major circle), and minor radius. `Axis=` orients
 the torus; the major radius must exceed the positive minor radius. Its U and V
 domains are the major- and minor-circle circumferences, matching OpenNURBS.
 
-`ExtrudeCrv` creates exact rational NURBS surfaces from selected analytic,
-polyline, and NURBS curves. A numeric distance uses the common normal of parallel
+`ExtrudeCrv` creates typed extrusions for perpendicular planar sweeps of
+selected analytic, polyline and NURBS curves, with explicit B-reps for other
+supported sweeps. A numeric distance uses the common normal of parallel
 planar profiles, oriented with its largest world-axis component positive.
 Incompatible or nonplanar profiles and a single line use the active CPlane Z.
 Parallel offset lines use their containing plane. Two points define
@@ -190,11 +190,12 @@ extrusion direction are skipped. Matching Rhino, outputs are unselected,
 ungrouped objects with fresh attributes on the current layer. `Solid=Yes`
 turns each closed planar profile into an exact closed B-rep with a ruled wall,
 two planar trimmed caps, shared rational rim curves, and one shared wall seam;
-open and nonplanar profiles remain exact NURBS surfaces.
+open profiles remain open, and nonplanar profiles retain explicit B-reps.
 See [numeric directions and qualification](../smlib-extrusion-direction.md).
 Profile parameters are retained, including native polyline vertex intervals;
-extrusion does not assign a new chord-length parameterization. The
-[native extrusion oracle](../curve-cutting.md) verifies the single-surface policy.
+extrusion does not assign a new chord-length parameterization. Closed profiles
+may reverse with the path; [typed creator qualification](../creator-extrusions.md)
+records the signed-interval and cap behavior.
 
 `ExtrudeCrvToPoint` creates exact rational NURBS surfaces that taper selected
 curves to one apex. Its U direction runs from the profile to the apex while V

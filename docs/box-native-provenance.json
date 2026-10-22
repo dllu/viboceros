@@ -62,9 +62,11 @@
     "third_party/opennurbs/opennurbs_nurbssurface.cpp": "7426fe2a116346458ff31ccf16c53a3bb9b4b87b6d8456376b1b2f2576bc93bb",
     "third_party/opennurbs/opennurbs_linecurve.cpp": "5db6d9535c3c00d0c8a45b36fb23b1394b9bedf484ea58503ce41f3fc0054141",
     "docs/commands/surfaces.md": "1457c9c3f21397f11c0f9a3df4546a078f398ef3354cec5a8468d0f32271f205",
-    "docs/box-native-topology.md": "48ef467bb3415d805a6c1261c60ff876f4583943db49e82bf02933a6e0a6e137",
     "docs/box-native-contour-comparison.json": "25cbe2c307d0769269ef830f91bb8d4351e8dad6266740a87ee2be69e9b1dfe0",
     "docs/box-native-validation.json": "15a94034cf84930951bef1a7b6718fb1ca50735a0a9d4669ed08afbcc3854ec1",
     "docs/edge-analysis-prior-source/crates/viboceros-geometry/src/lib.rs": "5670b5977aa8e093b59d2aa8249aaded787b1d011230e9b7effea5e9da8509c2"
+  },
+  "git_sha256": {
+    "c87464bf1b9245bdd21e4ed1a59342b0760a945d:docs/box-native-topology.md": "48ef467bb3415d805a6c1261c60ff876f4583943db49e82bf02933a6e0a6e137"
   }
 }
