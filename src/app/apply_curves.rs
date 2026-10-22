@@ -194,6 +194,7 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.document.clear_selection();
         self.intersection_prompt = Some(TwoSetsPrompt {
+            control_polygon: None,
             curve_deviation: None,
             deviation: None,
             projection: None,

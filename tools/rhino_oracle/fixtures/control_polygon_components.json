@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "control_polygon_command",
+      "id": "face_box_zero",
+      "case": "face_box_zero"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "face_box_pair",
+      "case": "face_box_pair"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "face_box_reverse_pair",
+      "case": "face_box_reverse_pair"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "face_box_input",
+      "case": "face_box_input"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "face_trimmed",
+      "case": "face_trimmed"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "face_subd",
+      "case": "face_subd"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "face_mesh",
+      "case": "face_mesh"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "segment_polycurve",
+      "case": "segment_polycurve"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "face_and_curve",
+      "case": "face_and_curve"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "range_line",
+      "case": "range_line"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "range_polycurve",
+      "case": "range_polycurve"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "range_circle",
+      "case": "range_circle"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "range_circle_wrap",
+      "case": "range_circle_wrap"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "range_spline",
+      "case": "range_spline"
+    }
+  ]
+}

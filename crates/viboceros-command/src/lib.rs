@@ -14628,6 +14628,9 @@ pub enum CommandError {
     #[error("none of the selected objects has an extractable control polygon")]
     NoExtractableControlPolygons,
 
+    #[error("control polygon input changed; select the source again")]
+    ControlPolygonStale,
+
     #[error("ExtractSrf supports selected NURBS surfaces and B-reps only")]
     UnsupportedExtractSurfaceGeometry,
     #[error(

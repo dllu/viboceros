@@ -47,6 +47,10 @@ def run(operation, host, iterations, tolerance):
             return subd
         if kind == 'line':
             return G.LineCurve(G.Point3d(0., 0., 0.), G.Point3d(4., 3., 2.))
+        if kind == 'spline':
+            return G.NurbsCurve.Create(False, 3, S.Array[G.Point3d]([
+                G.Point3d(*p) for p in [[0.,0.,0.],[2.,3.,1.],[4.,-1.,0.],
+                                       [6.,4.,2.],[8.,2.,-1.],[10.,0.,0.]]]))
         if kind == 'circle':
             return G.Circle(G.Plane.WorldXY, 3.).ToNurbsCurve()
         if kind == 'polycurve':
@@ -91,6 +95,9 @@ def run(operation, host, iterations, tolerance):
                        groups=[doc.Groups.GroupName(i) for i in (attrs.GetGroupList() or [])],
                        color=[int(attrs.ObjectColor.R),int(attrs.ObjectColor.G),int(attrs.ObjectColor.B)],
                        color_source=int(attrs.ColorSource), kind=str(g.ObjectType))
+            if 'components' in case or 'mouse' in case:
+                row['components'] = [[str(c.ComponentIndexType), int(c.Index)]
+                                     for c in (obj.GetSelectedSubObjects() or [])]
             if isinstance(g, G.Mesh):
                 row['mesh'] = mesh_value(g)
             elif isinstance(g, G.Curve):
@@ -137,7 +144,19 @@ def run(operation, host, iterations, tolerance):
         finally:
             doc.EndUndoRecord(serial)
         doc.ClearUndoRecords(True)
-        if case['preselected']:
+        if 'components' in case:
+            for source, kind, index in case['components']:
+                obj = doc.Objects.FindId(ids[source])
+                if kind == 'SubdFace':
+                    faces = list(obj.Geometry.Faces)
+                    component = faces[index].ComponentIndex()
+                else:
+                    component = G.ComponentIndex(getattr(G.ComponentIndexType, kind), index)
+                if not obj.SelectSubObject(component, True, True, False):
+                    raise ValueError('control polygon component preselection failed')
+            for source in case.get('whole', []):
+                doc.Objects.Select(ids[source])
+        elif case['preselected']:
             for key in ids:
                 doc.Objects.Select(key)
         before, source_3dm = snapshot(), archive()
@@ -148,20 +167,59 @@ def run(operation, host, iterations, tolerance):
             macro += ' _SubDPriority=_'+case['priority']
         if 'tokens' in case:
             macro += ' '+' '.join(case['tokens'])
-        if not case['preselected']:
+        subcurve_parameters = None
+        if 'subcurve' in case:
+            curve = doc.Objects.FindId(ids[0]).Geometry
+            subcurve_parameters = [curve.Domain.ParameterAt(f) for f in case['subcurve']]
+            points = [curve.PointAt(t) for t in subcurve_parameters]
+            tokens = [','.join(repr(float(v)) for v in [p.X,p.Y,p.Z]) for p in points]
+            macro += ' _SubCrv _SelID '+str(ids[0])+' '+tokens[0]
+            if case.get('cancel'):
+                macro += ' _Cancel _Cancel'
+            else:
+                macro += ' '+tokens[1]+' _Enter _Cancel _Cancel'
+        elif not case['preselected'] and 'mouse' not in case:
             macro += ' '+ ' '.join('_SelID '+str(key) for key in ids)
-        macro += ' _Enter _Cancel _Cancel'
+        if 'subcurve' not in case and 'mouse' not in case:
+            macro += ' _Enter _Cancel _Cancel'
+        selection_steps, completion = [], []
+        if 'mouse' in case:
+            from owned_brep_command import OwnedBrepCommand
+            from shrink_face_input import drive
+            witness = OwnedBrepCommand(host)
+            witness.ids = ids
+            face = doc.Objects.FindId(ids[0]).Geometry.Faces[case['mouse']['face']]
+            point = face.PointAt(face.Domain(0).Mid, face.Domain(1).Mid)
+            R.RhinoApp.RunScript('_SetView _World _Top', False)
+            R.RhinoApp.RunScript('_Zoom _Extents', False)
+            mode = R.Display.DisplayModeDescription.FindByName('Shaded')
+            doc.Views.ActiveView.ActiveViewport.DisplayMode = mode
+            doc.Views.Redraw()
+            view = doc.Views.ActiveView
+            pixel = view.ActiveViewport.WorldToClient(point)
+            witness.verify_face_pick(0, case['mouse']['face'], view, view.ActiveViewport, int(pixel.X), int(pixel.Y))
+            recipe = dict(id=operation['id'], steps=[dict(kind='click', modifiers=case['mouse']['modifiers'])],
+                          finish='Enter')
+            action = lambda:drive(recipe, [[point]], host, snapshot, selection_steps,
+                                  'ExtractControlPolygon', macro+' _Pause', completion)
+        else:
+            action = lambda:R.RhinoApp.RunScript(macro,True)
         success, after, events = observe_command(R.Commands.Command, 'ExtractControlPolygon',
-            lambda:R.RhinoApp.RunScript(macro,True), snapshot, lambda:[], True)
+            action, snapshot, lambda:[], True)
+        host['_record_progress']('control polygon '+operation['id']+': command returned')
         history = R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip()
         result_3dm, after_script = archive(), snapshot()
         R.RhinoApp.RunScript('_Undo',False)
+        host['_record_progress']('control polygon '+operation['id']+': undo returned')
         undo = snapshot()
         R.RhinoApp.RunScript('_Redo',False)
+        host['_record_progress']('control polygon '+operation['id']+': redo returned')
         redo = snapshot()
         return dict(input=case, macro=macro, success=success, before=before, after=after,
                     after_script=after_script, undo=undo, redo=redo, events=events,
-                    history=history, source_3dm=source_3dm, result_3dm=result_3dm), 0
+                    history=history, source_3dm=source_3dm, result_3dm=result_3dm,
+                    subcurve_parameters=subcurve_parameters,
+                    selection_steps=selection_steps, input_completion=completion), 0
     finally:
         doc.Layers.SetCurrentLayerIndex(old_layer,True)
         for obj in list(doc.Objects):

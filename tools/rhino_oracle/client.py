@@ -490,6 +490,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'control_polygon_command' for op in request.get('operations', [])):
+            from .control_polygon_cases import PICKS
+            if any(op.get('case') in PICKS for op in request['operations']):
+                from .component_picking import ComponentPicker
+                interaction = ComponentPicker()
         if any(op.get('op') == 'soft_crease_command' for op in request.get('operations', [])):
             from .soft_crease_cases import all_cases
             cases = all_cases()

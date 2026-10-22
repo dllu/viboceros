@@ -129,6 +129,7 @@ impl SelectionMenu {
 
 mod command_line;
 mod component_selection;
+mod control_polygon;
 mod copy_options;
 mod crease;
 mod extract_surface;
@@ -931,6 +932,7 @@ impl VibocerosApp {
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)
             || self.try_start_remember_copy_options(&input)
+            || self.try_start_control_polygon_components(&input)
             || self.try_start_to_subd(&input)
             || self.try_start_soft_crease(&input)
             || self.try_start_crease(&input)
@@ -1061,6 +1063,7 @@ impl VibocerosApp {
             self.cancel_interactive_command(false);
         }
         self.push_log(format!("> {command_input}"));
+        let release_control_polygon_components = self.replaying_control_polygon_selection(input);
         let previous_unit_scale = self.document.units().meters_per_unit();
         let result = self.try_run_3dm_command(&command_input).unwrap_or_else(|| {
             let context = viboceros_command::CommandContext { construction_plane };
@@ -1081,6 +1084,9 @@ impl VibocerosApp {
             Ok(message) => {
                 self.push_log(message);
                 self.start_edge_zoom_options(input);
+                if release_control_polygon_components {
+                    self.component_selection.clear();
+                }
                 if self.document.units().meters_per_unit() != previous_unit_scale {
                     // Accepted points outlive a cancelled drawing command, but
                     // must not silently become relative anchors in new units.

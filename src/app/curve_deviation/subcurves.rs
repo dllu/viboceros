@@ -58,6 +58,7 @@ impl VibocerosApp {
         let original_selection = self.document.selected_object_ids().collect();
         self.cancel_interactive_command(false);
         self.intersection_prompt = Some(TwoSetsPrompt {
+            control_polygon: None,
             curve_deviation: Some(base),
             deviation: None,
             first: None,

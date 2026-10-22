@@ -30,8 +30,18 @@ capture; those trials are excluded from native qualification. Complete typed
 invocations accept both options together; Rhino's preselected macro getter can
 finish after its first option.
 
-[Qualification](../control-polygon-qualification.json) covers 42 whole-object
-workflows through the command and interactive getters. SubCrv input, face
-component picking, texture display and comparative performance remain separate
-work. The [public Rhino help](https://docs.mcneel.com/rhino/8/help/en-us/commands/extractcontrolpolygon.htm)
-describes the broader native command.
+For a temporary curve portion, enter `SubCrv` while picking, select a curve,
+and pick its start and directed end before pressing Enter. The source remains
+unchanged. Closed curves can cross their seam. Temporary-range outputs have
+fresh attributes on the current layer, without source names, colors or groups.
+Scripts use `SubCrv=<object-id>,<start-parameter>,<end-parameter>`; `Sources=id,...`
+can explicitly choose whole objects. Parameters use the source's native domain.
+
+The [whole-object comparison](../control-polygon-qualification.json) covers 42
+workflows. The [range and component comparison](../control-polygon-ranges-qualification.json)
+covers five curve ranges through typed and interactive input, plus ten component
+selection workflows. Face components are ignored; select the complete single-face
+surface instead. Native polycurve-segment preselection is also ignored.
+Repeated/mixed ranges, Input-layer ranges, segment-component UI, texture display
+and comparative performance remain unqualified. Native range cancellation timed
+out and remains diagnostic; local cancellation is regression-tested.

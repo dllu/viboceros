@@ -1,6 +1,6 @@
 //! Getter choices are local to one invocation, matching the native reset behavior.
 use super::*;
-pub const USAGE: &str = "ExtractControlPolygon [OutputLayer=Current|Input|TargetObject] [SubDPriority=Geometry|TextureCoordinates]";
+pub const USAGE: &str = "ExtractControlPolygon [OutputLayer=Current|Input|TargetObject] [SubDPriority=Geometry|TextureCoordinates] [Sources=id,...] [SubCrv=id,start,end]";
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum OutputLayer {
     #[default]

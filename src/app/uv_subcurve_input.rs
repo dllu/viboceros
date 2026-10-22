@@ -7,6 +7,7 @@ mod length_confirmation;
 pub(super) struct CurveRange {
     pub(super) object: ObjectId,
     pub(super) parameters: [f64; 2],
+    pub(super) source: viboceros_document::GeometrySnapshot,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -277,10 +278,16 @@ impl VibocerosApp {
                 curve
                     .to_owned()
                     .try_subcurve(parameters[0], parameters[1])?;
-                prompt
-                    .uv_subcurves
-                    .ranges
-                    .push(CurveRange { object, parameters });
+                prompt.uv_subcurves.ranges.push(CurveRange {
+                    object,
+                    parameters,
+                    source: self
+                        .document
+                        .object(object)
+                        .unwrap()
+                        .geometry_snapshot()
+                        .clone(),
+                });
                 prompt.uv_subcurves.pending = None;
                 self.active_command = None;
                 self.drafting_plane = None;

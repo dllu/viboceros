@@ -34,6 +34,20 @@ the 32 successes and ten filtered inputs. Source geometry remains unchanged;
 measured positions and channels agree within `1e-6`, and captured metadata,
 selection and Undo/Redo agree exactly. The 19 malformed trials remain diagnostics.
 
-The public [command help](https://docs.mcneel.com/rhino/8/help/en-us/commands/extractcontrolpolygon.htm)
-lists additional interaction options. Subcurve/face picking, texture display and
-performance comparisons still require implementation and validation.
+Two additional captures retain fourteen component/range recipes and two box
+face-click recipes. Five temporary ranges cover a line, a mixed polycurve,
+a rational circle, its wrapped seam and a cubic spline. These outputs use
+fresh attributes on the current layer, unlike whole-object extraction.
+The [range/component qualification](../control-polygon-ranges-qualification.json)
+compares exact control vertices, metadata, selection and Undo/Redo through typed
+input and both interactive entry paths. Seven face-only preselection cases are
+ignored; a mixed face/curve selection extracts only the curve and retains the
+unrelated face until Undo/Redo. Both box face clicks reject the input.
+Polycurve-segment preselection is ignored natively; its UI representation remains
+unimplemented.
+
+A separate [cancellation diagnostic](../../tools/rhino_oracle/observations/control_polygon_components_cancel_timeout.json)
+records a 600-second owned-worker timeout. It provides no cancellation outcome
+and is excluded from qualification. Input-layer ranges, repeated/mixed ranges,
+texture display and comparative performance remain unqualified. See the
+[command guide](../commands/control-polygons.md) for supported input.

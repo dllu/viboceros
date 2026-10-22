@@ -5,11 +5,12 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
-from .control_polygon_cases import request, options_request, priority_request
+from .control_polygon_cases import request, options_request, priority_request, components_request, picks_request
 
 HERE = Path(__file__).resolve().parent
 SOURCES = ['generate_control_polygon.py','control_polygon_cases.py','control_polygon_probe.py',
-           'client.py','rhino_worker.py','structural_sdk.py','join_probe.py','merge_edges_probe.py']
+           'client.py','rhino_worker.py','structural_sdk.py','join_probe.py','merge_edges_probe.py',
+           'owned_brep_command.py','shrink_face_input.py','component_picking.py']
 
 
 def main():
@@ -18,10 +19,12 @@ def main():
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument('--options',action='store_true')
     modes.add_argument('--priority',action='store_true')
+    modes.add_argument('--components',action='store_true')
+    modes.add_argument('--picks',action='store_true')
     args = parser.parse_args()
-    suffix = 'priority' if args.priority else 'options' if args.options else None
+    suffix = 'picks' if args.picks else 'components' if args.components else 'priority' if args.priority else 'options' if args.options else None
     family = 'control_polygon' + ('_'+suffix if suffix else '')
-    query = priority_request() if args.priority else options_request() if args.options else request()
+    query = picks_request() if args.picks else components_request() if args.components else priority_request() if args.priority else options_request() if args.options else request()
     output = HERE / 'observations' / (family+'.json')
     if output.exists():
         raise ValueError('native observations are immutable; add a new family')

@@ -7,7 +7,7 @@ import shutil
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
     'mesh_channels_sdk': ('mesh_channels_probe', ()),
-    'control_polygon_command': ('control_polygon_probe', ('control_polygon_cases','join_probe','merge_edges_probe')),
+    'control_polygon_command': ('control_polygon_probe', ('control_polygon_cases','join_probe','merge_edges_probe','owned_brep_command','shrink_face_input')),
     'soft_crease_command': ('soft_crease_probe', ('soft_crease_cases','soft_crease_chain_cases','soft_crease_followup_cases','subd_edit_scene','conic_getter_input','managed_mouse_callback','snap_environment','number_token','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'crease_command': ('crease_probe', ('crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'creator_extrusions': ('creator_extrusions_probe', ('subd_box_probe','join_probe','merge_edges_probe')),

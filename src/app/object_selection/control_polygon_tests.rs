@@ -1,9 +1,8 @@
 //! Object getter replay uses the same immutable native command corpus.
 use super::*;
+use crate::app::control_polygon::native;
 use crate::app::tests::test_app;
 use serde_json::{Value, json};
-#[path = "../../../crates/viboceros-command/tests/support/control_polygon.rs"]
-mod native;
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();

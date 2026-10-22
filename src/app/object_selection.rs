@@ -978,6 +978,9 @@ impl VibocerosApp {
         if self.continue_mesh_patch_prompt(input) {
             return true;
         }
+        if self.promote_control_polygon_subcurve(input) {
+            return true;
+        }
         if self.promote_curve_deviation_subcurve(input) {
             return true;
         }
@@ -1711,7 +1714,11 @@ impl VibocerosApp {
             }
             if matches!(
                 pending.description.command,
-                "ShrinkTrimmedSrf" | "ShrinkTrimmedSrfToEdge" | "SubDivide" | "ToSubD"
+                "ShrinkTrimmedSrf"
+                    | "ShrinkTrimmedSrfToEdge"
+                    | "SubDivide"
+                    | "ToSubD"
+                    | "ExtractControlPolygon"
             ) {
                 self.component_selection.clear();
             }

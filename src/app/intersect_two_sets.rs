@@ -6,6 +6,7 @@ use viboceros_document::{ObjectId, SelectionMode};
 
 #[derive(Clone, Debug)]
 pub(super) struct TwoSetsPrompt {
+    pub(super) control_polygon: Option<String>,
     pub(super) curve_deviation: Option<String>,
     pub(super) deviation: Option<String>,
     pub(super) first: Option<Vec<ObjectId>>,
@@ -59,6 +60,9 @@ impl BooleanOptions {
 
 impl TwoSetsPrompt {
     pub(super) fn name(&self) -> &'static str {
+        if self.control_polygon.is_some() {
+            return "ExtractControlPolygon";
+        }
         if self.curve_deviation.is_some() {
             return "CrvDeviation";
         }
@@ -77,6 +81,13 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
+        if self.control_polygon.is_some() {
+            return if self.uv_subcurves.pending.is_some() {
+                ObjectSelectionFilter::Curves
+            } else {
+                ObjectSelectionFilter::ControlPolygons
+            };
+        }
         if self.curve_deviation.is_some() {
             return ObjectSelectionFilter::Curves;
         }
@@ -116,6 +127,9 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
+        if self.control_polygon.is_some() {
+            return self.uv_subcurves.hint().unwrap_or("Select objects; SubCrv picks a portion; OutputLayer/ SubDPriority set options; Enter extracts, Esc cancels");
+        }
         if self.curve_deviation.is_some() {
             return self.uv_subcurves.hint().unwrap_or("Select two curve inputs; SubCrv picks a temporary portion; Enter measures, Esc cancels");
         }
@@ -207,6 +221,9 @@ fn output_layer_option(input: &str) -> Option<&'static str> {
 
 impl VibocerosApp {
     pub(super) fn try_start_intersection_prompt(&mut self, input: &str) -> bool {
+        if self.try_start_control_polygon_subcurve(input) {
+            return true;
+        }
         if self.try_start_curve_deviation_subcurve_prompt(input) {
             return true;
         }
@@ -250,6 +267,7 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.document.clear_selection();
         self.intersection_prompt = Some(TwoSetsPrompt {
+            control_polygon: None,
             curve_deviation: None,
             deviation: None,
             projection: None,
@@ -301,6 +319,9 @@ impl VibocerosApp {
         let Some(mut prompt) = self.intersection_prompt.clone() else {
             return false;
         };
+        if prompt.control_polygon.is_some() {
+            return self.continue_control_polygon_sources(prompt, input);
+        }
         if prompt.curve_deviation.is_some() {
             return self.continue_curve_deviation_sources(prompt, input);
         }
@@ -414,11 +435,10 @@ impl VibocerosApp {
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
-        if self
-            .intersection_prompt
-            .as_ref()
-            .is_some_and(|p| p.curve_deviation.is_some() && p.uv_subcurves.pending.is_some())
-        {
+        if self.intersection_prompt.as_ref().is_some_and(|p| {
+            (p.curve_deviation.is_some() || p.control_polygon.is_some())
+                && p.uv_subcurves.pending.is_some()
+        }) {
             self.pick_uv_subcurve_source(ids);
             return;
         }
@@ -479,6 +499,9 @@ impl VibocerosApp {
                     self.push_log(format!("Cancelled {}", options.kind.name()));
                 }
                 return;
+            }
+            if prompt.control_polygon.is_some() {
+                self.component_selection.clear();
             }
             if announce {
                 let _ = self

@@ -4,6 +4,18 @@
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
     'src/app/object_selection.rs',
+    'src/app/control_polygon.rs',
+    'src/app/control_polygon/subcurve.rs',
+    'src/app/control_polygon/tests.rs',
+    'crates/viboceros-command/tests/support/control_polygon.rs',
+    'src/app/intersect_two_sets.rs',
+    'src/app/uv_subcurve_input.rs',
+    'src/app/apply_curves.rs',
+    'src/app/boolean_solids.rs',
+    'src/app/curve_deviation/subcurves.rs',
+    'src/app/iplane.rs',
+    'src/app/point_deviation.rs',
+    'src/app/project.rs',
     'src/app/object_selection/control_polygon_tests.rs',
     'src/app/soft_crease.rs',
     'src/app/soft_crease/tests.rs',
@@ -71,6 +83,8 @@ def with_shared_sources(paths):
         expanded.extend([
             'crates/viboceros-command/src/extract_control_polygon.rs',
             'crates/viboceros-command/src/extract_control_polygon/options.rs',
+            'crates/viboceros-command/src/extract_control_polygon/arguments.rs',
+            'crates/viboceros-command/src/extract_control_polygon/selection.rs',
             'crates/viboceros-command/src/soft_crease.rs',
             'crates/viboceros-command/src/soft_crease/profile.rs',
             'crates/viboceros-command/src/soft_crease/arguments.rs',

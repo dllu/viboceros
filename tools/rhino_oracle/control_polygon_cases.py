@@ -57,6 +57,43 @@ PRIORITY['priority_remembered_default'] = deepcopy(CASES['subd_cube'])
 PRIORITY['target_picked'] = dict(deepcopy(OPTIONS['target_separate_tokens']), preselected=False)
 SCENES.update(PRIORITY)
 
+# Component and temporary-curve discovery is a separate immutable family.
+COMPONENTS = {}
+for name, shape, kind, indices, layer in [
+    ('face_box_zero', 'box', 'BrepFace', [0], 'Current'),
+    ('face_box_pair', 'box', 'BrepFace', [0, 2], 'Current'),
+    ('face_box_reverse_pair', 'box', 'BrepFace', [2, 0], 'Current'),
+    ('face_box_input', 'box', 'BrepFace', [1], 'Input'),
+    ('face_trimmed', 'trimmed', 'BrepFace', [0], 'Current'),
+    ('face_subd', 'subd_cube', 'SubdFace', [0], 'Current'),
+    ('face_mesh', 'mesh', 'MeshFace', [0], 'Current'),
+    ('segment_polycurve', 'polycurve', 'PolycurveSegment', [1], 'Current'),
+]:
+    COMPONENTS[name] = dict(sources=[deepcopy(SHAPES[shape])], layer=layer,
+                            preselected=True, components=[[0, kind, i] for i in indices])
+COMPONENTS['face_and_curve'] = dict(sources=[deepcopy(SHAPES['box']), deepcopy(SHAPES['line'])],
+    layer='Current', preselected=True, components=[[0, 'BrepFace', 0]], whole=[1])
+for name, shape, fractions in [
+    ('range_line', 'line', [.2, .8]), ('range_polycurve', 'polycurve', [.1, .9]),
+    ('range_circle', 'circle', [.1, .4]), ('range_circle_wrap', 'circle', [.8, .2]),
+    ('range_spline', 'spline', [.2, .75]),
+]:
+    source = dict(kind='spline') if shape == 'spline' else deepcopy(SHAPES[shape])
+    COMPONENTS[name] = dict(sources=[source], layer='Current', preselected=False, subcurve=fractions)
+COMPONENTS['range_cancel'] = dict(deepcopy(COMPONENTS['range_line']), cancel=True)
+CANCEL = {'range_cancel': COMPONENTS.pop('range_cancel')}
+SCENES.update(COMPONENTS)
+SCENES.update(CANCEL)
+PICKS = {
+    name: dict(sources=[deepcopy(SHAPES[shape])], layer='Current', preselected=False,
+               mouse=dict(face=face, modifiers=modifiers))
+    for name, shape, face, modifiers in [
+        ('face_box_click', 'box', 5, 'sub'),
+        ('face_box_plain_click', 'box', 5, 'plain'),
+    ]
+}
+SCENES.update(PICKS)
+
 
 def request():
     return dict(protocol_version=1, iterations=1,
@@ -73,6 +110,18 @@ def options_request():
 def priority_request():
     result = request()
     result['operations'] = [dict(op='control_polygon_command', id=name, case=name) for name in PRIORITY]
+    return result
+
+
+def components_request():
+    result = request()
+    result['operations'] = [dict(op='control_polygon_command', id=name, case=name) for name in COMPONENTS]
+    return result
+
+
+def picks_request():
+    result = request()
+    result['operations'] = [dict(op='control_polygon_command', id=name, case=name) for name in PICKS]
     return result
 
 

@@ -83,7 +83,8 @@ class ControlPolygonTests(unittest.TestCase):
 
     def test_complete_fixed_requests_and_frozen_native_producers(self):
         for suffix, request, count in [('', cases.request, 37), ('_options', cases.options_request, 12),
-                                        ('_priority', cases.priority_request, 12)]:
+                                        ('_priority', cases.priority_request, 12),
+                                        ('_components', cases.components_request, 14), ('_picks', cases.picks_request, 2)]:
             family = 'control_polygon'+suffix
             path = HERE/'fixtures'/(family+'.json')
             query = json.loads(path.read_text())
@@ -119,4 +120,20 @@ class ControlPolygonTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             stage_helpers(query,HERE,Path(directory))
             self.assertEqual({p.name for p in Path(directory).iterdir()},
-                {'control_polygon_probe.py','control_polygon_cases.py','join_probe.py','merge_edges_probe.py'})
+                {'control_polygon_probe.py','control_polygon_cases.py','join_probe.py','merge_edges_probe.py',
+                 'owned_brep_command.py','shrink_face_input.py'})
+
+    def test_range_report_requires_both_getter_paths_and_all_component_cases(self):
+        from .report_control_polygon_ranges import ROOT, summarize
+        report = json.loads((ROOT/'docs/control-polygon-ranges-qualification.json').read_text())
+        command = ['CONTROL_POLYGON_RANGE_NATIVE '+json.dumps(r) for r in report['comparisons']['command']]
+        ui = ['CONTROL_POLYGON_RANGE_UI '+json.dumps(r) for r in report['comparisons']['ui']]
+        ui += ['CONTROL_POLYGON_COMPONENT_UI '+json.dumps(r) for r in report['comparisons']['components']]
+        self.assertEqual(summarize('\n'.join(command),'\n'.join(ui)),report)
+        self.assertEqual((report['temporary_ranges'],report['interactive_range_paths'],report['component_workflows']),(5,10,10))
+        for a,b in [(command[:-1],ui),(command,ui[:-1]),(command+command[:1],ui),(command,ui+ui[:1])]:
+            with self.assertRaises(ValueError): summarize('\n'.join(a),'\n'.join(b))
+        for field,value in [('maximum_error',float('nan')),('maximum_error',2e-6),('metadata_exact',False),('history_exact',1)]:
+            rows=copy.deepcopy(report['comparisons']['command']);rows[0][field]=value
+            with self.assertRaises(ValueError):
+                summarize('\n'.join('CONTROL_POLYGON_RANGE_NATIVE '+json.dumps(r) for r in rows),'\n'.join(ui))

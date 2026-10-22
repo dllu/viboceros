@@ -1,0 +1,39 @@
+{
+  "status": "diagnostic_only",
+  "operation": "range_cancel",
+  "completed_response": false,
+  "timeout_seconds": 600,
+  "reason": "The owned worker reached the final temporary-range cancellation case but did not publish a response. No native geometry or cancellation outcome is claimed.",
+  "request": "fixtures/control_polygon_components_cancel_timeout.json",
+  "request_sha256": "1abe1dd5feb5f1972ffb448d36b0f6e669d315ca503579ace9312d82976fa278",
+  "sources": {
+    "generate_control_polygon.py": "c84768248284747b67f6b7313d19814ed4846610fa165b9b6e7f7d7f23ccfbe5",
+    "control_polygon_cases.py": "ae899f6d86dfc16b0dde54f8d211320650dd2cb6d438fc76373c17a4f2447064",
+    "control_polygon_probe.py": "8ac8ec328ddf59967c7156b8f7e871aaee63c75afe2766c9f7122dd1b2fa7315",
+    "client.py": "142945049385624c3a392600071d435087d7478d15129619e51f5fb26c44f35c",
+    "rhino_worker.py": "7948a6a0eb5473bbc125bcb45df91e1e322fc3f4af84f9145daf3cab786cb1c7",
+    "structural_sdk.py": "eb5221bada9653f2934071325457a1b012cc8c17d885681d42a576c31b4a87f4",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1"
+  },
+  "stages": [
+    "worker: started",
+    "worker: started",
+    "worker: request loaded",
+    "operation face_box_zero: start",
+    "operation face_box_pair: start",
+    "operation face_box_reverse_pair: start",
+    "operation face_box_input: start",
+    "operation face_trimmed: start",
+    "operation face_subd: start",
+    "operation face_mesh: start",
+    "operation segment_polycurve: start",
+    "operation face_and_curve: start",
+    "operation range_line: start",
+    "operation range_polycurve: start",
+    "operation range_circle: start",
+    "operation range_circle_wrap: start",
+    "operation range_spline: start",
+    "operation range_cancel: start"
+  ]
+}
