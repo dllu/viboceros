@@ -26,7 +26,7 @@ struct NgonSpan {
     face_count: usize,
 }
 #[repr(C)]
-struct MeshView {
+pub(crate) struct MeshView {
     vertex_count: usize,
     face_count: usize,
     color_count: usize,
@@ -183,13 +183,12 @@ fn edit(
 ) -> Result<(MeshData, usize), MeshError> {
     edit_selection(data, op, distance, angle, None).map(|r| (r.mesh, r.changed))
 }
-fn edit_selection(
+/// Packs borrowed mesh arrays and keeps temporary n-gon buffers alive until
+/// the synchronous native callback returns. Raw views stay inside this crate.
+pub(crate) fn with_mesh_view<T>(
     data: &MeshData,
-    op: u32,
-    distance: f64,
-    angle: f64,
-    selection: Option<(&[usize], bool)>,
-) -> Result<EditResult, MeshError> {
+    run: impl FnOnce(&MeshView) -> T,
+) -> Result<T, MeshError> {
     if data.vertices.len() > 4_000_000
         || data.faces.len() > 1_000_000
         || data.ngons.len() > data.faces.len()
@@ -232,121 +231,132 @@ fn edit_selection(
         ngon_vertices: vertices.as_ptr(),
         ngon_faces: faces.as_ptr(),
     };
-    let mut error = [0u8; 512];
-    let mut raw = std::ptr::null_mut();
-    let status = if let Some((vertices, _)) = selection.filter(|_| op == 5) {
-        unsafe {
-            vibo_mesh_dissolve_vertices(
-                &view,
-                vertices.as_ptr(),
-                vertices.len(),
-                &mut raw,
-                error.as_mut_ptr().cast(),
-                error.len(),
-            )
+    Ok(run(&view))
+}
+fn edit_selection(
+    data: &MeshData,
+    op: u32,
+    distance: f64,
+    angle: f64,
+    selection: Option<(&[usize], bool)>,
+) -> Result<EditResult, MeshError> {
+    with_mesh_view(data, |view| {
+        let mut error = [0u8; 512];
+        let mut raw = std::ptr::null_mut();
+        let status = if let Some((vertices, _)) = selection.filter(|_| op == 5) {
+            unsafe {
+                vibo_mesh_dissolve_vertices(
+                    view,
+                    vertices.as_ptr(),
+                    vertices.len(),
+                    &mut raw,
+                    error.as_mut_ptr().cast(),
+                    error.len(),
+                )
+            }
+        } else if let Some((faces, region)) = selection {
+            unsafe {
+                vibo_mesh_merge_selected(
+                    view,
+                    faces.as_ptr(),
+                    faces.len(),
+                    region.into(),
+                    distance,
+                    angle,
+                    &mut raw,
+                    error.as_mut_ptr().cast(),
+                    error.len(),
+                )
+            }
+        } else {
+            unsafe {
+                vibo_mesh_edit(
+                    view,
+                    op,
+                    distance,
+                    angle,
+                    &mut raw,
+                    error.as_mut_ptr().cast(),
+                    error.len(),
+                )
+            }
+        };
+        let owner = NonNull::new(raw).map(Owner);
+        if status == 0 {
+            let end = error.iter().position(|b| *b == 0).unwrap_or(error.len());
+            return Err(MeshError(
+                String::from_utf8_lossy(&error[..end]).into_owned(),
+            ));
         }
-    } else if let Some((faces, region)) = selection {
-        unsafe {
-            vibo_mesh_merge_selected(
-                &view,
-                faces.as_ptr(),
-                faces.len(),
-                region.into(),
-                distance,
-                angle,
-                &mut raw,
-                error.as_mut_ptr().cast(),
-                error.len(),
-            )
+        let owner = owner.ok_or_else(|| MeshError("Missing result".into()))?;
+        let mut out = std::mem::MaybeUninit::<MeshView>::uninit();
+        let mut changed = 0;
+        if unsafe { vibo_mesh_result_view(owner.0.as_ptr(), out.as_mut_ptr(), &mut changed) } == 0 {
+            return Err(MeshError("Missing result view".into()));
         }
-    } else {
-        unsafe {
-            vibo_mesh_edit(
-                &view,
-                op,
-                distance,
-                angle,
-                &mut raw,
-                error.as_mut_ptr().cast(),
-                error.len(),
-            )
+        let out = unsafe { out.assume_init() };
+        // The owned native result keeps all validated spans alive while copying.
+        unsafe fn copy<T: Copy>(p: *const T, n: usize) -> Result<Vec<T>, MeshError> {
+            if n == 0 {
+                return Ok(vec![]);
+            }
+            if p.is_null() || n > 32_000_000 {
+                return Err(MeshError("Invalid result array".into()));
+            }
+            Ok(unsafe { std::slice::from_raw_parts(p, n) }.to_vec())
         }
-    };
-    let owner = NonNull::new(raw).map(Owner);
-    if status == 0 {
-        let end = error.iter().position(|b| *b == 0).unwrap_or(error.len());
-        return Err(MeshError(
-            String::from_utf8_lossy(&error[..end]).into_owned(),
-        ));
-    }
-    let owner = owner.ok_or_else(|| MeshError("Missing result".into()))?;
-    let mut out = std::mem::MaybeUninit::<MeshView>::uninit();
-    let mut changed = 0;
-    if unsafe { vibo_mesh_result_view(owner.0.as_ptr(), out.as_mut_ptr(), &mut changed) } == 0 {
-        return Err(MeshError("Missing result view".into()));
-    }
-    let out = unsafe { out.assume_init() };
-    // The owned native result keeps all validated spans alive while copying.
-    unsafe fn copy<T: Copy>(p: *const T, n: usize) -> Result<Vec<T>, MeshError> {
-        if n == 0 {
-            return Ok(vec![]);
+        let mut result = MeshData {
+            vertices: unsafe { copy(out.vertices.cast::<[f64; 3]>(), out.vertex_count)? },
+            faces: unsafe { copy(out.faces.cast::<[u32; 4]>(), out.face_count)? },
+            colors: None,
+            ngons: Vec::new(),
+        };
+        if out.color_count > 0 {
+            result.colors = Some(unsafe { copy(out.colors.cast::<[u8; 4]>(), out.color_count)? });
         }
-        if p.is_null() || n > 32_000_000 {
-            return Err(MeshError("Invalid result array".into()));
+        let vertex_indices = unsafe { copy(out.ngon_vertices, out.ngon_vertex_count)? };
+        let face_indices = unsafe { copy(out.ngon_faces, out.ngon_face_count)? };
+        for g in unsafe { copy(out.ngons, out.ngon_count)? } {
+            let vertex_end = g
+                .first_vertex
+                .checked_add(g.vertex_count)
+                .ok_or_else(|| MeshError("Invalid n-gon span".into()))?;
+            let face_end = g
+                .first_face
+                .checked_add(g.face_count)
+                .ok_or_else(|| MeshError("Invalid n-gon span".into()))?;
+            result.ngons.push(Ngon {
+                vertices: vertex_indices
+                    .get(g.first_vertex..vertex_end)
+                    .ok_or_else(|| MeshError("Invalid n-gon vertices".into()))?
+                    .to_vec(),
+                faces: face_indices
+                    .get(g.first_face..face_end)
+                    .ok_or_else(|| MeshError("Invalid n-gon faces".into()))?
+                    .to_vec(),
+            });
         }
-        Ok(unsafe { std::slice::from_raw_parts(p, n) }.to_vec())
-    }
-    let mut result = MeshData {
-        vertices: unsafe { copy(out.vertices.cast::<[f64; 3]>(), out.vertex_count)? },
-        faces: unsafe { copy(out.faces.cast::<[u32; 4]>(), out.face_count)? },
-        colors: None,
-        ngons: Vec::new(),
-    };
-    if out.color_count > 0 {
-        result.colors = Some(unsafe { copy(out.colors.cast::<[u8; 4]>(), out.color_count)? });
-    }
-    let vertex_indices = unsafe { copy(out.ngon_vertices, out.ngon_vertex_count)? };
-    let face_indices = unsafe { copy(out.ngon_faces, out.ngon_face_count)? };
-    for g in unsafe { copy(out.ngons, out.ngon_count)? } {
-        let vertex_end = g
-            .first_vertex
-            .checked_add(g.vertex_count)
-            .ok_or_else(|| MeshError("Invalid n-gon span".into()))?;
-        let face_end = g
-            .first_face
-            .checked_add(g.face_count)
-            .ok_or_else(|| MeshError("Invalid n-gon span".into()))?;
-        result.ngons.push(Ngon {
-            vertices: vertex_indices
-                .get(g.first_vertex..vertex_end)
-                .ok_or_else(|| MeshError("Invalid n-gon vertices".into()))?
-                .to_vec(),
-            faces: face_indices
-                .get(g.first_face..face_end)
-                .ok_or_else(|| MeshError("Invalid n-gon faces".into()))?
-                .to_vec(),
-        });
-    }
-    let (mut removed_faces, mut repaired_faces, mut removed_vertices) = (0, 0, 0);
-    if op == 4
-        && unsafe {
-            vibo_mesh_cleanup_counts(
-                owner.0.as_ptr(),
-                &mut removed_faces,
-                &mut repaired_faces,
-                &mut removed_vertices,
-            )
-        } == 0
-    {
-        return Err(MeshError("Missing cleanup counts".into()));
-    }
-    Ok(EditResult {
-        mesh: result,
-        changed,
-        removed_faces,
-        repaired_faces,
-        removed_vertices,
-    })
+        let (mut removed_faces, mut repaired_faces, mut removed_vertices) = (0, 0, 0);
+        if op == 4
+            && unsafe {
+                vibo_mesh_cleanup_counts(
+                    owner.0.as_ptr(),
+                    &mut removed_faces,
+                    &mut repaired_faces,
+                    &mut removed_vertices,
+                )
+            } == 0
+        {
+            return Err(MeshError("Missing cleanup counts".into()));
+        }
+        Ok(EditResult {
+            mesh: result,
+            changed,
+            removed_faces,
+            repaired_faces,
+            removed_vertices,
+        })
+    })?
 }
 
 #[cfg(test)]

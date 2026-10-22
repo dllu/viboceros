@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_elevated_cone2_0",
+      "case": "tosubd_poles_elevated_cone2_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_elevated_cone2_1",
+      "case": "tosubd_poles_elevated_cone2_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_elevated_cone3_0",
+      "case": "tosubd_poles_elevated_cone3_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_elevated_cone3_1",
+      "case": "tosubd_poles_elevated_cone3_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_hemisphere_0",
+      "case": "tosubd_poles_hemisphere_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_hemisphere_1",
+      "case": "tosubd_poles_hemisphere_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_paraboloid_0",
+      "case": "tosubd_poles_paraboloid_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_paraboloid_1",
+      "case": "tosubd_poles_paraboloid_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_cusp_0",
+      "case": "tosubd_poles_cusp_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_poles_cusp_1",
+      "case": "tosubd_poles_cusp_1"
+    }
+  ]
+}

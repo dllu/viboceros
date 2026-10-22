@@ -1893,7 +1893,7 @@ impl NurbsSurface {
         Ok(result)
     }
 
-    fn clamped_in_u(&self) -> Result<Self, GeometryError> {
+    pub(crate) fn clamped_in_u(&self) -> Result<Self, GeometryError> {
         let mut controls = Vec::new();
         let mut clamped_u_count = None;
         let mut clamped_knots_u = None;
@@ -1935,7 +1935,7 @@ impl NurbsSurface {
         )
     }
 
-    fn clamped_in_v(&self) -> Result<Self, GeometryError> {
+    pub(crate) fn clamped_in_v(&self) -> Result<Self, GeometryError> {
         let mut columns = Vec::new();
         columns
             .try_reserve_exact(self.control_point_count_u)
@@ -4521,7 +4521,7 @@ fn surface_continuity_sample_parameters(
     Ok(parameters)
 }
 
-fn control_net_singular_sides(
+pub(crate) fn control_net_singular_sides(
     vertices: &[Point3],
     count_u: usize,
     count_v: usize,
@@ -4543,7 +4543,7 @@ fn control_net_singular_sides(
     [south, east, north, west]
 }
 
-fn snap_singular_control_net_sides(
+pub(crate) fn snap_singular_control_net_sides(
     vertices: &mut [Point3],
     count_u: usize,
     count_v: usize,
@@ -4964,13 +4964,13 @@ fn knots_are_clamped(degree: usize, knots: &[Real]) -> bool {
     knots_are_clamped_at_start(degree, knots) && knots_are_clamped_at_end(degree, knots)
 }
 
-fn knots_are_clamped_at_start(degree: usize, knots: &[Real]) -> bool {
+pub(crate) fn knots_are_clamped_at_start(degree: usize, knots: &[Real]) -> bool {
     // OpenNURBS omits our two superfluous end knots. This is the equivalent
     // `ON_IsKnotVectorClamped(order, count, knots, 0)` comparison.
     knots[1] == knots[degree]
 }
 
-fn knots_are_clamped_at_end(degree: usize, knots: &[Real]) -> bool {
+pub(crate) fn knots_are_clamped_at_end(degree: usize, knots: &[Real]) -> bool {
     let control_count = knots.len() - degree - 1;
     knots[control_count] == knots[knots.len() - 2]
 }

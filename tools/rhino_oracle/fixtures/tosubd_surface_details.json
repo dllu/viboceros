@@ -1,0 +1,236 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_bilinear_warp_00",
+      "case": "tosubd_surface_bilinear_warp_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_bilinear_warp_01",
+      "case": "tosubd_surface_bilinear_warp_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_bilinear_warp_10",
+      "case": "tosubd_surface_bilinear_warp_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_bilinear_warp_11",
+      "case": "tosubd_surface_bilinear_warp_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_quadratic_00",
+      "case": "tosubd_surface_quadratic_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_quadratic_01",
+      "case": "tosubd_surface_quadratic_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_quadratic_10",
+      "case": "tosubd_surface_quadratic_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_quadratic_11",
+      "case": "tosubd_surface_quadratic_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_cubic_00",
+      "case": "tosubd_surface_cubic_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_cubic_01",
+      "case": "tosubd_surface_cubic_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_cubic_10",
+      "case": "tosubd_surface_cubic_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_cubic_11",
+      "case": "tosubd_surface_cubic_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_quartic_00",
+      "case": "tosubd_surface_quartic_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_quartic_01",
+      "case": "tosubd_surface_quartic_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_quartic_10",
+      "case": "tosubd_surface_quartic_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_quartic_11",
+      "case": "tosubd_surface_quartic_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_multispan_00",
+      "case": "tosubd_surface_multispan_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_multispan_01",
+      "case": "tosubd_surface_multispan_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_multispan_10",
+      "case": "tosubd_surface_multispan_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_multispan_11",
+      "case": "tosubd_surface_multispan_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_rational_00",
+      "case": "tosubd_surface_rational_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_rational_01",
+      "case": "tosubd_surface_rational_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_rational_10",
+      "case": "tosubd_surface_rational_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_surface_rational_11",
+      "case": "tosubd_surface_rational_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sphere_surface_00",
+      "case": "tosubd_sphere_surface_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sphere_surface_01",
+      "case": "tosubd_sphere_surface_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sphere_surface_10",
+      "case": "tosubd_sphere_surface_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sphere_surface_11",
+      "case": "tosubd_sphere_surface_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_cylinder_surface_00",
+      "case": "tosubd_cylinder_surface_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_cylinder_surface_01",
+      "case": "tosubd_cylinder_surface_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_cylinder_surface_10",
+      "case": "tosubd_cylinder_surface_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_cylinder_surface_11",
+      "case": "tosubd_cylinder_surface_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_torus_surface_00",
+      "case": "tosubd_torus_surface_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_torus_surface_01",
+      "case": "tosubd_torus_surface_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_torus_surface_10",
+      "case": "tosubd_torus_surface_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_torus_surface_11",
+      "case": "tosubd_torus_surface_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_box_faces_0_0",
+      "case": "tosubd_box_faces_0_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_box_faces_0_1",
+      "case": "tosubd_box_faces_0_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_box_faces_1_0",
+      "case": "tosubd_box_faces_1_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_box_faces_1_1",
+      "case": "tosubd_box_faces_1_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_box_faces_01_0",
+      "case": "tosubd_box_faces_01_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_box_faces_01_1",
+      "case": "tosubd_box_faces_01_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_box_faces_012345_0",
+      "case": "tosubd_box_faces_012345_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_box_faces_012345_1",
+      "case": "tosubd_box_faces_012345_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_mesh_face",
+      "case": "tosubd_mesh_face"
+    }
+  ]
+}

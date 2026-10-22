@@ -1,5 +1,6 @@
 #include "subd.h"
 #include "subd_codec.h"
+#include "mesh_codec.h"
 #include "viboceros_opennurbs.h"
 #include <algorithm>
 #include <array>
@@ -294,5 +295,23 @@ extern "C" int vibo_subd_subdivide(const uint8_t* bytes,size_t n,unsigned count,
     // an older level, and subsequent local edits can mix level indices.
     subd->ClearInactiveLevels();
     return extract(*subd,false,false,nullptr,local?&retained:nullptr);
+  });
+}
+
+extern "C" int vibo_subd_from_mesh(const ViboMeshView* input,int corners,int creases,
+    ViboSubDResult** out,char* error,size_t capacity) {
+  return guard(out,error,capacity,[&]{
+    require(input && (corners==0 || corners==1) && (creases==0 || creases==1),"Invalid mesh-to-SubD options");
+    ON_Mesh mesh;vibo_mesh::import_mesh(*input,mesh);
+    ON_SubDFromMeshParameters parameters=ON_SubDFromMeshParameters::Smooth;
+    parameters.SetInteriorCreaseOption(creases?ON_SubDFromMeshParameters::InteriorCreaseOption::AtMeshDoubleEdge:ON_SubDFromMeshParameters::InteriorCreaseOption::None);
+    parameters.SetConvexCornerOption(corners?ON_SubDFromMeshParameters::ConvexCornerOption::AtMeshCorner:ON_SubDFromMeshParameters::ConvexCornerOption::None);
+    std::unique_ptr<ON_SubD> subd(ON_SubD::CreateFromMesh(&mesh,&parameters,nullptr));
+    require(subd!=nullptr,"Cannot convert mesh to SubD");
+    vibo_subd::check(*subd);
+    uint64_t corner_count=0;auto fit=subd->FaceIterator();
+    for(auto* f=fit.FirstFace();f;f=fit.NextFace()) corner_count+=f->EdgeCount();
+    require(corner_count<=4*vibo_subd::component_limit,"Converted SubD corner budget exceeded");
+    return extract(*subd);
   });
 }

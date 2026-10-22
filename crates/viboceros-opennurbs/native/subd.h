@@ -2,10 +2,12 @@
 #define VIBOCEROS_SUBD_H
 #include <stddef.h>
 #include <stdint.h>
+#include "mesh_modeling.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
 typedef struct ViboSubDResult ViboSubDResult;
+int vibo_subd_from_mesh(const ViboMeshView*, int, int, ViboSubDResult**, char*, size_t);
 int vibo_subd_box(const double*, const uint32_t*, ViboSubDResult**, char*, size_t);
 int vibo_subd_cylinder(const double*, double, double, const uint32_t*, uint32_t, ViboSubDResult**, char*, size_t);
 typedef struct ViboSubDWeights ViboSubDWeights;

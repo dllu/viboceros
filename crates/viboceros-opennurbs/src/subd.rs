@@ -54,6 +54,14 @@ struct NativeResult {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vibo_subd_from_mesh(
+        input: *const crate::mesh::MeshView,
+        corners: c_int,
+        creases: c_int,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_subd_subdivide(
         bytes: *const u8,
         n: usize,
@@ -457,4 +465,19 @@ pub fn subd_subdivide(
             n,
         )
     })
+}
+
+/// Converts a validated mesh through the public OpenNURBS factory. Coincident
+/// raw vertices and logical n-gons follow the kernel's topology conversion.
+pub fn subd_from_mesh(
+    mesh: &crate::MeshData,
+    corners: bool,
+    creases: bool,
+) -> Result<SubDData, SubDError> {
+    crate::mesh::with_mesh_view(mesh, |view| {
+        call(|out, error, capacity| unsafe {
+            vibo_subd_from_mesh(view, corners.into(), creases.into(), out, error, capacity)
+        })
+    })
+    .map_err(|e| SubDError(e.to_string()))?
 }

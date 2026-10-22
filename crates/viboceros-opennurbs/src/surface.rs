@@ -10,6 +10,20 @@ pub struct SurfaceDefinition<'a> {
     pub knots: [&'a [f64]; 2],
 }
 unsafe extern "C" {
+    fn vibo_surface_discontinuities(
+        degree: *const u32,
+        count: *const usize,
+        controls: *const f64,
+        knot_count: *const usize,
+        knots_u: *const f64,
+        knots_v: *const f64,
+        regular_only: *const c_int,
+        breaks_u: *mut f64,
+        breaks_v: *mut f64,
+        found: *mut usize,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_surface_frames(
         degree: *const u32,
         count: *const usize,
@@ -31,28 +45,8 @@ pub fn surface_frames(
 ) -> Result<Vec<Option<[f64; 12]>>, SurfaceQueryError> {
     let invalid = || SurfaceQueryError("Invalid surface frame input".into());
     if parameters.len() > 1_000_000
-        || surface.count.contains(&0)
-        || surface.count[0].checked_mul(surface.count[1]) != Some(surface.controls.len())
-        || surface
-            .controls
-            .as_flattened()
-            .iter()
-            .chain(parameters.as_flattened())
-            .chain(surface.knots[0])
-            .chain(surface.knots[1])
-            .any(|v| !v.is_finite())
-        || surface.degree.contains(&0)
-        || surface
-            .degree
-            .iter()
-            .zip(surface.count)
-            .any(|(d, n)| *d as usize >= n)
-        || surface
-            .knots
-            .iter()
-            .zip(surface.count)
-            .zip(surface.degree)
-            .any(|((k, n), d)| k.len() != n + d as usize + 1)
+        || parameters.as_flattened().iter().any(|v| !v.is_finite())
+        || !valid_surface(&surface)
     {
         return Err(invalid());
     }
@@ -95,6 +89,84 @@ pub fn surface_frames(
             _ => Err(SurfaceQueryError("Invalid surface frame result".into())),
         })
         .collect()
+}
+
+fn valid_surface(surface: &SurfaceDefinition<'_>) -> bool {
+    !(surface.count.contains(&0)
+        || surface.count[0].checked_mul(surface.count[1]) != Some(surface.controls.len())
+        || surface
+            .controls
+            .as_flattened()
+            .iter()
+            .chain(surface.knots[0])
+            .chain(surface.knots[1])
+            .any(|v| !v.is_finite())
+        || surface.degree.contains(&0)
+        || surface
+            .degree
+            .iter()
+            .zip(surface.count)
+            .any(|(d, n)| *d as usize >= n)
+        || surface
+            .knots
+            .iter()
+            .zip(surface.count)
+            .zip(surface.degree)
+            .any(|((k, n), d)| k.len() != n + d as usize + 1))
+}
+/// Public OpenNURBS G1 break parameters, using its default angular tolerance.
+/// Regular-only queries omit singular transverse endpoints before traversal.
+pub fn surface_discontinuities(
+    surface: SurfaceDefinition<'_>,
+    regular_only: [bool; 2],
+) -> Result<[Vec<f64>; 2], SurfaceQueryError> {
+    if !valid_surface(&surface) {
+        return Err(SurfaceQueryError(
+            "Invalid surface discontinuity input".into(),
+        ));
+    }
+    let mut result = surface.knots.map(|knots| vec![0.; knots.len()]);
+    let [u, v] = &mut result;
+    let mut found = [0usize; 2];
+    let mut error = [0u8; 1024];
+    let flags = regular_only.map(i32::from);
+    let knot_count = surface.knots.map(<[f64]>::len);
+    let status = unsafe {
+        vibo_surface_discontinuities(
+            surface.degree.as_ptr(),
+            surface.count.as_ptr(),
+            surface.controls.as_flattened().as_ptr(),
+            knot_count.as_ptr(),
+            surface.knots[0].as_ptr(),
+            surface.knots[1].as_ptr(),
+            flags.as_ptr(),
+            u.as_mut_ptr(),
+            v.as_mut_ptr(),
+            found.as_mut_ptr(),
+            error.as_mut_ptr().cast(),
+            error.len(),
+        )
+    };
+    if status != 1 {
+        let n = error.iter().position(|&b| b == 0).unwrap_or(error.len());
+        return Err(SurfaceQueryError(
+            String::from_utf8_lossy(&error[..n]).into_owned(),
+        ));
+    }
+    for (axis, values) in result.iter_mut().enumerate() {
+        if found[axis] > values.len() {
+            return Err(SurfaceQueryError(
+                "Invalid surface discontinuity count".into(),
+            ));
+        }
+        values.truncate(found[axis]);
+        if values.iter().any(|x| !x.is_finite()) || values.windows(2).any(|w| w[1] <= w[0]) {
+            return Err(SurfaceQueryError(
+                "Invalid surface discontinuity values".into(),
+            ));
+        }
+    }
+    Ok(result)
 }
 
 #[cfg(test)]

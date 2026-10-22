@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_cone_0",
+      "case": "tosubd_features_cone_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_cone_1",
+      "case": "tosubd_features_cone_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_sphere_0",
+      "case": "tosubd_features_sphere_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_sphere_1",
+      "case": "tosubd_features_sphere_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_cylinder_0",
+      "case": "tosubd_features_cylinder_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_cylinder_1",
+      "case": "tosubd_features_cylinder_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_torus_0",
+      "case": "tosubd_features_torus_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_torus_1",
+      "case": "tosubd_features_torus_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_unclamped_curved_0",
+      "case": "tosubd_features_unclamped_curved_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_unclamped_curved_1",
+      "case": "tosubd_features_unclamped_curved_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_friendly_0",
+      "case": "tosubd_features_friendly_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_friendly_1",
+      "case": "tosubd_features_friendly_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_kink_0",
+      "case": "tosubd_features_kink_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_features_kink_1",
+      "case": "tosubd_features_kink_1"
+    }
+  ]
+}

@@ -9,14 +9,18 @@ mod cone;
 mod cylinder;
 mod ellipsoid;
 mod interpolation;
+mod mesh_conversion;
 mod primitives;
 mod sphere;
 mod subdivision;
+mod surface_conversion;
 mod torus;
 mod truncated_cone;
 pub use append::SubDAppendResult;
 pub use cylinder::SubDCylinderCap;
+pub use mesh_conversion::SubDFromMeshOptions;
 pub use sphere::SubDSphereStyle;
+pub use surface_conversion::SubDFromSurfaceMethod;
 
 /// A display tessellation with exact native limit normals for each quad corner.
 /// A zero vector marks an undefined normal in a degenerate sector.

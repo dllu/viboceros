@@ -1,0 +1,231 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_quad_default",
+      "case": "tosubd_main_quad_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_triangle_default",
+      "case": "tosubd_main_triangle_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_strip_default",
+      "case": "tosubd_main_strip_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_seam_default",
+      "case": "tosubd_main_seam_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_ngon_default",
+      "case": "tosubd_main_ngon_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bicubic_default",
+      "case": "tosubd_main_bicubic_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bilinear_default",
+      "case": "tosubd_main_bilinear_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_rational_default",
+      "case": "tosubd_main_rational_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_multispan_default",
+      "case": "tosubd_main_multispan_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_box_default",
+      "case": "tosubd_main_box_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_box_face_default",
+      "case": "tosubd_main_box_face_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_extrusion_default",
+      "case": "tosubd_main_extrusion_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_trimmed_default",
+      "case": "tosubd_main_trimmed_default"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_0_0_0",
+      "case": "tosubd_main_mesh_0_0_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_0_0_1",
+      "case": "tosubd_main_mesh_0_0_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_0_1_0",
+      "case": "tosubd_main_mesh_0_1_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_0_1_1",
+      "case": "tosubd_main_mesh_0_1_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_1_0_0",
+      "case": "tosubd_main_mesh_1_0_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_1_0_1",
+      "case": "tosubd_main_mesh_1_0_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_1_1_0",
+      "case": "tosubd_main_mesh_1_1_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_1_1_1",
+      "case": "tosubd_main_mesh_1_1_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bilinear_00",
+      "case": "tosubd_main_bilinear_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bilinear_01",
+      "case": "tosubd_main_bilinear_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bilinear_10",
+      "case": "tosubd_main_bilinear_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bilinear_11",
+      "case": "tosubd_main_bilinear_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bicubic_00",
+      "case": "tosubd_main_bicubic_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bicubic_01",
+      "case": "tosubd_main_bicubic_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bicubic_10",
+      "case": "tosubd_main_bicubic_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_bicubic_11",
+      "case": "tosubd_main_bicubic_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_rational_00",
+      "case": "tosubd_main_rational_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_rational_01",
+      "case": "tosubd_main_rational_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_rational_10",
+      "case": "tosubd_main_rational_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_rational_11",
+      "case": "tosubd_main_rational_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_multispan_00",
+      "case": "tosubd_main_multispan_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_multispan_01",
+      "case": "tosubd_main_multispan_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_multispan_10",
+      "case": "tosubd_main_multispan_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_multispan_11",
+      "case": "tosubd_main_multispan_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_keep",
+      "case": "tosubd_main_mesh_keep"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_surface_keep",
+      "case": "tosubd_main_surface_keep"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mesh_preselected",
+      "case": "tosubd_main_mesh_preselected"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_surface_preselected",
+      "case": "tosubd_main_surface_preselected"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_mixed",
+      "case": "tosubd_main_mixed"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_cancel",
+      "case": "tosubd_main_cancel"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_main_cancel_selection",
+      "case": "tosubd_main_cancel_selection"
+    }
+  ]
+}

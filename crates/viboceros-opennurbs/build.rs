@@ -18,6 +18,7 @@ fn main() {
         "subd_append.h",
         "subd_interpolation.h",
         "subd_subdivision.h",
+        "mesh_codec.h",
     ] {
         println!("cargo:rerun-if-changed=native/{file}");
     }

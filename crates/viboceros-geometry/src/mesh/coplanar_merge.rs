@@ -42,7 +42,7 @@ impl TriangleMesh {
         }
         Ok((Self::from_open_nurbs_data(data)?, removed))
     }
-    pub(super) fn open_nurbs_data(&self) -> viboceros_opennurbs::MeshData {
+    pub(crate) fn open_nurbs_data(&self) -> viboceros_opennurbs::MeshData {
         viboceros_opennurbs::MeshData {
             vertices: self.vertices.iter().map(|p| p.to_array()).collect(),
             faces: self

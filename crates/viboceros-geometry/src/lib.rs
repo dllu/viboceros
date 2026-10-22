@@ -5,7 +5,10 @@
 //! invalid values enter the model.
 
 mod subd;
-pub use subd::{SubD, SubDAppendResult, SubDCylinderCap, SubDDisplayMesh, SubDSphereStyle};
+pub use subd::{
+    SubD, SubDAppendResult, SubDCylinderCap, SubDDisplayMesh, SubDFromMeshOptions,
+    SubDFromSurfaceMethod, SubDSphereStyle,
+};
 mod area_mass_properties;
 mod mass_integration;
 pub use area_mass_properties::AreaMassProperties;
