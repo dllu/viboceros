@@ -1,0 +1,110 @@
+{
+  "baseline_revision": "25fef7b1bc01d18586f39aa1eb59b82eead208d4",
+  "scope": "Restore parameter-unit invariance in the native ArraySrf frame adapter while retaining native singular-boundary limits.",
+  "failure": "The baseline array matrix fails at model scale 2^-20 with U/V widths 2^-600 and 2^600. The public native frame routine returns a valid plane with an incorrect normal.",
+  "correction": "Normalize each valid nonzero native first derivative independently before crossing it. Classify collapsed boundary sides once per batch and retain the public native limit-frame evaluator there, including poles with small numerical derivative residuals. Control points, weights, knots and input parameters are unchanged.",
+  "opennurbs_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+  "analytic_matrices": {
+    "bridge_frame_samples": 168,
+    "axis_component_bound": 2e-14,
+    "normalized_origin_component_bound": 2e-12,
+    "per_backend_command_arrays": 336,
+    "per_backend_command_orientations": 672,
+    "per_backend_admission_checks": 24
+  },
+  "native_workflows": {
+    "native_api": {
+      "workflows": 46,
+      "maximum_cloud_error": 1.4972502017257676e-07
+    },
+    "portable_api": {
+      "workflows": 46,
+      "maximum_cloud_error": 1.4972502017257676e-07
+    },
+    "native_ui": {
+      "workflows": 46,
+      "maximum_cloud_error": 1.4972502017257676e-07
+    },
+    "cloud_bound": 1e-06
+  },
+  "validation": {
+    "rust": {
+      "bridge-final": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 19
+      },
+      "command-native-final": {
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "command-portable": {
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "ui-native-final": {
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 1658
+      }
+    },
+    "python_oracle_tests_passed": 18,
+    "clippy": [
+      "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "cargo clippy -p viboceros-opennurbs --all-targets -- -D warnings"
+    ],
+    "format": "cargo fmt --all -- --check",
+    "diff": "git diff --check"
+  },
+  "retained_qualifications": {
+    "records": 4,
+    "measurements_and_limits_unchanged": true,
+    "note": "Only the two changed source hashes were refreshed; unrelated public surface queries in the shared header are unchanged."
+  },
+  "limits": [
+    "The full workspace was not rerun for this focused fix. Its preceding result and 22 existing oracle-library failures are retained in docs/subd-soft-crease-validation.json.",
+    "Saved native comparisons use basis clouds, not all possible source geometry. General singularities, arbitrary floating-point ranges and comparative speed are not qualified."
+  ],
+  "sha256": {
+    "crates/viboceros-opennurbs/native/surface_queries.h": "3ccedae01ddbea8180fdf41d80d2d10f101e64a4f5b1ad632a4bb876e11b06ed",
+    "crates/viboceros-opennurbs/src/surface.rs": "d3b705927286a173681caff73054a81c1f1112352a91545ff9a3d2d9f15fd47f",
+    "docs/commands/array-surface.md": "6a70b92aeade26b849402ad17fb19da43f1cc3cf9cee2eaa16ebde17187f1250",
+    "docs/surface-parameter-frames.md": "917b7843d60e74b1e6124b14520a887eec3042b08d5cd7c515995f7d7ff78242",
+    "docs/tosubd-kernel-qualification.json": "a9e54f6363f0ed333c2791753c4e3220d7b1a248757f3fbdc25b7f4b929fe128",
+    "docs/tosubd-command-qualification.json": "2d2dd2173496ee1ed9f53140a4f0a6bf02dd42b0217160d4df1b4618519ef401",
+    "docs/creator-extrusion-qualification.json": "51f9ef5a2971f37d1ef8ee12812e92ff8a5cd71ce4111af39e66694a1817f111",
+    "docs/creator-extrusion-portable-qualification.json": "7790b8090977a62685f6ef4a9d3c27077357d00fb5413e2ec875b75bbd7b5bc3"
+  },
+  "git_sha256": {
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:AGENTS.md": "d525d153cf3109781b115090de9e85aedd26467278924721b2e6f95a0232721a",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:Cargo.toml": "3c295d751cff0799aa55e2f96ff3eeaba3a9b9b1e59b0b09b67735bbacc0e9a3",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-opennurbs/build.rs": "8972b3d579be1ebd1bb46960d5cec8438e5a50e806eb78563be7dd38397267c0",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-opennurbs/native/CMakeLists.txt": "e832471a1568b5b3b47b698d3d9f55530dccd36b2687d44ba4cac36beab5af24",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "e30382056772d65cdbaa3516846afab9d1ffc338375aba14c7723124907118fe",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-opennurbs/native/rational_coordinates.h": "17e5de0eeca81533cbe324ad27d42f75af400eb1dec1b0c1b2827b676cc2e565",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-geometry/src/nurbs_surface/limit_frames.rs": "85693973d85804daaf5a4291a5e3dd8c295205106ce6f77afbde7197a325649b",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-command/src/array_surface.rs": "9191694de9373c95f7dde32517d7ee356a99af913f8d83dcaddc82f3338efcf4",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-command/tests/array_surface_native.rs": "6e50b98624f326446fb4919c69aec9820320cced6cd63eb35c254e02d7778be7",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-command/tests/surface_parameter_placement.rs": "e77b0acc844ac6f53211d65f7b3f751426b93efb8898ba32fa18b6cf24ab10b4",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-command/tests/support/array_surface.rs": "80636a50363efe926f3ad14e133a669d9ebe7d10e7745339e10c8429d7f7688b",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:crates/viboceros-command/tests/support/array_curve_surface.rs": "9ad0736be5097cf1f1693b5ce2e30f6b1791c90ce283f1293d59b4ccc84468d2",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:src/app/array_surface.rs": "98fc42258f31150d7823a3aeec688a44f7a157bc0276027e491d32104f1eba34",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:src/app/tests/array_surface.rs": "f7d1f54929e8d550a70fe151c61573e0ef129ab13653383e74648a39c634718a",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:tools/rhino_oracle/fixtures/array_surface.json": "26771ec8dc8dbf531e6462ad9f94f14e8e16cc777a0a2f6513fa215117e72113",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:tools/rhino_oracle/observations/array_surface.json": "b5453af3ecfa0ee664e8bb5eb48face8f97cdbbb111ce3e330d4bbf30e6d680b",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:docs/array-surface-validation.json": "4e1c2db4f1e17ca831097061356f93127e7b429fa74dc1076a9f8ee9ef5c707b",
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:docs/subd-soft-crease-validation.json": "377d8ba801b4476a940f5767523b6b4c8316dde33a055380a127e005ba88f824"
+  }
+}

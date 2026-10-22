@@ -173,6 +173,79 @@ pub fn surface_discontinuities(
 mod tests {
     use super::*;
     #[test]
+    fn warped_surface_frames_preserve_normal_when_parameter_derivative_units_diverge() {
+        for model_exponent in [-20, 0, 40, 80] {
+            let scale = 2_f64.powi(model_exponent);
+            let controls = [
+                [5., -7., 11.],
+                [7., -7., 11.],
+                [6., -4., 11.],
+                [8., -4., 12.],
+            ]
+            .map(|[x, y, z]| [x * scale, y * scale, z * scale, 1.]);
+            for (ue, ve) in [
+                (0, 0),
+                (-200, -200),
+                (200, 200),
+                (-600, -600),
+                (600, 600),
+                (-600, 600),
+                (600, -600),
+            ] {
+                let widths = [2_f64.powi(ue), 2_f64.powi(ve)];
+                let knots = widths.map(|end| [0., 0., end, end]);
+                let fractions = [
+                    [0., 0.],
+                    [0., 1.],
+                    [0.5, 0.],
+                    [0.5, 1.],
+                    [1., 1.],
+                    [0.25, 0.625],
+                ];
+                let parameters = fractions.map(|[u, v]| [u * widths[0], v * widths[1]]);
+                let frames = surface_frames(
+                    SurfaceDefinition {
+                        degree: [1, 1],
+                        count: [2, 2],
+                        controls: &controls,
+                        knots: [&knots[0], &knots[1]],
+                    },
+                    &parameters,
+                )
+                .unwrap();
+                let unit = |v: [f64; 3]| {
+                    let length = v[0].hypot(v[1]).hypot(v[2]);
+                    v.map(|x| x / length)
+                };
+                for (frame, [u, v]) in frames.into_iter().zip(fractions) {
+                    let frame = frame.unwrap();
+                    let origin = [5. + 2. * u + v, -7. + 3. * v, 11. + u * v];
+                    let x = unit([2., 0., v]);
+                    let z = unit([-3. * v, v - 2. * u, 6.]);
+                    let y = [
+                        z[1] * x[2] - z[2] * x[1],
+                        z[2] * x[0] - z[0] * x[2],
+                        z[0] * x[1] - z[1] * x[0],
+                    ];
+                    let label =
+                        format!("model=2^{model_exponent}, domains=2^({ue},{ve}), uv=({u},{v})");
+                    for i in 0..3 {
+                        assert!(
+                            (frame[i] / scale - origin[i]).abs() < 2e-12,
+                            "{label}: origin {frame:?}"
+                        );
+                        for (offset, expected) in [(3, x), (6, y), (9, z)] {
+                            assert!(
+                                (frame[offset + i] - expected[i]).abs() < 2e-14,
+                                "{label}: axes {frame:?}"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+    #[test]
     fn batch_frames_reuse_one_exact_plane_and_reject_bad_parameters_and_definitions() {
         let controls = [
             [0., 0., 5., 1.],

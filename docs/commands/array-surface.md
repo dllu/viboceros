@@ -19,7 +19,8 @@ domain start. Copies are ordered by U, then V, then source order.
 
 Targets use the complete underlying surface, including portions outside trim
 boundaries. Reversed faces reflect the copied up axis while retaining the
-surface X and Y axes. Public OpenNURBS surface frames handle singular boundary
+surface X and Y axes. Regular frames normalize native derivative directions
+independently of UV units. Public OpenNURBS frames handle singular boundary
 limits, including sphere poles, with one owned surface transfer per batch.
 An Isocurve layout whose first U isocurve collapses to a point creates no copies,
 as in Rhino; a count of one in U avoids that division. Invalid frames or requests

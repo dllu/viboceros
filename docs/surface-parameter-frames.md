@@ -14,6 +14,13 @@ scaled parameter-step helper to invert its differential. For derivative lengths
 Mapped normals and constrained-orientation frames use the same typed directions.
 Zero derivatives and angularly unresolved tangent pairs still fail.
 
+The native array-frame adapter also normalizes the two first-derivative
+directions before crossing them. The pinned OpenNURBS normal evaluator can otherwise
+mistake a very small parameter derivative for a singularity and return an
+incorrect frame. Geometrically collapsed boundaries, including sphere poles,
+retain the native limit-frame evaluator. Their classification is computed once
+per batch; tiny evaluation residuals at a pole do not select a regular frame.
+
 `ArraySrf` parses Up/Normal as a unit direction. OrientOnSrf's supplied source
 normal is normalized independently of its magnitude, and its rotated target
 axes use angular frame validation. Its existing numerical source-reference
@@ -54,6 +61,9 @@ capture or performance measurement. They do not establish arbitrary parameter
 or model scales, general surface singularity handling, all morph consumers,
 or general topology. The follow-up [pullback correction](pullback-parameter-units.md)
 covers the regular pullback differential, source-span sampling and UV borders.
+The [native-adapter regression record](array-surface-frame-validation.json)
+checks the restored array matrix and the saved Rhino API and UI workflows,
+including sphere poles, with the current adapter.
 
 ```sh
 cargo test -p viboceros-geometry --test surface_parameter_frames

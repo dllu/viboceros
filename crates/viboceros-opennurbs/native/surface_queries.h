@@ -11,7 +11,23 @@ static std::unique_ptr<ON_Object> surface_query_geometry(const uint32_t* degree,
     source.knots_v=knots_v;source.knot_v_count=knot_count[1];
     return std::unique_ptr<ON_Object>(geometry_for(source,message));
 }
-// Public OpenNURBS limit frames, sharing the exact surface transfer constructor.
+// Normalize derivative directions before crossing them. Native EvNormal can
+// mistake an extremely small nonzero parameter derivative for a singularity.
+// Preserve its higher-order limit handling where first derivatives do vanish.
+static bool surface_query_frame(const ON_Surface& surface,double u,double v,
+    bool singular_boundary,ON_Plane& frame) {
+  ON_3dPoint origin;ON_3dVector du,dv;
+  if(!singular_boundary && surface.Ev1Der(u,v,origin,du,dv) && origin.IsValid() &&
+     du.IsValid() && dv.IsValid() && du.Unitize() && dv.Unitize()) {
+    auto normal=ON_CrossProduct(du,dv);
+    if(normal.Unitize()) {
+      const auto y=ON_CrossProduct(normal,du);
+      if(frame.CreateFromFrame(origin,du,y) && frame.IsValid()) return true;
+    }
+  }
+  return surface.FrameAt(u,v,frame);
+}
+// Public OpenNURBS evaluations, sharing the exact surface transfer constructor.
 extern "C" int32_t vibo_surface_frames(const uint32_t* degree, const size_t* count,
     const double* controls, const size_t* knot_count, const double* knots_u,
     const double* knots_v, size_t parameter_count, const double* parameters,
@@ -30,13 +46,20 @@ extern "C" int32_t vibo_surface_frames(const uint32_t* degree, const size_t* cou
     auto owned=surface_query_geometry(degree,count,controls,knot_count,knots_u,knots_v,message);
     const ON_Surface* surface=ON_Surface::Cast(owned.get());
     if(!surface){set_error(error,capacity,message.empty()?"Surface frame transfer failed":message);return 0;}
+    const auto ud=surface->Domain(0),vd=surface->Domain(1);
+    // Query the four sides once per batch. Rational pole derivatives can carry
+    // small evaluation residuals even when the boundary is geometrically singular.
+    const bool singular[4]={surface->IsSingular(0),surface->IsSingular(1),
+        surface->IsSingular(2),surface->IsSingular(3)};
     for(size_t i=0;i<parameter_count;++i){
       const double u=parameters[2*i],v=parameters[2*i+1];
       if(!ON_IsValid(u)||!ON_IsValid(v)||!surface->Domain(0).Includes(u)||!surface->Domain(1).Includes(v)){
         set_error(error,capacity,"Surface frame parameter is outside the domain");return 0;
       }
       ON_Plane frame;
-      if(!surface->FrameAt(u,v,frame)) continue;
+      const bool singular_boundary=(v==vd[0] && singular[0]) || (u==ud[1] && singular[1]) ||
+          (v==vd[1] && singular[2]) || (u==ud[0] && singular[3]);
+      if(!surface_query_frame(*surface,u,v,singular_boundary,frame)) continue;
       found[i]=1;
       const double values[12]={frame.origin.x,frame.origin.y,frame.origin.z,
           frame.xaxis.x,frame.xaxis.y,frame.xaxis.z,frame.yaxis.x,frame.yaxis.y,frame.yaxis.z,
