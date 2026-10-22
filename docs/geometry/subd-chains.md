@@ -47,3 +47,5 @@ options, partial hard/weighted sources, repeated edits, odd loops, cancellation
 and numeric retries. Moving labels are picked at positions measured from prior
 native outputs. General profile construction, document admission and the
 interactive `SubDCrease` command remain subsequent work.
+The [validation record](../subd-chains-validation.json) lists the completed
+kernel, replay, Python and lint checks.

@@ -6,6 +6,8 @@ The initial [32 SubDCrease workflows](../../tools/rhino_oracle/observations/soft
 and subsequent captures retain 178 workflows from Rhino 8.32.26160.13001 on private
 Xvfb displays and settings schemes. They preserve fixed inputs, command events, source and result 3DM files,
 attributes, selection, Undo/Redo, and the original public producer source bytes.
+Another [48 chain-editing workflows](soft-crease-chains.md) bring the retained
+corpus to 226 workflows, including the earlier diagnostic families.
 
 The capture covers constant weights from 0 through 100, repeated weight input,
 ConstantWeight, CreaseAll, cancellation before and after a weight, hard/corner
@@ -32,7 +34,7 @@ ConstantWeightChain options in the vertex-weight getter. A junction can belong
 to several chains; clicking it edits the selected chain rather than every
 incident edge. Closed-loop observations retain their intermediate zero anchor.
 
-The application SubDCrease getter, chain builder and comparative performance
+The application SubDCrease getter, profile editor and comparative performance
 remain subsequent work. The existing Crease and RemoveCrease qualification is
 separate. Replay the checks without starting Rhino:
 

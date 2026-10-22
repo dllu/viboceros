@@ -1,0 +1,49 @@
+{
+  "implementation_revision": "d1c60bb4c91244394c0764a7a62490090c734004",
+  "scope": "Native control-chain queries, percentage conversion, interval interpolation, stable stored-sharpness edits and retained native command observations.",
+  "validation": {
+    "portable_chain_tests_passed": 4,
+    "native_feature_chain_tests_passed": 4,
+    "combined_native_regressions_passed": 11,
+    "python_oracle_tests_passed": 1735,
+    "clippy": [
+      "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "cargo clippy -p viboceros-geometry -p viboceros-opennurbs --all-targets -- -D warnings"
+    ],
+    "format": "cargo fmt --all -- --check",
+    "diff": "git diff --cached --check"
+  },
+  "native_evidence": {
+    "additional_workflows": 48,
+    "source_objects": 50,
+    "chain_topology_qualified": true,
+    "profile_editor_qualified": false,
+    "retained_geometry_workflows": 133,
+    "retained_archive_readback_cases": 18
+  },
+  "retained_qualifications": {
+    "records": 27,
+    "measurements_and_limits_unchanged": true
+  },
+  "limits": [
+    "SubDCrease command registration, profile construction, document admission and frontend labels remain implementation work.",
+    "The complete workspace was not rerun; preceding workspace failures and their baseline replay remain in docs/subd-soft-crease-validation.json.",
+    "Native topology comparisons and kernel unit tests do not qualify complete interactive behavior or comparative performance."
+  ],
+  "git_sha256": {
+    "d1c60bb4c91244394c0764a7a62490090c734004:README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
+    "d1c60bb4c91244394c0764a7a62490090c734004:AGENTS.md": "d525d153cf3109781b115090de9e85aedd26467278924721b2e6f95a0232721a",
+    "d1c60bb4c91244394c0764a7a62490090c734004:docs/subd-chains-qualification.json": "7569beac860f385cd7c96369e0e8bdd76d497d438be489a3166cbdc1951ff19b",
+    "d1c60bb4c91244394c0764a7a62490090c734004:docs/subd-soft-crease-qualification.json": "c05e1c83ac3ef6ee297f833d20292c69917e780500ccfed503d2a4f6ded5ce1f",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-geometry/tests/subd_chains.rs": "ac755f7be15cda851ad6ee53963e87bbde9bc7656039b1645e361871a41e015b",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-command/tests/subd_chains_native.rs": "6af68747044303b8354ec5348d90cda5030125ad6ba1efb4d6ef425278c84552",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-geometry/src/subd/chains.rs": "128c74668d16711259f32197fce2e2437431f880476d22860b7060f1911660a1",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-geometry/src/subd/soft_crease.rs": "1f9bfbfca6b71418e39846e9847351267ee6a26023ac035a041d91247c232f3f",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-opennurbs/native/subd_chains.h": "03d28b1e73f18540d5b7857ce4b88ed384ac28fb445fdc22130863bab57d10b2",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-opennurbs/native/subd_sharpness.h": "4aa10d3a91dd82046545eb6a1c42a3e3e7c8efe0a86afc8f79b6a68b04dc2ec3",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-opennurbs/src/subd/chains.rs": "aab561c2ff51bdd3e8f14d1d848c083d3f06c04b5b6d1f4e57180f4b0b3faf4d",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-opennurbs/src/subd/sharpness.rs": "42fe6fa63dffe37abe4f03d7b3720780b831b191c0a680da0b9350048a921ca2",
+    "d1c60bb4c91244394c0764a7a62490090c734004:crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d"
+  }
+}
