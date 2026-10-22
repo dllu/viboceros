@@ -1,0 +1,63 @@
+{
+  "implementation_revision": "33e3d92704e99dc50e54fde55dd2b78a1969a12a",
+  "scope": "SubDCrease staged profiles, typed command, component selection, viewport labels and atomic document admission.",
+  "validation": {
+    "portable_command_regression_tests_passed": 15,
+    "native_feature_command_regression_tests_passed": 15,
+    "portable_application_tests_passed": 6,
+    "native_feature_application_tests_passed": 6,
+    "python_oracle_tests_passed": 1737,
+    "commands": [
+      "cargo test -p viboceros-command --release --test soft_crease_staging --test soft_crease_session_native --test soft_crease_native --test subd_chains_native --test crease_staging",
+      "cargo test -p viboceros-command --release --features native-smlib --test soft_crease_staging --test soft_crease_session_native --test soft_crease_native --test subd_chains_native --test crease_staging",
+      "cargo test --release --bin viboceros soft_crease",
+      "cargo test --release --features native-smlib --bin viboceros soft_crease",
+      "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "cargo fmt --all -- --check",
+      "python3 -m unittest discover -s tools/rhino_oracle -t .",
+      "git diff --cached --check"
+    ]
+  },
+  "native_evidence": {
+    "native_workflows": 48,
+    "source_objects": 50,
+    "application_workflows_per_build": 96,
+    "model_epsilon": 1e-06,
+    "maximum_measured_error": 3.8968670012594065e-15,
+    "retained_endpoint_workflows": 133,
+    "retained_archive_readback_cases": 18
+  },
+  "retained_records": {
+    "measurement_reports": 29,
+    "measurements_and_limits_unchanged": true,
+    "historical_source_references": "Changed historical source and report references are pinned to their original Git blobs.",
+    "relevant_provenance_records_verified": 36,
+    "sha256_entries_verified": 4224
+  },
+  "limits": [
+    "The complete Rust workspace was not rerun. Earlier workspace failures and baseline comparisons remain in docs/subd-soft-crease-validation.json; this checkpoint does not claim a green full workspace.",
+    "Native finite-corpus profiles and application getter actions are qualified. General profile equivalence, continuous surface error, full screen equivalence and comparative performance remain unqualified.",
+    "Retained reports keep their existing measurements and limits. Their shared implementation fingerprints were refreshed; this is not a new measurement run for every retained workflow."
+  ],
+  "git_sha256": {
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:AGENTS.md": "d525d153cf3109781b115090de9e85aedd26467278924721b2e6f95a0232721a",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:docs/commands/subd-crease.md": "d868e43eb982a3b43e7ba574b8b78625500d7bac3d440227586e8d09c36fa9f0",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:docs/subd-crease-session-qualification.json": "3314e1b48d2a025e90bded352688ae35d09c190679c6445cc98d13f16cca96cd",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:crates/viboceros-command/src/lib.rs": "8434ce2b43a2b9064580539c9b0734951f8f83a4577de54eef3e28d77e17c7f7",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:crates/viboceros-command/src/soft_crease.rs": "eec4487501312fc3090d932560599f5e18e4038017d7f7412ac268b5507e007b",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:crates/viboceros-command/src/soft_crease/profile.rs": "018d7bed89c5fc71e98265f9b578345809f7b5e6937145d2046cb3a472cc6f0f",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:crates/viboceros-command/src/soft_crease/arguments.rs": "7d38e43f5032110cda07782c1a4988a1bed1a7f2248b16ac94f8406c455034b6",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:crates/viboceros-command/tests/soft_crease_session_native.rs": "4d50c429830eb5f86bd62a459e19a312c47d3107fbeca2af0208f910a4e0b7bb",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:crates/viboceros-command/tests/soft_crease_staging.rs": "090fed08d3702cb1623791a8ad531f81306f3368f410e19377dc86c536c80586",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:crates/viboceros-command/tests/support/soft_crease.rs": "797e90b4bbb00b2063075aea896f932505600818cd2a6ff927bcc7114954e90a",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:src/app.rs": "7817c4420becc6e3e7831dd1949639de3d0a2006e2e523e46f1e26bfeedf7d6a",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:src/app/soft_crease.rs": "cbe51d66ec3c7cf991f2f886f279bec8adeac8edd1256661f33f0c781fb643ce",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:src/app/soft_crease/tests.rs": "5cd15b68572f29b2caf94b912c3915dc6d07389313598bc1a354338d95ba0132",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:src/app/soft_crease/tests/native.rs": "26d9cbd2d285653744b9682ba8de9c6f92bb546cb9a85bec2335c551730a4c2b",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:src/viewport.rs": "e30a9ba7b4a244db919e0d953cf4acfb661ed6171fbfb28235f380234bb7080d",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:tools/rhino_oracle/report_soft_crease_session.py": "3bf622eda9b558cd0a7c0c14158a8a38349658e56183348cd23b29e6f643035c",
+    "33e3d92704e99dc50e54fde55dd2b78a1969a12a:tools/rhino_oracle/test_soft_crease_session.py": "13a7e2ccbba8e06b86bf888c9ee5c5e0cb5c7dfa696c7f5f05de21db5b04a614"
+  }
+}
