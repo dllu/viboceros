@@ -235,4 +235,3 @@ no-hit run still clears the input selection but creates no undo record.
 Other non-planar and more general coincident surface/surface intersections,
 curved B-rep face pairs, and multiple coincident curved face regions remain
 future extensions.
-
