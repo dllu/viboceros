@@ -1,5 +1,5 @@
 """Qualify cone control nets, staged inputs and source-preserving references."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import hashlib
 import json
@@ -28,7 +28,7 @@ SOURCES = list(dict.fromkeys(BASE_SOURCES + [
     'tools/rhino_oracle/test_subd_cone.py',
 ] + [f'tools/rhino_oracle/{directory}/{family}.json'
      for family, _ in FAMILIES + EXPLORATORY for directory in ['fixtures', 'observations']]))
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def observations():

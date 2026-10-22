@@ -15,14 +15,17 @@ fn main() {
         "subd.cpp",
         "subd.h",
         "subd_codec.h",
+        "subd_archive_sharpness.h",
         "subd_append.h",
         "subd_crease.h",
+        "subd_soft_crease.h",
         "subd_edges.h",
         "subd_interpolation.h",
         "subd_subdivision.h",
         "mesh_codec.h",
         "extrusion_codec.h",
         "extrusion_queries.h",
+        "extrusion_roundoff.h",
     ] {
         println!("cargo:rerun-if-changed=native/{file}");
     }

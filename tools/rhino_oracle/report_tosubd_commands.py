@@ -1,5 +1,5 @@
 """Qualify fixed ToSubD document/getter replays independently of kernel reports."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import hashlib
 import json
@@ -22,7 +22,7 @@ SOURCES = list(dict.fromkeys(KERNEL_SOURCES + EXTRUSION_SOURCES + [
     'tools/rhino_oracle/report_tosubd_commands.py',
     'tools/rhino_oracle/test_tosubd_commands.py',
 ]))
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def observations():

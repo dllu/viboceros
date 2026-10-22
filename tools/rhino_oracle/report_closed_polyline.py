@@ -1,5 +1,5 @@
 """Complete closed-polyline SDK and selection qualification with visible gaps."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import hashlib
 import json
@@ -34,7 +34,7 @@ SOURCES=[
     'tools/rhino_oracle/structural_sdk.py',
 ] + [f'tools/rhino_oracle/{directory}/mesh_polyline{suffix}.json'
      for suffix,_ in GROUPS for directory in ['fixtures','observations']]
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def native_rows():

@@ -1,5 +1,5 @@
 """Complete public mesh polyline replays with explicit compatibility gaps."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse,hashlib,json,math,re
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
@@ -17,7 +17,7 @@ SOURCES=[
  'tools/rhino_oracle/fixtures/mesh_polyline_boundaries.json','tools/rhino_oracle/observations/mesh_polyline_boundaries.json',
  'tools/rhino_oracle/fixtures/mesh_polyline_ties.json','tools/rhino_oracle/observations/mesh_polyline_ties.json',
 ]
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 def summarize(log):
  def rows(prefix,fixture):
   q=json.loads((HERE/('fixtures/'+fixture+'.json')).read_text());ids=[o['id']for o in q['operations']]

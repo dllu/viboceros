@@ -15,8 +15,8 @@
 
 struct ViboSubDResult {
   std::vector<uint8_t> archive, vertex_tags, edge_tags;
-  std::vector<double> points, surface_points, corner_normals;
-  std::vector<uint32_t> edges, face_sizes, face_vertices, face_sources, selected_faces;
+  std::vector<double> points, surface_points, corner_normals, edge_sharpness;
+  std::vector<uint32_t> edges, face_sizes, face_vertices, face_sources, selected_faces, edge_face_counts;
   size_t boundary_edge_count=0;
 };
 namespace {
@@ -48,6 +48,13 @@ std::unique_ptr<ViboSubDResult> extract(const ON_SubD& subd, bool evaluated=fals
     out->edges.push_back(indices.at(e->m_vertex[0]));
     out->edges.push_back(indices.at(e->m_vertex[1]));
     out->edge_tags.push_back(static_cast<uint8_t>(e->m_edge_tag));
+    if(!evaluated) {
+      const auto sharpness=e->Sharpness(false);
+      require(sharpness.IsValid(),"Invalid SubD edge sharpness");
+      out->edge_sharpness.push_back(sharpness.EndSharpness(0));
+      out->edge_sharpness.push_back(sharpness.EndSharpness(1));
+      out->edge_face_counts.push_back(e->FaceCount());
+    }
     if(e->FaceCount()==1) ++out->boundary_edge_count;
   }
   std::vector<const ON_SubDFace*> faces;
@@ -154,6 +161,18 @@ extern "C" int vibo_subd_set_tags(const uint8_t* bytes,size_t count,int vertex,
   });
 }
 #include "subd_crease.h"
+#include "subd_soft_crease.h"
+extern "C" int vibo_subd_soft_crease(const uint8_t* bytes,size_t count,
+    const size_t* edges,const double* weights,size_t edge_count,size_t* changed,
+    ViboSubDResult** out,char* error,size_t capacity) {
+  if(changed) *changed=0;
+  return guard(out,error,capacity,[&]{
+    require(changed,"Missing soft crease change count");
+    auto subd=vibo_subd::decode(bytes,count);
+    *changed=vibo_subd::soft_crease(*subd,edges,weights,edge_count);
+    return extract(*subd);
+  });
+}
 extern "C" int vibo_subd_crease(const uint8_t* bytes,size_t count,
     const size_t* edges,size_t edge_count,const size_t* vertices,size_t vertex_count,
     int crease,size_t* changed,ViboSubDResult** out,char* error,size_t capacity) {
@@ -238,7 +257,8 @@ extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned densi
 extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
   if(!r || !v) return 0;
   *v={r->archive.size(),r->points.size()/3,r->edges.size()/2,r->face_sizes.size(),r->face_vertices.size(),r->corner_normals.size()/3,
-    r->archive.data(),r->points.data(),r->surface_points.data(),r->vertex_tags.data(),r->edges.data(),r->edge_tags.data(),r->face_sizes.data(),r->face_vertices.data(),r->corner_normals.data(),r->boundary_edge_count,r->face_sources.size(),r->face_sources.data(),r->selected_faces.size(),r->selected_faces.data()};return 1;
+    r->archive.data(),r->points.data(),r->surface_points.data(),r->vertex_tags.data(),r->edges.data(),r->edge_tags.data(),r->face_sizes.data(),r->face_vertices.data(),r->corner_normals.data(),r->boundary_edge_count,r->face_sources.size(),r->face_sources.data(),r->selected_faces.size(),r->selected_faces.data(),
+    r->edge_face_counts.size(),r->edge_sharpness.data(),r->edge_face_counts.data()};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 

@@ -1,0 +1,3167 @@
+{
+  "model_epsilon": 1e-06,
+  "native_engine_version": "8.32.26160.13001",
+  "compared_workflows": 133,
+  "component_sources": 138,
+  "captured_workflows": 178,
+  "diagnostic_families": [
+    "soft_crease_labels_discovery",
+    "soft_crease_extra",
+    "soft_crease_precision"
+  ],
+  "maximum_geometry_error": 3.8968670012594065e-15,
+  "maximum_archive_import_error": 1.3911054626160786e-15,
+  "maximum_native_roundtrip_surface_change": 0.0020030839971519766,
+  "command_registered": false,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "scope": "Immutable geometry API: per-edge endpoint percentages, hard/soft conversion, stable internal archives and external 3DM readback. Command admission and the application getter are subsequent work.",
+  "limits": [
+    "Rhino 8.32 changes some near-integer float sharpness values during 3DM readback. Internal Viboceros snapshots preserve their accepted values; external import follows the observed native readback.",
+    "The initial mouse families did not complete their input plans and remain diagnostics. The earlier numeric formatters rounded neighboring doubles; only the numeric-label family qualifies those input values.",
+    "label_after_constant missed a label after its preview moved. Its subsequent numeric weight was global; it does not qualify a vertex-weight edit.",
+    "Object attributes, document history, general chain construction and frontend label placement are not qualified by these low-level component comparisons.",
+    "Control stations and density-two surface facets are sampled evidence, not a continuous Hausdorff certificate."
+  ],
+  "stages": {
+    "kernel": [
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "branch_fraction",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3732700395566711e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "branch_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.2994827337208943e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "chain_fraction",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "chain_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "constant_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "constant_crease",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "constant_empty",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "constant_repeat",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "constant_weight_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3732700395566711e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "corner_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3732700395566711e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "corner_default",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3322676295501878e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "corner_half",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3732700395566711e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "corner_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3322676295501878e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "corner_maximum",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3322676295501878e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "corner_zero",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "disconnected_fraction",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1957467920563633e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "disconnected_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "grips_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "grips_edit",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "grips_noop",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "hard_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "hard_default",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "hard_half",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "hard_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "hard_maximum",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "hard_then_soft",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "hard_zero",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.2994827337208943e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "loop_fraction",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "loop_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "multiple_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "multiple_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 1,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "multiple_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "multiple_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 1,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "multiple_noop",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "multiple_noop",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 1,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "multiple_weight",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "multiple_weight",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 1,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "return_smooth",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "side_soft_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "side_soft_default",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "side_soft_half",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "side_soft_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "side_soft_maximum",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "side_soft_zero",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "soft_cancel",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "soft_default",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "soft_half",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "soft_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "soft_maximum",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "soft_then_hard",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "soft_zero",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.377745716588145e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease",
+        "id": "strip_0",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.377745716588145e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease",
+        "id": "strip_100",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.377745716588145e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease",
+        "id": "strip_50",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "text_only",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_0",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_0_01",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_0_1",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_0_24",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_0_25",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_0_26",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_1",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_10",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_100",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_24_74",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_24_75",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_24_9",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_25",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_25_1",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_25_25",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_25_26",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_33_333",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_50",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_75",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_99_75",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease",
+        "id": "weight_99_9",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 4,
+          "faces": 1,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 4
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_boundary",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_branch",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_branch_label",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_cancel_after_weight",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_cancel_empty",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_chain",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1322097734007351e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_chain_label",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_0",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_1",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_10",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_100",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_24_9",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_25",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_25_1",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_50",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_75",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_90",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_99",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_constant_option",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3322676295501878e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_corner_source",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_crease_all",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_default",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_hard_source",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_loop",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1322097734007351e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_loop_label",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.377745716588145e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_open_interior",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_start_control_label",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_start_label",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_text_sizes",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_two_weights",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_vertex_input",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_discovery",
+        "id": "soft_whole_object",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_0_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_10_numeric",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_11_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_12_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_13_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_14_numeric",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_15_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_16_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_17_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_1_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_2_numeric",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_3_numeric",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_4_numeric",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_5_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_6_numeric",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_7_numeric",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_8_numeric",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "boundary_9_numeric",
+        "native_archive_normalizes_sharpness": true,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255202e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_after_constant",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_both_ends",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_branch",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_cancel_inner",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_cancel_outer",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_control_accepted",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_disconnected",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.275549143317629e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_loop",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_middle_accepted",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_multiple",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      },
+      {
+        "changed": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_multiple",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 1,
+        "source_unchanged": true
+      },
+      {
+        "changed": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_numeric_labels",
+        "id": "label_start_accepted",
+        "native_archive_normalizes_sharpness": false,
+        "sharpness": true,
+        "source": 0,
+        "source_unchanged": true
+      }
+    ],
+    "archive": [
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_0_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_10_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_11_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_12_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_13_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_14_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_15_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_16_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_17_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_1_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_2_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_3_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_4_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_5_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_6_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_7_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_8_numeric"
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "boundary_9_numeric"
+      }
+    ]
+  },
+  "sha256": {
+    "crates/viboceros-opennurbs/build.rs": "8972b3d579be1ebd1bb46960d5cec8438e5a50e806eb78563be7dd38397267c0",
+    "crates/viboceros-opennurbs/native/subd.cpp": "8b707c66e1a120602550aa579e5f7c6ec35a3b279a4e3df6fded0c38cad128fb",
+    "crates/viboceros-opennurbs/native/subd.h": "da4a0a35a494c5131b399c8154ef963b8d2fe58fbeb38b6ca4b7d19ddccc9445",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "e30382056772d65cdbaa3516846afab9d1ffc338375aba14c7723124907118fe",
+    "crates/viboceros-opennurbs/src/lib.rs": "f4918619657eb3b7b3828476bc0e2ba8a307c9ce30561a1aa43d4ec227fd0904",
+    "crates/viboceros-opennurbs/src/subd.rs": "a401aba9ae62ca04f63c51b5b8e8d49eff7edfa745309810ab165c06eecd089b",
+    "crates/viboceros-opennurbs/native/subd_crease.h": "d5eb85162f2c276646950d5080f82131bd293dcaf32617d92dbd658fa2666a2e",
+    "crates/viboceros-opennurbs/native/subd_edges.h": "49e4529894e72b6a0817323ceb0f802451316a39b0af837a3674db1110f09d93",
+    "crates/viboceros-geometry/src/subd.rs": "ee381256d5ad61307b6e2c451b9d6f90e8ee383ecd541ab25361f3dd84ebcd04",
+    "crates/viboceros-geometry/tests/subd_soft_crease.rs": "47253bede1f957f941d822f1d0bf4f19ec97c5599a844fd71c2e6a40ca210dfc",
+    "crates/viboceros-command/tests/soft_crease_native.rs": "1e1d2be9da292b4256d387b97a2cbd4622b59d954eae8663e568ecca960907d3",
+    "crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
+    "crates/viboceros-command/tests/support/subd_facets.rs": "ad0be23c4f68083f9b43a85266d0c9e8dcb8d82f00c90c88affa4849472781ff",
+    "tools/rhino_oracle/report_subd_soft_crease.py": "1d08ae4b5fc125a9e5114cadf379c0e68380c91f769df8b9142d0542bfb6397f",
+    "tools/rhino_oracle/test_soft_crease.py": "c9fae6feaceaae8c7264ffb3de6bbd72e658c438af351d90eca81f3ab45c99c5",
+    "tools/rhino_oracle/soft_crease_probe.py": "88458a0c239c14629218c7dcf36bd1fa01842306eb75d3937361a5e0af97b3dc",
+    "tools/rhino_oracle/soft_crease_cases.py": "6b6062bb2310e0241b93745c8571e700a6bdd48e764d6c155bae2fb641fb18ca",
+    "tools/rhino_oracle/subd_edit_scene.py": "a96c0ad7984f2da4bb9577f30f3d96aa401542c12bd3e563527bb72c0dfe940c",
+    "tools/rhino_oracle/generate_soft_crease.py": "d29421cd327a47d16d35267889b8cd088c6aaef96c42462068c4b249ed94701e",
+    "tools/rhino_oracle/conic_getter_input.py": "0b60033fa4b2a8ded9bf0a5a762d1e0b5839fc20c160880adaa65d3998124cad",
+    "tools/rhino_oracle/client.py": "b0bf9b8dd8c54d5b782eaf874f10233fc849b3e56e8a967d823550dccc7d1b21",
+    "tools/rhino_oracle/structural_sdk.py": "1ebe10a8334de7c98301f0ca30290f581d79e30fd6012fba37873ff289239fe0",
+    "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846",
+    "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
+    "crates/viboceros-opennurbs/native/subd_soft_crease.h": "380510cf8f39f73315cb7ae3f2085982948e0d9b77a596c498041f88d22d8381",
+    "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "a921d830a092f0bcd3163ee113ae25b417349c1e207bf61ee8c6fba0100ed859",
+    "crates/viboceros-geometry/src/subd/soft_crease.rs": "4de10044311c7669beb170edf0cbb84d48b65e41fa6bdbd63e386ae76292e78c",
+    "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5",
+    "tools/rhino_oracle/qualification_sources.py": "c2e5acc32f3c008d49707a9475633a9f830ce098d59e89c22169fd8d05468846",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery.json": "a4b4b8c11be52c6dd3fb40375fab38969adcbfdf7a7c4656456528d1554fff3a",
+    "tools/rhino_oracle/observations/soft_crease_discovery.json": "1fd646203a9582e12b96643fcc9d4505b23c66a834b712a0c8fba93c55f85adc",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_boundary.3dm": "9984321e1dbb0118f11da2b5c96d3cfdcdae7f2d88b4396e16545f23ee830f7d",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_branch.3dm": "233c42dfb4dc2c97ab7cd59067fbf436c1565d337b145781c0e3c5f086298454",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_branch_label.3dm": "59ef66e08e7f551d515bac3506ceb25c8de80cc9d3a39b25b02e3460c184dca5",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_cancel_after_weight.3dm": "49bc5010c58cde2c21787005f1202e05a1f0ebcd6265fca22ae746771d501e9e",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_cancel_empty.3dm": "9a60f36311c7e835b633fcc328bdaf4771706fe1e0af7faeb9e161180929c079",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_chain.3dm": "9f7cafa8b875c58121629940d1068786a081622a948f81ccaef3370192af127a",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_chain_label.3dm": "5f5ca79fc92b332cbc448832eb48156764453a9ff26d78a20b8782e34d5ede67",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_0.3dm": "8ee12c53584ee51077671e751e382ddf908cc27b73fb90fd10124d41a22a0add",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_1.3dm": "f0218b1aaaa73a441e7c65c2602d4728747fba0e0cc5a7bf9f5cda562d2182c4",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_10.3dm": "3355a99c68408aa46795745604e851c421f43264eaa5ad2d191a61325aa413a0",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_100.3dm": "f4270ec4213330056dce92150d75f25a0b9b570d10efe9fe33938465e19ea93b",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_24_9.3dm": "6c6b2553beec45a4918a6ad8d413989014f46415a93410dfe52513a34bda53ae",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_25.3dm": "bf753917449e68892a28195ac63805c49a31287505a30eb418ed8c454950894a",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_25_1.3dm": "d4ef8eb84b07fca5c849061a1bd97624e9379121d45c1b766800e51956b555af",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_50.3dm": "b2c0a6706aa7cce71eb3db6bd251ad4295db0c4dfc2feaf346ff18982c900346",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_75.3dm": "97542680be552950700c4bf98eed35ecefb48061fe11955ac7923f1aec9e9f56",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_90.3dm": "62646908a9f449a6d1de892ebd0c5be4f8d556e26f7a79e12fdd938d80ca19c0",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_99.3dm": "b4ac6881a712dd59ce292371e2e9078f04dd1c287386bf73e01ab1a29fce1a8e",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_constant_option.3dm": "4394f240a715403121ec5f162e7f917fffe8cd0f4e59cc3a9c2dd46ed1b47578",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_corner_source.3dm": "4a1e05e08679f56618485e0edcb160fabf0751e59eb5ea658b2ecb531013bf2e",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_crease_all.3dm": "c72884fb61228a52ff6de5bf92b9ba18ab71b6517385471d28f614934dc8e0d7",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_default.3dm": "d22ca553b576953527c0ff1fefd698899de2ec472d9685fa346774dd28b2104b",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_hard_source.3dm": "fe4fa74a69b827ac5f02264aef11de117d974d76a28435fcc40fbaa91155b333",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_loop.3dm": "a6a970c3860702ae393ab8a759fe32faaa178a7da275345a79a52ad1040ffe26",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_loop_label.3dm": "577a6a70fff6fda685902ad694178679af4954f58d560270c2772a07ea508cad",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_open_interior.3dm": "dc9ba2e616527a0e16ab2aab0aa01552ce31d6609cd554edf2a8b9f0889cda62",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_start_control_label.3dm": "c819cb33acce42bfbfb07718f02414cc820410c1020db34d881ef08ffb074233",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_start_label.3dm": "e3d20f5089f8883595d15abf4d9b71f9d2b81eef09874185c9b6b0eb67e2edbb",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_text_sizes.3dm": "a7ee9bacde68dfbe875c992ac73f3c437b39494f0fe932ef1c501ff95ad2f256",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_two_weights.3dm": "a88da99bbb49d0c1f423ef146cb1d3858ec3bf963625baf5669ba577f367c8f4",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_vertex_input.3dm": "9f6705de9bc38105c2cf750655429e985dc338d472205d2e762a20b3f13c415f",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_whole_object.3dm": "14be36d5f79c550125ea259e0eb214de850ef58a8237946f14e7d3c9b83b0c9d",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_boundary.3dm": "2272d0e90871da7b06c1a98129c2fc7a0218ac26079cae0835e053c580035f43",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_branch.3dm": "4d0d76cfacaa03cd4a68c139e6cc0ffb8bc6af58d618c5a225e931553495aaa9",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_branch_label.3dm": "7645ef91682c8251c74af957a24d476631d470fabcb250e982ff83daed56ffed",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_cancel_after_weight.3dm": "6fe06baad9bc506dc60de9b8fbfdfa145845c58faedb0087d2840e7877e8188e",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_cancel_empty.3dm": "05a44792f0f42da1ddd9d15418a019c78844e140b0340665f21b2fbb24c898ac",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_chain.3dm": "b3c7353e0ab24dec81e33c756a687f297176ef95c7606589d91b787b6808633b",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_chain_label.3dm": "a6ed6ca82e0669aaf5be1aa0612cabdd45e0dcffdc75997b1868d5f8350afe67",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_0.3dm": "672a12f52ed8228d8de6a626adbef75c6384ca3ce5503485f671dbc5e7764f00",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_1.3dm": "1c97f89ce7866a52d3d7adbed98ef7941abb4364e6c14b325c16fd5356c639ee",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_10.3dm": "aef26e97015da10f62d29f6b6cf5808f84ce82a10bf0b16c74a7d99c00959af8",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_100.3dm": "1cab51377039725fd86506e8b078cf6de5776fdacb0226793792f5125f93e065",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_24_9.3dm": "7c81c9a3f1e1310f2259226bb43b3a50983984fedaa95c6dc62875045203da30",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_25.3dm": "17ddbc2d4f7b43045674f2a9caa84c8b22380ebb3d65ae2659c5ed97a40c91ea",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_25_1.3dm": "c9e0d0b2ae0aa1c286147d438479fbdfa426c6a3f7aa0bf77f0435fa2f3bad88",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_50.3dm": "aed70d68ad7902f450eaccd0a3227c207a9b210f751d1c20e51b6efb8157a8ac",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_75.3dm": "a7f239dccd9d3f833ddcf06f30c9475a21c438d55440d9c3548a2589e5a47f78",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_90.3dm": "029ce88d7d6f823d584b6d6c76977588b5c7ba0a50114df5cbf6b6c99c93078f",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_99.3dm": "9f115823ce8f5fe6a425819858f16d8d52797be6f633a10e6cd52b7bdd1f9594",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_constant_option.3dm": "0b7090530687bdd64a30361b519c9bf2b343a3b4eb83162ccc7c12781bb9ac9b",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_corner_source.3dm": "171ae87b0cdfa7ab60e400a37db2c33a5e330ebb82551c5e8cda2dec6f1ddf87",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_crease_all.3dm": "25c4c9a06fab812dcb40e7b2e718072886b99e628ff2eaf3ea414c1a027d5c85",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_default.3dm": "46362ff8d18f5affc06557daa20312c18d05ab517cee2dce49217b65f5a72400",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_hard_source.3dm": "c97754e93e426d48a342231e8d7e7c00c653164a8fbce7b5b8185ec37916c9d8",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_loop.3dm": "2bf862baf79e849ecaef3d357b63c8fa22e6f7606091a4bf16f1a52d0c564cf9",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_loop_label.3dm": "11686a7a259b446e6a583bb9206f3f6e67416003cd43560526ac7cfb13adfd71",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_open_interior.3dm": "ed47e4073f41d3247cfc43f7ae4f5f27a463765029e231b1a2ea589933e08445",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_start_control_label.3dm": "11aa020518ad3c8e40ccb7a3a2d39670b17df4348843ddb3ab9620002ae8b9a3",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_start_label.3dm": "01973b996c64bd9c97a3b7f80b8ffbd9694be87c31312dc066035a4062635190",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_text_sizes.3dm": "e783023ff0f058a600bffa266e6bc86f25fb36d9e1766316c75f3faea6a570a6",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_two_weights.3dm": "ab9020b4c99ce3df10e771ba553215689875cb485fd5a397607c5ba93aaa0d04",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_vertex_input.3dm": "b084c095f70ab94ed11fe6129b1edb36f8b0e0c1c495cbc23e989fcf587c43e3",
+    "tools/rhino_oracle/fixtures/soft_crease_discovery/source/soft_whole_object.3dm": "ee2bb6040ae800cdda234a5818c7407574388d8c113dfece7a40c0027ca11393",
+    "tools/rhino_oracle/observations/source_snapshots/8c5218798138ec409941985104571edaa39ca98a9acba12fe05d90f9fc6106ea.gz": "660b490c38686fd36a0cc9602411cdbe38b8d0588b4e8ee2cd760b034d2a026c",
+    "tools/rhino_oracle/observations/source_snapshots/4b894318912a4c65afb5d6d43c164491134dccf325c5d19d3d25a21e28143a8c.gz": "10d029affde5767c57ca3d37d94bdd8e515fbdc02555b78447f5618f2b0e3e43",
+    "tools/rhino_oracle/observations/source_snapshots/6946b697bedf9029986c393af480314f33db87a04fde2fd72ab2a0a7295634e5.gz": "d78d805786d8db69060eb1ea73ade2da02ede79e7db99d460d7178ebb828da78",
+    "tools/rhino_oracle/observations/source_snapshots/f0737116edca1be39a118421987329eb91e0b766b2e001c61e3d18e24f825894.gz": "7e934b69e8f63f51a42ec446dc87a9e90c019d023407ee5c24fedb96ef46b40a",
+    "tools/rhino_oracle/observations/source_snapshots/08d751e391bc593ab7263f00e3f77e64ceb91199a46360c2d396868cc579cb99.gz": "277d8dbbe5c0f328360abc2bfee0a2e85684c09aaf6ad669e427eb5be143f31d",
+    "tools/rhino_oracle/observations/source_snapshots/fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb.gz": "3910574955a6d6d6a27b5471d679087ab3e6f1bbc1691544d86a81b3260d42fd",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/a21aa6dcc54d3671a3cb4781cbf291f51fd7b8f7c3d1d52b4115ae71808690fa.gz": "3bdfca2a2d4fec01fa12d6c8e0450370f4353f296825890e887e7482d3e5927e",
+    "tools/rhino_oracle/observations/source_snapshots/a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846.gz": "77ba573e46fe2ada14e76655eae036a394a1ce91e8c709cfe56da3bbc5caa3e2",
+    "tools/rhino_oracle/observations/source_snapshots/29ec0211f99856af477f55911769a0221dd566c164a2bc385e269d909ff937bd.gz": "2cf324aa8f482012b26b8b4ad56ff4225551d4335081af6245c43b7b570009ef",
+    "tools/rhino_oracle/fixtures/soft_crease.json": "dd6ca0c96b5935a70ce560b243838c4887b356dfadf094c4f4bf15e4cb99ca84",
+    "tools/rhino_oracle/observations/soft_crease.json": "bc9e4ee39537ae4817f11a335571f2ee23d268d64a71dee4f5dddb18c7929e41",
+    "tools/rhino_oracle/fixtures/soft_crease/result/branch_fraction.3dm": "39df5f2550b210457c2fe396ca8bded1e228f0f48521cac38116eeb31fc030cf",
+    "tools/rhino_oracle/fixtures/soft_crease/result/branch_hard.3dm": "2a50203e2840cff2c31a89f688ccdb4100f06e19eca1e68529dc32242f92c86b",
+    "tools/rhino_oracle/fixtures/soft_crease/result/chain_fraction.3dm": "03b0ba7800a140c616213a6b1b9895d81bb9b796e9a36d8f553861521a4d7eb3",
+    "tools/rhino_oracle/fixtures/soft_crease/result/chain_hard.3dm": "156048585dcedbd4855cb8e87c694c8f71ef3d5985a53dfeb482fe1962b74b81",
+    "tools/rhino_oracle/fixtures/soft_crease/result/constant_cancel.3dm": "d36a7b9a740c46dd4430704d1cbfca835655eef62fb219f5a94f9cb2a01296e0",
+    "tools/rhino_oracle/fixtures/soft_crease/result/constant_crease.3dm": "a690150b1fae0fd0af491ce992437b9704d70ba7c0e598e9834da824d751094d",
+    "tools/rhino_oracle/fixtures/soft_crease/result/constant_empty.3dm": "b80fea138961d8ae0150017ea1e97a53f9de2410a97adfd0a6c93fa73bb1ca38",
+    "tools/rhino_oracle/fixtures/soft_crease/result/constant_repeat.3dm": "dae69f0a7c3f5af32078d6da59fd5ef1c5e620118a919b967c92363f1b3997f8",
+    "tools/rhino_oracle/fixtures/soft_crease/result/constant_weight_cancel.3dm": "579be470afe81e7307667fce25fdb939d141ed38e44af02186f9597aeecb18bc",
+    "tools/rhino_oracle/fixtures/soft_crease/result/corner_cancel.3dm": "a23d02b3d3ccd96cdb4080535156ce79e4d50201a3941f12b8c7bd581b523388",
+    "tools/rhino_oracle/fixtures/soft_crease/result/corner_default.3dm": "c01873ea3c62b3c48a998375813db93b3932908fa3da3920cd22a95476780658",
+    "tools/rhino_oracle/fixtures/soft_crease/result/corner_half.3dm": "815fb2aa263cbbcfc80f9a395f1f0c5d75b3e6ccfb5fe1c9e09453fb814414f7",
+    "tools/rhino_oracle/fixtures/soft_crease/result/corner_hard.3dm": "a66b3f0ebbfa8a42c1fe340e7c067413f76eaa149257356b333e91c0947f324b",
+    "tools/rhino_oracle/fixtures/soft_crease/result/corner_maximum.3dm": "891f37a5e0878403021aa034e27f503ac7c75d69a8a3d052e3b7c8389f19b5b6",
+    "tools/rhino_oracle/fixtures/soft_crease/result/corner_zero.3dm": "930ff3598c02cfb0910fb6cf9384f67706bee26247fd7466b23e7fc1e5a56541",
+    "tools/rhino_oracle/fixtures/soft_crease/result/disconnected_fraction.3dm": "a5c682fdb8ae05865614cf1748ff2e0970bcadad19c2c83333decf4acfcdb706",
+    "tools/rhino_oracle/fixtures/soft_crease/result/disconnected_hard.3dm": "c6d8347ae8a23a72fd8c8247fe3ffa0ca219b28819cc2822dee6afa2e8c7e5a7",
+    "tools/rhino_oracle/fixtures/soft_crease/result/grips_cancel.3dm": "1e0ecea80056f213c3f105c039dd8eb4fc19ce31053caa8fbe603e0da78e4e53",
+    "tools/rhino_oracle/fixtures/soft_crease/result/grips_edit.3dm": "8e9855d0d64778585f0cedc9495ae1c56b64b7a66b88761cfd3163a8e80820d6",
+    "tools/rhino_oracle/fixtures/soft_crease/result/grips_noop.3dm": "9d33ac4a12d2e78fedaa95d77d8f957c2ecff337d9c9e1f9c1e9f311bd7abd08",
+    "tools/rhino_oracle/fixtures/soft_crease/result/hard_cancel.3dm": "839a3e6892760e176e6c724c9dd1302907c8de19c4cc14db997ffe5b1b330e19",
+    "tools/rhino_oracle/fixtures/soft_crease/result/hard_default.3dm": "6bd965282125ecbf2b3ebd9b23ee76444aa32636f146c8b769a7bb8c736a6aef",
+    "tools/rhino_oracle/fixtures/soft_crease/result/hard_half.3dm": "e8133a699451f2afc13363ca702942dd594224790e02f00d25266c435addb3d0",
+    "tools/rhino_oracle/fixtures/soft_crease/result/hard_hard.3dm": "3db5d7c44571e83c0e8e6d3cdb4f9e7c51c0265045daf197b59c6e8792b862ad",
+    "tools/rhino_oracle/fixtures/soft_crease/result/hard_maximum.3dm": "b7ceddf8b87bc7defdc28e05b616b9fafac9e8644342a46a0119ef7fa99161a1",
+    "tools/rhino_oracle/fixtures/soft_crease/result/hard_then_soft.3dm": "a6712899aa624a40b43083d050997306f8c81695408bc3ee6225cd6b892a47f4",
+    "tools/rhino_oracle/fixtures/soft_crease/result/hard_zero.3dm": "84bd2c24c3993484a6944e0d855065c481359f373ad7dbe59effdd9e8532ff84",
+    "tools/rhino_oracle/fixtures/soft_crease/result/loop_fraction.3dm": "4165be123a521d1a9ee9945e94b4e7c2b0fdde60ed94b95a3a5cbce497a583a0",
+    "tools/rhino_oracle/fixtures/soft_crease/result/loop_hard.3dm": "b2c86653ffba5982ada2b36871bc88a425e7d7dc63b21dfc508e126192ce50a2",
+    "tools/rhino_oracle/fixtures/soft_crease/result/multiple_cancel.3dm": "a98cb12cc13652eb860bb9f6e1a19c233163eafa206c479411d43423bcb2703a",
+    "tools/rhino_oracle/fixtures/soft_crease/result/multiple_hard.3dm": "980eeadd33750abd399f2c08c97de7ecad3ff86789acba86109cbdb792d93be8",
+    "tools/rhino_oracle/fixtures/soft_crease/result/multiple_noop.3dm": "34df667388dceead74a162b2a9b317a5fe51dcf1971cd0d811907717acda82ce",
+    "tools/rhino_oracle/fixtures/soft_crease/result/multiple_weight.3dm": "e31f50d404195f134a846b734055d51889f6ed42005bf0ba88f469b9d58feb67",
+    "tools/rhino_oracle/fixtures/soft_crease/result/return_smooth.3dm": "c0f1708d395be85388c2452097f45d1c76dbe6db2902f34ccef276ee12a57a09",
+    "tools/rhino_oracle/fixtures/soft_crease/result/side_soft_cancel.3dm": "cc60fa76ff8143c4a0978b47c4182a128dbdfa9668996b2c8d67c3ade819f71d",
+    "tools/rhino_oracle/fixtures/soft_crease/result/side_soft_default.3dm": "d1a09541a2797ee19d5aedb36704360269cc55ecf08e721549486914fb017436",
+    "tools/rhino_oracle/fixtures/soft_crease/result/side_soft_half.3dm": "a7852c7f77183c2ae2453f7eceb527882306c8bcbe3ed228f3c405224e8810c1",
+    "tools/rhino_oracle/fixtures/soft_crease/result/side_soft_hard.3dm": "11bc52feb4225da7bcd098fd1523eb8a92f00b215690596ec30a65a511585087",
+    "tools/rhino_oracle/fixtures/soft_crease/result/side_soft_maximum.3dm": "182d4552ef5b5e99f365972ff995fa73596c0fde9494e51eb48515bb131fb502",
+    "tools/rhino_oracle/fixtures/soft_crease/result/side_soft_zero.3dm": "7265f7acf343c3e47bbebad404ff02db65e42a3ba375a3f53cb24e753d0938ff",
+    "tools/rhino_oracle/fixtures/soft_crease/result/soft_cancel.3dm": "0d672321541c5e0745eca51a76ad1a845f52d3f9a36397f790592a3a129e95dd",
+    "tools/rhino_oracle/fixtures/soft_crease/result/soft_default.3dm": "80da60df8694dbaad0b2712e710cf97b4014756ee98341aa94469b0e3c8924d9",
+    "tools/rhino_oracle/fixtures/soft_crease/result/soft_half.3dm": "58ec28be81ca570de568906bd2a734319b6600d6fe6140abef010203871db2fc",
+    "tools/rhino_oracle/fixtures/soft_crease/result/soft_hard.3dm": "697bb73746bd7c3ffce40818884418e5883d4d21342009b917e2219b85c5e228",
+    "tools/rhino_oracle/fixtures/soft_crease/result/soft_maximum.3dm": "ad52937f94b9520734cd2f3ac0dd347dd1143a94996bf64a8704799fdd8db02e",
+    "tools/rhino_oracle/fixtures/soft_crease/result/soft_then_hard.3dm": "3c87eef340f05df71e1076037571a2821d6e260f4078599daee3121821cb0aef",
+    "tools/rhino_oracle/fixtures/soft_crease/result/soft_zero.3dm": "d2fcf0472ccd7338718553e53910df97fdd71fbcaf8f0f7b4787f8985fb6e33e",
+    "tools/rhino_oracle/fixtures/soft_crease/result/strip_0.3dm": "e884a1bff59b839227263c322e6c4c1d09a855434234fac57ebdda099d6afd27",
+    "tools/rhino_oracle/fixtures/soft_crease/result/strip_100.3dm": "ec05b192cbab0cb32d3bf7acfed92658bdf864bc53a1b930a5de2969b896f19e",
+    "tools/rhino_oracle/fixtures/soft_crease/result/strip_50.3dm": "44a70183e34c01624e9fbd8a3f9a1dfa4327135e637359fae28d2bc57d561af4",
+    "tools/rhino_oracle/fixtures/soft_crease/result/text_only.3dm": "f5fbf05b0459af4e3ec76648618bddbd789d5a9005c1aae2149bfbd12e2e5c01",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_0.3dm": "03b1a04b0622b4fe2a21083bade3c1492a073c6d06a7130bd72a7190177582a8",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_0_01.3dm": "923dfbf07d1b8650284ae14423b7c86842a88e0c3e11fe9d684cfe6dc775bceb",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_0_1.3dm": "629eb7ab523499e13a738809001f92d72722ae4d6a87d56ee8eaf40d01a7c099",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_0_24.3dm": "0f157dfc5e775cfdd875957d1a2c796efe9cd3d7604ba04fcb46aae4c3654249",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_0_25.3dm": "ba43ebd9622eeb97ad327360695b9851f6236cce13318b8e1990a1ff524bfdd4",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_0_26.3dm": "509fcd822dc8a60027b22f17d67ea19066746ab1f1f0f5a92c41df7e396546f7",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_1.3dm": "3cb3f087c66c36caa87b3de09fbb1f631a2130bd7a58b0f5936afe992bcf4186",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_10.3dm": "d4e23f08218e68fff34a7121509c9ce9c3e47fa329df0957d5dbb36e010599ba",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_100.3dm": "36c1a2a8810b63ddecdebc9d13039659924d89a1d3e134b6eabc8df48fe87a8d",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_24_74.3dm": "579441e38be2230fe5e7d3db28ee26d76eb786421b9b50e6b89c4f325c8a540e",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_24_75.3dm": "006af19939be39a444195692d2a637025004446206abd7948b3e188ce9db6e24",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_24_9.3dm": "71ba94c9eab466e9d9c3c96536ae073843377b63fec0b74a5c4255b4971aaf85",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_25.3dm": "f04be5af6908e10076e7e735c1cb9265288c305804884c9ad44d030b861f10f1",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_25_1.3dm": "cbe4e599b4be0c6f3d762277c52e7bcfd23ffc92c46cd78cd8a7f98cf78e100a",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_25_25.3dm": "df5bcb4c9cdb24ddfd9c5e6a8e67aa19e75264147c4b6d370bc1b31d6d17a4e4",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_25_26.3dm": "0d42137640e96e89471de639c0bcc0ef60a393cfcf9da79921daa96da05a8753",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_33_333.3dm": "88dbab88e123a3aeb0fc85e8adf3975f51a6f1bfa9f11182f66aaa99569ab0af",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_50.3dm": "bc8dce29b436dc398abd7ef199db76be86700d377e4d0d9f88689ccf023ab1a2",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_75.3dm": "24fcbdefa705e5bd8b0ba61e35d2694081ab8f2e596ad467170b9d37af55e65f",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_99_75.3dm": "8fbc5b80bb725cf05137ea1be7a0d61e9d09f851e6cfe2b5cb79263bd0ffa54c",
+    "tools/rhino_oracle/fixtures/soft_crease/result/weight_99_9.3dm": "e7d9fe3ab2a53d32e94993f96f566f737b347f652b4f91d78aefdd931a57e444",
+    "tools/rhino_oracle/fixtures/soft_crease/source/branch_fraction.3dm": "c342f5d60c42d977d1607aa29142742623e51d1f6d32fd8a8dde2a7802af2a24",
+    "tools/rhino_oracle/fixtures/soft_crease/source/branch_hard.3dm": "40ca9b0f3cf6bddfa015e41dc445768ba0dca2b0943e56828157f90d8defcd8e",
+    "tools/rhino_oracle/fixtures/soft_crease/source/chain_fraction.3dm": "96e85d9d165771842a74457b70c3af08bd95ff61dc2d1551477ed5f8ebb2ee56",
+    "tools/rhino_oracle/fixtures/soft_crease/source/chain_hard.3dm": "ea740694680611839dddb0b92dad1ebff7ae6efc209855129be54d7f064ee1f0",
+    "tools/rhino_oracle/fixtures/soft_crease/source/constant_cancel.3dm": "84b61981c63ad44914833d594977c187bf26f9ef77b59d4ad9e32d0beead91ec",
+    "tools/rhino_oracle/fixtures/soft_crease/source/constant_crease.3dm": "0c79b90d59aac085e8e9b1c3cc2dcb83bb84a307161efa385a9fd79186c33c9f",
+    "tools/rhino_oracle/fixtures/soft_crease/source/constant_empty.3dm": "cbb626ae8d882e374f0700538e21760a243d868abb81499a513bcc36010aac7b",
+    "tools/rhino_oracle/fixtures/soft_crease/source/constant_repeat.3dm": "9fc1a7d5d981cdd5a217c6f0c217b6bab3854191a95cba754c120d696c71d9a4",
+    "tools/rhino_oracle/fixtures/soft_crease/source/constant_weight_cancel.3dm": "eec1ae2beeef5273a2662d8e8041609b06fa99e69e4a6de0794867e916c9940e",
+    "tools/rhino_oracle/fixtures/soft_crease/source/corner_cancel.3dm": "9b7cb49d75eb071a6b1f34855b7a7dfc3e3109fb9829872e02b2f608481dd9ef",
+    "tools/rhino_oracle/fixtures/soft_crease/source/corner_default.3dm": "8328027ac486ca142c792a4291d4da2b15b2f8589aa4a9ab08c7cd0cc8eca3b1",
+    "tools/rhino_oracle/fixtures/soft_crease/source/corner_half.3dm": "fdf04c844648b96bcedc2fc1d4218ec726734f7104f7f1c85f438eff0d97b300",
+    "tools/rhino_oracle/fixtures/soft_crease/source/corner_hard.3dm": "45f0a958cdd9d0218882ecf2937e945684060dc26a86514124ac193b914aee3b",
+    "tools/rhino_oracle/fixtures/soft_crease/source/corner_maximum.3dm": "3b7ff627a62fa6bbaa56ad2ce9b33b43de71076d43dc5ab4ea269622b7ab92b3",
+    "tools/rhino_oracle/fixtures/soft_crease/source/corner_zero.3dm": "5c1916e9e93f9bebfaea1fb3126375f8c9c66fb0ccdf56edf053ffe97a384e4d",
+    "tools/rhino_oracle/fixtures/soft_crease/source/disconnected_fraction.3dm": "f299fea682f3e2f953fb92d1dae72b4c661e02eb9cd534f41c15ac6c8012221f",
+    "tools/rhino_oracle/fixtures/soft_crease/source/disconnected_hard.3dm": "92b3d422ca7f90a1e14de82c0bbdf40816038d3f1f0793d5fd5fdba2bfeee148",
+    "tools/rhino_oracle/fixtures/soft_crease/source/grips_cancel.3dm": "827c06ead468bddd94737104e7deedabbbc56e23c925458377e317e7a0fb3a59",
+    "tools/rhino_oracle/fixtures/soft_crease/source/grips_edit.3dm": "e5ffabc1279abdcf709b7b385c02f73a8850219427c42e5fcc4af21401ea6ab6",
+    "tools/rhino_oracle/fixtures/soft_crease/source/grips_noop.3dm": "ff58e30ace165246cef916fc1d7c63bf10c05c1895899b470e423d1a06b2554f",
+    "tools/rhino_oracle/fixtures/soft_crease/source/hard_cancel.3dm": "8b88a7797c9cca0e400fa5450f30f732d2353c8b56a3dc84154d07dab9aeb28c",
+    "tools/rhino_oracle/fixtures/soft_crease/source/hard_default.3dm": "19244e93e2640b1f2e7cc7e004f7da6550d064e7d74dad4b8176941aaa8aeab4",
+    "tools/rhino_oracle/fixtures/soft_crease/source/hard_half.3dm": "e504b4436b8b6338dda53cbf7aac6d67a582af6eaa729841488b4d54e68b712f",
+    "tools/rhino_oracle/fixtures/soft_crease/source/hard_hard.3dm": "db2631ca6b2bdf1b4df0f22eed411ea3f23f6452937187bd3505f6abcb4f257d",
+    "tools/rhino_oracle/fixtures/soft_crease/source/hard_maximum.3dm": "0a7b2e7c16773a3a8be26b959dcf513396cc3a0c939a70a5b22cc092c25fb560",
+    "tools/rhino_oracle/fixtures/soft_crease/source/hard_then_soft.3dm": "29768ff2521a3bda13acb61cf3b793202695c2fd769f14745d88cc998a62d946",
+    "tools/rhino_oracle/fixtures/soft_crease/source/hard_zero.3dm": "6f992fab7761d00ba7be4549093d9a44ca4b60dfbfc2a45499e8e1996650936a",
+    "tools/rhino_oracle/fixtures/soft_crease/source/loop_fraction.3dm": "438c888d7f4651801bee59a8aeff34af68d8eb48bcfd382ae5fa91bce2d9fb28",
+    "tools/rhino_oracle/fixtures/soft_crease/source/loop_hard.3dm": "505c1975952e58292623d8930708e156264cac7ca083673537feea756e9606fb",
+    "tools/rhino_oracle/fixtures/soft_crease/source/multiple_cancel.3dm": "5cb9d239aed33ba25b4e3982f857bbfa44ace64b1f2fd1e2fa421b508aedbf18",
+    "tools/rhino_oracle/fixtures/soft_crease/source/multiple_hard.3dm": "3460fd201bf6135024e9cd8e4e8892ce34b5e95a1c82ed4ea6a16cba8bfeab4a",
+    "tools/rhino_oracle/fixtures/soft_crease/source/multiple_noop.3dm": "5ff47100c38de801446277458575ac42baf7d5a777a1b2f47cf0addacfc6f7f3",
+    "tools/rhino_oracle/fixtures/soft_crease/source/multiple_weight.3dm": "675d02ecfb45b85e997973ff3d4d17176b0b324de8fd159912904e145abd6acd",
+    "tools/rhino_oracle/fixtures/soft_crease/source/return_smooth.3dm": "c564d2059aa73a38eee92d772ac5f731fac1da31052b5c0c523a0a40d7eb1fc1",
+    "tools/rhino_oracle/fixtures/soft_crease/source/side_soft_cancel.3dm": "6aa39047527477f149be9d4e19458e80a743e2de73de5b4d37659f6bcc7f1001",
+    "tools/rhino_oracle/fixtures/soft_crease/source/side_soft_default.3dm": "0d2bf34f82b97dd46be4ca1bf6cc1b8df06c3915a1f5b85e5b0c3eddf26eb2ce",
+    "tools/rhino_oracle/fixtures/soft_crease/source/side_soft_half.3dm": "8b04920a790d6d107a53b27b8d99277bd152699279dddc48ed9b735ab0ebd53a",
+    "tools/rhino_oracle/fixtures/soft_crease/source/side_soft_hard.3dm": "161ac6e29229709194321188f464894a6ff473576244812c51191ed3e1ee8520",
+    "tools/rhino_oracle/fixtures/soft_crease/source/side_soft_maximum.3dm": "37e187bbc74b3dec5d42d9becd101baa97d35fa24d917546a574158075448808",
+    "tools/rhino_oracle/fixtures/soft_crease/source/side_soft_zero.3dm": "fbc06b2818204e782bea0a443d34ab741e3415aac38c614c9ec536728befd187",
+    "tools/rhino_oracle/fixtures/soft_crease/source/soft_cancel.3dm": "c97b506d0ff2e8912035828e6fe277eb56131fea5f6b0d2b59820963384715ee",
+    "tools/rhino_oracle/fixtures/soft_crease/source/soft_default.3dm": "71f9ebc4673ff1c2837c14567d47c65f1cf1db107352d846665e93388104ad02",
+    "tools/rhino_oracle/fixtures/soft_crease/source/soft_half.3dm": "dd672d1cfaf4965fed24fd6a962c5ad47cdf2242be57a3c8855114e485af18c5",
+    "tools/rhino_oracle/fixtures/soft_crease/source/soft_hard.3dm": "b9c8ffeaf9ddd1ce3020a25ecfd14553c96d1774b87117899c2816088a0255f9",
+    "tools/rhino_oracle/fixtures/soft_crease/source/soft_maximum.3dm": "41e71be226599a223e1abc88378d569babcb00e1c0f9316d211f094fc89b1bf0",
+    "tools/rhino_oracle/fixtures/soft_crease/source/soft_then_hard.3dm": "897c36bb89f81a227f7e8020596b6dc76753e062ab6cb733123e454c6aa735ff",
+    "tools/rhino_oracle/fixtures/soft_crease/source/soft_zero.3dm": "37561867b6066c93d85a5ee9fafc69070a0c59fb6be60b189c7223782e9e4aba",
+    "tools/rhino_oracle/fixtures/soft_crease/source/strip_0.3dm": "c539fe92f6ca516dc17b98db27badab737bb8ef2e7f12dcaae6dad4f4413f15a",
+    "tools/rhino_oracle/fixtures/soft_crease/source/strip_100.3dm": "644c85ccf391ad5509cdabd9706252f525a91d07c203c2f12fb2d0f4a1bff87d",
+    "tools/rhino_oracle/fixtures/soft_crease/source/strip_50.3dm": "e8a36a38895d251f786d8c6acae478c8a677fe5fc1f0a6d3c541c3ffeefb4ad9",
+    "tools/rhino_oracle/fixtures/soft_crease/source/text_only.3dm": "edcef6268f74ac2bbd3ac471c77243dd41064dda46cc3338a055fea8a8617d01",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_0.3dm": "2d8749fd18cd2510602f6a72323bb7eebd1fbd6ade523241e59439d7819f4880",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_0_01.3dm": "732084866120330b3778915c0868f370ec13c4eb170e6f8f7b2be1fb48c1d70f",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_0_1.3dm": "abfb1b9bf2c8daa698a0a6acb0a0df6c3eba85e1d4997d8fb6f75fa925eb39dc",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_0_24.3dm": "b0571ba27b6f1afc6ebe0398c372b961520717c6d6f6b710348af3cf8fb80987",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_0_25.3dm": "93838ebd7dd150dda1b87819932c7abc2b1f5ae90f35b2574df5baf42f694bc1",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_0_26.3dm": "2b6b7a42543cb5538427d2fe0c8ea397283106c1e6b72f187ca0fed118564107",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_1.3dm": "6e7f13f3b4d2f3fa0c078e0d4558b5ad0cae2a4ccc1f6d5d5f38b7e98335eba8",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_10.3dm": "6482744000163ed31f3615466284dc0ab451cfbcc838fced4234831b7880a28e",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_100.3dm": "5e3ea4453479f95d1148f051448cedd94259c226b8ce08ef77a1144ec5f80503",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_24_74.3dm": "2e53c39233870a35c9ebb41ee018310ecf4d85f7c3a21f5d50a91597f472f26e",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_24_75.3dm": "39389e4dae18221714767ae752ab64647a9665ff323f80a073e491139ce0c522",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_24_9.3dm": "08bdf1972ce35d60de83595c7acc32b0c217c1c33c3058d4324c2e93696fcdba",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_25.3dm": "d7d8bc1b7fcb1b0a622f6710835859b6ccd6f68b941dd2295961d5d78356c2c6",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_25_1.3dm": "3ddd5bea5bcee73007e1e836e37de01fc579f010f5121572d8b66700ef6ff08a",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_25_25.3dm": "328594595f6c1f75f5f1e566a21d31ed85276b6c973dae6c89b9855d94fcf660",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_25_26.3dm": "ead8c32798a098c66b455b2511e02c0e121efd0b020a6e752239c59392df2832",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_33_333.3dm": "e1a43fc774c916f667ae07614129231127284cfdc8faf50c3ac810aff6da9b22",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_50.3dm": "bd5421b2e1519098c1268fd076bfe3a3f23ebcd44cc467a88740315948a5e796",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_75.3dm": "ee3ef910fae1702a52694489939bb13247bc89855247573f2623ae3d96f4a34a",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_99_75.3dm": "1d821d39d6a76a3f4e47c16363064b8dc045ba162ed06976a5b336036c5bfbbb",
+    "tools/rhino_oracle/fixtures/soft_crease/source/weight_99_9.3dm": "02df9ba66e90cc0629879a0324910372de3c261c3784ba8c4d8a21b62192a946",
+    "tools/rhino_oracle/observations/source_snapshots/ce8747f66c77334613fb7d045d1a61020466a4cde2273b6ef1ba5356d9320f41.gz": "cb8d6f2ff69ba5e551949d8085fe8584b94ee0a7897e4e307cf1e7e4bf47a037",
+    "tools/rhino_oracle/observations/source_snapshots/a96c0ad7984f2da4bb9577f30f3d96aa401542c12bd3e563527bb72c0dfe940c.gz": "9a55d1da49de5b4b5cd3e955df56eacc31e434c15908ce10e26bc9ed855e7719",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels.json": "ae2975941191b41d98bdd2f22ebd567df7dd5d2f8c0c13852f16a235c55e3d82",
+    "tools/rhino_oracle/observations/soft_crease_numeric_labels.json": "d6b7f39b8a0a96bc176dabb7a5dd6fa909c823672e0ac58bf752351aad953d13",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_0_numeric.3dm": "539c304b7cfe0a51fefe61f7ce1dcb785060db1683ce8ecead22db06aaf23df0",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_10_numeric.3dm": "9130805042e656ea280675407aea8b3a682636a06d3ef0aa8b8f23073559f3d3",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_11_numeric.3dm": "83d2e315428d21fd8214f2cd59aeb03ddeba31edd63a657452ce06758a85a857",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_12_numeric.3dm": "969574e2633f8ec5cd0fa3d9c93f1eb934494414657e3922f6d83b2e7ac7ec44",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_13_numeric.3dm": "c4076846b72147da4dd99a4a1e00fc5775032196cc2e8bbb6b25f277efbde914",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_14_numeric.3dm": "6dfd8ca5967afc55cd24f657e4b9412f377d98bdfbc0db3777bd52383657ed72",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_15_numeric.3dm": "5869175b5dbe553c4346206f61d76d179b0b4988ee4cfd8d9c74dd21ef501d33",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_16_numeric.3dm": "6f6cf759e22c397c4a293234be1ac3e6c1af431f02d6ea840015e78877de8e60",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_17_numeric.3dm": "8e88ecbfd2734c43f7d4281e766428263b679302ffec6355bb13dc987ea98b22",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_1_numeric.3dm": "38d1e400b2af44dd975febfce2c54aac9c9b10f834e92efd99c6d3c6a1366dc3",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_2_numeric.3dm": "10bb7eed15f524006e5008697293f5513a498dcc0e01a08f29943e68b2af2a17",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_3_numeric.3dm": "d4acbf838551ba4915abd9afe9cb8f7b816ab5cbe95fd112c21c6d07ba3fca7f",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_4_numeric.3dm": "bc569bb730fd2ba423526bba43561594ac635d9b78f82696bbec2f3c718b4aae",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_5_numeric.3dm": "6ee7089dead9e6eefad92f5c9d34930d6a5823c6da293a877024e3fe4c4ff065",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_6_numeric.3dm": "f23bc918e5c245b4a9a97dfe5e6f6813703f885eb82768f5aa544a9f633f2198",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_7_numeric.3dm": "245a1ef199aac55057e9336e4c39fcd61b559082dae89e56d26614f391850b09",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_8_numeric.3dm": "c8c75ff7711317aeccfe77bd6ee2e3fdcf0ada2f7aa623c0491bdb05483eab13",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/boundary_9_numeric.3dm": "4f1f508f6a0958c6288828d403996e90850312d597e2d5c9cfb03ed5d70cf8c9",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_after_constant.3dm": "45ae68cdd037ddf1e6f84c84eb6a7d88cf81110df1f767f9dc63397dc6e8fb00",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_both_ends.3dm": "cc052fdc7b794a2053ef74fee469cc1d2b6d286f85e46baae4fffdf14cb2f2d4",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_branch.3dm": "53a5b3bfc00dd3756b4e45f81be20b43c66d9ea43c3ae831b74cdd5b8ed37daa",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_cancel_inner.3dm": "f4659a76680d831f174eda984d8bf7a830f955655c1009e4dd544ba7a0906574",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_cancel_outer.3dm": "4cc75a62ce62e2b602e068d6df78caade793fd3240ea4a48f201d4b7f5489ebe",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_control_accepted.3dm": "17ae640ef5f84d7127159fd19d4c7b245cc30fcb7f856b6f7b9b288f5ac3d69d",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_disconnected.3dm": "e65cdf0338a0c6c8c4358432285ca28dfd50e05c0f6149786987a80c48cbbf16",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_loop.3dm": "34daa2dc264f9b5982607197d9890f89bc5a8ef4aac87c456e54c92d25a11c0d",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_middle_accepted.3dm": "4c604a776289a161fbc47a85bca837ae38937bd2c4694b8c39f8be0bbd1795aa",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_multiple.3dm": "140b3f1be753f06f59827b74736990ce5b62b21b78949bbf8d08e1848233ff3d",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_start_accepted.3dm": "786816af64e072a398ac94e25f14685a8961931d5b24e11ff17beef2cce589be",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_0_numeric.3dm": "9a4abc8545cb35a379f659bd4a96ca407c19af1efa50309ead5fa4b3c74762e3",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_10_numeric.3dm": "d79f4f884a65cdd70ba88def908e0ac5367266079350395eeac2d22b8ffb04eb",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_11_numeric.3dm": "0637d6a4434ae7fb45aa47c6c98840a87a25527b9726b96bb4a8f90b50d32a83",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_12_numeric.3dm": "420909362a2ecc0572f3c352d05dbdcd0ed2b22cdc99dc3bf49b0dbacfd6d70b",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_13_numeric.3dm": "fe865d7a7dec80481fb38ef438cea2bc469dbc8bda86daa1ec60a2214c20c10d",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_14_numeric.3dm": "b940c97fc8ef92f8b2b9323475bf46a6f5cfd66b390f2cba136a0b6b309156fd",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_15_numeric.3dm": "6d4149a7384b99075ebdcd125cc6ecbb91052b879dd5fceb186c1609c82a3f63",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_16_numeric.3dm": "177a91c2f7ec18dacaee6adaeaee46434894e9045b713703e1e9a14b39e2729c",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_17_numeric.3dm": "49d757ea40672144f4c73f608d63208826b5ea1eaa70ded885b5837a89fac4f1",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_1_numeric.3dm": "3038420f9875ce054a2b9985c30279372b72238c043f017fd2d116a1a9af48fc",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_2_numeric.3dm": "e17a550669cb74562b76ebe6a07c2b66b4d61ea5fd3073037fa3e4edd5f604c1",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_3_numeric.3dm": "d0d55538b62b2bd129e1f8794258f4afae70ffdf52dbf4c847e63d6bf7f868fa",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_4_numeric.3dm": "32b6dd15dd6f56a9283373b202d5ac7c25d843ad4819354499fe67d08c69899e",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_5_numeric.3dm": "58823d5e713750eb4e33d9681021aa98f94992485b1470f3968b4e2ea370744d",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_6_numeric.3dm": "9cad6b2324330f52bd319dd8acf6b109791ad495685d3273090b51730ba06eb3",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_7_numeric.3dm": "d7205a31b64d04aae00921c8b573d3a5e6fa06d597f4f6cff44f39da9c37bd37",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_8_numeric.3dm": "a7ee7b16142aaf354cdd6c0942801edd1c3397a9b0f52e40eb6f492cfe3e0649",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/boundary_9_numeric.3dm": "713c40c4b95c805a92f0d311334c3875c43fc3faea33b9463dc5789985360a66",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_after_constant.3dm": "4f76f483247ee2f7e1a98952d6fa3004de4bc78c35e95d7454d2c91992e9bdbb",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_both_ends.3dm": "71fcd3b2b4361a013ab96b80cc63696f727d4d72a367bf70ee15b74bcd7e7a98",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_branch.3dm": "17eeeea188869e77fd8ca2ea2569ea4f958fb44bf65cb57abc697386ebaa12b5",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_cancel_inner.3dm": "fb5fc020a9ee261f557f969fce24f50f74e08e7dd93d1e4b1eb4674405ceb700",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_cancel_outer.3dm": "c6643ab8eaf37e13fdebd77580a3ecc7e9126b9afcf2d0b31ce48961eca2906e",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_control_accepted.3dm": "e08ad084c61f95a29a6d346db245dedf4641969e346488629b5c3a4d99c01049",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_disconnected.3dm": "f26053d8ddee84514959a7fe6c2ffbadc126d284726c536a3de5347ddeed8b61",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_loop.3dm": "88383aa022f81889007829aea864a001cd27fa5f98cd05516af61dfb50ff2bd7",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_middle_accepted.3dm": "8cf330c9ff88c5111f365a23f0049dcc37a103dc1b669be7522f10c43095ca28",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_multiple.3dm": "e90719670554c5dc8c96765a4c22686c624f557d3d83d7dde126dcd1788128b1",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/source/label_start_accepted.3dm": "8c6f1e7a2b64a026613753b9bdec4f0b4b4fb385ee5cec82d276401e899930c2",
+    "tools/rhino_oracle/observations/source_snapshots/d29421cd327a47d16d35267889b8cd088c6aaef96c42462068c4b249ed94701e.gz": "e10f646308c1ae82b84246cb4fe7ca28c5349a40176c65a51514a28010fb921b",
+    "tools/rhino_oracle/observations/source_snapshots/4da7c732a40c721971b7403f0bb544597f5c62a9a3c1d41282a87c7abee76044.gz": "e333900dbf2c84cf59b9f0f68a7c5b725ce2347b1f3289979bbd97211f8aa6c4",
+    "tools/rhino_oracle/observations/source_snapshots/e963328cdc8c899dc624ca43c01e2d73384b6a22233a10fe687a36d9e16768f8.gz": "ec50e7058b7a97e62aedcc3b16b5b988207f0be42ea87f46306730002cb04584",
+    "tools/rhino_oracle/observations/source_snapshots/b5b90387ce152b155bb1e16fdf4dba07dcb7e931f27390d4c772a7c775165d4b.gz": "a592a2ed59055b38bbfdab0faf507c45981c1f0bd29a476d48e323e5c75ad1da",
+    "tools/rhino_oracle/observations/source_snapshots/1ebe10a8334de7c98301f0ca30290f581d79e30fd6012fba37873ff289239fe0.gz": "09147b84dc6cfd9881b65fe8398fad66e447877543481044add5bc21496eb6eb",
+    "tools/rhino_oracle/observations/source_snapshots/0b60033fa4b2a8ded9bf0a5a762d1e0b5839fc20c160880adaa65d3998124cad.gz": "166659d89c94ad576d5665e4f12f3e51cb7962cc5e5c9e6c25f50a9f12eb5509",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f.gz": "066fec0cfff85ca807efa3e08801adaa8bbbb8d3015977b285145e0ef8cf9404",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a.gz": "5276814c81db96e730f998a14ab89dc08aebada5077dcc73abe671c3ed1e2ccd",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/fixtures/soft_crease_labels_discovery.json": "4c8ebe4b1d40c23f27257ab94dca5176ddc6e94a106e7b5cc3a9e060a78377da",
+    "tools/rhino_oracle/observations/soft_crease_labels_discovery.json": "8f82ee27ba402fb527ec3ba17cbbf0a7e66509ace5d40905b26867c55f228e60",
+    "tools/rhino_oracle/fixtures/soft_crease_labels_discovery/result/label_control.3dm": "ed75d62ebcc64d75de80b43fc9dc35d83d924e1468a71b0704ba4ce2ba4296be",
+    "tools/rhino_oracle/fixtures/soft_crease_labels_discovery/result/label_middle.3dm": "ce37faa3aaa488d101b891823cafe372748829758863be89f6842005c5e9986b",
+    "tools/rhino_oracle/fixtures/soft_crease_labels_discovery/result/label_start.3dm": "f014dd9bff945cf405095d26355c273b2676af58b23e46ae945e63a19d521c78",
+    "tools/rhino_oracle/fixtures/soft_crease_labels_discovery/source/label_control.3dm": "62573efdd47fcd008d9f36b076653d7b3fd950bdb8f9690fc101d4f2be03ddd0",
+    "tools/rhino_oracle/fixtures/soft_crease_labels_discovery/source/label_middle.3dm": "3f1c48d8e87cf5c4fb7989801e210bb0b7f1db09d0914aec6af5f419354fb14a",
+    "tools/rhino_oracle/fixtures/soft_crease_labels_discovery/source/label_start.3dm": "c46b54e02ec342012438f54429cccbc4dd8fae2a096fac94b28bcf5499366343",
+    "tools/rhino_oracle/observations/source_snapshots/ba1336695ed2eee02610fcda0a6b3422ab7577772e73b9c8191556d5062f45ae.gz": "10dd5e370b663befa7fa0cc3b546eafeb5448ad6842f3dc4e55b3f5d1506ae7f",
+    "tools/rhino_oracle/observations/source_snapshots/3fe9c1f61b2c6c5f7ba3b3bc00d22a83a6b7f41ad7de4b9a4941b882a1a1f904.gz": "90a358e26bf98810972f988c7eb2877de15f410a35af5db40538be29cf5b36a4",
+    "tools/rhino_oracle/observations/source_snapshots/022e1dcd5cb301ea98bd96ce651d9770006a14daaceffe8d4dc80d9c9fcc4637.gz": "11c1076378e64eed7e39a1f62e69d10637ca1201c4dd610a1c3ea74b13882226",
+    "tools/rhino_oracle/observations/source_snapshots/20b84da604edd691c3aeb2d05691a6d95ddb55bfbe028cf3b121fff3a0948318.gz": "e01de12f4693b749f266dc94cfc37b3deda05a2d116744bdb21293d1281461cc",
+    "tools/rhino_oracle/fixtures/soft_crease_extra.json": "c09d93ba6e549601b25ce3bbe311571fae8598fef15291f2f2960592ca203b61",
+    "tools/rhino_oracle/observations/soft_crease_extra.json": "fa7dc160cfa48244fb1743d8034ec925905e2f267974fe2cd038252d4abc5f52",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_0.3dm": "7d0da1655e25304773e12aab36491ff594ba80b7867f72adcb69b30e4766a8ac",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_1.3dm": "69528ef1f17fade2297025cea5b4d26713bd29adb0146e7c2f03fedad61f5398",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_10.3dm": "4e7f6b335725e84a675b28062753217e4d799f865794e285c98391ff71ca4a94",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_11.3dm": "8f1c5fd12525e1817d0a154d72a90a735285a2324612764085d22daec05dac5f",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_12.3dm": "54ddd0b2a44e91fef3ac51f136f46cf840ca80d446990b41967f0aa991dc1f81",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_13.3dm": "e5d652dcc6b3d08802e5fc58680f2cc9fcb4f03a075480711ffd4caf629569dd",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_14.3dm": "beec8d20896e9395ac681270db9f505d15bdeec95f61b15597b54513bafe28ac",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_15.3dm": "f4ddbeff01ac5056ffd84b69e743cb007e39494619c31429ef29d2b156351788",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_16.3dm": "efbb4f131be62eecfeb1741f3135ff9ea09ab6213ac9e86f4be796c772d8037c",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_17.3dm": "a75eb47134901b3f0cbaf7fd3bfd11d5f92483fb620ed6350f51837ab621fb2d",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_2.3dm": "41dc408695e01832cebb4dd62fe88d7635e88ceab883b71ca443d7870932c1f7",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_3.3dm": "86f6556630edbdeda3bb83aa36b21c8fa3c9558fc2e706b24c1d7df418dce301",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_4.3dm": "c68af758e970838b26803c4196bb3cb05c74a03a4b7e061dede514f0a7ded7df",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_5.3dm": "b3b1eff09384aba67c52b75076291726384412d9c09ace0818932e5901c380ce",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_6.3dm": "6cac6b822a65f247cc01153dfdafd82839a741aa0a682cf211e1d060d49c788a",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_7.3dm": "0ebf47504d621f9f0fa3069e2c198a3aadde20a432bf0c03fd46a9e0b4443d24",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_8.3dm": "d3965619b0e01f8a6f46956eee2aeb174047e8744233fd860cbbc0cb64512cae",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/boundary_9.3dm": "8db50deae96551bf8fc0b6aa8bac86e1ac7961274c69e70c77858c56cd8cfa3c",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/label_control_input.3dm": "c8c4f5b453bb8f1986d760e8e4d8a6cd347620b3079b92a6f4fbb46e5e512ab5",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/label_middle_input.3dm": "184a0f2a7f88d342bda5d18bb8e3be8f2b6259d57687e7d82df1d3d86ff9bf86",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/result/label_start_input.3dm": "7b2a7bfe03e7a07c710e1bf0a3193f5bffbd6584d0c8e729475c3bb7bb18c87a",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_0.3dm": "4a6bb44c3e8a73d4821150e374974dcd94206bcb31b72078253049bcf3617103",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_1.3dm": "04c3aeffa389b2a8b5118f19cd7f25e90a71cffc78edbdae30c5c7f0dad7a169",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_10.3dm": "7ebc8e227549b24a2c2a181fc35d6bb3a70311dc26785e6ff8cc55aec323d0d5",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_11.3dm": "3053a2142b2199ea2e0bccbb0a6fd43ec00fda9023fa0adca3746b4b049e0bb3",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_12.3dm": "6fbaa2b2924cb4e172e2f71ef69a9bad6d23d1897211d12651074ffbb6eb580c",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_13.3dm": "78fdb2e33050363078b3d760e9758e95d186867a9782c4835cc5937aab43fa60",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_14.3dm": "e4dc5adf44b60dae6986716176748f860ed91a440854652b039d33cbb16cdec5",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_15.3dm": "f58fd015c1df6cc15b75b466de5fbd730d6f0f4b2a9ccd70513bc672301fc0cd",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_16.3dm": "a0a1bb2a7fe889f6c0e0141f6806332585330db815cd0f65cb83e37b414c19c9",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_17.3dm": "72efc500170c8790abcd2b6ba7c5731eadb9611fa55c9d272021627a33ac7f32",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_2.3dm": "3190b20a614d69a2454bb5486e4d375398a2052d591d4eb83aa77009c1eb0bc0",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_3.3dm": "2ee9fb5b24b746b8e1554ad8b585c109df4dc665659b61a8fdf04d47b30b27e6",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_4.3dm": "d74bfd4be25e1d5f29562402f682c97eaa1a01405c0b8aa472f0a6a4e0741fd6",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_5.3dm": "5615a57e85ab0276ee84d960af28e2ed974ae25699e622c42260487e6a67df61",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_6.3dm": "0722f21f951f4ea7b9bdf0e42db148314503517aa91e1750efa5206fec534918",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_7.3dm": "9b8b3f2c514fe3e246b41d897458ae05560df878f1f4e9d01755b27dcc5c2f9b",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_8.3dm": "a6cc11f11c150d5295f98690c4c06c80b01779688b3812af3889c38712d2a231",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/boundary_9.3dm": "46c3517d94e8226e92fe51e5c0034d6a54190149425c55e7adf831a3fbae9b29",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/label_control_input.3dm": "430fb55d4524454513bd97d11079ad9cac99b72b73cbe025fbde488767587769",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/label_middle_input.3dm": "3a82b784d1d5b6d63f27b97d0fbca531c4badd253273567ed1eac529a2db1bd3",
+    "tools/rhino_oracle/fixtures/soft_crease_extra/source/label_start_input.3dm": "e15b7b201e76e51241929a9366ac1aad85de467975f303d5cd20e494062a819c",
+    "tools/rhino_oracle/observations/source_snapshots/9c20d68b8089cf783dc88face1609a40990b5cc5ba0f53ebf073880c43cc3e58.gz": "cf20697d5dfada9e093eaca3122ef20e4dc72cd8cea69a1df01eafbcd243cf33",
+    "tools/rhino_oracle/observations/source_snapshots/ebb05dad58f790136accf15c501561633b79cf219935563e2f037ff5fe1b087c.gz": "115ac7734a726b1fc00c01555904eed7886494f4b103cf2ba84520d37dc924c2",
+    "tools/rhino_oracle/observations/source_snapshots/fa764c8cacbcdedbbd508f993c6c0b6b5952927ae2984637881a1fab030e0fc3.gz": "954f826bce0307dde2aef93d69a0775a5daf189fef59438f9d4ccf7ad2091595",
+    "tools/rhino_oracle/observations/source_snapshots/bf2a4bbb8cf4779c13f8b102aa56a5bf898f3a461510f70c78422ea5fd3ec0ab.gz": "53a198eb49cee7ede579ec2133a9785b2689273f929fc9ba153a45c6e0c36eff",
+    "tools/rhino_oracle/fixtures/soft_crease_precision.json": "0554f7e66a3a806e53e5c90e6b8b34cd60d06e4087746f275a882c0845641c41",
+    "tools/rhino_oracle/observations/soft_crease_precision.json": "a41178004981226d24dfd5ba80c9f528d96a12b229f87af36e672950c4e7ec2c",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_0_precise.3dm": "eb0ebeaba9b9c87200c844d6aa595c5cd34d169fb7219a60194662ff4e873ada",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_10_precise.3dm": "b0b2fda831a2c6365627590bf757cce24da9ca911529aff9fab0730c313c7c56",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_11_precise.3dm": "434443ca8c5b1eae5dbb97378d1ea55993e91dbaae2c7623aff7129d47fa1c46",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_12_precise.3dm": "3a7930e7ada1a6ee298259b6d61b3574d116de61056c962960b1ca149bd88b88",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_13_precise.3dm": "d504295636b6ae6771fdee0ee57bcdb66f195119f53719bc4e90ec0c50239dbe",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_14_precise.3dm": "ff8702d97acb0632f62362bdf70aed780340fc022a4bcc6d5c1afb82c014f669",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_15_precise.3dm": "a4b5e0f6ca47bb4ed44fa7a4eb0840adf88af11ff3b310ab5c0f7697b84a551e",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_16_precise.3dm": "56313596ac049a0a661acadd16ba7bd1a8025f3de029dc307bdec30e06ce79bd",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_17_precise.3dm": "b9d5fdf3e510d37abdd403a406fa13ab0c3a1d427dd377c7fe0868c75d2c5747",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_1_precise.3dm": "a63f2b95ba33b06a755805a277c5ef95c37a52ef0d4bce2d82f92aba5308cb46",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_2_precise.3dm": "a53b18e9faee3234563b5a956e49087ab7f492ed6660fb938bc720365d5ae340",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_3_precise.3dm": "62ab3c4e2131513e307157b68e4be9c0b9a6d7a1312dcf13947504ff4a41a196",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_4_precise.3dm": "bedba31a6225a7309b167eded463d0ea770dcda6972327fbb199f67d0d165479",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_5_precise.3dm": "c1f0e2a7e396336318b026af91a30dba26bcba6417b208a817704c115907daa6",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_6_precise.3dm": "f72bfe1f2dc0e07be9cfcd65a1ef6e7258d78e7071b78d074c6fa160dd826135",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_7_precise.3dm": "6d32e4ed95bf0e2c336df9a6b5c2587d95c7f1d748191500f215ef34822f7296",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_8_precise.3dm": "baa74407dc12170c1c7e7512dbcc6c20c914c00131c2f8bb8b894124b83927cf",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/boundary_9_precise.3dm": "b9989a0a61774eee6af696d4d266a618e3b635d2269d9bdd709467ca77114c73",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/label_control_input_precise.3dm": "518449373ba61a8b1420f33e521710e5503f8dba26f7be4b5fd6e5b0f6b1a3e4",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/label_middle_input_precise.3dm": "3a6790f5700eb9077b55cf5e4d1d2c3dc4b551f97f6dd7a20efbea2478f1f502",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/result/label_start_input_precise.3dm": "5989f07fc0bc8e0375b6123f235d11657c82f436cec90c3c2cbcee8a7748d250",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_0_precise.3dm": "d8ee4dac711dbbefcbc2656053b3c977e7063bc9edc749599aba41c130299d1f",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_10_precise.3dm": "15917ddafd48ecf92196d974c673213f095ab31c85ec9d4917ba93e65e5a0541",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_11_precise.3dm": "29323c47ab3629ed8db0a54cade95b3466c8e66802751236e8899e564ead318e",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_12_precise.3dm": "2a02dd6e730645623c3f08ef8bc77f050a74052a7aac94b2afbf53cce39a21eb",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_13_precise.3dm": "d8888fe588717c9afa3ea4c2fa48d05638ed08de8db0a1d48623848d2605bfdd",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_14_precise.3dm": "78245d59e7e0aeea159ee307a3f49bc4ef8ed9195a86d11c54e3ce8e789d4c4b",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_15_precise.3dm": "ad472c5ba2d844a7954eb8dfa6516bed09440df12e749b14454309a423d1ce2c",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_16_precise.3dm": "2ecb0ea5eac2db85713a3a652f1e8d6f711bb23571d51f5bfc7fc9b3cac182c1",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_17_precise.3dm": "1c238634c9d1db1c60f120a9f1a741e8e65d2b1a0cf6c169d09ca207ec84078f",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_1_precise.3dm": "2ebbca2ba44568ded0c6af370e5b4156f489a02d56aadc80201abae6aa217fde",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_2_precise.3dm": "ef911878fb681f2cd06394da6d752f7ea66edb13fed2aa6d3d139c923db8c8f2",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_3_precise.3dm": "b74ece002453722d6615c6e6bd1bb878cceb1df0de4fe917d533893bf55453df",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_4_precise.3dm": "e755dc03487038eb3d721b577a42a1d0b109b9a23128d9109db116d047b73707",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_5_precise.3dm": "c2b699e61363a3f2fba3e73bd7579ef9dfd7310064f64e744c9fbe659cace280",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_6_precise.3dm": "60e422be6e3ee5beb3a12aa7fab7fe120bccd6420c9077fcf2bb082669f28c3e",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_7_precise.3dm": "29fefdc186b9ef8bb17d804b956cd5f6e03b3bded21ce8fd38fb7365158d56ef",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_8_precise.3dm": "d2b7385d34f1cad6a40c4e004b9b0abd4965f166e6e04a6035fa6c7ac3808e07",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/boundary_9_precise.3dm": "1d8d79a020b9e1dfefd1b5086c73c6aea22e4afa5c20efa95fa3f7c50b66e651",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/label_control_input_precise.3dm": "d417571ea3e58af6ce6354395239cd89db5a347b48d40b662d574a68639ae9b0",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/label_middle_input_precise.3dm": "58216e5080a5081b6bdf8f6253f01dba9cb1ed7be8d31c25c32f28fcda8d1c9a",
+    "tools/rhino_oracle/fixtures/soft_crease_precision/source/label_start_input_precise.3dm": "0c8e62c5e2ac03f3cb5211f87bae9a356ea3bc4e6a6760c6a9b57e69b98dc073",
+    "tools/rhino_oracle/observations/source_snapshots/b39886782ca6b675ab3ef62e9df2ec13caa647bcd868a41c1f20532b0dfb1e7d.gz": "890eb71c3281fbe2240c3c4a6ad8f10c2f781a4d84386263994f90e8b5e755f8",
+    "tools/rhino_oracle/observations/source_snapshots/0b2f3a9639a05661db6374e2f80321107bd22d82ae0a7990a4ec5308651fc8b6.gz": "8d2c6ceff1c49a77a428139dd5f66adfe7fe87e410aad0affcd2cd5363709c74",
+    "tools/rhino_oracle/observations/source_snapshots/1205626bad23aeab83ab665ef7279ba14b8ad3eb440a2c07f567c218cb6fbf54.gz": "5f9913dcc87c06dd1a15e92b916beb06c9f75cf68e593c0112b2cd71f30944da"
+  }
+}

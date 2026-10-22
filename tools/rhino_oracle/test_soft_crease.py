@@ -82,7 +82,8 @@ class SoftCreaseDiscoveryTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     validate_operations(bad)
         modules = ['soft_crease_probe', 'soft_crease_cases', 'subd_edit_scene',
-                   'subdivide_probe', 'subd_box_probe', 'join_probe', 'merge_edges_probe']
+                   'subdivide_probe', 'subd_box_probe', 'join_probe', 'merge_edges_probe',
+                   'conic_getter_input', 'managed_mouse_callback', 'snap_environment', 'number_token']
         with tempfile.TemporaryDirectory() as directory:
             stage_helpers(query, HERE, Path(directory))
             self.assertEqual({p.name for p in Path(directory).iterdir()},
@@ -90,6 +91,69 @@ class SoftCreaseDiscoveryTests(unittest.TestCase):
             subprocess.run([sys.executable, '-I', '-c',
                             'import sys;sys.path.insert(0,sys.argv[1]);import ' + ','.join(modules),
                             directory], check=True, capture_output=True)
+
+    def test_every_capture_binds_its_original_recipe_and_producer(self):
+        from .report_subd_soft_crease import FAMILIES, DIAGNOSTICS
+        cases = probe.all_cases()
+        for family, count in FAMILIES + DIAGNOSTICS:
+            path = HERE / 'fixtures' / (family + '.json')
+            query = json.loads(path.read_text())
+            validate_operations(query)
+            native = json.loads((HERE / 'observations' / (family + '.json')).read_text())
+            self.assertEqual(native['provenance']['request_sha256'], hashlib.sha256(path.read_bytes()).hexdigest())
+            self.assertEqual(len(native['results']), count)
+            self.assertEqual([r['id'] for r in native['results']], [o['id'] for o in query['operations']])
+            for row in native['results']:
+                # The immutable main producer reused one discovery identifier
+                # for a seeded source. Current recipes have unique names.
+                key = 'seed_soft_default' if family == 'soft_crease' and row['id'] == 'soft_default' else row['id']
+                self.assertEqual(row['value']['input'], cases[key])
+                for key, folder in [('source_3dm', 'source'), ('result_3dm', 'result')]:
+                    data = (HERE / 'fixtures' / family / folder / (row['id'] + '.3dm')).read_bytes()
+                    self.assertEqual(data, base64.b64decode(row['value'][key], validate=True))
+            for name, digest in native['provenance']['sources'].items():
+                source = HERE / 'observations/source_snapshots' / (digest + '.gz')
+                self.assertEqual(hashlib.sha256(gzip.decompress(source.read_bytes())).hexdigest(), digest, name)
+
+    def report_lines(self):
+        report = json.loads((HERE.parents[1] / 'docs/subd-soft-crease-qualification.json').read_text())
+        lines = ['SOFT_KERNEL ' + json.dumps(row) for row in report['stages']['kernel']]
+        lines += ['SOFT_IO ' + json.dumps(row) for row in report['stages']['archive']]
+        return report, lines
+
+    def test_geometry_and_archive_reports_are_complete_and_current(self):
+        from .report_subd_soft_crease import summarize
+        report, lines = self.report_lines()
+        self.assertEqual(summarize('\n'.join(lines)), report)
+        self.assertEqual(summarize('\n'.join(reversed(lines))), report)
+        self.assertEqual(report['compared_workflows'], 133)
+        self.assertEqual(report['component_sources'], 138)
+        self.assertEqual(len(report['stages']['archive']), 18)
+        self.assertFalse(report['command_registered'])
+        self.assertFalse(report['full_native_parity'])
+        self.assertGreater(report['maximum_native_roundtrip_surface_change'], 1e-6)
+
+    def test_missing_or_invalid_geometry_cannot_qualify(self):
+        from .report_subd_soft_crease import summarize
+        report, lines = self.report_lines()
+        for data in [lines[:-1], lines + lines[-1:]]:
+            with self.assertRaises(ValueError):
+                summarize('\n'.join(data))
+        first = report['stages']['kernel'][0]
+        for change in [dict(sharpness=False), dict(source_unchanged=1), dict(source=True),
+                       dict(id='unknown'), dict(changed=1), dict(native_archive_normalizes_sharpness=1)]:
+            row = copy.deepcopy(first)
+            row.update(change)
+            with self.assertRaises(ValueError, msg=change):
+                summarize('\n'.join(['SOFT_KERNEL ' + json.dumps(row)] + lines[1:]))
+        for field, bad in [('maximum_sampled_surface_error', float('nan')),
+                           ('maximum_sampled_surface_error', 1.1e-6),
+                           ('maximum_control_or_limit_point_error', -1.),
+                           ('vertices', True), ('qualified', False)]:
+            row = copy.deepcopy(first)
+            row['check'][field] = bad
+            with self.assertRaises(ValueError, msg=(field, bad)):
+                summarize('\n'.join(['SOFT_KERNEL ' + json.dumps(row)] + lines[1:]))
 
 
 if __name__ == '__main__':

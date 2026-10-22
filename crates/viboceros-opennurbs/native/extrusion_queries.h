@@ -1,4 +1,5 @@
 // Owned extrusion construction and its canonical, smooth-face B-rep transfer.
+#include "extrusion_roundoff.h"
 struct ViboExtrusionResult {
   std::vector<uint8_t> archive,brep;
 };
@@ -10,8 +11,11 @@ template<class F> int extrusion_guard(ViboExtrusionResult** out,char* error,size
     auto extrusion=run();vibo_extrusion::require(extrusion!=nullptr,"Cannot construct extrusion");
     auto result=std::make_unique<ViboExtrusionResult>();result->archive=vibo_extrusion::encode(*extrusion);
     std::unique_ptr<ON_Brep> brep(extrusion->BrepForm(nullptr,true));
-    vibo_extrusion::require(brep && brep->IsValid() && brep->m_F.Count()<=100000 && brep->m_E.Count()<=1000000 && brep->m_V.Count()<=1000000,"Invalid extrusion B-rep or topology budget exceeded");
-    BridgeObject transfer;vibo_extrusion::require(append_brep(*brep,transfer),"Cannot transfer extrusion B-rep");
+    vibo_extrusion::require(brep && brep->m_F.Count()<=100000 && brep->m_E.Count()<=1000000 && brep->m_V.Count()<=1000000,"Invalid extrusion B-rep or topology budget exceeded");
+    if(!brep->IsValid()) vibo_extrusion::bound_cap_roundoff(*brep);
+    BridgeObject transfer;std::string diagnostics;
+    const bool transferred=append_brep(*brep,transfer,&diagnostics);
+    vibo_extrusion::require(transferred,("Cannot transfer extrusion B-rep: "+diagnostics).c_str());
     vibo_extrusion::require(transfer.geometry_data.size()<=256U*1024U*1024U,"Extrusion B-rep transfer budget exceeded");
     result->brep=std::move(transfer.geometry_data);*out=result.release();return 1;
   }catch(const std::exception& exception){set_error(error,capacity,exception.what());}
@@ -26,7 +30,12 @@ extern "C" int vibo_extrusion_transform(const uint8_t* bytes,size_t count,const 
   return extrusion_guard(out,error,capacity,[&]{
     vibo_extrusion::require(matrix,"Missing extrusion transform");auto extrusion=vibo_extrusion::decode(bytes,count);
     ON_Xform transform;for(int i=0;i<4;++i)for(int j=0;j<4;++j){vibo_extrusion::require(ON_IsValid(matrix[4*i+j]),"Invalid extrusion transform");transform[i][j]=matrix[4*i+j];}
-    vibo_extrusion::require(transform.IsAffine() && transform.Determinant()!=0. && extrusion->Transform(transform),"Cannot represent transformed extrusion");return extrusion;
+    vibo_extrusion::require(transform.IsAffine(),"Extrusion transform must be affine");
+    // Translation does not affect affine invertibility. Including a very large
+    // translation in native 4x4 pivoting can incorrectly report a zero determinant.
+    auto linear=transform;for(int i=0;i<3;++i)linear[i][3]=0.;
+    vibo_extrusion::require(linear.Determinant()!=0.,"Singular extrusion transform");
+    vibo_extrusion::require(extrusion->Transform(transform),"Cannot represent transformed extrusion");return extrusion;
   });
 }
 extern "C" int vibo_extrusion_create(uint32_t degree,size_t count,const double* controls,

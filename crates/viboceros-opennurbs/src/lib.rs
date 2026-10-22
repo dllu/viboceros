@@ -19,7 +19,7 @@ mod subd;
 pub use subd::{
     SubDData, SubDError, subd_append, subd_box, subd_control_mesh, subd_crease_components,
     subd_cylinder, subd_edge_samples, subd_edit_points, subd_from_archive, subd_from_mesh,
-    subd_from_polygons, subd_set_tags, subd_subdivide, subd_tessellate,
+    subd_from_polygons, subd_set_tags, subd_soft_crease, subd_subdivide, subd_tessellate,
     subd_tessellate_with_normals, subd_transform,
 };
 

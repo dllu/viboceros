@@ -1,5 +1,5 @@
 """Qualify sphere styles and reference getters against fixed public Rhino captures."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import hashlib
 import json
@@ -37,7 +37,7 @@ SOURCES = list(dict.fromkeys(BASE_SOURCES + [
     'tools/rhino_oracle/report_subd_sphere.py', 'tools/rhino_oracle/test_subd_sphere.py',
 ] + [f'tools/rhino_oracle/{directory}/{family}.json'
      for family, _ in FAMILIES + DIAGNOSTICS for directory in ['fixtures', 'observations']]))
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def observations():

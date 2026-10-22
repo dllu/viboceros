@@ -1,4 +1,4 @@
-"""Shared source inventory for qualification after application module extraction."""
+"""Shared source inventory for extracted application and geometry modules."""
 
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
@@ -30,9 +30,22 @@ APPLICATION_MODULES = [
 ]
 
 
-def with_application_sources(paths):
+SUBD_MODULES = [
+    'crates/viboceros-opennurbs/native/subd_archive_sharpness.h',
+    'crates/viboceros-opennurbs/native/subd_soft_crease.h',
+    'crates/viboceros-opennurbs/src/subd/soft_crease.rs',
+    'crates/viboceros-geometry/src/subd/soft_crease.rs',
+]
+
+
+def with_shared_sources(paths):
     expanded = list(paths)
     if 'src/app.rs' in expanded:
         expanded.extend(APPLICATION_MODULES)
+    if 'crates/viboceros-opennurbs/native/subd.cpp' in expanded:
+        expanded.extend(SUBD_MODULES)
+    if ('crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp' in expanded or
+            'crates/viboceros-opennurbs/native/extrusion_queries.h' in expanded):
+        expanded.append('crates/viboceros-opennurbs/native/extrusion_roundoff.h')
     expanded.append('tools/rhino_oracle/qualification_sources.py')
     return list(dict.fromkeys(expanded))

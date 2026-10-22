@@ -1,5 +1,5 @@
 """Report every captured crossing, including unresolved command and SDK differences."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import hashlib
 import json
@@ -26,7 +26,7 @@ SOURCES = BASE_SOURCES + [
     'tools/rhino_oracle/test_mesh_patch_crossings.py',
 ] + [f'tools/rhino_oracle/{directory}/mesh_patch_crossings{suffix}.json'
      for _, _, suffix in GROUPS for directory in ['fixtures', 'observations']]
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def finite_error(value):

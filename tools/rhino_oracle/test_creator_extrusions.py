@@ -58,11 +58,12 @@ class CreatorExtrusionTests(unittest.TestCase):
             with self.assertRaises(ValueError,msg=path):summarize('\n'.join('CREATOR_EXTRUSIONS '+json.dumps(changed)if s==original else s for s in lines))
 
     def test_existing_direction_api_keeps_all_thirty_native_cases(self):
+        from tools.verify_provenance import verify
         record=json.loads((ROOT/'docs/creator-extrusion-direction-regression.json').read_text())
         self.assertEqual({name:r['cases']for name,r in record['reports'].items()},{'curve_extrusion_directions':27,'curve_native_extrusion':3})
         for report in record['reports'].values():
             self.assertIs(report['passed'],True);self.assertEqual(report['matched'],report['cases']);self.assertEqual(report['native_failed'],0)
-        for path,sha in record['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
+        self.assertGreater(verify(record),0)
 
     def test_arbitrary_creator_recipes_are_rejected(self):
         for edit in [dict(case='arbitrary'),dict(case=[]),dict(extra=True),dict(id='wrong')]:

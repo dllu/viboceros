@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
     if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','InterpCrvOnSrf','PolylineOnMesh'):
@@ -47,6 +47,7 @@ def drive(op,host,guides,command="Conic"):
     if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch','Number of points per turn','Points per turn')
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
+    if command=='SubDCrease':prefixes=('Select highlighted vertex','Weight','Enter','Select interior SubD')
     if command=='SubDSphere':prefixes=('Center of sphere','Radius','Diameter','Circumference','Area','First','Second','Third','Fourth','Sphere','Orientation','Direction','Point','Select','Style','Subdivisions','Around','Vertical')
     if command=='SubDTorus':prefixes=('Center of torus','Radius','Diameter','Circumference','Area','First','Second','Third','Select','Point','Second radius','Second diameter','Number','Vertical','Around','Cap','Solid','Direction')
     if command=='SubDCone':prefixes=('Base of cone','Radius','Diameter','Circumference','Area','First','Second','Third','Select','Point','End of cone','Number','Vertical','Around','Cap','Solid','Direction')
@@ -160,7 +161,7 @@ def drive(op,host,guides,command="Conic"):
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
             else:
-                if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):
+                if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf','SubDCrease'):
                     from number_token import number_token
                     token=number_token(a)
                 else:token=repr(float(a))

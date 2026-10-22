@@ -213,3 +213,48 @@ fn extrusion_surface_transfer_retains_metadata_and_rejects_malformed_envelopes()
     assert!(viboceros_geometry::interop::decode_surface(&version).is_err());
     assert_eq!(source, rectangle(true, 2.));
 }
+
+#[test]
+fn large_tilted_cylinder_caps_bound_roundoff_without_changing_geometry() {
+    for exponent in [0, 40, 80] {
+        let scale = 2_f64.powi(exponent);
+        let tolerance = Tolerance::try_new(scale * 1e-7, 1e-12, 1e-9).unwrap();
+        let frame = Frame3::try_from_normal(
+            point([11. * scale, -4. * scale, 7. * scale]),
+            Vector3::try_new(2., 3., 6.).unwrap(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .unwrap();
+        for cap in [false, true] {
+            let source =
+                Brep::try_cylinder_extrusion(frame, 2. * scale, [0., 3. * scale], cap, tolerance)
+                    .unwrap();
+            assert!(source.is_extrusion());
+            assert_eq!(source.is_solid(), cap);
+            let restored =
+                Brep::try_from_extrusion_archive(source.extrusion().unwrap().archive(), tolerance)
+                    .unwrap();
+            assert_eq!(source, restored);
+            let transform = AffineTransform3::from_translation(
+                Vector3::try_new(5. * scale, 3. * scale, -2. * scale).unwrap(),
+            );
+            let moved = source.transformed(transform, tolerance).unwrap();
+            assert!(moved.is_extrusion());
+            assert_eq!(moved.is_solid(), cap);
+            for vertex in moved.vertices() {
+                let distance = source
+                    .vertices()
+                    .iter()
+                    .map(|v| {
+                        transform
+                            .transform_point(v.point())
+                            .unwrap()
+                            .distance_to(vertex.point())
+                            .unwrap()
+                    })
+                    .fold(f64::INFINITY, f64::min);
+                assert!(distance / scale < 1e-12, "scale={exponent} gap={distance}");
+            }
+        }
+    }
+}

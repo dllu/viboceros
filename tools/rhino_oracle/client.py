@@ -476,6 +476,25 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'soft_crease_command' for op in request.get('operations', [])):
+            from .soft_crease_cases import all_cases
+            cases = all_cases()
+            operations = request['operations']
+            if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('Soft crease workflows require a private scheme and one iteration')
+            if any(op.get('op') != 'soft_crease_command' for op in operations):
+                raise OracleProtocolError('Soft crease workflows require a dedicated request')
+            names = [op['id'] for op in operations]
+            if not 1 <= len(names) <= 128 or len(set(names)) != len(names):
+                raise OracleProtocolError('Soft crease workflows require 1 through 128 unique recipes')
+            if any(cases[op['case']].get('live') for op in operations):
+                from .catenary_point_picker import CatenaryPointPicker
+                # The fixed native recipe calculates each vertex target. The
+                # host picker consumes only allowlisted action markers.
+                click_request = dict(request, operations=[dict(op, actions=[
+                    dict(click=True) if isinstance(action, dict) else action
+                    for action in cases[op['case']]['actions']]) for op in operations])
+                interaction = CatenaryPointPicker(click_request)
         if any(op.get('op')=='face_create_command' and op.get('case') in ('edge_single','cancel_partial','append_cancel_partial','multiple_cancel_partial','append_after_face_cancel_partial') for op in request.get('operations', [])):
             from .face_create_probe import control_request
             from .group_picking import IdlePicker

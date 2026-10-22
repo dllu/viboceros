@@ -3223,17 +3223,17 @@
     "The eight unsuccessful native postselection attempts remain excluded. Positive postselection getter replay is an independent Viboceros frontend regression against the successful native geometry recipes, not native physical mouse-gesture parity. Mesh normal arrays, material/texture channels and comparative performance are unqualified."
   ],
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "99db0377eda1c17fbd19bd2bb9051b8cf07553f92d77c5836d167f48e9d89eb7",
-    "crates/viboceros-opennurbs/native/subd.cpp": "148f523cab0d08eca46829e1205d0be42e7b7db6113e40de93e33682606461f1",
-    "crates/viboceros-opennurbs/native/subd.h": "817749af5e4b942a104ff5a11f1ee7656f64e3b5c72904295437461c7333b3bb",
-    "crates/viboceros-opennurbs/native/subd_codec.h": "692893eb5c4447a582d43aca0c78413b8622ed19600975057ec15fddacad5fd0",
+    "crates/viboceros-opennurbs/build.rs": "8972b3d579be1ebd1bb46960d5cec8438e5a50e806eb78563be7dd38397267c0",
+    "crates/viboceros-opennurbs/native/subd.cpp": "8b707c66e1a120602550aa579e5f7c6ec35a3b279a4e3df6fded0c38cad128fb",
+    "crates/viboceros-opennurbs/native/subd.h": "da4a0a35a494c5131b399c8154ef963b8d2fe58fbeb38b6ca4b7d19ddccc9445",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
     "crates/viboceros-opennurbs/native/subd_crease.h": "d5eb85162f2c276646950d5080f82131bd293dcaf32617d92dbd658fa2666a2e",
     "crates/viboceros-opennurbs/native/subd_edges.h": "49e4529894e72b6a0817323ceb0f802451316a39b0af837a3674db1110f09d93",
-    "crates/viboceros-opennurbs/src/lib.rs": "df0e5c2c6d7ed438c3ae01bef3b8f0eb2f47e207802976d511cdac62cb100e70",
-    "crates/viboceros-opennurbs/src/subd.rs": "55d84cb754c3fc22f9f7acdbcbf27e55095a3ce9130177c80408d76d505868b6",
+    "crates/viboceros-opennurbs/src/lib.rs": "f4918619657eb3b7b3828476bc0e2ba8a307c9ce30561a1aa43d4ec227fd0904",
+    "crates/viboceros-opennurbs/src/subd.rs": "a401aba9ae62ca04f63c51b5b8e8d49eff7edfa745309810ab165c06eecd089b",
     "crates/viboceros-opennurbs/src/subd/crease.rs": "58bf7eaa6b1a6edc850d4bcd78eb0d1e7f24cca9ad4ef5447901bf7ba31272d1",
     "crates/viboceros-opennurbs/src/subd/edges.rs": "964405af7e7efed5091a7f416b8ed852843ea66dfd24699ca21e371933386778",
-    "crates/viboceros-geometry/src/subd.rs": "f1ffe40cca59dfaa3b58296484fcfbf44063cdae62a70a498bd81d57a9a86ff4",
+    "crates/viboceros-geometry/src/subd.rs": "ee381256d5ad61307b6e2c451b9d6f90e8ee383ecd541ab25361f3dd84ebcd04",
     "crates/viboceros-geometry/src/subd/crease.rs": "b0ac75bd02d9d22316f4f992a0774781e8c52aee68a8b3877ba5aa782c863ba2",
     "crates/viboceros-geometry/src/subd/edges.rs": "b45a57b11ebd445ef1f26cdce266dea50922a67cdd3b15700653c40bd690af4f",
     "crates/viboceros-geometry/tests/subd_edges.rs": "ddb85c3c11699b036031c42c40a66e2a7bdf140189e10a07d3af1171d9aa03fd",
@@ -3254,9 +3254,9 @@
     "tools/rhino_oracle/crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
     "tools/rhino_oracle/crease_probe.py": "036cfbf54a3c3c7e25d1d8232332ee5bdc81b87ad3aefd0d734f8a8171b246f8",
     "tools/rhino_oracle/generate_crease.py": "4af359530ca4b67ac8dd624c8287d93f068dbd659eb418576f53e82aeda56c40",
-    "tools/rhino_oracle/report_crease.py": "2729851d7a7fc1e2bcc19eb97976f3cd37a21e1a33307fbd67b0a6a3ca4f11b5",
+    "tools/rhino_oracle/report_crease.py": "97317547a49f11be348430c760dc6be6ecb3ac1fe1f8f7a0352994d266d968a6",
     "tools/rhino_oracle/test_crease.py": "6aa8d28fbc90c8b461e55b228b7cd5fae59eb3e42dfe68e7f61edf1aa15b8ec9",
-    "tools/rhino_oracle/structural_sdk.py": "29ec0211f99856af477f55911769a0221dd566c164a2bc385e269d909ff937bd",
+    "tools/rhino_oracle/structural_sdk.py": "1ebe10a8334de7c98301f0ca30290f581d79e30fd6012fba37873ff289239fe0",
     "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846",
     "src/app.rs": "692475e60e0d004f09bdb66e198947fc7eca2d81384f10931f3a2847675e7b7b",
     "src/app/crease.rs": "abbf160b6928a2104d8fa832b9ddfa568c3ee6d0ed336a96e247da5a2bbd2b7f",
@@ -3435,6 +3435,10 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "507b57c03ba29280b7e5c0c7a8ba436a571e5993f5a73dc6d3bad81eccc12c3c",
     "src/app/viewport_input.rs": "47ee836e7dffdcf405be3f3220eca327c84513dcd2b29ba2de93a327023e8d6d",
-    "tools/rhino_oracle/qualification_sources.py": "a7fb410a6d4e97c862c23cddfec9d54f0bfdbacfea273cfeba3ed39b52589fc6"
+    "tools/rhino_oracle/qualification_sources.py": "c2e5acc32f3c008d49707a9475633a9f830ce098d59e89c22169fd8d05468846",
+    "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
+    "crates/viboceros-opennurbs/native/subd_soft_crease.h": "380510cf8f39f73315cb7ae3f2085982948e0d9b77a596c498041f88d22d8381",
+    "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "a921d830a092f0bcd3163ee113ae25b417349c1e207bf61ee8c6fba0100ed859",
+    "crates/viboceros-geometry/src/subd/soft_crease.rs": "4de10044311c7669beb170edf0cbb84d48b65e41fa6bdbd63e386ae76292e78c"
   }
 }

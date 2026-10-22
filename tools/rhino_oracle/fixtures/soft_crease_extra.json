@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_0",
+      "case": "boundary_0"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_1",
+      "case": "boundary_1"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_2",
+      "case": "boundary_2"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_3",
+      "case": "boundary_3"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_4",
+      "case": "boundary_4"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_5",
+      "case": "boundary_5"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_6",
+      "case": "boundary_6"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_7",
+      "case": "boundary_7"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_8",
+      "case": "boundary_8"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_9",
+      "case": "boundary_9"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_10",
+      "case": "boundary_10"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_11",
+      "case": "boundary_11"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_12",
+      "case": "boundary_12"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_13",
+      "case": "boundary_13"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_14",
+      "case": "boundary_14"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_15",
+      "case": "boundary_15"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_16",
+      "case": "boundary_16"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_17",
+      "case": "boundary_17"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_start_input",
+      "case": "label_start_input"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_middle_input",
+      "case": "label_middle_input"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_control_input",
+      "case": "label_control_input"
+    }
+  ]
+}

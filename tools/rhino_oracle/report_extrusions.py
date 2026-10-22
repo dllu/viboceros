@@ -1,5 +1,5 @@
 """Qualify native extrusion file interchange; ToSubD integration remains pending."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import hashlib
 import json
@@ -35,7 +35,7 @@ SOURCES = [
     'tools/rhino_oracle/structural_sdk.py', 'tools/rhino_oracle/rhino_worker.py',
     'tools/rhino_oracle/report_extrusions.py', 'tools/rhino_oracle/test_extrusions.py',
 ] + [f'tools/rhino_oracle/{folder}/{family}.json' for family, _ in FAMILIES for folder in ['fixtures', 'observations']]
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def observations():

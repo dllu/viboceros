@@ -14,6 +14,7 @@ mod extrusion_conversion;
 mod interpolation;
 mod mesh_conversion;
 mod primitives;
+mod soft_crease;
 mod sphere;
 mod subdivision;
 mod surface_conversion;
@@ -59,6 +60,14 @@ impl SubD {
         Self::from_native(viboceros_opennurbs::subd_from_archive(bytes)?)
     }
     fn from_native(mut data: viboceros_opennurbs::SubDData) -> Result<Self, GeometryError> {
+        if data.edge_sharpness.len() != data.edges.len()
+            || data.edge_face_counts.len() != data.edges.len()
+        {
+            return Err(viboceros_opennurbs::SubDError(
+                "Incomplete control edge properties".into(),
+            )
+            .into());
+        }
         data.selected_faces.clear();
         let points = data
             .points
@@ -100,6 +109,14 @@ impl SubD {
     /// OpenNURBS tags: 1 smooth, 2 crease, 4 smooth between tagged vertices.
     pub fn edge_tags(&self) -> &[u8] {
         &self.data.edge_tags
+    }
+    /// Soft sharpness at the two ends of each oriented control edge, 0..=4.
+    /// Hard creases have a crease tag and zero soft sharpness.
+    pub fn edge_sharpness(&self) -> &[[f64; 2]] {
+        &self.data.edge_sharpness
+    }
+    pub fn edge_face_counts(&self) -> &[u32] {
+        &self.data.edge_face_counts
     }
     /// Uses OpenNURBS' validated component setters, including neighbor updates.
     pub fn try_with_vertex_tags(&self, tags: &[(usize, u8)]) -> Result<Self, GeometryError> {

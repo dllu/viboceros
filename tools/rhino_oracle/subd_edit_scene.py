@@ -63,6 +63,30 @@ class Scene:
                 doc.Layers.SetCurrentLayerIndex(self.layers[1], True)
             finally:
                 doc.EndUndoRecord(serial)
+            for key, definition in zip(self.ids, self.case['sources']):
+                if 'soft' not in definition:
+                    continue
+                obj = doc.Objects.FindId(key)
+                vertices = self.vertices(obj.Geometry)
+                indices = {int(v.Id): i for i, v in enumerate(vertices)}
+                for edge in obj.Geometry.Edges:
+                    pair = sorted([indices[int(edge.VertexFrom.Id)], indices[int(edge.VertexTo.Id)]])
+                    if pair in definition.get('seed_edges', definition['edges']):
+                        obj.SelectSubObject(edge.ComponentIndex(), True, True, False)
+                completed = []
+                def ended(sender, event):
+                    if event.CommandEnglishName == 'SubDCrease':
+                        completed.append(str(event.CommandResult))
+                R.Commands.Command.EndCommand += ended
+                try:
+                    R.RhinoApp.RunScript('_-SubDCrease ' + str(definition['soft']) + ' _Enter _Cancel _Cancel', True)
+                finally:
+                    R.Commands.Command.EndCommand -= ended
+                if completed != ['Success']:
+                    raise ValueError('source soft crease seed failed: ' + str(completed))
+                for obj in list(doc.Objects):
+                    obj.UnselectAllSubObjects()
+                    obj.Select(False)
             doc.ClearUndoRecords(True)
             serial = doc.BeginUndoRecord('Owned SubD edit Undo witness')
             try:
@@ -79,6 +103,11 @@ class Scene:
     def select(self):
         for key, definition in zip(self.ids, self.case['sources']):
             obj = self.doc.Objects.FindId(key)
+            if self.case.get('grips'):
+                obj.GripsOn = True
+                grips = list(obj.GetGrips() or [])
+                for index in definition.get('selected_grips', []):
+                    grips[index].Select(True)
             if self.case.get('whole'):
                 obj.Select(True)
                 continue
@@ -102,7 +131,9 @@ class Scene:
                        groups=[self.doc.Groups.GroupName(i) for i in (attrs.GetGroupList() or [])],
                        color=[int(attrs.ObjectColor.R), int(attrs.ObjectColor.G), int(attrs.ObjectColor.B)],
                        color_source=int(attrs.ColorSource), selected=bool(obj.IsSelected(False)),
-                       grips_on=bool(obj.GripsOn), selected_grips=[], crc=int(g.DataCRC(0)))
+                       grips_on=bool(obj.GripsOn),
+                       selected_grips=[int(grip.Index) for grip in (obj.GetGrips() or []) if grip.IsSelected(False)] if obj.GripsOn else [],
+                       crc=int(g.DataCRC(0)))
             if isinstance(g, self.R.Geometry.SubD):
                 row['subd'] = subd_value(g, self.host)
                 row['selected_edges'] = [i for i, e in enumerate(g.Edges) if obj.IsSubObjectSelected(e.ComponentIndex())]

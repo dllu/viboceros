@@ -1,5 +1,5 @@
 """Qualify subdivision ellipsoid construction, sampled facets and owned history."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import copy
 import math
@@ -33,7 +33,7 @@ SOURCES = list(dict.fromkeys(BASE_SOURCES + [
     'tools/rhino_oracle/test_subd_ellipsoid.py',
 ] + [f'tools/rhino_oracle/{directory}/{family}.json'
      for family, _ in FAMILIES + EXPLORATORY for directory in ['fixtures', 'observations']]))
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def native_history_error(before, after):

@@ -60,10 +60,11 @@ SubDs draw and support object picking in wireframe, shaded and ghosted modes.
 Shading uses native limit-surface normals for each sector, keeping shallow
 creases sharp without averaging normals across them.
 `PointsOn` exposes their control vertices; ordinary transforms and control-point
-edits retain SubD topology. Creation and edits support Undo/Redo. 3DM Save/Open
-preserves SubDs, including native fields such as crease sharpness that are not
-yet exposed as editable properties. Import unit conversion scales their control
-points. Model bounds use the conservative control hull.
+edits retain SubD topology. Creation and edits support Undo/Redo. The geometry API
+also supports [soft endpoint weights](geometry/subd-soft-crease.md). 3DM Save/Open
+retains native SubD data, with documented near-integer sharpness readback behavior
+matching Rhino. Import unit conversion scales control points. Model bounds use
+the conservative control hull.
 
 Display meshes sample exact limit-surface points after bounded subdivision.
 The facets between samples are approximations without a model-tolerance

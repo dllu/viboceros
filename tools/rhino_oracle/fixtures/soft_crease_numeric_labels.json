@@ -1,0 +1,156 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_0_numeric",
+      "case": "boundary_0_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_1_numeric",
+      "case": "boundary_1_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_2_numeric",
+      "case": "boundary_2_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_3_numeric",
+      "case": "boundary_3_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_4_numeric",
+      "case": "boundary_4_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_5_numeric",
+      "case": "boundary_5_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_6_numeric",
+      "case": "boundary_6_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_7_numeric",
+      "case": "boundary_7_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_8_numeric",
+      "case": "boundary_8_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_9_numeric",
+      "case": "boundary_9_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_10_numeric",
+      "case": "boundary_10_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_11_numeric",
+      "case": "boundary_11_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_12_numeric",
+      "case": "boundary_12_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_13_numeric",
+      "case": "boundary_13_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_14_numeric",
+      "case": "boundary_14_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_15_numeric",
+      "case": "boundary_15_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_16_numeric",
+      "case": "boundary_16_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_17_numeric",
+      "case": "boundary_17_numeric"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_start_accepted",
+      "case": "label_start_accepted"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_middle_accepted",
+      "case": "label_middle_accepted"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_control_accepted",
+      "case": "label_control_accepted"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_both_ends",
+      "case": "label_both_ends"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_after_constant",
+      "case": "label_after_constant"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_cancel_outer",
+      "case": "label_cancel_outer"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_cancel_inner",
+      "case": "label_cancel_inner"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_branch",
+      "case": "label_branch"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_loop",
+      "case": "label_loop"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_disconnected",
+      "case": "label_disconnected"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_multiple",
+      "case": "label_multiple"
+    }
+  ]
+}

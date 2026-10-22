@@ -3,15 +3,16 @@ use std::ffi::{c_char, c_int};
 use std::ptr::NonNull;
 mod crease;
 mod edges;
+mod soft_crease;
 pub use crease::subd_crease_components;
 pub use edges::subd_edge_samples;
+pub use soft_crease::subd_soft_crease;
 
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 #[error("OpenNURBS SubD: {0}")]
 pub struct SubDError(pub String);
 
-/// Immutable control net. The archive also retains crease sharpness and other
-/// OpenNURBS fields that are not yet exposed as editable Rust properties.
+/// Immutable control net. The archive retains all native SubD properties.
 #[derive(Clone, Debug, PartialEq)]
 pub struct SubDData {
     /// Newly refined face ordinals for a local subdivision result only.
@@ -25,6 +26,12 @@ pub struct SubDData {
     pub vertex_tags: Vec<u8>,
     pub edges: Vec<[u32; 2]>,
     pub edge_tags: Vec<u8>,
+    /// Sharpness at each oriented control edge end, in the native range 0..=4.
+    /// Hard creases have zero soft sharpness and a separate crease tag.
+    /// Empty for evaluated display meshes and control-mesh conversions.
+    pub edge_sharpness: Vec<[f64; 2]>,
+    /// Incident face counts in the same control-edge order as sharpness.
+    pub edge_face_counts: Vec<u32>,
     pub faces: Vec<Vec<u32>>,
     /// Exact limit normals per face corner, when explicitly requested.
     pub corner_normals: Vec<[f64; 3]>,
@@ -52,6 +59,9 @@ struct View {
     face_sources: *const u32,
     selected_face_count: usize,
     selected_faces: *const u32,
+    control_edge_count: usize,
+    edge_sharpness: *const f64,
+    edge_face_counts: *const u32,
 }
 #[repr(C)]
 struct NativeResult {
@@ -259,6 +269,8 @@ fn call(
         vertex_tags: unsafe { copy(v.vertex_tags, v.point_count) },
         edges: unsafe { copy(v.edges.cast(), v.edge_count) },
         edge_tags: unsafe { copy(v.edge_tags, v.edge_count) },
+        edge_sharpness: unsafe { copy(v.edge_sharpness.cast(), v.control_edge_count) },
+        edge_face_counts: unsafe { copy(v.edge_face_counts, v.control_edge_count) },
         faces,
         corner_normals: unsafe { copy(v.corner_normals.cast(), v.normal_count) },
     })

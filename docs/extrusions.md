@@ -13,6 +13,15 @@ NURBS profile, a frame, a nonzero height and a cap choice.
 `Brep::extrusion` exposes the retained representation; `explicit_brep` removes it.
 The geometry and IO layers share one versioned structural transfer codec.
 
+At very large coordinates, native planar caps can report zero edge tolerance
+despite a roundoff-sized gap between the trim image and its 3D edge. For matching
+positive-weight NURBS bases, the transfer bounds that gap by the largest control
+displacement and updates only the edge tolerance. Native validity checks still
+apply; the repair declines larger gaps or mismatched bases. Regression cases
+cover tilted cylinders through scale `2^80`, archive reloads and translation.
+Affine invertibility checks exclude translation from native determinant pivoting,
+so large translations cannot cause a false singularity.
+
 Affine maps rebuild the archive and B-rep view together. Surface edits, UV swaps,
 orientation reversal and topology reconstruction produce explicit B-reps, so a
 later save cannot restore obsolete extrusion geometry. `ToNURBS` also produces an

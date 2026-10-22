@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_0_precise",
+      "case": "boundary_0_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_1_precise",
+      "case": "boundary_1_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_2_precise",
+      "case": "boundary_2_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_3_precise",
+      "case": "boundary_3_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_4_precise",
+      "case": "boundary_4_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_5_precise",
+      "case": "boundary_5_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_6_precise",
+      "case": "boundary_6_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_7_precise",
+      "case": "boundary_7_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_8_precise",
+      "case": "boundary_8_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_9_precise",
+      "case": "boundary_9_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_10_precise",
+      "case": "boundary_10_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_11_precise",
+      "case": "boundary_11_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_12_precise",
+      "case": "boundary_12_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_13_precise",
+      "case": "boundary_13_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_14_precise",
+      "case": "boundary_14_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_15_precise",
+      "case": "boundary_15_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_16_precise",
+      "case": "boundary_16_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "boundary_17_precise",
+      "case": "boundary_17_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_start_input_precise",
+      "case": "label_start_input_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_middle_input_precise",
+      "case": "label_middle_input_precise"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_control_input_precise",
+      "case": "label_control_input_precise"
+    }
+  ]
+}

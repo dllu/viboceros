@@ -51,17 +51,10 @@
   },
   "source_hash_note": "Current qualification source maps were refreshed after the complete application regressions. Earlier numerical and performance measurements remain unchanged. The historical UI recovery receipt retains its app.rs bytes through Git.",
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "99db0377eda1c17fbd19bd2bb9051b8cf07553f92d77c5836d167f48e9d89eb7",
-    "crates/viboceros-opennurbs/native/subd.cpp": "148f523cab0d08eca46829e1205d0be42e7b7db6113e40de93e33682606461f1",
-    "crates/viboceros-opennurbs/native/subd.h": "817749af5e4b942a104ff5a11f1ee7656f64e3b5c72904295437461c7333b3bb",
-    "crates/viboceros-opennurbs/native/subd_codec.h": "692893eb5c4447a582d43aca0c78413b8622ed19600975057ec15fddacad5fd0",
     "crates/viboceros-opennurbs/native/subd_crease.h": "d5eb85162f2c276646950d5080f82131bd293dcaf32617d92dbd658fa2666a2e",
     "crates/viboceros-opennurbs/native/subd_edges.h": "49e4529894e72b6a0817323ceb0f802451316a39b0af837a3674db1110f09d93",
-    "crates/viboceros-opennurbs/src/lib.rs": "df0e5c2c6d7ed438c3ae01bef3b8f0eb2f47e207802976d511cdac62cb100e70",
-    "crates/viboceros-opennurbs/src/subd.rs": "55d84cb754c3fc22f9f7acdbcbf27e55095a3ce9130177c80408d76d505868b6",
     "crates/viboceros-opennurbs/src/subd/crease.rs": "58bf7eaa6b1a6edc850d4bcd78eb0d1e7f24cca9ad4ef5447901bf7ba31272d1",
     "crates/viboceros-opennurbs/src/subd/edges.rs": "964405af7e7efed5091a7f416b8ed852843ea66dfd24699ca21e371933386778",
-    "crates/viboceros-geometry/src/subd.rs": "f1ffe40cca59dfaa3b58296484fcfbf44063cdae62a70a498bd81d57a9a86ff4",
     "crates/viboceros-geometry/src/subd/crease.rs": "b0ac75bd02d9d22316f4f992a0774781e8c52aee68a8b3877ba5aa782c863ba2",
     "crates/viboceros-geometry/src/subd/edges.rs": "b45a57b11ebd445ef1f26cdce266dea50922a67cdd3b15700653c40bd690af4f",
     "crates/viboceros-geometry/tests/subd_edges.rs": "ddb85c3c11699b036031c42c40a66e2a7bdf140189e10a07d3af1171d9aa03fd",
@@ -250,6 +243,13 @@
     "51f7bc54f601861f911b27a82b6aab034d893bc6:tools/rhino_oracle/rhino_worker.py": "bcf7b6e6e867b2b0d114872ec1c511b376ac8707bbe2646367e9735dd819a864",
     "51f7bc54f601861f911b27a82b6aab034d893bc6:src/app.rs": "cbdf3d0585abc98dcd69719e62a3691a76a49217140d9247a8eb92950924a3a7",
     "51f7bc54f601861f911b27a82b6aab034d893bc6:tools/rhino_oracle/report_crease.py": "fb0692eff51e32b48240bf3002eb8205ed37851d9853dff5f8ab8b96f7cdbe17",
-    "51f7bc54f601861f911b27a82b6aab034d893bc6:docs/crease-qualification.json": "908c7f552624846c744e302ecf0a6abf0e319bb59e9a89ba7aeb75815e0d6c4d"
+    "51f7bc54f601861f911b27a82b6aab034d893bc6:docs/crease-qualification.json": "908c7f552624846c744e302ecf0a6abf0e319bb59e9a89ba7aeb75815e0d6c4d",
+    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:crates/viboceros-opennurbs/build.rs": "99db0377eda1c17fbd19bd2bb9051b8cf07553f92d77c5836d167f48e9d89eb7",
+    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:crates/viboceros-opennurbs/native/subd.cpp": "148f523cab0d08eca46829e1205d0be42e7b7db6113e40de93e33682606461f1",
+    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:crates/viboceros-opennurbs/native/subd.h": "817749af5e4b942a104ff5a11f1ee7656f64e3b5c72904295437461c7333b3bb",
+    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:crates/viboceros-opennurbs/native/subd_codec.h": "692893eb5c4447a582d43aca0c78413b8622ed19600975057ec15fddacad5fd0",
+    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:crates/viboceros-opennurbs/src/lib.rs": "df0e5c2c6d7ed438c3ae01bef3b8f0eb2f47e207802976d511cdac62cb100e70",
+    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:crates/viboceros-opennurbs/src/subd.rs": "55d84cb754c3fc22f9f7acdbcbf27e55095a3ce9130177c80408d76d505868b6",
+    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:crates/viboceros-geometry/src/subd.rs": "f1ffe40cca59dfaa3b58296484fcfbf44063cdae62a70a498bd81d57a9a86ff4"
   }
 }

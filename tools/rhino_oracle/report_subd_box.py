@@ -1,5 +1,5 @@
 """SubDBox command, viewport getter, native diagnostics and grouped history."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse,hashlib,json,math,re
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
@@ -14,7 +14,7 @@ SOURCES=[
  'tools/rhino_oracle/subd_box_probe.py','tools/rhino_oracle/generate_subd_box.py','tools/rhino_oracle/structural_sdk.py','tools/rhino_oracle/rhino_worker.py',
  'tools/rhino_oracle/fixtures/subd_box.json','tools/rhino_oracle/observations/subd_box.json','tools/rhino_oracle/report_subd_box.py','tools/rhino_oracle/test_subd_box.py',
 ]
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 def error(value):
  if type(value)not in(int,float)or not math.isfinite(value)or not 0<=value<=1e-6:raise ValueError('invalid or excessive SubDBox error')
  return value

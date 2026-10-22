@@ -33,6 +33,9 @@ typedef struct {
   const uint32_t* face_sources;
   size_t selected_face_count;
   const uint32_t* selected_faces;
+  size_t control_edge_count;
+  const double* edge_sharpness;
+  const uint32_t* edge_face_counts;
 } ViboSubDView;
 int vibo_subd_create(const double*, size_t, const uint32_t*, size_t,
   const uint32_t*, size_t, ViboSubDResult**, char*, size_t);
@@ -42,6 +45,8 @@ int vibo_subd_set_tags(const uint8_t*, size_t, int, const size_t*, const uint8_t
   ViboSubDResult**, char*, size_t);
 int vibo_subd_crease(const uint8_t*, size_t, const size_t*, size_t, const size_t*, size_t,
   int, size_t*, ViboSubDResult**, char*, size_t);
+int vibo_subd_soft_crease(const uint8_t*, size_t, const size_t*, const double*, size_t,
+  size_t*, ViboSubDResult**, char*, size_t);
 int vibo_subd_read(const uint8_t*, size_t, ViboSubDResult**, char*, size_t);
 int vibo_subd_edit_points(const uint8_t*, size_t, const double*, size_t,
   ViboSubDResult**, char*, size_t);

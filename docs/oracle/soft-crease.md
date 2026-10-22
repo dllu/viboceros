@@ -1,10 +1,10 @@
-# Soft SubD crease discovery
+# Soft SubD crease observations
 
 [Rhino oracle](../oracle.md) · [Editing evidence](editing-evidence.md)
 
-The [32 saved SubDCrease workflows](../../tools/rhino_oracle/observations/soft_crease_discovery.json)
-were captured from Rhino 8.32.26160.13001 on a private Xvfb display and settings
-scheme. They preserve fixed inputs, command events, source and result 3DM files,
+The initial [32 SubDCrease workflows](../../tools/rhino_oracle/observations/soft_crease_discovery.json)
+and subsequent captures retain 178 workflows from Rhino 8.32.26160.13001 on private
+Xvfb displays and settings schemes. They preserve fixed inputs, command events, source and result 3DM files,
 attributes, selection, Undo/Redo, and the original public producer source bytes.
 
 The capture covers constant weights from 0 through 100, repeated weight input,
@@ -18,10 +18,23 @@ their unknown numeric input remains in the transcript. Typed coordinates used
 in the label experiments did not enter a vertex-weight getter. Those recipes
 therefore do not establish per-vertex weight interaction.
 
-This is discovery evidence for subsequent implementation. It does not qualify a
-Viboceros SubDCrease command, variable-weight chains, mouse label input, numerical
-agreement or performance. The existing Crease and RemoveCrease qualification is
-separate. Replay the capture integrity checks without starting Rhino:
+The [geometry API qualification](../subd-soft-crease-qualification.json) now
+compares 133 workflows, including separate live-result and archive-readback
+checks. The numeric-label family uses the shared exact decimal formatter;
+earlier attempts rounded neighboring doubles before delivering them to Rhino.
+Complete mouse traces confirm ten vertex-weight getter workflows. A further
+click after changing a global weight missed the moved label; its following
+numeric weight was global. Failed and incomplete plans stay in three diagnostic
+families, outside the qualified comparison set.
+
+Branch and disconnected selections expose native CreaseThisChain and
+ConstantWeightChain options in the vertex-weight getter. A junction can belong
+to several chains; clicking it edits the selected chain rather than every
+incident edge. Closed-loop observations retain their intermediate zero anchor.
+
+The application SubDCrease getter, chain builder and comparative performance
+remain subsequent work. The existing Crease and RemoveCrease qualification is
+separate. Replay the checks without starting Rhino:
 
 ```sh
 python3 -m unittest tools.rhino_oracle.test_soft_crease

@@ -664,7 +664,7 @@ bool write_nurbs_surface(const ON_Surface& source, ByteWriter& writer) {
   return true;
 }
 
-bool append_brep(const ON_Brep& source, BridgeObject& output) {
+bool append_brep(const ON_Brep& source, BridgeObject& output, std::string* failure=nullptr) {
   ON_Brep normalized(source);
   normalized.SetTolerancesBoxesAndFlags(true, true, true, true, false, false,
                                         false, false);
@@ -679,6 +679,7 @@ bool append_brep(const ON_Brep& source, BridgeObject& output) {
   ON_TextLog log(diagnostics);
   if (!brep.IsValid(&log) || brep.m_V.Count() <= 0 ||
       brep.m_E.Count() <= 0 || brep.m_F.Count() <= 0) {
+    if(failure) *failure=utf8(diagnostics);
     return false;
   }
 

@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_crease_command",
+      "id": "label_start",
+      "case": "label_start"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_middle",
+      "case": "label_middle"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "label_control",
+      "case": "label_control"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 """Complete MeshPatch SDK, command and getter replays at the fixed model gate."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse,hashlib,json,math,re
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
@@ -21,7 +21,7 @@ SOURCES=[
  'tools/rhino_oracle/fixtures/mesh_patch.json','tools/rhino_oracle/observations/mesh_patch.json',
  'crates/viboceros-command/src/mesh_patch/tests.rs','tools/rhino_oracle/client.py','tools/rhino_oracle/rhino_worker.py','tools/rhino_oracle/structural_sdk.py',
 ]
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 def summarize(log):
     q=json.loads((HERE/'fixtures/mesh_patch.json').read_text());native=json.loads((HERE/'observations/mesh_patch.json').read_text())
     ids=[o['id']for o in q['operations']]

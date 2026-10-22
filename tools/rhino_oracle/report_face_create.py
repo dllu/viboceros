@@ -1,5 +1,5 @@
 """Direct mesh-face construction, input controls and grouped-history qualification."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import hashlib
 import json
@@ -29,7 +29,7 @@ SOURCES=[
  'tools/rhino_oracle/generate_face_create.py','tools/rhino_oracle/report_face_create.py','tools/rhino_oracle/test_face_create.py',
  'tools/rhino_oracle/group_picking.py','tools/rhino_oracle/client.py','tools/rhino_oracle/structural_sdk.py','tools/rhino_oracle/rhino_worker.py',
 ]+[f'tools/rhino_oracle/{directory}/face_create{suffix}.json'for suffix,_ in GROUPS for directory in ['fixtures','observations']]
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def check(row,value,allow_gaps=False):

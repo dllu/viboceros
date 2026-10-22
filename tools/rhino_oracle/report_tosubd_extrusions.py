@@ -1,5 +1,5 @@
 """Qualify extrusion and direct surface-SDK conversion, with complete fixed coverage."""
-from .qualification_sources import with_application_sources
+from .qualification_sources import with_shared_sources
 import argparse
 import hashlib
 import json
@@ -26,7 +26,7 @@ SOURCES=list(dict.fromkeys(INTEROP_SOURCES+[
     'tools/rhino_oracle/creator_types_probe.py','tools/rhino_oracle/generate_creator_types.py',
     'tools/rhino_oracle/fixtures/creator_types.json','tools/rhino_oracle/observations/creator_types.json',
 ]+[f'tools/rhino_oracle/{folder}/{family}.json' for family,_ in FAMILIES for folder in ['fixtures','observations']]))
-SOURCES = with_application_sources(SOURCES)
+SOURCES = with_shared_sources(SOURCES)
 
 
 def observations():
