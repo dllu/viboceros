@@ -5,6 +5,7 @@
 These pages describe geometry algorithms, numeric conventions and their
 validation. Command behavior belongs in the [command reference](../commands/README.md).
 
+- [Surface intersection coverage, tangencies and remaining limits](surface-intersections.md)
 - [Typed extrusion creators and native geometry qualification](../creator-extrusions.md)
 - [SubD geometry](../subd.md)
 - [Mesh vertex channels and 3DM preservation](mesh-channels.md)
