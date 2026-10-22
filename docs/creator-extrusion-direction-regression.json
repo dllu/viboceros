@@ -451,7 +451,7 @@
   },
   "performance_qualified": false,
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "24332a39853b327e6b5760324bb9bccf27706075193039afb58ac049e55a9150",
+    "crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
     "crates/viboceros-command/src/extrude_curve.rs": "c2301b8c76103d1d603c69bdfdb7fe57c2bc999173335a4274549d75a595edfa",
     "crates/viboceros-document/src/geometry.rs": "6b8a85eec1ead4ac5ce9255941cec005b3cd1b3eeee949892b9492777bae99d9",
     "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",

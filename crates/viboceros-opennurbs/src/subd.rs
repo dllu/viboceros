@@ -1,6 +1,8 @@
 //! Owned SubD records and bounded calls to the public OpenNURBS subdivision API.
 use std::ffi::{c_char, c_int};
 use std::ptr::NonNull;
+mod crease;
+pub use crease::subd_crease_components;
 
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 #[error("OpenNURBS SubD: {0}")]

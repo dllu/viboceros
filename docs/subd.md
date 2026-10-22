@@ -26,6 +26,8 @@ Interpolation is remembered and affects only SubD output.
 The [mesh and SubD command index](commands/meshes-index.md) lists primitive
 construction guides and their native qualifications. Primitive commands reuse
 shared rectangle, circle, ellipse and axis getters, with independent settings.
+Use [Crease and RemoveCrease](commands/crease.md) to edit hard edges and corners
+through typed component indices or selected control grips.
 
 Select a SubD before `3DFace`, choose `Append` in the point getter, or supply
 `Append=<id>` to add faces to it. Without an explicit `Output` option, the target

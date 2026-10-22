@@ -153,6 +153,18 @@ extern "C" int vibo_subd_set_tags(const uint8_t* bytes,size_t count,int vertex,
     subd->UpdateAllTagsAndSectorCoefficients(false);subd->ClearEvaluationCache();return extract(*subd);
   });
 }
+#include "subd_crease.h"
+extern "C" int vibo_subd_crease(const uint8_t* bytes,size_t count,
+    const size_t* edges,size_t edge_count,const size_t* vertices,size_t vertex_count,
+    int crease,size_t* changed,ViboSubDResult** out,char* error,size_t capacity) {
+  if(changed) *changed=0;
+  return guard(out,error,capacity,[&]{
+    require(changed && (crease==0 || crease==1),"Invalid crease operation");
+    auto subd=vibo_subd::decode(bytes,count);
+    *changed=vibo_subd::crease_components(*subd,edges,edge_count,vertices,vertex_count,crease!=0);
+    return extract(*subd);
+  });
+}
 extern "C" int vibo_subd_read(const uint8_t* bytes,size_t n,ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{return extract(*vibo_subd::decode(bytes,n));});
 }

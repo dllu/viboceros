@@ -130,6 +130,7 @@ impl Document {
         &mut self,
         staged: Vec<(usize, Geometry)>,
         history: ReplacementHistory,
+        label: &'static str,
     ) -> Result<usize, DocumentError> {
         let before = staged
             .iter()
@@ -143,15 +144,9 @@ impl Document {
             .collect::<Vec<_>>();
         let owns_transaction = !before.is_empty() && self.history.active.is_none();
         if owns_transaction {
-            self.begin_transaction("Transform objects")?;
+            self.begin_transaction(label)?;
         }
-        let result = self.commit_object_geometries(
-            staged,
-            "Transform objects",
-            "Transform object",
-            history,
-            true,
-        );
+        let result = self.commit_object_geometries(staged, label, label, history, true);
         if result.is_ok() {
             for (id, old) in before {
                 let state = self.control_points.get_mut(&id).unwrap();
@@ -166,7 +161,7 @@ impl Document {
                         .collect(),
                 );
                 self.record_edit(
-                    "Transform objects",
+                    label,
                     Edit::ControlPointsChanged {
                         id,
                         stored: Some(old),

@@ -39,7 +39,34 @@ impl Document {
                 ))
             })
             .collect::<Result<Vec<_>, DocumentError>>()?;
-        self.commit_object_geometries_with_control_selection(staged, history)
+        self.commit_object_geometries_with_control_selection(staged, history, "Transform objects")
+    }
+
+    /// Replace geometry while retaining selected control indices and geometry
+    /// user text. Use this for edits that preserve the meaning of control
+    /// indices; indices beyond the new grip table are discarded. Grip state
+    /// follows the geometry through Undo/Redo. All inputs are staged first.
+    pub fn replace_object_geometries_preserving_control_selection(
+        &mut self,
+        replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<usize, DocumentError> {
+        let mut replacements = replacements.into_iter().collect::<BTreeMap<_, _>>();
+        let indices = self.resolve_object_indices(replacements.keys().copied())?;
+        for &index in &indices {
+            self.ensure_object_editable(&self.objects[index])?;
+        }
+        let staged = indices
+            .into_iter()
+            .map(|index| {
+                let geometry = replacements.remove(&self.objects[index].id).unwrap();
+                Ok((index, object_admission::normalize_geometry(geometry)?))
+            })
+            .collect::<Result<Vec<_>, DocumentError>>()?;
+        self.commit_object_geometries_with_control_selection(
+            staged,
+            ReplacementHistory::ChangesOnly,
+            "Replace object geometry",
+        )
     }
 
     pub(super) fn stage_object_geometries(

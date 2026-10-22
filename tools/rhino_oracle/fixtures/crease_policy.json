@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "crease_command",
+      "id": "policy_crease_overlap_0",
+      "case": "policy_crease_overlap_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_crease_overlap_01",
+      "case": "policy_crease_overlap_01"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_crease_soft_dart",
+      "case": "policy_crease_soft_dart"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_crease_ngon_boundary",
+      "case": "policy_crease_ngon_boundary"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_crease_ngon_internal",
+      "case": "policy_crease_ngon_internal"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_crease_ngon_unrelated",
+      "case": "policy_crease_ngon_unrelated"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_removecrease_overlap_0",
+      "case": "policy_removecrease_overlap_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_removecrease_overlap_01",
+      "case": "policy_removecrease_overlap_01"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_removecrease_soft_dart",
+      "case": "policy_removecrease_soft_dart"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_removecrease_ngon_boundary",
+      "case": "policy_removecrease_ngon_boundary"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_removecrease_ngon_internal",
+      "case": "policy_removecrease_ngon_internal"
+    },
+    {
+      "op": "crease_command",
+      "id": "policy_removecrease_ngon_unrelated",
+      "case": "policy_removecrease_ngon_unrelated"
+    }
+  ]
+}

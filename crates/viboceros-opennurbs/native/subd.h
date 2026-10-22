@@ -40,6 +40,8 @@ int vibo_subd_append(const uint8_t*, size_t, const double*, size_t, const uint32
   const uint32_t*, size_t, ViboSubDResult**, char*, size_t);
 int vibo_subd_set_tags(const uint8_t*, size_t, int, const size_t*, const uint8_t*, size_t,
   ViboSubDResult**, char*, size_t);
+int vibo_subd_crease(const uint8_t*, size_t, const size_t*, size_t, const size_t*, size_t,
+  int, size_t*, ViboSubDResult**, char*, size_t);
 int vibo_subd_read(const uint8_t*, size_t, ViboSubDResult**, char*, size_t);
 int vibo_subd_edit_points(const uint8_t*, size_t, const double*, size_t,
   ViboSubDResult**, char*, size_t);

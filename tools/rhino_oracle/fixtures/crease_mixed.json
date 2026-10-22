@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "crease_command",
+      "id": "mixed_crease_smooth_remote",
+      "case": "mixed_crease_smooth_remote"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_crease_corner_remote",
+      "case": "mixed_crease_corner_remote"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_crease_crease_remote",
+      "case": "mixed_crease_crease_remote"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_crease_smooth_both",
+      "case": "mixed_crease_smooth_both"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_crease_corner_both",
+      "case": "mixed_crease_corner_both"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_removecrease_smooth_remote",
+      "case": "mixed_removecrease_smooth_remote"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_removecrease_corner_remote",
+      "case": "mixed_removecrease_corner_remote"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_removecrease_crease_remote",
+      "case": "mixed_removecrease_crease_remote"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_removecrease_smooth_both",
+      "case": "mixed_removecrease_smooth_both"
+    },
+    {
+      "op": "crease_command",
+      "id": "mixed_removecrease_corner_both",
+      "case": "mixed_removecrease_corner_both"
+    }
+  ]
+}

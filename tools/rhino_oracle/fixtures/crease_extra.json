@@ -1,0 +1,161 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "crease_command",
+      "id": "extra_crease_dart_0",
+      "case": "extra_crease_dart_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_dart_0_1",
+      "case": "extra_crease_dart_0_1"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_crease_0",
+      "case": "extra_crease_crease_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_crease_0_1",
+      "case": "extra_crease_crease_0_1"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_corner_on_chain_0",
+      "case": "extra_crease_corner_on_chain_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_corner_on_chain_0_1",
+      "case": "extra_crease_corner_on_chain_0_1"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_all_edges_0",
+      "case": "extra_crease_all_edges_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_all_edges_0_1",
+      "case": "extra_crease_all_edges_0_1"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_grid_False",
+      "case": "extra_crease_grid_False"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_grid_True",
+      "case": "extra_crease_grid_True"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_grip_smooth",
+      "case": "extra_crease_grip_smooth"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_grip_crease",
+      "case": "extra_crease_grip_crease"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_grip_corner",
+      "case": "extra_crease_grip_corner"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_mesh_colors",
+      "case": "extra_crease_mesh_colors"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_crease_mesh_ngon",
+      "case": "extra_crease_mesh_ngon"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_dart_0",
+      "case": "extra_removecrease_dart_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_dart_0_1",
+      "case": "extra_removecrease_dart_0_1"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_crease_0",
+      "case": "extra_removecrease_crease_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_crease_0_1",
+      "case": "extra_removecrease_crease_0_1"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_corner_on_chain_0",
+      "case": "extra_removecrease_corner_on_chain_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_corner_on_chain_0_1",
+      "case": "extra_removecrease_corner_on_chain_0_1"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_all_edges_0",
+      "case": "extra_removecrease_all_edges_0"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_all_edges_0_1",
+      "case": "extra_removecrease_all_edges_0_1"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_grid_False",
+      "case": "extra_removecrease_grid_False"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_grid_True",
+      "case": "extra_removecrease_grid_True"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_grip_smooth",
+      "case": "extra_removecrease_grip_smooth"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_grip_crease",
+      "case": "extra_removecrease_grip_crease"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_grip_corner",
+      "case": "extra_removecrease_grip_corner"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_mesh_colors",
+      "case": "extra_removecrease_mesh_colors"
+    },
+    {
+      "op": "crease_command",
+      "id": "extra_removecrease_mesh_ngon",
+      "case": "extra_removecrease_mesh_ngon"
+    }
+  ]
+}

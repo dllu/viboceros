@@ -1,0 +1,161 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "crease_command",
+      "id": "crease_subd_edge",
+      "case": "crease_subd_edge"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_subd_vertex",
+      "case": "crease_subd_vertex"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_subd_boundary_vertex",
+      "case": "crease_subd_boundary_vertex"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_subd_boundary_edge",
+      "case": "crease_subd_boundary_edge"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_subd_creased_edge",
+      "case": "crease_subd_creased_edge"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_subd_corner",
+      "case": "crease_subd_corner"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_subd_cycle",
+      "case": "crease_subd_cycle"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_mesh_edge",
+      "case": "crease_mesh_edge"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_mesh_seam",
+      "case": "crease_mesh_seam"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_mesh_boundary",
+      "case": "crease_mesh_boundary"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_subd_whole_post",
+      "case": "crease_subd_whole_post"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_subd_whole_pre",
+      "case": "crease_subd_whole_pre"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_mesh_whole_post",
+      "case": "crease_mesh_whole_post"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_mesh_whole_pre",
+      "case": "crease_mesh_whole_pre"
+    },
+    {
+      "op": "crease_command",
+      "id": "crease_cancel",
+      "case": "crease_cancel"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_edge",
+      "case": "removecrease_subd_edge"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_vertex",
+      "case": "removecrease_subd_vertex"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_boundary_vertex",
+      "case": "removecrease_subd_boundary_vertex"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_boundary_edge",
+      "case": "removecrease_subd_boundary_edge"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_creased_edge",
+      "case": "removecrease_subd_creased_edge"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_corner",
+      "case": "removecrease_subd_corner"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_cycle",
+      "case": "removecrease_subd_cycle"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_mesh_edge",
+      "case": "removecrease_mesh_edge"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_mesh_seam",
+      "case": "removecrease_mesh_seam"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_mesh_boundary",
+      "case": "removecrease_mesh_boundary"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_whole_post",
+      "case": "removecrease_subd_whole_post"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_subd_whole_pre",
+      "case": "removecrease_subd_whole_pre"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_mesh_whole_post",
+      "case": "removecrease_mesh_whole_post"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_mesh_whole_pre",
+      "case": "removecrease_mesh_whole_pre"
+    },
+    {
+      "op": "crease_command",
+      "id": "removecrease_cancel",
+      "case": "removecrease_cancel"
+    }
+  ]
+}

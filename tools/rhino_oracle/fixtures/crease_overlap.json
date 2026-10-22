@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "crease_command",
+      "id": "overlap_crease_valence_four",
+      "case": "overlap_crease_valence_four"
+    },
+    {
+      "op": "crease_command",
+      "id": "overlap_crease_boundary",
+      "case": "overlap_crease_boundary"
+    },
+    {
+      "op": "crease_command",
+      "id": "overlap_removecrease_valence_four",
+      "case": "overlap_removecrease_valence_four"
+    },
+    {
+      "op": "crease_command",
+      "id": "overlap_removecrease_boundary",
+      "case": "overlap_removecrease_boundary"
+    }
+  ]
+}

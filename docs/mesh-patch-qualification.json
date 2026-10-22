@@ -454,7 +454,7 @@
     "crates/viboceros-geometry/src/bezier.rs": "fb5b7ce4ec1dbf70c1d5191906bc7fa69ea830f7f96a5e7a10eb99d194f0f6b0",
     "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
     "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
-    "crates/viboceros-command/src/lib.rs": "24332a39853b327e6b5760324bb9bccf27706075193039afb58ac049e55a9150",
+    "crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",
     "crates/viboceros-command/src/mesh_patch.rs": "1d0c35fa81f30b6f47f1a1a9c5f5dad1c486cab860f5fb8cfa400172b7376653",
     "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",
@@ -473,7 +473,7 @@
     "tools/rhino_oracle/observations/mesh_patch.json": "79f352d68c46ab33e7842022ec0b14db87530d471915ef30837f9c8fe9e507b9",
     "crates/viboceros-command/src/mesh_patch/tests.rs": "d76fee8b9d14f8ea618ef8078d81bd0b4d91a613e9f28a1f246035fe4e84140b",
     "tools/rhino_oracle/client.py": "a21aa6dcc54d3671a3cb4781cbf291f51fd7b8f7c3d1d52b4115ae71808690fa",
-    "tools/rhino_oracle/rhino_worker.py": "2a13b40fa72e3ad5f139ab4da86fb166d997e1438083a9b3fb546a96b7844f75",
-    "tools/rhino_oracle/structural_sdk.py": "f9c029cec4311905df10046bffdcf27626cd35156f553ebeb329694d7055e0ba"
+    "tools/rhino_oracle/rhino_worker.py": "bcf7b6e6e867b2b0d114872ec1c511b376ac8707bbe2646367e9735dd819a864",
+    "tools/rhino_oracle/structural_sdk.py": "a524afc7dcd7ad37ae791eb1d1a2177fdfb38da5ed4247a57572742f237dead6"
   }
 }

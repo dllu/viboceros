@@ -6,6 +6,7 @@ use crate::{
 use std::sync::Arc;
 mod append;
 mod cone;
+mod crease;
 mod cylinder;
 mod ellipsoid;
 mod extrusion_conversion;
