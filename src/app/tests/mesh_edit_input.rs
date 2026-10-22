@@ -337,6 +337,7 @@ fn interactive_weld_vertices_uses_one_topology_vertex_pick() {
 #[test]
 fn interactive_unweld_edge_uses_one_topology_edge_pick() {
     let mut app = test_app();
+    let stored_normal = viboceros_geometry::Vector3::try_new(1., 0., 0.).unwrap();
     let mesh = TriangleMesh::try_new(
         vec![
             point(0.0, 0.0, 0.0),
@@ -347,6 +348,8 @@ fn interactive_unweld_edge_uses_one_topology_edge_pick() {
         vec![[0, 1, 2], [1, 0, 3]],
         app.document.tolerance(),
     )
+    .unwrap()
+    .try_with_vertex_normals(Some(vec![stored_normal; 4]))
     .unwrap();
     let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
     app.document
@@ -369,6 +372,13 @@ fn interactive_unweld_edge_uses_one_topology_edge_pick() {
         panic!("expected unwelded mesh")
     };
     assert_eq!(unwelded.vertices().len(), 6);
+    assert!(
+        unwelded
+            .vertex_normals()
+            .unwrap()
+            .iter()
+            .all(|n| *n == stored_normal)
+    );
     assert_eq!(app.document.undo_label(), Some("UnweldEdge"));
     assert!(!app.try_start_interactive_command("UnweldEdge ModifyNormals=Maybe"));
     assert!(!app.try_start_interactive_command("UnweldEdge ModifyNormals=No ModifyNormals=Yes"));
@@ -377,6 +387,7 @@ fn interactive_unweld_edge_uses_one_topology_edge_pick() {
 #[test]
 fn interactive_unweld_vertex_uses_one_topology_vertex_pick() {
     let mut app = test_app();
+    let stored_normal = viboceros_geometry::Vector3::try_new(1., 0., 0.).unwrap();
     let mesh = TriangleMesh::try_new(
         vec![
             point(0.0, 0.0, 0.0),
@@ -387,6 +398,8 @@ fn interactive_unweld_vertex_uses_one_topology_vertex_pick() {
         vec![[0, 1, 2], [1, 0, 3]],
         app.document.tolerance(),
     )
+    .unwrap()
+    .try_with_vertex_normals(Some(vec![stored_normal; 4]))
     .unwrap();
     let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
     app.document
@@ -409,6 +422,13 @@ fn interactive_unweld_vertex_uses_one_topology_vertex_pick() {
         panic!("expected vertex-unwelded mesh")
     };
     assert_eq!(unwelded.vertices().len(), 5);
+    assert!(
+        unwelded
+            .vertex_normals()
+            .unwrap()
+            .iter()
+            .all(|n| *n == stored_normal)
+    );
     assert_eq!(app.document.undo_label(), Some("UnweldVertex"));
     assert!(!app.try_start_interactive_command("UnweldVertex ModifyNormals=Maybe"));
     assert!(!app.try_start_interactive_command("UnweldVertex ModifyNormals=No ModifyNormals=Yes"));

@@ -1,0 +1,251 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_bent_preserve",
+      "case": "edge_bent_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_bent_modify",
+      "case": "edge_bent_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_remote_preserve",
+      "case": "edge_remote_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_remote_modify",
+      "case": "edge_remote_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_cube_preserve",
+      "case": "edge_cube_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_cube_modify",
+      "case": "edge_cube_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_fan_preserve",
+      "case": "edge_fan_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_fan_modify",
+      "case": "edge_fan_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_nonmanifold_preserve",
+      "case": "edge_nonmanifold_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_nonmanifold_modify",
+      "case": "edge_nonmanifold_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_partial_preserve",
+      "case": "edge_partial_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_partial_modify",
+      "case": "edge_partial_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_unshared_preserve",
+      "case": "edge_unshared_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_unshared_modify",
+      "case": "edge_unshared_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_no_normals_preserve",
+      "case": "edge_no_normals_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_no_normals_modify",
+      "case": "edge_no_normals_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_naked_preserve",
+      "case": "edge_naked_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_naked_modify",
+      "case": "edge_naked_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_multiple_preserve",
+      "case": "edge_multiple_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_multiple_modify",
+      "case": "edge_multiple_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_duplicate_preserve",
+      "case": "edge_duplicate_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_duplicate_modify",
+      "case": "edge_duplicate_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_empty_preserve",
+      "case": "edge_empty_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "edge_empty_modify",
+      "case": "edge_empty_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_bent_preserve",
+      "case": "vertex_bent_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_bent_modify",
+      "case": "vertex_bent_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_remote_preserve",
+      "case": "vertex_remote_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_remote_modify",
+      "case": "vertex_remote_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_cube_preserve",
+      "case": "vertex_cube_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_cube_modify",
+      "case": "vertex_cube_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_fan_preserve",
+      "case": "vertex_fan_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_fan_modify",
+      "case": "vertex_fan_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_nonmanifold_preserve",
+      "case": "vertex_nonmanifold_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_nonmanifold_modify",
+      "case": "vertex_nonmanifold_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_partial_preserve",
+      "case": "vertex_partial_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_partial_modify",
+      "case": "vertex_partial_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_unshared_preserve",
+      "case": "vertex_unshared_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_unshared_modify",
+      "case": "vertex_unshared_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_no_normals_preserve",
+      "case": "vertex_no_normals_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_no_normals_modify",
+      "case": "vertex_no_normals_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_naked_preserve",
+      "case": "vertex_naked_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_naked_modify",
+      "case": "vertex_naked_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_multiple_preserve",
+      "case": "vertex_multiple_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_multiple_modify",
+      "case": "vertex_multiple_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_duplicate_preserve",
+      "case": "vertex_duplicate_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_duplicate_modify",
+      "case": "vertex_duplicate_modify"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_empty_preserve",
+      "case": "vertex_empty_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_channels",
+      "id": "vertex_empty_modify",
+      "case": "vertex_empty_modify"
+    }
+  ]
+}

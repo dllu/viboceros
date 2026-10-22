@@ -4558,7 +4558,7 @@ fn execute(
             vertices,
             triangles,
             angle_radians,
-            modify_normals: _,
+            modify_normals,
             ..
         } => {
             let mesh = TriangleMesh::try_new(
@@ -4571,7 +4571,10 @@ fn execute(
             )?;
             let before = mesh.vertices().len() as i64;
             let ((unwelded, _), elapsed) = measure(iterations, || {
-                black_box(&mesh).unwelded_vertices(black_box(*angle_radians))
+                black_box(&mesh).unwelded_vertices_with_normal_update(
+                    black_box(*angle_radians),
+                    black_box(*modify_normals),
+                )
             })?;
             let added_vertices = unwelded.vertices().len() as i64 - before;
             (
@@ -4586,7 +4589,7 @@ fn execute(
             vertices,
             triangles,
             edge_indices,
-            modify_normals: _,
+            modify_normals,
             ..
         } => {
             let mesh = TriangleMesh::try_new(
@@ -4599,7 +4602,10 @@ fn execute(
             )?;
             let before = mesh.vertices().len() as i64;
             let ((unwelded, _), elapsed) = measure(iterations, || {
-                black_box(&mesh).unwelded_topology_edges(black_box(edge_indices))
+                black_box(&mesh).unwelded_topology_edges_with_normal_update(
+                    black_box(edge_indices),
+                    black_box(*modify_normals),
+                )
             })?;
             let added_vertices = unwelded.vertices().len() as i64 - before;
             (
@@ -4615,7 +4621,7 @@ fn execute(
             vertices,
             triangles,
             vertex_indices,
-            modify_normals: _,
+            modify_normals,
             ..
         } => {
             let mesh = TriangleMesh::try_new(
@@ -4628,7 +4634,10 @@ fn execute(
             )?;
             let before = mesh.vertices().len() as i64;
             let ((unwelded, _), elapsed) = measure(iterations, || {
-                black_box(&mesh).unwelded_topology_vertices(black_box(vertex_indices))
+                black_box(&mesh).unwelded_topology_vertices_with_normal_update(
+                    black_box(vertex_indices),
+                    black_box(*modify_normals),
+                )
             })?;
             let added_vertices = unwelded.vertices().len() as i64 - before;
             (

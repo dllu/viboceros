@@ -23,6 +23,16 @@ impl TriangleMesh {
         &self,
         vertex_indices: &[usize],
     ) -> Result<(Self, usize), GeometryError> {
+        self.unwelded_topology_vertices_with_normal_update(vertex_indices, true)
+    }
+
+    /// Gives incident faces separate raw vertices while either copying source
+    /// normals or recomputing the replacement normals from their faces.
+    pub fn unwelded_topology_vertices_with_normal_update(
+        &self,
+        vertex_indices: &[usize],
+        modify_normals: bool,
+    ) -> Result<(Self, usize), GeometryError> {
         if vertex_indices.is_empty() {
             return Ok((self.clone(), 0));
         }
@@ -119,8 +129,15 @@ impl TriangleMesh {
         }
 
         let vertex_order = (0..data.topological_vertex_count).collect::<Vec<_>>();
+        let normals = self.stored_or_computed_normals()?;
         Ok((
-            self.rebuilt_from_face_components(&data, &face_components, &vertex_order)?,
+            self.rebuilt_from_face_components_with_normals(
+                &data,
+                &face_components,
+                &vertex_order,
+                modify_normals,
+                normals.as_deref(),
+            )?,
             newly_separated_vertex_count,
         ))
     }

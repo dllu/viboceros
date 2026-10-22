@@ -409,14 +409,11 @@ attributes, colors, and valid n-gons are retained. Face and edge indices are
 the source mesh's original indices. Invalid components or degenerate faces
 reject the whole selection before document mutation.
 
-`Weld` merges exactly coincident endpoints only where mesh faces share a whole
-edge and their normal angle is within the supplied 0-to-180-degree tolerance.
-It compacts unused vertices, keeps vertex-only contacts separate, and preserves
-object identity, metadata, groups and selection. Stored UVs, vertex colors and
-normal directions are blended across joined seams. The default is 180 degrees;
-`Angle=90` is also accepted. Connected-face ordering and some attribute reductions
-still differ from Rhino; see the [measured limits](../geometry/mesh-channels.md).
-Whole-mesh `Weld`, `Unweld`, `CombineIdenticalMeshVertices`, and
+[Mesh seam commands](mesh-seams.md) cover `Weld`, `WeldEdge`, `WeldVertices`,
+`Unweld`, `UnweldEdge`, and `UnweldVertex`, including stored-normal options,
+component selection, and measured compatibility limits.
+
+`CombineIdenticalMeshVertices`, and
 `CullUnusedMeshVertices` likewise borrow selected inputs while staging new
 geometry, without an extra input snapshot. This does not remove the allocations
 needed to construct results or retain document history.

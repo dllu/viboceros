@@ -223,7 +223,7 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         validate_structural_sdk_operations(request)
-        if any(op.get('op') in ('mesh_weld_channels','mesh_weld_channels_followup','mesh_weld_channels_prefixes','mesh_unweld_channels') for op in request.get('operations', [])):
+        if any(op.get('op') in ('mesh_weld_channels','mesh_weld_channels_followup','mesh_weld_channels_prefixes','mesh_unweld_channels','mesh_component_unweld_channels','mesh_component_unweld_commands') for op in request.get('operations', [])):
             operations=request['operations']
             if (self.settings_scheme is None or type(request.get('iterations',1)) is not int
                     or request.get('iterations',1)!=1 or not 1<=len(operations)<=64

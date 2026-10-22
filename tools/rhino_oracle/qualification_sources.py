@@ -3,6 +3,8 @@
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
+    'src/viewport/scene.rs',
+    'src/viewport/display_cache.rs',
     'src/app/object_selection.rs',
     'src/app/control_polygon.rs',
     'src/app/control_polygon/subcurve.rs',
@@ -66,11 +68,12 @@ SUBD_MODULES = [
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['vertex_channels', 'native', 'append', 'face_records', 'components',
-                 'rebuild', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
-                 'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'unweld', 'compaction',
+                 'rebuild', 'normals', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
+                 'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'unweld', 'edge_unweld', 'vertex_unweld', 'radial', 'compaction',
                  'quadrangulate', 'planar_cap', 'coplanar_merge']
 ] + [
     'crates/viboceros-geometry/tests/support/mesh_channels.rs',
+    'crates/viboceros-geometry/tests/support/mesh_equivalence.rs',
     'crates/viboceros-opennurbs/src/mesh.rs',
     'crates/viboceros-opennurbs/native/mesh_modeling.h',
     'crates/viboceros-opennurbs/native/mesh_modeling.cpp',
@@ -83,6 +86,7 @@ def with_shared_sources(paths):
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
             'crates/viboceros-command/src/mesh_seams.rs',
+            'crates/viboceros-command/src/mesh_component_unweld.rs',
             'crates/viboceros-command/src/extract_control_polygon.rs',
             'crates/viboceros-command/src/extract_control_polygon/options.rs',
             'crates/viboceros-command/src/extract_control_polygon/arguments.rs',

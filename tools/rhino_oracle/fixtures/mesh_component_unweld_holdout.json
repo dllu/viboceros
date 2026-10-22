@@ -1,0 +1,131 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_corner_preserve",
+      "case": "holdout_cube_edges_corner_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_corner_modify",
+      "case": "holdout_cube_edges_corner_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_all_preserve",
+      "case": "holdout_cube_edges_all_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_all_modify",
+      "case": "holdout_cube_edges_all_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_disjoint_preserve",
+      "case": "holdout_cube_edges_disjoint_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_disjoint_modify",
+      "case": "holdout_cube_edges_disjoint_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_reverse_preserve",
+      "case": "holdout_cube_edges_reverse_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_reverse_modify",
+      "case": "holdout_cube_edges_reverse_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_pair_preserve",
+      "case": "holdout_cube_edges_pair_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_edges_pair_modify",
+      "case": "holdout_cube_edges_pair_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_rotated_preserve",
+      "case": "holdout_cube_rotated_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_cube_rotated_modify",
+      "case": "holdout_cube_rotated_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_four_face_edge_preserve",
+      "case": "holdout_four_face_edge_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_four_face_edge_modify",
+      "case": "holdout_four_face_edge_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_four_face_vertex_preserve",
+      "case": "holdout_four_face_vertex_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_four_face_vertex_modify",
+      "case": "holdout_four_face_vertex_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_octa_edge_preserve",
+      "case": "holdout_octa_edge_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_octa_edge_modify",
+      "case": "holdout_octa_edge_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_octa_vertex_preserve",
+      "case": "holdout_octa_vertex_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_octa_vertex_modify",
+      "case": "holdout_octa_vertex_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_tilted_edge_preserve",
+      "case": "holdout_tilted_edge_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_tilted_edge_modify",
+      "case": "holdout_tilted_edge_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_tilted_vertex_preserve",
+      "case": "holdout_tilted_vertex_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "holdout_tilted_vertex_modify",
+      "case": "holdout_tilted_vertex_modify"
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "vertex_bent_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_bent_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_remote_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_remote_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_cube_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_cube_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_fan_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_fan_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_nonmanifold_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_nonmanifold_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_partial_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_partial_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_unshared_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_unshared_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_no_normals_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals"
+  ],
+  "vertex_no_normals_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals"
+  ],
+  "vertex_multiple_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_multiple_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_duplicate_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "vertex_duplicate_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ]
+}

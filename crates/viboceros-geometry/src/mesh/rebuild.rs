@@ -4,6 +4,14 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
+#[derive(Default)]
+pub(super) struct FaceComponentRebuildPolicy<'a> {
+    pub normals: Option<&'a [Vector3]>,
+    pub modify_normals: bool,
+    pub retained: BTreeMap<(usize, usize), u32>,
+    pub normal_overrides: BTreeMap<(usize, usize), Vector3>,
+}
+
 fn output_vertex_count(
     retained: usize,
     component_counts: impl IntoIterator<Item = usize>,
@@ -30,21 +38,43 @@ impl TriangleMesh {
         data: &MeshTopologyData,
         face_components: &[Vec<Vec<usize>>],
         topological_vertex_order: &[usize],
+        modify_normals: bool,
     ) -> Result<Self, GeometryError> {
-        self.rebuilt_from_face_components_with_normal_update(
+        self.rebuilt_from_face_components_with_normals(
             data,
             face_components,
             topological_vertex_order,
-            true,
+            modify_normals,
+            self.vertex_normals(),
         )
     }
 
-    pub(super) fn rebuilt_from_face_components_with_normal_update(
+    pub(super) fn rebuilt_from_face_components_with_normals(
         &self,
         data: &MeshTopologyData,
         face_components: &[Vec<Vec<usize>>],
         topological_vertex_order: &[usize],
         modify_normals: bool,
+        normals: Option<&[Vector3]>,
+    ) -> Result<Self, GeometryError> {
+        self.rebuilt_from_component_plan(
+            data,
+            face_components,
+            topological_vertex_order,
+            FaceComponentRebuildPolicy {
+                normals,
+                modify_normals,
+                ..Default::default()
+            },
+        )
+    }
+
+    pub(super) fn rebuilt_from_component_plan(
+        &self,
+        data: &MeshTopologyData,
+        face_components: &[Vec<Vec<usize>>],
+        topological_vertex_order: &[usize],
+        policy: FaceComponentRebuildPolicy<'_>,
     ) -> Result<Self, GeometryError> {
         let affected_topological_vertices = face_components
             .iter()
@@ -78,19 +108,26 @@ impl TriangleMesh {
                     !affected_topological_vertices[data.topological_vertices[vertex as usize]];
             }
         }
+        for &source in policy.retained.values() {
+            used[source as usize] = true;
+        }
         let retained = used.iter().filter(|&&used| used).count();
         let vertex_count = output_vertex_count(
             retained,
-            topological_vertex_order
-                .iter()
-                .map(|&vertex| face_components[vertex].len()),
+            topological_vertex_order.iter().map(|&vertex| {
+                face_components[vertex]
+                    .iter()
+                    .enumerate()
+                    .filter(|(component, _)| !policy.retained.contains_key(&(vertex, *component)))
+                    .count()
+            }),
         )?;
         let mut raw_remap = Vec::new();
         raw_remap
             .try_reserve_exact(self.vertices.len())
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
         raw_remap.resize(self.vertices.len(), 0_u32);
-        let mut channels = ChannelBuilder::new(&self.vertex_channels);
+        let mut channels = ChannelBuilder::with_normals(&self.vertex_channels, policy.normals);
         let mut vertices = Vec::new();
         let mut colors = self
             .vertex_colors
@@ -128,22 +165,34 @@ impl TriangleMesh {
                 }
             }
         }
+        let mut normal_overrides = Vec::new();
         for &topological_vertex in topological_vertex_order {
             let components = &face_components[topological_vertex];
-            for component in components {
-                let target = u32::try_from(vertices.len())
-                    .map_err(|_| GeometryError::TooManyMeshVertices)?;
-                vertices.push(data.topological_points[topological_vertex]);
-                let source = self.faces[component[0]]
-                    .indices()
-                    .iter()
-                    .copied()
-                    .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
-                    .expect("a face component contains its topology vertex")
-                    as usize;
-                channels.push(source);
-                if let Some(colors) = &mut colors {
-                    colors.push(self.vertex_colors.as_ref().unwrap()[source]);
+            for (component_index, component) in components.iter().enumerate() {
+                let key = (topological_vertex, component_index);
+                let target = if let Some(&source) = policy.retained.get(&key) {
+                    raw_remap[source as usize]
+                } else {
+                    let target = u32::try_from(vertices.len())
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?;
+                    vertices.push(data.topological_points[topological_vertex]);
+                    let source = self.faces[component[0]]
+                        .indices()
+                        .iter()
+                        .copied()
+                        .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
+                        .expect("a face component contains its topology vertex")
+                        as usize;
+                    channels.push(source);
+                    if let Some(colors) = &mut colors {
+                        colors.push(self.vertex_colors.as_ref().unwrap()[source]);
+                    }
+                    target
+                };
+                if policy.modify_normals
+                    && let Some(&normal) = policy.normal_overrides.get(&key)
+                {
+                    normal_overrides.push((target as usize, normal));
                 }
                 for &face in component {
                     let corner = self.faces[face]
@@ -182,8 +231,13 @@ impl TriangleMesh {
             .retain_valid_ngons_for_same_faces(&self.ngons);
         rebuilt.vertex_colors = colors;
         rebuilt.vertex_channels = channels.finish();
-        if modify_normals {
+        if policy.modify_normals {
             rebuilt.recompute_stored_normals_from(retained)?;
+            if let Some(normals) = &mut rebuilt.vertex_channels.normals {
+                for (target, normal) in normal_overrides {
+                    normals[target] = normal;
+                }
+            }
         }
         Ok(rebuilt)
     }

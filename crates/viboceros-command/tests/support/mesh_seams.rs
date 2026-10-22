@@ -4,8 +4,14 @@ use viboceros_command::CommandRegistry;
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, SelectionMode};
 #[path = "../../../viboceros-geometry/tests/support/mesh_channels.rs"]
 mod channels;
+#[path = "../../../viboceros-geometry/tests/support/mesh_equivalence.rs"]
+mod equivalence;
 
 pub fn check(name: &str, v: &Value, command: &str, history: &str) {
+    check_with_geometry(name, v, command, history, true);
+}
+
+pub fn check_with_geometry(name: &str, v: &Value, command: &str, history: &str, strict: bool) {
     let source = channels::mesh(&v["before"]);
     let mut doc = Document::default();
     let registry = CommandRegistry::with_builtins();
@@ -19,7 +25,9 @@ pub fn check(name: &str, v: &Value, command: &str, history: &str) {
     doc.select_objects_direct([id], SelectionMode::Replace)
         .unwrap();
     doc.clear_history().unwrap();
-    registry.execute(&mut doc, command).unwrap();
+    registry
+        .execute(&mut doc, command)
+        .unwrap_or_else(|error| panic!("{name} {command}: {error}"));
     assert_eq!(doc.objects().len(), 1);
     let object = doc.object(id).unwrap();
     assert_eq!(object.attributes(), &attrs);
@@ -28,8 +36,13 @@ pub fn check(name: &str, v: &Value, command: &str, history: &str) {
     let Geometry::Mesh(mesh) = object.geometry() else {
         panic!()
     };
+    let raw_order_qualified = channels::differences(mesh, &v["after"]).is_empty();
     assert!(
-        channels::differences(mesh, &v["after"]).is_empty(),
+        if strict {
+            raw_order_qualified
+        } else {
+            equivalence::equivalent(mesh, &channels::mesh(&v["after"]))
+        },
         "{name}"
     );
     let result = object.geometry_snapshot().clone();
@@ -41,8 +54,15 @@ pub fn check(name: &str, v: &Value, command: &str, history: &str) {
     assert_eq!(doc.object(id).unwrap().attributes(), &attrs);
     assert_eq!(doc.object(id).unwrap().group_ids(), [group]);
     assert!(doc.is_selected(id));
-    println!(
-        "MESH_SEAM_COMMAND {}",
-        serde_json::json!({"id":name,"command":command,"history":history,"qualified":true})
-    );
+    if strict {
+        println!(
+            "MESH_SEAM_COMMAND {}",
+            serde_json::json!({"id":name,"command":command,"history":history,"qualified":true})
+        );
+    } else {
+        println!(
+            "MESH_SEAM_COMPARISON {}",
+            serde_json::json!({"id":name,"command":command,"history":history,"qualified":true,"raw_order_qualified":raw_order_qualified})
+        );
+    }
 }

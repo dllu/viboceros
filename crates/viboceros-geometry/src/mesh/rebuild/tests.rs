@@ -131,7 +131,7 @@ fn corner_rebuilding_preserves_geometry_and_requested_sharing_partitions() {
                     order.reverse();
                 }
                 let rebuilt = source
-                    .rebuilt_from_face_components(&data, &components, &order)
+                    .rebuilt_from_face_components(&data, &components, &order, true)
                     .unwrap();
                 let mut corners = Vec::new();
                 for (face_index, (original, output)) in

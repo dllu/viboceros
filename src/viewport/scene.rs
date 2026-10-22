@@ -44,6 +44,25 @@ fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) 
 
 pub(super) fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>; 3]> {
     let fallback = NaVector3::new(0.0, 0.0, 1.0);
+    if let Some(stored) = mesh.vertex_normals() {
+        return mesh
+            .triangles()
+            .iter()
+            .enumerate()
+            .map(|(face, triangle)| {
+                triangle.map(|raw| {
+                    let n = stored[raw as usize];
+                    NaVector3::new(n.x(), n.y(), n.z())
+                        .try_normalize(0.)
+                        .unwrap_or_else(|| {
+                            mesh.face_normal(face)
+                                .map(|n| NaVector3::new(n.x(), n.y(), n.z()))
+                                .unwrap_or(fallback)
+                        })
+                })
+            })
+            .collect();
+    }
     let face_normals = (0..mesh.triangles().len())
         .map(|index| {
             mesh.face_normal(index)
@@ -1248,6 +1267,39 @@ mod tests {
                 .iter()
                 .all(|line| line.color == color_to_gpu(SELECTED_COLOR))
         );
+    }
+
+    #[test]
+    fn stored_mesh_normals_reach_shaded_and_ghosted_gpu_scenes() {
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![point(-1., -1., 0.), point(1., -1., 0.), point(0., 1., 0.)],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap()
+        .try_with_vertex_normals(Some(vec![
+            Vector3::try_new(2., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 1e-38, 0.).unwrap(),
+        ]))
+        .unwrap();
+        document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        let mut view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
+            view.display_mode = mode;
+            let scene = view.object_scene(rect, &document);
+            assert_eq!(scene.triangles.len(), 3);
+            for (vertex, normal) in
+                scene
+                    .triangles
+                    .iter()
+                    .zip([[1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
+            {
+                assert_eq!(vertex.normal, normal);
+            }
+        }
     }
 }
 

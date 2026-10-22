@@ -6,6 +6,8 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'mesh_component_unweld_commands': ('mesh_component_unweld_command_probe', ('mesh_component_unweld_command_cases','mesh_component_unweld_primed_cases','mesh_component_unweld_verified_cases','mesh_component_unweld_holdout_cases','mesh_component_unweld_cases','mesh_unweld_channels_cases','mesh_channel_capture')),
+    'mesh_component_unweld_channels': ('mesh_component_unweld_probe', ('mesh_component_unweld_cases','mesh_unweld_channels_cases','mesh_channel_capture')),
     'mesh_unweld_channels': ('mesh_unweld_channels_probe', ('mesh_unweld_channels_cases','mesh_channel_capture')),
     'mesh_weld_channels_prefixes': ('mesh_weld_channels_probe', ('mesh_weld_channels_cases','mesh_weld_channels_stress_cases','mesh_weld_channels_trace_cases','mesh_weld_channels_options_cases','mesh_channel_capture')),
     'mesh_weld_channels_followup': ('mesh_weld_channels_probe', ('mesh_weld_channels_cases','mesh_weld_channels_stress_cases','mesh_weld_channels_trace_cases','mesh_weld_channels_options_cases','mesh_channel_capture')),

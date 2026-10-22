@@ -1,0 +1,2103 @@
+{
+  "native_engine_version": "8.32.26160.13001",
+  "compared_cases": 72,
+  "geometry_channels_and_sharing_qualified_cases": 72,
+  "raw_order_qualified_cases": 64,
+  "command_cases": 106,
+  "sdk_compared_cases": 48,
+  "sdk_raw_order_qualified_cases": 28,
+  "epsilon": 1e-06,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "route_diagnostics": {
+    "sdk_vertex_edge_pairs": [
+      {
+        "vertex": "vertex_bent_preserve",
+        "edge": "edge_bent_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_bent_modify",
+        "edge": "edge_bent_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_remote_preserve",
+        "edge": "edge_remote_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_remote_modify",
+        "edge": "edge_remote_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_cube_preserve",
+        "edge": "edge_cube_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_cube_modify",
+        "edge": "edge_cube_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_fan_preserve",
+        "edge": "edge_fan_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_fan_modify",
+        "edge": "edge_fan_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_nonmanifold_preserve",
+        "edge": "edge_nonmanifold_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_nonmanifold_modify",
+        "edge": "edge_nonmanifold_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_partial_preserve",
+        "edge": "edge_partial_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_partial_modify",
+        "edge": "edge_partial_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_unshared_preserve",
+        "edge": "edge_unshared_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_unshared_modify",
+        "edge": "edge_unshared_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_no_normals_preserve",
+        "edge": "edge_no_normals_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_no_normals_modify",
+        "edge": "edge_no_normals_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_duplicate_preserve",
+        "edge": "edge_duplicate_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_duplicate_modify",
+        "edge": "edge_duplicate_modify",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_empty_preserve",
+        "edge": "edge_empty_preserve",
+        "outputs_exact": true
+      },
+      {
+        "vertex": "vertex_empty_modify",
+        "edge": "edge_empty_modify",
+        "outputs_exact": true
+      }
+    ],
+    "unprimed_same_output_pairs": [
+      "command_edge_bent_preserve",
+      "command_edge_remote_preserve",
+      "command_edge_cube_preserve",
+      "command_edge_fan_preserve",
+      "command_edge_nonmanifold_preserve",
+      "command_edge_partial_preserve",
+      "command_edge_unshared_preserve",
+      "command_edge_no_normals_preserve",
+      "command_edge_naked_preserve",
+      "command_edge_multiple_preserve",
+      "command_edge_duplicate_preserve",
+      "command_edge_empty_preserve",
+      "command_vertex_bent_preserve",
+      "command_vertex_remote_preserve",
+      "command_vertex_cube_preserve",
+      "command_vertex_fan_preserve",
+      "command_vertex_nonmanifold_preserve",
+      "command_vertex_partial_preserve",
+      "command_vertex_unshared_preserve",
+      "command_vertex_no_normals_preserve",
+      "command_vertex_naked_preserve",
+      "command_vertex_multiple_preserve",
+      "command_vertex_duplicate_preserve",
+      "command_vertex_empty_preserve"
+    ],
+    "primed_distinct_normal_pairs": [
+      "primed_edge_bent_preserve",
+      "primed_edge_cube_preserve",
+      "primed_edge_no_normals_preserve",
+      "primed_vertex_bent_preserve",
+      "primed_vertex_cube_preserve",
+      "primed_vertex_no_normals_preserve"
+    ],
+    "unprimed_normal_modes_qualified": false,
+    "direct_document_copies_exact": true
+  },
+  "limits": [
+    "Verified command captures set the normal option before preselection and record direct document snapshots. Unprimed captures remain diagnostics: their requested modes did not yield distinct outputs.",
+    "Geometry equivalence preserves face order/winding, every UV/normal/RGBA value and the bijection of shared raw vertices, allowing vertex renumbering. Eight multi-edge holdouts retain explicit raw-order differences.",
+    "Normal updates preserve untouched non-manifold uses and smoothing across an artificial additional cut. Missing component normal channels are computed before copying or updating replacements.",
+    "Empty selections are no-op controls; no native command is launched. Command checks normalize duplicate preselected indices to the unique-index text grammar.",
+    "SDK UnweldVertices observations differ from the face-local UnweldVertex command. Every direct SDK difference is recorded separately.",
+    "Command checks cover explicit Yes/No, default Yes, point-pick aliases, identity, attributes, groups, selection and Undo/Redo. Two application picking regressions and GPU-scene normal staging are local tests, not native UI qualification.",
+    "N-gons, larger meshes, further native index-order parity and comparative performance remain unqualified."
+  ],
+  "cases": [
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_cube_edges_all_modify",
+      "qualified": true,
+      "raw_order_qualified": false,
+      "vertices": 24
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_cube_edges_all_preserve",
+      "qualified": true,
+      "raw_order_qualified": false,
+      "vertices": 24
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_cube_edges_corner_modify",
+      "qualified": true,
+      "raw_order_qualified": false,
+      "vertices": 13
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_cube_edges_corner_preserve",
+      "qualified": true,
+      "raw_order_qualified": false,
+      "vertices": 13
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "holdout_cube_edges_disjoint_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "holdout_cube_edges_disjoint_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_cube_edges_pair_modify",
+      "qualified": true,
+      "raw_order_qualified": false,
+      "vertices": 11
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_cube_edges_pair_preserve",
+      "qualified": true,
+      "raw_order_qualified": false,
+      "vertices": 11
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "holdout_cube_edges_reverse_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "holdout_cube_edges_reverse_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_cube_rotated_modify",
+      "qualified": true,
+      "raw_order_qualified": false,
+      "vertices": 12
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_cube_rotated_preserve",
+      "qualified": true,
+      "raw_order_qualified": false,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 4,
+      "id": "holdout_four_face_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 4,
+      "id": "holdout_four_face_edge_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 4,
+      "id": "holdout_four_face_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 4,
+      "id": "holdout_four_face_vertex_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 8,
+      "id": "holdout_octa_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 8,
+      "id": "holdout_octa_edge_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 8,
+      "id": "holdout_octa_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 8,
+      "id": "holdout_octa_vertex_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_tilted_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_tilted_edge_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_tilted_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_tilted_vertex_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_bent_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_bent_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "verified_edge_cube_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "verified_edge_cube_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_duplicate_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_duplicate_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_empty_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_empty_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 5,
+      "id": "verified_edge_fan_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 5,
+      "id": "verified_edge_fan_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "verified_edge_multiple_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "verified_edge_multiple_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_naked_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_naked_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_no_normals_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_no_normals_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_edge_nonmanifold_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_edge_nonmanifold_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_edge_partial_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_edge_partial_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_edge_remote_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_edge_remote_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_unshared_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_edge_unshared_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_bent_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_bent_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "verified_vertex_cube_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "verified_vertex_cube_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_duplicate_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_duplicate_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_empty_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_empty_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 5,
+      "id": "verified_vertex_fan_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 5,
+      "id": "verified_vertex_fan_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "verified_vertex_multiple_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "verified_vertex_multiple_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_naked_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_naked_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_no_normals_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_no_normals_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_vertex_nonmanifold_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_vertex_nonmanifold_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_vertex_partial_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_vertex_partial_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_vertex_remote_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "verified_vertex_remote_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_unshared_modify",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "verified_vertex_unshared_preserve",
+      "qualified": true,
+      "raw_order_qualified": true,
+      "vertices": 6
+    }
+  ],
+  "commands": [
+    {
+      "command": "UnweldEdge Edges=0,1,2,3,4,5,6,7,8,9,10,11",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_all_modify",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,2,3,4,5,6,7,8,9,10,11 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_all_modify",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,2,3,4,5,6,7,8,9,10,11 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_all_preserve",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,2",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_corner_modify",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,2 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_corner_modify",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,2 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_corner_preserve",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,11",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_disjoint_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,11 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_disjoint_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,11 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_disjoint_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,2",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_pair_modify",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,2 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_pair_modify",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,2 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_pair_preserve",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,4",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_reverse_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,4 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_reverse_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,4 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_edges_reverse_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,2,4",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_rotated_modify",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,2,4 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_rotated_modify",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0,2,4 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_cube_rotated_preserve",
+      "qualified": true,
+      "raw_order_qualified": false
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "holdout_four_face_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_four_face_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_four_face_edge_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "holdout_four_face_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "holdout_four_face_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "holdout_four_face_vertex_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "holdout_octa_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_octa_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_octa_edge_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "holdout_octa_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "holdout_octa_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "holdout_octa_vertex_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "holdout_tilted_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "holdout_tilted_edge_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "holdout_tilted_edge_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "holdout_tilted_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "holdout_tilted_vertex_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "holdout_tilted_vertex_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_bent_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_bent_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldMeshEdge 2,0,0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_bent_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_bent_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldMeshEdge 2,0,0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_bent_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_cube_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_cube_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_cube_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_duplicate_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_duplicate_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_duplicate_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_fan_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_fan_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_fan_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,4",
+      "history": "UnweldEdge",
+      "id": "verified_edge_multiple_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,4 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_multiple_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0,1,4 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_multiple_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=1",
+      "history": "UnweldEdge",
+      "id": "verified_edge_naked_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=1 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_naked_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=1 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_naked_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_no_normals_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_no_normals_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_no_normals_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_nonmanifold_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_nonmanifold_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_nonmanifold_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_partial_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_partial_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_partial_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_remote_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_remote_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_remote_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0",
+      "history": "UnweldEdge",
+      "id": "verified_edge_unshared_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=Yes",
+      "history": "UnweldEdge",
+      "id": "verified_edge_unshared_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldEdge Edges=0 ModifyNormals=No",
+      "history": "UnweldEdge",
+      "id": "verified_edge_unshared_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_bent_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_bent_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertices 0,0,0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_bent_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_bent_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertices 0,0,0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_bent_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_cube_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_cube_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_cube_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_duplicate_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_duplicate_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_duplicate_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_fan_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_fan_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_fan_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0,2",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_multiple_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0,2 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_multiple_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0,2 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_multiple_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=2",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_naked_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=2 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_naked_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=2 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_naked_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_no_normals_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_no_normals_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_no_normals_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_nonmanifold_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_nonmanifold_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_nonmanifold_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_partial_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_partial_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_partial_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_remote_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_remote_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_remote_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_unshared_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=Yes",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_unshared_modify",
+      "qualified": true,
+      "raw_order_qualified": true
+    },
+    {
+      "command": "UnweldVertex Vertices=0 ModifyNormals=No",
+      "history": "UnweldVertex",
+      "id": "verified_vertex_unshared_preserve",
+      "qualified": true,
+      "raw_order_qualified": true
+    }
+  ],
+  "sdk_diagnostics": [
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_bent_modify",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_bent_preserve",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "edge_cube_modify",
+      "qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "edge_cube_preserve",
+      "qualified": true,
+      "vertices": 10
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_duplicate_modify",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_duplicate_preserve",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_empty_modify",
+      "qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_empty_preserve",
+      "qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 5,
+      "id": "edge_fan_modify",
+      "qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 5,
+      "id": "edge_fan_preserve",
+      "qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "edge_multiple_modify",
+      "qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "edge_multiple_preserve",
+      "qualified": true,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_naked_modify",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_naked_preserve",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_no_normals_modify",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_no_normals_preserve",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_nonmanifold_modify",
+      "qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_nonmanifold_preserve",
+      "qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_partial_modify",
+      "qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_partial_preserve",
+      "qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_remote_modify",
+      "qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_remote_preserve",
+      "qualified": true,
+      "vertices": 9
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_unshared_modify",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_unshared_preserve",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "id": "vertex_bent_modify",
+      "qualified": false,
+      "vertices": 5
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "id": "vertex_bent_preserve",
+      "qualified": false,
+      "vertices": 5
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "vertex_cube_modify",
+      "qualified": false,
+      "vertices": 10
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "vertex_cube_preserve",
+      "qualified": false,
+      "vertices": 10
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "id": "vertex_duplicate_modify",
+      "qualified": false,
+      "vertices": 5
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "id": "vertex_duplicate_preserve",
+      "qualified": false,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_empty_modify",
+      "qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_empty_preserve",
+      "qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 5,
+      "id": "vertex_fan_modify",
+      "qualified": false,
+      "vertices": 10
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 5,
+      "id": "vertex_fan_preserve",
+      "qualified": false,
+      "vertices": 10
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "vertex_multiple_modify",
+      "qualified": false,
+      "vertices": 12
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "vertex_multiple_preserve",
+      "qualified": false,
+      "vertices": 12
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_naked_modify",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_naked_preserve",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals"
+      ],
+      "faces": 2,
+      "id": "vertex_no_normals_modify",
+      "qualified": false,
+      "vertices": 5
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals"
+      ],
+      "faces": 2,
+      "id": "vertex_no_normals_preserve",
+      "qualified": false,
+      "vertices": 5
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 3,
+      "id": "vertex_nonmanifold_modify",
+      "qualified": false,
+      "vertices": 7
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 3,
+      "id": "vertex_nonmanifold_preserve",
+      "qualified": false,
+      "vertices": 7
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 3,
+      "id": "vertex_partial_modify",
+      "qualified": false,
+      "vertices": 7
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 3,
+      "id": "vertex_partial_preserve",
+      "qualified": false,
+      "vertices": 7
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 3,
+      "id": "vertex_remote_modify",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 3,
+      "id": "vertex_remote_preserve",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "id": "vertex_unshared_modify",
+      "qualified": false,
+      "vertices": 6
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "id": "vertex_unshared_preserve",
+      "qualified": false,
+      "vertices": 6
+    }
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/mesh.rs": "b880b6092a34b3330795c1a9d7d544424fd324148d3add06fe7905349c727ae5",
+    "crates/viboceros-command/src/lib.rs": "5424ed43ce8911895b4610ccab78eabd513f2455db4444bd424f59edfe3d2192",
+    "crates/viboceros-oracle/src/lib.rs": "93b3f14a93695edf5c388d2f376c196a8dbe64f73e804619674a1b18bc051008",
+    "crates/viboceros-geometry/tests/mesh_component_unweld.rs": "dbe4594d8a0bf5d82a54ebbe811a4213e09d2012cd56bb87f3fdaeaedcc81b52",
+    "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
+    "crates/viboceros-command/tests/mesh_component_unweld.rs": "a821a74abb2ef162438e273d3f3642906867383e38cd9b718d4a4b9b3048f486",
+    "crates/viboceros-command/tests/support/mesh_seams.rs": "9840b1a33b82bc03c910ae1d0112fb20d0999e4ce22f74d747fa236d6f42205f",
+    "src/app/tests/mesh_edit_input.rs": "a4fd1266f4f6fa9b6dabd24745f9ec11375fd2e3e299c0f422475d488b378105",
+    "src/app/drafting_input.rs": "ec6d4cddf2d6491d6841babfd64b7a2abc849cb545d490d06488e202c711213b",
+    "src/app/interactive_start.rs": "e34b9827542d0403606428577564306d4dab88f4ba2c5e4897dad1323a093622",
+    "src/viewport/scene.rs": "4bf8dc17e9bbea22a6c3fc834d80b564cdf01510b20cd4f57a4bba81317fde29",
+    "src/viewport/display_cache.rs": "eac04d435f5bdfa90955b7cefc31c1664b55f8165d06f8bac6683a2db33eec84",
+    "docs/commands/mesh-seams.md": "37a892a51be73c61be661efb2bc9e68e6b977f5530cb74f96ad37e1d81f5ac2b",
+    "docs/geometry/mesh-channels.md": "52dc3c0af570d37c3e6a5e00bb7ee013b9a80643674ff0b0eaf1335f01b80121",
+    "tools/rhino_oracle/fixtures/mesh_component_unweld_order_gaps.json": "463b889dcec0dfbbcfeb8e95d60896c5f9545ef27c9df725e3241d43c5624364",
+    "tools/rhino_oracle/fixtures/mesh_component_unweld_sdk_gaps.json": "229fb8b21230246c62cd69e831d7a00b2c1f4900a5a86540b3af0caf6d179115",
+    "tools/rhino_oracle/mesh_component_unweld_cases.py": "38e6d4b90ccec2d57423abac35ecacf95a2eb455e2bfa794166b424c49f823bd",
+    "tools/rhino_oracle/mesh_component_unweld_command_cases.py": "ebcc8ce87a81a9fa05ba855f8b552c24f07e22c850dc34527f21093d866620e3",
+    "tools/rhino_oracle/mesh_component_unweld_primed_cases.py": "00488c5b74239a4a79a08ecb87eaf584adff6e885444bfd0dd45f39951417812",
+    "tools/rhino_oracle/mesh_component_unweld_verified_cases.py": "d22d99ea03939782749d9cdaaea58d5685d4e5e013cd0d40d4d48968c329ae1d",
+    "tools/rhino_oracle/mesh_component_unweld_holdout_cases.py": "45df11096e15986b1a0b2fa65c19b4eead803d88172696b7342fdc64071dd0b5",
+    "tools/rhino_oracle/mesh_component_unweld_probe.py": "e810725368b0cfdeb117b92abdee5136dadacfab0d56ffb09918f12b18406203",
+    "tools/rhino_oracle/mesh_component_unweld_command_probe.py": "7ae8a83e6fde3f3baa93c890f86f4e5641947631a21cd5ba3318ef5de46804b6",
+    "tools/rhino_oracle/mesh_unweld_channels_cases.py": "253d1a89d5ad82ff0a324c629c4bae9909a35b5fbf144a6b1f23c38f71f9883b",
+    "tools/rhino_oracle/mesh_channel_capture.py": "d9b8ef0ad8ccb9dc63fb91cbf495a59182e4165b1d65f1d611d4070aac0ce41c",
+    "tools/rhino_oracle/generate_mesh_component_unweld.py": "b12390059d8fc0e5637101a6c99545dceef5e5bef28aea2ea13bc8ddb403f2de",
+    "tools/rhino_oracle/report_mesh_component_unweld.py": "21e1f0a7fc1a0b0950338e7b2be81ec7aab9c86a40c10334f5bb790f8c6d3004",
+    "tools/rhino_oracle/test_mesh_component_unweld.py": "ba9964d9daef47f3e413e43d8e8f44172043ab72d1d9f37e915a2ebf2577d910",
+    "tools/rhino_oracle/client.py": "cc6dbda9ece40f6da025611e7a0256ad85ca456f61612572c1f6b5ca2ef532ea",
+    "tools/rhino_oracle/rhino_worker.py": "4ed22f0aad9cbfd2644fbef226e57bded5d5fcb06289159167f0561f54686d53",
+    "tools/rhino_oracle/structural_sdk.py": "949aab67594dac12b3886e6d9d939afbdf8895f1cbf3898de491bcd2d4fcaf25",
+    "crates/viboceros-command/src/mesh_seams.rs": "fae9bbdb286bd2441cd3c953da2e3e92034edde5b4635f1e5c3e3e751ba70ea0",
+    "crates/viboceros-command/src/mesh_component_unweld.rs": "339147a5780de3a7aea00e89874bdc94fdb6429d53edddf84d2126f968e4a07a",
+    "crates/viboceros-command/src/extract_control_polygon.rs": "34dcb893d9424ecf9dab92368babdcfb8c7961866f9af0286e08387b4065874d",
+    "crates/viboceros-command/src/extract_control_polygon/options.rs": "0377788c23f0563df4853728167ee4c500d3510ed9dacf8d602f14c2936de195",
+    "crates/viboceros-command/src/extract_control_polygon/arguments.rs": "83a1cd2cd716d6b495d9db4ceaf628f5ec319acee5f9497acf86111b540fcf1a",
+    "crates/viboceros-command/src/extract_control_polygon/selection.rs": "019a6a1973cf2b33e81d35d7567d9899651c8be4afdc9b9714285796d4ee06b4",
+    "crates/viboceros-command/src/soft_crease.rs": "eec4487501312fc3090d932560599f5e18e4038017d7f7412ac268b5507e007b",
+    "crates/viboceros-command/src/soft_crease/profile.rs": "018d7bed89c5fc71e98265f9b578345809f7b5e6937145d2046cb3a472cc6f0f",
+    "crates/viboceros-command/src/soft_crease/arguments.rs": "7d38e43f5032110cda07782c1a4988a1bed1a7f2248b16ac94f8406c455034b6",
+    "crates/viboceros-geometry/src/mesh/vertex_channels.rs": "4cf015db3d66d77e2980e6ce7716e48f19b9a8b6d1bd07236b675f5d05e43385",
+    "crates/viboceros-geometry/src/mesh/native.rs": "dcd8df91be3091300698e08b808519388c4fcf259e5a9245013fd7e121cffeec",
+    "crates/viboceros-geometry/src/mesh/append.rs": "2fbcba3e39a9b9a25ceb864d12a2daee0cd2368cc50073829fde29d106d0eced",
+    "crates/viboceros-geometry/src/mesh/face_records.rs": "bf5438805e68438bf60ddf912490e8a4e2b03d7beec39ecc03eb087353f83e6d",
+    "crates/viboceros-geometry/src/mesh/components.rs": "8ba40fa1bd7a7b2c34bf55e9a0fd8292229e11dc82ba3dd32d4f4ccc3706520a",
+    "crates/viboceros-geometry/src/mesh/rebuild.rs": "5f11498df18dc255f0097c088c56fb317f815330ad6e373fd26dba91565bce40",
+    "crates/viboceros-geometry/src/mesh/normals.rs": "e4cbcef46e287067a0364d7ad440c93d05d6bb77ac82aa1f9f21ad4dd97cd322",
+    "crates/viboceros-geometry/src/mesh/edge_split.rs": "0e5af113562bccd41fc1865b0b95bdbd398b4ded1efcb5812efc4ee2e2f0d6ed",
+    "crates/viboceros-geometry/src/mesh/edge_collapse.rs": "77f5ccb514d2a662a7f5d27652eb0c368331ca09dac52bf2a19243402d564442",
+    "crates/viboceros-geometry/src/mesh/subdivision.rs": "4ea9da1006c6c54dffd89b2bd4540a3aa0fada527e81439350c1f68be1270fdc",
+    "crates/viboceros-geometry/src/mesh/extrude.rs": "01425600d0ab79cf7eb8cc9d900ffd38e1ee2d06d33b653dc308760c931f5959",
+    "crates/viboceros-geometry/src/mesh/offset.rs": "723ff9c60ba50a754000085d26cf71d5eb3178b4dca07dd8d4d895ccc797e7c7",
+    "crates/viboceros-geometry/src/mesh/patch_single_face.rs": "b529aa705a2de3a8e065b42ac8150801874e749b1b697b61f1ebe66b848d86f7",
+    "crates/viboceros-geometry/src/mesh/join.rs": "eb2e74a63d64b25d8280eced61be132033e49b296ec4c94a1d18dfbbffb29f27",
+    "crates/viboceros-geometry/src/mesh/match_edges.rs": "2adbad45d20fe820e297ebb6c298a7935bab7aa52f1c46a6ab465d38a97425fc",
+    "crates/viboceros-geometry/src/mesh/alignment.rs": "e3a1ba2c33713e265ef474c197a3c9fd46729af227f6dad4ad9332c0dfad5bb1",
+    "crates/viboceros-geometry/src/mesh/weld.rs": "c333c27904981d24868b7fcbf658527cb9086cde4fe7fd80094f76795303c48c",
+    "crates/viboceros-geometry/src/mesh/weld/merge.rs": "edb77c2172370736db9076748bfc604be04685395b40fe2730867ca669b88725",
+    "crates/viboceros-geometry/src/mesh/unweld.rs": "07e9fdf9c33dc601b250094bd2b41cffdf0fe83528eb69ba37e90d737b084527",
+    "crates/viboceros-geometry/src/mesh/edge_unweld.rs": "78867a1bb302dcaf578eb7a23322bdb1c3005564278cf7fd5b2cf2216fb64415",
+    "crates/viboceros-geometry/src/mesh/vertex_unweld.rs": "2f61d588e1a2a4f3a1e25ceb20849b51ee2e12677072a3b33f20dc8b3c23c010",
+    "crates/viboceros-geometry/src/mesh/radial.rs": "2048def0e4605cb0153a13437b2bc705b9b6c7552fca51fa0ade62e3dffab03a",
+    "crates/viboceros-geometry/src/mesh/compaction.rs": "56bef5250f0bd441c1c3d429408368a9fbc3d40fd92d90892521a5070b543eab",
+    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "29dacc136b082428469f2b12e916b1a9d3867f78feaf9b6380f1d8f595534590",
+    "crates/viboceros-geometry/src/mesh/planar_cap.rs": "9bd66de6751bbd533a061be311ba42bb36fad7823cd8cf53e7d41d4afabe8f17",
+    "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
+    "crates/viboceros-geometry/tests/support/mesh_channels.rs": "edf4dd46061cdc16b651b9196a83a7906a596da7f8b2f39f5018d2699bd91aaa",
+    "crates/viboceros-opennurbs/src/mesh.rs": "e1ccdc906de63839869e5c05870d30597514bba092c32a2b269215dd128b358e",
+    "crates/viboceros-opennurbs/native/mesh_modeling.h": "d42be78afa32f9f75405e497465f046f0c2dff2cad9ce6a5f3e81f5c42e06cf4",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "5c4a56a9e03a9cdcdb07ad4f43c65452f915c4776f511b22fc20b4d458c63036",
+    "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
+    "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
+    "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
+    "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
+    "tools/rhino_oracle/qualification_sources.py": "610fc832c7eb2fe5f5cc421e3b68f248bedfd4c3df53102af47700ef62f2e7a9",
+    "tools/rhino_oracle/fixtures/mesh_component_unweld_channels.json": "f2bc3fd7375e8abade02770678e5134dd4448899162faffb64179dcf357f8e29",
+    "tools/rhino_oracle/observations/mesh_component_unweld_channels.json": "4628d8382b0aec7df7175cd957a420cdb21a04f466e635c7829b5c6a384db879",
+    "tools/rhino_oracle/observations/source_snapshots/8652d03a047f1e313f29da98a8216b3e0c7cbd096a4e405a7bb8f8d8994f2eaa.gz": "e6df9522114699a200ef458c807fbfd7d5100bdfe997aea5155491580351affb",
+    "tools/rhino_oracle/observations/source_snapshots/38e6d4b90ccec2d57423abac35ecacf95a2eb455e2bfa794166b424c49f823bd.gz": "90949acbdbb9e9744e50abdd9fe48f68a2de86a8eb5a987f84d1f8515d64f7bd",
+    "tools/rhino_oracle/observations/source_snapshots/e810725368b0cfdeb117b92abdee5136dadacfab0d56ffb09918f12b18406203.gz": "d8ce60e145a2e0ea8d8b325e64be356c170af9c65d695a01cb7c93c56b841f92",
+    "tools/rhino_oracle/observations/source_snapshots/253d1a89d5ad82ff0a324c629c4bae9909a35b5fbf144a6b1f23c38f71f9883b.gz": "4db20c4627e1450ae05074fec37da20db5023481c386bf5d6ea2f42949e1dc99",
+    "tools/rhino_oracle/observations/source_snapshots/dfcd385de95265a6a0424fe325886e2d0a44fbac75ebe392af492aa1d0c0d014.gz": "0b4a1fd48926e496bd491f3ccbefd560dff1837580ca270c1e0f9f562612e155",
+    "tools/rhino_oracle/observations/source_snapshots/e130d851fda38fd195ddcd685e4faabfd6ffa5497075daef1b566803b1a79112.gz": "101ef28d1316b43bbe5541436b3efa4d6729dde41d8549f02f5aaa5ed5e586ec",
+    "tools/rhino_oracle/observations/source_snapshots/acbee2e004ce2977984ae04669c843aee6b87b40838359066e1869f875678b5e.gz": "ab180e65e8b44dc342b18700f0d32b589319dd96e7f583e02546bd6136f39899",
+    "tools/rhino_oracle/observations/source_snapshots/2dc9b15726a8e75bf4645fee91689af40cbb249ec551526947a0ac87be8ef0ba.gz": "97f2efb41bcfb6b89678adc58f2941b90568adae193701df62f831c55bb2858c",
+    "tools/rhino_oracle/fixtures/mesh_component_unweld_commands.json": "3c0699aff46c166f06fba95c8e4ccfdce1ab9d20ff4e8c883b7b35892f75085a",
+    "tools/rhino_oracle/observations/mesh_component_unweld_commands.json": "e05797f246ff4b45326a1ef4200090627912c1816c01d4926b3de1329b75f8ca",
+    "tools/rhino_oracle/observations/source_snapshots/adde681a2a8cb30ad7f00bd7f29120554270c2c64845c204159ad31f5bd688de.gz": "cfd3ea47f12a268dcfbfc9644ac5609da6b66c0d7dd84c253b36750adb97bcb5",
+    "tools/rhino_oracle/observations/source_snapshots/cc6dbda9ece40f6da025611e7a0256ad85ca456f61612572c1f6b5ca2ef532ea.gz": "381739a74dc7b7cbd32fd88b823ccf73145320f98e4b6982af09492a6d46e7c5",
+    "tools/rhino_oracle/observations/source_snapshots/4ed22f0aad9cbfd2644fbef226e57bded5d5fcb06289159167f0561f54686d53.gz": "10290edcd02576fe265329f8525a4f7f6a78717f62e8841633a1a1dbba1bb810",
+    "tools/rhino_oracle/observations/source_snapshots/f817aff5c79038700febb838a9b3740ff82ceb32ed3e192bc436645f786c0c33.gz": "beecea0e62b057011defdc4c230d814f02a3b37c82d52c638c8a4bf8281d5772",
+    "tools/rhino_oracle/observations/source_snapshots/e5113617838aca09d1314a4bdeb698512b22fd14cc50321ba07792141e5a5f74.gz": "090c3c0173e203a1f874c40b2302166ce60da07c6bc0755f1e873314ac9861c0",
+    "tools/rhino_oracle/observations/source_snapshots/4f8c2540c9f7e634b9f136dff178c94b25634577a0516910857f47d79b14aa00.gz": "0e2adafe84f6a1871133cad850f590bee9afa464b0034124e7884f3ea3218f38",
+    "tools/rhino_oracle/fixtures/mesh_component_unweld_primed.json": "2bf982763a48fb2a150118acfe2cb6abe5f3ba97ff6c0369e187a59212e717c3",
+    "tools/rhino_oracle/observations/mesh_component_unweld_primed.json": "d2ac742282ce529394c80d9229acf65decb62ca42e7f02de835d9a85e6f9d336",
+    "tools/rhino_oracle/observations/source_snapshots/83593669948de6c01b49ac66341c2652c5cabefad00c4b24a6a082fb4e85fa52.gz": "a64880e2c5c067761c5d53d944178b12da9ce57dc1a7d771b8682ac97706e6bb",
+    "tools/rhino_oracle/observations/source_snapshots/d9b8ef0ad8ccb9dc63fb91cbf495a59182e4165b1d65f1d611d4070aac0ce41c.gz": "3c02cbdd5f42ac7000643c871e67dbfeb8715969e733757aa0df6bafecc30df5",
+    "tools/rhino_oracle/observations/source_snapshots/24e8a71b6d08c7bafeb43ef2d7deb75e7092341789b7592b882f4ed0049bec93.gz": "003e0f17f6b9f7f51d9603f1a78bc784e576ac1186747163ef153b3b7f16f455",
+    "tools/rhino_oracle/observations/source_snapshots/259d26fe9872d3d670f6c0bbd6be0c8b95da682a7162977bdf968ecdb78cbeab.gz": "f2c8067c6bf0bc70cfdce085e7841bd7e438a1022b567fb1850a55e247c0389a",
+    "tools/rhino_oracle/observations/source_snapshots/72710ad86fd626ef2a2341f15c5bab802a56e7ea76b16892d7ad355e951aa857.gz": "c5a45751dfdcc4444359dbf510d3c19ad80e4e90f3147850a0b70b38736a8627",
+    "tools/rhino_oracle/observations/source_snapshots/00488c5b74239a4a79a08ecb87eaf584adff6e885444bfd0dd45f39951417812.gz": "03c62ca638eb771f309bcd999f41814352bdba99e33946f9bd3e46f12e99a86c",
+    "tools/rhino_oracle/fixtures/mesh_component_unweld_verified.json": "1e6ba452b4e6aaa04174824d709788da57579f20e9738682f417b7a34bff402d",
+    "tools/rhino_oracle/observations/mesh_component_unweld_verified.json": "9dc481453e1aa455a2c2ec229c5b3d389c4590f119499ee8f0635ec682358a3c",
+    "tools/rhino_oracle/observations/source_snapshots/152638ef73cc079e39c1e944cc7af22aa726a68210dd73bfd27bc42e0f8247a8.gz": "275badee57f949461426f570d25cbc4719872b2de6ea701f690223e9c7dadf90",
+    "tools/rhino_oracle/observations/source_snapshots/ac572d4d370e5318f210c885c1313b07664e862dcbe471c574a30828eea23273.gz": "ad7600fd5c5ae9d106d41a7fd21e5dd0e28515afa8315b089e006256d6ff5249",
+    "tools/rhino_oracle/observations/source_snapshots/a2cc58b2cd192eb4c2f8dbda8c3b90c1701b45472e4da273923dda273b97dbea.gz": "75d2354cbecc9404d8deb62332780c3f198fd247abfad209c9b7e829ec8ec77c",
+    "tools/rhino_oracle/observations/source_snapshots/7ae8a83e6fde3f3baa93c890f86f4e5641947631a21cd5ba3318ef5de46804b6.gz": "38beff9ee46429eb7f1f9a384437d8e8fb67c04b84215bccd0493887dbfcd66e",
+    "tools/rhino_oracle/observations/source_snapshots/d22d99ea03939782749d9cdaaea58d5685d4e5e013cd0d40d4d48968c329ae1d.gz": "977f945a7938475a9b72765c7c3d98086d3a609626adae3c92696bf6cb30e6ea",
+    "tools/rhino_oracle/fixtures/mesh_component_unweld_holdout.json": "0e29d028b6e0ca94733c7db933329b7ad7ef272db1958e70686e0c9222d2854a",
+    "tools/rhino_oracle/observations/mesh_component_unweld_holdout.json": "bdc03e09f007c50dbdd8b92730f247a775d6868a68b373e59d079c6ef3b7c443",
+    "tools/rhino_oracle/observations/source_snapshots/b12390059d8fc0e5637101a6c99545dceef5e5bef28aea2ea13bc8ddb403f2de.gz": "85e40fc0b24fbe99ee5f86efa6d7ba29ac1a71186085081b1bead9f9fbbe9273",
+    "tools/rhino_oracle/observations/source_snapshots/949aab67594dac12b3886e6d9d939afbdf8895f1cbf3898de491bcd2d4fcaf25.gz": "f0f038a7baa59c498a254a7ce3373bda8ebd0669eecf501c908b7e405bf90645",
+    "tools/rhino_oracle/observations/source_snapshots/ebcc8ce87a81a9fa05ba855f8b552c24f07e22c850dc34527f21093d866620e3.gz": "4debf102de8557f5d0ea5fefcc7e8fb4b420dbef9fe28ad035cb78cc568d6a22",
+    "tools/rhino_oracle/observations/source_snapshots/45df11096e15986b1a0b2fa65c19b4eead803d88172696b7342fdc64071dd0b5.gz": "fd777e10821d06809ee6716736c2401aa9594f4ed0bce0922156df12411df81d"
+  }
+}

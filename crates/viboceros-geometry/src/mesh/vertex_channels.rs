@@ -18,6 +18,23 @@ fn stored(value: Real, context: &'static str) -> Result<Real, GeometryError> {
 }
 
 impl TriangleMesh {
+    pub(super) fn stored_or_computed_normals(
+        &self,
+    ) -> Result<Option<std::borrow::Cow<'_, [Vector3]>>, GeometryError> {
+        if let Some(normals) = self.vertex_normals() {
+            return Ok(Some(std::borrow::Cow::Borrowed(normals)));
+        }
+        viboceros_opennurbs::recompute_mesh_normals(&self.open_nurbs_data())?
+            .vertex_normals
+            .map(|normals| {
+                normals
+                    .into_iter()
+                    .map(Vector3::try_from)
+                    .collect::<Result<Vec<_>, _>>()
+                    .map(std::borrow::Cow::Owned)
+            })
+            .transpose()
+    }
     /// Rebuild an existing normal channel after changing face geometry. Meshes
     /// without stored normals keep their implicit normal representation.
     pub(super) fn recompute_stored_normals(&mut self) -> Result<(), GeometryError> {
@@ -189,15 +206,20 @@ impl VertexChannels {
 
 pub(super) struct ChannelBuilder<'a> {
     source: &'a VertexChannels,
+    normal_source: Option<&'a [Vector3]>,
     output: VertexChannels,
 }
 impl<'a> ChannelBuilder<'a> {
     pub fn new(source: &'a VertexChannels) -> Self {
+        Self::with_normals(source, source.normals.as_deref())
+    }
+    pub fn with_normals(source: &'a VertexChannels, normals: Option<&'a [Vector3]>) -> Self {
         Self {
             source,
+            normal_source: normals,
             output: VertexChannels {
                 uv: source.uv.as_ref().map(|_| Vec::new()),
-                normals: source.normals.as_ref().map(|_| Vec::new()),
+                normals: normals.map(|_| Vec::new()),
             },
         }
     }
@@ -206,7 +228,7 @@ impl<'a> ChannelBuilder<'a> {
             uv.push(self.source.uv.as_ref().unwrap()[index]);
         }
         if let Some(normals) = &mut self.output.normals {
-            normals.push(self.source.normals.as_ref().unwrap()[index]);
+            normals.push(self.normal_source.unwrap()[index]);
         }
     }
     pub fn blend(&mut self, sources: &[(usize, Real)]) -> Result<(), GeometryError> {
@@ -224,7 +246,7 @@ impl<'a> ChannelBuilder<'a> {
             ]);
         }
         if let Some(normals) = &mut self.output.normals {
-            let source = self.source.normals.as_ref().unwrap();
+            let source = self.normal_source.unwrap();
             let mut sum = [0.; 3];
             for &(index, weight) in sources {
                 for (i, s) in sum.iter_mut().enumerate() {

@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_edge_bent_preserve",
+      "case": "primed_edge_bent_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_edge_bent_modify",
+      "case": "primed_edge_bent_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_edge_cube_preserve",
+      "case": "primed_edge_cube_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_edge_cube_modify",
+      "case": "primed_edge_cube_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_edge_no_normals_preserve",
+      "case": "primed_edge_no_normals_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_edge_no_normals_modify",
+      "case": "primed_edge_no_normals_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_vertex_bent_preserve",
+      "case": "primed_vertex_bent_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_vertex_bent_modify",
+      "case": "primed_vertex_bent_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_vertex_cube_preserve",
+      "case": "primed_vertex_cube_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_vertex_cube_modify",
+      "case": "primed_vertex_cube_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_vertex_no_normals_preserve",
+      "case": "primed_vertex_no_normals_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "primed_vertex_no_normals_modify",
+      "case": "primed_vertex_no_normals_modify"
+    }
+  ]
+}

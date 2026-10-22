@@ -54,5 +54,16 @@ only replacement normals through OpenNURBS; untouched vertices retain their stor
 values. Neither mode creates a missing normal channel. The
 [native comparison](../mesh-unweld-channels-qualification.json) matches all 18
 captured cases and retains 27 command comparisons, including the default update
-policy. Broader normal reductions, non-manifold cases, and edge/vertex command
-normal options remain separate work.
+policy. Broader normal reductions remain separate work.
+
+Selected-edge and selected-vertex APIs expose corresponding
+`unwelded_topology_edges_with_normal_update` and
+`unwelded_topology_vertices_with_normal_update` methods. Component edits preserve
+untouched non-manifold uses, and compute missing normal data when needed for
+replacement vertices. Shaded and ghosted viewports use the stored directions.
+The [component comparison](../mesh-component-unweld-qualification.json) verifies
+all 72 captured command cases up to vertex renumbering, preserving face winding,
+each channel and the bijection of shared vertices. Sixty-four also match raw
+vertex numbering; eight multi-edge holdouts retain explicit differences.
+The SDK vertex operation behaves differently from the face-local command in
+the captured Rhino version; direct SDK observations remain separate diagnostics.

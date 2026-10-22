@@ -1,0 +1,58 @@
+{
+  "holdout_cube_edges_corner_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "holdout_cube_edges_corner_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "holdout_cube_edges_all_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "holdout_cube_edges_all_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "holdout_cube_edges_pair_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "holdout_cube_edges_pair_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "holdout_cube_rotated_preserve": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "holdout_cube_rotated_modify": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ]
+}

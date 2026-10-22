@@ -213,7 +213,7 @@ impl TriangleMesh {
         }
         let vertex_order = (0..data.topological_vertex_count).collect::<Vec<_>>();
         Ok((
-            self.rebuilt_from_face_components_with_normal_update(
+            self.rebuilt_from_face_components(
                 &data,
                 &face_components,
                 &vertex_order,

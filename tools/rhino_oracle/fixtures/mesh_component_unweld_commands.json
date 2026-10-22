@@ -1,0 +1,251 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_bent_preserve",
+      "case": "command_edge_bent_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_bent_modify",
+      "case": "command_edge_bent_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_remote_preserve",
+      "case": "command_edge_remote_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_remote_modify",
+      "case": "command_edge_remote_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_cube_preserve",
+      "case": "command_edge_cube_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_cube_modify",
+      "case": "command_edge_cube_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_fan_preserve",
+      "case": "command_edge_fan_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_fan_modify",
+      "case": "command_edge_fan_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_nonmanifold_preserve",
+      "case": "command_edge_nonmanifold_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_nonmanifold_modify",
+      "case": "command_edge_nonmanifold_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_partial_preserve",
+      "case": "command_edge_partial_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_partial_modify",
+      "case": "command_edge_partial_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_unshared_preserve",
+      "case": "command_edge_unshared_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_unshared_modify",
+      "case": "command_edge_unshared_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_no_normals_preserve",
+      "case": "command_edge_no_normals_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_no_normals_modify",
+      "case": "command_edge_no_normals_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_naked_preserve",
+      "case": "command_edge_naked_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_naked_modify",
+      "case": "command_edge_naked_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_multiple_preserve",
+      "case": "command_edge_multiple_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_multiple_modify",
+      "case": "command_edge_multiple_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_duplicate_preserve",
+      "case": "command_edge_duplicate_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_duplicate_modify",
+      "case": "command_edge_duplicate_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_empty_preserve",
+      "case": "command_edge_empty_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_edge_empty_modify",
+      "case": "command_edge_empty_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_bent_preserve",
+      "case": "command_vertex_bent_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_bent_modify",
+      "case": "command_vertex_bent_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_remote_preserve",
+      "case": "command_vertex_remote_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_remote_modify",
+      "case": "command_vertex_remote_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_cube_preserve",
+      "case": "command_vertex_cube_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_cube_modify",
+      "case": "command_vertex_cube_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_fan_preserve",
+      "case": "command_vertex_fan_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_fan_modify",
+      "case": "command_vertex_fan_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_nonmanifold_preserve",
+      "case": "command_vertex_nonmanifold_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_nonmanifold_modify",
+      "case": "command_vertex_nonmanifold_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_partial_preserve",
+      "case": "command_vertex_partial_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_partial_modify",
+      "case": "command_vertex_partial_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_unshared_preserve",
+      "case": "command_vertex_unshared_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_unshared_modify",
+      "case": "command_vertex_unshared_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_no_normals_preserve",
+      "case": "command_vertex_no_normals_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_no_normals_modify",
+      "case": "command_vertex_no_normals_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_naked_preserve",
+      "case": "command_vertex_naked_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_naked_modify",
+      "case": "command_vertex_naked_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_multiple_preserve",
+      "case": "command_vertex_multiple_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_multiple_modify",
+      "case": "command_vertex_multiple_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_duplicate_preserve",
+      "case": "command_vertex_duplicate_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_duplicate_modify",
+      "case": "command_vertex_duplicate_modify"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_empty_preserve",
+      "case": "command_vertex_empty_preserve"
+    },
+    {
+      "op": "mesh_component_unweld_commands",
+      "id": "command_vertex_empty_modify",
+      "case": "command_vertex_empty_modify"
+    }
+  ]
+}
