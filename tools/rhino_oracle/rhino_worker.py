@@ -7185,6 +7185,9 @@ def _execute(operation, iterations, tolerance):
     if kind in ('mesh_weld_channels','mesh_weld_channels_followup','mesh_weld_channels_prefixes'):
         from mesh_weld_channels_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'mesh_unweld_channels':
+        from mesh_unweld_channels_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'mesh_channels_sdk':
         from mesh_channels_probe import run
         return run(operation,globals(),iterations,tolerance)

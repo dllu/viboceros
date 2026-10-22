@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_weld_channels",
+      "id": "radial_cube_all",
+      "case": "radial_cube_all"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "radial_cube_rotated",
+      "case": "radial_cube_rotated"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "radial_cube_reverse_raw",
+      "case": "radial_cube_reverse_raw"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "radial_cube_triangles",
+      "case": "radial_cube_triangles"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "radial_holdout_grid_quads_2",
+      "case": "radial_holdout_grid_quads_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "radial_holdout_grid_triangles_2",
+      "case": "radial_holdout_grid_triangles_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "radial_holdout_cube_raw_5_0",
+      "case": "radial_holdout_cube_raw_5_0"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "radial_holdout_cube_rotation_2",
+      "case": "radial_holdout_cube_rotation_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_pair_flat_opaque",
+      "case": "transparency_pair_flat_opaque"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_pair_flat_transparent",
+      "case": "transparency_pair_flat_transparent"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_pair_flat_ramp",
+      "case": "transparency_pair_flat_ramp"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_pair_flat_extremes",
+      "case": "transparency_pair_flat_extremes"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_half_shared_opaque",
+      "case": "transparency_half_shared_opaque"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_half_shared_transparent",
+      "case": "transparency_half_shared_transparent"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_half_shared_ramp",
+      "case": "transparency_half_shared_ramp"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_half_shared_extremes",
+      "case": "transparency_half_shared_extremes"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_cube_all_opaque",
+      "case": "transparency_cube_all_opaque"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_cube_all_transparent",
+      "case": "transparency_cube_all_transparent"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_cube_all_ramp",
+      "case": "transparency_cube_all_ramp"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "transparency_cube_all_extremes",
+      "case": "transparency_cube_all_extremes"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_unweld_channels",
+      "id": "bent_0_preserve",
+      "case": "bent_0_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "bent_0_modify",
+      "case": "bent_0_modify"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "bent_89_preserve",
+      "case": "bent_89_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "bent_89_modify",
+      "case": "bent_89_modify"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "bent_91_preserve",
+      "case": "bent_91_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "bent_91_modify",
+      "case": "bent_91_modify"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "bent_180_preserve",
+      "case": "bent_180_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "bent_180_modify",
+      "case": "bent_180_modify"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "flat_0_preserve",
+      "case": "flat_0_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "flat_0_modify",
+      "case": "flat_0_modify"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "remote_0_preserve",
+      "case": "remote_0_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "remote_0_modify",
+      "case": "remote_0_modify"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "remote_91_preserve",
+      "case": "remote_91_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "remote_91_modify",
+      "case": "remote_91_modify"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "no_normals_0_preserve",
+      "case": "no_normals_0_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "no_normals_0_modify",
+      "case": "no_normals_0_modify"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "no_normals_91_preserve",
+      "case": "no_normals_91_preserve"
+    },
+    {
+      "op": "mesh_unweld_channels",
+      "id": "no_normals_91_modify",
+      "case": "no_normals_91_modify"
+    }
+  ]
+}

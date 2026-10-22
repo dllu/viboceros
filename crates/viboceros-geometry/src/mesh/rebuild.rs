@@ -31,6 +31,21 @@ impl TriangleMesh {
         face_components: &[Vec<Vec<usize>>],
         topological_vertex_order: &[usize],
     ) -> Result<Self, GeometryError> {
+        self.rebuilt_from_face_components_with_normal_update(
+            data,
+            face_components,
+            topological_vertex_order,
+            true,
+        )
+    }
+
+    pub(super) fn rebuilt_from_face_components_with_normal_update(
+        &self,
+        data: &MeshTopologyData,
+        face_components: &[Vec<Vec<usize>>],
+        topological_vertex_order: &[usize],
+        modify_normals: bool,
+    ) -> Result<Self, GeometryError> {
         let affected_topological_vertices = face_components
             .iter()
             .map(|components| !components.is_empty())
@@ -167,7 +182,9 @@ impl TriangleMesh {
             .retain_valid_ngons_for_same_faces(&self.ngons);
         rebuilt.vertex_colors = colors;
         rebuilt.vertex_channels = channels.finish();
-        rebuilt.recompute_stored_normals()?;
+        if modify_normals {
+            rebuilt.recompute_stored_normals_from(retained)?;
+        }
         Ok(rebuilt)
     }
 }

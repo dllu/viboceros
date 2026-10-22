@@ -68,7 +68,7 @@ pub fn mesh(v: &Value) -> TriangleMesh {
                                 c[0].as_u64().unwrap() as u8,
                                 c[1].as_u64().unwrap() as u8,
                                 c[2].as_u64().unwrap() as u8,
-                                0,
+                                c[3].as_u64().unwrap_or(0) as u8,
                             ]
                         })
                         .collect()
@@ -108,4 +108,45 @@ pub fn face_cycles(mesh: &TriangleMesh) -> Vec<Vec<u32>> {
             cycle
         })
         .collect()
+}
+
+pub fn differences(actual: &TriangleMesh, expected: &Value) -> Vec<&'static str> {
+    let mesh = mesh(expected);
+    [
+        (
+            "vertices",
+            near(
+                &actual
+                    .vertices()
+                    .iter()
+                    .map(|p| p.to_array())
+                    .collect::<Vec<_>>(),
+                &triples(&expected["vertices"]),
+            ),
+        ),
+        ("faces", face_cycles(actual) == face_cycles(&mesh)),
+        (
+            "UV",
+            near(
+                actual.texture_coordinates().unwrap_or_default(),
+                mesh.texture_coordinates().unwrap_or_default(),
+            ),
+        ),
+        (
+            "normals",
+            near(
+                &actual
+                    .vertex_normals()
+                    .unwrap_or_default()
+                    .iter()
+                    .map(|n| n.to_array())
+                    .collect::<Vec<_>>(),
+                &triples(&expected["normals"]),
+            ),
+        ),
+        ("colors", actual.vertex_colors() == mesh.vertex_colors()),
+    ]
+    .into_iter()
+    .filter_map(|(name, passes)| (!passes).then_some(name))
+    .collect()
 }

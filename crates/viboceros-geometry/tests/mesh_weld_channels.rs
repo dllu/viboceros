@@ -2,7 +2,7 @@
 use serde_json::{Value, json};
 #[path = "support/mesh_channels.rs"]
 mod native;
-use native::{face_cycles, mesh, near, triples};
+use native::mesh;
 
 #[test]
 fn native_whole_mesh_welding_tracks_channels_and_remaining_differences() {
@@ -13,7 +13,15 @@ fn native_whole_mesh_welding_tracks_channels_and_remaining_differences() {
     .unwrap();
     let mut changes = Vec::new();
     let mut seen = std::collections::BTreeSet::new();
-    for suffix in ["", "_followup", "_prefixes", "_pairs", "_stress", "_trace"] {
+    for suffix in [
+        "",
+        "_followup",
+        "_prefixes",
+        "_pairs",
+        "_stress",
+        "_trace",
+        "_options",
+    ] {
         let family = format!("mesh_weld_channels{suffix}");
         let data: Value = serde_json::from_slice(
             &std::fs::read(root.join(format!("tools/rhino_oracle/observations/{family}.json")))
@@ -36,46 +44,7 @@ fn native_whole_mesh_welding_tracks_channels_and_remaining_differences() {
                 .unwrap()
                 .0;
             assert_eq!(source, original);
-            let expected = mesh(&v["after"]);
-            let mut differences = Vec::new();
-            for (key, passes) in [
-                (
-                    "vertices",
-                    near(
-                        &actual
-                            .vertices()
-                            .iter()
-                            .map(|p| p.to_array())
-                            .collect::<Vec<_>>(),
-                        &triples(&v["after"]["vertices"]),
-                    ),
-                ),
-                ("faces", face_cycles(&actual) == face_cycles(&expected)),
-                (
-                    "UV",
-                    near(
-                        actual.texture_coordinates().unwrap_or_default(),
-                        expected.texture_coordinates().unwrap_or_default(),
-                    ),
-                ),
-                (
-                    "normals",
-                    near(
-                        &actual
-                            .vertex_normals()
-                            .unwrap_or_default()
-                            .iter()
-                            .map(|n| n.to_array())
-                            .collect::<Vec<_>>(),
-                        &triples(&v["after"]["normals"]),
-                    ),
-                ),
-                ("colors", actual.vertex_colors() == expected.vertex_colors()),
-            ] {
-                if !passes {
-                    differences.push(key);
-                }
-            }
+            let differences = native::differences(&actual, &v["after"]);
             println!(
                 "MESH_WELD_CHANNEL_NATIVE {}",
                 json!({"family":family,"id":row["id"],"differences":differences,"qualified":differences.is_empty(),"vertices":actual.vertices().len(),"faces":actual.face_count()})

@@ -21,17 +21,26 @@ impl TriangleMesh {
     /// Rebuild an existing normal channel after changing face geometry. Meshes
     /// without stored normals keep their implicit normal representation.
     pub(super) fn recompute_stored_normals(&mut self) -> Result<(), GeometryError> {
+        self.recompute_stored_normals_from(0)
+    }
+
+    /// Radial unwelding appends replacements after retained raw vertices.
+    /// Those retained normals remain verbatim, even with ModifyNormals enabled.
+    pub(super) fn recompute_stored_normals_from(
+        &mut self,
+        first_vertex: usize,
+    ) -> Result<(), GeometryError> {
         if self.vertex_channels.normals.is_some() {
             let result = viboceros_opennurbs::recompute_mesh_normals(&self.open_nurbs_data())?;
-            self.vertex_channels.normals = result
-                .vertex_normals
-                .map(|normals| {
-                    normals
-                        .into_iter()
-                        .map(Vector3::try_from)
-                        .collect::<Result<Vec<_>, _>>()
-                })
-                .transpose()?;
+            match result.vertex_normals {
+                Some(normals) => {
+                    let stored = self.vertex_channels.normals.as_mut().unwrap();
+                    for (target, normal) in stored.iter_mut().zip(normals).skip(first_vertex) {
+                        *target = Vector3::try_from(normal)?;
+                    }
+                }
+                None => self.vertex_channels.normals = None,
+            }
         }
         Ok(())
     }

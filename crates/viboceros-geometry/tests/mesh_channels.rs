@@ -3,7 +3,7 @@ use viboceros_geometry::{AffineTransform3, Point3, Tolerance, TriangleMesh, Vect
 
 #[path = "support/mesh_channels.rs"]
 mod native;
-use native::{face_cycles, mesh, near};
+use native::mesh;
 
 fn run(m: &TriangleMesh, op: &str) -> TriangleMesh {
     let t = Tolerance::DEFAULT;
@@ -73,7 +73,6 @@ fn native_mesh_channel_edits() {
         // face set and boundary membership independently of that direction.
         let mut expected_value = v["after"].clone();
         expected_value["ngons"] = serde_json::json!([]);
-        let expected = mesh(&expected_value);
         let native_ngons = v["after"]["ngons"].as_array().unwrap();
         let same_ngons = actual.ngons().len() == native_ngons.len()
             && actual.ngons().iter().zip(native_ngons).all(|(a, b)| {
@@ -86,36 +85,9 @@ fn native_mesh_channel_edits() {
                     == sorted(&serde_json::from_value::<Vec<u32>>(b["vertices"].clone()).unwrap())
                     && a.faces() == serde_json::from_value::<Vec<u32>>(b["faces"].clone()).unwrap()
             });
-        let points = |m: &TriangleMesh| {
-            m.vertices()
-                .iter()
-                .map(|p| p.to_array())
-                .collect::<Vec<_>>()
-        };
-        let normals = |m: &TriangleMesh| {
-            m.vertex_normals()
-                .unwrap_or_default()
-                .iter()
-                .map(|n| n.to_array())
-                .collect::<Vec<_>>()
-        };
-        let mut differences = Vec::new();
-        for (channel, passes) in [
-            ("vertices", near(&points(&actual), &points(&expected))),
-            ("faces", face_cycles(&actual) == face_cycles(&expected)),
-            ("ngons", same_ngons),
-            (
-                "UV",
-                near(
-                    actual.texture_coordinates().unwrap_or_default(),
-                    expected.texture_coordinates().unwrap_or_default(),
-                ),
-            ),
-            ("normals", near(&normals(&actual), &normals(&expected))),
-        ] {
-            if !passes {
-                differences.push(channel);
-            }
+        let mut differences = native::differences(&actual, &expected_value);
+        if !same_ngons {
+            differences.push("ngons");
         }
         let qualified = differences.is_empty();
         println!(

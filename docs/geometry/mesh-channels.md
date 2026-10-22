@@ -36,11 +36,23 @@ compatibility, texture display and comparative performance remain unqualified.
 Whole-mesh welding now blends stored UVs, colors and normal directions instead
 of copying one seam value and rebuilding geometric normals. It preserves
 custom stored normals. The [expanded Weld comparison](../mesh-weld-channels-qualification.json)
-records 76 valid cases: 58 match and 18 retain explicit differences in traversal,
-ordering or attribute reductions. These include face and raw-vertex permutations,
-triangulated cubes and grids; all 12 open and closed fan cases match. Seventeen
+records 96 valid cases: 71 match and 25 retain explicit differences in traversal,
+ordering or attribute reductions. Seven differences repeat cached radial-sort
+variants of existing scenes. The remaining scenes include face and raw-vertex
+permutations, triangulated cubes and grids; all 12 open and closed fan cases match. Seventeen
 invalid native inputs remain diagnostics. Eight diagnostics retain raw vertices
 before compaction; compacting them reproduces their separately captured valid
 twins exactly.
-Three command regressions check metadata, groups and Undo/Redo. Broader Weld
-parity remains open; passing regressions do not qualify the differing cases.
+Four transparency profiles match across three source meshes, including exact
+OpenNURBS alpha bytes (zero is opaque). Eight cached radial-sort variants reproduce
+their native twins exactly. Fifteen command cases check metadata, groups and
+Undo/Redo. Broader Weld parity remains open.
+
+Angle unwelding exposes `unwelded_vertices_with_normal_update(angle, modify_normals)`.
+Preserve mode copies source normals to separated vertices. Update mode recomputes
+only replacement normals through OpenNURBS; untouched vertices retain their stored
+values. Neither mode creates a missing normal channel. The
+[native comparison](../mesh-unweld-channels-qualification.json) matches all 18
+captured cases and retains 27 command comparisons, including the default update
+policy. Broader normal reductions, non-manifold cases, and edge/vertex command
+normal options remain separate work.

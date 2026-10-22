@@ -447,8 +447,11 @@ edges to their first two face uses, and performs unused-vertex compaction.
 greater than or equal to its tolerance. It preserves smoother face regions,
 rebuilds affected vertices in OpenNURBS radial order, and compacts unused
 vertices. The zero-degree default separates every adjacent face region;
-`ModifyNormals=Yes|No` is accepted for Rhino script compatibility while mesh
-normals remain derived data.
+`ModifyNormals=No` copies stored normals to separated vertices. The default
+`ModifyNormals=Yes` recomputes normals only for replacement vertices, retaining
+untouched stored normals. Neither option creates a missing normal channel.
+The [normal-policy comparison](../mesh-unweld-channels-qualification.json)
+records the measured SDK and command coverage.
 
 `UnweldEdge` adds seams at selected exact-location mesh topology edges. Use
 `Edges=0,2`, `Edges=All`, or omit the selector to pick one edge in the viewport.
@@ -456,14 +459,15 @@ It partitions closed and high-valence radial face fans, handles non-manifold
 edges, and preserves existing seams; naked or already-unwelded selections only
 trigger Rhino-compatible vertex compaction. At a non-manifold edge, an endpoint
 with existing partial sharing stays unchanged; only endpoints shared by every
-incident edge face are separated. `ModifyNormals=Yes|No` is accepted,
-but normals remain derived data.
+incident edge face are separated. `ModifyNormals=Yes|No` is accepted, but this
+edge command currently updates replacement normals regardless of the option.
 
 `UnweldVertex` gives every face incident to each selected topology vertex its
 own raw mesh vertex. Use `Vertices=0,2`, `Vertices=All`, or omit the selector
 for one viewport pick. Closed, high-valence, already-unwelded, and non-manifold
 fans follow Rhino's radial ordering, and unused raw vertices are compacted.
-`ModifyNormals=Yes|No` is accepted while normals remain derived data.
+`ModifyNormals=Yes|No` is accepted, but this vertex command currently updates
+replacement normals regardless of the option.
 
 `CombineIdenticalMeshVertices` turns exactly coincident raw vertices into shared
 indices without culling unused vertices, preserving object identity, metadata,

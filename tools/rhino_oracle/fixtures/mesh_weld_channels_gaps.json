@@ -108,5 +108,48 @@
     "faces",
     "UV",
     "colors"
+  ],
+  "radial_cube_rotated": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "radial_cube_reverse_raw": [
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "radial_cube_triangles": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "radial_holdout_grid_quads_2": [
+    "UV",
+    "colors"
+  ],
+  "radial_holdout_grid_triangles_2": [
+    "vertices",
+    "faces",
+    "UV",
+    "colors"
+  ],
+  "radial_holdout_cube_raw_5_0": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "radial_holdout_cube_rotation_2": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
   ]
 }

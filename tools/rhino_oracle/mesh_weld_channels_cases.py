@@ -139,7 +139,12 @@ def scene(operation):
         from .mesh_weld_channels_trace_cases import CASES as trace
     except (ImportError, ValueError):
         from mesh_weld_channels_trace_cases import CASES as trace
-    return trace[name]
+    if name in trace:return trace[name]
+    try:
+        from .mesh_weld_channels_options_cases import CASES as options
+    except (ImportError, ValueError):
+        from mesh_weld_channels_options_cases import CASES as options
+    return options[name]
 
 
 def validate(operation):
