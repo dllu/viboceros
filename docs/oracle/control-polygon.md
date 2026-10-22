@@ -28,8 +28,12 @@ before command-first object selection. The older multi-option trials are exclude
 from behavioral qualification. The documented `TargetObject` layer spelling is
 also rejected by this captured version; its trials remain diagnostics.
 
-These are implementation observations, not a complete command qualification.
+The [whole-object qualification](../control-polygon-qualification.json) replays
+all 42 trusted workflows through the command and interactive getters, including
+the 32 successes and ten filtered inputs. Source geometry remains unchanged;
+measured positions and channels agree within `1e-6`, and captured metadata,
+selection and Undo/Redo agree exactly. The 19 malformed trials remain diagnostics.
+
 The public [command help](https://docs.mcneel.com/rhino/8/help/en-us/commands/extractcontrolpolygon.htm)
-lists the supported geometry and additional interaction options. Full application,
-subcurve/face picking, texture-coordinate transfer and performance comparisons
-still require implementation and validation.
+lists additional interaction options. Subcurve/face picking, texture display and
+performance comparisons still require implementation and validation.

@@ -169,6 +169,56 @@ pub fn surface_discontinuities(
     Ok(result)
 }
 
+/// Public native control-polygon mesh, including Greville texture coordinates
+/// and evaluated normals. A fully collapsed net returns an empty mesh.
+pub fn surface_control_polygon_mesh(
+    surface: SurfaceDefinition<'_>,
+) -> Result<crate::MeshData, SurfaceQueryError> {
+    if !valid_surface(&surface)
+        || surface.controls.len() > 4_000_000
+        || (surface.count[0] - 1)
+            .checked_mul(surface.count[1] - 1)
+            .is_none_or(|n| n > 1_000_000)
+    {
+        return Err(SurfaceQueryError(
+            "Invalid control polygon surface dimensions".into(),
+        ));
+    }
+    unsafe extern "C" {
+        fn vibo_surface_control_polygon_mesh(
+            degree: *const u32,
+            count: *const usize,
+            controls: *const f64,
+            knot_count: *const usize,
+            knots_u: *const f64,
+            knots_v: *const f64,
+            output: *mut *mut crate::mesh::NativeResult,
+            error: *mut c_char,
+            capacity: usize,
+        ) -> c_int;
+    }
+    let mut raw = std::ptr::null_mut();
+    let mut error = [0u8; 1024];
+    let knot_count = surface.knots.map(<[f64]>::len);
+    let status = unsafe {
+        vibo_surface_control_polygon_mesh(
+            surface.degree.as_ptr(),
+            surface.count.as_ptr(),
+            surface.controls.as_flattened().as_ptr(),
+            knot_count.as_ptr(),
+            surface.knots[0].as_ptr(),
+            surface.knots[1].as_ptr(),
+            &mut raw,
+            error.as_mut_ptr().cast(),
+            error.len(),
+        )
+    };
+    // The synchronous callback transferred ownership of this native result.
+    unsafe { crate::mesh::read_mesh_result(raw, status, &error, 0) }
+        .map(|r| r.mesh)
+        .map_err(|e| SurfaceQueryError(e.to_string()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

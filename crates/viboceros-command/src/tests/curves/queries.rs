@@ -483,7 +483,10 @@ fn extract_control_polygon_rejects_bad_inputs_and_options_atomically() {
     let mut document = Document::default();
     registry.execute(&mut document, "Line 0,0 2,0").unwrap();
     registry.execute(&mut document, "Point 5,5").unwrap();
-    registry.execute(&mut document, "SelAll").unwrap();
+    let point = document.objects().last().unwrap().id();
+    document
+        .select_objects_direct([point], SelectionMode::Replace)
+        .unwrap();
     let history = document.undo_label().map(str::to_owned);
     let object_count = document.objects().len();
     assert!(matches!(

@@ -3,6 +3,8 @@ use super::*;
 use std::collections::BTreeSet;
 use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
 use viboceros_document::{Geometry, ObjectId, SelectionMode};
+#[cfg(test)]
+mod control_polygon_tests;
 mod divide;
 mod mesh_from_lines;
 mod mesh_patch;

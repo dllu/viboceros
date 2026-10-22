@@ -70,14 +70,9 @@ explicit indices for deterministic command-line input.
 
 ## Control polygons
 
-`ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
-of selected curves and creates mixed triangle/quad meshes through selected
-untrimmed NURBS surface control nets. Periodic control windows align to the
-active domain, closed seams remain explicit, and singular surface sides become
-triangles without artificial quad diagonals. Results default to the current
-layer; `OutputLayer=Input` and `TargetObject` use each source object's layer.
-Polycurves produce one connected polygon through the original segment controls,
-sharing duplicated junction controls without elevating segment degrees.
+[`ExtractControlPolygon`](control-polygons.md) extracts curve, surface and SubD
+control nets, preserving source metadata and groups. It supports object picking,
+output-layer choices, and SubD geometry or texture-coordinate priority.
 
 ## Arrays, joining, exploding, and measurement
 

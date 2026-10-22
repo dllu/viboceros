@@ -25,5 +25,8 @@ int vibo_mesh_cleanup_counts(const ViboMeshResult*,size_t*,size_t*,size_t*);
 void vibo_mesh_result_free(ViboMeshResult*);
 #ifdef __cplusplus
 }
+class ON_Mesh;
+// Shared owning result encoder for public mesh-producing SDK operations.
+ViboMeshResult* vibo_mesh_result_from_mesh(const ON_Mesh&);
 #endif
 #endif

@@ -3,6 +3,8 @@
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
+    'src/app/object_selection.rs',
+    'src/app/object_selection/control_polygon_tests.rs',
     'src/app/soft_crease.rs',
     'src/app/soft_crease/tests.rs',
     'src/app/soft_crease/tests/native.rs',
@@ -68,6 +70,7 @@ def with_shared_sources(paths):
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
             'crates/viboceros-command/src/extract_control_polygon.rs',
+            'crates/viboceros-command/src/extract_control_polygon/options.rs',
             'crates/viboceros-command/src/soft_crease.rs',
             'crates/viboceros-command/src/soft_crease/profile.rs',
             'crates/viboceros-command/src/soft_crease/arguments.rs',
@@ -84,5 +87,13 @@ def with_shared_sources(paths):
         expanded.extend(MESH_MODULES)
     if 'crates/viboceros-io/src/three_dm.rs' in expanded:
         expanded.append('crates/viboceros-io/src/three_dm/mesh_ngon.rs')
+    if ('crates/viboceros-geometry/src/nurbs_surface.rs' in expanded or
+            'crates/viboceros-opennurbs/src/surface.rs' in expanded or
+            'crates/viboceros-command/src/extract_control_polygon.rs' in expanded):
+        expanded.extend([
+            'crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs',
+            'crates/viboceros-opennurbs/src/surface.rs',
+            'crates/viboceros-opennurbs/native/surface_queries.h',
+        ])
     expanded.append('tools/rhino_oracle/qualification_sources.py')
     return list(dict.fromkeys(expanded))

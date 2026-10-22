@@ -45,6 +45,7 @@ pub enum ObjectSelectionFilter {
     PlaneFitPoints,
     LineFitPoints,
     ControlPoints,
+    ControlPolygons,
     Grips,
     PointCloudSources,
     PointCloudAddSources,
@@ -124,6 +125,7 @@ impl ObjectSelectionFilter {
             ),
             Self::Grips => false,
             Self::ControlPoints => geometry.supports_control_points(),
+            Self::ControlPolygons => crate::extract_control_polygon::accepts(geometry),
             Self::PointCloudAddSources => {
                 matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_))
             }

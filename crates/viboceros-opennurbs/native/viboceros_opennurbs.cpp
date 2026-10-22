@@ -1,4 +1,5 @@
 #include "viboceros_opennurbs.h"
+#include "mesh_modeling.h"
 #include <map>
 
 #include "opennurbs_public.h"

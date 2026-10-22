@@ -13,7 +13,7 @@ mod block_reset_scale;
 pub mod blocks;
 pub mod contour;
 pub mod crease;
-mod extract_control_polygon;
+pub mod extract_control_polygon;
 use extract_control_polygon::ExtractControlPolygonCommand;
 mod create_unique_block;
 mod create_uv_curves;
@@ -14622,9 +14622,7 @@ pub enum CommandError {
     #[error("the requested face has no duplicable border")]
     NoDuplicateFaceBorders,
 
-    #[error(
-        "ExtractControlPolygon supports selected lines, analytic curves, polylines, NURBS curves, and untrimmed NURBS surfaces only"
-    )]
+    #[error("ExtractControlPolygon supports curves, single surfaces, and SubDs")]
     UnsupportedExtractControlPolygonGeometry,
 
     #[error("none of the selected objects has an extractable control polygon")]

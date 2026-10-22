@@ -27,7 +27,7 @@ impl TriangleMesh {
                 .collect(),
         }
     }
-    pub(super) fn from_open_nurbs_data(
+    pub(crate) fn from_open_nurbs_data(
         data: viboceros_opennurbs::MeshData,
     ) -> Result<Self, GeometryError> {
         Self::try_from_face_records(

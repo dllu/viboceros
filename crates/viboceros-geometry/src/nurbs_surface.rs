@@ -6,6 +6,7 @@ mod analytic_sphere;
 mod analytic_torus;
 mod basis;
 mod closest_point;
+mod control_polygon;
 mod evaluate;
 mod grip_deletion;
 mod grips;
@@ -27,7 +28,7 @@ use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 use crate::integration::integrate_adaptive;
 use crate::nurbs::{
     basis_interior_knot_groups, clamped_uniform_knots, control_polygon_length,
-    control_polygon_range, curve_coordinates_coincident, curve_points_coincident, de_boor,
+    curve_coordinates_coincident, curve_points_coincident, de_boor,
     knot_removal_candidate_by_parameter, knot_vector_is_periodic, project_homogeneous,
     stable_divided_difference, stable_knot_mean, uniform_knots_like, validate_direction,
 };
@@ -3206,114 +3207,6 @@ impl NurbsSurface {
         [retained_u, retained_v]
     }
 
-    /// Builds Rhino's cleaned polygon mesh through the Euclidean control net.
-    ///
-    /// Regular cells remain quads. Cells beside a singular side become
-    /// triangles, and invalid collapsed cells are omitted before unused
-    /// vertices are culled. Closed directions retain one coincident seam row
-    /// or column; periodic directions use their domain-aligned Greville
-    /// window rather than the raw repeated-control prefix.
-    pub fn control_polygon_mesh(
-        &self,
-        tolerance: Tolerance,
-    ) -> Result<Option<TriangleMesh>, GeometryError> {
-        let periodic_u = self.is_periodic_u();
-        let periodic_v = self.is_periodic_v();
-        let (start_u, end_u) = control_polygon_range(
-            self.degree_u,
-            self.control_point_count_u,
-            &self.knots_u,
-            periodic_u,
-        );
-        let (start_v, end_v) = control_polygon_range(
-            self.degree_v,
-            self.control_point_count_v,
-            &self.knots_v,
-            periodic_v,
-        );
-        let count_u = end_u - start_u;
-        let count_v = end_v - start_v;
-        let vertex_count = count_u
-            .checked_mul(count_v)
-            .ok_or(GeometryError::TooManyMeshVertices)?;
-        if vertex_count
-            .checked_sub(1)
-            .is_some_and(|last| u32::try_from(last).is_err())
-        {
-            return Err(GeometryError::TooManyMeshVertices);
-        }
-        let face_capacity = count_u
-            .checked_sub(1)
-            .and_then(|u| count_v.checked_sub(1).and_then(|v| u.checked_mul(v)))
-            .ok_or(GeometryError::TooManyMeshFaces)?;
-
-        let mut vertices = Vec::new();
-        vertices
-            .try_reserve_exact(vertex_count)
-            .map_err(|_| GeometryError::TooManyMeshVertices)?;
-        for v in start_v..end_v {
-            for u in start_u..end_u {
-                vertices.push(self.control_points[self.control_index(u, v)].point());
-            }
-        }
-
-        let singular_sides = control_net_singular_sides(
-            &vertices,
-            count_u,
-            count_v,
-            [
-                knots_are_clamped_at_start(self.degree_v, &self.knots_v),
-                knots_are_clamped_at_end(self.degree_u, &self.knots_u),
-                knots_are_clamped_at_end(self.degree_v, &self.knots_v),
-                knots_are_clamped_at_start(self.degree_u, &self.knots_u),
-            ],
-        );
-        if self.is_closed_u()? {
-            for v in 0..count_v {
-                let first = vertices[v * count_u];
-                vertices[v * count_u + count_u - 1] = first;
-            }
-        }
-        if self.is_closed_v()? {
-            let last_row = count_u * (count_v - 1);
-            for u in 0..count_u {
-                vertices[last_row + u] = vertices[u];
-            }
-        }
-        snap_singular_control_net_sides(&mut vertices, count_u, count_v, singular_sides);
-
-        let mut faces = Vec::new();
-        faces
-            .try_reserve_exact(face_capacity)
-            .map_err(|_| GeometryError::TooManyMeshFaces)?;
-        let mut omitted_face = false;
-        for v in 1..count_v {
-            for u in 1..count_u {
-                let current = v * count_u + u;
-                let raw = [
-                    current - count_u - 1,
-                    current - count_u,
-                    current,
-                    current - 1,
-                ]
-                .map(|index| index as u32);
-                match clean_control_net_face(raw, &vertices) {
-                    Some(face) => faces.push(face),
-                    None => omitted_face = true,
-                }
-            }
-        }
-        if faces.is_empty() {
-            return Ok(None);
-        }
-        let mesh = TriangleMesh::try_new_faces(vertices, faces, tolerance)?;
-        Ok(Some(if omitted_face {
-            mesh.culled_unused_vertices().0
-        } else {
-            mesh
-        }))
-    }
-
     fn isocurve_controls(
         &self,
         direction: SurfaceIsoDirection,
@@ -4570,46 +4463,6 @@ pub(crate) fn snap_singular_control_net_sides(
         for v in 1..count_v {
             vertices[v * count_u] = point;
         }
-    }
-}
-
-/// Mirrors the `bCleanMesh` face cleanup in OpenNURBS'
-/// `ON_ControlPolygonMesh`, including which duplicated pole index survives.
-fn clean_control_net_face(mut indices: [u32; 4], vertices: &[Point3]) -> Option<MeshFace> {
-    let mut points = indices.map(|index| vertices[index as usize]);
-    if points[0] == points[1] {
-        indices[1] = indices[2];
-        indices[2] = indices[3];
-        points[1] = points[2];
-        points[2] = points[3];
-    }
-    if points[1] == points[2] {
-        indices[2] = indices[3];
-        points[2] = points[3];
-    }
-    if points[2] == points[3] {
-        indices[2] = indices[3];
-        points[2] = points[3];
-    }
-    if points[3] == points[0] {
-        indices[0] = indices[1];
-        indices[1] = indices[2];
-        indices[2] = indices[3];
-        points[0] = points[1];
-        points[1] = points[2];
-        points[2] = points[3];
-    }
-    if indices[0] == indices[1]
-        || indices[1] == indices[2]
-        || indices[3] == indices[0]
-        || points[0] == points[2]
-        || points[1] == points[3]
-    {
-        None
-    } else if indices[2] == indices[3] {
-        Some(MeshFace::Triangle([indices[0], indices[1], indices[2]]))
-    } else {
-        Some(MeshFace::Quad(indices))
     }
 }
 

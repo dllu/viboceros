@@ -27,5 +27,7 @@ their owner is released.
 The [qualification](../subd-control-net-qualification.json) compares 21 SubD
 sources from 20 native workflows. Points agree within `1e-6`, with zero observed
 error; topology, n-gons, stored normals and texture coordinates match exactly.
-The existing command's SubD integration and comparative performance remain
-separate work. Textured seam welding has a retained compatibility gap.
+Whole-object command integration has its own
+[qualification](../control-polygon-qualification.json). Subcurve/face picking
+and comparative performance remain separate work. Textured seam welding has a
+retained compatibility gap.

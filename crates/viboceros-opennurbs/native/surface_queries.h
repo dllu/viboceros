@@ -114,3 +114,39 @@ extern "C" int32_t vibo_surface_discontinuities(const uint32_t* degree,const siz
     return 1;
   }catch(const std::exception& exception){set_error(error,capacity,std::string("Surface discontinuity query failed: ")+exception.what());return 0;}
 }
+
+// Native control-net conversion retains Greville UVs, limit normals, periodic
+// seams and singular-side cleanup through the shared mesh result encoder.
+extern "C" int32_t vibo_surface_control_polygon_mesh(
+    const uint32_t* degree, const size_t* count, const double* controls,
+    const size_t* knot_count, const double* knots_u, const double* knots_v,
+    ViboMeshResult** output, char* error, size_t capacity) {
+  if (output) *output = nullptr;
+  set_error(error, capacity, "");
+  try {
+    if (!output || !degree || !count || !controls || !knot_count ||
+        !knots_u || !knots_v || count[0] < 2 || count[1] < 2 ||
+        count[0] > 4000000 / count[1] ||
+        count[0] - 1 > 1000000 / (count[1] - 1)) {
+      set_error(error, capacity, "Invalid control polygon surface buffers");
+      return 0;
+    }
+    vibo_begin_open_nurbs();
+    std::string message;
+    auto owned = surface_query_geometry(degree, count, controls, knot_count,
+                                        knots_u, knots_v, message);
+    const auto* surface = ON_NurbsSurface::Cast(owned.get());
+    if (!surface || !surface->IsValid()) {
+      set_error(error, capacity, message.empty() ? "Invalid control polygon surface" : message);
+      return 0;
+    }
+    ON_Mesh mesh;
+    // All degenerate facets can legitimately leave an empty result.
+    ON_ControlPolygonMesh(*surface, true, &mesh);
+    *output = vibo_mesh_result_from_mesh(mesh);
+    return 1;
+  } catch (const std::exception& exception) {
+    set_error(error, capacity, exception.what());
+    return 0;
+  }
+}

@@ -47,7 +47,7 @@ pub(crate) struct MeshView {
     vertex_normals: *const f64,
 }
 #[repr(C)]
-struct NativeResult {
+pub(crate) struct NativeResult {
     _private: [u8; 0],
 }
 #[derive(Clone, Debug, PartialEq)]
@@ -57,8 +57,8 @@ pub struct MeshFaceCullResult {
     pub repaired_faces: usize,
     pub removed_vertices: usize,
 }
-struct EditResult {
-    mesh: MeshData,
+pub(crate) struct EditResult {
+    pub(crate) mesh: MeshData,
     changed: usize,
     removed_faces: usize,
     repaired_faces: usize,
@@ -307,97 +307,109 @@ fn edit_selection(
                 )
             }
         };
-        let owner = NonNull::new(raw).map(Owner);
-        if status == 0 {
-            let end = error.iter().position(|b| *b == 0).unwrap_or(error.len());
-            return Err(MeshError(
-                String::from_utf8_lossy(&error[..end]).into_owned(),
-            ));
-        }
-        let owner = owner.ok_or_else(|| MeshError("Missing result".into()))?;
-        let mut out = std::mem::MaybeUninit::<MeshView>::uninit();
-        let mut changed = 0;
-        if unsafe { vibo_mesh_result_view(owner.0.as_ptr(), out.as_mut_ptr(), &mut changed) } == 0 {
-            return Err(MeshError("Missing result view".into()));
-        }
-        let out = unsafe { out.assume_init() };
-        // The owned native result keeps all validated spans alive while copying.
-        unsafe fn copy<T: Copy>(p: *const T, n: usize) -> Result<Vec<T>, MeshError> {
-            if n == 0 {
-                return Ok(vec![]);
-            }
-            if p.is_null() || n > 32_000_000 {
-                return Err(MeshError("Invalid result array".into()));
-            }
-            Ok(unsafe { std::slice::from_raw_parts(p, n) }.to_vec())
-        }
-        let mut result = MeshData {
-            vertices: unsafe { copy(out.vertices.cast::<[f64; 3]>(), out.vertex_count)? },
-            faces: unsafe { copy(out.faces.cast::<[u32; 4]>(), out.face_count)? },
-            colors: None,
-            ngons: Vec::new(),
-            texture_coordinates: None,
-            vertex_normals: None,
-        };
-        if out.color_count > 0 {
-            result.colors = Some(unsafe { copy(out.colors.cast::<[u8; 4]>(), out.color_count)? });
-        }
-        if (out.texture_count != 0 && out.texture_count != out.vertex_count)
-            || (out.normal_count != 0 && out.normal_count != out.vertex_count)
-        {
-            return Err(MeshError("Invalid result vertex channel counts".into()));
-        }
-        if out.texture_count > 0 {
-            result.texture_coordinates =
-                Some(unsafe { copy(out.texture_coordinates.cast(), out.texture_count)? });
-        }
-        if out.normal_count > 0 {
-            result.vertex_normals =
-                Some(unsafe { copy(out.vertex_normals.cast(), out.normal_count)? });
-        }
-        let vertex_indices = unsafe { copy(out.ngon_vertices, out.ngon_vertex_count)? };
-        let face_indices = unsafe { copy(out.ngon_faces, out.ngon_face_count)? };
-        for g in unsafe { copy(out.ngons, out.ngon_count)? } {
-            let vertex_end = g
-                .first_vertex
-                .checked_add(g.vertex_count)
-                .ok_or_else(|| MeshError("Invalid n-gon span".into()))?;
-            let face_end = g
-                .first_face
-                .checked_add(g.face_count)
-                .ok_or_else(|| MeshError("Invalid n-gon span".into()))?;
-            result.ngons.push(Ngon {
-                vertices: vertex_indices
-                    .get(g.first_vertex..vertex_end)
-                    .ok_or_else(|| MeshError("Invalid n-gon vertices".into()))?
-                    .to_vec(),
-                faces: face_indices
-                    .get(g.first_face..face_end)
-                    .ok_or_else(|| MeshError("Invalid n-gon faces".into()))?
-                    .to_vec(),
-            });
-        }
-        let (mut removed_faces, mut repaired_faces, mut removed_vertices) = (0, 0, 0);
-        if op == 4
-            && unsafe {
-                vibo_mesh_cleanup_counts(
-                    owner.0.as_ptr(),
-                    &mut removed_faces,
-                    &mut repaired_faces,
-                    &mut removed_vertices,
-                )
-            } == 0
-        {
-            return Err(MeshError("Missing cleanup counts".into()));
-        }
-        Ok(EditResult {
-            mesh: result,
-            changed,
-            removed_faces,
-            repaired_faces,
-            removed_vertices,
-        })
+        // The native callback transfers a fresh, uniquely owned result.
+        unsafe { read_mesh_result(raw, status, &error, op) }
     })?
+}
+
+/// # Safety
+/// `raw` must be null or a uniquely owned live result from this bridge. This
+/// function takes ownership, including when the native status indicates error.
+pub(crate) unsafe fn read_mesh_result(
+    raw: *mut NativeResult,
+    status: c_int,
+    error: &[u8],
+    op: u32,
+) -> Result<EditResult, MeshError> {
+    let owner = NonNull::new(raw).map(Owner);
+    if status == 0 {
+        let end = error.iter().position(|b| *b == 0).unwrap_or(error.len());
+        return Err(MeshError(
+            String::from_utf8_lossy(&error[..end]).into_owned(),
+        ));
+    }
+    let owner = owner.ok_or_else(|| MeshError("Missing result".into()))?;
+    let mut out = std::mem::MaybeUninit::<MeshView>::uninit();
+    let mut changed = 0;
+    if unsafe { vibo_mesh_result_view(owner.0.as_ptr(), out.as_mut_ptr(), &mut changed) } == 0 {
+        return Err(MeshError("Missing result view".into()));
+    }
+    let out = unsafe { out.assume_init() };
+    // The owned native result keeps all validated spans alive while copying.
+    unsafe fn copy<T: Copy>(p: *const T, n: usize) -> Result<Vec<T>, MeshError> {
+        if n == 0 {
+            return Ok(vec![]);
+        }
+        if p.is_null() || n > 32_000_000 {
+            return Err(MeshError("Invalid result array".into()));
+        }
+        Ok(unsafe { std::slice::from_raw_parts(p, n) }.to_vec())
+    }
+    let mut result = MeshData {
+        vertices: unsafe { copy(out.vertices.cast::<[f64; 3]>(), out.vertex_count)? },
+        faces: unsafe { copy(out.faces.cast::<[u32; 4]>(), out.face_count)? },
+        colors: None,
+        ngons: Vec::new(),
+        texture_coordinates: None,
+        vertex_normals: None,
+    };
+    if out.color_count > 0 {
+        result.colors = Some(unsafe { copy(out.colors.cast::<[u8; 4]>(), out.color_count)? });
+    }
+    if (out.texture_count != 0 && out.texture_count != out.vertex_count)
+        || (out.normal_count != 0 && out.normal_count != out.vertex_count)
+    {
+        return Err(MeshError("Invalid result vertex channel counts".into()));
+    }
+    if out.texture_count > 0 {
+        result.texture_coordinates =
+            Some(unsafe { copy(out.texture_coordinates.cast(), out.texture_count)? });
+    }
+    if out.normal_count > 0 {
+        result.vertex_normals = Some(unsafe { copy(out.vertex_normals.cast(), out.normal_count)? });
+    }
+    let vertex_indices = unsafe { copy(out.ngon_vertices, out.ngon_vertex_count)? };
+    let face_indices = unsafe { copy(out.ngon_faces, out.ngon_face_count)? };
+    for g in unsafe { copy(out.ngons, out.ngon_count)? } {
+        let vertex_end = g
+            .first_vertex
+            .checked_add(g.vertex_count)
+            .ok_or_else(|| MeshError("Invalid n-gon span".into()))?;
+        let face_end = g
+            .first_face
+            .checked_add(g.face_count)
+            .ok_or_else(|| MeshError("Invalid n-gon span".into()))?;
+        result.ngons.push(Ngon {
+            vertices: vertex_indices
+                .get(g.first_vertex..vertex_end)
+                .ok_or_else(|| MeshError("Invalid n-gon vertices".into()))?
+                .to_vec(),
+            faces: face_indices
+                .get(g.first_face..face_end)
+                .ok_or_else(|| MeshError("Invalid n-gon faces".into()))?
+                .to_vec(),
+        });
+    }
+    let (mut removed_faces, mut repaired_faces, mut removed_vertices) = (0, 0, 0);
+    if op == 4
+        && unsafe {
+            vibo_mesh_cleanup_counts(
+                owner.0.as_ptr(),
+                &mut removed_faces,
+                &mut repaired_faces,
+                &mut removed_vertices,
+            )
+        } == 0
+    {
+        return Err(MeshError("Missing cleanup counts".into()));
+    }
+    Ok(EditResult {
+        mesh: result,
+        changed,
+        removed_faces,
+        repaired_faces,
+        removed_vertices,
+    })
 }
 
 #[cfg(test)]

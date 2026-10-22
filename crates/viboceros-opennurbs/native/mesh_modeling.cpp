@@ -126,6 +126,11 @@ void export_mesh(const ON_Mesh &m,ViboMeshResult &r){
   }
 }
 }
+ViboMeshResult* vibo_mesh_result_from_mesh(const ON_Mesh& mesh) {
+  auto result = std::make_unique<ViboMeshResult>();
+  export_mesh(mesh, *result);
+  return result.release();
+}
 static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distance,double angle,ViboMeshResult **out,char *error,size_t capacity,const size_t *selected=nullptr,size_t selected_count=0,bool region=false){
   if(out)*out=nullptr;
   try{

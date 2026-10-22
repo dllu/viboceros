@@ -14,6 +14,35 @@ HERE = Path(__file__).resolve().parent
 
 
 class ControlPolygonTests(unittest.TestCase):
+    def test_whole_object_report_requires_all_command_and_ui_cases(self):
+        from .report_control_polygon import ROOT, summarize
+        report = json.loads((ROOT/'docs/control-polygon-qualification.json').read_text())
+        command = ['CONTROL_POLYGON_NATIVE '+json.dumps(r) for r in report['comparisons']['command']]
+        ui = ['CONTROL_POLYGON_UI '+json.dumps(r) for r in report['comparisons']['ui']]
+        self.assertEqual(summarize('\n'.join(command), '\n'.join(ui)), report)
+        self.assertEqual((report['compared_workflows'], report['successful_workflows'],
+                          report['rejected_workflows'], len(report['diagnostic_workflows'])),
+                         (42, 32, 10, 19))
+        self.assertTrue(report['whole_object_command_qualified'])
+        self.assertTrue(report['interactive_object_getter_qualified'])
+        self.assertFalse(report['full_native_parity'])
+        self.assertFalse(report['performance_qualified'])
+        for a, b in [(command[:-1], ui), (command, ui[:-1]), (command+command[:1], ui),
+                     (command, ui+ui[:1])]:
+            with self.assertRaises(ValueError):
+                summarize('\n'.join(a), '\n'.join(b))
+        for field, value in [('maximum_error', float('nan')), ('maximum_error', 2e-6),
+                             ('geometry_unchanged', False), ('metadata_exact', False),
+                             ('selection_exact', False), ('history_exact', False),
+                             ('qualified', True)]:
+            rows = copy.deepcopy(report['comparisons']['command'])
+            rows[0][field] = value
+            if field == 'qualified':
+                rows[0]['success'] = not rows[0]['success']
+            bad = '\n'.join('CONTROL_POLYGON_NATIVE '+json.dumps(r) for r in rows)
+            with self.assertRaises(ValueError):
+                summarize(bad, '\n'.join(ui))
+
     def test_control_net_report_requires_complete_exact_attributes(self):
         from .report_subd_control_net import ROOT,summarize
         report = json.loads((ROOT/'docs/subd-control-net-qualification.json').read_text())
