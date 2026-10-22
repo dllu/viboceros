@@ -67,9 +67,10 @@ MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['vertex_channels', 'native', 'append', 'face_records', 'components',
                  'rebuild', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
-                 'offset', 'patch_single_face', 'join', 'match_edges', 'alignment',
+                 'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'compaction',
                  'quadrangulate', 'planar_cap', 'coplanar_merge']
 ] + [
+    'crates/viboceros-geometry/tests/support/mesh_channels.rs',
     'crates/viboceros-opennurbs/src/mesh.rs',
     'crates/viboceros-opennurbs/native/mesh_modeling.h',
     'crates/viboceros-opennurbs/native/mesh_modeling.cpp',

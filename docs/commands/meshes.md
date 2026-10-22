@@ -411,9 +411,11 @@ reject the whole selection before document mutation.
 
 `Weld` merges exactly coincident endpoints only where mesh faces share a whole
 edge and their normal angle is within the supplied 0-to-180-degree tolerance.
-It matches Rhino's survivor ordering, compacts unused vertices, never merges a
-vertex-only contact, and preserves object identity, metadata, groups, and
-selection. The default is 180 degrees; `Angle=90` is also accepted.
+It compacts unused vertices, keeps vertex-only contacts separate, and preserves
+object identity, metadata, groups and selection. Stored UVs, vertex colors and
+normal directions are blended across joined seams. The default is 180 degrees;
+`Angle=90` is also accepted. Connected-face ordering and some attribute reductions
+still differ from Rhino; see the [measured limits](../geometry/mesh-channels.md).
 Whole-mesh `Weld`, `Unweld`, `CombineIdenticalMeshVertices`, and
 `CullUnusedMeshVertices` likewise borrow selected inputs while staging new
 geometry, without an extra input snapshot. This does not remove the allocations

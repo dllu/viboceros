@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_all",
+      "case": "cube_all"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_plain",
+      "case": "cube_plain"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_uv",
+      "case": "cube_uv"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_normals",
+      "case": "cube_normals"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_below",
+      "case": "cube_below"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_right",
+      "case": "cube_right"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_above",
+      "case": "cube_above"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_rotated",
+      "case": "cube_rotated"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "pair_flat",
+      "case": "pair_flat"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "pair_bent_below",
+      "case": "pair_bent_below"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "pair_bent_right",
+      "case": "pair_bent_right"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "pair_bent_above",
+      "case": "pair_bent_above"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "nonmanifold",
+      "case": "nonmanifold"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "vertex_only",
+      "case": "vertex_only"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "fan",
+      "case": "fan"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_reverse_raw",
+      "case": "cube_reverse_raw"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "cube_triangles",
+      "case": "cube_triangles"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "pair_custom_normals",
+      "case": "pair_custom_normals"
+    }
+  ]
+}

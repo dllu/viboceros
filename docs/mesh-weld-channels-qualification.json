@@ -1,0 +1,618 @@
+{
+  "native_engine_version": "8.32.26160.13001",
+  "compared_cases": 47,
+  "qualified_cases": 24,
+  "diagnostic_cases": [
+    {
+      "family": "mesh_weld_channels",
+      "id": "pair_custom_normals",
+      "reason": "Native source is invalid; not a geometry comparison."
+    },
+    {
+      "family": "mesh_weld_channels_followup",
+      "id": "prefix_2_all",
+      "reason": "Native source is invalid; not a geometry comparison."
+    },
+    {
+      "family": "mesh_weld_channels_followup",
+      "id": "prefix_2_none",
+      "reason": "Native source is invalid; not a geometry comparison."
+    },
+    {
+      "family": "mesh_weld_channels_followup",
+      "id": "prefix_3_all",
+      "reason": "Native source is invalid; not a geometry comparison."
+    },
+    {
+      "family": "mesh_weld_channels_followup",
+      "id": "prefix_3_none",
+      "reason": "Native source is invalid; not a geometry comparison."
+    },
+    {
+      "family": "mesh_weld_channels_followup",
+      "id": "prefix_4_all",
+      "reason": "Native source is invalid; not a geometry comparison."
+    },
+    {
+      "family": "mesh_weld_channels_followup",
+      "id": "prefix_4_none",
+      "reason": "Native source is invalid; not a geometry comparison."
+    },
+    {
+      "family": "mesh_weld_channels_followup",
+      "id": "prefix_5_all",
+      "reason": "Native source is invalid; not a geometry comparison."
+    },
+    {
+      "family": "mesh_weld_channels_followup",
+      "id": "prefix_5_none",
+      "reason": "Native source is invalid; not a geometry comparison."
+    }
+  ],
+  "epsilon": 1e-06,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "limits": [
+    "Every valid source in four fixed captures is compared; invalid source recipes remain explicit diagnostics.",
+    "Connected-face traversal, survivor ordering and some seam attribute reductions still differ. Each differing case lists its fields in the mismatch ledger.",
+    "RGB colors compare exactly; float positions, UVs and stored normals compare within 1e-6. Face cycles allow rotation.",
+    "Three command regressions check identity, metadata, groups and Undo/Redo. The native captures exercise the SDK, not command selection or UI.",
+    "Alpha blending, larger meshes, mixed opposing normals, broader edit compatibility and comparative performance remain unqualified."
+  ],
+  "cases": [
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_above",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_all",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_below",
+      "qualified": true,
+      "vertices": 24
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "normals"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_normals",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_plain",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_reverse_raw",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_right",
+      "qualified": true,
+      "vertices": 24
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_rotated",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 12,
+      "family": "mesh_weld_channels",
+      "id": "cube_triangles",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels",
+      "id": "cube_uv",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "UV",
+        "colors"
+      ],
+      "faces": 4,
+      "family": "mesh_weld_channels",
+      "id": "fan",
+      "qualified": false,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "family": "mesh_weld_channels",
+      "id": "nonmanifold",
+      "qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels",
+      "id": "pair_bent_above",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels",
+      "id": "pair_bent_below",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels",
+      "id": "pair_bent_right",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels",
+      "id": "pair_flat",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels",
+      "id": "vertex_only",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_followup",
+      "id": "half_shared",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "colors"
+      ],
+      "faces": 3,
+      "family": "mesh_weld_channels_followup",
+      "id": "open_fan",
+      "qualified": false,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_followup",
+      "id": "other_half_shared",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_followup",
+      "id": "pair_unit_opposite",
+      "qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_followup",
+      "id": "pair_unit_x",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_0_1",
+      "qualified": false,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_0_2",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_0_3",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_0_4",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_1_2",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_1_4",
+      "qualified": false,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_1_5",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_2_3",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_2_5",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_3_4",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_3_5",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "edge_pair_4_5",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "quad_pair_reverse_faces",
+      "qualified": false,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "tri_pair_reverse_faces",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "colors"
+      ],
+      "faces": 2,
+      "family": "mesh_weld_channels_pairs",
+      "id": "tri_pair_reverse_raw",
+      "qualified": false,
+      "vertices": 4
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 2,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_2_all",
+      "qualified": false,
+      "vertices": 6
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces"
+      ],
+      "faces": 2,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_2_none",
+      "qualified": false,
+      "vertices": 6
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 3,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_3_all",
+      "qualified": false,
+      "vertices": 7
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces"
+      ],
+      "faces": 3,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_3_none",
+      "qualified": false,
+      "vertices": 7
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 4,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_4_all",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces"
+      ],
+      "faces": 4,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_4_none",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 5,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_5_all",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 5,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_5_none",
+      "qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_6_all",
+      "qualified": false,
+      "vertices": 8
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces"
+      ],
+      "faces": 6,
+      "family": "mesh_weld_channels_prefixes",
+      "id": "valid_prefix_6_none",
+      "qualified": false,
+      "vertices": 8
+    }
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/mesh.rs": "189040d5191bc54f7471f9a7867e3c33ec145c42bcf70d4fb770c9a85866e79a",
+    "crates/viboceros-geometry/tests/mesh_weld_channels.rs": "66671499c16285c2d8502864fcd14004fa0de090a925099728e90998b76b30c4",
+    "crates/viboceros-geometry/tests/support/mesh_channels.rs": "453ad8c1f7530c6072219e7445c7dbaa519e5097840aeae6739504b35a8eba47",
+    "crates/viboceros-command/tests/mesh_weld_channels.rs": "dba14eb96cb7ccc3f1533b0a644627e8e920864dc3ecdcddafeb3ca6f3a2e5b1",
+    "tools/rhino_oracle/fixtures/mesh_weld_channels_gaps.json": "058940f83d7ac18a8df5e755c5733787a41137c9d7c91d43b61fcdeb308d121d",
+    "tools/rhino_oracle/mesh_weld_channels_cases.py": "6c54a3e1e40a559c1476b0f12ce27206fe749dd5bb700dc3a44d4a92efeb4f72",
+    "tools/rhino_oracle/mesh_weld_channels_probe.py": "68ff3e5f6b2495f4dda6e755586e6f8d80ccb6dad54375a5363d50671640801a",
+    "tools/rhino_oracle/generate_mesh_weld_channels.py": "ffdb847bf0f02a1d9f049e4903f96cff5faaf5d379fbf0b4e3607326edffa575",
+    "tools/rhino_oracle/report_mesh_weld_channels.py": "d86d77f6d8521ae574f9dd03bfdd07dad78bb9ef2077e5e2671e18b490031682",
+    "tools/rhino_oracle/test_mesh_weld_channels.py": "84481b8ab5c860db1a80d29caaebe1a0cecd00584f604353c6c5d6dcbf698654",
+    "crates/viboceros-geometry/src/mesh/vertex_channels.rs": "5febc58bc556408968d5ea35d48723684d8fec56003aa226011449c27685cfbb",
+    "crates/viboceros-geometry/src/mesh/native.rs": "dcd8df91be3091300698e08b808519388c4fcf259e5a9245013fd7e121cffeec",
+    "crates/viboceros-geometry/src/mesh/append.rs": "2fbcba3e39a9b9a25ceb864d12a2daee0cd2368cc50073829fde29d106d0eced",
+    "crates/viboceros-geometry/src/mesh/face_records.rs": "bf5438805e68438bf60ddf912490e8a4e2b03d7beec39ecc03eb087353f83e6d",
+    "crates/viboceros-geometry/src/mesh/components.rs": "8ba40fa1bd7a7b2c34bf55e9a0fd8292229e11dc82ba3dd32d4f4ccc3706520a",
+    "crates/viboceros-geometry/src/mesh/rebuild.rs": "11443f9dc5a93cee2390539a5c99ddab82b02ff6a370fe20426dfd2efbaec79d",
+    "crates/viboceros-geometry/src/mesh/edge_split.rs": "0e5af113562bccd41fc1865b0b95bdbd398b4ded1efcb5812efc4ee2e2f0d6ed",
+    "crates/viboceros-geometry/src/mesh/edge_collapse.rs": "77f5ccb514d2a662a7f5d27652eb0c368331ca09dac52bf2a19243402d564442",
+    "crates/viboceros-geometry/src/mesh/subdivision.rs": "4ea9da1006c6c54dffd89b2bd4540a3aa0fada527e81439350c1f68be1270fdc",
+    "crates/viboceros-geometry/src/mesh/extrude.rs": "01425600d0ab79cf7eb8cc9d900ffd38e1ee2d06d33b653dc308760c931f5959",
+    "crates/viboceros-geometry/src/mesh/offset.rs": "723ff9c60ba50a754000085d26cf71d5eb3178b4dca07dd8d4d895ccc797e7c7",
+    "crates/viboceros-geometry/src/mesh/patch_single_face.rs": "b529aa705a2de3a8e065b42ac8150801874e749b1b697b61f1ebe66b848d86f7",
+    "crates/viboceros-geometry/src/mesh/join.rs": "eb2e74a63d64b25d8280eced61be132033e49b296ec4c94a1d18dfbbffb29f27",
+    "crates/viboceros-geometry/src/mesh/match_edges.rs": "2adbad45d20fe820e297ebb6c298a7935bab7aa52f1c46a6ab465d38a97425fc",
+    "crates/viboceros-geometry/src/mesh/alignment.rs": "e3a1ba2c33713e265ef474c197a3c9fd46729af227f6dad4ad9332c0dfad5bb1",
+    "crates/viboceros-geometry/src/mesh/weld.rs": "00bc8fa7adab7802dc7a6bcb0fc4697ab91074a4de8d7e05920b9a16675193eb",
+    "crates/viboceros-geometry/src/mesh/compaction.rs": "56bef5250f0bd441c1c3d429408368a9fbc3d40fd92d90892521a5070b543eab",
+    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "29dacc136b082428469f2b12e916b1a9d3867f78feaf9b6380f1d8f595534590",
+    "crates/viboceros-geometry/src/mesh/planar_cap.rs": "9bd66de6751bbd533a061be311ba42bb36fad7823cd8cf53e7d41d4afabe8f17",
+    "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
+    "crates/viboceros-opennurbs/src/mesh.rs": "e1ccdc906de63839869e5c05870d30597514bba092c32a2b269215dd128b358e",
+    "crates/viboceros-opennurbs/native/mesh_modeling.h": "d42be78afa32f9f75405e497465f046f0c2dff2cad9ce6a5f3e81f5c42e06cf4",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "5c4a56a9e03a9cdcdb07ad4f43c65452f915c4776f511b22fc20b4d458c63036",
+    "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
+    "tools/rhino_oracle/qualification_sources.py": "6ffa86acfc89e70186bf04592cdf6c56ae56db6844d4b40f290c503b2d9f0d65",
+    "tools/rhino_oracle/fixtures/mesh_weld_channels.json": "cfb88cea554267ab57c8f9e819f6986ca28d68df4c31421209603a7a5f794526",
+    "tools/rhino_oracle/observations/mesh_weld_channels.json": "282d060c8fa452c4ddadc4193735758dac073bf578bd4f759d91c8dd14f33821",
+    "tools/rhino_oracle/observations/source_snapshots/47e3f1ef1910397808673b6d95e47db14f6b763d0444cbfecf179ae904c4293a.gz": "ea5d26a7c2f6bd64d2b2d9be21251d574696fbabe889a26bbee74f6349e1f6dc",
+    "tools/rhino_oracle/observations/source_snapshots/3e813a5f8bc16e16c085b978c761e13deefcbceb4cb9327b6a9e61784d4a22f8.gz": "2f41f7b0a14abe14441fcae3b0cf93e07d5f350b199a22e32c25b2dffb4f9912",
+    "tools/rhino_oracle/observations/source_snapshots/719245950aaf0c169f82078cd8ce594eea4c8f940931fa25353ec494a6280795.gz": "ef1208653186b764cf99526ffab2b5c28e784e0698c1ec08936a01a1971bf1bd",
+    "tools/rhino_oracle/observations/source_snapshots/4ffcbaa0286f3b535620ef8ef17f5a6bd25742c11ae5e7cfc9414cc543540b3d.gz": "cdf35111415fbadb0de5cb9a286f6ffb3e27bb1089e4d03a85a4c419c97665e4",
+    "tools/rhino_oracle/observations/source_snapshots/13eda9701deb1852ebf8d178f42546e86b8e68085847d9be46c8ebdde26067ab.gz": "e382c356a3a4251dd39a630c760e7aeca365e175bee3675c4212378f9d9483a8",
+    "tools/rhino_oracle/observations/source_snapshots/2e00cb9d8fe5450550c1a9cc842d3529f0e0d1cee35aa764f9ceba6e1dc992c1.gz": "a0ef573070c259d9b2f60c41527f78a4d21a9ab23e58b9578cd074af0496f308",
+    "tools/rhino_oracle/fixtures/mesh_weld_channels_followup.json": "1c5b9da7eafe0bdaf201df539475b3834cc9fce097efdc97cac917cf77dcbdce",
+    "tools/rhino_oracle/observations/mesh_weld_channels_followup.json": "7d7c8ae4cbd10006c75f6b7a368c9931e7e7ee514e4dff18791061e4bdb1ff91",
+    "tools/rhino_oracle/observations/source_snapshots/ca9e67983c67248e57659881aaee8c2ba65c532c7412810d0f6f17f9c7635cbc.gz": "2fa354c361f45caf371a61ab00687fb0fd7baad22be5f0915a40169734b6ac36",
+    "tools/rhino_oracle/observations/source_snapshots/e0e270283758bc0f598f858b9822d967ed0c1d52bbfbf5a46ab2bf3d30361159.gz": "229fe8780ae499f99eb0d776bcfdecd6f90b10110e9e1f8b3c76e46e68d3b8c8",
+    "tools/rhino_oracle/observations/source_snapshots/28a4e0f11b82e6d9884c708c1dcf35581c1203ed175408ab2ee580f089a76905.gz": "4dad88a18153799cc154fd105b39e4dc4f429d9532481fd310c7798690396cf9",
+    "tools/rhino_oracle/observations/source_snapshots/464dd8de34cf86403d67321daa2a83017e96c54435a72787ec1f4498e9bdc726.gz": "4446169e36817fb7b6666e797289259de40d2154ef0cf390f75aef9202c15044",
+    "tools/rhino_oracle/observations/source_snapshots/69a119980fa9bf4112970b60c06fdc45c2827958e934d4e087c0d4a494a59c56.gz": "c284063dec0c24200dab065e3009b5f2ad9c3931cf2167747aaec52a20b53657",
+    "tools/rhino_oracle/observations/source_snapshots/6bd3525f4a7c543e47fdc0ce8522dd661441a2e28ae42abfdee9d0bba3f4133f.gz": "f9c42f9abd23c005bbe346f364a2f9a99d3f9095f15be4c8a25d0379ffe0ccb5",
+    "tools/rhino_oracle/fixtures/mesh_weld_channels_prefixes.json": "400f88a05903460f18d5b6f338372ddcd83bfe4045994d8a2a1c5246fef59bdf",
+    "tools/rhino_oracle/observations/mesh_weld_channels_prefixes.json": "337dfbf1cfa9626933a655175573ed28d39379fb3db4444f4dcc346f4170f5b1",
+    "tools/rhino_oracle/observations/source_snapshots/d47693b5c791f809e4c601478997ea7d7916cea730ea54ddd9307f5a819da48d.gz": "0d19a4aaf15ace4a9df833ccbdbd538537d291fd23f6c46796ced4c4ed237bd9",
+    "tools/rhino_oracle/observations/source_snapshots/ae56308445badee172044582038d002ce08011c98d0165fc94049b56c62d0174.gz": "dd866b5e0c92989c6bc3f86638d768128ee30d0eaf75f2074f1cab7e29d30469",
+    "tools/rhino_oracle/observations/source_snapshots/7d622fedfaa59eebcd65f96882bbc11f8e3f0bfef84ca9bd35501c582b3bc144.gz": "e1940464cc68075d66a2c26c973e797a59b48924d53c92c45ced2aee2989a18b",
+    "tools/rhino_oracle/observations/source_snapshots/4efe05c2cb217b5857e560eb723ce776030eb2d187699b48dc057df00543b87e.gz": "2df381e4fded898f9cc758d3823175c24b46fc924d60a3fe967d36bc8a2fa32b",
+    "tools/rhino_oracle/observations/source_snapshots/ff3f2a074ae039e7f8f89520adf88a11efa81509cd86ab03df1025775cacd20f.gz": "6c64a0fb8dd34cc6ad48111418f557614545360c98f5bca51beddb4087377337",
+    "tools/rhino_oracle/observations/source_snapshots/0b9ad0f9e0a75775484d9adacf7ae264ef4be682e5ff6a0282b9b4790bfaa6da.gz": "9d3a4208971f5627d93a383a367fda1eda81f2fff3d932544d783dd7d30311b4",
+    "tools/rhino_oracle/fixtures/mesh_weld_channels_pairs.json": "4b77364869cb45ee1a510015ba6588276e5f87b9a6c748fbced67f5df40d53c6",
+    "tools/rhino_oracle/observations/mesh_weld_channels_pairs.json": "5ac71da5240dde7a87c4e860af6a090e22f2a01d18fb040f21735cf5270457b1",
+    "tools/rhino_oracle/observations/source_snapshots/ffdb847bf0f02a1d9f049e4903f96cff5faaf5d379fbf0b4e3607326edffa575.gz": "4a16faf158e80b21d415f1b08477aab7a3c21336007ccfd66dcdcae22882ff8b",
+    "tools/rhino_oracle/observations/source_snapshots/bb36d69c8c28a97a8f31c9b00143012b3bc0e7b22261af63a8c6e722b66b333f.gz": "60a36dba10a2e59b25c3e380a7c72db23877dd1d2d0d63f8ba7a125fec639000",
+    "tools/rhino_oracle/observations/source_snapshots/68ff3e5f6b2495f4dda6e755586e6f8d80ccb6dad54375a5363d50671640801a.gz": "02f7033ec12b9643a827b91828f9b5c170b77f49e89d981637bed3140e2725be"
+  }
+}

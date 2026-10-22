@@ -1,0 +1,137 @@
+{
+  "cube_all": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "cube_plain": [
+    "vertices",
+    "faces"
+  ],
+  "cube_uv": [
+    "vertices",
+    "faces",
+    "UV"
+  ],
+  "cube_normals": [
+    "vertices",
+    "faces",
+    "normals"
+  ],
+  "cube_above": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "cube_rotated": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "fan": [
+    "UV",
+    "colors"
+  ],
+  "cube_reverse_raw": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "cube_triangles": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "open_fan": [
+    "vertices",
+    "faces",
+    "UV",
+    "colors"
+  ],
+  "valid_prefix_2_all": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "valid_prefix_2_none": [
+    "vertices",
+    "faces"
+  ],
+  "valid_prefix_3_all": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "valid_prefix_3_none": [
+    "vertices",
+    "faces"
+  ],
+  "valid_prefix_4_all": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "valid_prefix_4_none": [
+    "vertices",
+    "faces"
+  ],
+  "valid_prefix_5_all": [
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "valid_prefix_6_all": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "valid_prefix_6_none": [
+    "vertices",
+    "faces"
+  ],
+  "edge_pair_0_1": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "edge_pair_1_4": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ],
+  "tri_pair_reverse_raw": [
+    "vertices",
+    "faces",
+    "UV",
+    "colors"
+  ],
+  "quad_pair_reverse_faces": [
+    "vertices",
+    "faces",
+    "UV",
+    "normals",
+    "colors"
+  ]
+}

@@ -33,3 +33,11 @@ up to rotation, and n-gon boundaries by membership. The textured cube's Weld
 case differs in vertex order and seam averaging; it remains unqualified.
 Two native 3DM fixtures also round-trip with exact channel values. Broader edit
 compatibility, texture display and comparative performance remain unqualified.
+
+Whole-mesh welding now blends stored UVs, colors and normal directions instead
+of copying one seam value and rebuilding geometric normals. It preserves
+custom stored normals. The [expanded Weld comparison](../mesh-weld-channels-qualification.json)
+records 47 valid cases: 24 match and 23 retain explicit differences in traversal,
+ordering or attribute reductions. Nine invalid native inputs remain diagnostics.
+Three command regressions check metadata, groups and Undo/Redo. Broader Weld
+parity remains open; passing regressions do not qualify the differing cases.

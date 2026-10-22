@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "prefix_2_all",
+      "case": "prefix_2_all"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "prefix_2_none",
+      "case": "prefix_2_none"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "prefix_3_all",
+      "case": "prefix_3_all"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "prefix_3_none",
+      "case": "prefix_3_none"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "prefix_4_all",
+      "case": "prefix_4_all"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "prefix_4_none",
+      "case": "prefix_4_none"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "prefix_5_all",
+      "case": "prefix_5_all"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "prefix_5_none",
+      "case": "prefix_5_none"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "half_shared",
+      "case": "half_shared"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "other_half_shared",
+      "case": "other_half_shared"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "pair_unit_x",
+      "case": "pair_unit_x"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "pair_unit_opposite",
+      "case": "pair_unit_opposite"
+    },
+    {
+      "op": "mesh_weld_channels_followup",
+      "id": "open_fan",
+      "case": "open_fan"
+    }
+  ]
+}

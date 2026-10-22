@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_0_4",
+      "case": "edge_pair_0_4"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_0_1",
+      "case": "edge_pair_0_1"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_1_4",
+      "case": "edge_pair_1_4"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_0_3",
+      "case": "edge_pair_0_3"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_3_4",
+      "case": "edge_pair_3_4"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_0_2",
+      "case": "edge_pair_0_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_2_3",
+      "case": "edge_pair_2_3"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_1_2",
+      "case": "edge_pair_1_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_1_5",
+      "case": "edge_pair_1_5"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_2_5",
+      "case": "edge_pair_2_5"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_4_5",
+      "case": "edge_pair_4_5"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "edge_pair_3_5",
+      "case": "edge_pair_3_5"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "tri_pair_reverse_faces",
+      "case": "tri_pair_reverse_faces"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "tri_pair_reverse_raw",
+      "case": "tri_pair_reverse_raw"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "quad_pair_reverse_faces",
+      "case": "quad_pair_reverse_faces"
+    }
+  ]
+}

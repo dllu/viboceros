@@ -1521,7 +1521,7 @@
     "crates/viboceros-geometry/src/error.rs": "633250a4c718f091a9f3e7c9a1bbb0b6541fca30f97199122f45d6ae2fbf4b42",
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/transform.rs": "e8b24486c8963c14828765f7d29ab5e4ce1c79006eef1b912508374e4da8ac9f",
-    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
+    "crates/viboceros-geometry/src/mesh.rs": "189040d5191bc54f7471f9a7867e3c33ec145c42bcf70d4fb770c9a85866e79a",
     "crates/viboceros-geometry/src/mesh/face_create.rs": "8e30235e97616ce91117e6ed0477edcc0bfea75a7b766a1c9ef41a9910da57e8",
     "crates/viboceros-geometry/src/mesh/face_records.rs": "bf5438805e68438bf60ddf912490e8a4e2b03d7beec39ecc03eb087353f83e6d",
     "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
@@ -1556,8 +1556,8 @@
     "tools/rhino_oracle/observations/face_create_subd_surface.json": "08f576e7af7815a93f10e84f2c4cd7b1f21e195c471cf06e74a93a8f9618b6c3",
     "crates/viboceros-command/tests/subd_append_native.rs": "42604d7cdabb2c2e31cfb569b1ee52a021527a56c5e2de26d3b71de76cd7e533",
     "crates/viboceros-command/tests/support/subd_append.rs": "29c1e3b52b0c18f842e91be606e1cf9db701b0a25f72084e2942984e6179af94",
-    "tools/rhino_oracle/client.py": "6ae828fd1a5ebb7f7bf8777ca083b5386c501ab7e87eac02e288bb4b58b82759",
-    "tools/rhino_oracle/structural_sdk.py": "d3c26ff9ecb6ec622c0e89d3924856d080df377acb40cb8a0b6ffc9a82454651",
+    "tools/rhino_oracle/client.py": "4efe05c2cb217b5857e560eb723ce776030eb2d187699b48dc057df00543b87e",
+    "tools/rhino_oracle/structural_sdk.py": "0b9ad0f9e0a75775484d9adacf7ae264ef4be682e5ff6a0282b9b4790bfaa6da",
     "tools/rhino_oracle/face_draft_input.py": "bb0e0d8e4a7cdd1b5b0488a0d09b1ec63b6caf94196cdd9a8e6cc3c54762e56e",
     "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
     "tools/rhino_oracle/report_subd_append.py": "147f2b2bdf26772d285b17e169e5e6e58428c831dd6babc59995767fca164a94",
@@ -1594,7 +1594,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "62de29eaea095db346dea80d9ddec4fe3f8828361ccc57bfb5ce699580be3d60",
     "src/app/viewport_input.rs": "7c647743560b9a419515c949beca893ac702d1d5026f9f56171156346dc3e74d",
-    "tools/rhino_oracle/qualification_sources.py": "c36dd2acd1084154c45a7a912696e923ed0eea198ece9eafdf8df12467eb103e",
+    "tools/rhino_oracle/qualification_sources.py": "6ffa86acfc89e70186bf04592cdf6c56ae56db6844d4b40f290c503b2d9f0d65",
     "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
@@ -1657,6 +1657,9 @@
     "src/app/iplane.rs": "8a1b436aa686eba2ca6f063fa8d4968f5bdbf3e5aaf99dad2ce92a5c03f19596",
     "src/app/point_deviation.rs": "98cc65e3efc83c3a26542e3f3ef601431146f6e02d42a48fbeea5ee727e6be31",
     "src/app/project.rs": "dc033b76c6a8c8a6db66bb21b3de65ff957d2a9f6f20f45bacfae085ca4f4f9e",
-    "crates/viboceros-command/tests/support/control_polygon.rs": "c8659f900f9909512db96f48728a9a06ca300ac8c8e43c8fddb54d16929d46e6"
+    "crates/viboceros-command/tests/support/control_polygon.rs": "c8659f900f9909512db96f48728a9a06ca300ac8c8e43c8fddb54d16929d46e6",
+    "crates/viboceros-geometry/src/mesh/weld.rs": "00bc8fa7adab7802dc7a6bcb0fc4697ab91074a4de8d7e05920b9a16675193eb",
+    "crates/viboceros-geometry/src/mesh/compaction.rs": "56bef5250f0bd441c1c3d429408368a9fbc3d40fd92d90892521a5070b543eab",
+    "crates/viboceros-geometry/tests/support/mesh_channels.rs": "453ad8c1f7530c6072219e7445c7dbaa519e5097840aeae6739504b35a8eba47"
   }
 }

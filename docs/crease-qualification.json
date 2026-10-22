@@ -3237,7 +3237,7 @@
     "crates/viboceros-geometry/src/subd/crease.rs": "b0ac75bd02d9d22316f4f992a0774781e8c52aee68a8b3877ba5aa782c863ba2",
     "crates/viboceros-geometry/src/subd/edges.rs": "b45a57b11ebd445ef1f26cdce266dea50922a67cdd3b15700653c40bd690af4f",
     "crates/viboceros-geometry/tests/subd_edges.rs": "ddb85c3c11699b036031c42c40a66e2a7bdf140189e10a07d3af1171d9aa03fd",
-    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
+    "crates/viboceros-geometry/src/mesh.rs": "189040d5191bc54f7471f9a7867e3c33ec145c42bcf70d4fb770c9a85866e79a",
     "crates/viboceros-geometry/src/mesh/edge_weld.rs": "48bd1b6d254b68fab20aa7e4cce6597922e4296e4e59bb322621f176f1ff4430",
     "crates/viboceros-document/src/object_geometry.rs": "c1c77eba480c5bced476fb4ac59eefcfba52255667e9a40d4024c72b6ade2378",
     "crates/viboceros-document/src/control_points.rs": "1c3144d99fcd3356e34ab0b2d061387edfa12d89f2dcc232cf1168a675523cc8",
@@ -3256,8 +3256,8 @@
     "tools/rhino_oracle/generate_crease.py": "4af359530ca4b67ac8dd624c8287d93f068dbd659eb418576f53e82aeda56c40",
     "tools/rhino_oracle/report_crease.py": "97317547a49f11be348430c760dc6be6ecb3ac1fe1f8f7a0352994d266d968a6",
     "tools/rhino_oracle/test_crease.py": "6aa8d28fbc90c8b461e55b228b7cd5fae59eb3e42dfe68e7f61edf1aa15b8ec9",
-    "tools/rhino_oracle/structural_sdk.py": "d3c26ff9ecb6ec622c0e89d3924856d080df377acb40cb8a0b6ffc9a82454651",
-    "tools/rhino_oracle/rhino_worker.py": "7948a6a0eb5473bbc125bcb45df91e1e322fc3f4af84f9145daf3cab786cb1c7",
+    "tools/rhino_oracle/structural_sdk.py": "0b9ad0f9e0a75775484d9adacf7ae264ef4be682e5ff6a0282b9b4790bfaa6da",
+    "tools/rhino_oracle/rhino_worker.py": "ff3f2a074ae039e7f8f89520adf88a11efa81509cd86ab03df1025775cacd20f",
     "src/app.rs": "ef4dc017daa5c3492e8870006f693289c08713a6352eac4d5b3d4255f248c669",
     "src/app/crease.rs": "abbf160b6928a2104d8fa832b9ddfa568c3ee6d0ed336a96e247da5a2bbd2b7f",
     "src/app/crease/tests.rs": "c9045649a4f7d491914042e726575ceeba52c7627a9e00263d7131313e0aa186",
@@ -3435,7 +3435,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "62de29eaea095db346dea80d9ddec4fe3f8828361ccc57bfb5ce699580be3d60",
     "src/app/viewport_input.rs": "7c647743560b9a419515c949beca893ac702d1d5026f9f56171156346dc3e74d",
-    "tools/rhino_oracle/qualification_sources.py": "c36dd2acd1084154c45a7a912696e923ed0eea198ece9eafdf8df12467eb103e",
+    "tools/rhino_oracle/qualification_sources.py": "6ffa86acfc89e70186bf04592cdf6c56ae56db6844d4b40f290c503b2d9f0d65",
     "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
@@ -3496,6 +3496,9 @@
     "src/app/iplane.rs": "8a1b436aa686eba2ca6f063fa8d4968f5bdbf3e5aaf99dad2ce92a5c03f19596",
     "src/app/point_deviation.rs": "98cc65e3efc83c3a26542e3f3ef601431146f6e02d42a48fbeea5ee727e6be31",
     "src/app/project.rs": "dc033b76c6a8c8a6db66bb21b3de65ff957d2a9f6f20f45bacfae085ca4f4f9e",
-    "crates/viboceros-command/tests/support/control_polygon.rs": "c8659f900f9909512db96f48728a9a06ca300ac8c8e43c8fddb54d16929d46e6"
+    "crates/viboceros-command/tests/support/control_polygon.rs": "c8659f900f9909512db96f48728a9a06ca300ac8c8e43c8fddb54d16929d46e6",
+    "crates/viboceros-geometry/src/mesh/weld.rs": "00bc8fa7adab7802dc7a6bcb0fc4697ab91074a4de8d7e05920b9a16675193eb",
+    "crates/viboceros-geometry/src/mesh/compaction.rs": "56bef5250f0bd441c1c3d429408368a9fbc3d40fd92d90892521a5070b543eab",
+    "crates/viboceros-geometry/tests/support/mesh_channels.rs": "453ad8c1f7530c6072219e7445c7dbaa519e5097840aeae6739504b35a8eba47"
   }
 }
