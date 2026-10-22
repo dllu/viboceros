@@ -1028,7 +1028,7 @@
     "crates/viboceros-geometry/src/mesh/edge_weld.rs": "48bd1b6d254b68fab20aa7e4cce6597922e4296e4e59bb322621f176f1ff4430",
     "crates/viboceros-document/src/object_geometry.rs": "c1c77eba480c5bced476fb4ac59eefcfba52255667e9a40d4024c72b6ade2378",
     "crates/viboceros-document/src/control_points.rs": "e6ea0659fffb3d67fd622e7e8cc98ad2d4f02b9f7562ce5e0c7f3a4e53e61cfe",
-    "crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
+    "crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c",
     "crates/viboceros-command/src/crease.rs": "dc858497580204417b208457493ef053ce6b09bbe931a2c4a5bf2d7d649d40e4",
     "crates/viboceros-command/src/crease/arguments.rs": "2a9257eae35d24c7f2a4b4da89fab2621d942cde9cedb6de92eda148d1a79813",
     "crates/viboceros-command/tests/crease_native.rs": "d71ba83df3202e2664cd43462f846b0e683dc8eaad67e7fb97ba40ea4d236798",

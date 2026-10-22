@@ -8732,7 +8732,7 @@
     "tools/rhino_oracle/observations/creator_types.json": "4e92a5236dce296d4722f162aa69f87b418d63e25858c6a01182f0e9c08452a9",
     "tools/rhino_oracle/fixtures/tosubd_conversion_edges.json": "cd32bfdc91ebac0087abbd44233c5b511f4721e8a6223cd734ad8178549fbc09",
     "tools/rhino_oracle/observations/tosubd_conversion_edges.json": "5f82a0e6536d2363d1d4b8c787c031a58247800cf60a5e557cd44ad300e12f5c",
-    "crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
+    "crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c",
     "crates/viboceros-command/src/to_subd.rs": "33a37cfc05695487fc4df00645ba281c75147b10c5b7fa21a134496ffb691bc5",
     "crates/viboceros-command/src/to_subd/options.rs": "2c00e472630dccebf7abe4dddbd94c60796848ddbfe0e07543186d8bbf676fda",
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",

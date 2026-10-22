@@ -454,7 +454,7 @@
     "crates/viboceros-geometry/src/bezier.rs": "fb5b7ce4ec1dbf70c1d5191906bc7fa69ea830f7f96a5e7a10eb99d194f0f6b0",
     "crates/viboceros-geometry/src/mesh/projection.rs": "b436033ed22c02e06140108d22941152e3d8a0c569dc2367cf97c42767450bfb",
     "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
-    "crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
+    "crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c",
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",
     "crates/viboceros-command/src/mesh_patch.rs": "1d0c35fa81f30b6f47f1a1a9c5f5dad1c486cab860f5fb8cfa400172b7376653",
     "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",

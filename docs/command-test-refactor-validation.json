@@ -1,0 +1,164 @@
+{
+  "baseline_revision": "e5f65306b0e92a9a6b2fd09bf73a7fa50009bbf3",
+  "scope": "Extract existing command-dispatch regressions into topic modules before further implementation",
+  "line_counts": {
+    "README.md": {
+      "before": 33,
+      "after": 33
+    },
+    "crates/viboceros-command/src/lib.rs": {
+      "before": 40668,
+      "after": 15195
+    },
+    "largest_new_topic_file": 815
+  },
+  "preservation": {
+    "moved_tests": 370,
+    "test_helper_and_type_items": 398,
+    "topic_files": 67,
+    "topic_groups": 9,
+    "production_dispatcher": "Byte-identical before its final cfg(test) module declaration; no production behavior changed in this refactor.",
+    "source_check": "All test/helper/type items and test attributes were accounted for. Tokens and literals match after whitespace, comments and formatting commas; rustfmt also removes single-expression closure braces in surface_array_uv_matches_rhino_selection_groups_and_undo and orient_line.",
+    "shared_fixtures": "Common geometry fixtures retain their parent visibility; shared transform fixtures live in the transforms test parent."
+  },
+  "validation": {
+    "native_release": {
+      "viboceros_command": {
+        "passed": 1631,
+        "failed": 0,
+        "ignored": 3,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "viboceros_document": {
+        "passed": 283,
+        "failed": 0,
+        "ignored": 5,
+        "measured": 0,
+        "filtered_out": 0
+      }
+    },
+    "portable_release": {
+      "viboceros_command": {
+        "passed": 1541,
+        "failed": 0,
+        "ignored": 3,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "viboceros_document": {
+        "passed": 283,
+        "failed": 0,
+        "ignored": 5,
+        "measured": 0,
+        "filtered_out": 0
+      }
+    },
+    "python_tests_passed": 1724,
+    "clippy": [
+      "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "cargo clippy -p viboceros-command -p viboceros-document --all-targets -- -D warnings"
+    ],
+    "format": "cargo fmt --all -- --check",
+    "local_documentation_links": 48
+  },
+  "qualification": {
+    "current_source_maps_refreshed": 25,
+    "numeric_results_and_limits_unchanged": true,
+    "fresh_native_captures_during_refactor": false,
+    "note": "The preceding Crease checkpoint qualified 110 native command workflows. This refactor reuses saved measurements and updates source maps after preserving the dispatcher and regression bodies."
+  },
+  "sha256": {
+    "README.md": "4b9ac76e2f76be97e09de3a7759a500d46a9575f094ed4b0a5d14904e5f56ba2",
+    "docs/development.md": "c826cecb53cbffe7440e5810580c3726b2050b082e00ceca9ba34a48840e394b",
+    "crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c",
+    "crates/viboceros-command/src/tests/curves/closure.rs": "f6e442f49de129a47b883766576e42a3339f7bd3f4f9f0748e69289a6c04a8ed",
+    "crates/viboceros-command/src/tests/curves/creation.rs": "c91f7c67d4661598b5649063ee58fc19f26587d4c3a96426693c34b8b4fe1577",
+    "crates/viboceros-command/src/tests/curves/extend.rs": "a8fd23161cf74e63f693cd183f03cb5fb782cf3cefb9153d0eb2f164e998b084",
+    "crates/viboceros-command/src/tests/curves/fit.rs": "dab5a2f06f6b5c03d04306e072e6d3236d93f331d8a3de02bfc0f89d7b629301",
+    "crates/viboceros-command/src/tests/curves/join.rs": "31b588cb06f6c1608e168e1c1c1e11d817178d1844f98522d3b2121290f3d0fa",
+    "crates/viboceros-command/src/tests/curves/mod.rs": "fb4b547f31dbb95c3d33fe47bd66853f15d42c1e527ada2e4daea25083730811",
+    "crates/viboceros-command/src/tests/curves/parameters.rs": "10220802672988599d89f3c05330b2b922cdf686c4373f399c9602e83838ef1e",
+    "crates/viboceros-command/src/tests/curves/queries.rs": "7fba942f431008f415a131d790ce03e03495444580821833b781b7397009e40d",
+    "crates/viboceros-command/src/tests/curves/split.rs": "73178fbe57807676a0f09f92560f907c8cc23f3403235c5ba79934d7099d4fb0",
+    "crates/viboceros-command/src/tests/curves/subcurve.rs": "61830358c7b3c49d29730c7ebb6092ef76d866e1d8c837051966c2180f552745",
+    "crates/viboceros-command/src/tests/curves/through.rs": "84b2fb369c370f06ef23841618e240418b2c8275925638e67b9dfd1e3d23466e",
+    "crates/viboceros-command/src/tests/curves/trim.rs": "dcdd2d1243f8f06ab62ec280b9bf0239a088f62e856ea0ca14a9ff405630229d",
+    "crates/viboceros-command/src/tests/curves/tween.rs": "3760239eb6801f3405949f55d1f311bf65453157e87d7ccda9199ba7d78d90bf",
+    "crates/viboceros-command/src/tests/document/filters.rs": "2f943ae48ca0b8363a51a5d8528ff0262e0932d93db4fda3a86dfd54141740d2",
+    "crates/viboceros-command/src/tests/document/interchange.rs": "e63723cdab47a1efec4aef6f8b10e84334a016b9f0ce0f4e41793927b7574f86",
+    "crates/viboceros-command/src/tests/document/layers.rs": "4f8bc45458acf7115dd667d2e221912eec76f00313f53c43e0b0fa8d6604fc8d",
+    "crates/viboceros-command/src/tests/document/mod.rs": "d8b87887fc69db812ac26c70e97d08f50183c3dad203fcbfe28e64db4e53dcb1",
+    "crates/viboceros-command/src/tests/document/registry.rs": "6f16b9d5068c2a6db0474481d7dc91839f73ce2ff1091521661e59d18c310da7",
+    "crates/viboceros-command/src/tests/document/selection.rs": "93816605430c9837f2b75e1b734d8c4a86ed508bbd84754951dd926d8c0a6e40",
+    "crates/viboceros-command/src/tests/document/transactions.rs": "4de81f07cb99f469739e52bcba7623ef03dc35256d9385e95c3b71e5d0f0f974",
+    "crates/viboceros-command/src/tests/document/visibility.rs": "8502a3697759f515b2206ac24facbcb5926ee82cb4abac0e6571a5e9f78b0586",
+    "crates/viboceros-command/src/tests/extraction/border.rs": "9bb1bbd1215132f963daa2af55d99e74fe89b165c08a577177d1b4881beb06c8",
+    "crates/viboceros-command/src/tests/extraction/face_border.rs": "3a82b0f67666d22be32fa6c23f42e3374bf962527691c4ccf581597d7e79e8e0",
+    "crates/viboceros-command/src/tests/extraction/isocurves.rs": "cd38d284d3f8bf2c9e5edebb38687bfa46c75f0c3754134e2881790836c56d42",
+    "crates/viboceros-command/src/tests/extraction/mesh_border.rs": "0aebfc102ed85d8020f91aa851fc9649841325f196effb9f9c1997f7a21218a0",
+    "crates/viboceros-command/src/tests/extraction/mod.rs": "06351b71d66b12ed84c18171186b18b0964e377d6430a9a4503bf18a761572e6",
+    "crates/viboceros-command/src/tests/extraction/wireframe.rs": "045a63664933cc2bc784232851c4fbb1df1a5122843d795a0a3ebc28d98a57fc",
+    "crates/viboceros-command/src/tests/intersection/cone.rs": "68eaa41a381d9b2bb6c3a0888bc74d428feb2ccfa96336c0c593f34ccce4646a",
+    "crates/viboceros-command/src/tests/intersection/cylinder.rs": "bc12d00a73e09fdbbc4cbd8e94f146e68e313a4cc575d6339b8169714d199873",
+    "crates/viboceros-command/src/tests/intersection/mod.rs": "71fa76fb38694ebd4518899772e314065de6b0af968b69caaa90d197bb32dc5b",
+    "crates/viboceros-command/src/tests/intersection/overlap.rs": "85e53f610c265914772d87269b74923ee51cf4658fdada45bd27dbc2deba035e",
+    "crates/viboceros-command/src/tests/intersection/pairs.rs": "1994d23de1f72bdb5eb1c0899b4ffe2856bde474edbc8000b02402ea9043dde8",
+    "crates/viboceros-command/src/tests/intersection/sphere.rs": "a30e0b943a8d02655d4859c5079d335f4138ad32c3cab49d7fe82caaf5d99c81",
+    "crates/viboceros-command/src/tests/intersection/sphere_cone.rs": "42687b993fb5813a255d4de448656e76247fd45e35ba7ba4d3afbe4c5034951e",
+    "crates/viboceros-command/src/tests/intersection/torus_plane.rs": "2a3685b02733b37cbe383b7deab7ec6eb7da8f1fdd337a252c961bfb9c8952ae",
+    "crates/viboceros-command/src/tests/intersection/torus_quadric.rs": "7aa44ead8263e9da14e6030374578ab6000b8c670d43e9fb92b3683fd5c1ccf9",
+    "crates/viboceros-command/src/tests/intersection/torus_torus.rs": "d8218a7528f279a251671d57f98a2ab4d9f9525e3154ec241a9e8460c0e9e8a8",
+    "crates/viboceros-command/src/tests/mesh_edit/cleanup.rs": "b7dba116a1eca35371fb98bfbfcda775449d88606f046c64b824ed1ed90676e6",
+    "crates/viboceros-command/src/tests/mesh_edit/delete_faces.rs": "3216aa9f91c8c2ba76c6b8738ac691242eb9fe21c3dbd19209d8626c0d10f789",
+    "crates/viboceros-command/src/tests/mesh_edit/edges.rs": "11367e435354d31f3f7094796db257ae734ea278bc98e80b702eb46988285537",
+    "crates/viboceros-command/src/tests/mesh_edit/extraction.rs": "b2da9e2cce584337bcf4fe5ff6ea2399969a687736a2c8025539ea3b3224a68a",
+    "crates/viboceros-command/src/tests/mesh_edit/faces.rs": "28d10d142636186ee224abcb7bc26bff0f5a25403660d7b13f8620ce383b6e12",
+    "crates/viboceros-command/src/tests/mesh_edit/holes.rs": "de181cd0ddd9cebcae4946405ac498e28dc1e842e360cd486e987c5fbd158ea7",
+    "crates/viboceros-command/src/tests/mesh_edit/mod.rs": "afbe9668373f7f69341e8a61eb043a64b74df0693af3200cffa672259e3db4d1",
+    "crates/viboceros-command/src/tests/mesh_edit/normals.rs": "e047f76c9cca64a307f4fa79cc020cb09dd46f1289142ab628d4b631d014e781",
+    "crates/viboceros-command/src/tests/mesh_edit/triangulate.rs": "eef8516cc643f11215d5c26ce42cdd3d1453b8e35b03d83e31bf36a0cb7e04c7",
+    "crates/viboceros-command/src/tests/mesh_edit/unweld.rs": "cad762f426c6929baaab649ffbfbb7d87ae8769e5d83e2f54444666a3df2c5ad",
+    "crates/viboceros-command/src/tests/mesh_edit/weld.rs": "0c937f574eab555143c34d2a4b5c3cc4cb461beaa87b1182aca3be23a4cb25ca",
+    "crates/viboceros-command/src/tests/mod.rs": "391f89cd9e9e6f4096c0808430635adeb536bf987e02fdacfa1284d99d509859",
+    "crates/viboceros-command/src/tests/primitives/arcs.rs": "2ef9dc8a07a79c0fb22fe2d021b9b673bd0ccc9627764849f8d4bb20fb860f46",
+    "crates/viboceros-command/src/tests/primitives/conics.rs": "0842632c69db29d19a9c51e38f0096b2dc2f96eeb9ea67d261a0d9b8d1ec77d1",
+    "crates/viboceros-command/src/tests/primitives/mesh_axial.rs": "4308b046e763384d87ca3f54c15339614fea9a720adff37f5cb4176bbac51d82",
+    "crates/viboceros-command/src/tests/primitives/mesh_planar.rs": "70a0cb0ef9abc0c73d1c26126343ea8184fbf177dc0f1bc8f9cae496dc288dd6",
+    "crates/viboceros-command/src/tests/primitives/mesh_round.rs": "5c815988440279c0532dcefd2257dc84c06668232428e1a4864699d3fc4210b0",
+    "crates/viboceros-command/src/tests/primitives/mod.rs": "baa71ca632d803c4c9f387fe42d67d243fbaea451973868f04eac9463b253e71",
+    "crates/viboceros-command/src/tests/primitives/planar.rs": "c41f1b210493900903e1345fcda9b4a6bd293848d0b4ee119a91ce8ae4538952",
+    "crates/viboceros-command/src/tests/primitives/solids.rs": "4483c8a126fd678285cf82dd0eb3aede2d8cc597eb144bbff245d35af13565bc",
+    "crates/viboceros-command/src/tests/primitives/spirals.rs": "5e068cc88321526bd51a3d9464a7456881dcfc2a1e9de38d770f6b488c14fa64",
+    "crates/viboceros-command/src/tests/refinement/insert_control.rs": "93cce2f28121a15ee8014da557abbd069d5864135ba945a7fc85d0fb7d3e1034",
+    "crates/viboceros-command/src/tests/refinement/insert_knots.rs": "bc5c53fe003cef1850de7c0b2bed967866cb77cae43399d85ed57eaaf0b8bf2f",
+    "crates/viboceros-command/src/tests/refinement/mod.rs": "f5b90c2e456750cab1e20fa3ce5d6884945eb5cfb96e3d721ec94cb1cf2e14bb",
+    "crates/viboceros-command/src/tests/refinement/periodic.rs": "7f8c4d3a05062a579ad773c3b95bf79d596c9316963894a018313fc001480296",
+    "crates/viboceros-command/src/tests/refinement/remove_knots.rs": "98cf69f5a56bacd17112d19dd33b321c011c68b9135575a577071b15cfb32039",
+    "crates/viboceros-command/src/tests/refinement/uniform.rs": "b40f9be3bc0d97add58744e2ac06a29f872fe2d8851c3400ae98e2163be36af0",
+    "crates/viboceros-command/src/tests/surfaces/creation.rs": "159f3bfd9f90a26761df562e84648ed7700f98e872802ad83dceb4ef9716cd92",
+    "crates/viboceros-command/src/tests/surfaces/direction.rs": "8912cab0a07315ee9d027ce8c4e31a529db149c6adf2da402426636ee8f28706",
+    "crates/viboceros-command/src/tests/surfaces/extend.rs": "5a02b6a5634b3070d3407bb8146ba110ccbdb4590b0676b9504fbd3004e3cedd",
+    "crates/viboceros-command/src/tests/surfaces/extraction.rs": "645362670f5a8c6602c3f9250910bb0b8c1b09c1fc01dd9eadbfde4bc2078134",
+    "crates/viboceros-command/src/tests/surfaces/extrusions.rs": "b910b92beec0e6bde3575ae7e30605ea4d9b068b606797ec8f1373c4defbc966",
+    "crates/viboceros-command/src/tests/surfaces/isocurve_split.rs": "0397be842bf85b9eaeba821812b3392a33c3a51ae122b4e32aacc9e7447a365d",
+    "crates/viboceros-command/src/tests/surfaces/mod.rs": "162e01b3bf779930a810bf671bdfed7f99d4c0594620798c9ae41d02a3ad0c1d",
+    "crates/viboceros-command/src/tests/surfaces/seams.rs": "4adb9153cb1a3a984a1e57f42c6652c8b9974ff81716d7421f4d2288f34890f7",
+    "crates/viboceros-command/src/tests/surfaces/split_clipping.rs": "fc195eb304d6393b21bdf4278747f8c391692d8ffcc509e14cca3748d62f6efd",
+    "crates/viboceros-command/src/tests/surfaces/split_mapping.rs": "31944856e5e0ac30c03fbe14117e1761c52693a2e46afcf44165e8f3d68afc0d",
+    "crates/viboceros-command/src/tests/surfaces/split_regions.rs": "d32f5c8e3c72aabacf7828e1006d1a893c692d09c5f59277a78948189ddcecc5",
+    "crates/viboceros-command/src/tests/surfaces/split_straight.rs": "943f3c713a100d78a783ac3d93e836d90b62ee242d15e714aa3fb026de166f02",
+    "crates/viboceros-command/src/tests/transforms/arrays.rs": "66f6c82233e2316bb896db767900b018c06acba37050a26c18c3b82002fde223",
+    "crates/viboceros-command/src/tests/transforms/basic.rs": "2194471352e07fe395beb7870680b8271710564f75ccd040ee0b686ede209a10",
+    "crates/viboceros-command/src/tests/transforms/curve_array.rs": "003b3ad3870daecad6db80230c6376d75ab2075af32fc680549ad3c6beafb9da",
+    "crates/viboceros-command/src/tests/transforms/mod.rs": "a367832efeafa6742c365803bf4b3d4762c4f50cdbf2b6706038217ea858266f",
+    "crates/viboceros-command/src/tests/transforms/orient.rs": "ca8bfc1684cbb1cc782cfd3d9c42541a627d2f4992f3c15179c544cc4580ba17",
+    "crates/viboceros-command/src/tests/transforms/orient_surface.rs": "8c45bcf6f6296e7431be90d60c295d20d45a22215291a0769509a917cf7bbf17",
+    "crates/viboceros-command/src/tests/transforms/surface_array.rs": "51940926b47fe59ef67f1d5df94a96ab491329894163b3efb603c219e8df4931"
+  },
+  "baseline_git_sha256": {
+    "e5f65306b0e92a9a6b2fd09bf73a7fa50009bbf3:crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
+    "e5f65306b0e92a9a6b2fd09bf73a7fa50009bbf3:crates/viboceros-command/src/tests/mesh_edit/mod.rs": "3edff48ff235be7e9c56d0bb9d48c9e9ab7317cfd47602c5424ac2db937ae869",
+    "e5f65306b0e92a9a6b2fd09bf73a7fa50009bbf3:docs/development.md": "1c3bedca6497ccd49a254b8d29d19e8bb569f1f89bce011432cd31fdace7803c"
+  }
+}

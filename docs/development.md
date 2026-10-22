@@ -18,6 +18,10 @@ Choose the relevant [validation guide](development/checks.md): native kernel,
 Booleans and topology, curves and surfaces, or UI and measurement. Each guide
 keeps its detailed evidence and limitations with the subsystem it exercises.
 
+Command regressions are grouped by topic under
+`crates/viboceros-command/src/tests/`, with shared geometry fixtures in its
+`mod.rs`. Add tests to the relevant topic instead of the command dispatcher.
+
 Live Rhino oracle testing must run in a separate Xvfb display so it cannot
 interfere with the shared desktop. Use `tools/rhino_oracle/run_headless.sh` for
 captures, including its `exec python3 ...` mode when calling the Python oracle

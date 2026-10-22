@@ -2648,7 +2648,7 @@
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/polyline.rs": "20e2fe82681377f1cc39c58b3974fdbb2ed316ab2d66f512a86396a01faf429d",
     "crates/viboceros-geometry/src/curve/polyline.rs": "af769a36f117448e43eb4f0c435dd908e1532f95b5e2779ca3e5b095d1fc6676",
-    "crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
+    "crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c",
     "crates/viboceros-command/src/mesh_polyline.rs": "259257931a45d643a29a409f6620004f6372f0510ed19f76c33a25ce5ba5be88",
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",
     "crates/viboceros-command/tests/mesh_polyline_native.rs": "1086c7b070f9a81a3fb8981908e0a4b33b96ae65270bf96136aa9dc6e895911f",

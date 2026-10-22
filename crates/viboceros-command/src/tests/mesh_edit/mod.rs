@@ -7,3 +7,8 @@ mod extraction;
 mod faces;
 mod holes;
 mod triangulate;
+
+mod cleanup;
+mod normals;
+mod unweld;
+mod weld;

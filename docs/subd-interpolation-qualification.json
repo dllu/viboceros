@@ -1543,7 +1543,7 @@
     "crates/viboceros-document/src/geometry.rs": "6b8a85eec1ead4ac5ce9255941cec005b3cd1b3eeee949892b9492777bae99d9",
     "crates/viboceros-document/src/control_points.rs": "e6ea0659fffb3d67fd622e7e8cc98ad2d4f02b9f7562ce5e0c7f3a4e53e61cfe",
     "crates/viboceros-document/src/control_points/geometry.rs": "cf5cbda50d47b3f25d1a564bfee83d089858a102839013019935af285b621bf9",
-    "crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
+    "crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c",
     "crates/viboceros-command/src/face_create.rs": "d20c390e9fe5e1379340ecef654312c3f30c2e357176aa39ad26db38a5d51c4a",
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",
     "crates/viboceros-command/src/interchange.rs": "6f9df72cd4882fcd3d0f4e791117545daa500dca6564f6859c5bfb2f7409a67f",
