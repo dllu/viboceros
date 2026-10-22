@@ -182,7 +182,7 @@ pub use brep::{
     BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent,
     BrepPolyhedralRegion, BrepPolyhedralShell, BrepSetIntersection, BrepSolidOrientation,
     BrepSplitComponent, BrepSurfaceShrinkMode, BrepSurfaceSplitComponent, BrepTrim, BrepTrimType,
-    BrepUnionComponent, BrepVertex, BrepWireCage, ExtrusionRepresentation,
+    BrepUnionComponent, BrepVertex, BrepWireCage, ExtrusionNurbsForm, ExtrusionRepresentation,
     RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso, boolean_planar_breps,
     boolean_polyhedral_breps, boolean_projected_planar_breps, convex_brep_boundary_interactions,
     convex_brep_subtraction_interactions, intersect_convex_brep_sets, intersect_convex_breps,

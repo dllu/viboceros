@@ -70,9 +70,13 @@ pub(super) fn crease_pairs(
     points: &[Point3],
     counts: [usize; 2],
     anchors: &[Vec<usize>; 2],
+    crease_axes: [bool; 2],
 ) -> Vec<[Point3; 2]> {
     let mut pairs = Vec::new();
     for axis in 0..2 {
+        if !crease_axes[axis] {
+            continue;
+        }
         for &i in &anchors[axis] {
             for j in 1..counts[1 - axis] {
                 let index = |k| {

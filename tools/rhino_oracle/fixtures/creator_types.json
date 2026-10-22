@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "creator_types",
+      "id": "creator_box",
+      "case": "creator_box"
+    },
+    {
+      "op": "creator_types",
+      "id": "creator_cylinder",
+      "case": "creator_cylinder"
+    },
+    {
+      "op": "creator_types",
+      "id": "creator_extrude_rectangle_0",
+      "case": "creator_extrude_rectangle_0"
+    },
+    {
+      "op": "creator_types",
+      "id": "creator_extrude_rectangle_1",
+      "case": "creator_extrude_rectangle_1"
+    },
+    {
+      "op": "creator_types",
+      "id": "creator_extrude_circle_0",
+      "case": "creator_extrude_circle_0"
+    },
+    {
+      "op": "creator_types",
+      "id": "creator_extrude_circle_1",
+      "case": "creator_extrude_circle_1"
+    },
+    {
+      "op": "creator_types",
+      "id": "creator_extrude_open_kink_0",
+      "case": "creator_extrude_open_kink_0"
+    },
+    {
+      "op": "creator_types",
+      "id": "creator_extrude_open_kink_1",
+      "case": "creator_extrude_open_kink_1"
+    }
+  ]
+}

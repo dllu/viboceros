@@ -49,3 +49,26 @@ extern "C" int vibo_extrusion_view(const ViboExtrusionResult* result,const uint8
   *archive=result->archive.data();*archive_count=result->archive.size();*brep=result->brep.data();*brep_count=result->brep.size();return 1;
 }
 extern "C" void vibo_extrusion_free(ViboExtrusionResult* result) {delete result;}
+
+struct ViboExtrusionSurfaceResult { std::vector<uint8_t> bytes; };
+extern "C" int vibo_extrusion_surface(const uint8_t* bytes,size_t count,
+    ViboExtrusionSurfaceResult** out,const uint8_t** data,size_t* length,uint32_t* caps,uint32_t* path_axis,
+    char* error,size_t capacity) {
+  if(out)*out=nullptr;set_error(error,capacity,"");
+  try {
+    vibo_extrusion::require(out && data && length && caps && path_axis,"Missing extrusion surface buffers");
+    *data=nullptr;*length=0;*caps=0;*path_axis=0;vibo_begin_open_nurbs();
+    auto extrusion=vibo_extrusion::decode(bytes,count);ON_NurbsSurface surface;
+    vibo_extrusion::require(extrusion->GetNurbForm(surface)>0 && surface.IsValid(),"Cannot obtain extrusion NURBS form");
+    const uint64_t controls=uint64_t(surface.CVCount(0))*uint64_t(surface.CVCount(1));
+    vibo_extrusion::require(controls<=400000,"Extrusion surface control budget exceeded");
+    auto result=std::make_unique<ViboExtrusionSurfaceResult>();
+    result->bytes={'V','I','B','O','S','R','F',0};ByteWriter writer(result->bytes);writer.U32(1);
+    vibo_extrusion::require(write_nurbs_surface(surface,writer),"Cannot transfer extrusion NURBS form");
+    *caps=static_cast<uint32_t>(extrusion->IsCapped());*path_axis=static_cast<uint32_t>(extrusion->PathParameter());
+    *data=result->bytes.data();*length=result->bytes.size();*out=result.release();return 1;
+  }catch(const std::exception& exception){set_error(error,capacity,exception.what());}
+  catch(...){set_error(error,capacity,"Unknown extrusion surface failure");}
+  return 0;
+}
+extern "C" void vibo_extrusion_surface_free(ViboExtrusionSurfaceResult* result) {delete result;}

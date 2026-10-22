@@ -22,17 +22,7 @@ impl SubD {
         corners: bool,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        match method {
-            SubDFromSurfaceMethod::ControlPoints => {
-                Self::try_from_surface_control_net(surface, corners, tolerance)
-            }
-            SubDFromSurfaceMethod::Location => {
-                let fitted = fitting::fit(surface, tolerance)?;
-                let converted =
-                    Self::try_from_surface_control_net(&fitted.surface, corners, tolerance)?;
-                features::apply_creases(converted, &fitted.creases)
-            }
-        }
+        convert_with_net(surface, method, corners, tolerance).map(|(subd, _)| subd)
     }
 
     /// Converts Euclidean surface controls, retaining closed seams and singular
@@ -97,4 +87,23 @@ fn singular_sides(surface: &NurbsSurface) -> [bool; 4] {
             knots_are_clamped_at_start(surface.degree_u(), surface.knots_u()),
         ],
     )
+}
+
+/// Keep the exact conversion net available for extrusion cap boundary matching.
+pub(super) fn convert_with_net<'a>(
+    surface: &'a NurbsSurface,
+    method: SubDFromSurfaceMethod,
+    corners: bool,
+    tolerance: Tolerance,
+) -> Result<(SubD, std::borrow::Cow<'a, NurbsSurface>), GeometryError> {
+    use std::borrow::Cow;
+    let (net, creases) = match method {
+        SubDFromSurfaceMethod::ControlPoints => (Cow::Borrowed(surface), Vec::new()),
+        SubDFromSurfaceMethod::Location => {
+            let fitted = fitting::fit(surface, tolerance)?;
+            (Cow::Owned(fitted.surface), fitted.creases)
+        }
+    };
+    let converted = SubD::try_from_surface_control_net(&net, corners, tolerance)?;
+    Ok((features::apply_creases(converted, &creases)?, net))
 }

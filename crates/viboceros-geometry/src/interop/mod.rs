@@ -68,6 +68,23 @@ pub fn decode_arc(bytes: &[u8]) -> Result<CircularArc3, GeometryCodecError> {
     Ok(arc)
 }
 
+/// Exact surface payload shared with public native geometry queries.
+pub fn decode_surface(bytes: &[u8]) -> Result<NurbsSurface, GeometryCodecError> {
+    let mut reader = Reader {
+        bytes,
+        position: 0,
+        curve3_flags: false,
+    };
+    if reader.take(8)? != b"VIBOSRF\0" || reader.u32()? != 1 {
+        return Err(GeometryCodecError::Malformed);
+    }
+    let surface = reader.surface()?;
+    if reader.position != bytes.len() {
+        return Err(GeometryCodecError::Malformed);
+    }
+    Ok(surface)
+}
+
 pub fn decode_polycurve(bytes: &[u8]) -> Result<PolyCurve3, GeometryCodecError> {
     let mut reader = Reader {
         bytes,

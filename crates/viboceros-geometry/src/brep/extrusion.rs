@@ -12,6 +12,26 @@ impl ExtrusionRepresentation {
     pub fn archive(&self) -> &[u8] {
         &self.archive
     }
+    /// Complete profile NURBS form, including the native profile joining policy.
+    pub fn nurbs_form(&self) -> Result<ExtrusionNurbsForm, GeometryError> {
+        let data = viboceros_opennurbs::extrusion_surface(self.archive())?;
+        let surface =
+            crate::interop::decode_surface(&data.surface).map_err(|error| match error {
+                crate::interop::GeometryCodecError::Geometry(e) => e,
+                _ => viboceros_opennurbs::ExtrusionError("Invalid NURBS surface transfer".into())
+                    .into(),
+            })?;
+        Ok(ExtrusionNurbsForm {
+            surface,
+            caps: data.caps,
+            path_axis: data.path_axis,
+        })
+    }
+}
+pub struct ExtrusionNurbsForm {
+    pub surface: NurbsSurface,
+    pub caps: [bool; 2],
+    pub path_axis: usize,
 }
 impl Brep {
     pub fn extrusion(&self) -> Option<&ExtrusionRepresentation> {

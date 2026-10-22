@@ -186,3 +186,30 @@ fn one_face_extrusion_refinement_becomes_an_explicit_brep_without_losing_knots()
             > source.faces()[0].surface().control_point_count_v()
     );
 }
+
+#[test]
+fn extrusion_surface_transfer_retains_metadata_and_rejects_malformed_envelopes() {
+    let source = rectangle(true, 2.);
+    let data =
+        viboceros_opennurbs::extrusion_surface(source.extrusion().unwrap().archive()).unwrap();
+    assert_eq!(data.caps, [true, true]);
+    assert_eq!(data.path_axis, 1);
+    let surface = viboceros_geometry::interop::decode_surface(&data.surface).unwrap();
+    assert_eq!(
+        [
+            surface.control_point_count_u(),
+            surface.control_point_count_v()
+        ],
+        [5, 2]
+    );
+    for length in [0, 8, 11, 12, data.surface.len() - 1] {
+        assert!(viboceros_geometry::interop::decode_surface(&data.surface[..length]).is_err());
+    }
+    let mut trailing = data.surface.clone();
+    trailing.push(0);
+    assert!(viboceros_geometry::interop::decode_surface(&trailing).is_err());
+    let mut version = data.surface;
+    version[8] = 2;
+    assert!(viboceros_geometry::interop::decode_surface(&version).is_err());
+    assert_eq!(source, rectangle(true, 2.));
+}

@@ -107,7 +107,7 @@ def summarize(text):
             'Affine-map, archive validation, geometry-user-text removal, explicit B-rep edits and ToNURBS history/attributes have separate Rust regressions; every transform and editing command is not qualified.',
             'The first tube recipe used an inner profile in the wrong coordinate frame. A separate public Rhino diagnostic confirms its B-rep form is invalid. It is retained as an unsupported-file diagnostic; correct pipes are captured separately.',
             'Extrusions use an immutable native archive and validated canonical B-rep view. Geometric edits discard the archive; supported affine maps rebuild both views together. Native archives are bounded to 64 MiB and canonical transfers to 256 MiB.',
-            'ToSubD command, option persistence, component selection, UI and extrusion conversion remain in progress. These source-file comparisons do not qualify those workflows.',
+            'ToSubD command, option persistence, component selection, UI and creator integration remain in progress; extrusion kernel conversion is qualified separately. These source-file comparisons do not qualify those workflows.',
         ], sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in paths},
     )
 

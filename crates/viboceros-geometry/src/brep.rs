@@ -14,7 +14,7 @@ use crate::{
 };
 
 mod extrusion;
-pub use extrusion::ExtrusionRepresentation;
+pub use extrusion::{ExtrusionNurbsForm, ExtrusionRepresentation};
 mod boolean;
 mod borders;
 mod command_box;

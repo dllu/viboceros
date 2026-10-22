@@ -29,8 +29,8 @@ comparative speed remain unqualified. A misplaced inner-profile fixture has an
 invalid native B-rep form and remains an unsupported-file diagnostic.
 
 Native archives are limited to 64 MiB, with canonical transfers limited to
-256 MiB. ToSubD command/getter and extrusion conversion integration are still in
-progress; their public native captures are retained separately from file checks.
+256 MiB. ToSubD extrusion conversion is available through `SubD::try_from_extrusion`.
+Command/getter and creator integration remain in progress; their public native captures are retained separately from file checks.
 The [ToSubD kernel guide](tosubd-kernel.md) describes the completed mesh and
 surface conversion APIs.
 

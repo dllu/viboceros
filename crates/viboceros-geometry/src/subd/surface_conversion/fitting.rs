@@ -141,7 +141,12 @@ pub(super) fn fit(surface: &NurbsSurface, tolerance: Tolerance) -> Result<Fitted
     if counts[0].checked_mul(counts[1]).is_none_or(|n| n > 400_000) {
         return Err(GeometryError::SubDInterpolationFailed);
     }
-    let creases = super::features::crease_pairs(&points, counts, &anchors);
+    let creases = super::features::crease_pairs(
+        &points,
+        counts,
+        &anchors,
+        [surface.degree_u() > 1, surface.degree_v() > 1],
+    );
     let surface = NurbsSurface::try_new(
         1,
         1,

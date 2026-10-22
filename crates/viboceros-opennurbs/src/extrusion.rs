@@ -173,3 +173,6 @@ pub fn extrusion_create(
         )
     })
 }
+
+mod surface;
+pub use surface::{ExtrusionSurfaceData, extrusion_surface};

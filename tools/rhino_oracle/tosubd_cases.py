@@ -133,24 +133,25 @@ for name,radial,height in [('paraboloid',[0.,1.,2.],[0.,0.,-1.]),('cusp',[0.,0.,
 
 
 try:
-    from .tosubd_extrusion_cases import recipes as extrusion_recipes, pipe_recipes
+    from .tosubd_extrusion_cases import recipes as extrusion_recipes, pipe_recipes, conversion_edge_recipes
 except (ImportError, ValueError):
-    from tosubd_extrusion_cases import recipes as extrusion_recipes, pipe_recipes
+    from tosubd_extrusion_cases import recipes as extrusion_recipes, pipe_recipes, conversion_edge_recipes
 EXTRUSIONS = extrusion_recipes(DEFAULT_OPTIONS)
 PIPES = pipe_recipes(DEFAULT_OPTIONS)
+CONVERSION_EDGES = conversion_edge_recipes(DEFAULT_OPTIONS)
 
 
 def all_cases():
     result = {}
-    for cases in [DISCOVERY, SCENES, SURFACE_DETAILS, SURFACE_EDGES, FEATURES, POLES, EXTRUSIONS, PIPES]:
+    for cases in [DISCOVERY, SCENES, SURFACE_DETAILS, SURFACE_EDGES, FEATURES, POLES, EXTRUSIONS, PIPES, CONVERSION_EDGES]:
         result.update(cases)
     return result
 
 
-def request(discovery=False, surface_details=False, surface_edges=False, features=False, poles=False, extrusions=False, pipes=False):
+def request(discovery=False, surface_details=False, surface_edges=False, features=False, poles=False, extrusions=False, pipes=False, conversion_edges=False):
     return dict(protocol_version=1, iterations=1,
                 tolerance=dict(absolute=1e-6, relative=1e-12, angular=1e-6),
-                operations=[dict(op='tosubd_command', id=k, case=k) for k in (DISCOVERY if discovery else SURFACE_DETAILS if surface_details else SURFACE_EDGES if surface_edges else FEATURES if features else POLES if poles else EXTRUSIONS if extrusions else PIPES if pipes else SCENES)])
+                operations=[dict(op='tosubd_command', id=k, case=k) for k in (DISCOVERY if discovery else SURFACE_DETAILS if surface_details else SURFACE_EDGES if surface_edges else FEATURES if features else POLES if poles else EXTRUSIONS if extrusions else PIPES if pipes else CONVERSION_EDGES if conversion_edges else SCENES)])
 
 
 def validate(operation):

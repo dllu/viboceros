@@ -16,7 +16,8 @@ def main():
                 ('surface_details','tosubd_surface_details','SurfaceDetails'),
                 ('surface_edges','tosubd_surface_edges','SurfaceEdges'),
                 ('features','tosubd_features','Features'), ('poles','tosubd_poles','Poles'),
-                ('extrusions','tosubd_extrusions','Extrusions'), ('pipes','tosubd_pipes','Pipes')]
+                ('extrusions','tosubd_extrusions','Extrusions'), ('pipes','tosubd_pipes','Pipes'),
+                ('conversion_edges','tosubd_conversion_edges','ConversionEdges')]
     choices = parser.add_mutually_exclusive_group()
     for flag, _, _ in families:
         choices.add_argument('--' + flag.replace('_','-'), action='store_true')

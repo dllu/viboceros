@@ -43,3 +43,30 @@ def pipe_recipes(defaults):
         sources=[dict(kind='extrusion', profile='circle', cap=True, inner_radius=1.)],
         record_extrusion=True, options=deepcopy(defaults))
     return result
+
+
+def conversion_edge_recipes(defaults):
+    result = {}
+    for bottom in [False, True]:
+        for location in [False, True]:
+            key = 'tosubd_one_cap_' + str(int(bottom)) + str(int(location))
+            result[key] = dict(sources=[dict(kind='extrusion', profile='cylinder',
+                cap_bottom=bottom, cap_top=not bottom)], source_3dm=not location,
+                record_extrusion=True, options=dict(defaults, UseSurface='Location' if location else 'ControlPoints'))
+    for profile in ['rectangle', 'circle', 'pipe']:
+        for location in [False, True]:
+            key = 'tosubd_transposed_' + profile + '_' + str(int(location))
+            result[key] = dict(sources=[dict(kind='extrusion', profile=profile, cap=True, transpose=True)],
+                source_3dm=not location, record_extrusion=True,
+                options=dict(defaults, UseSurface='Location' if location else 'ControlPoints'))
+    for degree, xs, zs, knots in [(1,[0.,1.,2.],[0.,0.,1.],[0.,0.,1.,2.,2.]),
+            (2,[0.,.5,1.,1.5,2.],[0.,0.,0.,.5,1.],[0.,0.,0.,1.,1.,2.,2.,2.])]:
+        source = dict(kind='surface', degree_u=degree, degree_v=1,
+            control_point_count_u=len(xs), control_point_count_v=2, knots_u=knots,
+            knots_v=[0.,0.,1.,1.], control_points=[dict(point=[x,float(v),z],weight=1.)for v in range(2)for x,z in zip(xs,zs)])
+        for location in [False,True]:
+            for corners in [False,True]:
+                key = 'tosubd_sdk_kink_' + ''.join(str(int(v))for v in [degree,location,corners])
+                result[key] = dict(sources=[deepcopy(source)], sdk=True,
+                    options=dict(defaults, UseSurface='Location' if location else 'ControlPoints', SurfaceCorners=corners))
+    return result

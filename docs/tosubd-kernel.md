@@ -5,7 +5,8 @@
 The geometry API now provides the conversion foundation for `ToSubD`.
 The command and interactive workflow are still being implemented. Native
 [extrusion representation and file interchange](extrusions.md) are available;
-ToSubD extrusion conversion remains in progress.
+Extrusion conversion is available through `SubD::try_from_extrusion`; command
+and selection integration remain in progress.
 
 - `SubD::try_from_mesh` accepts independent interpolation, corner and crease
   options through `SubDFromMeshOptions`.
@@ -25,10 +26,17 @@ These include one rejected collapsed control net. Constructive cases compare
 control topology, tags, limit stations and corresponding density-two facets
 within `1e-6`. Cases include rational and nonuniform surfaces, unclamped and
 periodic axes, sphere poles, hemispheres, tori, and degree-elevated cones.
+A further [62 comparisons](tosubd-extrusion-qualification.json) cover 54 whole
+extrusions and eight direct surface-SDK cases. They include transposition,
+one-ended caps, complete-profile joining, and linear/quadratic crease behavior.
+Closed complete profiles receive caps when both ends are capped; one-ended
+inputs retain their walls, matching the recorded native behavior. Multiple
+profiles follow the native joined-profile interpretation, which can be open.
+
 Continuous surface error, arbitrary topology and comparative speed remain
 unqualified.
 
-The saved corpus contains 139 corrected public command workflows and 43 initial
+The original corpus contains 139 corrected public command workflows and 43 initial
 diagnostic workflows. It also retains B-rep face selection, extrusion conversion,
 attributes, cancellation and Undo/Redo observations for subsequent integration.
 Those document workflows have not yet been qualified against Viboceros.

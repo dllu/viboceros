@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_one_cap_00",
+      "case": "tosubd_one_cap_00"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_one_cap_01",
+      "case": "tosubd_one_cap_01"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_one_cap_10",
+      "case": "tosubd_one_cap_10"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_one_cap_11",
+      "case": "tosubd_one_cap_11"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_transposed_rectangle_0",
+      "case": "tosubd_transposed_rectangle_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_transposed_rectangle_1",
+      "case": "tosubd_transposed_rectangle_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_transposed_circle_0",
+      "case": "tosubd_transposed_circle_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_transposed_circle_1",
+      "case": "tosubd_transposed_circle_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_transposed_pipe_0",
+      "case": "tosubd_transposed_pipe_0"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_transposed_pipe_1",
+      "case": "tosubd_transposed_pipe_1"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sdk_kink_100",
+      "case": "tosubd_sdk_kink_100"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sdk_kink_101",
+      "case": "tosubd_sdk_kink_101"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sdk_kink_110",
+      "case": "tosubd_sdk_kink_110"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sdk_kink_111",
+      "case": "tosubd_sdk_kink_111"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sdk_kink_200",
+      "case": "tosubd_sdk_kink_200"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sdk_kink_201",
+      "case": "tosubd_sdk_kink_201"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sdk_kink_210",
+      "case": "tosubd_sdk_kink_210"
+    },
+    {
+      "op": "tosubd_command",
+      "id": "tosubd_sdk_kink_211",
+      "case": "tosubd_sdk_kink_211"
+    }
+  ]
+}

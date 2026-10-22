@@ -8,6 +8,7 @@ mod append;
 mod cone;
 mod cylinder;
 mod ellipsoid;
+mod extrusion_conversion;
 mod interpolation;
 mod mesh_conversion;
 mod primitives;

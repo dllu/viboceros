@@ -1,0 +1,970 @@
+{
+  "iterations": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "created": [
+          {
+            "cap_count": 2,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "cap_count": 2,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              }
+            ],
+            "name": "Box",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "success": true,
+        "history": "Command: _Box\nFirst corner of base ( Diagonal  3Point  Vertical  Center ): 0,0,0\nOther corner of base or length ( 3Point ): 4,3,0\nHeight. Press Enter to use width: 2\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "after": [
+          {
+            "object_type": "SubD",
+            "source": false,
+            "type": "SubD"
+          },
+          {
+            "cap_count": 2,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          }
+        ],
+        "input": {
+          "macro": "_Box 0,0,0 4,3,0 2",
+          "command": "Box"
+        },
+        "tosubd_success": true,
+        "conversion_events": [
+          {
+            "objects": [
+              {
+                "object_type": "SubD",
+                "source": false,
+                "type": "SubD"
+              },
+              {
+                "cap_count": 2,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              }
+            ],
+            "name": "ToSubD",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      },
+      "id": "creator_box"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "created": [
+          {
+            "cap_count": 2,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "cap_count": 2,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              }
+            ],
+            "name": "Cylinder",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "success": true,
+        "history": "Command: _Cylinder\nBase of cylinder ( DirectionConstraint=Vertical  Solid=Yes  2Point  3Point  Tangent  FitPoints ): 0,0,0\nRadius <5.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes ): 2\nEnd of cylinder <5.000> ( DirectionConstraint=Vertical  BothSides=No ): 3\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "after": [
+          {
+            "object_type": "SubD",
+            "source": false,
+            "type": "SubD"
+          },
+          {
+            "cap_count": 2,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          }
+        ],
+        "input": {
+          "macro": "_Cylinder 0,0,0 2 3",
+          "command": "Cylinder"
+        },
+        "tosubd_success": true,
+        "conversion_events": [
+          {
+            "objects": [
+              {
+                "object_type": "SubD",
+                "source": false,
+                "type": "SubD"
+              },
+              {
+                "cap_count": 2,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              }
+            ],
+            "name": "ToSubD",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      },
+      "id": "creator_cylinder"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "created": [
+          {
+            "cap_count": 0,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "NurbsCurve"
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "cap_count": 0,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "NurbsCurve"
+              }
+            ],
+            "name": "ExtrudeCrv",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "success": true,
+        "history": "Command: _-ExtrudeCrv\nExtrusion distance <0> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _Output=_Surface\nExtrusion distance <0> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _Solid=_No\nExtrusion distance <0> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _BothSides=_No\nExtrusion distance <0> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _DeleteInput=_No\nExtrusion distance <0> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): 2\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "after": [
+          {
+            "object_type": "SubD",
+            "source": false,
+            "type": "SubD"
+          },
+          {
+            "cap_count": 0,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "NurbsCurve"
+          }
+        ],
+        "input": {
+          "profile": "rectangle",
+          "command": "ExtrudeCrv",
+          "macro": "_-ExtrudeCrv _Output=_Surface _Solid=_No _BothSides=_No _DeleteInput=_No 2"
+        },
+        "tosubd_success": true,
+        "conversion_events": [
+          {
+            "objects": [
+              {
+                "object_type": "SubD",
+                "source": false,
+                "type": "SubD"
+              },
+              {
+                "cap_count": 0,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "NurbsCurve"
+              }
+            ],
+            "name": "ToSubD",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      },
+      "id": "creator_extrude_rectangle_0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "created": [
+          {
+            "cap_count": 2,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "NurbsCurve"
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "cap_count": 2,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "NurbsCurve"
+              }
+            ],
+            "name": "ExtrudeCrv",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "success": true,
+        "history": "Command: _-ExtrudeCrv\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _Output=_Surface\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _Solid=_Yes\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _BothSides=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _DeleteInput=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): 2\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "after": [
+          {
+            "object_type": "SubD",
+            "source": false,
+            "type": "SubD"
+          },
+          {
+            "cap_count": 2,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "NurbsCurve"
+          }
+        ],
+        "input": {
+          "profile": "rectangle",
+          "command": "ExtrudeCrv",
+          "macro": "_-ExtrudeCrv _Output=_Surface _Solid=_Yes _BothSides=_No _DeleteInput=_No 2"
+        },
+        "tosubd_success": true,
+        "conversion_events": [
+          {
+            "objects": [
+              {
+                "object_type": "SubD",
+                "source": false,
+                "type": "SubD"
+              },
+              {
+                "cap_count": 2,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "NurbsCurve"
+              }
+            ],
+            "name": "ToSubD",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      },
+      "id": "creator_extrude_rectangle_1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "created": [
+          {
+            "cap_count": 0,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "NurbsCurve"
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "cap_count": 0,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "NurbsCurve"
+              }
+            ],
+            "name": "ExtrudeCrv",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "success": true,
+        "history": "Command: _-ExtrudeCrv\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _Output=_Surface\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _Solid=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _BothSides=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _DeleteInput=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): 2\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "after": [
+          {
+            "object_type": "SubD",
+            "source": false,
+            "type": "SubD"
+          },
+          {
+            "cap_count": 0,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "NurbsCurve"
+          }
+        ],
+        "input": {
+          "profile": "circle",
+          "command": "ExtrudeCrv",
+          "macro": "_-ExtrudeCrv _Output=_Surface _Solid=_No _BothSides=_No _DeleteInput=_No 2"
+        },
+        "tosubd_success": true,
+        "conversion_events": [
+          {
+            "objects": [
+              {
+                "object_type": "SubD",
+                "source": false,
+                "type": "SubD"
+              },
+              {
+                "cap_count": 0,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "NurbsCurve"
+              }
+            ],
+            "name": "ToSubD",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      },
+      "id": "creator_extrude_circle_0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "created": [
+          {
+            "cap_count": 2,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "NurbsCurve"
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "cap_count": 2,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "NurbsCurve"
+              }
+            ],
+            "name": "ExtrudeCrv",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "success": true,
+        "history": "Command: _-ExtrudeCrv\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _Output=_Surface\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _Solid=_Yes\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _BothSides=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _DeleteInput=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): 2\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "after": [
+          {
+            "object_type": "SubD",
+            "source": false,
+            "type": "SubD"
+          },
+          {
+            "cap_count": 2,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "NurbsCurve"
+          }
+        ],
+        "input": {
+          "profile": "circle",
+          "command": "ExtrudeCrv",
+          "macro": "_-ExtrudeCrv _Output=_Surface _Solid=_Yes _BothSides=_No _DeleteInput=_No 2"
+        },
+        "tosubd_success": true,
+        "conversion_events": [
+          {
+            "objects": [
+              {
+                "object_type": "SubD",
+                "source": false,
+                "type": "SubD"
+              },
+              {
+                "cap_count": 2,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "NurbsCurve"
+              }
+            ],
+            "name": "ToSubD",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      },
+      "id": "creator_extrude_circle_1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "created": [
+          {
+            "cap_count": 0,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "PolylineCurve"
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "cap_count": 0,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "PolylineCurve"
+              }
+            ],
+            "name": "ExtrudeCrv",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "success": true,
+        "history": "Command: _-ExtrudeCrv\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _Output=_Surface\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _Solid=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _BothSides=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _DeleteInput=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): 2\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "after": [
+          {
+            "object_type": "SubD",
+            "source": false,
+            "type": "SubD"
+          },
+          {
+            "cap_count": 0,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "PolylineCurve"
+          }
+        ],
+        "input": {
+          "profile": "open_kink",
+          "command": "ExtrudeCrv",
+          "macro": "_-ExtrudeCrv _Output=_Surface _Solid=_No _BothSides=_No _DeleteInput=_No 2"
+        },
+        "tosubd_success": true,
+        "conversion_events": [
+          {
+            "objects": [
+              {
+                "object_type": "SubD",
+                "source": false,
+                "type": "SubD"
+              },
+              {
+                "cap_count": 0,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "PolylineCurve"
+              }
+            ],
+            "name": "ToSubD",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      },
+      "id": "creator_extrude_open_kink_0"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "created": [
+          {
+            "cap_count": 0,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "PolylineCurve"
+          }
+        ],
+        "events": [
+          {
+            "objects": [
+              {
+                "cap_count": 0,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "PolylineCurve"
+              }
+            ],
+            "name": "ExtrudeCrv",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "success": true,
+        "history": "Command: _-ExtrudeCrv\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _Output=_Surface\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=No  DeleteInput=No  ToBoundary  SetBasePoint ): _Solid=_Yes\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _BothSides=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): _DeleteInput=_No\nExtrusion distance <2> ( Output=Surface  Direction  BothSides=No  Solid=Yes  DeleteInput=No  ToBoundary  SetBasePoint ): 2\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "after": [
+          {
+            "object_type": "SubD",
+            "source": false,
+            "type": "SubD"
+          },
+          {
+            "cap_count": 0,
+            "source": false,
+            "type": "Extrusion",
+            "profile_count": 1,
+            "object_type": "Extrusion"
+          },
+          {
+            "object_type": "Curve",
+            "source": true,
+            "type": "PolylineCurve"
+          }
+        ],
+        "input": {
+          "profile": "open_kink",
+          "command": "ExtrudeCrv",
+          "macro": "_-ExtrudeCrv _Output=_Surface _Solid=_Yes _BothSides=_No _DeleteInput=_No 2"
+        },
+        "tosubd_success": true,
+        "conversion_events": [
+          {
+            "objects": [
+              {
+                "object_type": "SubD",
+                "source": false,
+                "type": "SubD"
+              },
+              {
+                "cap_count": 0,
+                "source": false,
+                "type": "Extrusion",
+                "profile_count": 1,
+                "object_type": "Extrusion"
+              },
+              {
+                "object_type": "Curve",
+                "source": true,
+                "type": "PolylineCurve"
+              }
+            ],
+            "name": "ToSubD",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      },
+      "id": "creator_extrude_open_kink_1"
+    }
+  ],
+  "provenance": {
+    "request_sha256": "9eb069405d37b717f60e6fa834a3c63091e075026db0ba6d7baaeaa1929f5c32",
+    "sources": {
+      "creator_types_probe.py": "60284626efdb734a47a889af037d8ccc0b953fc88d1d8ccf47535ae557a97985",
+      "generate_creator_types.py": "aacb31055907de423f93896abeb70f2d0f7150856b7232167b8490d273c58831",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "ba7f611fd130771fe0b417a01f8d6fcd3cbc27c86ef9b4e0e4a64aa94764dd79",
+      "rhino_worker.py": "78d45d01327f97f827fbe5e35c776f2cca02ad5045cfee2dd92d830c0c42651d",
+      "client.py": "a21aa6dcc54d3671a3cb4781cbf291f51fd7b8f7c3d1d52b4115ae71808690fa"
+    }
+  }
+}

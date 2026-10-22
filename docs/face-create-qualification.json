@@ -3796,7 +3796,7 @@
     "Legacy A-C diagonal rejection is recorded for native quads. Comparisons retain all shortest-diagonal facets, including collapsed ones handled by the exact segment/point fallback. Original native vertex, face and n-gon counts remain the topology targets."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/lib.rs": "14f47e57593b0ee0bc28900bd8b02563fb0c11e57b7110dc028f469098a1f9dc",
+    "crates/viboceros-geometry/src/lib.rs": "115973202604c7acdf575f6c5bb60e8e70f2e01fd448bfd3e935c68c537cf51c",
     "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
     "crates/viboceros-geometry/src/vector/cross_direction.rs": "a7d521a3ee9f7d58e01caf7fd79b88a937949918fd91ebccf979ec8d61085b4e",
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
@@ -3842,8 +3842,8 @@
     "tools/rhino_oracle/test_face_create.py": "2752f7792144e28d4da8d51323fcc1f4cfe93491b287b0d5f5e3669b20a66226",
     "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
     "tools/rhino_oracle/client.py": "a21aa6dcc54d3671a3cb4781cbf291f51fd7b8f7c3d1d52b4115ae71808690fa",
-    "tools/rhino_oracle/structural_sdk.py": "3f70923a9dc0e0794e1feb56e8c1013683b356186399085d853f4646d393bf16",
-    "tools/rhino_oracle/rhino_worker.py": "3022500a1371cb416de8c5e1c5985f54b27b95f3cb42477dc6c66e919c5604dc",
+    "tools/rhino_oracle/structural_sdk.py": "ba7f611fd130771fe0b417a01f8d6fcd3cbc27c86ef9b4e0e4a64aa94764dd79",
+    "tools/rhino_oracle/rhino_worker.py": "78d45d01327f97f827fbe5e35c776f2cca02ad5045cfee2dd92d830c0c42651d",
     "tools/rhino_oracle/fixtures/face_create.json": "26fc3b89bd149d5506fb6f95c3fd75d30b01a2b46099739fc54f20af8057d8e1",
     "tools/rhino_oracle/observations/face_create.json": "2472619c22ffac8634f52948a2ae81195b9b6b4276276f3f329b1d99060c1db8",
     "tools/rhino_oracle/fixtures/face_create_variants.json": "416766d0f73ecabbbaca1ab26e558502810653ec9e04d8214e454a10a868a804",

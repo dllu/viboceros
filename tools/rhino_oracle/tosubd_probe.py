@@ -71,9 +71,14 @@ def run(operation, host, iterations, tolerance):
             return G.Brep.CreateFromBox(G.BoundingBox(G.Point3d(0, 0, 0), G.Point3d(4, 3, 2)))
         if kind == 'extrusion':
             profile = source.get('profile', 'rectangle')
-            if profile == 'pipe':
+            if profile in ['pipe','cylinder']:
                 cylinder = G.Cylinder(G.Circle(G.Plane.WorldXY,2.), source.get('height',2.))
-                return G.Extrusion.CreatePipeExtrusion(cylinder,1.,source.get('cap',True),source.get('cap',True))
+                bottom,top=source.get('cap_bottom',source.get('cap',True)),source.get('cap_top',source.get('cap',True))
+                extrusion = G.Extrusion.CreatePipeExtrusion(cylinder,1.,bottom,top) if profile=='pipe' else G.Extrusion.CreateCylinderExtrusion(cylinder,bottom,top)
+                if source.get('transpose') and not extrusion.Transpose():
+                    extrusion.Dispose()
+                    raise ValueError('extrusion transpose failed')
+                return extrusion
             if profile == 'rectangle':
                 curve = G.Rectangle3d(G.Plane.WorldXY, 4., 3.).ToNurbsCurve()
             elif profile == 'circle':
@@ -110,6 +115,8 @@ def run(operation, host, iterations, tolerance):
                             transform[r,c] = source['transform'][4*r+c]
                     if not extrusion.Transform(transform):
                         raise ValueError('extrusion transform failed')
+                if source.get('transpose') and not extrusion.Transpose():
+                    raise ValueError('extrusion transpose failed')
                 return extrusion
             except Exception:
                 extrusion.Dispose()

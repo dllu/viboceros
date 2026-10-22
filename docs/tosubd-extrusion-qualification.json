@@ -1,0 +1,1093 @@
+{
+  "model_epsilon": 1e-06,
+  "native_engine_version": "8.32.26160.13001",
+  "captured_workflows": 67,
+  "extrusion_kernel_comparisons": 54,
+  "direct_surface_sdk_comparisons": 8,
+  "creator_type_observations": 8,
+  "maximum_control_or_limit_point_error": 6.023919126296977e-15,
+  "maximum_sampled_surface_error": 4.070144838902082e-15,
+  "command_qualified": false,
+  "getter_qualified": false,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "stages": {
+    "extrusion_kernel": [
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 64,
+          "edges": 12,
+          "faces": 4,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.304854800243425e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_open_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 64,
+          "edges": 12,
+          "faces": 4,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.304854800243425e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_open_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 64,
+          "edges": 12,
+          "faces": 4,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.304854800243425e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_open_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 64,
+          "edges": 12,
+          "faces": 4,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 6.304854800243425e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_open_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_negative_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_negative_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_negative_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_negative_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 5.438959822042074e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 5.438959822042074e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 1.1957467920563633e-15,
+          "maximum_sampled_surface_error": 1.1401027837150673e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 1.1957467920563633e-15,
+          "maximum_sampled_surface_error": 1.1401027837150673e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 128,
+          "edges": 24,
+          "faces": 8,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 5.438959822042074e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_open_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 128,
+          "edges": 24,
+          "faces": 8,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 5.438959822042074e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_open_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 128,
+          "edges": 24,
+          "faces": 8,
+          "maximum_control_or_limit_point_error": 1.1957467920563633e-15,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_open_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 128,
+          "edges": 24,
+          "faces": 8,
+          "maximum_control_or_limit_point_error": 1.1957467920563633e-15,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_open_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.965068306494546e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_extrusion_open_kink_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.996003610813204e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_extrusion_open_kink_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 6.206335383118183e-17,
+          "maximum_sampled_surface_error": 4.965068306494546e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_extrusion_open_kink_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 6.206335383118183e-17,
+          "maximum_sampled_surface_error": 4.996003610813204e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_extrusion_open_kink_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.021666937153402e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_extrusion_arc_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.043575467574349e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_extrusion_arc_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 5.438959822042073e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_extrusion_arc_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.130536482749599e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_extrusion_arc_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.2560739669470201e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_miter_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.2560739669470201e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_miter_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 2.4079204150680626e-16,
+          "maximum_sampled_surface_error": 1.2560739669470201e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_miter_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 2.4079204150680626e-16,
+          "maximum_sampled_surface_error": 1.2560739669470201e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_extrusion_rectangle_miter_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+          "maximum_sampled_surface_error": 3.668778978806643e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_shear_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 1.9860273225978185e-15,
+          "maximum_sampled_surface_error": 3.668778978806643e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_shear_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 6.023919126296977e-15,
+          "maximum_sampled_surface_error": 4.070144838902082e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_shear_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 6.023919126296977e-15,
+          "maximum_sampled_surface_error": 4.070144838902082e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_extrusion_circle_shear_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.043575467574349e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_pipe_000",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.043575467574349e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_pipe_001",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 1.076401158743041e-15,
+          "maximum_sampled_surface_error": 1.2161883888976235e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_pipe_010",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 1.076401158743041e-15,
+          "maximum_sampled_surface_error": 1.2161883888976235e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_pipe_011",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.043575467574349e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_pipe_100",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.043575467574349e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_pipe_101",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 1.076401158743041e-15,
+          "maximum_sampled_surface_error": 1.2161883888976235e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_pipe_110",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 1.076401158743041e-15,
+          "maximum_sampled_surface_error": 1.2161883888976235e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_pipe_111",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 128,
+          "edges": 24,
+          "faces": 8,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.043575467574349e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_one_cap_00",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 128,
+          "edges": 24,
+          "faces": 8,
+          "maximum_control_or_limit_point_error": 9.930136612989092e-16,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_one_cap_01",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 128,
+          "edges": 24,
+          "faces": 8,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.043575467574349e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_one_cap_10",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 128,
+          "edges": 24,
+          "faces": 8,
+          "maximum_control_or_limit_point_error": 9.930136612989092e-16,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_one_cap_11",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_transposed_rectangle_0",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 96,
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.155133597044475e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "id": "tosubd_transposed_rectangle_1",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 5.438959822042074e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_transposed_circle_0",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 192,
+          "edges": 24,
+          "faces": 10,
+          "maximum_control_or_limit_point_error": 1.1957467920563633e-15,
+          "maximum_sampled_surface_error": 1.1401027837150673e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 16
+        },
+        "id": "tosubd_transposed_circle_1",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 4.440892098500626e-16,
+          "maximum_sampled_surface_error": 7.043575467574349e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_transposed_pipe_0",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 256,
+          "edges": 49,
+          "faces": 16,
+          "maximum_control_or_limit_point_error": 1.076401158743041e-15,
+          "maximum_sampled_surface_error": 1.2161883888976235e-15,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 34
+        },
+        "id": "tosubd_transposed_pipe_1",
+        "source_unchanged": true
+      }
+    ],
+    "surface_sdk_kernel": [
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 2.543840524313801e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_sdk_kink_100",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.585973723508304e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_sdk_kink_101",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 2.543840524313801e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_sdk_kink_110",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 32,
+          "edges": 7,
+          "faces": 2,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.585973723508304e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "id": "tosubd_sdk_kink_111",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 64,
+          "edges": 13,
+          "faces": 4,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.965068306494546e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "id": "tosubd_sdk_kink_200",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 64,
+          "edges": 13,
+          "faces": 4,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.577566798522237e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "id": "tosubd_sdk_kink_201",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 64,
+          "edges": 13,
+          "faces": 4,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.965068306494546e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "id": "tosubd_sdk_kink_210",
+        "source_unchanged": true
+      },
+      {
+        "check": {
+          "common_facet_triangulation": true,
+          "compared_surface_faces": 64,
+          "edges": 13,
+          "faces": 4,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 4.611102534756203e-16,
+          "qualified": true,
+          "surface_facets_correspond": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "id": "tosubd_sdk_kink_211",
+        "source_unchanged": true
+      }
+    ]
+  },
+  "limits": [
+    "Kernel conversion only. ToSubD command/getter, document lifecycle and source creator representation integration remain pending.",
+    "Fixed native comparisons cover controls, topology, tags, vertex limit stations and corresponding density-two facets within 1e-6; arbitrary profiles and continuous surface error are not certified.",
+    "Complete-profile extrusion NURBS conversion follows public OpenNURBS joining. Closed complete profiles receive caps only when both ends are capped. Single-cap inputs retain only their walls; multiple profiles can produce an open joined-profile ribbon, matching the captures.",
+    "Direct SDK cases distinguish degree-one and degree-two kink behavior before Rhino document insertion splits them into multi-face B-reps. These eight cases are excluded from constructive command totals.",
+    "Eight public creator observations show native default Box, Cylinder and planar ExtrudeCrv produce extrusions. Their Viboceros creator updates remain pending; discovery is not command qualification.",
+    "Five misplaced-inner-profile workflows are retained as diagnostics and excluded from conversion comparisons; their invalid native B-rep form was recorded separately."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/lib.rs": "115973202604c7acdf575f6c5bb60e8e70f2e01fd448bfd3e935c68c537cf51c",
+    "crates/viboceros-geometry/src/error.rs": "633250a4c718f091a9f3e7c9a1bbb0b6541fca30f97199122f45d6ae2fbf4b42",
+    "crates/viboceros-geometry/src/brep.rs": "0653ec6387088321526ec0438c708c32892a0b7966d48cc8bb6b5d06f44efa50",
+    "crates/viboceros-geometry/src/brep/extrusion.rs": "ae1595f753cc7a997f87dedf9925f5b5dc06091114993030d5b6baf5f3106286",
+    "crates/viboceros-geometry/src/brep/parameter_orientation.rs": "380a080dc63d74de059e98a303ef40f2e04446a006a37fd0d28a6e6363c612dd",
+    "crates/viboceros-geometry/src/brep/surface_refine.rs": "145e1bb747baf13c6d2990e1176c1848e8959502ef7838f0d7e0654f10668f5f",
+    "crates/viboceros-geometry/src/brep/shrink.rs": "cb2937d9f0b2cd2a61f99d05a8ec3bf1816095a476ad21184fe16f77bdd02b95",
+    "crates/viboceros-geometry/src/brep/join_edges/automatic/rebuild.rs": "e6ac91825fecbb8e6d3b55768271f16bcfa6169c9505432af681986486c1222b",
+    "crates/viboceros-geometry/src/interop/mod.rs": "ebb25f8fca784c926e57767a2fd60bb7cb4a31e6627cd8964cae482c6981d680",
+    "crates/viboceros-geometry/src/interop/tests.rs": "45d675f09f418a79053757ea0fd76e776f344d20fafa6b4f4845df1e839fe7c6",
+    "crates/viboceros-geometry/tests/extrusion.rs": "f7cdefaaee47cf093f279ceb1a615300f3df2e0d3becc16d4577a3595e0f0bd1",
+    "crates/viboceros-io/src/three_dm.rs": "97b16ef90085682e92b4ab76a40043674ffdcc62ce1b4ae4443b005472064354",
+    "crates/viboceros-io/src/three_dm_curves.rs": "95166b2a4e6fd703e17e9632225c5d5fb2375a661b2f8756e7a11b179a768666",
+    "crates/viboceros-io/src/three_dm_geometry.rs": "3f0d385e22d0aa88f71d5c342e0df42ea0da91995e8a351e79b792ff229ef7b2",
+    "crates/viboceros-io/tests/extrusion.rs": "23005d27bfb350796081de3137244cd9fda97b1791cf5596f5196e1ad4510a7a",
+    "crates/viboceros-opennurbs/native/extrusion_codec.h": "d920fe03ac2848f59d8d40b7786de024f1ece0ce583a0ca8b2f6d5e72b652f93",
+    "crates/viboceros-opennurbs/native/extrusion_queries.h": "66b60b65ad839ea11e834a6595b1e612d509ef748c41c5b1a0546534215cb65d",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "54b38c97a076e7b562b1ee9fd31d1574365f23d12051c8ec7081275e7c41e6c9",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "ee04edd5c0b301746e66136c924b3456427db9e70a90a521dd5daf1b36bb27c8",
+    "crates/viboceros-opennurbs/src/extrusion.rs": "7e8151f2cf676546a79a5bdea9e49ee0776926046b93418e5c00ec40b8da35f5",
+    "crates/viboceros-opennurbs/src/lib.rs": "a4c259da23dd4f352f88c408a5746be0451d81cd8942d39071b5f4bde2586eeb",
+    "crates/viboceros-opennurbs/build.rs": "4ee2af063c1c091b83abae4a9baf06cac0e435b6d767404ea0439869ee47e94b",
+    "crates/viboceros-command/src/to_nurbs.rs": "be4747752e901c731f24dde21cd1bee669727049a7cc245cca40fb155dc9655a",
+    "crates/viboceros-command/tests/extrusion.rs": "64ff3f4857f65bb17c5328507635cbfe4eec7488586c807302302282035c80fb",
+    "tools/rhino_oracle/tosubd_cases.py": "f0a4faf9f67e8e24f7c503d7463e6390dde4070bbac1d5ace67262b46c430529",
+    "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
+    "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
+    "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
+    "tools/rhino_oracle/structural_sdk.py": "ba7f611fd130771fe0b417a01f8d6fcd3cbc27c86ef9b4e0e4a64aa94764dd79",
+    "tools/rhino_oracle/rhino_worker.py": "78d45d01327f97f827fbe5e35c776f2cca02ad5045cfee2dd92d830c0c42651d",
+    "tools/rhino_oracle/report_extrusions.py": "e03fa9a75a203e39242c05093d639839e0cb70fc90901a09fa25adb749c17783",
+    "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
+    "tools/rhino_oracle/fixtures/tosubd_extrusions.json": "00f7b598aea12033c12945d2a9b1566e661e68e2bbd757c2c35bba49b64d16fd",
+    "tools/rhino_oracle/observations/tosubd_extrusions.json": "d730e00f2c6e77cf7c7691044b2d03f15880b4a1dc2a0d0679013ae6cf7bcc34",
+    "tools/rhino_oracle/fixtures/tosubd_pipes.json": "bd9cd10caf97c5ca122792a11da41e55485cbb19737bdac60e793544dc0c8ed0",
+    "tools/rhino_oracle/observations/tosubd_pipes.json": "230dcf78c55da29ed4ca5ef7c08ad509623d64200acd0b793f1b741d5f9f1af9",
+    "crates/viboceros-opennurbs/src/extrusion/surface.rs": "73e13ebbe2b74a74fad7f686684ce51de280bd6fcd8e3ff417cd25291cb4e648",
+    "crates/viboceros-geometry/src/subd.rs": "3c0549a7adba851521103eb4ee18fcc0c2dd507f696c99a3084662e4c1068d76",
+    "crates/viboceros-geometry/src/subd/extrusion_conversion.rs": "dab7e7815e980c4cbd0f9515bf60c5e5ea787a0d274feda8a7191f4210dec32d",
+    "crates/viboceros-geometry/src/subd/surface_conversion.rs": "694ae97f90cf0c05accfee0c2fcbf6d6832baf205e9431148d3494283123bc1c",
+    "crates/viboceros-geometry/src/subd/surface_conversion/features.rs": "0e76e90fc8dbd7973d9ba21f8947f88e2f5c3f5daafcd2574d95ddc91eb6ad2d",
+    "crates/viboceros-geometry/src/subd/surface_conversion/fitting.rs": "622ba59a72030029c5fc61e88e0318176b5246252a2ba1d377a116835e0c9eb8",
+    "crates/viboceros-geometry/src/subd/surface_conversion/axis.rs": "93d217172db670c45511af4112286edc4fe2aca1826dc54b5ea21102dd148db9",
+    "crates/viboceros-command/tests/tosubd_extrusions_native.rs": "ed2dc3c014f69d46a72bbe33c1aa553579219f2b3a838dd9805997b3662b067b",
+    "crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
+    "crates/viboceros-command/tests/support/subd_facets.rs": "ad0be23c4f68083f9b43a85266d0c9e8dcb8d82f00c90c88affa4849472781ff",
+    "tools/rhino_oracle/report_tosubd_extrusions.py": "1faee93ce4e89731d7ad97955624cc90217b144f529a6858e7299f7932ac080d",
+    "tools/rhino_oracle/test_tosubd_extrusions.py": "dd8ef814867d4897b870bcf751507791f88a343007cc953985cf9a6817bebba4",
+    "tools/rhino_oracle/creator_types_probe.py": "60284626efdb734a47a889af037d8ccc0b953fc88d1d8ccf47535ae557a97985",
+    "tools/rhino_oracle/generate_creator_types.py": "aacb31055907de423f93896abeb70f2d0f7150856b7232167b8490d273c58831",
+    "tools/rhino_oracle/fixtures/creator_types.json": "9eb069405d37b717f60e6fa834a3c63091e075026db0ba6d7baaeaa1929f5c32",
+    "tools/rhino_oracle/observations/creator_types.json": "4e92a5236dce296d4722f162aa69f87b418d63e25858c6a01182f0e9c08452a9",
+    "tools/rhino_oracle/fixtures/tosubd_conversion_edges.json": "cd32bfdc91ebac0087abbd44233c5b511f4721e8a6223cd734ad8178549fbc09",
+    "tools/rhino_oracle/observations/tosubd_conversion_edges.json": "5f82a0e6536d2363d1d4b8c787c031a58247800cf60a5e557cd44ad300e12f5c",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_rectangle_00.3dm": "c802038509d83be6bbfe818278744bc2333d30d7b80ebfeac738523b8308f9da",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_rectangle_open_00.3dm": "7afae390176bd35b3435ae2f377c2e5e10d77141d26e4eb03552e3ae9c178378",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_rectangle_negative_00.3dm": "95c52c0d3c65c00227f792561c5bd96c4498417168731ca4ddf333229156a9d5",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_circle_00.3dm": "7d6f3f532948e916213699198bd14017b6a59023e2a46894c251c78589c9525e",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_circle_open_00.3dm": "26e576f001e0079c4c3dd70e54c818978c7f68bde70e417b93ba091317d05213",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_open_kink_00.3dm": "0c978cff1324f7beb87fad37fd5dbb1dbbaab4812e8c89247f1c410dbe9907dc",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_arc_00.3dm": "94b51c21f693a532c91582715e28897800a25d915a1f87bf564a429769119d79",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_tube_00.3dm": "c4e0e5bdce77e5f05b2eadba29c2495aa5f7e6194bde4df93855b4ca5fd27a6b",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_rectangle_miter_00.3dm": "7f9ab90d34649b2cce339878a4d086b68b18c82a9316133436965c62e35615d2",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_circle_shear_00.3dm": "9c9c956827aa77b5f9b62a56ff4ed2556c7eef40b4da59144ac023be4fd7a84f",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_000.3dm": "de42c2eee5bd5370ce9693bc05060dc325ef754346e9dd7461ee7c706d39c355",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_100.3dm": "0361293bbb2dc587f5e61d31f68d15732a52e584d23360b44a9964b13a52527a",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_one_cap_00.3dm": "1b15c9463e70f4a9856543a9d8d0df71e42b54327bb822f7edc9b47a3c3aaf0a",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_one_cap_10.3dm": "59a4b086a38adfaf341636021ffea0c544db3f3e7635651f19f7ef0ec17b8d01",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_rectangle_0.3dm": "405160ef963cd96713931684719fde45969285339f749fbce1f748ab663dc7f4",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_circle_0.3dm": "bf628228dec65c8402320746f753223a0ea4dd02c26eabad1c0d3ff76357e0d3",
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_pipe_0.3dm": "b9b8316c4428ddb225c323cee42fa28ca28c8c834a709054832b07edf3e10498"
+  }
+}
