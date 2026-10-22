@@ -1018,7 +1018,7 @@
     "Five misplaced-inner-profile workflows are retained as diagnostics and excluded from conversion comparisons; their invalid native B-rep form was recorded separately."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/lib.rs": "a07d2c2651bfc8cd30469e18f8ca98b714fffe360f0943fe8dcd23b4d9509bdd",
+    "crates/viboceros-geometry/src/lib.rs": "5473f6a86b931941d304c4a131f1c1318cc8c11bc5d8da9523fbd4b8cd8eaedf",
     "crates/viboceros-geometry/src/error.rs": "633250a4c718f091a9f3e7c9a1bbb0b6541fca30f97199122f45d6ae2fbf4b42",
     "crates/viboceros-geometry/src/brep.rs": "0653ec6387088321526ec0438c708c32892a0b7966d48cc8bb6b5d06f44efa50",
     "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",
@@ -1038,8 +1038,8 @@
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "e30382056772d65cdbaa3516846afab9d1ffc338375aba14c7723124907118fe",
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "ee04edd5c0b301746e66136c924b3456427db9e70a90a521dd5daf1b36bb27c8",
     "crates/viboceros-opennurbs/src/extrusion.rs": "5e1b07a7bd19d4a9b942cbeab47f0d706a8605bf57fab8ef1e9c809e985dd744",
-    "crates/viboceros-opennurbs/src/lib.rs": "327c20bb71704ded20717bcdd54fa58842c61dd2b91922e1acd7cc6fac6b25c5",
-    "crates/viboceros-opennurbs/build.rs": "46b18787b603bab3a7b721f5611ea11db5188cd86f31f1cb253c341ac0077aa5",
+    "crates/viboceros-opennurbs/src/lib.rs": "4329e9b0fd2270e6ec3541d3ca0ca594f80693afeb15cc7a70482be086c8ce9a",
+    "crates/viboceros-opennurbs/build.rs": "d7fb60d96043701e7ba4105f0593b9de4d3bc2b4d8a1a8c7fecfe05539a12feb",
     "crates/viboceros-command/src/to_nurbs.rs": "be4747752e901c731f24dde21cd1bee669727049a7cc245cca40fb155dc9655a",
     "crates/viboceros-command/tests/extrusion.rs": "64ff3f4857f65bb17c5328507635cbfe4eec7488586c807302302282035c80fb",
     "tools/rhino_oracle/tosubd_cases.py": "f0a4faf9f67e8e24f7c503d7463e6390dde4070bbac1d5ace67262b46c430529",
@@ -1055,7 +1055,7 @@
     "tools/rhino_oracle/fixtures/tosubd_pipes.json": "bd9cd10caf97c5ca122792a11da41e55485cbb19737bdac60e793544dc0c8ed0",
     "tools/rhino_oracle/observations/tosubd_pipes.json": "230dcf78c55da29ed4ca5ef7c08ad509623d64200acd0b793f1b741d5f9f1af9",
     "crates/viboceros-opennurbs/src/extrusion/surface.rs": "73e13ebbe2b74a74fad7f686684ce51de280bd6fcd8e3ff417cd25291cb4e648",
-    "crates/viboceros-geometry/src/subd.rs": "ca7c3d4b1e74d6988986283cf727d8ca3efac87dbfb1a19e8b507b86dba667f2",
+    "crates/viboceros-geometry/src/subd.rs": "29a07d7d3442f2e5d027fdf5e62dd2e11b98a66a5d1afe576ea1316de57187b3",
     "crates/viboceros-geometry/src/subd/extrusion_conversion.rs": "dab7e7815e980c4cbd0f9515bf60c5e5ea787a0d274feda8a7191f4210dec32d",
     "crates/viboceros-geometry/src/subd/surface_conversion.rs": "694ae97f90cf0c05accfee0c2fcbf6d6832baf205e9431148d3494283123bc1c",
     "crates/viboceros-geometry/src/subd/surface_conversion/features.rs": "0e76e90fc8dbd7973d9ba21f8947f88e2f5c3f5daafcd2574d95ddc91eb6ad2d",
@@ -1089,7 +1089,7 @@
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_rectangle_0.3dm": "405160ef963cd96713931684719fde45969285339f749fbce1f748ab663dc7f4",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_circle_0.3dm": "bf628228dec65c8402320746f753223a0ea4dd02c26eabad1c0d3ff76357e0d3",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_pipe_0.3dm": "b9b8316c4428ddb225c323cee42fa28ca28c8c834a709054832b07edf3e10498",
-    "tools/rhino_oracle/qualification_sources.py": "72c2359be1eddaefdf18a069f9ec5e98f067eb8cb72a89882b76f68ecb296a2c",
+    "tools/rhino_oracle/qualification_sources.py": "01e7c5c9ef26ce1116c5ee40e65ea890c9c84c673e2ad79cc6c330424b986a59",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5"
   }
 }

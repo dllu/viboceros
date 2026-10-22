@@ -30,6 +30,8 @@ Use [Crease and RemoveCrease](commands/crease.md) to edit hard edges and corners
 through typed component indices or selected control grips.
 Use [SubDCrease](commands/subd-crease.md) for staged soft weights and vertex profiles
 along interior control-edge chains.
+The [control-net mesh API](geometry/subd-control-net.md) retains native n-gons,
+crease seams, normals and texture corners for low-poly conversion.
 
 Select a SubD before `3DFace`, choose `Append` in the point getter, or supply
 `Append=<id>` to add faces to it. Without an explicit `Output` option, the target

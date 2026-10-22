@@ -14,6 +14,23 @@ HERE = Path(__file__).resolve().parent
 
 
 class ControlPolygonTests(unittest.TestCase):
+    def test_control_net_report_requires_complete_exact_attributes(self):
+        from .report_subd_control_net import ROOT,summarize
+        report = json.loads((ROOT/'docs/subd-control-net-qualification.json').read_text())
+        lines = ['CONTROL_NET_NATIVE '+json.dumps(row) for row in report['cases']]
+        self.assertEqual(summarize('\n'.join(lines)),report)
+        self.assertEqual((report['compared_workflows'],report['component_sources']),(20,21))
+        for bad in [lines[:-1],lines+lines[:1]]:
+            with self.assertRaises(ValueError):
+                summarize('\n'.join(bad))
+        for field,value in [('qualified',False),('source_unchanged',1),('vertices',True),
+                            ('topology_exact',False),('vertex_attributes_exact',False),
+                            ('maximum_point_error',float('nan')),('maximum_point_error',1.01e-6)]:
+            row = copy.deepcopy(report['cases'][0])
+            row[field] = value
+            with self.assertRaises(ValueError,msg=field):
+                summarize('\n'.join(['CONTROL_NET_NATIVE '+json.dumps(row)]+lines[1:]))
+
     def test_owned_capture_rejects_unbounded_or_mixed_requests_before_launch(self):
         from .client import OracleClient, OracleProtocolError
         query = cases.request()

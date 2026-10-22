@@ -14,6 +14,9 @@
 #include "subd_subdivision.h"
 
 struct ViboSubDResult {
+  std::vector<ViboNgonSpan> mesh_ngons;
+  std::vector<uint32_t> mesh_ngon_vertices, mesh_ngon_faces;
+  std::vector<double> mesh_texture_coordinates, mesh_vertex_normals;
   std::vector<uint8_t> archive, vertex_tags, edge_tags;
   std::vector<double> points, surface_points, corner_normals, edge_sharpness;
   std::vector<uint32_t> edges, face_sizes, face_vertices, face_sources, selected_faces, edge_face_counts;
@@ -229,21 +232,7 @@ extern "C" int vibo_subd_transform(const uint8_t* bytes,size_t n,const double* m
     return extract(*subd);
   });
 }
-extern "C" int vibo_subd_control_mesh(const uint8_t* bytes,size_t count,ViboSubDResult** out,char* error,size_t capacity) {
-  return guard(out,error,capacity,[&]{
-    auto subd=vibo_subd::decode(bytes,count);ON_Mesh mesh;
-    require(subd->GetControlNetMesh(&mesh,ON_SubDGetControlNetMeshPriority::Geometry),"Cannot get SubD control mesh");
-    auto result=std::make_unique<ViboSubDResult>();
-    for(int i=0;i<mesh.VertexCount();++i) {
-      point(result->points,mesh.Vertex(i));point(result->surface_points,mesh.Vertex(i));result->vertex_tags.push_back(0);
-    }
-    for(int i=0;i<mesh.FaceCount();++i) {
-      const auto& face=mesh.m_F[i];const unsigned n=face.IsTriangle()?3:4;result->face_sizes.push_back(n);
-      for(unsigned j=0;j<n;++j) result->face_vertices.push_back(static_cast<uint32_t>(face.vi[j]));
-    }
-    return result;
-  });
-}
+#include "subd_control_mesh.h"
 extern "C" int vibo_subd_tessellate(const uint8_t* bytes,size_t n,unsigned density,int normals,
     ViboSubDResult** out,char* error,size_t capacity) {
   return guard(out,error,capacity,[&]{
@@ -271,7 +260,11 @@ extern "C" int vibo_subd_view(const ViboSubDResult* r,ViboSubDView* v) {
   if(!r || !v) return 0;
   *v={r->archive.size(),r->points.size()/3,r->edges.size()/2,r->face_sizes.size(),r->face_vertices.size(),r->corner_normals.size()/3,
     r->archive.data(),r->points.data(),r->surface_points.data(),r->vertex_tags.data(),r->edges.data(),r->edge_tags.data(),r->face_sizes.data(),r->face_vertices.data(),r->corner_normals.data(),r->boundary_edge_count,r->face_sources.size(),r->face_sources.data(),r->selected_faces.size(),r->selected_faces.data(),
-    r->edge_face_counts.size(),r->edge_sharpness.data(),r->edge_face_counts.data()};return 1;
+    r->edge_face_counts.size(),r->edge_sharpness.data(),r->edge_face_counts.data(),
+    r->mesh_ngons.size(),r->mesh_ngon_vertices.size(),r->mesh_ngon_faces.size(),
+    r->mesh_texture_coordinates.size()/2,r->mesh_vertex_normals.size()/3,
+    r->mesh_ngons.data(),r->mesh_ngon_vertices.data(),r->mesh_ngon_faces.data(),
+    r->mesh_texture_coordinates.data(),r->mesh_vertex_normals.data()};return 1;
 }
 extern "C" void vibo_subd_free(ViboSubDResult* r) { delete r; }
 

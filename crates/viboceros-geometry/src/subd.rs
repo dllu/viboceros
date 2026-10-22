@@ -7,6 +7,7 @@ use std::sync::Arc;
 mod append;
 mod chains;
 mod cone;
+mod control_net;
 mod crease;
 mod cylinder;
 mod edges;
@@ -23,6 +24,7 @@ mod torus;
 mod truncated_cone;
 pub use append::SubDAppendResult;
 pub use chains::{SubDDirectedEdge, SubDEdgeChain};
+pub use control_net::{SubDControlNetMesh, SubDControlNetPriority};
 pub use cylinder::SubDCylinderCap;
 pub use mesh_conversion::SubDFromMeshOptions;
 pub use sphere::SubDSphereStyle;
@@ -138,22 +140,9 @@ impl SubD {
     /// Native control-cage facets for boundary selection. The displayed SubD
     /// continues to use the separately evaluated limit surface.
     pub fn control_mesh(&self) -> Result<TriangleMesh, GeometryError> {
-        let data = viboceros_opennurbs::subd_control_mesh(self.archive())?;
-        let vertices = data
-            .points
-            .into_iter()
-            .map(Point3::try_from)
-            .collect::<Result<Vec<_>, _>>()?;
-        let faces = data
-            .faces
-            .into_iter()
-            .map(|f| match f[..] {
-                [a, b, c] => MeshFace::Triangle([a, b, c]),
-                [a, b, c, d] => MeshFace::Quad([a, b, c, d]),
-                _ => unreachable!("control mesh contains triangles or quads"),
-            })
-            .collect();
-        TriangleMesh::try_from_face_records(vertices, faces)
+        Ok(self
+            .control_net_mesh(SubDControlNetPriority::Geometry)?
+            .mesh)
     }
     pub fn archive(&self) -> &[u8] {
         &self.data.archive

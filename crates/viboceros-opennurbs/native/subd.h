@@ -36,6 +36,11 @@ typedef struct {
   size_t control_edge_count;
   const double* edge_sharpness;
   const uint32_t* edge_face_counts;
+  size_t mesh_ngon_count, mesh_ngon_vertex_count, mesh_ngon_face_count;
+  size_t mesh_texture_count, mesh_normal_count;
+  const ViboNgonSpan* mesh_ngons;
+  const uint32_t *mesh_ngon_vertices, *mesh_ngon_faces;
+  const double *mesh_texture_coordinates, *mesh_vertex_normals;
 } ViboSubDView;
 int vibo_subd_create(const double*, size_t, const uint32_t*, size_t,
   const uint32_t*, size_t, ViboSubDResult**, char*, size_t);
@@ -52,7 +57,7 @@ int vibo_subd_edit_points(const uint8_t*, size_t, const double*, size_t,
   ViboSubDResult**, char*, size_t);
 int vibo_subd_transform(const uint8_t*, size_t, const double*,
   ViboSubDResult**, char*, size_t);
-int vibo_subd_control_mesh(const uint8_t*, size_t, ViboSubDResult**, char*, size_t);
+int vibo_subd_control_mesh(const uint8_t*, size_t, uint32_t, ViboSubDResult**, char*, size_t);
 int vibo_subd_tessellate(const uint8_t*, size_t, unsigned, int,
   ViboSubDResult**, char*, size_t);
 int vibo_subd_subdivide(const uint8_t*, size_t, unsigned, const size_t*, size_t, int,

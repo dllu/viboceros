@@ -20,6 +20,7 @@ fn main() {
         "subd_crease.h",
         "subd_soft_crease.h",
         "subd_chains.h",
+        "subd_control_mesh.h",
         "subd_sharpness.h",
         "subd_edges.h",
         "subd_interpolation.h",

@@ -2,11 +2,13 @@
 use std::ffi::{c_char, c_int};
 use std::ptr::NonNull;
 mod chains;
+mod control_net;
 mod crease;
 mod edges;
 mod sharpness;
 mod soft_crease;
 pub use chains::subd_edge_chains;
+pub use control_net::{SubDControlNetPriority, subd_control_mesh_with_priority};
 pub use crease::subd_crease_components;
 pub use edges::subd_edge_samples;
 pub use sharpness::{subd_chain_sharpness, subd_sharpness_from_percent};
@@ -40,6 +42,10 @@ pub struct SubDData {
     pub faces: Vec<Vec<u32>>,
     /// Exact limit normals per face corner, when explicitly requested.
     pub corner_normals: Vec<[f64; 3]>,
+    /// Present only for control-net mesh conversion, never a SubD property.
+    pub mesh_ngons: Vec<crate::mesh::Ngon>,
+    pub mesh_texture_coordinates: Vec<[f64; 2]>,
+    pub mesh_vertex_normals: Vec<[f64; 3]>,
 }
 #[repr(C)]
 #[derive(Default)]
@@ -67,6 +73,16 @@ struct View {
     control_edge_count: usize,
     edge_sharpness: *const f64,
     edge_face_counts: *const u32,
+    mesh_ngon_count: usize,
+    mesh_ngon_vertex_count: usize,
+    mesh_ngon_face_count: usize,
+    mesh_texture_count: usize,
+    mesh_normal_count: usize,
+    mesh_ngons: *const control_net::NgonSpan,
+    mesh_ngon_vertices: *const u32,
+    mesh_ngon_faces: *const u32,
+    mesh_texture_coordinates: *const f64,
+    mesh_vertex_normals: *const f64,
 }
 #[repr(C)]
 struct NativeResult {
@@ -171,6 +187,7 @@ unsafe extern "C" {
     fn vibo_subd_control_mesh(
         bytes: *const u8,
         count: usize,
+        priority: u32,
         out: *mut *mut NativeResult,
         error: *mut c_char,
         capacity: usize,
@@ -264,6 +281,7 @@ fn call(
             face
         })
         .collect();
+    let mesh_ngons = unsafe { control_net::ngons(&v)? };
     Ok(SubDData {
         selected_faces: unsafe { copy(v.selected_faces, v.selected_face_count) },
         boundary_edge_count: v.boundary_edge_count,
@@ -278,6 +296,11 @@ fn call(
         edge_face_counts: unsafe { copy(v.edge_face_counts, v.control_edge_count) },
         faces,
         corner_normals: unsafe { copy(v.corner_normals.cast(), v.normal_count) },
+        mesh_ngons,
+        mesh_texture_coordinates: unsafe {
+            copy(v.mesh_texture_coordinates.cast(), v.mesh_texture_count)
+        },
+        mesh_vertex_normals: unsafe { copy(v.mesh_vertex_normals.cast(), v.mesh_normal_count) },
     })
 }
 fn check_archive(bytes: &[u8]) -> Result<(), SubDError> {
@@ -448,13 +471,10 @@ pub fn subd_set_tags(
     })
 }
 
-/// Native triangulated control cage, used only for control-boundary input.
-/// This is not a limit-surface approximation.
+/// Native control cage, with n-gon membership, normals and crease seams.
+/// This is not a limit-surface approximation. Geometry priority has no UV channel.
 pub fn subd_control_mesh(bytes: &[u8]) -> Result<SubDData, SubDError> {
-    check_archive(bytes)?;
-    call(|out, error, n| unsafe {
-        vibo_subd_control_mesh(bytes.as_ptr(), bytes.len(), out, error, n)
-    })
+    subd_control_mesh_with_priority(bytes, SubDControlNetPriority::Geometry)
 }
 
 /// Refines a private archive copy; local face indices address its active table.
