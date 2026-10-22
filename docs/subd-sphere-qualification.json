@@ -1994,7 +1994,7 @@
     "tools/rhino_oracle/test_subd_box.py": "361f693c7d7d55763c4f638d2d428217630ad7675cb2b9913dffe0271af2fa72",
     "crates/viboceros-geometry/src/subd/sphere.rs": "195077c3735f2d12df08e03c3b76a60400454a1e450a9e90f62243b874121f34",
     "crates/viboceros-geometry/src/subd/interpolation.rs": "d1a5ac2f286ebc688584ac7318d81bb79bcf1a249cd5323dcef84ac9eb55ce03",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-command/src/subd_sphere.rs": "aae9c604dc58548f923612c7f8cd0ec40ab3564da2dd3451b6c23afe6bfa95d9",
     "crates/viboceros-command/src/sphere_input.rs": "833ba93f9b66f29a61d8ff2093a4bab7cbac383ae2d203290986af2e7967d799",
     "crates/viboceros-command/src/splop/reference.rs": "0799db8bfca2dfe9e7c9c61c98fd0a0d4d46d74d8a039ea9f1c9b3c2bcd2b168",

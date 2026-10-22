@@ -444,7 +444,7 @@
     "tools/rhino_oracle/mesh_patch_crossing_gaps.json": "cf5e1b692c6442f2a6fcdde9006648f88860fe9eb6c4f966f17bf8590a8b3a28",
     "crates/viboceros-geometry/src/curve/polyline.rs": "af769a36f117448e43eb4f0c435dd908e1532f95b5e2779ca3e5b095d1fc6676",
     "crates/viboceros-geometry/src/curve/polyline/angle.rs": "1332c312e6b38cc3e1795d364060fa7e417c7c7c203a449d0adc2681290f246d",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-geometry/src/lib.rs": "7f87070063c560b76b389586225d37294d0fcba3be5c29662f23f4459d138b2f",
     "crates/viboceros-geometry/src/error.rs": "633250a4c718f091a9f3e7c9a1bbb0b6541fca30f97199122f45d6ae2fbf4b42",
     "crates/viboceros-geometry/src/point_projection.rs": "f297f74f124a39cb6dd80abc2abe37cb16f302d23cc71f464004bb44c54a4556",

@@ -2075,7 +2075,7 @@
     "tools/rhino_oracle/fixtures/subd_cylinder_reference_degenerate.json": "2a6a58897ef1c95e41bfcecdf28feb6d52ce7deea07d2ad767eb7ca404e4f0a5",
     "tools/rhino_oracle/observations/subd_cylinder_reference_degenerate.json": "eca52059a6127540cc804870d0092464daae418f73db05b129a24862340ab6e2",
     "crates/viboceros-geometry/src/subd/cone.rs": "7865f0b842f37549bca6b5f27a7e8da972ff8247da00cc6c48b27567b80bd9e7",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-command/src/subd_cone.rs": "99070eec5a343c33b78741538d8e41f777550f8a69619568eabbae5b6b866b65",
     "crates/viboceros-command/tests/subd_cone_native.rs": "d6ae5891842a685dd30eb3a8448aae237a4ccb2634fa15cdc26958a0ee7e1cdc",
     "crates/viboceros-command/tests/subd_cone_references_native.rs": "790ef45ac45cf66d24ffacc24504bc205389d6e54580c16e2cba143cd0824dd2",

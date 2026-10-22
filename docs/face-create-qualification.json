@@ -3802,7 +3802,7 @@
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
     "crates/viboceros-geometry/src/tolerance.rs": "a5d8ff84321ee02cabcdac0666c9965aa7d1211f893c0321b05cf9a30a420123",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-geometry/src/mesh/face_create.rs": "8e30235e97616ce91117e6ed0477edcc0bfea75a7b766a1c9ef41a9910da57e8",
     "crates/viboceros-geometry/src/mesh/face_boundary.rs": "d8a06bd95b77b23d5fc0b77e93b58ad2b69006d997ac5adc5f03305071c65ce7",
     "crates/viboceros-geometry/src/mesh/face_records.rs": "bf5438805e68438bf60ddf912490e8a4e2b03d7beec39ecc03eb087353f83e6d",

@@ -2252,7 +2252,7 @@
     "crates/viboceros-geometry/src/subd/truncated_cone.rs": "7ffb4a329987256186ac264c7108e0404613117ee1a28f2ee6b7123d8ed86ae3",
     "crates/viboceros-geometry/src/subd/cone.rs": "7865f0b842f37549bca6b5f27a7e8da972ff8247da00cc6c48b27567b80bd9e7",
     "crates/viboceros-geometry/src/subd/interpolation.rs": "d1a5ac2f286ebc688584ac7318d81bb79bcf1a249cd5323dcef84ac9eb55ce03",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-command/src/subd_truncated_cone.rs": "9af763c1bdcec681a188d8f29d4f572a59381caed6942f37b657d8da8dcadab0",
     "crates/viboceros-command/tests/subd_truncated_cone_native.rs": "05b5252c80486427d52e962b1cc1b025ecb8135f2a1204d3c0f78caa8e734af8",
     "crates/viboceros-command/tests/subd_truncated_cone_references_native.rs": "a5e91d82d2946d7ce97143d8b15bc5705dc2d37b591b675fd680a1673cdc97bb",

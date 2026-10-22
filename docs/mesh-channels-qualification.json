@@ -214,7 +214,7 @@
     }
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-geometry/src/subd.rs": "fa971107e981d385340062f5a09d52352f0065536e43344877d6e87e227904ba",
     "crates/viboceros-geometry/src/subd/control_net.rs": "e9daecf9d13af06d157873bc528a21e25cae7cf2f0958c454d2a91fce480073d",
     "crates/viboceros-geometry/tests/mesh_channels.rs": "efe49cbc3899ce2facb630ef871b5f7725eaa6645c51da02a879ba76157214a7",

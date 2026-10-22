@@ -2641,7 +2641,7 @@
     "General projection-ambiguous spatial polygons and native comparative speed require further qualification."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-geometry/src/mesh/closed_polyline.rs": "d85306f3d7b31e80aa842bd48d29e70fc67c244f064c5104e6836834e7cbb361",
     "crates/viboceros-geometry/src/mesh/closed_polyline/tests.rs": "cbb77d34402588d7bdba91c50d7dcff49994470a1488365964cd0a53e86eb121",
     "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",

@@ -3103,7 +3103,7 @@
     "tools/rhino_oracle/fixtures/subd_cylinder_reference_degenerate.json": "2a6a58897ef1c95e41bfcecdf28feb6d52ce7deea07d2ad767eb7ca404e4f0a5",
     "tools/rhino_oracle/observations/subd_cylinder_reference_degenerate.json": "eca52059a6127540cc804870d0092464daae418f73db05b129a24862340ab6e2",
     "crates/viboceros-geometry/src/subd/torus.rs": "278e7e5887c0e6ef96719dd3f9a42ee074c0b549452cd3dea2ff7909e8237d4d",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-command/src/subd_torus.rs": "c6f9b1674cbca090d4cd8d9c1e4f8d010c28d17a751006c11bc7dc0bae26d06d",
     "crates/viboceros-command/src/subd_torus/input.rs": "2da020808357c470a95db2487fe6d97f100b8706a066706217c5e055bfe94da0",
     "crates/viboceros-command/src/subd_torus/arguments.rs": "bd7b4ad010cd4956a3ef0647fec39a9d2e27bde158f9861414905cddc134438f",

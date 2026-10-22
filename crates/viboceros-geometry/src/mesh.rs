@@ -9745,7 +9745,7 @@ mod tests {
     }
 
     #[test]
-    fn transforms_vertices_and_rejects_collapsed_faces() {
+    fn transforms_vertices_and_retains_collapsed_face_records() {
         let mesh = TriangleMesh::try_new(
             vec![
                 point(0.0, 0.0, 0.0),
@@ -9770,7 +9770,20 @@ mod tests {
             crate::Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
         )
         .unwrap();
-        assert!(mesh.transformed(collapsed, Tolerance::DEFAULT).is_err());
+        // Native Mesh.Transform retains face records after a projection. The
+        // recorded mesh-channel corpus also checks its stored normals and UVs.
+        let projected = mesh.transformed(collapsed, Tolerance::DEFAULT).unwrap();
+        assert_eq!(projected.faces(), mesh.faces());
+        assert!(
+            projected
+                .validate_face_geometry(Tolerance::DEFAULT)
+                .is_err()
+        );
+        // Ordinary vertex maps still enforce their geometry-preserving contract.
+        assert!(
+            mesh.try_with_mapped_vertices(projected.vertices().to_vec(), Tolerance::DEFAULT)
+                .is_err()
+        );
     }
 
     #[test]

@@ -7548,7 +7548,7 @@
     "crates/viboceros-opennurbs/build.rs": "d7fb60d96043701e7ba4105f0593b9de4d3bc2b4d8a1a8c7fecfe05539a12feb",
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",
     "crates/viboceros-geometry/src/error.rs": "633250a4c718f091a9f3e7c9a1bbb0b6541fca30f97199122f45d6ae2fbf4b42",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "src/app/untrim_holes.rs": "ba350a8291e8438a1a8caf630af5fcad258954f4058c312f56b63027a96da89a",
     "crates/viboceros-command/src/subdivide.rs": "22b2e4c1d16e83e187085e8cb1025442458664e84ebe46bac8206e70a8e6c622",
     "crates/viboceros-command/src/subdivide/arguments.rs": "06e9fabd6a8a4f84b9d362ebe24c039d891f7865919fd68957ae3456907299e2",

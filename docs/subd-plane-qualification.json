@@ -645,7 +645,7 @@
     "tools/rhino_oracle/observations/subd_box.json": "22740b74ce7b370b50148d7b4fbdfd4a20fcb07725926fa5a78d2d1f1c2e637a",
     "tools/rhino_oracle/report_subd_box.py": "7d0fb89966f074c0f2be336465f058e9912c1185657dd376b118a336d51fe1af",
     "tools/rhino_oracle/test_subd_box.py": "361f693c7d7d55763c4f638d2d428217630ad7675cb2b9913dffe0271af2fa72",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-geometry/src/mesh/face_records.rs": "bf5438805e68438bf60ddf912490e8a4e2b03d7beec39ecc03eb087353f83e6d",
     "crates/viboceros-command/tests/subd_plane_native.rs": "3137a8fecbdbc0ca3fc837818a4bc1e094280d0c7635a5203598609a6191f13d",
     "tools/rhino_oracle/subd_plane_probe.py": "5af6efcac9fa038d3f65fce820187c75ccb8160dfde3bd62cb5556a4cd6bbc06",

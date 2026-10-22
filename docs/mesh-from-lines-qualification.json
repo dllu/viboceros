@@ -1858,7 +1858,7 @@
     "crates/viboceros-geometry/src/mesh/from_lines.rs": "391439086194f767041c8205cdd54538825b2707adb6f5cca2e7b218b4f5830a",
     "crates/viboceros-geometry/src/mesh/from_lines/cycles.rs": "648fca0e23005ba95dd2e644e7a71cae8eb0b0d637e5cc9541f17088895c46db",
     "crates/viboceros-geometry/src/mesh/from_lines/tests.rs": "03a8739d323577ac0beef6716c0b77c70113d2f4c7bab770387637567a6bee76",
-    "crates/viboceros-geometry/src/mesh.rs": "1638a7bd0337f2cabf2bd337e9d64acfcfeb2db41cc51bfdcc1570b715d18b6d",
+    "crates/viboceros-geometry/src/mesh.rs": "22165d53f759dd7e04bfa5c2d2ef77d6c084df47b48bb6ddd5fb1c69036e82bf",
     "crates/viboceros-geometry/src/mesh/union_find.rs": "6940de0d881901613f3263f895c5e438fb79aad50599de4ea2322738c2f8f8ce",
     "crates/viboceros-geometry/src/mesh/patch.rs": "e4564970793c796f812d6d4f4e04d09e3bd13b7814df0cf715144197c4cd59de",
     "crates/viboceros-geometry/src/mesh/patch/constraints.rs": "f31640dfefbfa6710b665e3791f37dff93e0f0c4dc456a1ade85a0219c5eb5a2",
