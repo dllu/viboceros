@@ -223,6 +223,13 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         validate_structural_sdk_operations(request)
+        if any(op.get('op') == 'mesh_channels_sdk' for op in request.get('operations', [])):
+            operations=request['operations']
+            if (self.settings_scheme is None or type(request.get('iterations',1)) is not int
+                    or request.get('iterations',1)!=1 or not 1<=len(operations)<=64
+                    or any(op.get('op')!='mesh_channels_sdk' for op in operations)
+                    or len({op['id'] for op in operations})!=len(operations)):
+                raise OracleProtocolError('Mesh channel SDK captures require owned unique fixed inputs')
         if any(op.get('op') == 'control_polygon_command' for op in request.get('operations', [])):
             operations = request['operations']
             if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int

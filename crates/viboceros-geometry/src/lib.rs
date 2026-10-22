@@ -7,9 +7,8 @@
 pub mod interop;
 mod subd;
 pub use subd::{
-    SubD, SubDAppendResult, SubDControlNetMesh, SubDControlNetPriority, SubDCylinderCap,
-    SubDDirectedEdge, SubDDisplayMesh, SubDEdgeChain, SubDFromMeshOptions, SubDFromSurfaceMethod,
-    SubDSphereStyle,
+    SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
+    SubDDisplayMesh, SubDEdgeChain, SubDFromMeshOptions, SubDFromSurfaceMethod, SubDSphereStyle,
 };
 mod area_mass_properties;
 mod mass_integration;

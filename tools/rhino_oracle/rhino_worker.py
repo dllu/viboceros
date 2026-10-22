@@ -7182,6 +7182,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'tosubd_command':
         from tosubd_probe import run
         return run(operation,globals(),iterations,tolerance)
+    if kind == 'mesh_channels_sdk':
+        from mesh_channels_probe import run
+        return run(operation,globals(),iterations,tolerance)
     if kind == 'control_polygon_command':
         from control_polygon_probe import run
         return run(operation,globals(),iterations,tolerance)

@@ -60,8 +60,11 @@ pub(super) fn weld_cap_boundary(
         .collect();
     let mut vertices = capped.vertices;
     vertices.truncate(source_len);
-    TriangleMesh::try_new_faces(vertices, faces, tolerance)?
-        .try_with_vertex_colors(source.vertex_colors.clone())
+    let mut mesh = TriangleMesh::try_new_faces(vertices, faces, tolerance)?
+        .try_with_vertex_colors(source.vertex_colors.clone())?;
+    mesh.vertex_channels = source.vertex_channels.clone();
+    mesh.recompute_stored_normals()?;
+    Ok(mesh)
 }
 
 pub(super) fn try_cap_annular(
@@ -223,6 +226,19 @@ pub(super) fn try_cap_annular(
             );
             capped.vertex_colors = Some(colors);
         }
+        let mut boundary_raw_by_point = BTreeMap::new();
+        for incidence in data.edges.values().filter(|incidence| incidence.count == 1) {
+            for raw in incidence.first_use.unwrap().raw_vertices {
+                boundary_raw_by_point
+                    .entry(point_key(mesh.vertices[raw as usize]))
+                    .or_insert(raw as usize);
+            }
+        }
+        capped.vertex_channels = mesh.vertex_channels.remapped(
+            (0..mesh.vertices.len())
+                .chain(points.iter().map(|&p| boundary_raw_by_point[&point_key(p)])),
+        );
+        capped.recompute_stored_normals()?;
         capped.ngons = mesh.ngons.clone();
         return Ok(Some((capped, holes.len() + 1)));
     }

@@ -85,9 +85,14 @@ impl TriangleMesh {
         }
         let mut vertices = self.vertices.clone();
         vertices.reserve(vertices_count - vertices.len());
+        let mut channels = ChannelBuilder::new(&self.vertex_channels);
+        for raw in 0..self.vertices.len() {
+            channels.push(raw);
+        }
         let mut colors = self.vertex_colors.clone();
         for (&(a, b), index) in &mut midpoints {
             *index = vertices.len() as u32;
+            channels.blend(&[(a as usize, 0.5), (b as usize, 0.5)])?;
             let a = self.vertices[a as usize].to_array();
             let b = self.vertices[b as usize].to_array();
             vertices.push(Point3::try_from(std::array::from_fn(|i| {
@@ -116,6 +121,11 @@ impl TriangleMesh {
                         sum[c] += p[c];
                     }
                 }
+                channels.blend(
+                    &f.iter()
+                        .map(|&raw| (raw as usize, reciprocal))
+                        .collect::<Vec<_>>(),
+                )?;
                 centers[i] = Some(vertices.len() as u32);
                 vertices.push(Point3::try_from(sum.map(|v| v * reciprocal))?);
                 if let Some(out) = &mut colors {
@@ -163,8 +173,9 @@ impl TriangleMesh {
         }
 
         debug_assert_eq!(faces.len(), faces_count);
-        let output =
+        let mut output =
             Self::try_from_face_records(vertices, faces)?.try_with_vertex_colors(colors)?;
+        output.vertex_channels = channels.finish();
         let ngons = groups
             .into_iter()
             .enumerate()

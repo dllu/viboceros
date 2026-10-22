@@ -8,6 +8,8 @@ pub struct MeshData {
     pub faces: Vec<[u32; 4]>,
     pub colors: Option<Vec<[u8; 4]>>,
     pub ngons: Vec<Ngon>,
+    pub texture_coordinates: Option<Vec<[f64; 2]>>,
+    pub vertex_normals: Option<Vec<[f64; 3]>>,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Ngon {
@@ -39,6 +41,10 @@ pub(crate) struct MeshView {
     ngons: *const NgonSpan,
     ngon_vertices: *const u32,
     ngon_faces: *const u32,
+    texture_count: usize,
+    normal_count: usize,
+    texture_coordinates: *const f64,
+    vertex_normals: *const f64,
 }
 #[repr(C)]
 struct NativeResult {
@@ -114,6 +120,10 @@ pub fn merge_coplanar_mesh(
     angle: f64,
 ) -> Result<(MeshData, usize), MeshError> {
     edit(data, 1, distance, angle)
+}
+
+pub fn recompute_mesh_normals(data: &MeshData) -> Result<MeshData, MeshError> {
+    edit(data, 6, 0., 0.).map(|r| r.0)
 }
 /// Dissolve selected vertices through OpenNURBS' face-set executive, retaining
 /// its n-gon overlays and vertex colors. An empty result has no faces or vertices.
@@ -196,6 +206,12 @@ pub(crate) fn with_mesh_view<T>(
             .colors
             .as_ref()
             .is_some_and(|c| c.len() != data.vertices.len())
+        || data.texture_coordinates.as_ref().is_some_and(|t| {
+            t.len() != data.vertices.len() || t.iter().flatten().any(|v| !(*v as f32).is_finite())
+        })
+        || data.vertex_normals.as_ref().is_some_and(|n| {
+            n.len() != data.vertices.len() || n.iter().flatten().any(|v| !(*v as f32).is_finite())
+        })
     {
         return Err(MeshError(
             "Invalid mesh dimensions or resource limit".into(),
@@ -230,6 +246,16 @@ pub(crate) fn with_mesh_view<T>(
         ngons: spans.as_ptr(),
         ngon_vertices: vertices.as_ptr(),
         ngon_faces: faces.as_ptr(),
+        texture_count: data.texture_coordinates.as_ref().map_or(0, Vec::len),
+        normal_count: data.vertex_normals.as_ref().map_or(0, Vec::len),
+        texture_coordinates: data
+            .texture_coordinates
+            .as_ref()
+            .map_or(std::ptr::null(), |t| t.as_ptr().cast()),
+        vertex_normals: data
+            .vertex_normals
+            .as_ref()
+            .map_or(std::ptr::null(), |n| n.as_ptr().cast()),
     };
     Ok(run(&view))
 }
@@ -310,9 +336,24 @@ fn edit_selection(
             faces: unsafe { copy(out.faces.cast::<[u32; 4]>(), out.face_count)? },
             colors: None,
             ngons: Vec::new(),
+            texture_coordinates: None,
+            vertex_normals: None,
         };
         if out.color_count > 0 {
             result.colors = Some(unsafe { copy(out.colors.cast::<[u8; 4]>(), out.color_count)? });
+        }
+        if (out.texture_count != 0 && out.texture_count != out.vertex_count)
+            || (out.normal_count != 0 && out.normal_count != out.vertex_count)
+        {
+            return Err(MeshError("Invalid result vertex channel counts".into()));
+        }
+        if out.texture_count > 0 {
+            result.texture_coordinates =
+                Some(unsafe { copy(out.texture_coordinates.cast(), out.texture_count)? });
+        }
+        if out.normal_count > 0 {
+            result.vertex_normals =
+                Some(unsafe { copy(out.vertex_normals.cast(), out.normal_count)? });
         }
         let vertex_indices = unsafe { copy(out.ngon_vertices, out.ngon_vertex_count)? };
         let face_indices = unsafe { copy(out.ngon_faces, out.ngon_face_count)? };

@@ -7,6 +7,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 
 - [Typed extrusion creators and native geometry qualification](../creator-extrusions.md)
 - [SubD geometry](../subd.md)
+- [Mesh vertex channels and 3DM preservation](mesh-channels.md)
 - [Stretch fitting performance and native 3dm readback](../stretch-performance.md)
 - [Control and edit-point workflows, HidePt and ShowPt](../control-points.md)
 - [curve closure and shared seam grips](../curve-closure.md)

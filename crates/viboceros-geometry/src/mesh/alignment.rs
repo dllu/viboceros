@@ -161,13 +161,15 @@ fn align_mesh_vertices_impl(
             if moved[index] == 0 {
                 return Ok(((*mesh).clone(), 0));
             }
-            let rebuilt = TriangleMesh::try_new_faces(
+            let mut rebuilt = TriangleMesh::try_new_faces(
                 std::mem::take(&mut vertices[index]),
                 mesh.faces.clone(),
                 tolerance,
             )?
             .try_with_vertex_colors(mesh.vertex_colors.clone())?
             .try_with_ngons(mesh.ngons.clone())?;
+            rebuilt.vertex_channels = mesh.vertex_channels.clone();
+            rebuilt.recompute_stored_normals()?;
             Ok((rebuilt, moved[index]))
         })
         .collect()

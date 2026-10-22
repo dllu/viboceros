@@ -57,6 +57,7 @@ impl TriangleMesh {
         Ok(Self {
             vertices,
             vertex_colors: None,
+            vertex_channels: VertexChannels::default(),
             faces,
             triangles,
             ngons: Vec::new(),
@@ -74,6 +75,7 @@ impl TriangleMesh {
         Ok(Self {
             vertices,
             vertex_colors: self.vertex_colors.clone(),
+            vertex_channels: self.vertex_channels.clone(),
             faces: self.faces.clone(),
             triangles: self.triangles.clone(),
             ngons: self.ngons.clone(),

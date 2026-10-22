@@ -74,7 +74,7 @@ def summarize(text):
         subd_command_integration_qualified=False,full_native_parity=False,performance_qualified=False,
         limits=[
             'The Rust geometry API preserves native control-mesh topology, n-gons, crease seams, normals and texture coordinates for this finite corpus.',
-            'Texture coordinates and normals are returned alongside TriangleMesh; document mesh-channel storage, file interchange and full ExtractControlPolygon integration remain separate implementation work.',
+            'Texture coordinates and normals are stored on the returned TriangleMesh. Full ExtractControlPolygon command integration, broader edit compatibility and comparative performance remain separate work.',
             'Unknown-input trials are retained as diagnostics and excluded. Source geometry is compared with immutable saved native inputs.',
         ],cases=sorted(rows,key=lambda r:(r['family'],r['id'],r['source'])),
         sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in dict.fromkeys(paths)})

@@ -505,9 +505,11 @@ fn apply_match(
         for (raw, point) in raw_updates {
             vertices[raw] = point;
         }
-        let rebuilt = TriangleMesh::try_new_faces(vertices, mesh.faces.clone(), tolerance)?
+        let mut rebuilt = TriangleMesh::try_new_faces(vertices, mesh.faces.clone(), tolerance)?
             .try_with_vertex_colors(mesh.vertex_colors.clone())?
             .try_with_ngons(mesh.ngons.clone())?;
+        rebuilt.vertex_channels = mesh.vertex_channels.clone();
+        rebuilt.recompute_stored_normals()?;
         staged.insert(mesh_index, rebuilt);
     }
     masks[candidate.target_mesh] = staged[&candidate.target_mesh]

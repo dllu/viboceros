@@ -51,7 +51,7 @@ fn control_mesh_priorities_preserve_native_topology_normals_and_texture_coordina
                     SubDControlNetPriority::Geometry
                 };
                 let result = subd.control_net_mesh(priority).unwrap();
-                let mesh = &result.mesh;
+                let mesh = &result;
                 let expected = &expected["mesh"];
                 let points: Vec<[f64; 3]> =
                     serde_json::from_value(expected["vertices"].clone()).unwrap();
@@ -95,7 +95,8 @@ fn control_mesh_priorities_preserve_native_topology_normals_and_texture_coordina
                     serde_json::from_value(expected["normals"].clone()).unwrap();
                 assert_eq!(
                     result
-                        .vertex_normals
+                        .vertex_normals()
+                        .unwrap_or_default()
                         .iter()
                         .map(|v| v.to_array())
                         .collect::<Vec<_>>(),
@@ -104,20 +105,20 @@ fn control_mesh_priorities_preserve_native_topology_normals_and_texture_coordina
                 );
                 if let Some(tex) = expected.get("texture_coordinates") {
                     assert_eq!(
-                        result.texture_coordinates,
+                        result.texture_coordinates().unwrap_or_default(),
                         serde_json::from_value::<Vec<[f64; 2]>>(tex.clone()).unwrap(),
                         "{family}/{id}"
                     );
                 } else {
-                    assert!(result.texture_coordinates.is_empty());
+                    assert!(result.texture_coordinates().is_none());
                 }
                 assert_eq!(subd, &before);
                 if priority == SubDControlNetPriority::Geometry {
-                    assert_eq!(subd.control_mesh().unwrap(), result.mesh);
+                    assert_eq!(subd.control_mesh().unwrap(), result);
                 }
                 println!(
                     "CONTROL_NET_NATIVE {}",
-                    json!({"family":family,"id":id,"source":source.attributes().name(),"vertices":mesh.vertices().len(),"faces":mesh.face_count(),"ngons":mesh.ngons().len(),"textures":result.texture_coordinates.len(),"normals":result.vertex_normals.len(),"maximum_point_error":error,"source_unchanged":true,"vertex_attributes_exact":true,"topology_exact":true,"qualified":true})
+                    json!({"family":family,"id":id,"source":source.attributes().name(),"vertices":mesh.vertices().len(),"faces":mesh.face_count(),"ngons":mesh.ngons().len(),"textures":result.texture_coordinates().unwrap_or_default().len(),"normals":result.vertex_normals().unwrap_or_default().len(),"maximum_point_error":error,"source_unchanged":true,"vertex_attributes_exact":true,"topology_exact":true,"qualified":true})
                 );
                 count += 1;
             }

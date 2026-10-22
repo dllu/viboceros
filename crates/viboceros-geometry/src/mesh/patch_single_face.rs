@@ -167,6 +167,13 @@ impl TriangleMesh {
                     .collect();
                 patch.vertex_colors = Some(colors);
             }
+            patch.vertex_channels = self.vertex_channels.remapped(order.iter().map(|&topology| {
+                data.topological_vertices
+                    .iter()
+                    .position(|&candidate| candidate == topology)
+                    .expect("a topology vertex has a raw mesh vertex")
+            }));
+            patch.recompute_stored_normals()?;
             candidates.push((naked, bridge_length, order, patch));
         }
         candidates.sort_by(|left, right| {

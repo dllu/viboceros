@@ -75,6 +75,7 @@ impl TriangleMesh {
             .try_reserve_exact(self.vertices.len())
             .map_err(|_| GeometryError::TooManyMeshVertices)?;
         raw_remap.resize(self.vertices.len(), 0_u32);
+        let mut channels = ChannelBuilder::new(&self.vertex_channels);
         let mut vertices = Vec::new();
         let mut colors = self
             .vertex_colors
@@ -90,6 +91,7 @@ impl TriangleMesh {
             raw_remap[source] =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(point);
+            channels.push(source);
             if let Some(colors) = &mut colors {
                 colors.push(self.vertex_colors.as_ref().unwrap()[source]);
             }
@@ -117,15 +119,16 @@ impl TriangleMesh {
                 let target = u32::try_from(vertices.len())
                     .map_err(|_| GeometryError::TooManyMeshVertices)?;
                 vertices.push(data.topological_points[topological_vertex]);
+                let source = self.faces[component[0]]
+                    .indices()
+                    .iter()
+                    .copied()
+                    .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
+                    .expect("a face component contains its topology vertex")
+                    as usize;
+                channels.push(source);
                 if let Some(colors) = &mut colors {
-                    let source_face = component[0];
-                    let source = self.faces[source_face]
-                        .indices()
-                        .iter()
-                        .copied()
-                        .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
-                        .expect("a face component contains its topology vertex");
-                    colors.push(self.vertex_colors.as_ref().unwrap()[source as usize]);
+                    colors.push(self.vertex_colors.as_ref().unwrap()[source]);
                 }
                 for &face in component {
                     let corner = self.faces[face]
@@ -163,6 +166,8 @@ impl TriangleMesh {
         let mut rebuilt = Self::from_validated_parts(vertices, faces)
             .retain_valid_ngons_for_same_faces(&self.ngons);
         rebuilt.vertex_colors = colors;
+        rebuilt.vertex_channels = channels.finish();
+        rebuilt.recompute_stored_normals()?;
         Ok(rebuilt)
     }
 }

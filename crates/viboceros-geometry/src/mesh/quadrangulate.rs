@@ -160,6 +160,7 @@ impl TriangleMesh {
         }
         let mut result = Self::try_new_faces(self.vertices.clone(), faces, tolerance)?
             .try_with_vertex_colors(self.vertex_colors.clone())?;
+        result.vertex_channels = self.vertex_channels.clone();
         if !self.ngons.is_empty() {
             let ngons = self
                 .ngons

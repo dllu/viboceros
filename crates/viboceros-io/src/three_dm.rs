@@ -1487,7 +1487,9 @@ fn decode_object(
             ThreeDmGeometry::Mesh(
                 TriangleMesh::try_from_face_records(vertices, faces)?
                     .try_with_ngons(mesh_payload.ngons)?
-                    .try_with_vertex_colors(mesh_payload.vertex_colors)?,
+                    .try_with_vertex_colors(mesh_payload.vertex_colors)?
+                    .try_with_texture_coordinates(mesh_payload.texture_coordinates)?
+                    .try_with_vertex_normals(mesh_payload.vertex_normals)?,
             )
         }
         OBJECT_BREP | OBJECT_POLYCURVE | OBJECT_ARC
@@ -1976,7 +1978,12 @@ impl ObjectPayload {
                         MeshFace::Quad(indices) => indices,
                     })
                     .collect(),
-                geometry_data: mesh_ngon::encode(mesh.ngons(), mesh.vertex_colors())?,
+                geometry_data: mesh_ngon::encode(
+                    mesh.ngons(),
+                    mesh.vertex_colors(),
+                    mesh.texture_coordinates(),
+                    mesh.vertex_normals(),
+                )?,
             },
         })
     }

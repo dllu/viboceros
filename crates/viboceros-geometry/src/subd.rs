@@ -24,7 +24,7 @@ mod torus;
 mod truncated_cone;
 pub use append::SubDAppendResult;
 pub use chains::{SubDDirectedEdge, SubDEdgeChain};
-pub use control_net::{SubDControlNetMesh, SubDControlNetPriority};
+pub use control_net::SubDControlNetPriority;
 pub use cylinder::SubDCylinderCap;
 pub use mesh_conversion::SubDFromMeshOptions;
 pub use sphere::SubDSphereStyle;
@@ -140,9 +140,7 @@ impl SubD {
     /// Native control-cage facets for boundary selection. The displayed SubD
     /// continues to use the separately evaluated limit surface.
     pub fn control_mesh(&self) -> Result<TriangleMesh, GeometryError> {
-        Ok(self
-            .control_net_mesh(SubDControlNetPriority::Geometry)?
-            .mesh)
+        self.control_net_mesh(SubDControlNetPriority::Geometry)
     }
     pub fn archive(&self) -> &[u8] {
         &self.data.archive

@@ -72,6 +72,7 @@ impl TriangleMesh {
         Ok(Self {
             vertices,
             vertex_colors,
+            vertex_channels: VertexChannels::appended(meshes),
             faces,
             triangles,
             ngons,

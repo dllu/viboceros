@@ -1,0 +1,151 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_identity",
+      "case": "texture_cube_identity"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_translate",
+      "case": "texture_cube_translate"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_mirror",
+      "case": "texture_cube_mirror"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_scale",
+      "case": "texture_cube_scale"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_shear",
+      "case": "texture_cube_shear"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_flatten",
+      "case": "texture_cube_flatten"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_flip",
+      "case": "texture_cube_flip"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_triangulate",
+      "case": "texture_cube_triangulate"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_delete_face",
+      "case": "texture_cube_delete_face"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_cull",
+      "case": "texture_cube_cull"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_unweld",
+      "case": "texture_cube_unweld"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_weld",
+      "case": "texture_cube_weld"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_append_plain",
+      "case": "texture_cube_append_plain"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "texture_cube_append_self",
+      "case": "texture_cube_append_self"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_identity",
+      "case": "ngon_identity"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_translate",
+      "case": "ngon_translate"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_mirror",
+      "case": "ngon_mirror"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_scale",
+      "case": "ngon_scale"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_shear",
+      "case": "ngon_shear"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_flatten",
+      "case": "ngon_flatten"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_flip",
+      "case": "ngon_flip"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_triangulate",
+      "case": "ngon_triangulate"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_delete_face",
+      "case": "ngon_delete_face"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_cull",
+      "case": "ngon_cull"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_unweld",
+      "case": "ngon_unweld"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_weld",
+      "case": "ngon_weld"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_append_plain",
+      "case": "ngon_append_plain"
+    },
+    {
+      "op": "mesh_channels_sdk",
+      "id": "ngon_append_self",
+      "case": "ngon_append_self"
+    }
+  ]
+}

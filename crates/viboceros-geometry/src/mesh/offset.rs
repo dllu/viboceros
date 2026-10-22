@@ -84,6 +84,8 @@ impl TriangleMesh {
             }
             let mut mesh = Self::try_new_faces(vertices, self.faces.clone(), tolerance)?;
             mesh.vertex_colors = self.vertex_colors.clone();
+            mesh.vertex_channels = self.vertex_channels.clone();
+            mesh.recompute_stored_normals()?;
             mesh.ngons = self.ngons.clone();
             Ok(mesh)
         };
@@ -333,6 +335,11 @@ impl TriangleMesh {
             boundary_loops.push((minimum, loop_sides));
         }
         boundary_loops.sort_by_key(|(minimum, _)| *minimum);
+        let skin_channels = VertexChannels::appended(&[first, second]);
+        let mut channels = ChannelBuilder::new(&skin_channels);
+        for raw in 0..2 * count {
+            channels.push(raw);
+        }
         let mut colors = first
             .vertex_colors
             .as_ref()
@@ -345,6 +352,14 @@ impl TriangleMesh {
         for [a, b] in boundary_loops.into_iter().flat_map(|(_, sides)| sides) {
             let base =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            for raw in [
+                a as usize,
+                b as usize,
+                count + b as usize,
+                count + a as usize,
+            ] {
+                channels.push(raw);
+            }
             vertices.extend([
                 first.vertices[a as usize],
                 first.vertices[b as usize],
@@ -369,6 +384,8 @@ impl TriangleMesh {
         }
         let mut mesh = Self::try_new_faces(vertices, faces, tolerance)?;
         mesh.vertex_colors = colors;
+        mesh.vertex_channels = channels.finish();
+        mesh.recompute_stored_normals()?;
         let face_offset =
             u32::try_from(self.faces.len()).map_err(|_| GeometryError::TooManyMeshFaces)?;
         let mut ngons = Vec::with_capacity(self.ngons.len() * 2);

@@ -13,6 +13,8 @@ typedef struct {
   const uint8_t *colors;
   const ViboNgonSpan *ngons;
   const uint32_t *ngon_vertices, *ngon_faces;
+  size_t texture_count, normal_count;
+  const double *texture_coordinates, *vertex_normals;
 } ViboMeshView;
 typedef struct ViboMeshResult ViboMeshResult;
 int vibo_mesh_edit(const ViboMeshView*,uint32_t,double,double,ViboMeshResult**,char*,size_t);

@@ -49,6 +49,19 @@ SUBD_MODULES = [
     'crates/viboceros-geometry/src/subd/soft_crease.rs',
 ]
 
+MESH_MODULES = [
+    'crates/viboceros-geometry/src/mesh/' + name + '.rs'
+    for name in ['vertex_channels', 'native', 'append', 'face_records', 'components',
+                 'rebuild', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
+                 'offset', 'patch_single_face', 'join', 'match_edges', 'alignment',
+                 'quadrangulate', 'planar_cap', 'coplanar_merge']
+] + [
+    'crates/viboceros-opennurbs/src/mesh.rs',
+    'crates/viboceros-opennurbs/native/mesh_modeling.h',
+    'crates/viboceros-opennurbs/native/mesh_modeling.cpp',
+    'crates/viboceros-opennurbs/native/mesh_codec.h',
+]
+
 
 def with_shared_sources(paths):
     expanded = list(paths)
@@ -66,5 +79,10 @@ def with_shared_sources(paths):
     if ('crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp' in expanded or
             'crates/viboceros-opennurbs/native/extrusion_queries.h' in expanded):
         expanded.append('crates/viboceros-opennurbs/native/extrusion_roundoff.h')
+    if ('crates/viboceros-geometry/src/mesh.rs' in expanded or
+            'crates/viboceros-geometry/src/subd.rs' in expanded):
+        expanded.extend(MESH_MODULES)
+    if 'crates/viboceros-io/src/three_dm.rs' in expanded:
+        expanded.append('crates/viboceros-io/src/three_dm/mesh_ngon.rs')
     expanded.append('tools/rhino_oracle/qualification_sources.py')
     return list(dict.fromkeys(expanded))

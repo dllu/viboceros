@@ -59,13 +59,17 @@ mod radial;
 use radial::{
     ordered_vertex_face_components, radial_vertex_face_walk, radially_sorted_vertex_edges,
 };
+mod native;
 mod rebuild;
 mod union_find;
+mod vertex_channels;
 mod vertex_unweld;
 use union_find::{index_root, union_faces, union_indices_keep_earlier, union_indices_keep_later};
+use vertex_channels::{ChannelBuilder, VertexChannels};
 #[cfg(test)]
 mod transform_tests;
 
+use crate::Vector3;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::ops::Range;
 
@@ -432,6 +436,7 @@ pub struct TriangleMesh {
     vertices: Vec<Point3>,
     /// OpenNURBS RGBA colors, indexed by raw mesh vertex; alpha is transparency.
     vertex_colors: Option<Vec<[u8; 4]>>,
+    vertex_channels: VertexChannels,
     faces: Vec<MeshFace>,
     triangles: Vec<[u32; 3]>,
     ngons: Vec<MeshNgon>,
@@ -1937,6 +1942,7 @@ impl TriangleMesh {
         Self {
             vertices,
             vertex_colors: None,
+            vertex_channels: VertexChannels::default(),
             faces,
             triangles,
             ngons: Vec::new(),
@@ -1990,6 +1996,7 @@ impl TriangleMesh {
             self.faces.iter().copied().map(MeshFace::reversed).collect(),
         );
         reversed.vertex_colors = self.vertex_colors.clone();
+        reversed.vertex_channels = self.vertex_channels.reversed();
         reversed.ngons = self
             .ngons
             .iter()
@@ -2054,6 +2061,7 @@ impl TriangleMesh {
         }
         let mut triangulated = Self::try_new_faces(self.vertices.clone(), faces, tolerance)?;
         triangulated.vertex_colors = self.vertex_colors.clone();
+        triangulated.vertex_channels = self.vertex_channels.clone();
         if !self.ngons.is_empty() {
             let ngons = self
                 .ngons
@@ -2141,6 +2149,7 @@ impl TriangleMesh {
         let mut swapped = Self::from_validated_parts(self.vertices.clone(), faces)
             .retain_valid_ngons_for_same_faces(&self.ngons);
         swapped.vertex_colors = self.vertex_colors.clone();
+        swapped.vertex_channels = self.vertex_channels.clone();
         Ok(Some(swapped))
     }
 
@@ -2268,24 +2277,29 @@ impl TriangleMesh {
             .copied()
             .map(MeshFace::Triangle)
             .collect::<Vec<_>>();
-        let boundary_colors = self.vertex_colors.as_ref().map(|source_colors| {
-            let mut raw_by_topology = vec![None; data.topological_vertex_count];
-            for incidence in data.edges.values().filter(|incidence| incidence.count == 1) {
-                for raw in incidence.first_use.unwrap().raw_vertices {
-                    raw_by_topology[data.topological_vertices[raw as usize]].get_or_insert(raw);
-                }
+        let mut raw_by_topology = vec![None; data.topological_vertex_count];
+        for incidence in data.edges.values().filter(|incidence| incidence.count == 1) {
+            for raw in incidence.first_use.unwrap().raw_vertices {
+                raw_by_topology[data.topological_vertices[raw as usize]].get_or_insert(raw);
             }
-            boundary
+        }
+        let boundary_raw = boundary
+            .iter()
+            .map(|&topology| {
+                raw_by_topology[topology].expect("a naked boundary vertex belongs to a naked edge")
+                    as usize
+            })
+            .collect::<Vec<_>>();
+        let boundary_colors = self.vertex_colors.as_ref().map(|colors| {
+            boundary_raw
                 .iter()
-                .map(|&topology| {
-                    source_colors[raw_by_topology[topology]
-                        .expect("a naked boundary vertex belongs to a naked edge")
-                        as usize]
-                })
+                .map(|&raw| colors[raw])
                 .collect::<Vec<_>>()
         });
-        let patch = Self::try_new_faces(boundary_points.clone(), patch_faces, tolerance)?
+        let mut patch = Self::try_new_faces(boundary_points.clone(), patch_faces, tolerance)?
             .try_with_vertex_colors(boundary_colors.clone())?;
+        patch.vertex_channels = self.vertex_channels.remapped(boundary_raw.iter().copied());
+        patch.recompute_stored_normals()?;
 
         let added_vertex_count = boundary_points.len().saturating_add(1);
         let total_vertex_count = self
@@ -2326,6 +2340,12 @@ impl TriangleMesh {
             colors.push(boundary_colors[0]);
             filled.vertex_colors = Some(colors);
         }
+        filled.vertex_channels = self.vertex_channels.remapped(
+            (0..self.vertices.len())
+                .chain(boundary_raw.iter().copied())
+                .chain([boundary_raw[0]]),
+        );
+        filled.recompute_stored_normals()?;
         filled.ngons = self.ngons.clone();
         Ok(Some(MeshHoleFill { filled, patch }))
     }
@@ -2364,6 +2384,7 @@ impl TriangleMesh {
                 .vertices
                 .pop()
                 .expect("a filled boundary appends an unused closing vertex");
+            next.vertex_channels.pop();
             if let Some(colors) = &mut next.vertex_colors {
                 colors.pop();
             }
@@ -2457,6 +2478,7 @@ impl TriangleMesh {
                 break;
             };
             next.vertices.pop();
+            next.vertex_channels.pop();
             if let Some(colors) = &mut next.vertex_colors {
                 colors.pop();
             }
@@ -3017,6 +3039,8 @@ impl TriangleMesh {
         let mut unified = Self::from_validated_parts(self.vertices.clone(), faces)
             .rebuild_ngons_for_same_faces(&self.ngons)?;
         unified.vertex_colors = self.vertex_colors.clone();
+        unified.vertex_channels = self.vertex_channels.clone();
+        unified.recompute_stored_normals()?;
         Ok((unified, flipped_face_count))
     }
 
@@ -3106,6 +3130,9 @@ impl TriangleMesh {
                     .map(|&source| colors[source as usize])
                     .collect()
             });
+            output.vertex_channels = self
+                .vertex_channels
+                .remapped(vertices.iter().map(|&i| i as usize));
             vertex_remaps.push(vertex_remap);
             outputs.push(output);
         }
@@ -3270,17 +3297,21 @@ impl TriangleMesh {
     /// `(x, y, z)` while a mesh with no duplicates remains byte-for-byte equal.
     pub fn combined_identical_vertices(&self) -> (Self, usize) {
         let mut unique_by_location = BTreeMap::new();
-        for &vertex in &self.vertices {
+        for (index, &vertex) in self.vertices.iter().enumerate() {
             let key = vertex.to_array().map(canonical_coordinate_bits);
-            unique_by_location.entry(key).or_insert(vertex);
+            unique_by_location.entry(key).or_insert((vertex, index));
         }
         let removed = self.vertices.len() - unique_by_location.len();
         if removed == 0 {
             return (self.clone(), 0);
         }
 
-        let mut vertices = unique_by_location.into_values().collect::<Vec<_>>();
-        vertices.sort_by(compare_points_descending);
+        let mut representatives = unique_by_location.into_values().collect::<Vec<_>>();
+        representatives.sort_by(|a, b| compare_points_descending(&a.0, &b.0));
+        let channels = self
+            .vertex_channels
+            .remapped(representatives.iter().map(|p| p.1));
+        let vertices = representatives.into_iter().map(|p| p.0).collect::<Vec<_>>();
         let colors = self.vertex_colors.as_ref().map(|source_colors| {
             let mut first_color_by_location = BTreeMap::new();
             for (&vertex, &color) in self.vertices.iter().zip(source_colors) {
@@ -3322,6 +3353,7 @@ impl TriangleMesh {
         let mut combined = Self::from_validated_parts(vertices, faces)
             .retain_valid_ngons_for_same_faces(&self.ngons);
         combined.vertex_colors = colors;
+        combined.vertex_channels = channels;
         (combined, removed)
     }
 
@@ -3391,7 +3423,9 @@ impl TriangleMesh {
             }
         }
 
-        Ok(self.compacted_with_vertex_parents(parents))
+        let (mut welded, removed) = self.compacted_with_vertex_parents(parents);
+        welded.recompute_stored_normals()?;
+        Ok((welded, removed))
     }
 
     /// Welds joined mesh seams incident to selected exact-location topology
@@ -3454,7 +3488,8 @@ impl TriangleMesh {
             }
             welded_edge_count += 1;
         }
-        let (welded, _) = self.compacted_with_vertex_parents(parents);
+        let (mut welded, _) = self.compacted_with_vertex_parents(parents);
+        welded.recompute_stored_normals()?;
         Ok((welded, welded_edge_count))
     }
 
@@ -3854,6 +3889,7 @@ impl TriangleMesh {
                 })
             })
             .collect::<Vec<_>>();
+        let mut channels = ChannelBuilder::new(&self.vertex_channels);
         let mut vertices = Vec::with_capacity(retained_count);
         let mut colors = self
             .vertex_colors
@@ -3865,6 +3901,7 @@ impl TriangleMesh {
             }
             parents[source] = vertices.len();
             vertices.push(point);
+            channels.push(source);
             if let Some(colors) = &mut colors {
                 colors.push(self.vertex_colors.as_ref().unwrap()[source]);
             }
@@ -3878,6 +3915,7 @@ impl TriangleMesh {
         let mut compacted = Self::from_validated_parts(vertices, faces)
             .retain_valid_ngons_for_same_faces(&self.ngons);
         compacted.vertex_colors = colors;
+        compacted.vertex_channels = channels.finish();
         (compacted, removed)
     }
 
@@ -3899,6 +3937,7 @@ impl TriangleMesh {
         }
 
         let mut vertex_remap = vec![0_u32; self.vertices.len()];
+        let mut channels = ChannelBuilder::new(&self.vertex_channels);
         let mut vertices = Vec::with_capacity(retained_vertex_count);
         let mut colors = self
             .vertex_colors
@@ -3911,6 +3950,7 @@ impl TriangleMesh {
             vertex_remap[source] = u32::try_from(vertices.len())
                 .expect("a culled mesh cannot have more vertices than its source");
             vertices.push(point);
+            channels.push(source);
             if let Some(colors) = &mut colors {
                 colors.push(self.vertex_colors.as_ref().unwrap()[source]);
             }
@@ -3923,6 +3963,7 @@ impl TriangleMesh {
             .collect();
         let mut culled = Self::from_validated_parts(vertices, faces);
         culled.vertex_colors = colors;
+        culled.vertex_channels = channels.finish();
         culled.ngons = self
             .ngons
             .iter()
@@ -3946,6 +3987,7 @@ impl TriangleMesh {
             }
         }
         let mut vertex_remap = vec![0_u32; self.vertices.len()];
+        let mut channels = ChannelBuilder::new(&self.vertex_channels);
         let mut vertices = Vec::new();
         let mut colors = self.vertex_colors.as_ref().map(|_| Vec::new());
         for (source, (&point, used)) in self.vertices.iter().zip(used).enumerate() {
@@ -3955,6 +3997,7 @@ impl TriangleMesh {
             vertex_remap[source] = u32::try_from(vertices.len())
                 .expect("a mesh subset cannot have more vertices than its source");
             vertices.push(point);
+            channels.push(source);
             if let Some(colors) = &mut colors {
                 colors.push(self.vertex_colors.as_ref().unwrap()[source]);
             }
@@ -3965,6 +4008,7 @@ impl TriangleMesh {
             .collect();
         let mut subset = Self::from_validated_parts(vertices, retained_faces);
         subset.vertex_colors = colors;
+        subset.vertex_channels = channels.finish();
         if !self.ngons.is_empty() {
             let mut face_remap = vec![None; self.faces.len()];
             for (local, &source) in faces.iter().enumerate() {
@@ -4217,7 +4261,18 @@ impl TriangleMesh {
             .iter()
             .map(|point| transform.transform_point(*point))
             .collect::<Result<_, _>>()?;
-        self.try_with_mapped_vertices(vertices, tolerance)
+        let singular = transform.orientation_reversing().is_err();
+        let mut mesh = if singular {
+            self.try_with_edited_vertices(vertices)?
+        } else {
+            self.try_with_mapped_vertices(vertices, tolerance)?
+        };
+        if singular {
+            mesh.recompute_stored_normals()?;
+        } else {
+            mesh.vertex_channels = self.vertex_channels.transformed(transform)?;
+        }
+        Ok(mesh)
     }
 
     /// Rebuilds geometric caches for a one-to-one vertex map, retaining faces,

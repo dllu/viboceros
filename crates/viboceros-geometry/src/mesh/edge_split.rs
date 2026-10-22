@@ -312,6 +312,7 @@ impl TriangleMesh {
             }
             debug_assert_eq!(output, face_count);
         }
+        let mut channels = ChannelBuilder::new(&self.vertex_channels);
         let mut vertices = Vec::new();
         let mut colors = self
             .vertex_colors
@@ -331,6 +332,7 @@ impl TriangleMesh {
             *mapped =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(point);
+            channels.push(source);
             if let Some(colors) = &mut colors {
                 colors.push(self.vertex_colors.as_ref().unwrap()[source]);
             }
@@ -341,6 +343,10 @@ impl TriangleMesh {
             let split_vertex =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.push(split_point);
+            channels.blend(&[
+                (first_raw_edge[0] as usize, 1. - parameter),
+                (first_raw_edge[1] as usize, parameter),
+            ])?;
             if let Some(colors) = &mut colors {
                 colors.push(interpolated_vertex_color(
                     self.vertex_colors.as_ref().unwrap(),
@@ -361,6 +367,14 @@ impl TriangleMesh {
                     *target = u32::try_from(vertices.len())
                         .map_err(|_| GeometryError::TooManyMeshVertices)?;
                     vertices.push(raw.map_or(split_point, |raw| self.vertices[raw as usize]));
+                    if let Some(raw) = raw {
+                        channels.push(raw as usize);
+                    } else {
+                        channels.blend(&[
+                            (candidate.edge_vertices[0] as usize, 1. - parameter),
+                            (candidate.edge_vertices[1] as usize, parameter),
+                        ])?;
+                    }
                     if let Some(colors) = &mut colors {
                         colors.push(raw.map_or_else(
                             || {
@@ -380,6 +394,7 @@ impl TriangleMesh {
         let mut split = Self::try_new_faces(vertices, faces, tolerance)?
             .retain_valid_ngons_from_face_map(&self.ngons, &ngon_face_map);
         split.vertex_colors = colors;
+        split.vertex_channels = channels.finish();
         Ok(Some(split))
     }
 }

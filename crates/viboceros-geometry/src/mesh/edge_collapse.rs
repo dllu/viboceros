@@ -71,6 +71,11 @@ impl TriangleMesh {
                 edge_use.raw_vertices[1] as usize,
             );
         }
+        let mut merged_sources = vec![None; self.vertices.len()];
+        for edge_use in incidence.uses() {
+            let root = index_root(&mut parents, edge_use.raw_vertices[0] as usize);
+            merged_sources[root].get_or_insert(edge_use.raw_vertices);
+        }
         let mut merged_colors = self.vertex_colors.as_ref().map(|colors| {
             let mut merged = vec![None; self.vertices.len()];
             for edge_use in incidence.uses() {
@@ -127,6 +132,7 @@ impl TriangleMesh {
                 }
             }
         }
+        let mut channels = ChannelBuilder::new(&self.vertex_channels);
         let mut vertices = Vec::new();
         let mut colors = self
             .vertex_colors
@@ -140,6 +146,11 @@ impl TriangleMesh {
                 continue;
             }
             *mapped = vertices.len();
+            if let Some([a, b]) = merged_sources[raw] {
+                channels.blend(&[(a as usize, 0.5), (b as usize, 0.5)])?;
+            } else {
+                channels.push(raw);
+            }
             let topology_vertex = data.topological_vertices[raw];
             vertices.push(
                 if topology_vertex == first_topology_vertex
@@ -168,6 +179,7 @@ impl TriangleMesh {
         let mut collapsed = Self::try_new_faces(vertices, faces, tolerance)?
             .retain_valid_ngons_from_face_map(&self.ngons, &ngon_face_map);
         collapsed.vertex_colors = colors;
+        collapsed.vertex_channels = channels.finish();
         Ok(Some(collapsed))
     }
 }

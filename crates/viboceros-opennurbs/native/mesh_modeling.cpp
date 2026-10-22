@@ -16,6 +16,7 @@ extern "C" void vibo_begin_open_nurbs() {
 }
 struct ViboMeshResult {
   std::vector<double> vertices;
+  std::vector<double> texture_coordinates,vertex_normals;
   std::vector<uint32_t> faces,ngon_vertices,ngon_faces;
   std::vector<uint8_t> colors;
   std::vector<ViboNgonSpan> ngons;
@@ -117,6 +118,8 @@ void export_mesh(const ON_Mesh &m,ViboMeshResult &r){
   for(int i=0;i<m.VertexCount();++i){const auto p=points[i];r.vertices.insert(r.vertices.end(),{p.x,p.y,p.z});}
   for(int f=0;f<m.FaceCount();++f)for(int j=0;j<4;++j)r.faces.push_back(static_cast<uint32_t>(m.m_F[f].vi[j]));
   if(m.HasVertexColors())for(int i=0;i<m.VertexCount();++i){const auto c=m.m_C[i];r.colors.insert(r.colors.end(),{static_cast<uint8_t>(c.Red()),static_cast<uint8_t>(c.Green()),static_cast<uint8_t>(c.Blue()),static_cast<uint8_t>(c.Alpha())});}
+  if(m.HasTextureCoordinates())for(int i=0;i<m.VertexCount();++i){const auto t=m.m_T[i];r.texture_coordinates.insert(r.texture_coordinates.end(),{t.x,t.y});}
+  if(m.HasVertexNormals())for(int i=0;i<m.VertexCount();++i){const auto n=m.m_N[i];r.vertex_normals.insert(r.vertex_normals.end(),{n.x,n.y,n.z});}
   for(int i=0;i<m.NgonCount();++i){const auto *g=m.Ngon(i);if(!g)continue;
     r.ngons.push_back({r.ngon_vertices.size(),g->m_Vcount,r.ngon_faces.size(),g->m_Fcount});
     r.ngon_vertices.insert(r.ngon_vertices.end(),g->m_vi,g->m_vi+g->m_Vcount);r.ngon_faces.insert(r.ngon_faces.end(),g->m_fi,g->m_fi+g->m_Fcount);
@@ -127,7 +130,7 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
   if(out)*out=nullptr;
   try{
     require(input && out,"Missing mesh arguments");vibo_begin_open_nurbs();
-    ON_Mesh mesh;vibo_mesh::import_mesh(*input,mesh,operation==4);auto result=std::make_unique<ViboMeshResult>();
+    ON_Mesh mesh;vibo_mesh::import_mesh(*input,mesh,operation==4,operation==6);auto result=std::make_unique<ViboMeshResult>();
     if(operation==1)result->changed=merge(mesh,distance,angle,selected,selected_count,region);
     else if(operation==2){require(std::isfinite(distance)&&distance>=0,"Invalid planar tolerance");result->changed=mesh.AddPlanarNgons(nullptr,distance,3,2,false);}
     else if(operation==3){
@@ -135,6 +138,7 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
       ON_SimpleArray<unsigned> faces;for(int f=0;f<mesh.FaceCount();++f)faces.Append(static_cast<unsigned>(f));
       require(add_face_region_ngon(mesh,faces)>=0,"No valid outer boundary");
     }else if(operation==4)cull_degenerate_faces(mesh,*result);
+    else if(operation==6){mesh.ComputeFaceNormals();mesh.ComputeVertexNormals();result->changed=1;}
     else if(operation==5){
       require(selected && selected_count && selected_count<=vertex_limit,"Invalid selected mesh vertices");
       ON_SimpleArray<ON_COMPONENT_INDEX> components;
@@ -174,7 +178,7 @@ extern "C" int vibo_mesh_dissolve_vertices(const ViboMeshView *input,const size_
 }
 extern "C" int vibo_mesh_result_view(const ViboMeshResult *r,ViboMeshView *v,size_t *changed){
   if(!r || !v || !changed)return 0;
-  *v={r->vertices.size()/3,r->faces.size()/4,r->colors.size()/4,r->ngons.size(),r->ngon_vertices.size(),r->ngon_faces.size(),r->vertices.data(),r->faces.data(),r->colors.data(),r->ngons.data(),r->ngon_vertices.data(),r->ngon_faces.data()};*changed=r->changed;return 1;
+  *v={r->vertices.size()/3,r->faces.size()/4,r->colors.size()/4,r->ngons.size(),r->ngon_vertices.size(),r->ngon_faces.size(),r->vertices.data(),r->faces.data(),r->colors.data(),r->ngons.data(),r->ngon_vertices.data(),r->ngon_faces.data(),r->texture_coordinates.size()/2,r->vertex_normals.size()/3,r->texture_coordinates.data(),r->vertex_normals.data()};*changed=r->changed;return 1;
 }
 extern "C" int vibo_mesh_cleanup_counts(const ViboMeshResult *r,size_t *removed,size_t *repaired,size_t *vertices){
   if(!r || !removed || !repaired || !vertices)return 0;

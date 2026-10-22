@@ -140,6 +140,7 @@ fn key(point: Point3) -> [u64; 3] {
 
 fn compact(mesh: &TriangleMesh) -> TriangleMesh {
     let mut mapping = vec![None; mesh.vertices.len()];
+    let mut channels = ChannelBuilder::new(&mesh.vertex_channels);
     let mut vertices = Vec::new();
     let mut colors = mesh.vertex_colors.as_ref().map(|_| Vec::new());
     let faces = mesh
@@ -150,6 +151,7 @@ fn compact(mesh: &TriangleMesh) -> TriangleMesh {
                 *mapping[i as usize].get_or_insert_with(|| {
                     let index = vertices.len() as u32;
                     vertices.push(mesh.vertices[i as usize]);
+                    channels.push(i as usize);
                     if let Some(colors) = &mut colors {
                         colors.push(mesh.vertex_colors.as_ref().unwrap()[i as usize]);
                     }
@@ -160,6 +162,7 @@ fn compact(mesh: &TriangleMesh) -> TriangleMesh {
         .collect();
     let mut compacted = TriangleMesh::from_validated_parts(vertices, faces);
     compacted.vertex_colors = colors;
+    compacted.vertex_channels = channels.finish();
     compacted.ngons = mesh
         .ngons
         .iter()
@@ -333,9 +336,16 @@ fn align(
                     *vertex = points[targets[index]];
                 }
             }
-            TriangleMesh::try_new_faces(vertices, mesh.faces.clone(), Tolerance::MESH_VALIDATION)?
-                .try_with_ngons(mesh.ngons.clone())?
-                .try_with_vertex_colors(mesh.vertex_colors.clone())
+            let mut rebuilt = TriangleMesh::try_new_faces(
+                vertices,
+                mesh.faces.clone(),
+                Tolerance::MESH_VALIDATION,
+            )?
+            .try_with_ngons(mesh.ngons.clone())?
+            .try_with_vertex_colors(mesh.vertex_colors.clone())?;
+            rebuilt.vertex_channels = mesh.vertex_channels.clone();
+            rebuilt.recompute_stored_normals()?;
+            Ok(rebuilt)
         })
         .collect()
 }

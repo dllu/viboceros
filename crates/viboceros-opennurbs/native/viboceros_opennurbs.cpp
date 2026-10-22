@@ -840,10 +840,12 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
     ngon_count += mesh.Ngon(index) != nullptr ? 1U : 0U;
   }
   const bool has_colors = mesh.HasVertexColors();
-  if (ngon_count != 0 || has_colors) {
+  const bool has_textures = mesh.HasTextureCoordinates();
+  const bool has_normals = mesh.HasVertexNormals();
+  if (ngon_count != 0 || has_colors || has_textures || has_normals) {
     ByteWriter writer(output.geometry_data);
     writer.Bytes(kNgonMagic, sizeof(kNgonMagic));
-    writer.U32(kNgonVersion);
+    writer.U32(has_textures || has_normals ? 3U : kNgonVersion);
     writer.U32(ngon_count);
     for (uint32_t index = 0; index < mesh.NgonUnsignedCount(); ++index) {
       const ON_MeshNgon* ngon = mesh.Ngon(index);
@@ -878,6 +880,23 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
                                  static_cast<uint8_t>(color.Blue()),
                                  static_cast<uint8_t>(color.Alpha())};
         writer.Bytes(rgba, sizeof(rgba));
+      }
+    }
+    if (has_textures || has_normals) {
+      writer.U32(has_textures ? static_cast<uint32_t>(mesh.VertexCount()) : 0U);
+      if (has_textures) {
+        for (int i = 0; i < mesh.VertexCount(); ++i) {
+          writer.Double(mesh.m_T[i].x);
+          writer.Double(mesh.m_T[i].y);
+        }
+      }
+      writer.U32(has_normals ? static_cast<uint32_t>(mesh.VertexCount()) : 0U);
+      if (has_normals) {
+        for (int i = 0; i < mesh.VertexCount(); ++i) {
+          writer.Double(mesh.m_N[i].x);
+          writer.Double(mesh.m_N[i].y);
+          writer.Double(mesh.m_N[i].z);
+        }
       }
     }
   }
@@ -1790,7 +1809,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
         uint32_t version = 0;
         uint32_t ngon_count = 0;
         if (!reader.Bytes(kNgonMagic, sizeof(kNgonMagic)) ||
-            !reader.U32(version) || version != kNgonVersion ||
+            !reader.U32(version) || (version != kNgonVersion && version != 3) ||
             !reader.U32(ngon_count) || ngon_count > reader.Remaining() / 8) {
           delete mesh;
           error = "polygon mesh payload is invalid";
@@ -1848,6 +1867,47 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
             return nullptr;
           }
           mesh->m_C.Append(ON_Color(rgba[0], rgba[1], rgba[2], rgba[3]));
+        }
+        if (version >= 3) {
+          uint32_t texture_count = 0, normal_count = 0;
+          if (!reader.U32(texture_count) ||
+              (texture_count && texture_count != vertex_count) ||
+              texture_count > reader.Remaining() / 16) {
+            delete mesh;
+            error = "invalid mesh texture count";
+            return nullptr;
+          }
+          for (uint32_t i = 0; i < texture_count; ++i) {
+            double u, v;
+            if (!reader.Double(u) || !reader.Double(v) ||
+                !std::isfinite(static_cast<float>(u)) ||
+                !std::isfinite(static_cast<float>(v))) {
+              delete mesh;
+              error = "invalid mesh texture coordinate";
+              return nullptr;
+            }
+            mesh->m_T.Append(ON_2fPoint(static_cast<float>(u), static_cast<float>(v)));
+          }
+          if (!reader.U32(normal_count) ||
+              (normal_count && normal_count != vertex_count) ||
+              normal_count > reader.Remaining() / 24) {
+            delete mesh;
+            error = "invalid mesh normal count";
+            return nullptr;
+          }
+          for (uint32_t i = 0; i < normal_count; ++i) {
+            double x, y, z;
+            if (!reader.Double(x) || !reader.Double(y) || !reader.Double(z) ||
+                !std::isfinite(static_cast<float>(x)) ||
+                !std::isfinite(static_cast<float>(y)) ||
+                !std::isfinite(static_cast<float>(z))) {
+              delete mesh;
+              error = "invalid mesh normal";
+              return nullptr;
+            }
+            mesh->m_N.Append(ON_3fVector(static_cast<float>(x), static_cast<float>(y),
+                                       static_cast<float>(z)));
+          }
         }
         if (!reader.Finished()) {
           delete mesh;

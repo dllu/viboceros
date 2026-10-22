@@ -119,6 +119,10 @@ impl TriangleMesh {
         }
         let mut displaced = BTreeMap::<(u32, usize), u32>::new();
         let mut vertices = self.vertices.clone();
+        let mut channels = ChannelBuilder::new(&self.vertex_channels);
+        for raw in 0..self.vertices.len() {
+            channels.push(raw);
+        }
         let mut colors = self.vertex_colors.clone();
         let mut add_displaced =
             |raw: u32, edge_vector: Option<(Vector3, usize)>| -> Result<u32, GeometryError> {
@@ -143,6 +147,7 @@ impl TriangleMesh {
                 let index = u32::try_from(vertices.len())
                     .map_err(|_| GeometryError::TooManyMeshVertices)?;
                 vertices.push(point);
+                channels.push(raw as usize);
                 if let (Some(source), Some(output)) = (&self.vertex_colors, &mut colors) {
                     output.push(source[raw as usize]);
                 }
@@ -231,6 +236,8 @@ impl TriangleMesh {
         }
         let mut mesh =
             Self::try_new_faces(vertices, faces, tolerance)?.try_with_vertex_colors(colors)?;
+        mesh.vertex_channels = channels.finish();
+        mesh.recompute_stored_normals()?;
         let ngons = self
             .ngons
             .iter()
