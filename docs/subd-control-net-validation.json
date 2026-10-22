@@ -1,0 +1,70 @@
+{
+  "implementation_revision": "bea3597a0febf52ff1378e7372378d852195591c",
+  "refactor_revision": "761b8312efe6382d45bdea9c94bb173bcca28cfc",
+  "scope": "Command/module cleanup, native extraction observations and SubD control-net mesh conversion with n-gons and vertex attributes.",
+  "validation": {
+    "refactor": {
+      "command_control_polygon_filter_tests": 5,
+      "sorted_help_tests": 1,
+      "subd_crease_application_tests": 6,
+      "python_oracle_tests": 1740
+    },
+    "core": {
+      "native_command_regression_tests": 14,
+      "portable_control_net_test": 1,
+      "face_creation_application_tests": 16,
+      "python_oracle_tests": 1741
+    },
+    "checks": [
+      "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "cargo fmt --all -- --check",
+      "git diff --cached --check"
+    ]
+  },
+  "native_evidence": {
+    "engine_version": "8.32.26160.13001",
+    "retained_workflows": 61,
+    "complete_command_traces_without_unknown_input": 42,
+    "successful_complete_command_traces": 32,
+    "diagnostic_workflows": 19,
+    "control_net_workflows_compared": 20,
+    "control_net_sources_compared": 21,
+    "maximum_point_error": 0.0,
+    "stored_normals_and_texture_coordinates_exact": true,
+    "topology_and_ngons_exact": true,
+    "model_epsilon": 1e-06
+  },
+  "retained_reports": {
+    "count": 30,
+    "measurements_and_limits_unchanged": true,
+    "relevant_source_entries_verified": 4499,
+    "relevant_records_verified": 38
+  },
+  "limits": [
+    "This geometry API returns texture coordinates and normals alongside TriangleMesh. Document mesh-channel storage, interchange and complete ExtractControlPolygon integration remain implementation work.",
+    "Subcurve/face picking and general command options remain outside this control-net qualification.",
+    "The complete Rust workspace was not rerun; earlier failures and baseline comparisons remain in docs/subd-soft-crease-validation.json. This checkpoint does not claim a green full workspace.",
+    "Retained measurement reports changed only their source fingerprints. Those changes do not constitute new measurements of every retained workflow.",
+    "Native comparison covers the finite captured control nets. Comparative performance remains unqualified."
+  ],
+  "git_sha256": {
+    "bea3597a0febf52ff1378e7372378d852195591c:README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
+    "bea3597a0febf52ff1378e7372378d852195591c:AGENTS.md": "d525d153cf3109781b115090de9e85aedd26467278924721b2e6f95a0232721a",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-command/src/extract_control_polygon.rs": "b4e374229d119856668aeb3243ed0c9fb4dbb2d178012dbc3d55414585a491e6",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-command/src/tests/document/registry.rs": "bb9518d1eca0286e6431d732c6abcb8f7354a682425930d2da79bfb27dab945b",
+    "bea3597a0febf52ff1378e7372378d852195591c:src/app/soft_crease.rs": "35c9a496d5b4f1b7a752b13e999624391f2692d300220f57d41e21230232511b",
+    "bea3597a0febf52ff1378e7372378d852195591c:src/app/component_selection.rs": "2cbfdc32b8e918ac4495d6b7ef49bb6c12976505a084202c0d23a27b1a81dbd4",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-opennurbs/build.rs": "d7fb60d96043701e7ba4105f0593b9de4d3bc2b4d8a1a8c7fecfe05539a12feb",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-opennurbs/native/subd.h": "e66f23e1f69ed44283796d7c2fb7c31790fc7900a18990123898568ee206872c",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-opennurbs/native/subd.cpp": "d188049772e1d2f5e964ec05e8150f13abfd3ab31f3e56222e1e7280e51f0000",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-opennurbs/native/subd_control_mesh.h": "f703404a12d76c3a25a34324d1cc789e095b3a2715c9b012ecf7dac8502306ab",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-opennurbs/src/subd.rs": "94c0b53f7daaaeecdab80bb68f2ff1b87fc5c6374dcc59ced8041797735729cf",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-opennurbs/src/subd/control_net.rs": "31637cff0a102a2c810a30fe725f22d0acc2f70e690cb316d15c29de00825e89",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-geometry/src/subd.rs": "29a07d7d3442f2e5d027fdf5e62dd2e11b98a66a5d1afe576ea1316de57187b3",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-geometry/src/subd/control_net.rs": "f595e3dcbe00da624ef461f9122921af46dee4b797ea1ac9ad96278f734639ea",
+    "bea3597a0febf52ff1378e7372378d852195591c:crates/viboceros-command/tests/subd_control_net_native.rs": "57440c79cb34d9535850f63a8e4365714014ad1dd8f34e18e080f14909acf5fd",
+    "bea3597a0febf52ff1378e7372378d852195591c:docs/subd-control-net-qualification.json": "9f5e5b60caa06b9b5ccdf6a9d79c9a3f473c170e7a4a9b3c57f20010aef231fd",
+    "bea3597a0febf52ff1378e7372378d852195591c:tools/rhino_oracle/report_subd_control_net.py": "174ddafb11fc0339ad3730a9bc0dd5f60dbc80f035d491b65cf9a65d3ba5c47e",
+    "bea3597a0febf52ff1378e7372378d852195591c:tools/rhino_oracle/test_control_polygon.py": "7bee17c983d9ee036e7b6a9bdcecb09bd749307377d77a7bc3c582eaa8359fb2"
+  }
+}
