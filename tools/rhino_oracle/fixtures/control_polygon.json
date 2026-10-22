@@ -1,0 +1,196 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "control_polygon_command",
+      "id": "line",
+      "case": "line"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "circle",
+      "case": "circle"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "polycurve",
+      "case": "polycurve"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "surface",
+      "case": "surface"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "sphere",
+      "case": "sphere"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "trimmed",
+      "case": "trimmed"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "box",
+      "case": "box"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "extrusion",
+      "case": "extrusion"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "point",
+      "case": "point"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "mesh",
+      "case": "mesh"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_quad",
+      "case": "subd_quad"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_cube",
+      "case": "subd_cube"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_crease",
+      "case": "subd_crease"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_triangle",
+      "case": "subd_triangle"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_ngon",
+      "case": "subd_ngon"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_cube_input",
+      "case": "subd_cube_input"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_cube_targetobject",
+      "case": "subd_cube_targetobject"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "surface_input",
+      "case": "surface_input"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "surface_targetobject",
+      "case": "surface_targetobject"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "trimmed_input",
+      "case": "trimmed_input"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "trimmed_targetobject",
+      "case": "trimmed_targetobject"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "box_input",
+      "case": "box_input"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "box_targetobject",
+      "case": "box_targetobject"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "polycurve_input",
+      "case": "polycurve_input"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "polycurve_targetobject",
+      "case": "polycurve_targetobject"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "point_input",
+      "case": "point_input"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "point_targetobject",
+      "case": "point_targetobject"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "mesh_input",
+      "case": "mesh_input"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "mesh_targetobject",
+      "case": "mesh_targetobject"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_cube_postselected",
+      "case": "subd_cube_postselected"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "surface_postselected",
+      "case": "surface_postselected"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "box_postselected",
+      "case": "box_postselected"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "point_postselected",
+      "case": "point_postselected"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "mesh_postselected",
+      "case": "mesh_postselected"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "multiple",
+      "case": "multiple"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "mixed",
+      "case": "mixed"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "mixed_unsupported",
+      "case": "mixed_unsupported"
+    }
+  ]
+}

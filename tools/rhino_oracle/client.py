@@ -223,6 +223,13 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         validate_structural_sdk_operations(request)
+        if any(op.get('op') == 'control_polygon_command' for op in request.get('operations', [])):
+            operations = request['operations']
+            if (self.settings_scheme is None or type(request.get('iterations', 1)) is not int
+                    or request.get('iterations', 1) != 1 or not 1 <= len(operations) <= 64
+                    or any(op.get('op') != 'control_polygon_command' for op in operations)
+                    or len({op['id'] for op in operations}) != len(operations)):
+                raise OracleProtocolError('Control-polygon commands require an owned private scheme and bounded unique fixed recipes')
         if any(op.get('op')in ('mesh_patch_command','mesh_from_lines_command','mesh_polyline_command','planar_mesh_command','face_create_command')for op in request.get('operations',[])):
             if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1:
                 raise OracleProtocolError('Owned mesh commands require a private scheme and one iteration')

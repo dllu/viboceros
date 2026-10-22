@@ -78,7 +78,8 @@
     "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/app/prompt_cancel.rs": "d2814335055ff7950b7ae8b7e1def7638b79a2f0cacc9fe92f7c43758a8df787",
     "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/app/tests/mod.rs": "ef9d5ea23b929b23f97d3b9369f2ba738aa0659423f580d622030df1c424aba1",
     "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/app/ui.rs": "507b57c03ba29280b7e5c0c7a8ba436a571e5993f5a73dc6d3bad81eccc12c3c",
-    "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/app/viewport_input.rs": "47ee836e7dffdcf405be3f3220eca327c84513dcd2b29ba2de93a327023e8d6d"
+    "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/app/viewport_input.rs": "47ee836e7dffdcf405be3f3220eca327c84513dcd2b29ba2de93a327023e8d6d",
+    "16d2f7f9863f4a091f3837ad09c904fffe413731:tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846"
   },
   "sha256": {
     "README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
@@ -190,8 +191,7 @@
     "tools/rhino_oracle/observations/source_snapshots/6946b697bedf9029986c393af480314f33db87a04fde2fd72ab2a0a7295634e5.gz": "d78d805786d8db69060eb1ea73ade2da02ede79e7db99d460d7178ebb828da78",
     "tools/rhino_oracle/observations/source_snapshots/8c5218798138ec409941985104571edaa39ca98a9acba12fe05d90f9fc6106ea.gz": "660b490c38686fd36a0cc9602411cdbe38b8d0588b4e8ee2cd760b034d2a026c",
     "tools/rhino_oracle/observations/source_snapshots/a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846.gz": "77ba573e46fe2ada14e76655eae036a394a1ce91e8c709cfe56da3bbc5caa3e2",
-    "tools/rhino_oracle/observations/source_snapshots/f0737116edca1be39a118421987329eb91e0b766b2e001c61e3d18e24f825894.gz": "7e934b69e8f63f51a42ec446dc87a9e90c019d023407ee5c24fedb96ef46b40a",
-    "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846"
+    "tools/rhino_oracle/observations/source_snapshots/f0737116edca1be39a118421987329eb91e0b766b2e001c61e3d18e24f825894.gz": "7e934b69e8f63f51a42ec446dc87a9e90c019d023407ee5c24fedb96ef46b40a"
   },
   "validation_git_sha256": {
     "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:docs/closed-polyline-qualification.json": "8845d4db892d608cff324022347d24a3bd9436b41e30c6cac9a0dc99d5762939",

@@ -51,6 +51,7 @@ def with_shared_sources(paths):
     expanded = list(paths)
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
+            'crates/viboceros-command/src/extract_control_polygon.rs',
             'crates/viboceros-command/src/soft_crease.rs',
             'crates/viboceros-command/src/soft_crease/profile.rs',
             'crates/viboceros-command/src/soft_crease/arguments.rs',

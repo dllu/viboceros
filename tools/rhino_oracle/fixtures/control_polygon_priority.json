@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "control_polygon_command",
+      "id": "subd_quad_geometry_picked",
+      "case": "subd_quad_geometry_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_quad_texturecoordinates_picked",
+      "case": "subd_quad_texturecoordinates_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_cube_geometry_picked",
+      "case": "subd_cube_geometry_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_cube_texturecoordinates_picked",
+      "case": "subd_cube_texturecoordinates_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_crease_geometry_picked",
+      "case": "subd_crease_geometry_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_crease_texturecoordinates_picked",
+      "case": "subd_crease_texturecoordinates_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_ngon_geometry_picked",
+      "case": "subd_ngon_geometry_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_ngon_texturecoordinates_picked",
+      "case": "subd_ngon_texturecoordinates_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "surface_geometry_picked",
+      "case": "surface_geometry_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "surface_texturecoordinates_picked",
+      "case": "surface_texturecoordinates_picked"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "priority_remembered_default",
+      "case": "priority_remembered_default"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "target_picked",
+      "case": "target_picked"
+    }
+  ]
+}

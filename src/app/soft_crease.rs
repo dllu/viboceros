@@ -5,6 +5,14 @@ use viboceros_command::{
     soft_crease::{SoftCreaseLabel, SoftCreaseSession},
 };
 
+pub(super) fn eligible_edge(document: &Document, pick: &crate::viewport::ComponentPick) -> bool {
+    pick.kind == ComponentSelectionKind::SubDEdge
+        && document.object(pick.object).is_some_and(|object| {
+            matches!(object.geometry(), Geometry::SubD(subd)
+                if subd.edge_face_counts().get(pick.index) == Some(&2))
+        })
+}
+
 #[derive(Clone, Copy, Debug)]
 enum Getter {
     Outer,
@@ -77,10 +85,14 @@ impl VibocerosApp {
             .is_some_and(Prompt::selecting)
     }
     fn soft_crease_targets(&self) -> Result<Vec<(ObjectId, usize)>, CommandError> {
-        Ok(self.component_selection.checked_picks(&self.document).map_err(|_|CommandError::CreaseStale)?
-            .into_iter().filter(|p| p.kind == ComponentSelectionKind::SubDEdge)
-            .filter(|p| self.document.object(p.object).is_some_and(|o| matches!(o.geometry(),Geometry::SubD(s) if s.edge_face_counts().get(p.index) == Some(&2))))
-            .map(|p| (p.object,p.index)).collect())
+        Ok(self
+            .component_selection
+            .checked_picks(&self.document)
+            .map_err(|_| CommandError::CreaseStale)?
+            .into_iter()
+            .filter(|pick| eligible_edge(&self.document, pick))
+            .map(|pick| (pick.object, pick.index))
+            .collect())
     }
     pub(super) fn try_start_soft_crease(&mut self, input: &str) -> bool {
         let words = input.split_whitespace().collect::<Vec<_>>();

@@ -1046,8 +1046,8 @@
     "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/structural_sdk.py": "a9d67d48bd7ac0d02d726c27b0b2b30a85f312654c1c13836978c629b8f6a91e",
-    "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846",
+    "tools/rhino_oracle/structural_sdk.py": "4e1af9f3abb6d5c5270ab42808fc5a5373d865fd718e5badde040edec2a050bf",
+    "tools/rhino_oracle/rhino_worker.py": "e28de87cf7e9ec034a55a30313990633669eec1a834998e8ae2d88eb2396c18b",
     "tools/rhino_oracle/report_extrusions.py": "5c5a1296894ca353b0f7e900769dd65aaff9d1cfe2b1aecc80d8cae336b444be",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
     "tools/rhino_oracle/fixtures/tosubd_extrusions.json": "00f7b598aea12033c12945d2a9b1566e661e68e2bbd757c2c35bba49b64d16fd",
@@ -1089,7 +1089,7 @@
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_rectangle_0.3dm": "405160ef963cd96713931684719fde45969285339f749fbce1f748ab663dc7f4",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_circle_0.3dm": "bf628228dec65c8402320746f753223a0ea4dd02c26eabad1c0d3ff76357e0d3",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_pipe_0.3dm": "b9b8316c4428ddb225c323cee42fa28ca28c8c834a709054832b07edf3e10498",
-    "tools/rhino_oracle/qualification_sources.py": "ea569a4bb65380abfd1cbfa128943a1ba7d99c2fa49584552a2b6d371f526e59",
+    "tools/rhino_oracle/qualification_sources.py": "72c2359be1eddaefdf18a069f9ec5e98f067eb8cb72a89882b76f68ecb296a2c",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5"
   }
 }

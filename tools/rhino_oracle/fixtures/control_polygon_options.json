@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "control_polygon_command",
+      "id": "subd_quad_geometry",
+      "case": "subd_quad_geometry"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_quad_texturecoordinates",
+      "case": "subd_quad_texturecoordinates"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_cube_geometry",
+      "case": "subd_cube_geometry"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_cube_texturecoordinates",
+      "case": "subd_cube_texturecoordinates"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_crease_geometry",
+      "case": "subd_crease_geometry"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_crease_texturecoordinates",
+      "case": "subd_crease_texturecoordinates"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_ngon_geometry",
+      "case": "subd_ngon_geometry"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "subd_ngon_texturecoordinates",
+      "case": "subd_ngon_texturecoordinates"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "surface_geometry",
+      "case": "surface_geometry"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "surface_texturecoordinates",
+      "case": "surface_texturecoordinates"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "default_after_texture",
+      "case": "default_after_texture"
+    },
+    {
+      "op": "control_polygon_command",
+      "id": "target_separate_tokens",
+      "case": "target_separate_tokens"
+    }
+  ]
+}

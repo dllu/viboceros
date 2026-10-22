@@ -346,8 +346,11 @@ impl VibocerosApp {
                 .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
                 .collect()
         } else if self.picking_soft_crease_edges() {
-            click.picks.into_iter().filter(|p| p.kind == ComponentSelectionKind::SubDEdge
-                && self.document.object(p.object).is_some_and(|o| matches!(o.geometry(),Geometry::SubD(s) if s.edge_face_counts().get(p.index) == Some(&2)))).collect()
+            click
+                .picks
+                .into_iter()
+                .filter(|pick| soft_crease::eligible_edge(&self.document, pick))
+                .collect()
         } else if self.crease_prompt.is_some() {
             click
                 .picks
@@ -589,8 +592,9 @@ impl VibocerosApp {
             window.picks.retain(|p| crease::eligible(p.kind));
         }
         if self.picking_soft_crease_edges() {
-            window.picks.retain(|p| p.kind == ComponentSelectionKind::SubDEdge
-                && self.document.object(p.object).is_some_and(|o| matches!(o.geometry(),Geometry::SubD(s) if s.edge_face_counts().get(p.index) == Some(&2))));
+            window
+                .picks
+                .retain(|pick| soft_crease::eligible_edge(&self.document, pick));
         }
         if window.preselection {
             if self.component_preselection_available() {

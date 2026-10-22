@@ -619,7 +619,7 @@
     "crates/viboceros-document/src/geometry.rs": "6b8a85eec1ead4ac5ce9255941cec005b3cd1b3eeee949892b9492777bae99d9",
     "crates/viboceros-document/src/control_points.rs": "1c3144d99fcd3356e34ab0b2d061387edfa12d89f2dcc232cf1168a675523cc8",
     "crates/viboceros-document/src/control_points/geometry.rs": "cf5cbda50d47b3f25d1a564bfee83d089858a102839013019935af285b621bf9",
-    "crates/viboceros-command/src/lib.rs": "8434ce2b43a2b9064580539c9b0734951f8f83a4577de54eef3e28d77e17c7f7",
+    "crates/viboceros-command/src/lib.rs": "7e124b941eb90c02a9da6f1c12c13b732dd9162ac0ad82feea734f21196d1740",
     "crates/viboceros-command/src/face_create.rs": "d20c390e9fe5e1379340ecef654312c3f30c2e357176aa39ad26db38a5d51c4a",
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",
     "crates/viboceros-command/src/interchange.rs": "6f9df72cd4882fcd3d0f4e791117545daa500dca6564f6859c5bfb2f7409a67f",
@@ -667,7 +667,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "62de29eaea095db346dea80d9ddec4fe3f8828361ccc57bfb5ce699580be3d60",
     "src/app/viewport_input.rs": "7c647743560b9a419515c949beca893ac702d1d5026f9f56171156346dc3e74d",
-    "tools/rhino_oracle/qualification_sources.py": "ea569a4bb65380abfd1cbfa128943a1ba7d99c2fa49584552a2b6d371f526e59",
+    "tools/rhino_oracle/qualification_sources.py": "72c2359be1eddaefdf18a069f9ec5e98f067eb8cb72a89882b76f68ecb296a2c",
     "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
@@ -681,9 +681,10 @@
     "crates/viboceros-command/src/soft_crease.rs": "eec4487501312fc3090d932560599f5e18e4038017d7f7412ac268b5507e007b",
     "crates/viboceros-command/src/soft_crease/profile.rs": "018d7bed89c5fc71e98265f9b578345809f7b5e6937145d2046cb3a472cc6f0f",
     "crates/viboceros-command/src/soft_crease/arguments.rs": "7d38e43f5032110cda07782c1a4988a1bed1a7f2248b16ac94f8406c455034b6",
-    "src/app/soft_crease.rs": "cbe51d66ec3c7cf991f2f886f279bec8adeac8edd1256661f33f0c781fb643ce",
+    "src/app/soft_crease.rs": "35c9a496d5b4f1b7a752b13e999624391f2692d300220f57d41e21230232511b",
     "src/app/soft_crease/tests.rs": "5cd15b68572f29b2caf94b912c3915dc6d07389313598bc1a354338d95ba0132",
     "src/app/soft_crease/tests/native.rs": "26d9cbd2d285653744b9682ba8de9c6f92bb546cb9a85bec2335c551730a4c2b",
-    "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a"
+    "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
+    "crates/viboceros-command/src/extract_control_polygon.rs": "b4e374229d119856668aeb3243ed0c9fb4dbb2d178012dbc3d55414585a491e6"
   }
 }
