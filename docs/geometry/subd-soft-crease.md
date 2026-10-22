@@ -25,10 +25,9 @@ do not allocate the extra arrays. Repeated values return the original immutable
 surface with `changed=false`. Transforms, control edits and internal archive
 roundtrips retain the weights.
 
-This is a geometry API. The interactive `SubDCrease` command, label editing,
-interactive chain selection and document admission are subsequent implementation work.
-The [control-chain API](subd-chains.md) supplies native partitioning and
-interpolation primitives for that work.
+The [SubDCrease editor](../commands/subd-crease.md) adds staged vertex and chain
+editing, viewport labels and atomic document admission. It combines this API
+with the [control-chain API](subd-chains.md).
 
 ## Native archive boundaries
 
@@ -69,5 +68,7 @@ readback within about `1.4e-15`.
 Unit regressions cover repeated snapshots at integer thresholds, oriented
 endpoint weights, hard/soft conversion, source immutability, malformed
 envelopes, transforms and control edits. Sampled facets do not establish a
-continuous surface-error bound. General chain construction, frontend placement,
-document history and comparative performance remain unqualified.
+continuous surface-error bound. The separate
+[session qualification](../subd-crease-session-qualification.json) covers captured
+profiles and application getters. Arbitrary profiles, full frontend equivalence
+and comparative performance remain unqualified.

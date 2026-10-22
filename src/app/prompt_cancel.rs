@@ -95,6 +95,7 @@ impl VibocerosApp {
             || self.unjoin_prompt.is_some()
             || self.edge_fillet_prompt.is_some()
             || self.crease_prompt.is_some()
+            || self.soft_crease_prompt.is_some()
         {
             self.cancel_interactive_command(true);
         } else if self.component_selection.has_choices() {

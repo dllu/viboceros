@@ -48,6 +48,7 @@ impl VibocerosApp {
                 .take()
                 .is_some_and(|session| session.applied);
         self.cancel_crease();
+        self.cancel_soft_crease();
         self.finish_edge_fillet(false);
         if self.unjoin_prompt.is_some() {
             self.finish_unjoin_command(false);

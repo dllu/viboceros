@@ -29,6 +29,7 @@ mod clipping;
 mod drafting;
 mod named_view;
 mod normal_point;
+pub(crate) mod soft_crease;
 #[cfg(test)]
 use drafting::clip_drafting_line;
 #[cfg(test)]
@@ -335,6 +336,7 @@ pub enum FacePickMode {
 
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
+    pub soft_crease: Option<soft_crease::Overlay<'a>>,
     pub drafting: DraftingInput,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
@@ -454,6 +456,7 @@ fn selection_candidate(
 impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
+            soft_crease: None,
             drafting: DraftingInput::default(),
             point_filter: None,
             point_constraint: None,
@@ -541,6 +544,7 @@ impl Default for ViewportInput<'_> {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
+    pub soft_crease_vertex: Option<(usize, usize)>,
     pub(crate) surface_corner_click: Option<SurfaceCornerAction>,
     pub zoom_window_result: Option<Result<bool, &'static str>>,
     pub zoom_window_cancelled: bool,
@@ -2766,6 +2770,17 @@ impl Viewport {
             && response.clicked_by(PointerButton::Primary)
             && self.has_unmeshed_selected_face_source(document, input.face_pick.unwrap());
         ViewportOutput {
+            soft_crease_vertex: input.soft_crease.and_then(|overlay| {
+                self.paint_soft_crease(
+                    &painter,
+                    rect,
+                    response
+                        .clicked_by(PointerButton::Primary)
+                        .then(|| response.interact_pointer_pos())
+                        .flatten(),
+                    overlay,
+                )
+            }),
             surface_corner_click: response
                 .clicked_by(PointerButton::Primary)
                 .then(|| {

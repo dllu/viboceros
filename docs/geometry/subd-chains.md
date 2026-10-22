@@ -45,7 +45,9 @@ orientation, invalid input, quantization and stored-value restoration.
 The captures also preserve behavior needed for the command editor: per-chain
 options, partial hard/weighted sources, repeated edits, odd loops, cancellation
 and numeric retries. Moving labels are picked at positions measured from prior
-native outputs. General profile construction, document admission and the
-interactive `SubDCrease` command remain subsequent work.
+native outputs. The [SubDCrease editor](../commands/subd-crease.md) now replays
+these profiles through staged document admission and viewport getters; its
+[session qualification](../subd-crease-session-qualification.json) records that
+separate scope.
 The [validation record](../subd-chains-validation.json) lists the completed
 kernel, replay, Python and lint checks.

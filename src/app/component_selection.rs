@@ -252,6 +252,7 @@ impl VibocerosApp {
             && self.unjoin_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.crease_prompt.is_none()
+            && self.soft_crease_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && self.end_analysis_pick.is_none()
@@ -268,6 +269,7 @@ impl VibocerosApp {
             && self.shell_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.crease_prompt.is_none()
+            && self.soft_crease_prompt.is_none()
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
             && !self.picking_orient_curve()
@@ -343,6 +345,9 @@ impl VibocerosApp {
                 .into_iter()
                 .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
                 .collect()
+        } else if self.picking_soft_crease_edges() {
+            click.picks.into_iter().filter(|p| p.kind == ComponentSelectionKind::SubDEdge
+                && self.document.object(p.object).is_some_and(|o| matches!(o.geometry(),Geometry::SubD(s) if s.edge_face_counts().get(p.index) == Some(&2)))).collect()
         } else if self.crease_prompt.is_some() {
             click
                 .picks
@@ -583,11 +588,15 @@ impl VibocerosApp {
         if self.crease_prompt.is_some() {
             window.picks.retain(|p| crease::eligible(p.kind));
         }
+        if self.picking_soft_crease_edges() {
+            window.picks.retain(|p| p.kind == ComponentSelectionKind::SubDEdge
+                && self.document.object(p.object).is_some_and(|o| matches!(o.geometry(),Geometry::SubD(s) if s.edge_face_counts().get(p.index) == Some(&2))));
+        }
         if window.preselection {
             if self.component_preselection_available() {
                 self.select_components(window.picks, ComponentAction::Add);
             }
-        } else if self.crease_prompt.is_some() {
+        } else if self.crease_prompt.is_some() || self.picking_soft_crease_edges() {
             let action =
                 if (window.modifiers.ctrl || window.modifiers.command) && !window.modifiers.shift {
                     ComponentAction::Remove

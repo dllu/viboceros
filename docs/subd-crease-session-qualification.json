@@ -1,0 +1,2735 @@
+{
+  "native_engine_version": "8.32.26160.13001",
+  "native_workflows": 48,
+  "profile_objects": 50,
+  "application_workflows": 96,
+  "model_epsilon": 1e-06,
+  "maximum_measured_error": 3.8968670012594065e-15,
+  "command_registered": true,
+  "sampled_profiles_qualified": true,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "limits": [
+    "Public native source files, accepted live sharpness recipes and recorded getter actions are replayed; no proprietary implementation is inspected.",
+    "Application replays dispatch component picks, label actions and command text. A separate egui regression checks physical projected label clicks; full native and application screen equivalence is unqualified.",
+    "The finite corpus covers source bends, discontinuities, hard runs, odd loops, per-chain options, repeated edits, invalid weights and cancellation. Arbitrary profiles and continuous surface error remain unqualified.",
+    "Lifecycle regressions check immutable previews, atomic invalid edits, stale sources, selection release before Undo, metadata retention, source ordering and Redo preservation."
+  ],
+  "stages": {
+    "SOFT_SESSION": [
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_erase_break",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.275549143317629e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_loop_noop_middle",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_noop_middle_0",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_noop_middle_50",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_constant",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_constant_cancel",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_hard",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_hard_cancel",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_constant",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_constant_cancel",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_hard",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_hard_cancel",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_hard_end",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.333152767288562e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_hard_middle",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3517848686956845e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_constant",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_constant",
+        "object": "Input 1",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_hard",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_hard",
+        "object": "Input 1",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255202e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_0_vertex_0",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_0_vertex_1",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_50_vertex_0",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_50_vertex_1",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_hard_end",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_hard_middle",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_soft_end",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_soft_middle",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3608726004012153e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_24_75_end",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_24_75_middle",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_25_25_end",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_25_25_middle",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_50_end",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_50_middle",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_middle_accepted_vertex_0",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5543122344752194e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_middle_accepted_vertex_2",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.992007221626409e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_start_accepted_vertex_0",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5543122344752194e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_start_accepted_vertex_2",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_constant_then_vertex_0",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5059797815742442e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_constant_then_vertex_1",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1801832636420706e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_distant_hard",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_distant_soft",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.368774871883577e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_even_repeated",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_invalid_101",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_invalid_minus1",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_middle_start",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_odd_repeated",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 17,
+          "faces": 9,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.88411095042053e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_pentagon_0",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 17,
+          "faces": 9,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.9484335006297032e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_pentagon_50",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1322097734007351e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_start_middle",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": true,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_start_middle_cancel",
+        "object": "Input 0",
+        "source_unchanged": true
+      },
+      {
+        "cancelled": false,
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5059797815742442e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_weighted_repeated",
+        "object": "Input 0",
+        "source_unchanged": true
+      }
+    ],
+    "SOFT_UI": [
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_erase_break",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_erase_break",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.275549143317629e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_loop_noop_middle",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.275549143317629e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_loop_noop_middle",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_noop_middle_0",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_noop_middle_0",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_noop_middle_50",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_anchors",
+        "id": "anchors_noop_middle_50",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_constant",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_constant",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_constant_cancel",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_constant_cancel",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_hard",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_hard",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_hard_cancel",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_branch_hard_cancel",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_constant",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_constant",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_constant_cancel",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_constant_cancel",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_hard",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0706603116298291e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_hard",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_hard_cancel",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_disconnected_hard_cancel",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_hard_end",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_hard_end",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.333152767288562e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_hard_middle",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.333152767288562e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_hard_middle",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3517848686956845e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_constant",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3517848686956845e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_constant",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_constant",
+        "object": "Input 1",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_constant",
+        "object": "Input 1",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_hard",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_hard",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_hard",
+        "object": "Input 1",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 3.8968670012594065e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_multiple_hard",
+        "object": "Input 1",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255202e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_0_vertex_0",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255202e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_0_vertex_0",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_0_vertex_1",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_0_vertex_1",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_50_vertex_0",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_50_vertex_0",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_50_vertex_1",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_odd_loop_50_vertex_1",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_hard_end",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_hard_end",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_hard_middle",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_hard_middle",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_soft_end",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3911054626160786e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_soft_end",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_soft_middle",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_partial_soft_middle",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3608726004012153e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_24_75_end",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.3608726004012153e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_24_75_end",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_24_75_middle",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_24_75_middle",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_25_25_end",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_25_25_end",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_25_25_middle",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_25_25_middle",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_50_end",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_50_end",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_50_middle",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_chains",
+        "id": "chains_seed_50_middle",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_middle_accepted_vertex_0",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_middle_accepted_vertex_0",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5543122344752194e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_middle_accepted_vertex_2",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5543122344752194e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_middle_accepted_vertex_2",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.992007221626409e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_start_accepted_vertex_0",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 9.992007221626409e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_start_accepted_vertex_0",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5543122344752194e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_start_accepted_vertex_2",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5543122344752194e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_archive_label_start_accepted_vertex_2",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_constant_then_vertex_0",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.137640067256873e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_constant_then_vertex_0",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5059797815742442e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_constant_then_vertex_1",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5059797815742442e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_constant_then_vertex_1",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1801832636420706e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_distant_hard",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1801832636420706e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_distant_hard",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_distant_soft",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_distant_soft",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.368774871883577e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_even_repeated",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.368774871883577e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_even_repeated",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_invalid_101",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_invalid_101",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_invalid_minus1",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.355199909595506e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_invalid_minus1",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_middle_start",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.4141731344682327e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_middle_start",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_odd_repeated",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 9,
+          "faces": 5,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 8.881784197001252e-16,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 6
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_odd_repeated",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 17,
+          "faces": 9,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.88411095042053e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_pentagon_0",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 17,
+          "faces": 9,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.88411095042053e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_pentagon_0",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 17,
+          "faces": 9,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.9484335006297032e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_pentagon_50",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 17,
+          "faces": 9,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.9484335006297032e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 10
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_pentagon_50",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1322097734007351e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_start_middle",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.1322097734007351e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_start_middle",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_start_middle_cancel",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.0175362097255204e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_start_middle_cancel",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5059797815742442e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_weighted_repeated",
+        "object": "Input 0",
+        "preselected": false,
+        "selection_released": true,
+        "staged": true
+      },
+      {
+        "check": {
+          "edges": 12,
+          "faces": 6,
+          "maximum_control_or_limit_point_error": 0.0,
+          "maximum_sampled_surface_error": 1.5059797815742442e-15,
+          "qualified": true,
+          "surface_sampled": true,
+          "vertices": 8
+        },
+        "family": "soft_crease_followup",
+        "id": "followup_weighted_repeated",
+        "object": "Input 0",
+        "preselected": true,
+        "selection_released": true,
+        "staged": true
+      }
+    ]
+  },
+  "sha256": {
+    "crates/viboceros-opennurbs/build.rs": "46b18787b603bab3a7b721f5611ea11db5188cd86f31f1cb253c341ac0077aa5",
+    "crates/viboceros-opennurbs/native/subd.cpp": "019535e92bfc08412dfc66a2dfab54f3c8acd46781c582285ae4742e6a80fb0a",
+    "crates/viboceros-opennurbs/native/subd.h": "4b2fb27a9d8affb55d6e88ade2e9cd4c0a44ddc0fbbe19bf2ef3ceb8a51062a5",
+    "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
+    "crates/viboceros-opennurbs/src/lib.rs": "327c20bb71704ded20717bcdd54fa58842c61dd2b91922e1acd7cc6fac6b25c5",
+    "crates/viboceros-opennurbs/src/subd.rs": "0164f696d68147e3c36625bd4271a3a495a2a6686832f3c3321465d8b9f76cb9",
+    "crates/viboceros-geometry/src/lib.rs": "a07d2c2651bfc8cd30469e18f8ca98b714fffe360f0943fe8dcd23b4d9509bdd",
+    "crates/viboceros-geometry/src/subd.rs": "ca7c3d4b1e74d6988986283cf727d8ca3efac87dbfb1a19e8b507b86dba667f2",
+    "crates/viboceros-geometry/tests/subd_chains.rs": "ac755f7be15cda851ad6ee53963e87bbde9bc7656039b1645e361871a41e015b",
+    "crates/viboceros-command/tests/subd_chains_native.rs": "6af68747044303b8354ec5348d90cda5030125ad6ba1efb4d6ef425278c84552",
+    "tools/rhino_oracle/report_subd_chains.py": "b69617a91842765cb16cb893d0d1d79148c38f4001113731e4b23f6179fae6b9",
+    "tools/rhino_oracle/test_soft_crease.py": "d8f294b08f328a0a7f9f81da160c8b72cc7692650440d10ba680a6a50a276486",
+    "tools/rhino_oracle/soft_crease_cases.py": "b350a281fddf7512bc876ccedec1ba3997618997272ff6c043dd85bb8669ed79",
+    "tools/rhino_oracle/soft_crease_chain_cases.py": "8a1ff76b875c91bf2db73bf4868fcffc28475ebf59d16f1e36920b38a19ba75f",
+    "tools/rhino_oracle/soft_crease_followup_cases.py": "ae3b96f3c5831618ec74e84510dd662d36259189cdb6a74c23c5c849ac57ef42",
+    "tools/rhino_oracle/soft_crease_probe.py": "f67aee5b9fc5be31f2dc037e7d39c9b22f3d2f058db9589dd071875bb0b165b3",
+    "tools/rhino_oracle/subd_edit_scene.py": "d461327ba3dc736e8b7727d1ff29a39b87022d056da6ba684e6381e6792a5cc7",
+    "tools/rhino_oracle/generate_soft_crease.py": "c7e06ca92ee30306add2f501ec9cb9d0a14d0c69ab30cc642f82775e91ec15a7",
+    "tools/rhino_oracle/structural_sdk.py": "a9d67d48bd7ac0d02d726c27b0b2b30a85f312654c1c13836978c629b8f6a91e",
+    "tools/rhino_oracle/fixtures/soft_crease_followup_assets.json": "9fcad304656aff6ee0447ed91cf10f8205c5fe470bd70e2a33865a2d9a7ee94d",
+    "tools/rhino_oracle/observations/soft_crease_numeric_labels.json": "d6b7f39b8a0a96bc176dabb7a5dd6fa909c823672e0ac58bf752351aad953d13",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_start_accepted.3dm": "786816af64e072a398ac94e25f14685a8961931d5b24e11ff17beef2cce589be",
+    "tools/rhino_oracle/fixtures/soft_crease_numeric_labels/result/label_middle_accepted.3dm": "4c604a776289a161fbc47a85bca837ae38937bd2c4694b8c39f8be0bbd1795aa",
+    "crates/viboceros-opennurbs/native/subd_chains.h": "03d28b1e73f18540d5b7857ce4b88ed384ac28fb445fdc22130863bab57d10b2",
+    "crates/viboceros-opennurbs/native/subd_sharpness.h": "4aa10d3a91dd82046545eb6a1c42a3e3e7c8efe0a86afc8f79b6a68b04dc2ec3",
+    "crates/viboceros-opennurbs/src/subd/chains.rs": "aab561c2ff51bdd3e8f14d1d848c083d3f06c04b5b6d1f4e57180f4b0b3faf4d",
+    "crates/viboceros-opennurbs/src/subd/sharpness.rs": "42fe6fa63dffe37abe4f03d7b3720780b831b191c0a680da0b9350048a921ca2",
+    "crates/viboceros-geometry/src/subd/chains.rs": "128c74668d16711259f32197fce2e2437431f880476d22860b7060f1911660a1",
+    "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
+    "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
+    "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
+    "crates/viboceros-geometry/src/subd/soft_crease.rs": "1f9bfbfca6b71418e39846e9847351267ee6a26023ac035a041d91247c232f3f",
+    "tools/rhino_oracle/qualification_sources.py": "ea569a4bb65380abfd1cbfa128943a1ba7d99c2fa49584552a2b6d371f526e59",
+    "tools/rhino_oracle/fixtures/soft_crease_chains.json": "52e803491ae30f9f947c0614de0eb658849a104e4d0ff7ae9329dae124cd5820",
+    "tools/rhino_oracle/observations/soft_crease_chains.json": "b9e55a5c87b73ca0fa9c0d7a7d055c54307511f4e4d6a2777ebb6a5d8dcd382d",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_branch_constant.3dm": "9949cf75dfed460c818a78d6b989fe18f675e274402f44948d450e13ca41fae9",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_branch_constant_cancel.3dm": "e7365fdbd2490fa2a8cf990a60f811ccc46881664bdf5bc06d0c972429920c87",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_branch_hard.3dm": "0e68ee971b239e500f1df2a73bd3f3351cc479ba825e845c99a2a591060e8cae",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_branch_hard_cancel.3dm": "b4db5004884fc55352ad73c06afde3fda2b34a3784528a640b994884c93e332a",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_disconnected_constant.3dm": "b0b0ac04383902cd5206cacd3c912f748adcc9fc3f8cd91d233008c7df95709f",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_disconnected_constant_cancel.3dm": "df800ac69600d4d0071e8c325b8388f237c7efd53f1f18eff297710df1e57799",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_disconnected_hard.3dm": "5960ba7fd39bdc6b63dda21c751a02323fbe84118d4149e6ace280db7efcc8f6",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_disconnected_hard_cancel.3dm": "af4ec6d36ff95a933e997b80302f1e0c240d1016a0b48d57fd9d9dec4ce7dc8c",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_hard_end.3dm": "765fbda2659a8aac220f061c806b0ecdecb715a0583852c79acdc55c8f1c7c92",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_hard_middle.3dm": "f6db973a340a8406395263d8c134c90f7e384cb7d3dbf033b4a1f176599cd274",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_multiple_constant.3dm": "d43687a35f39eaacd21e2d869ad1878b12a3b53bebe9d3d33d32eb090adcbdfb",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_multiple_hard.3dm": "f2aefddaa936cd1f1616836e874610e22b1f303d55692f4b19744372881c8191",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_odd_loop_0_vertex_0.3dm": "bdb5d28bec42a17a11a83f5d7df974d0ae13cbaad61f468ddc341ff1483bde46",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_odd_loop_0_vertex_1.3dm": "9eeab0b70a218a83e2b3f154832b5519a35444b025cd61e346bf52031cd58fe5",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_odd_loop_50_vertex_0.3dm": "4c93143dac2799921e7587a84c7b1fbb7ae35a0a88949820d4d937315e564942",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_odd_loop_50_vertex_1.3dm": "3519f4b2c5d1a67daa7450dcec5d0f53442f85793111daf75db7beb64fa186f6",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_partial_hard_end.3dm": "b0e715ae74c5dc0ca7c26744869a7b22e382a2f6c5cefe420de8a085013dc2e7",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_partial_hard_middle.3dm": "a38779a5b1af2b9ca7d2e687be01c26289840362587de647f51e49c3906d8f02",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_partial_soft_end.3dm": "e87b2bdc65b6071e86d34ebeaf389d30a8ad3ae6830244cdcc1050c5ade967d5",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_partial_soft_middle.3dm": "aad0ce34ea5a5c95d2700133be4de239a779c38a12173f5979f8c57c8d320eb4",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_seed_24_75_end.3dm": "ea9355cb3f34874be6b3d18c8f707e41353f148968debad65a333bbe4b20666b",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_seed_24_75_middle.3dm": "4b8491b78d3fcd685582db33870d2505d0bd42190dde48d9f5d3eff9606433db",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_seed_25_25_end.3dm": "d195262d87fc87702dacb968134e5913219278afdf673f963c21f9a6c5b3eabe",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_seed_25_25_middle.3dm": "f2602d3365132f12c88ee9bd7854d5dbd942fbeb7893109bfe38bc82902a96e4",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_seed_50_end.3dm": "0b5d065cff5232928f918dbe66b5433a9a9a7894de49844cbb46cc3f22cedb7f",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_seed_50_middle.3dm": "8beacb09ff01038b278efaf3870d96b63cc6ecae4dd7d450334d90b31d19e087",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_branch_constant.3dm": "3cbd12bce0c0f2cbc972058804972a88bc0a3159c2fd57abeb296f9a3ee56c38",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_branch_constant_cancel.3dm": "2869c3d878391cb2f4c3ff07ee8d6831ef480279d1124d9c9194be0cf3c56c01",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_branch_hard.3dm": "9ed734ef078947db5ab3e757aca5c4c5cc77080018a9723c7667d6a3675e96b5",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_branch_hard_cancel.3dm": "736c550a5285f8a7f5867579c6a52fb533e51277e6381d7292edd450db7cc071",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_disconnected_constant.3dm": "e16a5cdb65b3bd0b4ed8d2247d4654776ae9a0437dcb11db1196a121d337620f",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_disconnected_constant_cancel.3dm": "50a9deb9c75f4ee4387e5c2b55a6b22192e16d588a7f6db90d28ab002d1d6d31",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_disconnected_hard.3dm": "414bd7c5370eb3bca19e763041c6c44a6419584eb32a2d8527ca5d2d286c4e6e",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_disconnected_hard_cancel.3dm": "48de0727432c58c29a30936f3975d910ca3f89e46fd6d631d3d92521acd5ad31",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_hard_end.3dm": "d67ab1bea953587ebbe61c1c117a898f5bb982b1927e35ff85c23cc1feed7504",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_hard_middle.3dm": "8e5f2a1a6fcb1186b12f95c1fe3529cca8a93095369af2eb005e1f2a530af3c9",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_multiple_constant.3dm": "290dbac2368064b65934d5b10d097ba4b9b03d565fb4cd314046fb340cd2f7df",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_multiple_hard.3dm": "4d0f8eebc87d2eef2f4af2c8f9f73dffd559d6c14b96b43ceb8bebcf5828a707",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_odd_loop_0_vertex_0.3dm": "fdaa71d473e48d21c3b5aebf5d4a31b8896af705a2444f08c335455e92da2207",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_odd_loop_0_vertex_1.3dm": "d75b7237a3f59ded0d65fa5c18c4d577dced062cdce69179311f428c880eac06",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_odd_loop_50_vertex_0.3dm": "d7c280106733eab82dcdcfc11cffecb8367bff6ae6fe0a3835d6d49613b4585d",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_odd_loop_50_vertex_1.3dm": "d966922eb3c4b293874475669bd63e9192e0c738d65d00d7005a2fbd3c915fb1",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_partial_hard_end.3dm": "47fa52e75959dec1c90def7e3a11ac9e8006ff14b238a50d6552a375299869f7",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_partial_hard_middle.3dm": "181621be64ead80b26ce15e923b0076ff7074eb2fe6326d0b9c6b28685059760",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_partial_soft_end.3dm": "97f2d5a5a66fe5034a4cf53990abbb9336c98b1a48ce1e7d6ae3d26265cf172f",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_partial_soft_middle.3dm": "83882556e36e2a7c591b5711487f73d2b62c53997a1e0f385752bf15c1d01705",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_seed_24_75_end.3dm": "83e48b99490cb2f02e264de9f224b379f4772f4f763f67db34ae3b7c8a5a9236",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_seed_24_75_middle.3dm": "726ac1a470e0e4ab51b5221e3b2335fa7a2eaaf2377d0d297fe35645c449e9d4",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_seed_25_25_end.3dm": "e704347ffb84a45047d78cce4fda1363554b83f605c55143ded061357e5be2ab",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_seed_25_25_middle.3dm": "cb26fd9c2bce35905015a80bb2af4ea1a6ccae2361f31ae2da04f051a34ad3df",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_seed_50_end.3dm": "3e6d8c4d00b8d7b1b123484b11faaf160852d3be37c7a6afd03bec3b675df752",
+    "tools/rhino_oracle/fixtures/soft_crease_chains/source/chains_seed_50_middle.3dm": "61fb6bb36801dc8d4333f423b96559237875883182a896cbae1d552eb894acc8",
+    "tools/rhino_oracle/observations/source_snapshots/bf730b6ae10071af4db7df854dca8a26a443160cc55facf1b558e706ccd61211.gz": "73b89107ce40c44ba2c46c6fefdc1d47325a9b7c70901deb3e6c236ca9d42de3",
+    "tools/rhino_oracle/observations/source_snapshots/71d9990c1e72992c43a85d5cd7f0701971830deef7682ecc12b5439ad62ea57f.gz": "723f5d64e261e242267b0fc59b71377561bc7e2cedf5d10a60a51fce6ec430fa",
+    "tools/rhino_oracle/observations/source_snapshots/8a1ff76b875c91bf2db73bf4868fcffc28475ebf59d16f1e36920b38a19ba75f.gz": "378192d611a51eda0ccf87fff0e6e0a95b0697f403b084be73fe3a0e05c209c1",
+    "tools/rhino_oracle/observations/source_snapshots/4ca86177c60eaf66b053181f41cfae616d568adbee13e5a6840fbeea62e23950.gz": "11625beb5e3e8c33eb44cf07017795bc867ab987bec20d8a5a233a83087502d1",
+    "tools/rhino_oracle/observations/source_snapshots/5911aa5e8aa188cb135d56cd1224e9603fe2eae049b9aeedcd9d953ec0b67732.gz": "92e01d8446c6a95dacad16bf935cf1a3c5b680e35a30fae971a09b03e3b849c8",
+    "tools/rhino_oracle/observations/source_snapshots/08d751e391bc593ab7263f00e3f77e64ceb91199a46360c2d396868cc579cb99.gz": "277d8dbbe5c0f328360abc2bfee0a2e85684c09aaf6ad669e427eb5be143f31d",
+    "tools/rhino_oracle/observations/source_snapshots/fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb.gz": "3910574955a6d6d6a27b5471d679087ab3e6f1bbc1691544d86a81b3260d42fd",
+    "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
+    "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
+    "tools/rhino_oracle/observations/source_snapshots/b0bf9b8dd8c54d5b782eaf874f10233fc849b3e56e8a967d823550dccc7d1b21.gz": "68df090d47c5e4b476f861ae2c4e6cb5e025978b75c9775d8400c97f21654a56",
+    "tools/rhino_oracle/observations/source_snapshots/a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846.gz": "77ba573e46fe2ada14e76655eae036a394a1ce91e8c709cfe56da3bbc5caa3e2",
+    "tools/rhino_oracle/observations/source_snapshots/e9005aaf07625c15951094fcf3b6f1a9efcde888a70b51290a6a37d28bfa9b3b.gz": "859da6c5c201c0910fad5a49975a5b14a6461e339c1dd988df57fb24462c5fbc",
+    "tools/rhino_oracle/observations/source_snapshots/0b60033fa4b2a8ded9bf0a5a762d1e0b5839fc20c160880adaa65d3998124cad.gz": "166659d89c94ad576d5665e4f12f3e51cb7962cc5e5c9e6c25f50a9f12eb5509",
+    "tools/rhino_oracle/observations/source_snapshots/28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f.gz": "b5ae4926924fe1bfef1417b1880b95d7185c62e70dc037c6ba85fc70aad5a9aa",
+    "tools/rhino_oracle/observations/source_snapshots/89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f.gz": "066fec0cfff85ca807efa3e08801adaa8bbbb8d3015977b285145e0ef8cf9404",
+    "tools/rhino_oracle/observations/source_snapshots/0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7.gz": "b8c325c26655d9fced9f9a209e7bf44d6ecffae873f04381b4d512aa4588b1b3",
+    "tools/rhino_oracle/observations/source_snapshots/c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a.gz": "5276814c81db96e730f998a14ab89dc08aebada5077dcc73abe671c3ed1e2ccd",
+    "tools/rhino_oracle/observations/source_snapshots/86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa.gz": "deb0832eb2c6d4a8052f17c969fe0e5438995fadffe836701143f370ff4343bf",
+    "tools/rhino_oracle/fixtures/soft_crease_followup.json": "47f912470dc7d2c31563d9280eb7dc8b284a9901375accb1ea7cca61fa6039e9",
+    "tools/rhino_oracle/observations/soft_crease_followup.json": "682772f875b0712784e342ab4e47cc4334a4e8442dc748808cebf95bcff6b53d",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_archive_label_middle_accepted_vertex_0.3dm": "9385dbb4879911655fc2a8a04bf044125ecbd9eda4ff1eb2b33da12db6fec336",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_archive_label_middle_accepted_vertex_2.3dm": "faf1c00f6e0da4e326035fd2b72837d96d7fa5fd02a5845abf51451daf343924",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_archive_label_start_accepted_vertex_0.3dm": "ccbc804aed2bb6052ea84e5384ff27923da43a1895dbc22f095c27a5fca94296",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_archive_label_start_accepted_vertex_2.3dm": "dc99dd56505c83ae301a51d63f67dccea7053ab7967a6eb4c2cfe1da90960bc8",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_constant_then_vertex_0.3dm": "2c9c947a72bbb5c83ca12eff79c678265e7c18f3fbd24c57b642bf4b332e0e6d",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_constant_then_vertex_1.3dm": "bcef07cf04e3da65fdfd01a08ab959ba12bbe8fc758021c3978e546013138577",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_distant_hard.3dm": "7e312b77a7265c10fbcc8d34cb4555b31780b523268612d52a6c1d673d87f822",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_distant_soft.3dm": "69660aa5b45f30f4df25e7cc1ade43817fc223dfaa182b4ae8491e22878ca378",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_even_repeated.3dm": "ad997cb456384834f43e244725cce68d228294cb1857a0036903fb68435b8139",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_invalid_101.3dm": "d68c20b40c4264daafcc26bb4df8d7451cc5ce80134158f055ad2e45df75afee",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_invalid_minus1.3dm": "61d061d3233da0cb22c697bcb0840ef4be084f9be4e3eee06bbf3a24e73dcc6a",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_middle_start.3dm": "aa45f804a650eaf2fedcedf4f9c22ac26defe4826d24368b187b560461cb5ead",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_odd_repeated.3dm": "cbdcf3e8e8700f469e73f63d4a7d29c77914f4f64ae92e824a742919def9949b",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_pentagon_0.3dm": "23508c383c9b94412a9ec9a2aa2fb7d481fe13636fd643bbda37cebf2b3479dd",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_pentagon_50.3dm": "533dba46b62f8a81447a620d2e7bb3d8dc0974a6676175b1d1e37b1dec056b2a",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_start_middle.3dm": "af4f30c18c6420495696385837a37f221762bf65863dd634853b785a4d95a008",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_start_middle_cancel.3dm": "42d0fa4a39ec743baf392ebc99bddb2653e326b168de42e15cc5078c2bdd9bb4",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/result/followup_weighted_repeated.3dm": "97d00c5abdd3ff77bf22d43332114871eb9fc01b18b89d9d03b0b03593cb73d3",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_archive_label_middle_accepted_vertex_0.3dm": "50ec60d3152e91f439c24624322ce528af2322ac6ad585e939cab5fc4677ae94",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_archive_label_middle_accepted_vertex_2.3dm": "ef843de6ee3876dca0aa7a7e691995032e84050da5cc646152b4aae3968594a3",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_archive_label_start_accepted_vertex_0.3dm": "97421c1117e2f3f4b58fb8a61d9c4bdf0eebe829e0073401009469556d0cd1a1",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_archive_label_start_accepted_vertex_2.3dm": "8a5f6e682e49b49dd20fd0ad485df9c270db8687dfd154fddc2bee16d61852f9",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_constant_then_vertex_0.3dm": "ddf4547ced2b75eba8f3cbdf7374475d7d29e0d07c3250a971a45251b6d4a985",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_constant_then_vertex_1.3dm": "611f7e182b1588122ea6ca026f5d052946fbed96ea7a0e16a421ec60cc3e6eb2",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_distant_hard.3dm": "40007f66d199f555c68a9e63cf08c64a46112e900173a3bd8e5774d960af1292",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_distant_soft.3dm": "aa90b3c6c6a3953099aa42e93cfc76b3772fff79ab4eee74441d623973574f25",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_even_repeated.3dm": "e8961a114b20c8649f5be14755827c876cab7d91df70ff7ba442b20cf4d26458",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_invalid_101.3dm": "d901063739bab04c7cd7384167f5b3ce61bf3a7e07a0ee5affb097d1dd87dac0",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_invalid_minus1.3dm": "3a5d190a091c850c92ab3007613d16ac28c382a38842b45721e9eb9a512196dc",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_middle_start.3dm": "98a72a3e3653d94bb140f97fbfd5114c83d52dcf539387d548c4dfa0e80dcb30",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_odd_repeated.3dm": "035ccfd921954323f375946aa90c3ecc9d59fb048d4d978196881d740cc8ae82",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_pentagon_0.3dm": "79635c498328dc1ecdbebb4a3a3a624d3da117ae454fdd442e88cdf999b35324",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_pentagon_50.3dm": "2f50ec56266f82758be2e2df8ed826de32f7bd06a1a7d5d0967639602b84088b",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_start_middle.3dm": "5447fc0fcf38ac0d1772d4225d440c993df77ae4e18956e90747b350e856388a",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_start_middle_cancel.3dm": "c62806881923dd1a373c1c8f7a774854c62d88b21c860b4bdc362381d324be91",
+    "tools/rhino_oracle/fixtures/soft_crease_followup/source/followup_weighted_repeated.3dm": "15bb1d199a75fe986f7943978f6cd10f85e8015acdce052c89bb201822e19abb",
+    "tools/rhino_oracle/observations/source_snapshots/9bf6fd4a5025bc9c6eceda665c7ba8717eb9b90c3b3e3ab97c27f85c48f5c6db.gz": "8dd3920a9f4305d9ed132c3645a0347c4a3077ccf469b38cb48e324219371e4a",
+    "tools/rhino_oracle/observations/source_snapshots/7e2213a4a0c779e4e9ddfc6aa69c62a2fa88a45943844a2a2be163c5762460de.gz": "42c0cba97983511e6079a1a55481dfa2f98378f6b5ac8bc270d2e77995dbc8fb",
+    "tools/rhino_oracle/observations/source_snapshots/cab281255a03649d1280c4c30a630549e8c24cf90078be8e234dbd2f1f94056c.gz": "4e2cb851dddccdcbebd469f29e5b78393f4ff9e0651fc9bf83d1a5482db4b651",
+    "tools/rhino_oracle/observations/source_snapshots/3d27fc79fadd741b24c02d71328db949f403fe019c75bab2015a4aafaf399518.gz": "cae95f03a0ff99db96478b32d6b4b2fff1a6995282482a96f9f4b266b491b6af",
+    "tools/rhino_oracle/observations/source_snapshots/9fcad304656aff6ee0447ed91cf10f8205c5fe470bd70e2a33865a2d9a7ee94d.gz": "f90676d9c1a02770e7b8e678ed10e050db753da9f577527d8440223cae3a3233",
+    "tools/rhino_oracle/observations/source_snapshots/d461327ba3dc736e8b7727d1ff29a39b87022d056da6ba684e6381e6792a5cc7.gz": "77f003fd5d74de1a4deedd202ae822ecbe8db2515733800aadd6f95bb58582a4",
+    "tools/rhino_oracle/observations/source_snapshots/a9d67d48bd7ac0d02d726c27b0b2b30a85f312654c1c13836978c629b8f6a91e.gz": "9c0069f17becaf28d24e7f28ca94f6ef9b22f10ff89c25fe502661a2f77f6e0d",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors.json": "d597f3dd040f3dd7efa53248ecd9e68b09c488367f2f94b3282b98f96585303c",
+    "tools/rhino_oracle/observations/soft_crease_anchors.json": "9411ef7e66f3eb82e3d34e5af8cff984bfa03e636c9352d48db5f41d91aff8b8",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors/result/anchors_erase_break.3dm": "271d89ad2467a93a55162ac421206ccff861117d819708c7cfcd0d331b53f241",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors/result/anchors_loop_noop_middle.3dm": "78f42c9dac49b39bebab6602c031bf9d98d821cb3a09aa6f801f9102df65aa45",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors/result/anchors_noop_middle_0.3dm": "3a3abfa3557ebfa3d2a3f6018d74ba377f126679de1da5e441352ece4e722f75",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors/result/anchors_noop_middle_50.3dm": "8dca4f834970f73578552651c0a6481d38562b9d86a6d0a65b852e985d0a1c60",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors/source/anchors_erase_break.3dm": "e3420569a9303b30ef4652b68f0bd2036a497a286cfe787a9751f5d4317ba53a",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors/source/anchors_loop_noop_middle.3dm": "dd9ab414f515590234baaf3bdd9c114788c6e40f48d12935dbf55922c15ff0a1",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors/source/anchors_noop_middle_0.3dm": "631f241702bf1458efba9e7dff4451bf317c2c1121d801f75ef101008c206aba",
+    "tools/rhino_oracle/fixtures/soft_crease_anchors/source/anchors_noop_middle_50.3dm": "20a910f6831711127c7d4fbfeeb3a78c7f28a954c20ddf45ecd2941b662f52e4",
+    "tools/rhino_oracle/observations/source_snapshots/c7e06ca92ee30306add2f501ec9cb9d0a14d0c69ab30cc642f82775e91ec15a7.gz": "c3a30cd5f327d01e4bb0d46a91a147e353dbf2dcb74b5a8eb51939df049318dd",
+    "tools/rhino_oracle/observations/source_snapshots/8e7c1866119c0ba9e0f7b43c7fb2eafc27d85727b4760ca5ba85394530fcf433.gz": "1219ee9130ac74e56074a272990c638de02c4d68defa8dc41753b27dbad81023",
+    "tools/rhino_oracle/observations/source_snapshots/d8ac1ba8c6925054d95009c15f0add5128134d2d0fb2aa1333e3e3b1aab7e324.gz": "d9f3c979473daee7aea324e316f182ef5d77f6a72495f208bdbc038e734c64ff",
+    "tools/rhino_oracle/observations/source_snapshots/647cd5a53ce283f55dacc9128b0704856e6407a9e49c7fa9fb19c0a1f3089ac0.gz": "9853c59bedf0d2764ae04fcfb1294bb25fd5d63bc132f7268236ef2f766222ec",
+    "crates/viboceros-command/src/lib.rs": "8434ce2b43a2b9064580539c9b0734951f8f83a4577de54eef3e28d77e17c7f7",
+    "src/app.rs": "7817c4420becc6e3e7831dd1949639de3d0a2006e2e523e46f1e26bfeedf7d6a",
+    "src/viewport.rs": "e30a9ba7b4a244db919e0d953cf4acfb661ed6171fbfb28235f380234bb7080d",
+    "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
+    "src/app/soft_crease.rs": "cbe51d66ec3c7cf991f2f886f279bec8adeac8edd1256661f33f0c781fb643ce",
+    "src/app/soft_crease/tests.rs": "5cd15b68572f29b2caf94b912c3915dc6d07389313598bc1a354338d95ba0132",
+    "src/app/soft_crease/tests/native.rs": "26d9cbd2d285653744b9682ba8de9c6f92bb546cb9a85bec2335c551730a4c2b",
+    "src/app/component_selection.rs": "c1eff82aa5e0a6a8a914d3771cb8b36cbd3929685ae8c8eb0d36a3ae891a97f5",
+    "src/app/command_line.rs": "a9ae21d623d6c506e3f74c4d50de9d55132baca299b3e5577f100182e67ebb26",
+    "src/app/object_selection.rs": "bf28d099d9cb93e184cd727916fc19e989a573508cab665757ac8423026b831f",
+    "src/app/block_edit.rs": "b96ea90830a3edefd32a1b61a98fbfa11769cce14ff160f30f84220f1c274c8f",
+    "crates/viboceros-command/tests/soft_crease_session_native.rs": "4d50c429830eb5f86bd62a459e19a312c47d3107fbeca2af0208f910a4e0b7bb",
+    "crates/viboceros-command/tests/soft_crease_staging.rs": "090fed08d3702cb1623791a8ad531f81306f3368f410e19377dc86c536c80586",
+    "crates/viboceros-command/tests/support/soft_crease.rs": "797e90b4bbb00b2063075aea896f932505600818cd2a6ff927bcc7114954e90a",
+    "crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
+    "crates/viboceros-command/tests/support/subd_facets.rs": "ad0be23c4f68083f9b43a85266d0c9e8dcb8d82f00c90c88affa4849472781ff",
+    "tools/rhino_oracle/report_soft_crease_session.py": "3bf622eda9b558cd0a7c0c14158a8a38349658e56183348cd23b29e6f643035c",
+    "tools/rhino_oracle/test_soft_crease_session.py": "13a7e2ccbba8e06b86bf888c9ee5c5e0cb5c7dfa696c7f5f05de21db5b04a614",
+    "crates/viboceros-command/src/soft_crease.rs": "eec4487501312fc3090d932560599f5e18e4038017d7f7412ac268b5507e007b",
+    "crates/viboceros-command/src/soft_crease/profile.rs": "018d7bed89c5fc71e98265f9b578345809f7b5e6937145d2046cb3a472cc6f0f",
+    "crates/viboceros-command/src/soft_crease/arguments.rs": "7d38e43f5032110cda07782c1a4988a1bed1a7f2248b16ac94f8406c455034b6",
+    "src/app/drafting_input.rs": "ec6d4cddf2d6491d6841babfd64b7a2abc849cb545d490d06488e202c711213b",
+    "src/app/interactive_cancel.rs": "7c4ff5f117db309f4b5426edf623c66a61d78c3bd8c30c1b63de3cd80ee9dc0a",
+    "src/app/interactive_start.rs": "e34b9827542d0403606428577564306d4dab88f4ba2c5e4897dad1323a093622",
+    "src/app/interactive_state/metadata.rs": "fbafb777ff716f2d4b6d1f009e12897df2189c3dfe8aa06f2046bd917bec2d1c",
+    "src/app/interactive_state/mod.rs": "1c200249ea8ac710380c15e0bfbc27fc585eb96aac042aa0c26f72097bf0672b",
+    "src/app/interactive_state/prompts.rs": "58af4a1f006faa716017c1064292b7e56454cb61f2a9b6eefadf4e7c3c592920",
+    "src/app/prompt_cancel.rs": "d29a110ba79603f8bc16e5aa67546b6d56d8de4c7c0eb37cc9b811a97104c78f",
+    "src/app/selection_input.rs": "b2613b77a55730f01beecda72b96832b0b51d984d3863fa5016e6f11ba1f3e2e",
+    "src/app/sidebar.rs": "448e17369b0ae80c81532e5d49af583d74501c9e4fb64a395578a8284efcfe80",
+    "src/app/tests/arc_input.rs": "4e20965c46689f9bfe53fe77d870f25f5056bb95c8d9c64eb4ecae840a545a5c",
+    "src/app/tests/command_focus.rs": "47574bf3360cbc2209caa04a444c15bd6fb66035e3165ab31bc2277e01c8e429",
+    "src/app/tests/curve_input.rs": "bbc1b9b0da91964171eb06989f4c0c02267f08015e67a75ed8ffe63d049d32f1",
+    "src/app/tests/extrusion_input.rs": "b905153752c72e87a39d83266ebff3a06fc73db934f1899faff334b9bde261c7",
+    "src/app/tests/face_edge_input.rs": "5a3073701e8da3181f8e3306badcc2fcc2f6b175740891dc1d612b0c204e4abc",
+    "src/app/tests/mesh_edit_input.rs": "830d7640281a0ba9cc53add8908e6ebbcc2451c21688e28f0df71169ac2ccca1",
+    "src/app/tests/mesh_primitive_input.rs": "31ed51730b62b47d6dc9c3b9528a3855f898029f76883d050ff5e07a63ed58b5",
+    "src/app/tests/mod.rs": "6cf3d1983bc0417f2dd98cf3c3564f57c4211ec36db82a4d92c07baf574ae23e",
+    "src/app/tests/primitive_input.rs": "cb745190ea55cfbca6bbc77c7da7ed8c1e845590cf114318949718179e055652",
+    "src/app/tests/round_primitive_input.rs": "5d700393bc1a19f4fdc67402ba38a6058cff1cc9cd5220453d9569b95e8d6b64",
+    "src/app/tests/selection_sidebar.rs": "91e05888ec0c505b8992aeb987f09e8f712d30a269d1af34bac66ae6687f85ea",
+    "src/app/tests/transform_input.rs": "55a0ee3f30c857ed9d65aae08f983bbaf11cff65ad8b53b85855ca386467b214",
+    "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
+    "src/app/ui.rs": "62de29eaea095db346dea80d9ddec4fe3f8828361ccc57bfb5ce699580be3d60",
+    "src/app/viewport_input.rs": "7c647743560b9a419515c949beca893ac702d1d5026f9f56171156346dc3e74d"
+  }
+}

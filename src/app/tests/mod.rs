@@ -278,6 +278,7 @@ pub(super) fn test_app() -> VibocerosApp {
         merge_face_prompt: None,
         edge_fillet_prompt: None,
         crease_prompt: None,
+        soft_crease_prompt: None,
         component_selection: Default::default(),
         points_session: None,
         transform_session: None,

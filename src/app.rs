@@ -135,6 +135,7 @@ mod extract_surface;
 mod merge_coplanar_face;
 mod shell;
 mod shrink_trimmed;
+mod soft_crease;
 mod subdivide;
 mod to_subd;
 #[cfg(test)]
@@ -398,6 +399,7 @@ pub struct VibocerosApp {
     merge_face_prompt: Option<merge_coplanar_face::Prompt>,
     edge_fillet_prompt: Option<edge_fillet::Prompt>,
     crease_prompt: Option<crease::Prompt>,
+    soft_crease_prompt: Option<soft_crease::Prompt>,
     component_selection: component_selection::ComponentSelection,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
@@ -553,6 +555,7 @@ impl VibocerosApp {
             merge_face_prompt: None,
             edge_fillet_prompt: None,
             crease_prompt: None,
+            soft_crease_prompt: None,
             component_selection: Default::default(),
             curve_points: Vec::new(),
             points_session: None,
@@ -830,6 +833,7 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_component_choice(&input)
+            || self.try_continue_soft_crease(&input)
             || self.try_continue_crease(&input)
             || self.try_continue_extract_faces(&input)
             || self.try_continue_edge_fillet(&input)
@@ -928,6 +932,7 @@ impl VibocerosApp {
             || self.start_boolean_two(&input)
             || self.try_start_remember_copy_options(&input)
             || self.try_start_to_subd(&input)
+            || self.try_start_soft_crease(&input)
             || self.try_start_crease(&input)
             || self.try_start_subdivide_faces(&input)
             || self.try_start_shrink_faces(&input)
@@ -973,6 +978,7 @@ impl VibocerosApp {
         let input: &str = input.as_ref();
         self.selection_menu = None;
         if self.try_continue_component_choice(input)
+            || self.try_continue_soft_crease(input)
             || self.try_continue_crease(input)
             || self.try_continue_edge_fillet(input)
             || self.try_continue_unjoin_command(input)

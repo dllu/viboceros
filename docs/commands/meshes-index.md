@@ -10,6 +10,7 @@
 - [ToSubD: mesh, surface, extrusion and selected-face conversion](to-subd.md)
 - [SubDivide: whole objects, selected faces and SubD selection](subdivide.md)
 - [Crease and RemoveCrease: SubD corners/edges and mesh seams](crease.md)
+- [SubDCrease: soft weights, vertex profiles and chain editing](subd-crease.md)
 - [SubDBox primitives and rectangle construction modes](subd-box.md)
 - [SubDPlane grids and rectangle construction modes](subd-plane.md)
 - [SubDSphere styles, sphere construction and reference inputs](subd-sphere.md)

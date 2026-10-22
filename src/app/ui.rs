@@ -45,6 +45,7 @@ impl eframe::App for VibocerosApp {
         self.validate_boolean_two();
         self.validate_rebuild_preview();
         self.validate_weight_preview();
+        self.validate_soft_crease();
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
             self.cancel_current_prompt_or_selection();
@@ -79,6 +80,7 @@ impl eframe::App for VibocerosApp {
             && self.merge_face_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.crease_prompt.is_none()
+            && self.soft_crease_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && !self.remember_copy_prompt
@@ -587,6 +589,7 @@ impl eframe::App for VibocerosApp {
             && self.merge_face_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.crease_prompt.is_none()
+            && self.soft_crease_prompt.is_none()
             && self.shrink_prompt_mode().is_none()
             && !self.to_subd_pending()
             && !self.picking_subdivide()
@@ -642,7 +645,7 @@ impl eframe::App for VibocerosApp {
                     .then_some(crate::viewport::ComponentPickFilter::Edges)
             });
         let component_pick = component_pick.or_else(|| {
-            (self.crease_prompt.is_some()
+            ((self.crease_prompt.is_some() || self.picking_soft_crease_edges())
                 && model_input_active
                 && self.plane_prompt.is_none()
                 && !end_analysis_picking)
@@ -750,7 +753,8 @@ impl eframe::App for VibocerosApp {
                 .as_ref()
                 .and_then(|p| p.scene())
                 .or_else(|| self.refinement_prompt.as_ref().and_then(|p| p.scene()))
-                .or_else(|| self.weight_prompt.as_ref().and_then(|p| p.scene())),
+                .or_else(|| self.weight_prompt.as_ref().and_then(|p| p.scene()))
+                .or_else(|| self.soft_crease_prompt.as_ref().and_then(|p| p.scene())),
         );
         let twist_preview = self
             .twist_session
@@ -1033,6 +1037,7 @@ impl eframe::App for VibocerosApp {
                         &mut child,
                         document,
                         ViewportInput {
+                            soft_crease: self.soft_crease_prompt.as_ref().and_then(|p| p.overlay()),
                             drafting,
                             angle_plane,
                             point_filter,

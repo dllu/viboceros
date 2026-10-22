@@ -9,9 +9,10 @@ getter. Follow-up clicks use surface stations measured from earlier native
 outputs; their parent observations are recorded in the fixture assets. Existing
 varying profiles are seeded from original native 3DM results.
 
-These observations guide the upcoming profile editor. The current
-[qualification](../subd-chains-qualification.json) covers control topology and
-chain counts; it does not claim complete command or UI parity.
+The profile editor and application getters replay these observations. The
+[chain qualification](../subd-chains-qualification.json) records the earlier
+control-topology stage; the [command guide](../commands/subd-crease.md) documents
+the staged editor. These finite captures do not establish complete command parity.
 
 For an open `0–1–2–3` chain, representative vertex-weight sequences are:
 

@@ -485,6 +485,7 @@ impl VibocerosApp {
             || self.unjoin_prompt.is_some()
             || self.edge_fillet_prompt.is_some()
             || self.crease_prompt.is_some()
+            || self.soft_crease_prompt.is_some()
         {
             return None;
         }

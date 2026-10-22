@@ -28,6 +28,8 @@ construction guides and their native qualifications. Primitive commands reuse
 shared rectangle, circle, ellipse and axis getters, with independent settings.
 Use [Crease and RemoveCrease](commands/crease.md) to edit hard edges and corners
 through typed component indices or selected control grips.
+Use [SubDCrease](commands/subd-crease.md) for staged soft weights and vertex profiles
+along interior control-edge chains.
 
 Select a SubD before `3DFace`, choose `Append` in the point getter, or supply
 `Append=<id>` to add faces to it. Without an explicit `Output` option, the target

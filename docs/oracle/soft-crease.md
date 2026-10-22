@@ -34,12 +34,14 @@ ConstantWeightChain options in the vertex-weight getter. A junction can belong
 to several chains; clicking it edits the selected chain rather than every
 incident edge. Closed-loop observations retain their intermediate zero anchor.
 
-The application SubDCrease getter, profile editor and comparative performance
-remain subsequent work. The existing Crease and RemoveCrease qualification is
-separate. Replay the checks without starting Rhino:
+The [application editor](../commands/subd-crease.md) replays the additional chain
+profiles through staged sessions and preselection/postselection getters. Its
+[qualification](../subd-crease-session-qualification.json) is separate from the
+endpoint API and hard-crease records. Comparative performance remains unqualified.
+Replay the checks without starting Rhino:
 
 ```sh
-python3 -m unittest tools.rhino_oracle.test_soft_crease
+python3 -m unittest tools.rhino_oracle.test_soft_crease tools.rhino_oracle.test_soft_crease_session
 ```
 
 The generator refuses to overwrite its observations. Source snapshots retain

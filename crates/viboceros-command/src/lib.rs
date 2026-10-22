@@ -35,6 +35,7 @@ pub mod point_deviation;
 pub mod replace_block;
 pub mod rigid_groups;
 pub mod section;
+pub mod soft_crease;
 pub mod sphere_input;
 pub mod subd_axial;
 pub mod subd_box;
@@ -1167,6 +1168,9 @@ impl CommandRegistry {
         registry
             .register(crease::CreaseCommand(crease::CreaseMode::Remove))
             .expect("unique built-in RemoveCrease");
+        registry
+            .register(soft_crease::SubDCreaseCommand)
+            .expect("unique built-in SubDCrease");
         registry
             .register(subdivide::SubDivideCommand)
             .expect("unique built-in SubDivide");

@@ -3,6 +3,10 @@
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
+    'src/app/soft_crease.rs',
+    'src/app/soft_crease/tests.rs',
+    'src/app/soft_crease/tests/native.rs',
+    'src/viewport/soft_crease.rs',
     'src/app/drafting_input.rs',
     'src/app/interactive_cancel.rs',
     'src/app/interactive_start.rs',
@@ -45,6 +49,12 @@ SUBD_MODULES = [
 
 def with_shared_sources(paths):
     expanded = list(paths)
+    if 'crates/viboceros-command/src/lib.rs' in expanded:
+        expanded.extend([
+            'crates/viboceros-command/src/soft_crease.rs',
+            'crates/viboceros-command/src/soft_crease/profile.rs',
+            'crates/viboceros-command/src/soft_crease/arguments.rs',
+        ])
     if 'src/app.rs' in expanded:
         expanded.extend(APPLICATION_MODULES)
     if 'crates/viboceros-opennurbs/native/subd.cpp' in expanded:

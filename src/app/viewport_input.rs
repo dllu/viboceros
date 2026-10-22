@@ -3,6 +3,16 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if self
+            .soft_crease_prompt
+            .as_ref()
+            .is_some_and(|p| !p.selecting())
+        {
+            if let Some((chain, vertex)) = output.soft_crease_vertex {
+                self.pick_soft_crease_vertex(chain, vertex);
+            }
+            return true;
+        }
         if self.remap_cplane_session.is_some()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
