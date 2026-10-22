@@ -5,6 +5,7 @@ use crate::{
 };
 use std::sync::Arc;
 mod append;
+mod chains;
 mod cone;
 mod crease;
 mod cylinder;
@@ -21,6 +22,7 @@ mod surface_conversion;
 mod torus;
 mod truncated_cone;
 pub use append::SubDAppendResult;
+pub use chains::{SubDDirectedEdge, SubDEdgeChain};
 pub use cylinder::SubDCylinderCap;
 pub use mesh_conversion::SubDFromMeshOptions;
 pub use sphere::SubDSphereStyle;

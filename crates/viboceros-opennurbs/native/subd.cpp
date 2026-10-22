@@ -162,6 +162,8 @@ extern "C" int vibo_subd_set_tags(const uint8_t* bytes,size_t count,int vertex,
 }
 #include "subd_crease.h"
 #include "subd_soft_crease.h"
+#include "subd_chains.h"
+#include "subd_sharpness.h"
 extern "C" int vibo_subd_soft_crease(const uint8_t* bytes,size_t count,
     const size_t* edges,const double* weights,size_t edge_count,size_t* changed,
     ViboSubDResult** out,char* error,size_t capacity) {
@@ -170,6 +172,17 @@ extern "C" int vibo_subd_soft_crease(const uint8_t* bytes,size_t count,
     require(changed,"Missing soft crease change count");
     auto subd=vibo_subd::decode(bytes,count);
     *changed=vibo_subd::soft_crease(*subd,edges,weights,edge_count);
+    return extract(*subd);
+  });
+}
+extern "C" int vibo_subd_stored_sharpness(const uint8_t* bytes,size_t count,
+    const size_t* edges,const double* weights,size_t edge_count,size_t* changed,
+    ViboSubDResult** out,char* error,size_t capacity) {
+  if(changed) *changed=0;
+  return guard(out,error,capacity,[&]{
+    require(changed,"Missing soft crease change count");
+    auto subd=vibo_subd::decode(bytes,count);
+    *changed=vibo_subd::soft_crease(*subd,edges,weights,edge_count,true);
     return extract(*subd);
   });
 }

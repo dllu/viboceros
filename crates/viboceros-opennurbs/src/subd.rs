@@ -1,12 +1,17 @@
 //! Owned SubD records and bounded calls to the public OpenNURBS subdivision API.
 use std::ffi::{c_char, c_int};
 use std::ptr::NonNull;
+mod chains;
 mod crease;
 mod edges;
+mod sharpness;
 mod soft_crease;
+pub use chains::subd_edge_chains;
 pub use crease::subd_crease_components;
 pub use edges::subd_edge_samples;
+pub use sharpness::{subd_chain_sharpness, subd_sharpness_from_percent};
 pub use soft_crease::subd_soft_crease;
+pub use soft_crease::subd_stored_sharpness;
 
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 #[error("OpenNURBS SubD: {0}")]

@@ -19,6 +19,8 @@ fn main() {
         "subd_append.h",
         "subd_crease.h",
         "subd_soft_crease.h",
+        "subd_chains.h",
+        "subd_sharpness.h",
         "subd_edges.h",
         "subd_interpolation.h",
         "subd_subdivision.h",

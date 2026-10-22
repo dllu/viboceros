@@ -79,11 +79,7 @@
     "crates/viboceros-opennurbs/native/surface_queries.h": "3ccedae01ddbea8180fdf41d80d2d10f101e64a4f5b1ad632a4bb876e11b06ed",
     "crates/viboceros-opennurbs/src/surface.rs": "d3b705927286a173681caff73054a81c1f1112352a91545ff9a3d2d9f15fd47f",
     "docs/commands/array-surface.md": "6a70b92aeade26b849402ad17fb19da43f1cc3cf9cee2eaa16ebde17187f1250",
-    "docs/surface-parameter-frames.md": "917b7843d60e74b1e6124b14520a887eec3042b08d5cd7c515995f7d7ff78242",
-    "docs/tosubd-kernel-qualification.json": "a9e54f6363f0ed333c2791753c4e3220d7b1a248757f3fbdc25b7f4b929fe128",
-    "docs/tosubd-command-qualification.json": "2d2dd2173496ee1ed9f53140a4f0a6bf02dd42b0217160d4df1b4618519ef401",
-    "docs/creator-extrusion-qualification.json": "51f9ef5a2971f37d1ef8ee12812e92ff8a5cd71ce4111af39e66694a1817f111",
-    "docs/creator-extrusion-portable-qualification.json": "7790b8090977a62685f6ef4a9d3c27077357d00fb5413e2ec875b75bbd7b5bc3"
+    "docs/surface-parameter-frames.md": "917b7843d60e74b1e6124b14520a887eec3042b08d5cd7c515995f7d7ff78242"
   },
   "git_sha256": {
     "25fef7b1bc01d18586f39aa1eb59b82eead208d4:AGENTS.md": "d525d153cf3109781b115090de9e85aedd26467278924721b2e6f95a0232721a",
@@ -105,6 +101,10 @@
     "25fef7b1bc01d18586f39aa1eb59b82eead208d4:tools/rhino_oracle/fixtures/array_surface.json": "26771ec8dc8dbf531e6462ad9f94f14e8e16cc777a0a2f6513fa215117e72113",
     "25fef7b1bc01d18586f39aa1eb59b82eead208d4:tools/rhino_oracle/observations/array_surface.json": "b5453af3ecfa0ee664e8bb5eb48face8f97cdbbb111ce3e330d4bbf30e6d680b",
     "25fef7b1bc01d18586f39aa1eb59b82eead208d4:docs/array-surface-validation.json": "4e1c2db4f1e17ca831097061356f93127e7b429fa74dc1076a9f8ee9ef5c707b",
-    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:docs/subd-soft-crease-validation.json": "377d8ba801b4476a940f5767523b6b4c8316dde33a055380a127e005ba88f824"
+    "25fef7b1bc01d18586f39aa1eb59b82eead208d4:docs/subd-soft-crease-validation.json": "377d8ba801b4476a940f5767523b6b4c8316dde33a055380a127e005ba88f824",
+    "47ea3b354630c8a4370f95be1cf70a08d4ff51ca:docs/tosubd-kernel-qualification.json": "a9e54f6363f0ed333c2791753c4e3220d7b1a248757f3fbdc25b7f4b929fe128",
+    "47ea3b354630c8a4370f95be1cf70a08d4ff51ca:docs/tosubd-command-qualification.json": "2d2dd2173496ee1ed9f53140a4f0a6bf02dd42b0217160d4df1b4618519ef401",
+    "47ea3b354630c8a4370f95be1cf70a08d4ff51ca:docs/creator-extrusion-qualification.json": "51f9ef5a2971f37d1ef8ee12812e92ff8a5cd71ce4111af39e66694a1817f111",
+    "47ea3b354630c8a4370f95be1cf70a08d4ff51ca:docs/creator-extrusion-portable-qualification.json": "7790b8090977a62685f6ef4a9d3c27077357d00fb5413e2ec875b75bbd7b5bc3"
   }
 }

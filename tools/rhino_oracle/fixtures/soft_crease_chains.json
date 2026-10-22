@@ -1,0 +1,141 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_crease_command",
+      "id": "chains_seed_50_end",
+      "case": "chains_seed_50_end"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_seed_50_middle",
+      "case": "chains_seed_50_middle"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_seed_24_75_end",
+      "case": "chains_seed_24_75_end"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_seed_24_75_middle",
+      "case": "chains_seed_24_75_middle"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_seed_25_25_end",
+      "case": "chains_seed_25_25_end"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_seed_25_25_middle",
+      "case": "chains_seed_25_25_middle"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_hard_end",
+      "case": "chains_hard_end"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_partial_soft_end",
+      "case": "chains_partial_soft_end"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_partial_hard_end",
+      "case": "chains_partial_hard_end"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_hard_middle",
+      "case": "chains_hard_middle"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_partial_soft_middle",
+      "case": "chains_partial_soft_middle"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_partial_hard_middle",
+      "case": "chains_partial_hard_middle"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_branch_hard",
+      "case": "chains_branch_hard"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_branch_constant",
+      "case": "chains_branch_constant"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_branch_hard_cancel",
+      "case": "chains_branch_hard_cancel"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_branch_constant_cancel",
+      "case": "chains_branch_constant_cancel"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_disconnected_hard",
+      "case": "chains_disconnected_hard"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_disconnected_constant",
+      "case": "chains_disconnected_constant"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_disconnected_hard_cancel",
+      "case": "chains_disconnected_hard_cancel"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_disconnected_constant_cancel",
+      "case": "chains_disconnected_constant_cancel"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_multiple_hard",
+      "case": "chains_multiple_hard"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_multiple_constant",
+      "case": "chains_multiple_constant"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_odd_loop_0_vertex_0",
+      "case": "chains_odd_loop_0_vertex_0"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_odd_loop_0_vertex_1",
+      "case": "chains_odd_loop_0_vertex_1"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_odd_loop_50_vertex_0",
+      "case": "chains_odd_loop_50_vertex_0"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "chains_odd_loop_50_vertex_1",
+      "case": "chains_odd_loop_50_vertex_1"
+    }
+  ]
+}

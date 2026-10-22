@@ -68,6 +68,19 @@ typedef struct {
 int vibo_subd_edge_samples(const uint8_t*, size_t, unsigned, ViboSubDEdgeSamples**, char*, size_t);
 int vibo_subd_edge_samples_view(const ViboSubDEdgeSamples*, ViboSubDEdgeSamplesView*);
 void vibo_subd_edge_samples_free(ViboSubDEdgeSamples*);
+typedef struct ViboSubDChains ViboSubDChains;
+typedef struct {
+  size_t chain_count,edge_count;
+  const size_t* offsets;
+  const size_t* directed_edges;
+} ViboSubDChainsView;
+int vibo_subd_edge_chains(const uint8_t*,size_t,const size_t*,size_t,ViboSubDChains**,char*,size_t);
+int vibo_subd_edge_chains_view(const ViboSubDChains*,ViboSubDChainsView*);
+void vibo_subd_edge_chains_free(ViboSubDChains*);
+int vibo_subd_sharpness_from_percent(double,double*,char*,size_t);
+int vibo_subd_chain_sharpness(const double*,size_t,double*,char*,size_t);
+int vibo_subd_stored_sharpness(const uint8_t*,size_t,const size_t*,const double*,size_t,
+  size_t*,ViboSubDResult**,char*,size_t);
 #ifdef __cplusplus
 }
 #endif

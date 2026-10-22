@@ -1,15 +1,20 @@
 """Fixed public SubDCrease commands, without proprietary implementation access."""
 from copy import deepcopy
 if __package__:
-    from .soft_crease_cases import DISCOVERY, SCENES, LABELS, EXTRA, PRECISION, NUMERIC_LABELS, all_cases
+    from .soft_crease_cases import DISCOVERY, SCENES, LABELS, EXTRA, PRECISION, NUMERIC_LABELS, CHAINS, FOLLOWUP, ANCHORS, all_cases
 else:
-    from soft_crease_cases import DISCOVERY, SCENES, LABELS, EXTRA, PRECISION, NUMERIC_LABELS, all_cases
+    from soft_crease_cases import DISCOVERY, SCENES, LABELS, EXTRA, PRECISION, NUMERIC_LABELS, CHAINS, FOLLOWUP, ANCHORS, all_cases
 
 
-def request(discovery=True, labels=False, extra=False, precision=False, numeric_labels=False):
+def request(discovery=True, labels=False, extra=False, precision=False, numeric_labels=False, chains=False, followup=False, anchors=False):
+    families = [(anchors, ANCHORS), (followup, FOLLOWUP), (chains, CHAINS),
+                (numeric_labels, NUMERIC_LABELS), (precision, PRECISION),
+                (extra, EXTRA), (labels, LABELS)]
+    selected = next((family for enabled, family in families if enabled),
+                    DISCOVERY if discovery else SCENES)
     return dict(protocol_version=1, iterations=1,
                 tolerance=dict(absolute=1e-6, relative=1e-12, angular=1e-6),
-                operations=[dict(op='soft_crease_command', id=key, case=key) for key in (NUMERIC_LABELS if numeric_labels else PRECISION if precision else EXTRA if extra else LABELS if labels else DISCOVERY if discovery else SCENES)])
+                operations=[dict(op='soft_crease_command', id=key, case=key) for key in selected])
 
 
 def validate(op):
@@ -38,7 +43,7 @@ def run(op, host, iterations, tolerance):
             if isinstance(action, dict):
                 obj = scene.doc.Objects.FindId(scene.ids[action.get('source', 0)])
                 v = scene.vertices(obj.Geometry)[action['vertex']]
-                point = v.SurfacePoint() if action['space'] == 'surface' else v.ControlNetPoint
+                point = scene.R.Geometry.Point3d(*action['point']) if 'point' in action else v.SurfacePoint() if action['space'] == 'surface' else v.ControlNetPoint
                 tokens.append('{:.17g},{:.17g},{:.17g}'.format(point.X, point.Y, point.Z))
                 live_actions.append(dict(click=[float(point.X), float(point.Y), float(point.Z)]))
             elif isinstance(action, str):

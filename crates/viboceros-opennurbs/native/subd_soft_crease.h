@@ -4,7 +4,7 @@
 // Its sharpness conversion owns percentage sanitization and float storage.
 namespace vibo_subd {
 inline size_t soft_crease(ON_SubD& subd, const size_t* indices,
-    const double* weights, size_t count) {
+    const double* weights, size_t count, bool stored=false) {
   require(count<=4*component_limit && (count==0 || (indices && weights)),
     "Invalid or excessive soft crease input");
   std::vector<const ON_SubDEdge*> edges;
@@ -23,13 +23,18 @@ inline size_t soft_crease(ON_SubD& subd, const size_t* indices,
     double ends[2];
     for(unsigned k=0;k<2;++k) {
       const double value=weights[2*i+k];
-      require(std::isfinite(value) && value>=0. && value<=100.,
-        "Soft crease weights must be between 0 and 100");
-      ends[k]=ON_SubDEdgeSharpness::SharpnessFromSliderValue(
-        ON_Interval(0.,100.),value,ON_DBL_QNAN);
+      if(stored) ends[k]=stored_sharpness_input(value);
+      else {
+        require(std::isfinite(value) && value>=0. && value<=100.,
+          "Soft crease weights must be between 0 and 100");
+        ends[k]=ON_SubDEdgeSharpness::SharpnessFromSliderValue(
+          ON_Interval(0.,100.),value,ON_DBL_QNAN);
+      }
     }
     const auto value=ON_SubDEdgeSharpness::FromInterval(ends[0],ends[1]);
     require(value.IsValid(),"Invalid soft crease sharpness");
+    if(stored) require(value.EndSharpness(0)==weights[2*i] && value.EndSharpness(1)==weights[2*i+1],
+      "Cannot preserve stored soft crease sharpness");
     sharpness.push_back(value);
     selected.Append(ON_SubDComponentPtr::Create(e));
   }

@@ -133,9 +133,21 @@ other['vertices'] = [[x + 9, y - 4, z + 3] for x, y, z in other['vertices']]
 recipe['sources'].append(other)
 NUMERIC_LABELS['label_multiple'] = recipe
 
+if __package__:
+    from .soft_crease_chain_cases import cases as chain_cases
+    from .soft_crease_followup_cases import cases as followup_cases, anchor_cases
+else:
+    from soft_crease_chain_cases import cases as chain_cases
+    from soft_crease_followup_cases import cases as followup_cases, anchor_cases
+CHAINS = chain_cases(cube, label)
+FOLLOWUP = followup_cases(cube, label)
+ANCHORS = anchor_cases(cube, label)
+
 
 def all_cases():
-    pairs = list(DISCOVERY.items()) + list(SCENES.items()) + list(LABELS.items()) + list(EXTRA.items()) + list(PRECISION.items()) + list(NUMERIC_LABELS.items())
+    families = (DISCOVERY, SCENES, LABELS, EXTRA, PRECISION, NUMERIC_LABELS,
+                CHAINS, FOLLOWUP, ANCHORS)
+    pairs = [pair for family in families for pair in family.items()]
     result = dict(pairs)
     if len(result) != len(pairs):
         raise ValueError('soft crease recipe names must be globally unique')

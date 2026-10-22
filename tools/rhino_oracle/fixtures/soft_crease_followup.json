@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_crease_command",
+      "id": "followup_start_middle",
+      "case": "followup_start_middle"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_middle_start",
+      "case": "followup_middle_start"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_start_middle_cancel",
+      "case": "followup_start_middle_cancel"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_constant_then_vertex_0",
+      "case": "followup_constant_then_vertex_0"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_constant_then_vertex_1",
+      "case": "followup_constant_then_vertex_1"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_weighted_repeated",
+      "case": "followup_weighted_repeated"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_even_repeated",
+      "case": "followup_even_repeated"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_odd_repeated",
+      "case": "followup_odd_repeated"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_archive_label_start_accepted_vertex_0",
+      "case": "followup_archive_label_start_accepted_vertex_0"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_archive_label_start_accepted_vertex_2",
+      "case": "followup_archive_label_start_accepted_vertex_2"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_archive_label_middle_accepted_vertex_0",
+      "case": "followup_archive_label_middle_accepted_vertex_0"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_archive_label_middle_accepted_vertex_2",
+      "case": "followup_archive_label_middle_accepted_vertex_2"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_pentagon_0",
+      "case": "followup_pentagon_0"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_pentagon_50",
+      "case": "followup_pentagon_50"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_distant_hard",
+      "case": "followup_distant_hard"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_distant_soft",
+      "case": "followup_distant_soft"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_invalid_minus1",
+      "case": "followup_invalid_minus1"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "followup_invalid_101",
+      "case": "followup_invalid_101"
+    }
+  ]
+}

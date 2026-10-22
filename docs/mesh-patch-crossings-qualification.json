@@ -3468,7 +3468,7 @@
     "crates/viboceros-geometry/src/curve/polyline.rs": "af769a36f117448e43eb4f0c435dd908e1532f95b5e2779ca3e5b095d1fc6676",
     "crates/viboceros-geometry/src/curve/polyline/angle.rs": "1332c312e6b38cc3e1795d364060fa7e417c7c7c203a449d0adc2681290f246d",
     "crates/viboceros-geometry/src/mesh.rs": "af5e20118bd32ad3e7fe2c5bb79e4ab9d8cc118b60cd34b21cf63bd193d02143",
-    "crates/viboceros-geometry/src/lib.rs": "115973202604c7acdf575f6c5bb60e8e70f2e01fd448bfd3e935c68c537cf51c",
+    "crates/viboceros-geometry/src/lib.rs": "a07d2c2651bfc8cd30469e18f8ca98b714fffe360f0943fe8dcd23b4d9509bdd",
     "crates/viboceros-geometry/src/error.rs": "633250a4c718f091a9f3e7c9a1bbb0b6541fca30f97199122f45d6ae2fbf4b42",
     "crates/viboceros-geometry/src/point_projection.rs": "f297f74f124a39cb6dd80abc2abe37cb16f302d23cc71f464004bb44c54a4556",
     "crates/viboceros-geometry/src/point_projection/fit.rs": "ff9b24930ffdd88aa820d62037fc7c435aeaaa32aeca15040d3bd634e11cba91",
@@ -3497,7 +3497,7 @@
     "crates/viboceros-command/src/mesh_patch/tests.rs": "d76fee8b9d14f8ea618ef8078d81bd0b4d91a613e9f28a1f246035fe4e84140b",
     "tools/rhino_oracle/client.py": "b0bf9b8dd8c54d5b782eaf874f10233fc849b3e56e8a967d823550dccc7d1b21",
     "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846",
-    "tools/rhino_oracle/structural_sdk.py": "1ebe10a8334de7c98301f0ca30290f581d79e30fd6012fba37873ff289239fe0",
+    "tools/rhino_oracle/structural_sdk.py": "a9d67d48bd7ac0d02d726c27b0b2b30a85f312654c1c13836978c629b8f6a91e",
     "tools/rhino_oracle/generate_mesh_patch_crossings.py": "9c4d9ed75c160214f6e0642f42c6ff7b77609243969c6e0c28dd49046a10a134",
     "tools/rhino_oracle/report_mesh_patch_crossings.py": "b7ca00dc845df9e32bd6e66eb6077c3765488043269887771049a43441247146",
     "tools/rhino_oracle/test_mesh_patch_crossings.py": "51ea0af8b64b659efa525d9be9600eaf0859ae40aa4dba293cdbcdece12987ef",
@@ -3539,6 +3539,6 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "507b57c03ba29280b7e5c0c7a8ba436a571e5993f5a73dc6d3bad81eccc12c3c",
     "src/app/viewport_input.rs": "47ee836e7dffdcf405be3f3220eca327c84513dcd2b29ba2de93a327023e8d6d",
-    "tools/rhino_oracle/qualification_sources.py": "c2e5acc32f3c008d49707a9475633a9f830ce098d59e89c22169fd8d05468846"
+    "tools/rhino_oracle/qualification_sources.py": "90779be6b32d132cd028ee0162d054f2c0d5f5fe72ffcc6f44615d58c9a105e6"
   }
 }

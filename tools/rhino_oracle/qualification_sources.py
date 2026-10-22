@@ -31,6 +31,11 @@ APPLICATION_MODULES = [
 
 
 SUBD_MODULES = [
+    'crates/viboceros-opennurbs/native/subd_chains.h',
+    'crates/viboceros-opennurbs/native/subd_sharpness.h',
+    'crates/viboceros-opennurbs/src/subd/chains.rs',
+    'crates/viboceros-opennurbs/src/subd/sharpness.rs',
+    'crates/viboceros-geometry/src/subd/chains.rs',
     'crates/viboceros-opennurbs/native/subd_archive_sharpness.h',
     'crates/viboceros-opennurbs/native/subd_soft_crease.h',
     'crates/viboceros-opennurbs/src/subd/soft_crease.rs',

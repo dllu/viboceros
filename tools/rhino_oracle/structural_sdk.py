@@ -6,7 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
-    'soft_crease_command': ('soft_crease_probe', ('soft_crease_cases','subd_edit_scene','conic_getter_input','managed_mouse_callback','snap_environment','number_token','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
+    'soft_crease_command': ('soft_crease_probe', ('soft_crease_cases','soft_crease_chain_cases','soft_crease_followup_cases','subd_edit_scene','conic_getter_input','managed_mouse_callback','snap_environment','number_token','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'crease_command': ('crease_probe', ('crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'creator_extrusions': ('creator_extrusions_probe', ('subd_box_probe','join_probe','merge_edges_probe')),
     'creator_types': ('creator_types_probe', ('join_probe','merge_edges_probe')),
@@ -166,3 +166,7 @@ def stage_helpers(request, source_directory: Path, destination: Path):
     for module in sorted(modules):
         name = module+'.py'
         shutil.copyfile(source_directory/name, destination/name)
+    if 'soft_crease_probe' in modules:
+        asset = Path('fixtures/soft_crease_followup_assets.json')
+        (destination/asset.parent).mkdir(exist_ok=True)
+        shutil.copyfile(source_directory/asset, destination/asset)

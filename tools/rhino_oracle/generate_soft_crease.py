@@ -8,7 +8,8 @@ from pathlib import Path
 from .soft_crease_probe import request
 
 HERE = Path(__file__).resolve().parent
-SOURCES = ['generate_soft_crease.py', 'soft_crease_cases.py', 'soft_crease_probe.py',
+SOURCES = ['generate_soft_crease.py', 'soft_crease_cases.py', 'soft_crease_chain_cases.py', 'soft_crease_probe.py',
+           'soft_crease_followup_cases.py', 'fixtures/soft_crease_followup_assets.json',
            'subd_edit_scene.py', 'subdivide_probe.py', 'subd_box_probe.py',
            'join_probe.py', 'merge_edges_probe.py', 'client.py', 'rhino_worker.py', 'structural_sdk.py',
            'conic_getter_input.py', 'managed_mouse_callback.py', 'snap_environment.py', 'number_token.py',
@@ -22,19 +23,26 @@ def sha(path):
 def main():
     from .client import OracleClient
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--main', action='store_true')
-    parser.add_argument('--labels', action='store_true')
-    parser.add_argument('--extra', action='store_true')
-    parser.add_argument('--precision', action='store_true')
-    parser.add_argument('--numeric-labels', action='store_true')
+    families = [
+        ('main', 'soft_crease', 'Main', dict(discovery=False)),
+        ('labels', 'soft_crease_labels_discovery', 'Labels', dict(labels=True)),
+        ('extra', 'soft_crease_extra', 'Extra', dict(extra=True)),
+        ('precision', 'soft_crease_precision', 'Precision', dict(precision=True)),
+        ('numeric_labels', 'soft_crease_numeric_labels', 'NumericLabels', dict(numeric_labels=True)),
+        ('chains', 'soft_crease_chains', 'Chains', dict(chains=True)),
+        ('followup', 'soft_crease_followup', 'Followup', dict(followup=True)),
+        ('anchors', 'soft_crease_anchors', 'Anchors', dict(anchors=True)),
+    ]
+    group = parser.add_mutually_exclusive_group()
+    for name, _, _, _ in families:
+        group.add_argument('--' + name.replace('_', '-'), action='store_true')
     args = parser.parse_args()
-    if sum([args.main, args.labels, args.extra, args.precision, args.numeric_labels]) > 1:
-        parser.error('choose one fixed family')
-    family = 'soft_crease_numeric_labels' if args.numeric_labels else 'soft_crease_precision' if args.precision else 'soft_crease_extra' if args.extra else 'soft_crease_labels_discovery' if args.labels else 'soft_crease' if args.main else 'soft_crease_discovery'
+    _, family, suffix, options = next((entry for entry in families if getattr(args, entry[0])),
+                                    ('discovery', 'soft_crease_discovery', 'Discovery', {}))
     output = HERE / 'observations' / (family + '.json')
     if output.exists():
         raise ValueError('observations are immutable; add another family')
-    query = request(discovery=not args.main, labels=args.labels, extra=args.extra, precision=args.precision, numeric_labels=args.numeric_labels)
+    query = request(**options)
     path = HERE / 'fixtures' / (family + '.json')
     path.write_text(json.dumps(query, indent=2) + '\n')
     sources = {name: sha(HERE / name) for name in SOURCES}
@@ -44,7 +52,8 @@ def main():
             archive.write_bytes(gzip.compress((HERE / name).read_bytes(), mtime=0))
     print('Capturing ' + family + ': ' + str(len(query['operations'])) + ' workflows', flush=True)
     try:
-        response = OracleClient(settings_scheme='VibocerosOracleSoftCrease20261022' + ('NumericLabels' if args.numeric_labels else 'Precision' if args.precision else 'Extra' if args.extra else 'Labels' if args.labels else 'Main' if args.main else 'Discovery')).run_rhino(query, timeout=300)
+        response = OracleClient(settings_scheme='VibocerosOracleSoftCrease20261022' + suffix).run_rhino(
+            query, timeout=1500 if suffix in ('Chains', 'Followup', 'Anchors') else 300)
     except Exception as error:
         response = dict(error=str(error), excluded_from_qualification=True)
     if sources != {name: sha(HERE / name) for name in SOURCES}:

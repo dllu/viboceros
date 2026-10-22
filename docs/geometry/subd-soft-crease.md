@@ -26,7 +26,9 @@ surface with `changed=false`. Transforms, control edits and internal archive
 roundtrips retain the weights.
 
 This is a geometry API. The interactive `SubDCrease` command, label editing,
-chain selection and document admission are subsequent implementation work.
+interactive chain selection and document admission are subsequent implementation work.
+The [control-chain API](subd-chains.md) supplies native partitioning and
+interpolation primitives for that work.
 
 ## Native archive boundaries
 

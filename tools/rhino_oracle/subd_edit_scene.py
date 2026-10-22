@@ -19,6 +19,32 @@ class Scene:
             v = v.Next
         return result
 
+    def geometry(self, definition):
+        R = self.R
+        if 'native_archive' in definition:
+            seed = definition['native_archive']
+            model = R.FileIO.File3dm.FromByteArray(self.S.Convert.FromBase64String(seed['data']))
+            if model is None:
+                raise ValueError('cannot read native SubD seed')
+            try:
+                matches = [o.Geometry for o in model.Objects if isinstance(o.Geometry, R.Geometry.SubD)
+                           and o.Attributes.Name == seed['object_name']]
+                if len(matches) != 1:
+                    raise ValueError('native SubD seed is ambiguous')
+                return matches[0].Duplicate()
+            finally:
+                model.Dispose()
+        mesh = R.Geometry.Mesh()
+        mesh.Vertices.UseDoublePrecisionVertices = True
+        try:
+            for point in definition['vertices']:
+                mesh.Vertices.Add(R.Geometry.Point3d(*point))
+            for face in definition['faces']:
+                mesh.Faces.AddFace(*face)
+            return R.Geometry.SubD.CreateFromMesh(mesh)
+        finally:
+            mesh.Dispose()
+
     def __enter__(self):
         R, S, doc = self.R, self.S, self.doc
         if list(doc.Objects) or doc.UndoRecordingIsActive:
@@ -30,16 +56,7 @@ class Scene:
                     self.layers.append(doc.Layers.Add(name, color))
                 self.group = doc.Groups.Add('SubD edit assembly')
                 for index, definition in enumerate(self.case['sources']):
-                    mesh = R.Geometry.Mesh()
-                    mesh.Vertices.UseDoublePrecisionVertices = True
-                    try:
-                        for point in definition['vertices']:
-                            mesh.Vertices.Add(R.Geometry.Point3d(*point))
-                        for face in definition['faces']:
-                            mesh.Faces.AddFace(*face)
-                        subd = R.Geometry.SubD.CreateFromMesh(mesh)
-                    finally:
-                        mesh.Dispose()
+                    subd = self.geometry(definition)
                     if subd is None:
                         raise ValueError('cannot construct source SubD')
                     try:
@@ -79,7 +96,8 @@ class Scene:
                         completed.append(str(event.CommandResult))
                 R.Commands.Command.EndCommand += ended
                 try:
-                    R.RhinoApp.RunScript('_-SubDCrease ' + str(definition['soft']) + ' _Enter _Cancel _Cancel', True)
+                    from number_token import number_token
+                    R.RhinoApp.RunScript('_-SubDCrease ' + number_token(definition['soft']) + ' _Enter _Cancel _Cancel', True)
                 finally:
                     R.Commands.Command.EndCommand -= ended
                 if completed != ['Success']:

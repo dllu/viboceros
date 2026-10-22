@@ -2662,7 +2662,7 @@
     "tools/rhino_oracle/test_mesh_polyline.py": "a9c899a21da65231ec92dfa1abfabea596b31068ba8e838923be2ef0486fa02e",
     "tools/rhino_oracle/client.py": "b0bf9b8dd8c54d5b782eaf874f10233fc849b3e56e8a967d823550dccc7d1b21",
     "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846",
-    "tools/rhino_oracle/structural_sdk.py": "1ebe10a8334de7c98301f0ca30290f581d79e30fd6012fba37873ff289239fe0",
+    "tools/rhino_oracle/structural_sdk.py": "a9d67d48bd7ac0d02d726c27b0b2b30a85f312654c1c13836978c629b8f6a91e",
     "tools/rhino_oracle/fixtures/mesh_polyline.json": "7adc422abd5729fdb652610777ce65e8efab60e14c3735f0cd87bc47c8fccdc9",
     "tools/rhino_oracle/observations/mesh_polyline.json": "2fce07a7571ecaf28bba93704b5292527ff3c2b4dc85995814a8486d331a2b2e",
     "tools/rhino_oracle/fixtures/mesh_polyline_variants.json": "a0a61db2beb32f4746b1ab5c2b9162a4446ed7e8f0c5085f92d031e6199bedef",
@@ -2691,6 +2691,6 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "507b57c03ba29280b7e5c0c7a8ba436a571e5993f5a73dc6d3bad81eccc12c3c",
     "src/app/viewport_input.rs": "47ee836e7dffdcf405be3f3220eca327c84513dcd2b29ba2de93a327023e8d6d",
-    "tools/rhino_oracle/qualification_sources.py": "c2e5acc32f3c008d49707a9475633a9f830ce098d59e89c22169fd8d05468846"
+    "tools/rhino_oracle/qualification_sources.py": "90779be6b32d132cd028ee0162d054f2c0d5f5fe72ffcc6f44615d58c9a105e6"
   }
 }
