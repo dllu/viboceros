@@ -35,6 +35,7 @@ use drafting::clip_drafting_line;
 #[cfg(test)]
 use viboceros_drafting::TrackAxis;
 mod display_cache;
+mod mesh_normals;
 mod mirror_preview;
 pub(crate) use mirror_preview::MirrorPreview;
 pub(crate) mod affine_preview;

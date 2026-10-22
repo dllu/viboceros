@@ -6,11 +6,33 @@ use crate::{Real, Vector3};
 mod tests;
 
 impl TriangleMesh {
+    /// Computes unit vertex normals from raw vertex sharing without changing
+    /// the stored normal channel. Each incident polygon contributes its unit
+    /// normal once, including non-planar quads as one polygon.
+    ///
+    /// Coincident vertices remain independent. Collapsed polygons contribute
+    /// nothing; unused vertices and cancelling sums use the world Z direction.
+    /// Work and storage are linear in the vertex and face counts.
+    pub fn computed_vertex_normals(&self) -> Result<Vec<Vector3>, GeometryError> {
+        self.vertex_normals_from_faces(true)
+    }
+
     /// Initial float normals following the owned OffsetMesh normal path.
     pub(super) fn raw_vertex_normals(&self) -> Result<Vec<Vector3>, GeometryError> {
-        let normals = self.polygon_face_normals()?;
+        self.vertex_normals_from_faces(false)
+    }
+
+    fn vertex_normals_from_faces(
+        &self,
+        skip_collapsed: bool,
+    ) -> Result<Vec<Vector3>, GeometryError> {
         let mut sums = vec![[0.0_f32; 3]; self.vertices.len()];
-        for (face, normal) in self.faces.iter().zip(normals).rev() {
+        for &face in self.faces.iter().rev() {
+            let normal = match self.normal_for_face(face) {
+                Ok(normal) => normal,
+                Err(GeometryError::Degenerate { .. }) if skip_collapsed => continue,
+                Err(error) => return Err(error),
+            };
             for &index in face.indices() {
                 let index = index as usize;
                 for (sum, coordinate) in sums[index].iter_mut().zip(normal.as_vector().to_array()) {

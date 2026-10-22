@@ -5,6 +5,30 @@ mod equivalence;
 #[path = "support/mesh_channels.rs"]
 mod native;
 
+#[test]
+fn computed_normals_match_native_missing_channel_setup() {
+    let data: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/mesh_component_unweld_verified.json"
+    ))
+    .unwrap();
+    let mut compared = 0;
+    for row in data["results"].as_array().unwrap() {
+        if !row["id"].as_str().unwrap().contains("_no_normals_") {
+            continue;
+        }
+        let source = native::mesh(&row["value"]["recipe_mesh"]);
+        let original = source.clone();
+        let expected = native::triples(&row["value"]["before"]["normals"]);
+        let actual = source.computed_vertex_normals().unwrap();
+        let actual = actual.iter().map(|n| n.to_array()).collect::<Vec<_>>();
+        assert!(native::near(&actual, &expected), "{}", row["id"]);
+        assert_eq!(source, original);
+        assert!(source.vertex_normals().is_none());
+        compared += 1;
+    }
+    assert_eq!(compared, 4);
+}
+
 fn run(v: &Value) -> viboceros_geometry::TriangleMesh {
     assert_eq!(v["before"]["valid"], true);
     let source = native::mesh(&v["before"]);

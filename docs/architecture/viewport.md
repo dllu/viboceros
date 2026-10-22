@@ -19,6 +19,8 @@ state into document transactions:
 | `viewport/polygon_edges` | Mesh/SubD topology edges and SubD vertex capture, including visible control cages |
 | `viewport/edge_picking`, `viewport/edge_point` | Boundary-component capture and constrained screen-space edge locations |
 | `viewport/scene` | Object display, shading, depth staging, and GPU buffers |
+| `viewport/display_cache` | Shared immutable display meshes, normals, and wires |
+| `viewport/mesh_normals` | Raw mesh sharing and surface tessellation smoothing |
 | `viewport/drafting` | Cursor resolution, construction-plane grid, and drafting overlays |
 
 The `viboceros-drafting` crate separates feature snaps (`object_snap`), plane-local

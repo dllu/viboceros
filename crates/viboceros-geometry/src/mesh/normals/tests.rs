@@ -2,6 +2,51 @@ use super::*;
 use crate::{MeshEdgeFilter, Point3, Tolerance};
 
 #[test]
+fn computed_vertex_normals_keep_polygon_weighting_at_extreme_scales() {
+    for scale in [1., 1e200, 1e-200] {
+        let mesh = TriangleMesh::try_from_face_records(
+            [[0., 0., 0.], [2., 0., 0.], [2., 1., 1.], [0., 1., 0.]]
+                .map(|p| Point3::try_from(p.map(|x| x * scale)).unwrap())
+                .to_vec(),
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+        )
+        .unwrap();
+        let expected = mesh.polygon_face_normal(0).unwrap().as_vector();
+        for normal in mesh.computed_vertex_normals().unwrap() {
+            assert!(
+                normal
+                    .to_array()
+                    .into_iter()
+                    .zip(expected.to_array())
+                    .all(|(actual, expected)| (actual - expected).abs() < 1e-7)
+            );
+        }
+        assert!(mesh.vertex_normals().is_none());
+    }
+}
+
+#[test]
+fn collapsed_polygons_do_not_contaminate_shared_vertex_normals() {
+    let mesh = TriangleMesh::try_from_face_records(
+        [[0., 0., 0.], [1., 0., 0.], [0., 1., -1.], [0.5, 0., 0.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+        vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([0, 1, 3])],
+    )
+    .unwrap();
+    let normals = mesh.computed_vertex_normals().unwrap();
+    let expected = 1. / 2_f64.sqrt();
+    for normal in &normals[..3] {
+        assert_eq!(normal.x(), 0.);
+        assert!((normal.y() - expected).abs() < 1e-7);
+        assert!((normal.z() - expected).abs() < 1e-7);
+    }
+    assert_eq!(normals[3].to_array(), [0., 0., 1.]);
+    // Modeling retains its existing rejection of collapsed input polygons.
+    assert!(mesh.raw_vertex_normals().is_err());
+}
+
+#[test]
 fn polygon_and_facet_normal_indices_are_distinct_and_checked() {
     let vertices = [[0., 0., 0.], [2., 0., 0.], [2., 1., 1.], [0., 1., 0.]]
         .map(|[x, y, z]| Point3::try_new(x, y, z).unwrap())

@@ -5,15 +5,13 @@ use super::object_preview::ObjectPreview;
 #[cfg(test)]
 use super::object_preview::TransformedObjects;
 use super::*;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::rc::Rc;
 use std::sync::Arc;
 use viboceros_document::ColorRgb;
 #[cfg(test)]
 use viboceros_geometry::MeshFace;
 use viboceros_geometry::{AffineNormalTransform3, AffineTransform3};
-
-const SMOOTH_SHADING_COSINE: Real = std::f64::consts::FRAC_1_SQRT_2;
 
 #[derive(Clone, Copy)]
 struct AffineMeshTransform {
@@ -40,83 +38,6 @@ fn color_with_alpha(color: Color32, alpha: u8) -> Color32 {
 fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) -> Color32 {
     let color = attributes.display_color(layer_color);
     Color32::from_rgb(color.red, color.green, color.blue)
-}
-
-pub(super) fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>; 3]> {
-    let fallback = NaVector3::new(0.0, 0.0, 1.0);
-    if let Some(stored) = mesh.vertex_normals() {
-        return mesh
-            .triangles()
-            .iter()
-            .enumerate()
-            .map(|(face, triangle)| {
-                triangle.map(|raw| {
-                    let n = stored[raw as usize];
-                    NaVector3::new(n.x(), n.y(), n.z())
-                        .try_normalize(0.)
-                        .unwrap_or_else(|| {
-                            mesh.face_normal(face)
-                                .map(|n| NaVector3::new(n.x(), n.y(), n.z()))
-                                .unwrap_or(fallback)
-                        })
-                })
-            })
-            .collect();
-    }
-    let face_normals = (0..mesh.triangles().len())
-        .map(|index| {
-            mesh.face_normal(index)
-                .map(|normal| NaVector3::new(normal.x(), normal.y(), normal.z()))
-                .ok()
-        })
-        .collect::<Vec<_>>();
-
-    // Surface tessellation intentionally duplicates vertices at knot-span
-    // boundaries. Group exact coincident samples so continuous spans shade as
-    // one surface, then use the crease angle below to keep analytic caps and
-    // other genuinely sharp joins hard.
-    let mut incident_faces: HashMap<[u64; 3], Vec<usize>> = HashMap::new();
-    for (face_index, triangle) in mesh.triangles().iter().enumerate() {
-        for &vertex_index in triangle {
-            let point = mesh.vertices()[vertex_index as usize];
-            incident_faces
-                .entry(point_position_key(point))
-                .or_default()
-                .push(face_index);
-        }
-    }
-
-    mesh.triangles()
-        .iter()
-        .enumerate()
-        .map(|(face_index, triangle)| {
-            let Some(reference) = face_normals[face_index] else {
-                return [fallback; 3];
-            };
-            triangle.map(|vertex_index| {
-                let point = mesh.vertices()[vertex_index as usize];
-                let mut sum = NaVector3::zeros();
-                for &incident in &incident_faces[&point_position_key(point)] {
-                    if let Some(candidate) = face_normals[incident]
-                        && reference.dot(&candidate) >= SMOOTH_SHADING_COSINE
-                    {
-                        sum += candidate;
-                    }
-                }
-                sum.try_normalize(Real::EPSILON).unwrap_or(reference)
-            })
-        })
-        .collect()
-}
-
-fn point_position_key(point: Point3) -> [u64; 3] {
-    [point.x(), point.y(), point.z()].map(|value| {
-        if value == 0.0 {
-            0.0_f64.to_bits()
-        } else {
-            value.to_bits()
-        }
-    })
 }
 
 // Source snapshots are shared with the geometry cache; pointer equality here is
@@ -797,7 +718,7 @@ impl Viewport {
         self.add_gpu_mesh_faces_with_normals(
             scene,
             mesh,
-            &smooth_corner_normals(mesh),
+            &mesh_normals::mesh_corner_normals(mesh),
             color,
             true,
             None,
@@ -1041,8 +962,8 @@ mod tests {
             vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([3, 4, 5])],
         )
         .unwrap();
-        let normals = smooth_corner_normals(&mixed);
-        assert_eq!(normals[0], smooth_corner_normals(&source)[0]);
+        let normals = mesh_normals::mesh_corner_normals(&mixed);
+        assert_eq!(normals[0], mesh_normals::mesh_corner_normals(&source)[0]);
         assert!(
             normals
                 .iter()
@@ -1052,7 +973,7 @@ mod tests {
     }
 
     #[test]
-    fn smooth_shading_keeps_ninety_degree_mesh_edges_hard() {
+    fn tessellation_shading_keeps_ninety_degree_edges_hard() {
         let mesh = TriangleMesh::try_new(
             vec![
                 point(0.0, 0.0, 0.0),
@@ -1064,7 +985,7 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
-        let normals = smooth_corner_normals(&mesh);
+        let normals = mesh_normals::tessellation_corner_normals(&mesh);
         assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].z, 1.0));
         assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].y, 0.0));
         assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].y, -1.0));

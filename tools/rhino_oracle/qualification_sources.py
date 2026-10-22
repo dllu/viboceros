@@ -5,6 +5,8 @@
 APPLICATION_MODULES = [
     'src/viewport/scene.rs',
     'src/viewport/display_cache.rs',
+    'src/viewport/mesh_normals.rs',
+    'src/viewport/mesh_normals/tests.rs',
     'src/app/object_selection.rs',
     'src/app/control_polygon.rs',
     'src/app/control_polygon/subcurve.rs',
@@ -72,6 +74,7 @@ MESH_MODULES = [
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'unweld', 'edge_unweld', 'vertex_unweld', 'radial', 'compaction',
                  'quadrangulate', 'planar_cap', 'coplanar_merge']
 ] + [
+    'crates/viboceros-geometry/src/mesh/normals/tests.rs',
     'crates/viboceros-geometry/tests/support/mesh_channels.rs',
     'crates/viboceros-geometry/tests/support/mesh_equivalence.rs',
     'crates/viboceros-opennurbs/src/mesh.rs',
@@ -83,6 +86,10 @@ MESH_MODULES = [
 
 def with_shared_sources(paths):
     expanded = list(paths)
+    if any(p in expanded for p in ['src/viewport.rs', 'src/viewport/scene.rs',
+                                   'src/viewport/display_cache.rs']):
+        expanded.extend(['src/viewport/mesh_normals.rs',
+                         'src/viewport/mesh_normals/tests.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
             'crates/viboceros-command/src/mesh_seams.rs',

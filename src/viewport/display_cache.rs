@@ -367,7 +367,10 @@ impl DisplayGeometry {
         }
         self.normals.get_or_init(|| {
             self.mesh()
-                .map(scene::smooth_corner_normals)
+                .map(|mesh| match &*self.geometry {
+                    Geometry::Mesh(_) => mesh_normals::mesh_corner_normals(mesh),
+                    _ => mesh_normals::tessellation_corner_normals(mesh),
+                })
                 .unwrap_or_default()
         })
     }

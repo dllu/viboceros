@@ -79,7 +79,6 @@
     "src/app/crease/tests/native.rs": "4f15d7edfec974dd2418708b360b4d93f1716c51286b865c2e7ebf8ed1d2529f",
     "src/app/untrim_holes.rs": "ba350a8291e8438a1a8caf630af5fcad258954f4058c312f56b63027a96da89a",
     "src/viewport/component_picking.rs": "b42497d498ae6fb87ca1657dd23e9f345478b5304c00455af718590cd495832a",
-    "src/viewport/display_cache.rs": "eac04d435f5bdfa90955b7cefc31c1664b55f8165d06f8bac6683a2db33eec84",
     "src/viewport/polygon_edges.rs": "7791ce80ee462d8cad5c3d81be8f71a5a570305fed5ecce6ea465f40462e2d9f",
     "src/viewport/polygon_edges/tests.rs": "f5a0e3eb1ac3f1eebd291b5ee8273c8f30ee068ca13a63f3790461dab3ea585f",
     "src/viewport/selection.rs": "97a0c529b7e43b496a55c38bfe3be56e78dcd30535ef8480902db6bab0acc1b6",
@@ -221,8 +220,7 @@
     "tools/rhino_oracle/fixtures/crease_overlap/overlap_crease_valence_four.3dm": "c4047bc97520ca43aab86def22c91d09c26242f5bc9e7c0deb0256e3e82f7342",
     "tools/rhino_oracle/fixtures/crease_overlap/overlap_removecrease_boundary.3dm": "70334ad4a0c863b4ab4fd02cd502fa915dea363ad0214a71bedd7f7a6ffe88b9",
     "tools/rhino_oracle/fixtures/crease_overlap/overlap_removecrease_valence_four.3dm": "4b20b68bba103e923629e147173abdfbcb68e388f2bcc5104aebd032110246dd",
-    "docs/commands/crease.md": "4f12272335b42732890f368afed31fc2ee377a8fecd77bc95f455d2d57e1c805",
-    "docs/architecture/viewport.md": "fbd3ec8e8383001956d6080636b3e2b53706217d6d2b897facaac3ee54e99ff8"
+    "docs/commands/crease.md": "4f12272335b42732890f368afed31fc2ee377a8fecd77bc95f455d2d57e1c805"
   },
   "baseline_git_sha256": {
     "225a7d7a965e9cbfc6eea534f864c76eddd216b1:src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828",
@@ -252,6 +250,8 @@
     "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/app/object_selection.rs": "40be177b476aec6fe54e260bdee6dfbfb0c2e654e9d3f8a64ef72f855bc009b6",
     "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/app/block_edit.rs": "3ab597679d3cd2637de2d0f81144ce776e14ad205279f3fef0efb0e9a3a626e1",
     "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/viewport.rs": "fcc9f39b5a7c017bfb8282c08f9e8bc045dbe68455a0cee9637989d1997ce495",
-    "0004d1baa0a68e9a5837e5a13db30ebfe125f4fa:crates/viboceros-geometry/src/mesh.rs": "af5e20118bd32ad3e7fe2c5bb79e4ab9d8cc118b60cd34b21cf63bd193d02143"
+    "0004d1baa0a68e9a5837e5a13db30ebfe125f4fa:crates/viboceros-geometry/src/mesh.rs": "af5e20118bd32ad3e7fe2c5bb79e4ab9d8cc118b60cd34b21cf63bd193d02143",
+    "d9808bbc953637fa0e50d8405edbfc007c035974:src/viewport/display_cache.rs": "eac04d435f5bdfa90955b7cefc31c1664b55f8165d06f8bac6683a2db33eec84",
+    "d9808bbc953637fa0e50d8405edbfc007c035974:docs/architecture/viewport.md": "fbd3ec8e8383001956d6080636b3e2b53706217d6d2b897facaac3ee54e99ff8"
   }
 }

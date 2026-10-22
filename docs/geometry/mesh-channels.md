@@ -9,6 +9,7 @@ vertex. Coincident vertices may carry different UVs at a texture seam.
 ```rust
 let uv = mesh.texture_coordinates(); // Option<&[[f64; 2]]>
 let normals = mesh.vertex_normals(); // Option<&[Vector3]>
+let computed = mesh.computed_vertex_normals()?; // Does not change stored normals.
 ```
 
 The setters check channel lengths and finite float range, and round to native
@@ -61,6 +62,11 @@ Selected-edge and selected-vertex APIs expose corresponding
 `unwelded_topology_vertices_with_normal_update` methods. Component edits preserve
 untouched non-manifold uses, and compute missing normal data when needed for
 replacement vertices. Shaded and ghosted viewports use the stored directions.
+When a mesh has no stored normals, display normals follow raw vertex sharing:
+unwelded seams stay sharp and welded vertices share incident polygon normals.
+This calculation is linear and cached across viewports; quads contribute once,
+and collapsed faces contribute nothing. Generated surface tessellations retain
+their separate smoothing policy across coincident knot-span samples.
 The [component comparison](../mesh-component-unweld-qualification.json) verifies
 all 72 captured command cases up to vertex renumbering, preserving face winding,
 each channel and the bijection of shared vertices. Sixty-four also match raw
