@@ -1,4 +1,5 @@
 """Qualify standalone SubD face creation against immutable Rhino observations."""
+from .qualification_sources import with_application_sources
 import argparse
 import hashlib
 import json
@@ -59,6 +60,7 @@ SOURCES = [
     'tools/rhino_oracle/report_subd.py', 'tools/rhino_oracle/test_subd.py',
 ] + [f'tools/rhino_oracle/{directory}/{name}.json'
      for name in GROUPS for directory in ['fixtures', 'observations']]
+SOURCES = with_application_sources(SOURCES)
 
 
 def summarize(text):

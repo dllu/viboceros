@@ -1,4 +1,5 @@
 """PlanarMesh surface and topology qualification across both geometry adapters."""
+from .qualification_sources import with_application_sources
 import argparse
 import hashlib
 import json
@@ -33,6 +34,7 @@ SOURCES=[
  'tools/rhino_oracle/fixtures/planar_mesh.json','tools/rhino_oracle/observations/planar_mesh.json',
  'tools/rhino_oracle/fixtures/planar_mesh_postselect.json','tools/rhino_oracle/observations/planar_mesh_postselect.json',
 ]
+SOURCES = with_application_sources(SOURCES)
 
 
 def native_rows(suffix='',count=21):

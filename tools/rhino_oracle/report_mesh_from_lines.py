@@ -1,4 +1,5 @@
 """Line-network SDK, command and getter qualification with retained token gaps."""
+from .qualification_sources import with_application_sources
 import argparse,hashlib,json,math,re
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
@@ -14,6 +15,7 @@ SOURCES=[
  'tools/rhino_oracle/mesh_from_lines_probe.py','tools/rhino_oracle/generate_mesh_from_lines.py','tools/rhino_oracle/report_mesh_from_lines.py','tools/rhino_oracle/test_mesh_from_lines.py',
  'tools/rhino_oracle/client.py','tools/rhino_oracle/structural_sdk.py','tools/rhino_oracle/rhino_worker.py',
 ] + [f'tools/rhino_oracle/{directory}/mesh_from_lines{suffix}.json'for _,_,suffix,_ in GROUPS for directory in ['fixtures','observations']]
+SOURCES = with_application_sources(SOURCES)
 
 def summarize(log):
  groups={};gaps=[]

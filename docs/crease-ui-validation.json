@@ -82,11 +82,7 @@
     "tools/rhino_oracle/crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
     "tools/rhino_oracle/crease_probe.py": "036cfbf54a3c3c7e25d1d8232332ee5bdc81b87ad3aefd0d734f8a8171b246f8",
     "tools/rhino_oracle/generate_crease.py": "4af359530ca4b67ac8dd624c8287d93f068dbd659eb418576f53e82aeda56c40",
-    "tools/rhino_oracle/report_crease.py": "fb0692eff51e32b48240bf3002eb8205ed37851d9853dff5f8ab8b96f7cdbe17",
     "tools/rhino_oracle/test_crease.py": "6aa8d28fbc90c8b461e55b228b7cd5fae59eb3e42dfe68e7f61edf1aa15b8ec9",
-    "tools/rhino_oracle/structural_sdk.py": "a524afc7dcd7ad37ae791eb1d1a2177fdfb38da5ed4247a57572742f237dead6",
-    "tools/rhino_oracle/rhino_worker.py": "bcf7b6e6e867b2b0d114872ec1c511b376ac8707bbe2646367e9735dd819a864",
-    "src/app.rs": "cbdf3d0585abc98dcd69719e62a3691a76a49217140d9247a8eb92950924a3a7",
     "src/app/crease.rs": "abbf160b6928a2104d8fa832b9ddfa568c3ee6d0ed336a96e247da5a2bbd2b7f",
     "src/app/crease/tests.rs": "c9045649a4f7d491914042e726575ceeba52c7627a9e00263d7131313e0aa186",
     "src/app/crease/tests/native.rs": "4f15d7edfec974dd2418708b360b4d93f1716c51286b865c2e7ebf8ed1d2529f",
@@ -239,7 +235,6 @@
     "tools/rhino_oracle/fixtures/crease_overlap/overlap_crease_valence_four.3dm": "c4047bc97520ca43aab86def22c91d09c26242f5bc9e7c0deb0256e3e82f7342",
     "tools/rhino_oracle/fixtures/crease_overlap/overlap_removecrease_boundary.3dm": "70334ad4a0c863b4ab4fd02cd502fa915dea363ad0214a71bedd7f7a6ffe88b9",
     "tools/rhino_oracle/fixtures/crease_overlap/overlap_removecrease_valence_four.3dm": "4b20b68bba103e923629e147173abdfbcb68e388f2bcc5104aebd032110246dd",
-    "docs/crease-qualification.json": "908c7f552624846c744e302ecf0a6abf0e319bb59e9a89ba7aeb75815e0d6c4d",
     "docs/commands/crease.md": "4f12272335b42732890f368afed31fc2ee377a8fecd77bc95f455d2d57e1c805",
     "docs/architecture/viewport.md": "fbd3ec8e8383001956d6080636b3e2b53706217d6d2b897facaac3ee54e99ff8"
   },
@@ -249,5 +244,12 @@
     "225a7d7a965e9cbfc6eea534f864c76eddd216b1:src/viewport/component_picking.rs": "b1ff41f0fab64f704ca9bf360ef8831e5f2c36f72ff11ff6dbfb8f6307548db2",
     "225a7d7a965e9cbfc6eea534f864c76eddd216b1:src/viewport/display_cache.rs": "dbf8e0527ac3a4286138dab05db171e6874f99de0c9bc9574f9765a8ff626418",
     "225a7d7a965e9cbfc6eea534f864c76eddd216b1:crates/viboceros-command/tests/crease_native.rs": "d71ba83df3202e2664cd43462f846b0e683dc8eaad67e7fb97ba40ea4d236798"
+  },
+  "validation_git_sha256": {
+    "51f7bc54f601861f911b27a82b6aab034d893bc6:tools/rhino_oracle/structural_sdk.py": "a524afc7dcd7ad37ae791eb1d1a2177fdfb38da5ed4247a57572742f237dead6",
+    "51f7bc54f601861f911b27a82b6aab034d893bc6:tools/rhino_oracle/rhino_worker.py": "bcf7b6e6e867b2b0d114872ec1c511b376ac8707bbe2646367e9735dd819a864",
+    "51f7bc54f601861f911b27a82b6aab034d893bc6:src/app.rs": "cbdf3d0585abc98dcd69719e62a3691a76a49217140d9247a8eb92950924a3a7",
+    "51f7bc54f601861f911b27a82b6aab034d893bc6:tools/rhino_oracle/report_crease.py": "fb0692eff51e32b48240bf3002eb8205ed37851d9853dff5f8ab8b96f7cdbe17",
+    "51f7bc54f601861f911b27a82b6aab034d893bc6:docs/crease-qualification.json": "908c7f552624846c744e302ecf0a6abf0e319bb59e9a89ba7aeb75815e0d6c4d"
   }
 }

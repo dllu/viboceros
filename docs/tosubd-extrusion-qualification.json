@@ -1046,9 +1046,9 @@
     "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/structural_sdk.py": "a524afc7dcd7ad37ae791eb1d1a2177fdfb38da5ed4247a57572742f237dead6",
-    "tools/rhino_oracle/rhino_worker.py": "bcf7b6e6e867b2b0d114872ec1c511b376ac8707bbe2646367e9735dd819a864",
-    "tools/rhino_oracle/report_extrusions.py": "e03fa9a75a203e39242c05093d639839e0cb70fc90901a09fa25adb749c17783",
+    "tools/rhino_oracle/structural_sdk.py": "29ec0211f99856af477f55911769a0221dd566c164a2bc385e269d909ff937bd",
+    "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846",
+    "tools/rhino_oracle/report_extrusions.py": "f785e313b415a3fc045c58f36d2bf4f9de79400c9fc18e947047efa5ee0798d9",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
     "tools/rhino_oracle/fixtures/tosubd_extrusions.json": "00f7b598aea12033c12945d2a9b1566e661e68e2bbd757c2c35bba49b64d16fd",
     "tools/rhino_oracle/observations/tosubd_extrusions.json": "d730e00f2c6e77cf7c7691044b2d03f15880b4a1dc2a0d0679013ae6cf7bcc34",
@@ -1064,7 +1064,7 @@
     "crates/viboceros-command/tests/tosubd_extrusions_native.rs": "ed2dc3c014f69d46a72bbe33c1aa553579219f2b3a838dd9805997b3662b067b",
     "crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
     "crates/viboceros-command/tests/support/subd_facets.rs": "ad0be23c4f68083f9b43a85266d0c9e8dcb8d82f00c90c88affa4849472781ff",
-    "tools/rhino_oracle/report_tosubd_extrusions.py": "9e2a1b3ebc5045e684ed97e1bc78c808602942fc18fd2bfeb7bf2b5e936c27c9",
+    "tools/rhino_oracle/report_tosubd_extrusions.py": "eaa9abd3c08fefbaa5915e20f816da8feaaa7dd25eecf30c60eaff7f93e04959",
     "tools/rhino_oracle/test_tosubd_extrusions.py": "dd8ef814867d4897b870bcf751507791f88a343007cc953985cf9a6817bebba4",
     "tools/rhino_oracle/creator_types_probe.py": "60284626efdb734a47a889af037d8ccc0b953fc88d1d8ccf47535ae557a97985",
     "tools/rhino_oracle/generate_creator_types.py": "aacb31055907de423f93896abeb70f2d0f7150856b7232167b8490d273c58831",
@@ -1088,6 +1088,7 @@
     "tools/rhino_oracle/fixtures/extrusions/tosubd_one_cap_10.3dm": "59a4b086a38adfaf341636021ffea0c544db3f3e7635651f19f7ef0ec17b8d01",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_rectangle_0.3dm": "405160ef963cd96713931684719fde45969285339f749fbce1f748ab663dc7f4",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_circle_0.3dm": "bf628228dec65c8402320746f753223a0ea4dd02c26eabad1c0d3ff76357e0d3",
-    "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_pipe_0.3dm": "b9b8316c4428ddb225c323cee42fa28ca28c8c834a709054832b07edf3e10498"
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_pipe_0.3dm": "b9b8316c4428ddb225c323cee42fa28ca28c8c834a709054832b07edf3e10498",
+    "tools/rhino_oracle/qualification_sources.py": "a7fb410a6d4e97c862c23cddfec9d54f0bfdbacfea273cfeba3ed39b52589fc6"
   }
 }

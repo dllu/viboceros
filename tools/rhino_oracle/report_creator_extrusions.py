@@ -1,4 +1,5 @@
 """Qualify typed creators, signed paths, 3DM round-trips and ToSubD outputs."""
+from .qualification_sources import with_application_sources
 import argparse
 import hashlib
 import json
@@ -31,6 +32,7 @@ SOURCES=list(dict.fromkeys(COMMAND_SOURCES+[
     'tools/rhino_oracle/fixtures/creator_extrusions_macro_diagnostic.json',
     'tools/rhino_oracle/observations/creator_extrusions_macro_diagnostic.json',
 ]))
+SOURCES = with_application_sources(SOURCES)
 
 
 def observations():

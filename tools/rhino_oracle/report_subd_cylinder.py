@@ -1,4 +1,5 @@
 """SubDCylinder caps, surface radius, spatial frames and grouped history."""
+from .qualification_sources import with_application_sources
 import argparse,hashlib,json,re
 from pathlib import Path
 from .report_subd_box import ROOT,HERE,SOURCES as BASE_SOURCES,error
@@ -9,6 +10,7 @@ SOURCES=list(dict.fromkeys(BASE_SOURCES+[
  'tools/rhino_oracle/subd_cylinder_probe.py','tools/rhino_oracle/generate_subd_cylinder.py','tools/rhino_oracle/report_subd_cylinder.py','tools/rhino_oracle/test_subd_cylinder.py',
  'tools/rhino_oracle/fixtures/subd_cylinder.json','tools/rhino_oracle/observations/subd_cylinder.json',
 ]))
+SOURCES = with_application_sources(SOURCES)
 def summarize(text):
  q=json.loads((HERE/'fixtures/subd_cylinder.json').read_text());native=json.loads((HERE/'observations/subd_cylinder.json').read_text());expected={r['id']:r['value']for r in native['results']}
  if len(native['results'])!=28 or len(expected)!=28 or list(expected)!=[o['id']for o in q['operations']]:raise ValueError('missing native cylinder observations')

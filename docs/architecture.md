@@ -49,7 +49,8 @@ selection share geometry snapshots and visibility rules; temporary component
 choices stay outside model history. Display meshes and prepared queries are
 derived caches, invalidated when their source geometry or tolerance changes.
 
-See [viewport boundaries](architecture/viewport.md) for the module map and
+See [application input](architecture/application.md) for command state and UI
+ownership, [viewport boundaries](architecture/viewport.md) for the viewport module map, and
 [viewport precision](viewport-implementation.md) for coordinate conventions.
 
 ## Current foundation

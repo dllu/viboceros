@@ -1,4 +1,5 @@
 """Qualify fixed Crease/RemoveCrease comparisons, rejecting incomplete evidence."""
+from .qualification_sources import with_application_sources
 import argparse
 import copy
 import hashlib
@@ -59,6 +60,7 @@ SOURCES = [
     'src/viewport/polygon_edges/tests.rs', 'src/viewport/selection.rs',
     'src/viewport/picking.rs', 'src/viewport/screen.rs',
 ]
+SOURCES = with_application_sources(SOURCES)
 
 
 def observations():

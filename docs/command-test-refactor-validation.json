@@ -69,8 +69,6 @@
     "note": "The preceding Crease checkpoint qualified 110 native command workflows. This refactor reuses saved measurements and updates source maps after preserving the dispatcher and regression bodies."
   },
   "sha256": {
-    "README.md": "4b9ac76e2f76be97e09de3a7759a500d46a9575f094ed4b0a5d14904e5f56ba2",
-    "docs/development.md": "c826cecb53cbffe7440e5810580c3726b2050b082e00ceca9ba34a48840e394b",
     "crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c",
     "crates/viboceros-command/src/tests/curves/closure.rs": "f6e442f49de129a47b883766576e42a3339f7bd3f4f9f0748e69289a6c04a8ed",
     "crates/viboceros-command/src/tests/curves/creation.rs": "c91f7c67d4661598b5649063ee58fc19f26587d4c3a96426693c34b8b4fe1577",
@@ -160,5 +158,9 @@
     "e5f65306b0e92a9a6b2fd09bf73a7fa50009bbf3:crates/viboceros-command/src/lib.rs": "ab5a1a8a6a190d4cc557e1e477925abcce768d64c78cff5ba7b3d77f6eda9524",
     "e5f65306b0e92a9a6b2fd09bf73a7fa50009bbf3:crates/viboceros-command/src/tests/mesh_edit/mod.rs": "3edff48ff235be7e9c56d0bb9d48c9e9ab7317cfd47602c5424ac2db937ae869",
     "e5f65306b0e92a9a6b2fd09bf73a7fa50009bbf3:docs/development.md": "1c3bedca6497ccd49a254b8d29d19e8bb569f1f89bce011432cd31fdace7803c"
+  },
+  "validation_git_sha256": {
+    "225a7d7a965e9cbfc6eea534f864c76eddd216b1:README.md": "4b9ac76e2f76be97e09de3a7759a500d46a9575f094ed4b0a5d14904e5f56ba2",
+    "225a7d7a965e9cbfc6eea534f864c76eddd216b1:docs/development.md": "c826cecb53cbffe7440e5810580c3726b2050b082e00ceca9ba34a48840e394b"
   }
 }

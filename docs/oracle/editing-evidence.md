@@ -479,3 +479,8 @@ Rhino's integrated lengths and shortness results. Adaptive three-point
 integration with early rejection, rather than a single fixed estimate,
 now passes all 66 classifications. Broader curve families, extreme shortness
 thresholds, and polycurve-specific boundary behavior still need oracle coverage.
+
+## Soft SubD creases
+
+[SubDCrease discovery](soft-crease.md) retains 32 native workflows for the next
+implementation step, including cancellations and ineligible source diagnostics.

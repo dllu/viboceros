@@ -227,9 +227,9 @@
     "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/structural_sdk.py": "a524afc7dcd7ad37ae791eb1d1a2177fdfb38da5ed4247a57572742f237dead6",
-    "tools/rhino_oracle/rhino_worker.py": "bcf7b6e6e867b2b0d114872ec1c511b376ac8707bbe2646367e9735dd819a864",
-    "tools/rhino_oracle/report_extrusions.py": "e03fa9a75a203e39242c05093d639839e0cb70fc90901a09fa25adb749c17783",
+    "tools/rhino_oracle/structural_sdk.py": "29ec0211f99856af477f55911769a0221dd566c164a2bc385e269d909ff937bd",
+    "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846",
+    "tools/rhino_oracle/report_extrusions.py": "f785e313b415a3fc045c58f36d2bf4f9de79400c9fc18e947047efa5ee0798d9",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
     "tools/rhino_oracle/fixtures/tosubd_extrusions.json": "00f7b598aea12033c12945d2a9b1566e661e68e2bbd757c2c35bba49b64d16fd",
     "tools/rhino_oracle/observations/tosubd_extrusions.json": "d730e00f2c6e77cf7c7691044b2d03f15880b4a1dc2a0d0679013ae6cf7bcc34",
@@ -246,6 +246,7 @@
     "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_rectangle_miter_00.3dm": "7f9ab90d34649b2cce339878a4d086b68b18c82a9316133436965c62e35615d2",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_circle_shear_00.3dm": "9c9c956827aa77b5f9b62a56ff4ed2556c7eef40b4da59144ac023be4fd7a84f",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_000.3dm": "de42c2eee5bd5370ce9693bc05060dc325ef754346e9dd7461ee7c706d39c355",
-    "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_100.3dm": "0361293bbb2dc587f5e61d31f68d15732a52e584d23360b44a9964b13a52527a"
+    "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_100.3dm": "0361293bbb2dc587f5e61d31f68d15732a52e584d23360b44a9964b13a52527a",
+    "tools/rhino_oracle/qualification_sources.py": "a7fb410a6d4e97c862c23cddfec9d54f0bfdbacfea273cfeba3ed39b52589fc6"
   }
 }

@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_0",
+      "case": "soft_constant_0"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_1",
+      "case": "soft_constant_1"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_10",
+      "case": "soft_constant_10"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_24_9",
+      "case": "soft_constant_24_9"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_25",
+      "case": "soft_constant_25"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_25_1",
+      "case": "soft_constant_25_1"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_50",
+      "case": "soft_constant_50"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_75",
+      "case": "soft_constant_75"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_90",
+      "case": "soft_constant_90"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_99",
+      "case": "soft_constant_99"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_100",
+      "case": "soft_constant_100"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_default",
+      "case": "soft_default"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_cancel_empty",
+      "case": "soft_cancel_empty"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_cancel_after_weight",
+      "case": "soft_cancel_after_weight"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_constant_option",
+      "case": "soft_constant_option"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_two_weights",
+      "case": "soft_two_weights"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_crease_all",
+      "case": "soft_crease_all"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_text_sizes",
+      "case": "soft_text_sizes"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_hard_source",
+      "case": "soft_hard_source"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_corner_source",
+      "case": "soft_corner_source"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_boundary",
+      "case": "soft_boundary"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_open_interior",
+      "case": "soft_open_interior"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_whole_object",
+      "case": "soft_whole_object"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_vertex_input",
+      "case": "soft_vertex_input"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_start_label",
+      "case": "soft_start_label"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_start_control_label",
+      "case": "soft_start_control_label"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_chain",
+      "case": "soft_chain"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_chain_label",
+      "case": "soft_chain_label"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_branch",
+      "case": "soft_branch"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_branch_label",
+      "case": "soft_branch_label"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_loop",
+      "case": "soft_loop"
+    },
+    {
+      "op": "soft_crease_command",
+      "id": "soft_loop_label",
+      "case": "soft_loop_label"
+    }
+  ]
+}

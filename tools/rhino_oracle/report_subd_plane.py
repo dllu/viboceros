@@ -1,4 +1,5 @@
 """SubDPlane counts, rectangle modes, rounded boundaries and native diagnostics."""
+from .qualification_sources import with_application_sources
 import argparse,hashlib,json,re
 from pathlib import Path
 from .report_subd_box import ROOT,HERE,SOURCES as BASE_SOURCES,error
@@ -8,6 +9,7 @@ SOURCES=list(dict.fromkeys(BASE_SOURCES+[
  'tools/rhino_oracle/subd_plane_probe.py','tools/rhino_oracle/generate_subd_plane.py','tools/rhino_oracle/report_subd_plane.py','tools/rhino_oracle/test_subd_plane.py',
  'tools/rhino_oracle/fixtures/subd_plane.json','tools/rhino_oracle/observations/subd_plane.json',
 ]))
+SOURCES = with_application_sources(SOURCES)
 def summarize(text):
  q=json.loads((HERE/'fixtures/subd_plane.json').read_text());native=json.loads((HERE/'observations/subd_plane.json').read_text());expected={r['id']:r['value']for r in native['results']}
  if len(native['results'])!=19 or len(expected)!=19 or list(expected)!=[o['id']for o in q['operations']]:raise ValueError('missing native plane observations')

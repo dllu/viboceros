@@ -2162,10 +2162,10 @@
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/tosubd_info.py": "e96b9e44754a9226b4bbe302e600f3c0e06646b0b626def5d42036081bf924c3",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/report_tosubd.py": "e46449250755a775809e3506a22c17bb18033ca92e8f2768d86951ca23d8e05c",
+    "tools/rhino_oracle/report_tosubd.py": "e9ff88be598f5c9cdceb8f7f6eed8838a3112d0b37bb9f1cb5039c9e641a9788",
     "tools/rhino_oracle/test_tosubd.py": "15b3bafb3be9484adb15f4e39a1bd53a78836923468dae2af7d4826bb43ecc81",
-    "tools/rhino_oracle/structural_sdk.py": "a524afc7dcd7ad37ae791eb1d1a2177fdfb38da5ed4247a57572742f237dead6",
-    "tools/rhino_oracle/rhino_worker.py": "bcf7b6e6e867b2b0d114872ec1c511b376ac8707bbe2646367e9735dd819a864",
+    "tools/rhino_oracle/structural_sdk.py": "29ec0211f99856af477f55911769a0221dd566c164a2bc385e269d909ff937bd",
+    "tools/rhino_oracle/rhino_worker.py": "a68e44daef9e6b62dda6f2fc43fb720b113dd285ec0a353310a2da3c28e57846",
     "tools/rhino_oracle/fixtures/tosubd.json": "66190d99951ccd541a3965cb925a022030bbee8d65e43798eac49104500dacea",
     "tools/rhino_oracle/observations/tosubd.json": "86bff64fda484376441ed5771510e778befa9777e219823d9cb6423d3da60d83",
     "tools/rhino_oracle/fixtures/tosubd_surface_details.json": "8989f8b79c165d0cb79d5df0d8b1e215626f6c85c8465b4a9709a1838d90896c",
@@ -2177,6 +2177,7 @@
     "tools/rhino_oracle/fixtures/tosubd_poles.json": "11a511f5cb35a1e6c98a406b9995b26b93ef8b8f75943aeb7ec0a66d6994cfeb",
     "tools/rhino_oracle/observations/tosubd_poles.json": "5a4242d101c4d94d7ee94a903a44f3666557f6114071499f4922b55d71b43639",
     "tools/rhino_oracle/fixtures/tosubd_discovery.json": "a8bb3a39800b54992fb1d179d653184f71c7b8d672ef95f16aced4652bd3b788",
-    "tools/rhino_oracle/observations/tosubd_discovery.json": "1c158af308e35a0edff67a152535949d287eaff3eb0b0cd8c9780c63d94dbc72"
+    "tools/rhino_oracle/observations/tosubd_discovery.json": "1c158af308e35a0edff67a152535949d287eaff3eb0b0cd8c9780c63d94dbc72",
+    "tools/rhino_oracle/qualification_sources.py": "a7fb410a6d4e97c862c23cddfec9d54f0bfdbacfea273cfeba3ed39b52589fc6"
   }
 }

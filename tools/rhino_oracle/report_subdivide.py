@@ -1,4 +1,5 @@
 """Qualify fixed subdivision workflows; reject incomplete or invalid comparisons."""
+from .qualification_sources import with_application_sources
 import argparse
 import hashlib
 import json
@@ -43,6 +44,7 @@ SOURCES = list(dict.fromkeys(BASE_SOURCES + [
     'tools/rhino_oracle/report_subdivide.py', 'tools/rhino_oracle/test_subdivide.py',
 ] + [f'tools/rhino_oracle/{directory}/{family}.json'
      for family, _ in FAMILIES + EXPLORATORY for directory in ['fixtures', 'observations']]))
+SOURCES = with_application_sources(SOURCES)
 
 
 def getter_eligible(value):
