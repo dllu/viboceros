@@ -122,10 +122,7 @@ fn native_mesh_channel_edits() {
             "MESH_CHANNEL_NATIVE {}",
             serde_json::json!({"id":row["id"],"qualified":qualified,"differences":differences,"vertices":actual.vertices().len(),"faces":actual.face_count()})
         );
-        // The retained packed-cube Weld observation exposes an older weld
-        // traversal policy difference. Keep it visible as unqualified; this
-        // storage change does not claim native seam-averaging compatibility.
-        if !qualified && row["id"] != "texture_cube_weld" {
+        if !qualified {
             failures.push(format!("{}: {differences:?}", row["id"]));
         }
     }

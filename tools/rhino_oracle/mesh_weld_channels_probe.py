@@ -1,15 +1,15 @@
 """Public Mesh.Weld channel and topology observations; no document edits."""
 try:
-    from .mesh_weld_channels_cases import CASES, FOLLOWUP, PREFIXES, PAIRS, validate
+    from .mesh_weld_channels_cases import scene, validate
 except (ImportError, ValueError):
-    from mesh_weld_channels_cases import CASES, FOLLOWUP, PREFIXES, PAIRS, validate
+    from mesh_weld_channels_cases import scene, validate
 
 
 def run(operation,host,iterations,tolerance):
     validate(operation)
     if iterations!=1: raise ValueError('one mesh welding iteration required')
     R,S=host['Rhino'],host['System']
-    case=(PREFIXES if operation['op']=='mesh_weld_channels_prefixes' else FOLLOWUP if operation['op']=='mesh_weld_channels_followup' else dict(CASES,**PAIRS))[operation['case']]
+    case=scene(operation)
     mesh=R.Geometry.Mesh()
     try:
         mesh.Vertices.UseDoublePrecisionVertices=True
@@ -27,6 +27,9 @@ def run(operation,host,iterations,tolerance):
                 mesh.Normals.SetNormal(i,n)
         if case['channels']=='all':
             for i in range(mesh.Vertices.Count): mesh.VertexColors.Add(S.Drawing.Color.FromArgb((17*i)%256,(31*i)%256,(47*i)%256))
+        if case.get('late_invalid_face'):
+            n=mesh.Vertices.Count
+            mesh.Faces.AddFace(n+2,n+3,n+4)
         def snapshot():
             value=host['_polygon_mesh_value'](mesh)
             value.update(uv=[[float(t.X),float(t.Y)] for t in mesh.TextureCoordinates],

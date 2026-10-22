@@ -124,11 +124,30 @@ def request():
                 operations=[dict(op='mesh_weld_channels',id=name,case=name) for name in CASES])
 
 
+def scene(operation):
+    if operation.get('op')=='mesh_weld_channels_prefixes':return PREFIXES[operation['case']]
+    if operation.get('op')=='mesh_weld_channels_followup':return FOLLOWUP[operation['case']]
+    name=operation['case']
+    if name in CASES:return CASES[name]
+    if name in PAIRS:return PAIRS[name]
+    try:
+        from .mesh_weld_channels_stress_cases import CASES as stress
+    except (ImportError, ValueError):
+        from mesh_weld_channels_stress_cases import CASES as stress
+    if name in stress:return stress[name]
+    try:
+        from .mesh_weld_channels_trace_cases import CASES as trace
+    except (ImportError, ValueError):
+        from mesh_weld_channels_trace_cases import CASES as trace
+    return trace[name]
+
+
 def validate(operation):
     try:
-        valid = (isinstance(operation,dict) and set(operation)=={'op','id','case'}
-                 and operation['op'] in ['mesh_weld_channels','mesh_weld_channels_followup','mesh_weld_channels_prefixes']
-                 and operation['case'] in (PREFIXES if operation['op']=='mesh_weld_channels_prefixes' else FOLLOWUP if operation['op']=='mesh_weld_channels_followup' else dict(CASES,**PAIRS))
-                 and operation['id']==operation['case'])
-    except TypeError: valid=False
-    if not valid: raise ValueError('fixed mesh weld channel recipe required')
+        valid=(isinstance(operation,dict) and set(operation)=={'op','id','case'}
+               and operation['op'] in ['mesh_weld_channels','mesh_weld_channels_followup','mesh_weld_channels_prefixes']
+               and operation['id']==operation['case'])
+        if not valid:raise ValueError('fixed mesh weld channel recipe required')
+        scene(operation)
+    except (KeyError,TypeError):
+        raise ValueError('fixed mesh weld channel recipe required')

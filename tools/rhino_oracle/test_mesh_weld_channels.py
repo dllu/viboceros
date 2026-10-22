@@ -7,6 +7,8 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 from . import mesh_weld_channels_cases as cases
+from . import mesh_weld_channels_stress_cases as stress
+from . import mesh_weld_channels_trace_cases as trace
 from .client import OracleClient,OracleProtocolError
 from .structural_sdk import validate_operations
 HERE=Path(__file__).resolve().parent
@@ -16,7 +18,7 @@ class MeshWeldChannels(unittest.TestCase):
     def test_native_requests_inputs_and_frozen_producers(self):
         counts=[]
         for suffix,make,scenes in [('',cases.request,cases.CASES),('_followup',cases.followup_request,cases.FOLLOWUP),
-                                   ('_prefixes',cases.prefixes_request,cases.PREFIXES),('_pairs',cases.pairs_request,cases.PAIRS)]:
+                                   ('_prefixes',cases.prefixes_request,cases.PREFIXES),('_pairs',cases.pairs_request,cases.PAIRS),('_stress',stress.request,stress.CASES),('_trace',trace.request,trace.CASES)]:
             family='mesh_weld_channels'+suffix
             path=HERE/'fixtures'/(family+'.json')
             query=json.loads(path.read_text());self.assertEqual(query,make());validate_operations(query)
@@ -27,12 +29,15 @@ class MeshWeldChannels(unittest.TestCase):
             for row in native['results']:
                 self.assertNotIn('error',row);self.assertEqual(row['value']['input'],scenes[row['id']])
                 self.assertEqual(row['value']['before']['vertices'],scenes[row['id']]['source']['vertices'])
-                self.assertEqual(row['value']['before']['faces'],scenes[row['id']]['source']['faces'])
+                expected=scenes[row['id']]['source']['faces']
+                if scenes[row['id']].get('late_invalid_face'):
+                    n=len(scenes[row['id']]['source']['vertices']);expected=expected+[[n+2,n+3,n+4]]
+                self.assertEqual(row['value']['before']['faces'],expected)
             for name,digest in native['provenance']['sources'].items():
                 data=gzip.decompress((HERE/'observations/source_snapshots'/(digest+'.gz')).read_bytes())
                 self.assertEqual(hashlib.sha256(data).hexdigest(),digest,name)
             counts.append(len(native['results']))
-        self.assertEqual(counts,[18,13,10,15])
+        self.assertEqual(counts,[18,13,10,15,29,8])
 
     def test_unowned_mutated_mixed_or_unbounded_capture_is_rejected(self):
         query=cases.request()
@@ -57,10 +62,18 @@ class MeshWeldChannels(unittest.TestCase):
         report=json.loads((ROOT/'docs/mesh-weld-channels-qualification.json').read_text())
         lines=['MESH_WELD_CHANNEL_NATIVE '+json.dumps(r) for r in report['cases']]
         self.assertEqual(summarize('\n'.join(lines)),report)
-        self.assertEqual((report['compared_cases'],report['qualified_cases'],len(report['diagnostic_cases'])),(47,24,9))
+        self.assertEqual((report['compared_cases'],report['qualified_cases'],len(report['diagnostic_cases'])),(76,58,17))
+        self.assertEqual(len(report['precompaction_diagnostics']),8)
+        self.assertTrue(all(r['fields_exact'] for r in report['precompaction_diagnostics']))
         self.assertFalse(report['full_native_parity']);self.assertFalse(report['performance_qualified'])
         for bad in [lines[:-1],lines+lines[:1]]:
             with self.assertRaises(ValueError):summarize('\n'.join(bad))
         for field,value in [('qualified',1),('vertices',True),('faces',-1),('differences',['unmeasured'])]:
             rows=copy.deepcopy(report['cases']);rows[0][field]=value
             with self.assertRaises(ValueError):summarize('\n'.join('MESH_WELD_CHANNEL_NATIVE '+json.dumps(r)for r in rows))
+
+    def test_precompaction_diagnostics_are_bound_to_valid_native_twins(self):
+        from .report_mesh_weld_channels import trace_comparisons
+        records=trace_comparisons()
+        self.assertEqual({r['id'] for r in records},set(trace.TWINS))
+        self.assertTrue(all(r['raw_vertices']>r['compact_vertices'] for r in records))

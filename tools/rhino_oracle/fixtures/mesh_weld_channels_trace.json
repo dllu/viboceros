@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_weld_channels",
+      "id": "trace_cube_all",
+      "case": "trace_cube_all"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "trace_cube_rotated",
+      "case": "trace_cube_rotated"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "trace_cube_reverse_raw",
+      "case": "trace_cube_reverse_raw"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "trace_cube_triangles",
+      "case": "trace_cube_triangles"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "trace_holdout_grid_quads_2",
+      "case": "trace_holdout_grid_quads_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "trace_holdout_grid_triangles_2",
+      "case": "trace_holdout_grid_triangles_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "trace_holdout_cube_raw_5_0",
+      "case": "trace_holdout_cube_raw_5_0"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "trace_holdout_cube_rotation_2",
+      "case": "trace_holdout_cube_rotation_2"
+    }
+  ]
+}

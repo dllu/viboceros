@@ -1,0 +1,156 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_rotation_1",
+      "case": "holdout_cube_rotation_1"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_rotation_2",
+      "case": "holdout_cube_rotation_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_rotation_4",
+      "case": "holdout_cube_rotation_4"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_rotation_5",
+      "case": "holdout_cube_rotation_5"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_reverse_faces",
+      "case": "holdout_cube_reverse_faces"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_raw_5_0",
+      "case": "holdout_cube_raw_5_0"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_raw_5_3",
+      "case": "holdout_cube_raw_5_3"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_raw_7_1",
+      "case": "holdout_cube_raw_7_1"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_raw_23_0",
+      "case": "holdout_cube_raw_23_0"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_prefix_raw_2",
+      "case": "holdout_cube_prefix_raw_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_prefix_raw_3",
+      "case": "holdout_cube_prefix_raw_3"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_prefix_raw_4",
+      "case": "holdout_cube_prefix_raw_4"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_cube_prefix_raw_5",
+      "case": "holdout_cube_prefix_raw_5"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_3_closed",
+      "case": "holdout_fan_3_closed"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_3_open",
+      "case": "holdout_fan_3_open"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_4_closed",
+      "case": "holdout_fan_4_closed"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_4_open",
+      "case": "holdout_fan_4_open"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_5_closed",
+      "case": "holdout_fan_5_closed"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_5_open",
+      "case": "holdout_fan_5_open"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_6_closed",
+      "case": "holdout_fan_6_closed"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_6_open",
+      "case": "holdout_fan_6_open"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_7_closed",
+      "case": "holdout_fan_7_closed"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_7_open",
+      "case": "holdout_fan_7_open"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_8_closed",
+      "case": "holdout_fan_8_closed"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_fan_8_open",
+      "case": "holdout_fan_8_open"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_grid_quads_2",
+      "case": "holdout_grid_quads_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_grid_triangles_2",
+      "case": "holdout_grid_triangles_2"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_grid_quads_3",
+      "case": "holdout_grid_quads_3"
+    },
+    {
+      "op": "mesh_weld_channels",
+      "id": "holdout_grid_triangles_3",
+      "case": "holdout_grid_triangles_3"
+    }
+  ]
+}

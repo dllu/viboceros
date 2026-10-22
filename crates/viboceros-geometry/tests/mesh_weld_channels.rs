@@ -11,8 +11,9 @@ fn native_whole_mesh_welding_tracks_channels_and_remaining_differences() {
         "../../../tools/rhino_oracle/fixtures/mesh_weld_channels_gaps.json"
     ))
     .unwrap();
+    let mut changes = Vec::new();
     let mut seen = std::collections::BTreeSet::new();
-    for suffix in ["", "_followup", "_prefixes", "_pairs"] {
+    for suffix in ["", "_followup", "_prefixes", "_pairs", "_stress", "_trace"] {
         let family = format!("mesh_weld_channels{suffix}");
         let data: Value = serde_json::from_slice(
             &std::fs::read(root.join(format!("tools/rhino_oracle/observations/{family}.json")))
@@ -83,16 +84,18 @@ fn native_whole_mesh_welding_tracks_channels_and_remaining_differences() {
                 .get(row["id"].as_str().unwrap())
                 .cloned()
                 .unwrap_or(json!([]));
-            assert_eq!(
-                json!(differences),
-                expected_gaps,
-                "{}: new regression or resolved gap; update the measured limits",
-                row["id"]
-            );
+            if json!(differences) != expected_gaps {
+                changes.push(format!("{}: {differences:?}", row["id"]));
+            }
             if !differences.is_empty() {
                 seen.insert(row["id"].as_str().unwrap().to_owned());
             }
         }
     }
+    assert!(
+        changes.is_empty(),
+        "new regressions or resolved gaps; update measured limits:\n{}",
+        changes.join("\n")
+    );
     assert_eq!(seen, known.as_object().unwrap().keys().cloned().collect());
 }

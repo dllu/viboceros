@@ -27,17 +27,20 @@ bridge payload accepts legacy version 2 and adds version 3 only for these
 channels. STL has no corresponding attribute storage.
 
 The [native comparison](../mesh-channels-qualification.json) retains 28 SDK
-operations on a packed textured cube and a mesh with an n-gon. Twenty-seven
+operations on a packed textured cube and a mesh with an n-gon. All 28
 match within `1e-6`, including stored channel ordering. Face cycles are compared
-up to rotation, and n-gon boundaries by membership. The textured cube's Weld
-case differs in vertex order and seam averaging; it remains unqualified.
+up to rotation, and n-gon boundaries by membership.
 Two native 3DM fixtures also round-trip with exact channel values. Broader edit
 compatibility, texture display and comparative performance remain unqualified.
 
 Whole-mesh welding now blends stored UVs, colors and normal directions instead
 of copying one seam value and rebuilding geometric normals. It preserves
 custom stored normals. The [expanded Weld comparison](../mesh-weld-channels-qualification.json)
-records 47 valid cases: 24 match and 23 retain explicit differences in traversal,
-ordering or attribute reductions. Nine invalid native inputs remain diagnostics.
+records 76 valid cases: 58 match and 18 retain explicit differences in traversal,
+ordering or attribute reductions. These include face and raw-vertex permutations,
+triangulated cubes and grids; all 12 open and closed fan cases match. Seventeen
+invalid native inputs remain diagnostics. Eight diagnostics retain raw vertices
+before compaction; compacting them reproduces their separately captured valid
+twins exactly.
 Three command regressions check metadata, groups and Undo/Redo. Broader Weld
 parity remains open; passing regressions do not qualify the differing cases.

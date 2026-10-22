@@ -66,12 +66,13 @@ class MeshChannelsTests(unittest.TestCase):
                     client.run_rhino(query)
             spawn.assert_not_called()
 
-    def test_report_requires_every_comparison_and_retains_weld_gap(self):
+    def test_report_requires_every_comparison_and_retains_finite_scope(self):
         from .report_mesh_channels import summarize
         report = json.loads((ROOT/'docs/mesh-channels-qualification.json').read_text())
         lines = ['MESH_CHANNEL_NATIVE '+json.dumps(r) for r in report['cases']]
         self.assertEqual(summarize('\n'.join(lines)), report)
-        self.assertEqual((report['compared_cases'], report['qualified_cases']), (28, 27))
+        self.assertEqual((report['compared_cases'], report['qualified_cases']), (28, 28))
+        self.assertTrue(report['captured_cases_qualified'])
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
         for bad in [lines[:-1], lines+lines[:1]]:
