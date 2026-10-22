@@ -26,6 +26,77 @@ pub(super) fn interpolation_prompt_points(
 }
 
 impl VibocerosApp {
+    pub(super) fn finish_interactive_curve(&mut self) {
+        let Some(command) = self
+            .active_command
+            .filter(|command| command.collects_curve_points())
+        else {
+            return;
+        };
+        let minimum_point_count = match command {
+            InteractiveCommand::SplitCurve => 1,
+            InteractiveCommand::Curve {
+                closure: ControlPointCurveClosure::Smooth | ControlPointCurveClosure::Sharp,
+                ..
+            } => 3,
+            _ => 2,
+        };
+        if self.curve_points.len() < minimum_point_count {
+            self.push_log(format!(
+                "Error: {} requires at least {minimum_point_count} points",
+                command.name(),
+            ));
+            return;
+        }
+        let plane = self.drafting_plane;
+        let draft_input = self.command_input.clone();
+        let point_filter = self.point_filter;
+        let point_constraint = self.point_constraint;
+        let snap_override = self.snaps.model_override;
+        let points = std::mem::take(&mut self.curve_points);
+        self.active_command = None;
+        let construction_points = match command {
+            InteractiveCommand::InterpCrv { options } => {
+                curve_prompt::interpolation_prompt_points(&points, options)
+            }
+            _ => std::borrow::Cow::Borrowed(points.as_slice()),
+        };
+        let arguments = construction_points
+            .iter()
+            .copied()
+            .map(format_model_point)
+            .collect::<Vec<_>>()
+            .join(" ");
+        let input = match command {
+            InteractiveCommand::Curve { degree, closure } => {
+                let closure = match closure {
+                    ControlPointCurveClosure::Open => "Open",
+                    ControlPointCurveClosure::Smooth => "Smooth",
+                    ControlPointCurveClosure::Sharp => "Sharp",
+                };
+                format!("Curve {arguments} Degree={degree} Close={closure}")
+            }
+            InteractiveCommand::InterpCrv { options } => {
+                format!(
+                    "InterpCrv {arguments} {}",
+                    format_interp_curve_options(options)
+                )
+            }
+            _ => format!("{} {arguments}", command.name()),
+        };
+        if !self.try_execute_command(&input) {
+            // Command transactions restore the document on failure; restore
+            // the independent UI draft too so Enter does not discard work.
+            self.active_command = Some(command);
+            self.curve_points = points;
+            self.drafting_plane = plane;
+            self.command_input = draft_input;
+            self.point_filter = point_filter;
+            self.point_constraint = point_constraint;
+            self.snaps.model_override = snap_override;
+        }
+    }
+
     /// A closing point is a completion gesture, not another interpolation point.
     /// Private Rhino cubic probes establish an inclusive ON_SQRT_EPSILON
     /// distance threshold. Degree-one probes distinguish exact returns from

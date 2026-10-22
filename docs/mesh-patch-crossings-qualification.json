@@ -3483,7 +3483,7 @@
     "crates/viboceros-command/src/uv_reference.rs": "fdef2b7f3da08a21de55fc0be9b5b03e7533104c21ff2ac0a9eab06d2450a70a",
     "crates/viboceros-command/tests/mesh_patch_native.rs": "0340528dfaba64e917d9dc6ceabdd053cebfc6c9169f93c0d053691b5bcae0e5",
     "crates/viboceros-command/tests/support/mesh_patch.rs": "652360289115ab497f9c2ba2ae00e205a44ed6e0299c37cae1453f9ae56a04ff",
-    "src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
+    "src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828",
     "src/app/object_selection.rs": "adaf0565fabe218a7093803c9850e0340e8d38b0d1736f465956d9f1e7f4d272",
     "src/app/transform_sources.rs": "0e1a37d2bb943e927ac3dbee711d5da3089a4168c683010c1f1e7abf795396f3",
     "src/app/object_selection/mesh_patch.rs": "aab85e841a3339466c4d77b2f60c440efeffb26dde8a99a522d866e80d32eacb",

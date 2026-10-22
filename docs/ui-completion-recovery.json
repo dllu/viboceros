@@ -1,0 +1,66 @@
+{
+  "baseline_revision": "aede095c128bc95bef36ba28c148b849abbf4bb1",
+  "scope": "Curve completion recovery and removal of the obsolete single-pick InsertControlPoint UI path",
+  "baseline_failed_tests": [
+    "app::tests::interactive_insert_control_point_uses_one_object_location_pick_and_options",
+    "app::tests::point_input::failed_curve_close_restores_original_options_and_preserves_redo",
+    "app::tests::point_input::rejected_interpolation_closure_preserves_tangents_points_and_redo",
+    "app::tests::rhino_curve_prompt::interpolation_auto_close_is_one_edit_and_failed_closure_preserves_the_draft"
+  ],
+  "changes": [
+    "Failed completion restores typed input, filters, constraints and snap override alongside the existing points, options, captured plane and document history.",
+    "InsertControlPoint uses the staged repeated getter exclusively; Direction=Both is rejected at startup and while picking. The obsolete test expecting Both is replaced with production-entrypoint regressions for option rejection, immutable preview, surface hit points and one-edit Undo/Redo."
+  ],
+  "checks": {
+    "native_application": {
+      "passed": 1632,
+      "failed": 0,
+      "ignored": 19,
+      "filtered_out": 0
+    },
+    "portable_application": {
+      "passed": 1616,
+      "failed": 0,
+      "ignored": 19,
+      "filtered_out": 0
+    },
+    "python_tests_passed": 1719,
+    "clippy": [
+      "cargo clippy --bin viboceros --tests --features native-smlib -- -D warnings",
+      "cargo clippy --bin viboceros --tests -- -D warnings"
+    ],
+    "format": "cargo fmt --all -- --check"
+  },
+  "insert_control_point_saved_native_workflows": {
+    "command": 82,
+    "extensions": 24,
+    "endpoints": 15,
+    "charts": 3
+  },
+  "regression_tests": [
+    "app::tests::point_input::failed_curve_close_restores_original_options_and_preserves_redo",
+    "app::tests::point_input::rejected_interpolation_closure_preserves_tangents_points_and_redo",
+    "app::tests::rhino_curve_prompt::interpolation_auto_close_is_one_edit_and_failed_closure_preserves_the_draft",
+    "app::tests::curve_completion::failed_curve_completion_keeps_filters_constraints_snap_override_and_redo",
+    "app::tests::insert_control_point::insert_control_point_rejects_both_and_preserves_the_staged_edit_on_invalid_options",
+    "app::tests::insert_control_point::insert_surface_control_point_uses_the_rendered_hit_location_in_the_staged_getter"
+  ],
+  "source_hash_note": "Current qualification source hashes were refreshed after the full application regressions. Existing numeric and performance measurements were retained unchanged; this follow-up made no fresh Rhino captures or performance measurements. The earlier creator integration receipt retains its original source bytes through Git references.",
+  "sha256": {
+    "src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828",
+    "src/app/curve_prompt.rs": "c8726107140783628be77b4badac4c3fe84205da5d4c8d61297d5a78ec800344",
+    "src/app/mesh_face_prompt.rs": "df8247446ae4cca8690dad27b2e3f2c616e59f8f3d05d17b2f2710d1918ba2f5",
+    "src/app/tests/curve_completion.rs": "6bd33a67a48c402992a67fa440c6cc06c4a0a30b8ce7e9fe40d11d39343da9d8",
+    "src/app/tests/insert_control_point.rs": "1bf0b9d55cd36513274d57432d6d751e715cfc6bf67756ad15c42c116a9867e9",
+    "src/app/tests/point_input.rs": "8650cc337af7e9e73ba8e452e41cc86c757d6269cb075f8bbf90a42bb0564e40",
+    "src/app/tests/rhino_curve_prompt.rs": "e5c441861d87cd5b611539f7e3b52ad242b560405833e89bbb80f4250942711e",
+    "docs/point-input.md": "f5c37734a1b437e85677a87c035d583c95555d8245d650e8ccc55c794f5e2b70",
+    "docs/commands/insert-control-point.md": "b58f3c494c0d4dca24e4e9627bb218e98a7fec7f704bd4e4697b0c8984002979",
+    "tools/rhino_oracle/observations/insert_control_point_options.json": "9421f540e3a6382e8651ec5abd41558d2540bdf6fbc41535284d0a233aa94957"
+  },
+  "baseline_git_sha256": {
+    "aede095c128bc95bef36ba28c148b849abbf4bb1:src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
+    "aede095c128bc95bef36ba28c148b849abbf4bb1:src/app/curve_prompt.rs": "bd59b672bc1a60f4d0dd35f9ac9996df8bd3e9f28d163add54f8ce6b28e4bfcc",
+    "aede095c128bc95bef36ba28c148b849abbf4bb1:src/app/tests/insert_control_point.rs": "04ec4d00271f1430877dae3f17400849ced8d8d75f6684885d49db10af96bb3d"
+  }
+}

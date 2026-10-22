@@ -8739,7 +8739,7 @@
     "crates/viboceros-command/tests/tosubd.rs": "debb9c6e68878a59afdd22a4cbec5f7800fba5bb6966d23dc2232af1e1578a6c",
     "crates/viboceros-command/tests/tosubd_native.rs": "a26b030eb62dfd562361e074d6882ef0b7b8ac5e531f435b631837953c14a7c3",
     "crates/viboceros-command/tests/support/tosubd.rs": "e1fe7355b40a12335202ffd11955b806cfdd4bf52fa836f51b92906473468dc7",
-    "src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
+    "src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828",
     "src/app/to_subd.rs": "b472f7c0393af9818a2a7c89d9e8f0a58af4d4dec96e44b9da9178022cb85bca",
     "src/app/to_subd/tests.rs": "e8fe2a83b9c8f79f359e0611c4891c5202d0b1674589d5d63b7a47a2781908b1",
     "src/app/component_selection.rs": "4682d90e58761b9091cead429cf5d295ee4d582f231af6f45efd8412a82ddca1",

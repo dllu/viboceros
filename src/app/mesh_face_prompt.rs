@@ -116,8 +116,7 @@ impl VibocerosApp {
             Some(
                 InteractiveCommand::SrfSeam { .. }
                 | InteractiveCommand::SplitSurfaceIsocurve { .. }
-                | InteractiveCommand::ExtendSrf { .. }
-                | InteractiveCommand::InsertControlPoint { .. },
+                | InteractiveCommand::ExtendSrf { .. },
             ) => {
                 if let Some(point) = point {
                     self.accept_drafting_point(point);

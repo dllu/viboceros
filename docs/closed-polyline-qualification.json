@@ -2653,7 +2653,7 @@
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",
     "crates/viboceros-command/tests/mesh_polyline_native.rs": "1086c7b070f9a81a3fb8981908e0a4b33b96ae65270bf96136aa9dc6e895911f",
     "crates/viboceros-command/tests/support/closed_polyline.rs": "7ad81bc8fbe006bf405649e47362a496622a83a0f4d7bd669ec627860875e7b8",
-    "src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
+    "src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828",
     "src/app/object_selection.rs": "adaf0565fabe218a7093803c9850e0340e8d38b0d1736f465956d9f1e7f4d272",
     "src/app/object_selection/mesh_polyline_tests.rs": "c9e7821ea468b4427c474f3285d076ee65ba0d575be778683f188c1af2487fca",
     "tools/rhino_oracle/mesh_polyline_probe.py": "35ad0722d914333b9a67590408e392ad9c7c688b73c0ab86103eec1d56de2545",

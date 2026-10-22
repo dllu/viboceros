@@ -285,13 +285,6 @@ enum InteractiveIsocurveDirection {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum InteractiveControlPointDirection {
-    U,
-    V,
-    Both,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum InteractiveCurveExtensionStyle {
     Natural,
     Arc,
@@ -321,16 +314,6 @@ enum InteractiveMeshSphereTopology {
 }
 
 impl InteractiveIsocurveDirection {
-    const fn option_value(self) -> &'static str {
-        match self {
-            Self::U => "U",
-            Self::V => "V",
-            Self::Both => "Both",
-        }
-    }
-}
-
-impl InteractiveControlPointDirection {
     const fn option_value(self) -> &'static str {
         match self {
             Self::U => "U",
@@ -775,10 +758,6 @@ enum InteractiveCommand {
         direction: InteractiveIsocurveDirection,
         ignore_trims: bool,
     },
-    InsertControlPoint {
-        direction: InteractiveControlPointDirection,
-        midpoint: bool,
-    },
     CrvSeam,
     SrfSeam {
         direction: Option<InteractiveIsocurveDirection>,
@@ -1035,7 +1014,6 @@ impl InteractiveCommand {
             Self::DupMeshEdge { .. } => "DupMeshEdge",
             Self::DupMeshHoleBoundary => "DupMeshHoleBoundary",
             Self::ExtractIsocurve { .. } => "ExtractIsocurve",
-            Self::InsertControlPoint { .. } => "InsertControlPoint",
             Self::CrvSeam => "CrvSeam",
             Self::SrfSeam { .. } => "SrfSeam",
             Self::Extend { .. } => "Extend",
@@ -1712,9 +1690,6 @@ impl InteractiveCommand {
             Self::ExtractIsocurve { .. } => {
                 "ExtractIsocurve: pick a location on the selected surface or B-rep face (Esc to cancel)"
             }
-            Self::InsertControlPoint { .. } => {
-                "InsertControlPoint: pick a location on the selected curve or surface (Esc to cancel)"
-            }
             Self::CrvSeam => {
                 "CrvSeam: pick a new seam location on the selected closed curve (Esc to cancel)"
             }
@@ -2123,7 +2098,6 @@ impl InteractiveCommand {
             | Self::DupMeshEdge { .. }
             | Self::DupMeshHoleBoundary
             | Self::ExtractIsocurve { .. }
-            | Self::InsertControlPoint { .. }
             | Self::CrvSeam
             | Self::SrfSeam { .. }
             | Self::Extend { .. }
@@ -4726,45 +4700,6 @@ impl VibocerosApp {
                 return false;
             }
             InteractiveCommand::DupMeshHoleBoundary
-        } else if normalized == "insertcontrolpoint" {
-            let mut direction = InteractiveControlPointDirection::U;
-            let mut midpoint = false;
-            let mut direction_seen = false;
-            let mut midpoint_seen = false;
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                if name.eq_ignore_ascii_case("Direction") && !direction_seen {
-                    direction = if value.eq_ignore_ascii_case("U") {
-                        InteractiveControlPointDirection::U
-                    } else if value.eq_ignore_ascii_case("V") {
-                        InteractiveControlPointDirection::V
-                    } else if value.eq_ignore_ascii_case("Both") {
-                        InteractiveControlPointDirection::Both
-                    } else {
-                        return false;
-                    };
-                    direction_seen = true;
-                } else if name.eq_ignore_ascii_case("Midpoint") && !midpoint_seen {
-                    midpoint = if value.eq_ignore_ascii_case("Yes") {
-                        true
-                    } else if value.eq_ignore_ascii_case("No") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    midpoint_seen = true;
-                } else {
-                    return false;
-                }
-            }
-            InteractiveCommand::InsertControlPoint {
-                direction,
-                midpoint,
-            }
         } else if normalized == "extend" {
             let mut style = InteractiveCurveExtensionStyle::Natural;
             let mut join = InteractiveCurveExtensionJoin::Merge;
@@ -5616,7 +5551,6 @@ impl VibocerosApp {
                 | InteractiveCommand::DupMeshEdge { .. }
                 | InteractiveCommand::DupMeshHoleBoundary
                 | InteractiveCommand::ExtractIsocurve { .. }
-                | InteractiveCommand::InsertControlPoint { .. }
                 | InteractiveCommand::CrvSeam
                 | InteractiveCommand::SrfSeam { .. }
                 | InteractiveCommand::Extend { .. }
@@ -7906,18 +7840,6 @@ impl VibocerosApp {
                     if ignore_trims { "Yes" } else { "No" },
                 ));
             }
-            InteractiveCommand::InsertControlPoint {
-                direction,
-                midpoint,
-            } => {
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "InsertControlPoint {} Direction={} Midpoint={}",
-                    format_model_point(point),
-                    direction.option_value(),
-                    if midpoint { "Yes" } else { "No" },
-                ));
-            }
             InteractiveCommand::CrvSeam => {
                 self.active_command = None;
                 self.execute_command(&format!("CrvSeam {}", format_model_point(point)));
@@ -8587,69 +8509,6 @@ impl VibocerosApp {
             }
         }
         true
-    }
-
-    fn finish_interactive_curve(&mut self) {
-        let Some(command) = self
-            .active_command
-            .filter(|command| command.collects_curve_points())
-        else {
-            return;
-        };
-        let minimum_point_count = match command {
-            InteractiveCommand::SplitCurve => 1,
-            InteractiveCommand::Curve {
-                closure: ControlPointCurveClosure::Smooth | ControlPointCurveClosure::Sharp,
-                ..
-            } => 3,
-            _ => 2,
-        };
-        if self.curve_points.len() < minimum_point_count {
-            self.push_log(format!(
-                "Error: {} requires at least {minimum_point_count} points",
-                command.name(),
-            ));
-            return;
-        }
-        let plane = self.drafting_plane;
-        let points = std::mem::take(&mut self.curve_points);
-        self.active_command = None;
-        let construction_points = match command {
-            InteractiveCommand::InterpCrv { options } => {
-                curve_prompt::interpolation_prompt_points(&points, options)
-            }
-            _ => std::borrow::Cow::Borrowed(points.as_slice()),
-        };
-        let arguments = construction_points
-            .iter()
-            .copied()
-            .map(format_model_point)
-            .collect::<Vec<_>>()
-            .join(" ");
-        let input = match command {
-            InteractiveCommand::Curve { degree, closure } => {
-                let closure = match closure {
-                    ControlPointCurveClosure::Open => "Open",
-                    ControlPointCurveClosure::Smooth => "Smooth",
-                    ControlPointCurveClosure::Sharp => "Sharp",
-                };
-                format!("Curve {arguments} Degree={degree} Close={closure}")
-            }
-            InteractiveCommand::InterpCrv { options } => {
-                format!(
-                    "InterpCrv {arguments} {}",
-                    format_interp_curve_options(options)
-                )
-            }
-            _ => format!("{} {arguments}", command.name()),
-        };
-        if !self.try_execute_command(&input) {
-            // Command transactions restore the document on failure; restore
-            // the independent UI draft too so Enter does not discard work.
-            self.active_command = Some(command);
-            self.curve_points = points;
-            self.drafting_plane = plane;
-        }
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
@@ -10261,17 +10120,6 @@ impl eframe::App for VibocerosApp {
                     .and_then(curve_array::Session::preview)
             })
             .filter(|_| model_input_active);
-        let insert_surface_pick = model_input_active
-            && matches!(
-                self.active_command,
-                Some(InteractiveCommand::InsertControlPoint { .. })
-            )
-            && self.document.selected_object_count() == 1
-            && self
-                .document
-                .selected_objects()
-                .next()
-                .is_some_and(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)));
         let plane_object_pick = self
             .plane_prompt
             .as_ref()
@@ -10338,8 +10186,7 @@ impl eframe::App for VibocerosApp {
                     | InteractiveCommand::ExtendSrf { .. }
                     | InteractiveCommand::EvaluateUv { .. }
             )
-        ) || insert_surface_pick
-        {
+        ) {
             Some(FacePickMode::SurfaceAndBrep)
         } else {
             None
@@ -11415,6 +11262,7 @@ mod tests {
     mod cull_degenerate;
     mod curvature_graph;
     mod curve_array;
+    mod curve_completion;
     mod curve_deviation;
     mod curve_rebuild_preview;
     mod delete_grips;
@@ -13989,98 +13837,6 @@ mod tests {
         assert!(matches!(output.geometry(), Geometry::Polyline(boundary) if boundary == &expected));
         assert_eq!(app.document.undo_label(), Some("DupMeshHoleBoundary"));
         assert!(!app.try_start_interactive_command("DupMeshHoleBoundary Boundaries=All"));
-    }
-
-    #[test]
-    fn interactive_surface_control_point_uses_the_rendered_hit_location() {
-        let mut clicked = test_app();
-        clicked.execute_command("SrfPt 0,0,0 4,0,4 4,2,4 0,2,0");
-        let source = clicked.document.objects().next().unwrap().id();
-        clicked
-            .document
-            .select_object(source, viboceros_document::SelectionMode::Replace)
-            .unwrap();
-        assert!(clicked.try_start_interactive_command("InsertControlPoint Direction=V"));
-        clicked.accept_component_face_hit(source, 0, Some(point(1.5, 1.0, 1.5)));
-        let clicked_geometry = clicked.document.object(source).unwrap().geometry().clone();
-        assert_eq!(clicked.document.undo_label(), Some("InsertControlPoint"));
-
-        let mut scripted = test_app();
-        scripted.execute_command("SrfPt 0,0,0 4,0,4 4,2,4 0,2,0");
-        let source = scripted.document.objects().next().unwrap().id();
-        scripted
-            .document
-            .select_object(source, viboceros_document::SelectionMode::Replace)
-            .unwrap();
-        scripted.execute_command("InsertControlPoint 1.5,1,1.5 Direction=V");
-        assert_eq!(
-            scripted.document.object(source).unwrap().geometry(),
-            &clicked_geometry
-        );
-        scripted.execute_command("Undo");
-        scripted
-            .document
-            .select_object(source, viboceros_document::SelectionMode::Replace)
-            .unwrap();
-        scripted.execute_command("InsertControlPoint 1.5,1,0 Direction=V");
-        assert_ne!(
-            scripted.document.object(source).unwrap().geometry(),
-            &clicked_geometry
-        );
-    }
-
-    #[test]
-    fn interactive_insert_control_point_uses_one_object_location_pick_and_options() {
-        let mut app = test_app();
-        let source = NurbsCurve::try_new(
-            2,
-            vec![
-                point(0.0, 0.0, 0.0),
-                point(2.0, 4.0, 1.0),
-                point(5.0, -1.0, 2.0),
-                point(8.0, 3.0, -1.0),
-                point(11.0, 1.0, 0.0),
-            ],
-            vec![0.0, 0.0, 0.0, 1.0, 2.0, 4.0, 4.0, 4.0],
-        )
-        .unwrap();
-        let source_id = app
-            .document
-            .add_geometry(Geometry::NurbsCurve(source.clone()))
-            .unwrap();
-        app.document
-            .select_object(source_id, viboceros_document::SelectionMode::Replace)
-            .unwrap();
-
-        assert!(
-            app.try_start_interactive_command("InsertControlPoint Direction=Both Midpoint=Yes")
-        );
-        assert_eq!(
-            app.active_command,
-            Some(InteractiveCommand::InsertControlPoint {
-                direction: InteractiveControlPointDirection::Both,
-                midpoint: true,
-            })
-        );
-        assert!(app.command_log.back().unwrap().contains("curve or surface"));
-        app.accept_drafting_point(source.evaluate(1.5).unwrap());
-
-        assert_eq!(app.active_command, None);
-        let Geometry::NurbsCurve(inserted) = app.document.object(source_id).unwrap().geometry()
-        else {
-            panic!("expected an interactively edited NURBS curve")
-        };
-        assert_eq!(inserted.control_points().len(), 6);
-        assert_eq!(app.document.undo_label(), Some("InsertControlPoint"));
-        assert!(!app.try_start_interactive_command("InsertControlPoint Direction=Sideways"));
-        assert!(!app.try_start_interactive_command("InsertControlPoint Midpoint=Maybe"));
-
-        app.document
-            .select_objects([], viboceros_document::SelectionMode::Replace)
-            .unwrap();
-        assert!(app.try_start_interactive_command("InsertControlPoint"));
-        assert_eq!(app.active_command, None);
-        assert!(app.command_log.back().unwrap().contains("no objects"));
     }
 
     #[test]

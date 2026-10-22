@@ -103,18 +103,18 @@
     "Existing shared source hashes were refreshed after regressions while older saved measurements were retained; the current conversion and creator kernel comparisons were rerun. Historical references retain their original Git revision."
   ],
   "sha256": {
-    "src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
     "src/app/tests/affine_preview.rs": "11b7e79671d72b54fe0560be6a3490d693da43afcabdf248f60f5f217fd8eec7",
     "crates/viboceros-command/src/lib.rs": "24332a39853b327e6b5760324bb9bccf27706075193039afb58ac049e55a9150",
     "crates/viboceros-command/src/cylinder.rs": "7a7afc615e65ffe6978eac2e6c4288a14bbb4b8e52f9705363f22c42edb5ae4c",
     "crates/viboceros-command/src/extrude_curve.rs": "c2301b8c76103d1d603c69bdfdb7fe57c2bc999173335a4274549d75a595edfa",
     "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",
-    "docs/creator-extrusion-qualification.json": "ef369a1ec35849e83bae01ab5ce89208b7d77b17e94e74dbaa6ca89b5d012888",
-    "docs/creator-extrusion-portable-qualification.json": "a93a83d59a2d336a3aedc31104364465a2a87687e9427512a540c5e348f9bc7f",
     "docs/creator-extrusion-direction-regression.json": "5af2d44b16afc93a50065a7f48102a55e15ed3b3fab9aad0ad130f18dc9bb88a"
   },
   "git_sha256": {
     "c87464bf1b9245bdd21e4ed1a59342b0760a945d:src/app/tests/point_input.rs": "8650cc337af7e9e73ba8e452e41cc86c757d6269cb075f8bbf90a42bb0564e40",
-    "c87464bf1b9245bdd21e4ed1a59342b0760a945d:src/app/tests/rhino_curve_prompt.rs": "e5c441861d87cd5b611539f7e3b52ad242b560405833e89bbb80f4250942711e"
+    "c87464bf1b9245bdd21e4ed1a59342b0760a945d:src/app/tests/rhino_curve_prompt.rs": "e5c441861d87cd5b611539f7e3b52ad242b560405833e89bbb80f4250942711e",
+    "aede095c128bc95bef36ba28c148b849abbf4bb1:src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
+    "aede095c128bc95bef36ba28c148b849abbf4bb1:docs/creator-extrusion-qualification.json": "ef369a1ec35849e83bae01ab5ce89208b7d77b17e94e74dbaa6ca89b5d012888",
+    "aede095c128bc95bef36ba28c148b849abbf4bb1:docs/creator-extrusion-portable-qualification.json": "a93a83d59a2d336a3aedc31104364465a2a87687e9427512a540c5e348f9bc7f"
   }
 }

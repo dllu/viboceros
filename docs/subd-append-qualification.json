@@ -1539,7 +1539,7 @@
     "crates/viboceros-io/src/three_dm.rs": "97b16ef90085682e92b4ab76a40043674ffdcc62ce1b4ae4443b005472064354",
     "crates/viboceros-io/src/three_dm_units.rs": "c2586509c7ce6195af2929095af219321df79cdb97195ff451b4faeff66d77f8",
     "crates/viboceros-io/src/three_dm/blocks.rs": "3d4262a301c78ac39117c5d1226bb34fdfa07fffe9bc6fe43e97fcf6c02d1373",
-    "src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
+    "src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828",
     "src/app/face_create.rs": "1d9a48612ea3b24db66614e106505acb1af3a8c469630ca7982af3a87415fc0a",
     "src/app/face_create/tests.rs": "a187fe59a202c374e6deb42bab00847af1b9aec89868f9245ec3e2d8485c8ed9",
     "src/viewport/display_cache.rs": "dbf8e0527ac3a4286138dab05db171e6874f99de0c9bc9574f9765a8ff626418",

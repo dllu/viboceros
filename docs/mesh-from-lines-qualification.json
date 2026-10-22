@@ -1877,7 +1877,7 @@
     "crates/viboceros-command/src/object_selection.rs": "c0b4e44759fc9e3db7b57d6a5019fe69ca8b8e33e4a00d202c83d2e4d99effec",
     "crates/viboceros-command/tests/mesh_from_lines_native.rs": "1dc81f8ac57b022f5842eee91a05e958bc70f77e532fa9f7af0e5e6ee04288c3",
     "crates/viboceros-command/tests/support/mesh_from_lines.rs": "7ae115ac5bba7a5131ba304a8027046bc735ef945e9220ae3fab201515ff8a7d",
-    "src/app.rs": "d7a4b6bb54903519c9fbeffe580018b6dba3d948ccb22e1b5f1fcab33d6e13d6",
+    "src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828",
     "src/app/object_selection.rs": "adaf0565fabe218a7093803c9850e0340e8d38b0d1736f465956d9f1e7f4d272",
     "src/app/transform_sources.rs": "0e1a37d2bb943e927ac3dbee711d5da3089a4168c683010c1f1e7abf795396f3",
     "src/app/object_selection/mesh_from_lines.rs": "e2506ba8239e63850e1d591f99ffa9ea4404f3cbb9b8406061b9a30ec9aa8deb",

@@ -4,6 +4,8 @@ Run `InsertControlPoint`, select one curve or surface, and pick locations on it.
 Each accepted pick updates the preview and its control markers. Enter commits
 all picks as one edit; ordinary Undo restores the source. Esc discards the
 preview and retains existing redo history. This command changes the shape.
+Typed startup options and viewport picks use this same staged getter; unsupported
+options, including `Direction=Both`, fail without starting a different prompt.
 
 For surfaces, `Direction=U|V` names the row orientation: U adds a V-indexed row.
 `Toggle` swaps directions. `Midpoint=Yes` places the new control halfway between

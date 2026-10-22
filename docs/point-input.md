@@ -57,6 +57,9 @@ as another interpolation point. For cubics, two collected points produce a
 non-periodic curve; three or more produce smooth periodic closure by default.
 Sharp settings are retained; incompatible
 tangent constraints leave the original draft intact on failure.
+Failed completion also retains the input text, pending coordinate filters,
+distance/angle constraints, one-pick snap override, and document redo history;
+see the [recovery regression checks](ui-completion-recovery.json).
 The [18-case seam audit](interpolation-auto-close-measurement.json) checks
 ordinary, exact-boundary, and diagonal offsets near the world origin, and an
 exact seam with no final Enter. Typed and picked completion, undo/redo, and

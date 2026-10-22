@@ -51,8 +51,8 @@ python3 -m unittest tools.rhino_oracle.test_creator_extrusions
 ```
 
 The [integration validation record](creator-integration-validation.json) lists
-the command/application checks and four reproduced baseline UI failures that
-remain outside this creator change.
+the original command/application checks. Its four baseline UI failures were
+resolved in the [completion and insertion follow-up](ui-completion-recovery.json).
 
 The creator command and regression code live in focused Cylinder and ExtrudeCrv
 modules. The README remains a short setup guide; qualification details belong

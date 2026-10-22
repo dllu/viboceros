@@ -8,6 +8,128 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn insert_control_point_rejects_both_and_preserves_the_staged_edit_on_invalid_options() {
+    let mut app = test_app();
+    let source = NurbsCurve::try_new(
+        2,
+        vec![
+            point(0.0, 0.0, 0.0),
+            point(2.0, 4.0, 1.0),
+            point(5.0, -1.0, 2.0),
+            point(8.0, 3.0, -1.0),
+            point(11.0, 1.0, 0.0),
+        ],
+        vec![0.0, 0.0, 0.0, 1.0, 2.0, 4.0, 4.0, 4.0],
+    )
+    .unwrap();
+    let id = app
+        .document
+        .add_geometry(Geometry::NurbsCurve(source.clone()))
+        .unwrap();
+    app.document
+        .select_object(id, SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "SetObjectName Future");
+    enter(&mut app, "Undo");
+    let original = app.document.object(id).unwrap().clone();
+    let options = app.commands.insert_control_point_options();
+
+    enter(&mut app, "InsertControlPoint Direction=Both Midpoint=Yes");
+    assert!(app.refinement_prompt.is_none());
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.object(id), Some(&original));
+    assert_eq!(app.commands.insert_control_point_options(), options);
+    assert!(app.document.can_redo());
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+
+    enter(&mut app, "InsertControlPoint Direction=U Midpoint=Yes");
+    assert!(app.accept_drafting_point(source.evaluate(1.5).unwrap()));
+    let preview = app
+        .refinement_prompt
+        .as_ref()
+        .unwrap()
+        .scene()
+        .unwrap()
+        .object(id)
+        .unwrap()
+        .clone();
+    let Geometry::NurbsCurve(inserted) = preview.geometry() else {
+        panic!("NURBS curve")
+    };
+    assert_eq!(inserted.control_points().len(), 6);
+    for input in ["Direction=Both", "Direction=Sideways", "Midpoint=Maybe"] {
+        enter(&mut app, input);
+        assert!(app.command_log.back().unwrap().starts_with("Error:"));
+        assert_eq!(app.document.object(id), Some(&original));
+        assert_eq!(
+            app.refinement_prompt
+                .as_ref()
+                .unwrap()
+                .scene()
+                .unwrap()
+                .object(id),
+            Some(&preview)
+        );
+        assert!(app.document.can_redo());
+    }
+    enter(&mut app, "");
+    assert!(app.refinement_prompt.is_none());
+    assert_eq!(app.document.object(id), Some(&preview));
+    assert_eq!(app.document.undo_label(), Some("InsertControlPoint"));
+    assert!(!app.document.can_redo());
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.object(id), Some(&original));
+    assert!(!app.document.can_undo());
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.object(id), Some(&preview));
+}
+
+#[test]
+fn insert_surface_control_point_uses_the_rendered_hit_location_in_the_staged_getter() {
+    let mut clicked = test_app();
+    clicked.execute_command("SrfPt 0,0,0 4,0,4 4,2,4 0,2,0");
+    let source = clicked.document.objects().next().unwrap().id();
+    clicked
+        .document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    let original = clicked.document.object(source).unwrap().clone();
+    enter(&mut clicked, "InsertControlPoint Direction=V");
+    assert!(clicked.refinement_viewport_hit(&ViewportOutput {
+        picked_point: Some(point(1.5, 1.0, 1.5)),
+        ..Default::default()
+    }));
+    assert_eq!(clicked.document.object(source), Some(&original));
+    enter(&mut clicked, "");
+    let clicked_geometry = clicked.document.object(source).unwrap().geometry().clone();
+    assert_eq!(clicked.document.undo_label(), Some("InsertControlPoint"));
+
+    let mut scripted = test_app();
+    scripted.execute_command("SrfPt 0,0,0 4,0,4 4,2,4 0,2,0");
+    let source = scripted.document.objects().next().unwrap().id();
+    scripted
+        .document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    scripted.execute_command("InsertControlPoint 1.5,1,1.5 Direction=V");
+    assert_eq!(
+        scripted.document.object(source).unwrap().geometry(),
+        &clicked_geometry
+    );
+    scripted.execute_command("Undo");
+    scripted
+        .document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    scripted.execute_command("InsertControlPoint 1.5,1,0 Direction=V");
+    assert_ne!(
+        scripted.document.object(source).unwrap().geometry(),
+        &clicked_geometry
+    );
+}
+
+#[test]
 fn insert_control_point_native_getters_previews_metadata_and_history() {
     matrix("command", 82);
 }
