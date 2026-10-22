@@ -240,7 +240,6 @@
     "docs/automatic-surface-domains-validation.json": "62d54c1c1e06f179efafed46f0e1c996ad43f2175e20ba2e54c853c720658597",
     "docs/commands/reparameterize.md": "a1e486e690abd683442cd70efc04f9a6c84c9bb2ad94438adfd3e36aa48703f7",
     "docs/fillet-srf-validation.json": "2c432e4f057683cd2624ed785f262610e58c48bcbd0d477439ebb37ecb3c36b0",
-    "docs/reparameterize-faces-validation.json": "d538628927d42d38e72b3544433f84a2761d025ee7722496b1eeace8da6da483",
     "src/app.rs": "288ad08453e1e3328bd0d73fc97a32089d52bee210aa3c7d156b3989c35aff79",
     "src/app/command_line.rs": "1de8545d6d4c6e795af07a07ff81b78d0a1b0684bf7794701929cd8a67643dd9",
     "src/app/component_selection.rs": "038604dec06300ee3211b4aa15a2ce4cafdfa795e20ae9d9b5b333be363d4cdb",
@@ -369,5 +368,8 @@
     "docs/reparameterize-input-preserve-provenance.py.gz": "bd0b5459f890264ce13ab2cb7bfe4767f57bc948e73f902a5df0752e4cb2d6c8",
     "docs/reparameterize-input-record.py.gz": "095fb60f7dc10373d593e387488eb29f5c3a1ddba8640463a95a4f4dbcc7bada",
     "docs/reparameterize-input-stage.py.gz": "ffa6dd911b72779006b17fc5f5119ca89309b78814a87b763a86a80fa9ee63f1"
+  },
+  "source_git_sha256": {
+    "d0d30304d8f3cacae4ffc05a7e85674454427e9b:docs/reparameterize-faces-validation.json": "d538628927d42d38e72b3544433f84a2761d025ee7722496b1eeace8da6da483"
   }
 }

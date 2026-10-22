@@ -81,3 +81,7 @@ Confirmation disables object picking without enabling point drafting. Nested CPl
 input and display controls retain the current phase. Explicit ordered document
 renewal and ordered copies support pick-dependent creation order; inverse renewal
 uses adjacent cycle swaps with the same single scratch permutation as forward replay.
+
+Application interface regressions live under `src/app/tests/interface/`, grouped
+by viewport layout, navigation, selection, drafting, prompts, shortcuts and toolbar
+behavior. The parent module shares frame and input helpers across those topics.

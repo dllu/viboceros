@@ -32,6 +32,8 @@ links. Put command syntax, behavior, examples, and limitations in
 the relevant page under `docs/`. Use the [documentation directory](README.md) and
 existing command topic indexes for navigation. Keep examples with their topic,
 and split an index by subject when it becomes difficult to scan.
+Link overview pages to subject indexes instead of appending individual
+qualification reports as features land.
 Periodically review the README's capability and build instructions. Extract
 oversized command implementations and their tests into focused modules before
 adding more responsibilities to the dispatchers.

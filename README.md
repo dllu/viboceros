@@ -30,7 +30,4 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 
 ## Documentation
 
-- [User guides and documentation](docs/README.md)
-- [Command reference and examples](docs/commands/README.md)
-- [Architecture](docs/architecture.md)
-- [Development and testing](docs/development.md)
+[Documentation](docs/README.md) covers usage, commands, architecture, and testing.

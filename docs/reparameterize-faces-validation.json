@@ -182,7 +182,6 @@
     "crates/viboceros-geometry/src/brep/reparameterize/tests.rs": "3982fdc154f1405007aa4fc30e9e5a531eae3754634bf41bfb2921350db2b9a2",
     "docs/native-basis-evaluation-validation.json": "9bcacb1a32923aebe6fea3cd5e25806c8731594a3a7aaca73753f580ff636c70",
     "docs/native-closed-join-validation.json": "62a562824f0865882fe25e46152be65222d14dd4af3a9aa7ec7acbfad2acb018",
-    "docs/native-curve-contact-tolerance-validation.json": "14b60c9bc2ea1cd27e8288ec586d923aa6f2b916fead957f152c9c19e8d66c33",
     "docs/native-curve-segment-limits-validation.json": "5bc3aafb7f4bf5f6b0828d28a82256b628c2edf878a00c50524f407e8014eda6",
     "docs/native-exact-splits-validation.json": "1ea9f4e1658a45fc6a5173f9704036ef4bfbf7dacc6a46cdca6a1aad6973075e",
     "docs/native-isocurve-limits-validation.json": "80068b4d61fdbd071461fafdc58e2a6ff283b7af3634802e9eac01b2ef90d55a",
@@ -277,6 +276,7 @@
     "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:README.md": "4891aad4026a3c9c6487ebe0b98603fb2d00e8560dbf3fa37743b28f09eb0e89",
     "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
     "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/smlib-unclamped-import-validation.json": "3e6125f857ccd86a9421aca627e2d2378f36c7a8739bcc2b60f572f3ff473f88",
-    "d6c1a82d1c90433323b55e947676f3fa4e889c14:docs/fillet-srf-validation.json": "19887b09b98e2fc6f15891be80b796d1d30d6009e6aa5f1d4ebd3d64f789309d"
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:docs/fillet-srf-validation.json": "19887b09b98e2fc6f15891be80b796d1d30d6009e6aa5f1d4ebd3d64f789309d",
+    "d0d30304d8f3cacae4ffc05a7e85674454427e9b:docs/native-curve-contact-tolerance-validation.json": "14b60c9bc2ea1cd27e8288ec586d923aa6f2b916fead957f152c9c19e8d66c33"
   }
 }
