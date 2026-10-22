@@ -1,0 +1,106 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_nonunit",
+      "case": "followup_edge_nonunit"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_opposite",
+      "case": "followup_edge_opposite"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_zero",
+      "case": "followup_edge_zero"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_partial_dedup",
+      "case": "followup_edge_partial_dedup"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_naked_no_normals",
+      "case": "followup_edge_naked_no_normals"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_shared_no_normals",
+      "case": "followup_edge_shared_no_normals"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_empty_no_normals",
+      "case": "followup_edge_empty_no_normals"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_reverse_selection",
+      "case": "followup_edge_reverse_selection"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_edge_reverse_faces",
+      "case": "followup_edge_reverse_faces"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_nonunit",
+      "case": "followup_vertex_nonunit"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_opposite",
+      "case": "followup_vertex_opposite"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_zero",
+      "case": "followup_vertex_zero"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_partial_dedup",
+      "case": "followup_vertex_partial_dedup"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_naked_no_normals",
+      "case": "followup_vertex_naked_no_normals"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_shared_no_normals",
+      "case": "followup_vertex_shared_no_normals"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_empty_no_normals",
+      "case": "followup_vertex_empty_no_normals"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_reverse_selection",
+      "case": "followup_vertex_reverse_selection"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_vertex_reverse_faces",
+      "case": "followup_vertex_reverse_faces"
+    },
+    {
+      "op": "mesh_component_weld_followup",
+      "id": "followup_whole_cube_twin",
+      "case": "followup_whole_cube_twin"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_bent_second",
+      "case": "holdout_vertex_bent_second"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_flat_first",
+      "case": "holdout_vertex_flat_first"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_flat_second",
+      "case": "holdout_vertex_flat_second"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_flat_both",
+      "case": "holdout_vertex_flat_both"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_cube_second",
+      "case": "holdout_vertex_cube_second"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_cube_adjacent",
+      "case": "holdout_vertex_cube_adjacent"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_cube_triple",
+      "case": "holdout_vertex_cube_triple"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_all_reverse",
+      "case": "holdout_vertex_all_reverse"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_reverse_adjacent",
+      "case": "holdout_vertex_reverse_adjacent"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_edge_reverse_corner",
+      "case": "holdout_edge_reverse_corner"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_vertex_inconsistent_winding",
+      "case": "holdout_vertex_inconsistent_winding"
+    },
+    {
+      "op": "mesh_component_weld_holdout",
+      "id": "holdout_edge_reverse_bent",
+      "case": "holdout_edge_reverse_bent"
+    }
+  ]
+}

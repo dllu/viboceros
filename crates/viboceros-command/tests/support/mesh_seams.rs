@@ -12,6 +12,29 @@ pub fn check(name: &str, v: &Value, command: &str, history: &str) {
 }
 
 pub fn check_with_geometry(name: &str, v: &Value, command: &str, history: &str, strict: bool) {
+    check_inner(name, v, command, history, strict, None);
+}
+
+// Reused by component qualifiers; other seam test crates use the strict entry.
+#[allow(dead_code)]
+pub fn check_with_differences(
+    name: &str,
+    v: &Value,
+    command: &str,
+    history: &str,
+    expected: &[String],
+) {
+    check_inner(name, v, command, history, true, Some(expected));
+}
+
+fn check_inner(
+    name: &str,
+    v: &Value,
+    command: &str,
+    history: &str,
+    strict: bool,
+    expected: Option<&[String]>,
+) {
     let source = channels::mesh(&v["before"]);
     let mut doc = Document::default();
     let registry = CommandRegistry::with_builtins();
@@ -36,15 +59,20 @@ pub fn check_with_geometry(name: &str, v: &Value, command: &str, history: &str, 
     let Geometry::Mesh(mesh) = object.geometry() else {
         panic!()
     };
-    let raw_order_qualified = channels::differences(mesh, &v["after"]).is_empty();
-    assert!(
-        if strict {
-            raw_order_qualified
-        } else {
-            equivalence::equivalent(mesh, &channels::mesh(&v["after"]))
-        },
-        "{name}"
-    );
+    let differences = channels::differences(mesh, &v["after"]);
+    let raw_order_qualified = differences.is_empty();
+    if let Some(expected) = expected {
+        assert_eq!(differences, expected, "{name}");
+    } else {
+        assert!(
+            if strict {
+                raw_order_qualified
+            } else {
+                equivalence::equivalent(mesh, &channels::mesh(&v["after"]))
+            },
+            "{name}"
+        );
+    }
     let result = object.geometry_snapshot().clone();
     assert_eq!(doc.undo_label(), Some(history));
     registry.execute(&mut doc, "Undo").unwrap();
@@ -54,7 +82,12 @@ pub fn check_with_geometry(name: &str, v: &Value, command: &str, history: &str, 
     assert_eq!(doc.object(id).unwrap().attributes(), &attrs);
     assert_eq!(doc.object(id).unwrap().group_ids(), [group]);
     assert!(doc.is_selected(id));
-    if strict {
+    if expected.is_some() {
+        println!(
+            "MESH_COMPONENT_WELD_COMMAND {}",
+            serde_json::json!({"id":name,"command":command,"history":history,"qualified":raw_order_qualified,"differences":differences})
+        );
+    } else if strict {
         println!(
             "MESH_SEAM_COMMAND {}",
             serde_json::json!({"id":name,"command":command,"history":history,"qualified":true})

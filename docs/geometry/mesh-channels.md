@@ -49,6 +49,20 @@ OpenNURBS alpha bytes (zero is opaque). Eight cached radial-sort variants reprod
 their native twins exactly. Fifteen command cases check metadata, groups and
 Undo/Redo. Broader Weld parity remains open.
 
+Selected component welding uses separate policies. Edge welding averages stored
+normals per incident face use while copying the surviving UVs and colors.
+Vertex welding blends all three channels through radial face-corner edits,
+including a copy from the established side when closing a fan. Opposing normals
+can produce a zero direction. The `*_with_normal_generation` APIs can derive a
+missing normal channel; command edits use this mode without adding a history
+entry for a normal-only change. The
+[component welding comparison](../mesh-component-weld-qualification.json) records
+52 matches in stored channels and raw ordering among 56 cases, within `1e-6`.
+Four captures of adjacent or
+all-vertex selections retain differences. All 56 preserve the native positions,
+winding and raw-sharing graph. Six checks
+also start from original recipes before Rhino creates their missing normal data.
+
 Angle unwelding exposes `unwelded_vertices_with_normal_update(angle, modify_normals)`.
 Preserve mode copies source normals to separated vertices. Update mode recomputes
 only replacement normals through OpenNURBS; untouched vertices retain their stored

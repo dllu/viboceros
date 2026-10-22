@@ -58,7 +58,6 @@
     "crates/viboceros-geometry/src/subd/crease.rs": "b0ac75bd02d9d22316f4f992a0774781e8c52aee68a8b3877ba5aa782c863ba2",
     "crates/viboceros-geometry/src/subd/edges.rs": "b45a57b11ebd445ef1f26cdce266dea50922a67cdd3b15700653c40bd690af4f",
     "crates/viboceros-geometry/tests/subd_edges.rs": "ddb85c3c11699b036031c42c40a66e2a7bdf140189e10a07d3af1171d9aa03fd",
-    "crates/viboceros-geometry/src/mesh/edge_weld.rs": "48bd1b6d254b68fab20aa7e4cce6597922e4296e4e59bb322621f176f1ff4430",
     "crates/viboceros-document/src/object_geometry.rs": "c1c77eba480c5bced476fb4ac59eefcfba52255667e9a40d4024c72b6ade2378",
     "crates/viboceros-document/src/control_points.rs": "1c3144d99fcd3356e34ab0b2d061387edfa12d89f2dcc232cf1168a675523cc8",
     "crates/viboceros-command/src/crease.rs": "dc858497580204417b208457493ef053ce6b09bbe931a2c4a5bf2d7d649d40e4",
@@ -252,6 +251,7 @@
     "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:src/viewport.rs": "fcc9f39b5a7c017bfb8282c08f9e8bc045dbe68455a0cee9637989d1997ce495",
     "0004d1baa0a68e9a5837e5a13db30ebfe125f4fa:crates/viboceros-geometry/src/mesh.rs": "af5e20118bd32ad3e7fe2c5bb79e4ab9d8cc118b60cd34b21cf63bd193d02143",
     "d9808bbc953637fa0e50d8405edbfc007c035974:src/viewport/display_cache.rs": "eac04d435f5bdfa90955b7cefc31c1664b55f8165d06f8bac6683a2db33eec84",
-    "d9808bbc953637fa0e50d8405edbfc007c035974:docs/architecture/viewport.md": "fbd3ec8e8383001956d6080636b3e2b53706217d6d2b897facaac3ee54e99ff8"
+    "d9808bbc953637fa0e50d8405edbfc007c035974:docs/architecture/viewport.md": "fbd3ec8e8383001956d6080636b3e2b53706217d6d2b897facaac3ee54e99ff8",
+    "7d81a1107d993ff1e374428e49e1063b92e06ffa:crates/viboceros-geometry/src/mesh/edge_weld.rs": "48bd1b6d254b68fab20aa7e4cce6597922e4296e4e59bb322621f176f1ff4430"
   }
 }

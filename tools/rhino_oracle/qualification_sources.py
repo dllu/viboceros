@@ -71,10 +71,12 @@ MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['vertex_channels', 'native', 'append', 'face_records', 'components',
                  'rebuild', 'normals', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
-                 'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'unweld', 'edge_unweld', 'vertex_unweld', 'radial', 'compaction',
+                 'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
                  'quadrangulate', 'planar_cap', 'coplanar_merge']
 ] + [
     'crates/viboceros-geometry/src/mesh/normals/tests.rs',
+    'crates/viboceros-geometry/src/mesh/edge_weld/tests.rs',
+    'crates/viboceros-geometry/src/mesh/union_find/tests.rs',
     'crates/viboceros-geometry/tests/support/mesh_channels.rs',
     'crates/viboceros-geometry/tests/support/mesh_equivalence.rs',
     'crates/viboceros-opennurbs/src/mesh.rs',
@@ -94,6 +96,7 @@ def with_shared_sources(paths):
         expanded.extend([
             'crates/viboceros-command/src/mesh_seams.rs',
             'crates/viboceros-command/src/mesh_component_unweld.rs',
+            'crates/viboceros-command/src/mesh_component_weld.rs',
             'crates/viboceros-command/src/extract_control_polygon.rs',
             'crates/viboceros-command/src/extract_control_polygon/options.rs',
             'crates/viboceros-command/src/extract_control_polygon/arguments.rs',

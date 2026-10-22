@@ -1,0 +1,161 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_bent",
+      "case": "edge_bent"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_half_shared",
+      "case": "edge_half_shared"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_shared",
+      "case": "edge_shared"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_nonmanifold",
+      "case": "edge_nonmanifold"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_partial",
+      "case": "edge_partial"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_remote",
+      "case": "edge_remote"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_contact",
+      "case": "edge_contact"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_cube",
+      "case": "edge_cube"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_no_normals",
+      "case": "edge_no_normals"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_custom_x",
+      "case": "edge_custom_x"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_cube_corner",
+      "case": "edge_cube_corner"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_cube_all",
+      "case": "edge_cube_all"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_naked",
+      "case": "edge_naked"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_duplicate",
+      "case": "edge_duplicate"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "edge_empty",
+      "case": "edge_empty"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_bent",
+      "case": "vertex_bent"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_half_shared",
+      "case": "vertex_half_shared"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_shared",
+      "case": "vertex_shared"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_nonmanifold",
+      "case": "vertex_nonmanifold"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_partial",
+      "case": "vertex_partial"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_remote",
+      "case": "vertex_remote"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_contact",
+      "case": "vertex_contact"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_cube",
+      "case": "vertex_cube"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_no_normals",
+      "case": "vertex_no_normals"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_custom_x",
+      "case": "vertex_custom_x"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_cube_corner",
+      "case": "vertex_cube_corner"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_cube_all",
+      "case": "vertex_cube_all"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_naked",
+      "case": "vertex_naked"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_duplicate",
+      "case": "vertex_duplicate"
+    },
+    {
+      "op": "mesh_component_weld_commands",
+      "id": "vertex_empty",
+      "case": "vertex_empty"
+    }
+  ]
+}

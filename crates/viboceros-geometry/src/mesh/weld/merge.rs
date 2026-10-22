@@ -4,16 +4,14 @@ use super::*;
 pub(super) struct WeldState {
     parents: Vec<usize>,
     members: Vec<usize>,
-    channels: VertexChannels,
-    colors: Option<Vec<[u8; 4]>>,
+    attributes: super::attributes::WeldAttributes,
 }
 impl WeldState {
     pub fn new(source: &TriangleMesh) -> Self {
         Self {
             parents: (0..source.vertices.len()).collect(),
             members: vec![1; source.vertices.len()],
-            channels: source.vertex_channels.clone(),
-            colors: source.vertex_colors.clone(),
+            attributes: super::attributes::WeldAttributes::new(source, source.vertex_normals()),
         }
     }
     /// Return false when stored normals have no average direction. The caller
@@ -65,7 +63,7 @@ impl WeldState {
             }
             let average =
                 direction.is_none() || established.is_none() || established == Some(preferred);
-            if average && !self.blend(a, b)? {
+            if average && !self.attributes.blend(a, b, false)? {
                 return Ok(false);
             }
             let keep = [a, b][side];
@@ -78,38 +76,8 @@ impl WeldState {
     pub fn finish(self, source: &TriangleMesh) -> (TriangleMesh, usize) {
         source.compacted_with_vertex_parents_and_channels(
             self.parents,
-            &self.channels,
-            self.colors.as_deref(),
+            &self.attributes.channels,
+            self.attributes.colors.as_deref(),
         )
-    }
-    fn blend(&mut self, a: usize, b: usize) -> Result<bool, GeometryError> {
-        if let Some(normals) = &mut self.channels.normals {
-            let x = normals[a].to_array();
-            let y = normals[b].to_array();
-            let sum = Vector3::try_from(std::array::from_fn::<_, 3, _>(|i| x[i] + y[i]))?;
-            let Ok(normal) = sum.normalized_nonzero() else {
-                return Ok(false);
-            };
-            let normal =
-                Vector3::try_from(normal.as_vector().to_array().map(|n| n as f32 as Real))?;
-            normals[a] = normal;
-            normals[b] = normal;
-        }
-        if let Some(uv) = &mut self.channels.uv {
-            let blended = std::array::from_fn(|i| ((uv[a][i] + uv[b][i]) * 0.5) as f32 as Real);
-            uv[a] = blended;
-            uv[b] = blended;
-        }
-        if let Some(colors) = &mut self.colors {
-            let blended = std::array::from_fn(|i| {
-                // Public ON_Color fractional storage and nearest-byte rounding.
-                let factor = 0.003_921_568_627_450_98;
-                (((colors[a][i] as Real * factor + colors[b][i] as Real * factor) * 0.5) * 255.)
-                    .round() as u8
-            });
-            colors[a] = blended;
-            colors[b] = blended;
-        }
-        Ok(true)
     }
 }

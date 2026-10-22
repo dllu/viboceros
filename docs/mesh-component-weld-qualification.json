@@ -1,0 +1,1140 @@
+{
+  "native_engine_version": "8.32.26160.13001",
+  "compared_cases": 56,
+  "geometry_and_raw_sharing_qualified_cases": 56,
+  "channels_and_raw_order_qualified_cases": 52,
+  "generated_normal_cases": 6,
+  "command_cases": 66,
+  "qualified_command_cases": 61,
+  "epsilon": 1e-06,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "invalid_source_diagnostics": [
+    "followup_edge_nonunit",
+    "followup_edge_zero",
+    "followup_vertex_nonunit",
+    "followup_vertex_zero"
+  ],
+  "sdk_diagnostics": [
+    "followup_whole_cube_twin"
+  ],
+  "native_invalid_output_cases": [
+    "followup_edge_opposite",
+    "followup_vertex_opposite"
+  ],
+  "limits": [
+    "Four empty selections are no-op controls; 52 valid captured cases invoke native component commands.",
+    "Four captured cases retain explicit ordering and attribute-reduction differences, including two opposite selection orders of the same all-vertices cube. Geometry/winding and raw-sharing equivalence strip channels before comparison; stored arrays compare in raw order within epsilon, with exact color bytes. Face cycles may rotate; face order and winding cannot change.",
+    "Six original recipes lack normals that Rhino creates before its command. Rust command checks cover both original recipes and direct document snapshots, including generated normal data.",
+    "Opposing normal directions produce zero normals in two native outputs whose native IsValid flag is false. These outputs remain comparisons; four invalid source-normal recipes are diagnostics without command invocation.",
+    "Command checks cover indexed selectors, All, picking aliases, metadata, groups, selection and Undo/Redo. Native document snapshots and CopyFrom outputs are identical; no-op history checks are local.",
+    "The standalone SDK Weld capture is a separate diagnostic. SubD input, n-gons, additional overlapping fans, broad native UI parity and comparative performance remain unqualified."
+  ],
+  "cases": [
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_bent",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_contact",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "edge_cube",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 22
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "edge_cube_all",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "edge_cube_corner",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 19
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_custom_x",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_duplicate",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_empty",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_half_shared",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_naked",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_no_normals",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_nonmanifold",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_partial",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "edge_remote",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_shared",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_edge_empty_no_normals",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_edge_naked_no_normals",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_edge_opposite",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "followup_edge_partial_dedup",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "followup_edge_reverse_faces",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 22
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "followup_edge_reverse_selection",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 19
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_edge_shared_no_normals",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_vertex_empty_no_normals",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_vertex_naked_no_normals",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_vertex_opposite",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "followup_vertex_partial_dedup",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "followup_vertex_reverse_faces",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 19
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "followup_vertex_reverse_selection",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 15
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_vertex_shared_no_normals",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_edge_reverse_bent",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "holdout_edge_reverse_corner",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 19
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_vertex_all_reverse",
+      "qualified": false,
+      "topology_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_vertex_bent_second",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "holdout_vertex_cube_adjacent",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 16
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "holdout_vertex_cube_second",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 19
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_vertex_cube_triple",
+      "qualified": false,
+      "topology_qualified": true,
+      "vertices": 13
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_vertex_flat_both",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_vertex_flat_first",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "holdout_vertex_flat_second",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "holdout_vertex_inconsistent_winding",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 5
+    },
+    {
+      "differences": [
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "holdout_vertex_reverse_adjacent",
+      "qualified": false,
+      "topology_qualified": true,
+      "vertices": 16
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_bent",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_contact",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "vertex_cube",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 19
+    },
+    {
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "faces": 6,
+      "id": "vertex_cube_all",
+      "qualified": false,
+      "topology_qualified": true,
+      "vertices": 8
+    },
+    {
+      "differences": [],
+      "faces": 6,
+      "id": "vertex_cube_corner",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 15
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_custom_x",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_duplicate",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_empty",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_half_shared",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_naked",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_no_normals",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "vertex_nonmanifold",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "vertex_partial",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 3,
+      "id": "vertex_remote",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 7
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_shared",
+      "qualified": true,
+      "topology_qualified": true,
+      "vertices": 4
+    }
+  ],
+  "generated_normals": [
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "edge_no_normals",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_edge_naked_no_normals",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_edge_shared_no_normals",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_vertex_naked_no_normals",
+      "qualified": true,
+      "vertices": 6
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "followup_vertex_shared_no_normals",
+      "qualified": true,
+      "vertices": 4
+    },
+    {
+      "differences": [],
+      "faces": 2,
+      "id": "vertex_no_normals",
+      "qualified": true,
+      "vertices": 4
+    }
+  ],
+  "commands": [
+    {
+      "command": "WeldEdge EdgeIndices 0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldMeshEdge 2,0,0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_contact",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_cube",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0,1,2,3,4,5,6,7,8,9,10,11",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_cube_all",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=All",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_cube_all",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0,1,2",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_cube_corner",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_custom_x",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_duplicate",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_half_shared",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=1",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_naked",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_no_normals",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_no_normals_from_recipe",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_nonmanifold",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_partial",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_remote",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "edge_shared",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=1",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "followup_edge_naked_no_normals",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=1",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "followup_edge_naked_no_normals_from_recipe",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "followup_edge_opposite",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "followup_edge_partial_dedup",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "followup_edge_reverse_faces",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0,1,2",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "followup_edge_reverse_selection",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "followup_edge_shared_no_normals",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "followup_edge_shared_no_normals_from_recipe",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=2",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "followup_vertex_naked_no_normals",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=2",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "followup_vertex_naked_no_normals_from_recipe",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "followup_vertex_opposite",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "followup_vertex_partial_dedup",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "followup_vertex_reverse_faces",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0,2",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "followup_vertex_reverse_selection",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "followup_vertex_shared_no_normals",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "followup_vertex_shared_no_normals_from_recipe",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge EdgeIndices 0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "holdout_edge_reverse_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "holdout_edge_reverse_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldMeshEdge 2,0,0",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "holdout_edge_reverse_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldEdge Edges=0,1,2",
+      "differences": [],
+      "history": "WeldEdge",
+      "id": "holdout_edge_reverse_corner",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0,1,2,3,4,5,6,7",
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_all_reverse",
+      "qualified": false
+    },
+    {
+      "command": "WeldVertices Vertices=1",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_bent_second",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0,1",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_cube_adjacent",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=1",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_cube_second",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0,1,2",
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_cube_triple",
+      "qualified": false
+    },
+    {
+      "command": "WeldVertices Vertices=0,1",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_flat_both",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_flat_first",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=1",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_flat_second",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_inconsistent_winding",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0,1",
+      "differences": [
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "history": "WeldVertices",
+      "id": "holdout_vertex_reverse_adjacent",
+      "qualified": false
+    },
+    {
+      "command": "WeldMeshVertex 0,0,0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices VertexIndices 0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_bent",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_contact",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_cube",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0,1,2,3,4,5,6,7",
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "history": "WeldVertices",
+      "id": "vertex_cube_all",
+      "qualified": false
+    },
+    {
+      "command": "WeldVertices Vertices=All",
+      "differences": [
+        "vertices",
+        "faces",
+        "UV",
+        "normals",
+        "colors"
+      ],
+      "history": "WeldVertices",
+      "id": "vertex_cube_all",
+      "qualified": false
+    },
+    {
+      "command": "WeldVertices Vertices=0,2",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_cube_corner",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_custom_x",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_duplicate",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_half_shared",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=2",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_naked",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_no_normals",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_no_normals_from_recipe",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_nonmanifold",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_partial",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_remote",
+      "qualified": true
+    },
+    {
+      "command": "WeldVertices Vertices=0",
+      "differences": [],
+      "history": "WeldVertices",
+      "id": "vertex_shared",
+      "qualified": true
+    }
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/mesh.rs": "19b8989e859cc0e9509fbcc4948c6afc2d982b4ce41b2b0b869e740a0c6a5c26",
+    "crates/viboceros-command/src/lib.rs": "72c6750461badc1c53fd75606ff71222b4b7260e6278f59ccc77a08ea286c6f5",
+    "crates/viboceros-geometry/tests/mesh_component_weld.rs": "fe42670a668dafc7c06dba541e2324c287a8098378c811a023bc41dab2d577de",
+    "crates/viboceros-command/tests/mesh_component_weld.rs": "04971165b77b1e4f72e290f357755e407be9d410ccb3a79ff4ceec6b83a7be40",
+    "crates/viboceros-command/tests/support/mesh_seams.rs": "63866a891a9c60e870e1375951e73692d3707ab36157105a8976de09d8297f22",
+    "docs/commands/mesh-seams.md": "3dda5e12728af158f1453218d3a032fbfc27c536fc3f7f667b29ee99550a9644",
+    "docs/geometry/mesh-channels.md": "c2c01c84fd5e4139e87e1b416623a174b4ebd211e82692d3b5170efeb0af5f64",
+    "tools/rhino_oracle/fixtures/mesh_component_weld_gaps.json": "f613543dd27bf2e481cd846abcf85aeca25dcb23f4270fbcfa837aed6550fe08",
+    "tools/rhino_oracle/mesh_component_weld_cases.py": "96bae89e42698adb347bdc9229d10b84fb1a80f6650a379300cb8a48fd6a623d",
+    "tools/rhino_oracle/mesh_component_weld_followup_cases.py": "c335e4a3bac0a9888c590301c0ab987a3bc104c1510eec60bda5fa27fbd9e797",
+    "tools/rhino_oracle/mesh_component_weld_holdout_cases.py": "3962ca59e908b7f5f2414c0803f3071519feccc7e4811c58bde0b73bc32e379b",
+    "tools/rhino_oracle/mesh_component_weld_probe.py": "1d02f6392a98fbeb796e5d0b71f020d56f91f9601e9d39f8298432e53a9f4a38",
+    "tools/rhino_oracle/generate_mesh_component_weld.py": "0b6aea91519ba95313d9a84c18b469142c2597f4dcad6d43434a83d412e82e9c",
+    "tools/rhino_oracle/mesh_channel_capture.py": "d9b8ef0ad8ccb9dc63fb91cbf495a59182e4165b1d65f1d611d4070aac0ce41c",
+    "tools/rhino_oracle/structural_sdk.py": "280115f479da451865c3e52cffb6207012db22251fcb473b4a602e64ee5b69e1",
+    "tools/rhino_oracle/client.py": "e2b5552d86c707d0fa8f30773e7d468618358919d8101a24af6c6b86da882651",
+    "tools/rhino_oracle/rhino_worker.py": "c2049c97dc4d14d26a798a7c5dd657db10acc8e94e52cfd4f5f7392a3f2362d6",
+    "tools/rhino_oracle/report_mesh_component_weld.py": "be9fee06967ede603db286a5fd2ad8751ad25b1894122350caaa86032e7bbd47",
+    "tools/rhino_oracle/test_mesh_component_weld.py": "54bbebcb6ee54a2c6cdae887eedf52e0ab33214e21baa37178c696f0c9d8fb8f",
+    "crates/viboceros-command/src/mesh_seams.rs": "fae9bbdb286bd2441cd3c953da2e3e92034edde5b4635f1e5c3e3e751ba70ea0",
+    "crates/viboceros-command/src/mesh_component_unweld.rs": "339147a5780de3a7aea00e89874bdc94fdb6429d53edddf84d2126f968e4a07a",
+    "crates/viboceros-command/src/mesh_component_weld.rs": "50c1fa1c7b138021115085cc705ff3cc1d6c8c7003ce6fc31ac2321148e61249",
+    "crates/viboceros-command/src/extract_control_polygon.rs": "34dcb893d9424ecf9dab92368babdcfb8c7961866f9af0286e08387b4065874d",
+    "crates/viboceros-command/src/extract_control_polygon/options.rs": "0377788c23f0563df4853728167ee4c500d3510ed9dacf8d602f14c2936de195",
+    "crates/viboceros-command/src/extract_control_polygon/arguments.rs": "83a1cd2cd716d6b495d9db4ceaf628f5ec319acee5f9497acf86111b540fcf1a",
+    "crates/viboceros-command/src/extract_control_polygon/selection.rs": "019a6a1973cf2b33e81d35d7567d9899651c8be4afdc9b9714285796d4ee06b4",
+    "crates/viboceros-command/src/soft_crease.rs": "eec4487501312fc3090d932560599f5e18e4038017d7f7412ac268b5507e007b",
+    "crates/viboceros-command/src/soft_crease/profile.rs": "018d7bed89c5fc71e98265f9b578345809f7b5e6937145d2046cb3a472cc6f0f",
+    "crates/viboceros-command/src/soft_crease/arguments.rs": "7d38e43f5032110cda07782c1a4988a1bed1a7f2248b16ac94f8406c455034b6",
+    "crates/viboceros-geometry/src/mesh/vertex_channels.rs": "4cf015db3d66d77e2980e6ce7716e48f19b9a8b6d1bd07236b675f5d05e43385",
+    "crates/viboceros-geometry/src/mesh/native.rs": "dcd8df91be3091300698e08b808519388c4fcf259e5a9245013fd7e121cffeec",
+    "crates/viboceros-geometry/src/mesh/append.rs": "2fbcba3e39a9b9a25ceb864d12a2daee0cd2368cc50073829fde29d106d0eced",
+    "crates/viboceros-geometry/src/mesh/face_records.rs": "bf5438805e68438bf60ddf912490e8a4e2b03d7beec39ecc03eb087353f83e6d",
+    "crates/viboceros-geometry/src/mesh/components.rs": "8ba40fa1bd7a7b2c34bf55e9a0fd8292229e11dc82ba3dd32d4f4ccc3706520a",
+    "crates/viboceros-geometry/src/mesh/rebuild.rs": "5f11498df18dc255f0097c088c56fb317f815330ad6e373fd26dba91565bce40",
+    "crates/viboceros-geometry/src/mesh/normals.rs": "e87efa7d14228e67f07c763d6893af5a85e91f1adec12b3db617fb3f63a110e6",
+    "crates/viboceros-geometry/src/mesh/edge_split.rs": "0e5af113562bccd41fc1865b0b95bdbd398b4ded1efcb5812efc4ee2e2f0d6ed",
+    "crates/viboceros-geometry/src/mesh/edge_collapse.rs": "77f5ccb514d2a662a7f5d27652eb0c368331ca09dac52bf2a19243402d564442",
+    "crates/viboceros-geometry/src/mesh/subdivision.rs": "4ea9da1006c6c54dffd89b2bd4540a3aa0fada527e81439350c1f68be1270fdc",
+    "crates/viboceros-geometry/src/mesh/extrude.rs": "01425600d0ab79cf7eb8cc9d900ffd38e1ee2d06d33b653dc308760c931f5959",
+    "crates/viboceros-geometry/src/mesh/offset.rs": "723ff9c60ba50a754000085d26cf71d5eb3178b4dca07dd8d4d895ccc797e7c7",
+    "crates/viboceros-geometry/src/mesh/patch_single_face.rs": "b529aa705a2de3a8e065b42ac8150801874e749b1b697b61f1ebe66b848d86f7",
+    "crates/viboceros-geometry/src/mesh/join.rs": "eb2e74a63d64b25d8280eced61be132033e49b296ec4c94a1d18dfbbffb29f27",
+    "crates/viboceros-geometry/src/mesh/match_edges.rs": "2adbad45d20fe820e297ebb6c298a7935bab7aa52f1c46a6ab465d38a97425fc",
+    "crates/viboceros-geometry/src/mesh/alignment.rs": "e3a1ba2c33713e265ef474c197a3c9fd46729af227f6dad4ad9332c0dfad5bb1",
+    "crates/viboceros-geometry/src/mesh/weld.rs": "02bbaed263c485a717a91951364ed923fce064bbd61438731d9ca130846ff840",
+    "crates/viboceros-geometry/src/mesh/weld/merge.rs": "ad49a8bbe021a512474b7440157a0179224927ae513cb7939b2946bb26124ec2",
+    "crates/viboceros-geometry/src/mesh/weld/attributes.rs": "0e8e0d27463a758e1b491710cfa76460eaa5efe3e14ca73117dd5b2bdaf5a7b8",
+    "crates/viboceros-geometry/src/mesh/unweld.rs": "07e9fdf9c33dc601b250094bd2b41cffdf0fe83528eb69ba37e90d737b084527",
+    "crates/viboceros-geometry/src/mesh/edge_unweld.rs": "78867a1bb302dcaf578eb7a23322bdb1c3005564278cf7fd5b2cf2216fb64415",
+    "crates/viboceros-geometry/src/mesh/edge_weld.rs": "3a3882ecb6a175ad1873d512afc075ecb872bc2eab157de25b89d88dfc7b850c",
+    "crates/viboceros-geometry/src/mesh/vertex_weld.rs": "b10c37bd31d3fc990c274e9372f0b306616489874af34b537b85103bf4f5bf3c",
+    "crates/viboceros-geometry/src/mesh/vertex_unweld.rs": "2f61d588e1a2a4f3a1e25ceb20849b51ee2e12677072a3b33f20dc8b3c23c010",
+    "crates/viboceros-geometry/src/mesh/radial.rs": "2048def0e4605cb0153a13437b2bc705b9b6c7552fca51fa0ade62e3dffab03a",
+    "crates/viboceros-geometry/src/mesh/compaction.rs": "1cdd6ad2f8ff7abdc09805c489c72c6bb9607927d32981cbb812834b73915596",
+    "crates/viboceros-geometry/src/mesh/union_find.rs": "6940de0d881901613f3263f895c5e438fb79aad50599de4ea2322738c2f8f8ce",
+    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "29dacc136b082428469f2b12e916b1a9d3867f78feaf9b6380f1d8f595534590",
+    "crates/viboceros-geometry/src/mesh/planar_cap.rs": "9bd66de6751bbd533a061be311ba42bb36fad7823cd8cf53e7d41d4afabe8f17",
+    "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
+    "crates/viboceros-geometry/src/mesh/normals/tests.rs": "d10885e9cef9ddd7f8b725c0e87e1eee8fced36be67b1cef4fc256199ee2cf05",
+    "crates/viboceros-geometry/src/mesh/edge_weld/tests.rs": "ee8d7efd03417eb62f26bfec74cc87a2144987a383c64de69abcb4433eadd13f",
+    "crates/viboceros-geometry/src/mesh/union_find/tests.rs": "8a827790749c23059f7dace385d7898295b99610158117a7ee87d1e7a51c40de",
+    "crates/viboceros-geometry/tests/support/mesh_channels.rs": "edf4dd46061cdc16b651b9196a83a7906a596da7f8b2f39f5018d2699bd91aaa",
+    "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
+    "crates/viboceros-opennurbs/src/mesh.rs": "e1ccdc906de63839869e5c05870d30597514bba092c32a2b269215dd128b358e",
+    "crates/viboceros-opennurbs/native/mesh_modeling.h": "d42be78afa32f9f75405e497465f046f0c2dff2cad9ce6a5f3e81f5c42e06cf4",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "5c4a56a9e03a9cdcdb07ad4f43c65452f915c4776f511b22fc20b4d458c63036",
+    "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
+    "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
+    "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
+    "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
+    "tools/rhino_oracle/qualification_sources.py": "11f496d37743cac77205b006478ce57abe6f85abe7f9f5f953395798e88caa21",
+    "tools/rhino_oracle/fixtures/mesh_component_weld_commands.json": "a00fe66b37e02421ae7ab44977ac25d953fc18940d838987589c751c23e28bb3",
+    "tools/rhino_oracle/observations/mesh_component_weld_commands.json": "242496f0c4f9158c7a59accc2ef4850b2a13828e033fa843c5017c0ab09b9509",
+    "tools/rhino_oracle/observations/source_snapshots/fae3870aab36a6d430d9b66b7d4c7333cfd37d01535501d622d6afe7e2831c4e.gz": "c4ef714fdd3f41b395e5879b539f2d2aa861e952467d82ee8b27ec2bd6acbf98",
+    "tools/rhino_oracle/observations/source_snapshots/96bae89e42698adb347bdc9229d10b84fb1a80f6650a379300cb8a48fd6a623d.gz": "17f8e242db4c2fe6e762f154014899f206fa0f75162f99f4c6025af4f6e82926",
+    "tools/rhino_oracle/observations/source_snapshots/745862e9d27e9b7c61ffe89f5c0af0f707407da3c41da97ddf96f642e14408ed.gz": "4e5e519d8ced04b48602eb9c39da706ba8e643f136e2c915492d2187b95978c1",
+    "tools/rhino_oracle/observations/source_snapshots/d9b8ef0ad8ccb9dc63fb91cbf495a59182e4165b1d65f1d611d4070aac0ce41c.gz": "3c02cbdd5f42ac7000643c871e67dbfeb8715969e733757aa0df6bafecc30df5",
+    "tools/rhino_oracle/observations/source_snapshots/a0726360ccc59a08b9de81c26a2bcb43c03587340a4bbc301615d4c8c72691ce.gz": "4eed5fc510d6be83e456fd0fa1c140b30a9ce1f6c0253f781ac3e86ff85505be",
+    "tools/rhino_oracle/observations/source_snapshots/17ebe4b1b3472743c0b2e30f0915de095668abe5809549e7ec868a54e5b3a762.gz": "35070a15b6093844f0a2c1311243319bfe421c71d14729428ca72d0089b15baa",
+    "tools/rhino_oracle/observations/source_snapshots/8a325c93c2655169965952bf6b2800b144ad9b2c7ffddbd943023834ba30b0af.gz": "47dba762504f586ada18908a51cc80c7ae0a816c17bff2a351d38cfb47a4799b",
+    "tools/rhino_oracle/fixtures/mesh_component_weld_followup.json": "e461442407a6609d1a231dfb286c416eba0e9f96a11bc12964e8311e9a2a2052",
+    "tools/rhino_oracle/observations/mesh_component_weld_followup.json": "96e55cef69c1dfd4a801a17e65506e139d708ad515a8df4821e7d5984f7991b0",
+    "tools/rhino_oracle/observations/source_snapshots/33ce3d4d8dbddaa52aa2501c98dad5cd1142a1f4c779e6852011f133bedc098a.gz": "355c2e057ddfc81db0c01fd48e2820844ba41848bba8ef7f81337ed5c40e772c",
+    "tools/rhino_oracle/observations/source_snapshots/c335e4a3bac0a9888c590301c0ab987a3bc104c1510eec60bda5fa27fbd9e797.gz": "831521d2fbcbc00a7f694d257b49d331c7f6bfd5f6b39c8f5e54eecf10add426",
+    "tools/rhino_oracle/observations/source_snapshots/7406b3cd8e45af4ea2e1a407ed2e6dbd213e7d25c6753c57a5bef09cb045c2f3.gz": "2ad853f39f860322223d68fbaefa3a87f7878c9f7ebf62d17bcd36371394a289",
+    "tools/rhino_oracle/observations/source_snapshots/d2e248c897ef7c9976a30db33f9829224925abb93a5435a4b53940b6f0e6579a.gz": "8f2147ef2d4d61917030557fbe3de23483566713b1bb1f3ece095c0f10fd596e",
+    "tools/rhino_oracle/observations/source_snapshots/83075b62e63896b051493ccc7bff4bf1b721b89e2360b4536014dc8856e03804.gz": "cd0018292289bc63af02073eadf6683f4911465a9b39a5eb5f7754b1f48d74fd",
+    "tools/rhino_oracle/observations/source_snapshots/2631366660d17b1771fff703b7345952650ac539965a0ab2a0c40b521733adbc.gz": "2e5898016b1ef622216d5b13f2432fab0d9811b8554c75cf9f5929df9394d1a9",
+    "tools/rhino_oracle/fixtures/mesh_component_weld_holdout.json": "b4de706b2411e841c75cedaee849c3ba46a1ab4e8724f784f7d20e2d1f224a69",
+    "tools/rhino_oracle/observations/mesh_component_weld_holdout.json": "69b707efaa52ffba5247c0c4bd7b074e119c2860aeb379273f57549fd1350c14",
+    "tools/rhino_oracle/observations/source_snapshots/0b6aea91519ba95313d9a84c18b469142c2597f4dcad6d43434a83d412e82e9c.gz": "24322b8a04aea0d2401dba213b5380a717b8411a30013172907e6fb8a1de6b21",
+    "tools/rhino_oracle/observations/source_snapshots/3962ca59e908b7f5f2414c0803f3071519feccc7e4811c58bde0b73bc32e379b.gz": "bcf3298b686faa5cc57f1760fa8d937f0bd4f8e49f554fd914b12e02422d4c71",
+    "tools/rhino_oracle/observations/source_snapshots/1d02f6392a98fbeb796e5d0b71f020d56f91f9601e9d39f8298432e53a9f4a38.gz": "260d75b2602297fd027d951fd3cf69a36e5f6643bca51f2c5bc062e2cdc4ea37",
+    "tools/rhino_oracle/observations/source_snapshots/e2b5552d86c707d0fa8f30773e7d468618358919d8101a24af6c6b86da882651.gz": "a4967d93f6982ecf9a73715e0560243b3f0b442899ace142d7c51df11264f229",
+    "tools/rhino_oracle/observations/source_snapshots/c2049c97dc4d14d26a798a7c5dd657db10acc8e94e52cfd4f5f7392a3f2362d6.gz": "4c69a98cecf7c3d940079b36091aa86d63778e351b8189a46a16d5ce6ac2e607",
+    "tools/rhino_oracle/observations/source_snapshots/280115f479da451865c3e52cffb6207012db22251fcb473b4a602e64ee5b69e1.gz": "954634fe3ec9e870c5b587991af390d00428d429b768a36cf9762a27ede2374a"
+  }
+}

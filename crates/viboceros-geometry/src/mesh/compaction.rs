@@ -14,13 +14,59 @@ impl TriangleMesh {
 
     pub(super) fn compacted_with_vertex_parents_and_channels(
         &self,
-        mut parents: Vec<usize>,
+        parents: Vec<usize>,
         input_channels: &VertexChannels,
         input_colors: Option<&[[u8; 4]]>,
     ) -> (Self, usize) {
+        self.compacted_with_vertex_channel_builder(
+            parents,
+            ChannelBuilder::new(input_channels),
+            input_colors,
+            self.vertex_normals().is_some() || input_channels.normals.is_none(),
+            &self.faces,
+        )
+    }
+
+    pub(super) fn compacted_with_vertex_parents_and_normals(
+        &self,
+        parents: Vec<usize>,
+        normals: Option<&[Vector3]>,
+    ) -> (Self, usize) {
+        self.compacted_with_vertex_channel_builder(
+            parents,
+            ChannelBuilder::with_normals(&self.vertex_channels, normals),
+            self.vertex_colors.as_deref(),
+            self.vertex_normals().is_some() || normals.is_none(),
+            &self.faces,
+        )
+    }
+
+    pub(super) fn compacted_with_face_channels(
+        &self,
+        faces: &[MeshFace],
+        channels: &VertexChannels,
+        colors: Option<&[[u8; 4]]>,
+    ) -> (Self, usize) {
+        self.compacted_with_vertex_channel_builder(
+            (0..self.vertices.len()).collect(),
+            ChannelBuilder::new(channels),
+            colors,
+            false,
+            faces,
+        )
+    }
+
+    fn compacted_with_vertex_channel_builder(
+        &self,
+        mut parents: Vec<usize>,
+        mut channels: ChannelBuilder<'_>,
+        input_colors: Option<&[[u8; 4]]>,
+        keep_original_if_uncompacted: bool,
+        input_faces: &[MeshFace],
+    ) -> (Self, usize) {
         let mut retained = vec![false; self.vertices.len()];
         let mut retained_count = 0;
-        for face in &self.faces {
+        for face in input_faces {
             for &vertex in face.indices() {
                 let representative = index_root(&mut parents, vertex as usize);
                 if !retained[representative] {
@@ -30,15 +76,14 @@ impl TriangleMesh {
             }
         }
         let removed = self.vertices.len() - retained_count;
-        if removed == 0 {
+        if removed == 0 && keep_original_if_uncompacted {
             return (self.clone(), 0);
         }
 
         // Resolve all face references before reusing the parent forest as a
         // representative-to-compact-index table. Rewriting a root earlier
         // would corrupt later root searches (including unused source roots).
-        let mut faces = self
-            .faces
+        let mut faces = input_faces
             .iter()
             .copied()
             .map(|face| {
@@ -48,7 +93,6 @@ impl TriangleMesh {
                 })
             })
             .collect::<Vec<_>>();
-        let mut channels = ChannelBuilder::new(input_channels);
         let mut vertices = Vec::with_capacity(retained_count);
         let mut colors = input_colors.map(|_| Vec::with_capacity(retained_count));
         for (source, (&point, keep)) in self.vertices.iter().zip(retained).enumerate() {

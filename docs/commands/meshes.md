@@ -427,45 +427,6 @@ command-specific unsupported-geometry errors, rejecting an empty selection
 or a non-mesh source before topology work. Tests check borrowed identity,
 hidden group-selected peers, and unchanged state on a late non-mesh source.
 
-`WeldEdge` merges the raw endpoint sets incident to selected exact-location
-mesh topology edges. Use `Edges=0,2`, `Edges=All`, or omit the selector to pick
-one edge in the viewport. The earliest source vertex survives; unrelated
-coincident fan components remain separate, including at half-welded and
-non-manifold seams. Naked or already-welded selections still perform
-Rhino-compatible unused-vertex compaction while preserving the object.
-
-`WeldVertices` welds every joined seam incident to selected topology vertices,
-including both endpoints of each seam. Use `Vertices=0,2`, `Vertices=All`, or
-omit the selector for one viewport pick. It preserves Rhino's later-source
-vertex ordering, ignores coincident vertex-only contacts, limits non-manifold
-edges to their first two face uses, and performs unused-vertex compaction.
-
-`Unweld` performs the inverse topology edit at edges whose face-normal angle is
-greater than or equal to its tolerance. It preserves smoother face regions,
-rebuilds affected vertices in OpenNURBS radial order, and compacts unused
-vertices. The zero-degree default separates every adjacent face region;
-`ModifyNormals=No` copies stored normals to separated vertices. The default
-`ModifyNormals=Yes` recomputes normals only for replacement vertices, retaining
-untouched stored normals. Neither option creates a missing normal channel.
-The [normal-policy comparison](../mesh-unweld-channels-qualification.json)
-records the measured SDK and command coverage.
-
-`UnweldEdge` adds seams at selected exact-location mesh topology edges. Use
-`Edges=0,2`, `Edges=All`, or omit the selector to pick one edge in the viewport.
-It partitions closed and high-valence radial face fans, handles non-manifold
-edges, and preserves existing seams; naked or already-unwelded selections only
-trigger Rhino-compatible vertex compaction. At a non-manifold edge, an endpoint
-with existing partial sharing stays unchanged; only endpoints shared by every
-incident edge face are separated. `ModifyNormals=Yes|No` is accepted, but this
-edge command currently updates replacement normals regardless of the option.
-
-`UnweldVertex` gives every face incident to each selected topology vertex its
-own raw mesh vertex. Use `Vertices=0,2`, `Vertices=All`, or omit the selector
-for one viewport pick. Closed, high-valence, already-unwelded, and non-manifold
-fans follow Rhino's radial ordering, and unused raw vertices are compacted.
-`ModifyNormals=Yes|No` is accepted, but this vertex command currently updates
-replacement normals regardless of the option.
-
 `CombineIdenticalMeshVertices` turns exactly coincident raw vertices into shared
 indices without culling unused vertices, preserving object identity, metadata,
 face order, and winding.

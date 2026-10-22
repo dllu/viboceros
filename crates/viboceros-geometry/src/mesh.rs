@@ -38,6 +38,7 @@ mod nonplanar_quads;
 mod normals;
 mod smoothing;
 mod subdivision;
+mod vertex_weld;
 pub use nonplanar_quads::{NonPlanarQuadCriterion, QuadSplitMethod};
 mod coplanar_merge;
 mod degenerate_faces;
@@ -3359,71 +3360,6 @@ impl TriangleMesh {
         combined.vertex_colors = colors;
         combined.vertex_channels = channels;
         (combined, removed)
-    }
-
-    /// Welds joined mesh seams incident to selected exact-location topology
-    /// vertices.
-    ///
-    /// Indices use the same deterministic order as
-    /// [`Self::topology_vertex_points`]. Selecting either endpoint of a seam
-    /// welds both endpoint pairs on every incident edge, matching Rhino's
-    /// vertex tool. On a non-manifold edge only the first two face uses are
-    /// joined. The later raw vertex survives, and a non-empty valid selection
-    /// compacts unused vertices. The returned count is the number of incident
-    /// edges that required welding.
-    pub fn welded_topology_vertices(
-        &self,
-        vertex_indices: &[usize],
-    ) -> Result<(Self, usize), GeometryError> {
-        if vertex_indices.is_empty() {
-            return Ok((self.clone(), 0));
-        }
-        let data = self.topology_data();
-        let vertex_count = data.topological_vertex_count;
-        if let Some(&vertex) = vertex_indices
-            .iter()
-            .find(|&&vertex| vertex >= vertex_count)
-        {
-            return Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
-                vertex,
-                vertex_count,
-            });
-        }
-        let mut selected_vertices = vec![false; vertex_count];
-        for &vertex in vertex_indices {
-            selected_vertices[vertex] = true;
-        }
-
-        let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
-        let mut welded_edge_count = 0;
-        for (&(first_vertex, second_vertex), incidence) in &data.edges {
-            if !selected_vertices[first_vertex] && !selected_vertices[second_vertex] {
-                continue;
-            }
-            let mut uses = incidence.uses();
-            let Some(first) = uses.next() else {
-                continue;
-            };
-            let Some(second) = uses.next() else {
-                continue;
-            };
-            let divided = (0..2)
-                .any(|endpoint| first.raw_vertices[endpoint] != second.raw_vertices[endpoint]);
-            if !divided {
-                continue;
-            }
-            for endpoint in 0..2 {
-                union_indices_keep_later(
-                    &mut parents,
-                    first.raw_vertices[endpoint] as usize,
-                    second.raw_vertices[endpoint] as usize,
-                );
-            }
-            welded_edge_count += 1;
-        }
-        let (mut welded, _) = self.compacted_with_vertex_parents(parents);
-        welded.recompute_stored_normals()?;
-        Ok((welded, welded_edge_count))
     }
 
     fn subset_preserving_vertex_order(&self, faces: &[usize]) -> Self {
@@ -8571,7 +8507,24 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
-        for selection in [&[0][..], &[1][..], &[1, 0, 1][..]] {
+        // Native direct-array captures distinguish the incoming face at the
+        // second endpoint, including when both endpoints are selected.
+        let other_expected = TriangleMesh::try_new(
+            vec![
+                point(0., 0., 0.),
+                point(4., 0., 0.),
+                point(0., 3., 0.),
+                point(0., -3., 0.),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for (selection, expected) in [
+            (&[0][..], &expected),
+            (&[1][..], &other_expected),
+            (&[1, 0, 1][..], &other_expected),
+        ] {
             assert_eq!(
                 seam.welded_topology_vertices(selection).unwrap(),
                 (expected.clone(), 1)
@@ -8619,14 +8572,14 @@ mod tests {
         assert_eq!(
             welded.vertices(),
             &[
-                point(0.0, -1.0, 0.0),
                 point(1.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
                 point(0.0, 0.0, 0.0),
                 point(0.0, 1.0, 0.0),
                 point(-1.0, 0.0, 0.0),
             ]
         );
-        assert_eq!(welded.triangles(), &[[2, 1, 3], [2, 1, 0], [2, 4, 3]]);
+        assert_eq!(welded.triangles(), &[[2, 0, 3], [2, 0, 1], [2, 4, 3]]);
     }
 
     #[test]

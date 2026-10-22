@@ -16,16 +16,28 @@ Connected-face ordering and some attribute reductions still differ from Rhino;
 see the [measured limits](../geometry/mesh-channels.md).
 
 `WeldEdge` merges raw endpoint sets at selected exact-location topology edges.
-Use `Edges=0,2`, `Edges=All`, or omit the selector to pick one edge. The earliest
-source vertex survives; unrelated coincident fan components remain separate,
+Use `Edges=0,2`, `Edges=All`, or omit the selector to pick one edge. The first
+incident face supplies the surviving vertex; unrelated fan components remain separate,
 including at half-welded and non-manifold seams. Naked or already-welded
-selections still compact unused vertices.
+selections still compact unused vertices. Stored normals average per incident
+face use, including repeated uses of a shared non-manifold endpoint. UVs and
+colors retain the survivor's values.
 
 `WeldVertices` welds every joined seam incident to selected topology vertices,
 including both endpoints of each seam. Use `Vertices=0,2`, `Vertices=All`, or
-omit the selector for one viewport pick. It retains the later source vertex,
-ignores coincident vertex-only contacts, limits non-manifold edges to their
-first two face uses, and compacts unused vertices.
+omit the selector for one viewport pick. It walks radial face fans, ignores
+coincident vertex-only contacts, limits non-manifold edges to their first two
+face uses, and compacts unused vertices. It blends UVs, stored normals and colors
+at new joins; a fan's closing join copies its established side. Overlapping
+selections update individual face corners rather than globally merging every alias.
+
+These commands derive missing normal data when an edit needs it, preserve custom
+directions, and retain zero directions when opposing normals cancel. A change
+to normal data alone does not create a command history entry.
+The [component welding comparison](../mesh-component-weld-qualification.json)
+records 56 cases: all match positions, winding and raw sharing; 52 also match
+stored channels and raw numbering. Four captures of adjacent or all-vertex
+selections retain explicit attribute or ordering differences.
 
 ## Unwelding
 

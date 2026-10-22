@@ -1,0 +1,6 @@
+{
+  "vertex_cube_all": ["vertices", "faces", "UV", "normals", "colors"],
+  "holdout_vertex_cube_triple": ["vertices", "faces", "UV", "normals", "colors"],
+  "holdout_vertex_all_reverse": ["vertices", "faces", "UV", "normals", "colors"],
+  "holdout_vertex_reverse_adjacent": ["UV", "normals", "colors"]
+}

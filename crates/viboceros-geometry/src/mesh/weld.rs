@@ -1,5 +1,6 @@
 //! Whole-mesh seam welding and incremental patch welding.
 use super::*;
+pub(super) mod attributes;
 mod merge;
 use merge::WeldState;
 
