@@ -58,13 +58,14 @@ def summarize(text):
     for family in FAMILIES:paths.extend('tools/rhino_oracle/'+d+'/'+family+'.json'for d in ['fixtures','observations'])
     return dict(native_engine_version=version,model_epsilon=1e-6,sdk_geometry_cases=len(rows),local_command_cases=len(rows),
         maximum_error=maximum,full_native_parity=False,native_command_workflow_qualified=False,performance_qualified=False,
+        command_qualification_record='nonplanar-command-qualification.json',
         failed_import_requested_workflows=32,failed_import_qualified_workflows=0,cases=rows,
         limits=[
-            'Forty-two independent public SDK inputs match raw vertices, face records, stored colors/UV/normals and logical n-gon overlays exactly. Local registered commands verify identity, attributes, groups, selection and Undo/Redo, including unchanged-input redo preservation. These command history invariants are not a native UI comparison.',
+            'Forty-two independent public SDK inputs match raw vertices, face records, stored colors/UV/normals and logical n-gon overlays exactly. Local registered commands verify identity, attributes, groups, selection and Undo/Redo, including Undo creation for unchanged inputs and clearing redo on success. Separate native command evidence is retained in nonplanar-command-qualification.json.',
             'OpenNURBS selects nonplanar quads using its face-plane distance range and both opposite corner-normal pairs, independently of the split method. Exceeding either enabled threshold splits a quad. Strict distance equality and adjacent representable limits, zero thresholds, all six split methods, angular holdouts between the two diagonal-normal angles, concave inputs, translated/tiny geometry and unused vertices are covered.',
             'RhinoCommon removes n-gons containing a split quad; the binding requests that policy after initializing its face-to-ngon map. Four extra scenes vary n-gon ownership order and preserve unaffected overlays. Native empty removed slots are recorded explicitly and omitted from the model overlay vector.',
             'The geometry operation uses mesh validation tolerance independently of document tolerance. The first native attempt failed during import because IronPython lacks math.nextafter. Its request, host log and frozen producers survive; no response or geometry from that attempt is qualified.',
-            'Native command prompts, defaults, option memory, selection/history policy, restricted objects, grips, degenerate-input repair, split method zero/default, coordinates near numeric limits and comparative performance remain unqualified. The binding limits source input to four million vertices and one million faces.',
+            'This SDK record does not qualify command workflows; the separate command record covers scripted numeric options and staged application input. Restricted objects, grips, degenerate-input repair, split method zero/default, coordinates near numeric limits and comparative performance remain unqualified. The binding limits source input to four million vertices and one million faces.',
         ],sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in dict.fromkeys(paths)})
 
 

@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_main_defaults",
+      "case": "nonplanar_command_main_defaults"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_distance_high",
+      "case": "nonplanar_command_distance_high"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_remembered_high",
+      "case": "nonplanar_command_remembered_high"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_distance_low",
+      "case": "nonplanar_command_distance_low"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_remembered_low",
+      "case": "nonplanar_command_remembered_low"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_angle_high",
+      "case": "nonplanar_command_angle_high"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_remembered_angle",
+      "case": "nonplanar_command_remembered_angle"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_angle_zero",
+      "case": "nonplanar_command_angle_zero"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_minimum_angle",
+      "case": "nonplanar_command_minimum_angle"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_maximum_angle",
+      "case": "nonplanar_command_maximum_angle"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_shortest",
+      "case": "nonplanar_command_shortest"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_cancel_options",
+      "case": "nonplanar_command_cancel_options"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_after_cancel",
+      "case": "nonplanar_command_after_cancel"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_toggle",
+      "case": "nonplanar_command_toggle"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_first_selection",
+      "case": "nonplanar_command_first_selection"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_flat",
+      "case": "nonplanar_command_flat"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_triangles",
+      "case": "nonplanar_command_triangles"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_channels_ngon",
+      "case": "nonplanar_command_channels_ngon"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_mixed",
+      "case": "nonplanar_command_mixed"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_cancel_selection",
+      "case": "nonplanar_command_cancel_selection"
+    }
+  ]
+}

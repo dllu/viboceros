@@ -77,8 +77,6 @@ fn native_planarity_split_methods_channels_and_local_command_lifecycle_match() {
         doc.undo().unwrap();
         doc.select_objects_direct([id], SelectionMode::Replace)
             .unwrap();
-        let undo = doc.undo_label().map(str::to_owned);
-        let redo = doc.redo_label().map(str::to_owned);
         let attributes = doc.object(id).unwrap().attributes().clone();
         let groups = doc.object(id).unwrap().group_ids().to_vec();
         registry
@@ -94,20 +92,16 @@ fn native_planarity_split_methods_channels_and_local_command_lifecycle_match() {
         );
         assert_eq!(doc.object(id).unwrap().attributes(), &attributes);
         assert_eq!(doc.object(id).unwrap().group_ids(), groups);
-        assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), vec![id]);
-        if converted > 0 {
-            assert_eq!(doc.undo_label(), Some("TriangulateNonPlanarQuads"));
-            doc.undo().unwrap();
-            assert_eq!(doc.object(id).unwrap().geometry(), &Geometry::Mesh(source));
-            doc.redo().unwrap();
-            assert_eq!(
-                doc.object(id).unwrap().geometry(),
-                &Geometry::Mesh(expected.clone())
-            );
-        } else {
-            assert_eq!(doc.undo_label(), undo.as_deref());
-            assert_eq!(doc.redo_label(), redo.as_deref());
-        }
+        assert!(doc.selected_object_ids().next().is_none());
+        assert_eq!(doc.undo_label(), Some("TriangulateNonPlanarQuads"));
+        assert!(doc.redo_label().is_none());
+        doc.undo().unwrap();
+        assert_eq!(doc.object(id).unwrap().geometry(), &Geometry::Mesh(source));
+        doc.redo().unwrap();
+        assert_eq!(
+            doc.object(id).unwrap().geometry(),
+            &Geometry::Mesh(expected.clone())
+        );
         let empty_slots = v["after"]["ngons"]
             .as_array()
             .unwrap()

@@ -1,6 +1,6 @@
 use super::*;
 use crate::app::tests::test_app;
-use crate::app::{subd_native_tests as subd_native, subdivision_native_tests as mesh_native};
+use viboceros_command::quadrangulate_mesh::Options;
 #[allow(dead_code)]
 #[path = "../../../../crates/viboceros-command/tests/support/quad_command.rs"]
 mod fixtures;
@@ -35,7 +35,7 @@ fn quadrangulate_mesh_getters_match_native_geometry_preferences_cancellation_and
                 app.object_prompt
                     .as_ref()
                     .unwrap()
-                    .quadrangulate_mesh
+                    .mesh_conversion
                     .is_some()
             );
             if value["input"]["preselected"] == false && value["input"]["cancel"] != true {
@@ -107,11 +107,11 @@ fn quadrangulate_mesh_numeric_input_is_atomic_and_cancel_keeps_redo() {
         app.object_prompt
             .as_ref()
             .unwrap()
-            .quadrangulate_mesh
+            .mesh_conversion
             .as_ref()
             .unwrap()
             .options,
-        defaults
+        Settings::Quadrangulate(defaults)
     );
     enter(&mut app, "Planarity");
     enter(&mut app, "NaN");
@@ -119,7 +119,7 @@ fn quadrangulate_mesh_numeric_input_is_atomic_and_cancel_keeps_redo() {
         app.object_prompt
             .as_ref()
             .unwrap()
-            .quadrangulate_mesh
+            .mesh_conversion
             .as_ref()
             .unwrap()
             .value,

@@ -1,0 +1,15 @@
+Capturing 6 native nonplanar quad commands
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_command.py", line 38, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_command.py", line 29, in main
+    data=OracleClient(settings_scheme='VibocerosOracleNonplanarCommand20261023'+('Syntax'if args.syntax else'Options'if args.options else'Discovery')).run_rhino(payload,timeout=240)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2090, in run_rhino
+    _validate_response(response, "rhino", request)
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2542, in _validate_response
+    raise OracleError(f"{engine} probe failed: {error}")
+tools.rhino_oracle.client.OracleError: rhino probe failed: SyntaxError at operation nonplanar_command_select_menu: start: only one ** allowed

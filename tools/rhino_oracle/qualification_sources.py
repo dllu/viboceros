@@ -10,7 +10,10 @@ APPLICATION_MODULES = [
     'src/viewport/insert_point.rs',
     'src/app/crease_native_tests.rs',
     'src/app/object_selection.rs',
-    'src/app/object_selection/quadrangulate_mesh.rs',
+    'src/app/object_selection/mesh_conversion.rs',
+    'src/app/object_selection/mesh_conversion/tests.rs',
+    'crates/viboceros-command/tests/support/mesh_command.rs',
+    'crates/viboceros-command/tests/support/mesh_conversion.rs',
     'src/app/object_selection/quadrangulate_mesh/tests.rs',
     'src/app/transform_sources.rs',
     'src/app/control_polygon.rs',
@@ -119,7 +122,10 @@ MESH_MODULES = [
 
 
 def with_shared_sources(paths):
-    expanded = [p.replace('src/vertex_seams/arguments.rs', 'src/component_seams/arguments.rs') for p in paths]
+    moved = {'src/app/object_selection/quadrangulate_mesh.rs':
+             'src/app/object_selection/mesh_conversion.rs'}
+    expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
+                                      'src/component_seams/arguments.rs') for p in paths]
     if 'crates/viboceros-document/src/lib.rs' in expanded:
         expanded.append('crates/viboceros-document/src/object_geometry.rs')
     if 'crates/viboceros-document/src/control_points.rs' in expanded:
@@ -133,6 +139,7 @@ def with_shared_sources(paths):
         expanded.extend([
             'crates/viboceros-command/src/mesh_seams.rs',
             'crates/viboceros-command/src/quadrangulate_mesh.rs',
+            'crates/viboceros-command/src/triangulate_nonplanar_quads.rs',
             'crates/viboceros-command/src/mesh_component_unweld.rs',
             'crates/viboceros-command/src/mesh_component_weld.rs',
             'crates/viboceros-command/src/vertex_seams.rs',

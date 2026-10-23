@@ -228,7 +228,7 @@ use match_curve_direction::MatchCurveDirectionCommand;
 use match_mesh_edge::MatchMeshEdgeCommand;
 mod patch_single_face;
 use patch_single_face::PatchSingleFaceCommand;
-mod triangulate_nonplanar_quads;
+pub mod triangulate_nonplanar_quads;
 use triangulate_nonplanar_quads::TriangulateNonPlanarQuadsCommand;
 mod component_selection;
 mod mesh_to_nurb;
@@ -905,6 +905,8 @@ pub struct CommandRegistry {
     surface_rebuild_preferences: std::sync::Arc<remembered::Remembered<surface_rebuild::Options>>,
     tween_surface_preferences: std::sync::Arc<remembered::Remembered<tween_surfaces::Preferences>>,
     mesh_patch_preferences: std::sync::Arc<remembered::Remembered<mesh_patch::Preferences>>,
+    triangulate_nonplanar_quads_preferences:
+        std::sync::Arc<remembered::Remembered<triangulate_nonplanar_quads::Options>>,
     quadrangulate_mesh_preferences:
         std::sync::Arc<remembered::Remembered<quadrangulate_mesh::Options>>,
     mesh_from_lines_preferences:
@@ -1846,7 +1848,9 @@ impl CommandRegistry {
             .register(MatchMeshEdgeCommand)
             .expect("unique built-in command");
         registry
-            .register(TriangulateNonPlanarQuadsCommand)
+            .register(TriangulateNonPlanarQuadsCommand(
+                registry.triangulate_nonplanar_quads_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(QuadrangulateMeshCommand(

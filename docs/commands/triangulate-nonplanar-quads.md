@@ -2,44 +2,54 @@
 
 [Meshes and SubDs](meshes-index.md) · [Mesh editing](mesh-editing.md)
 
-Select meshes and run, for example:
+Start `TriangulateNonPlanarQuads`, select meshes and press Enter to open its
+text options. Preselected meshes open the options immediately. Change options,
+then press Enter to apply; Escape or Cancel discards the edit and clears selection.
+Geometry, tolerance, selection or editability changes reject staged acceptance.
+
+Complete preselected scripts execute directly:
 
 ```text
-TriangulateNonPlanarQuads Mode=Both Distance=0.01 Angle=1 SplitMethod=ShortestDiagonal
+TriangulateNonPlanarQuads SelectBy=Distance Distance=0.01 SplitMethod=ShortestDiagonal
+_-TriangulateNonPlanarQuads _SelectBy=_Angle _Angle 1 _SplitMethod _MinimumArea
 ```
 
-Options accept `Name=value` or separate `Name value` tokens, including English
-underscore prefixes. `Mode` selects `Distance`, `Angle`, or `Both`. Distance is
-in model units; Angle is in degrees. Zero is allowed. The local defaults remain
-Distance mode, document absolute tolerance, one degree and ShortestDiagonal;
-native command defaults and interactive input have not been qualified.
+Fresh defaults are Distance selection, zero distance, zero angle and
+ShortestDiagonal. Accepted settings persist across documents and Undo/Redo
+within one registry; cancelled or invalid updates preserve the accepted values.
+Distance uses model units and Angle uses degrees. Zero is allowed.
+Bare `SelectBy` toggles Distance and Angle; `Distance`, `Angle` and `SplitMethod`
+also accept separate responses. Local scripts additionally accept `Name=value`.
 
-The public OpenNURBS converter measures the range of distances to its face plane
-and checks both pairs of opposite corner normals. With Both enabled, exceeding
-either limit causes conversion. The distance comparison is strict: equality alone does not require splitting.
-Angular tests use the native normal/cosine comparison. Qualification is
-independent of the split method.
-This replaces the earlier fourth-point/ABC-plane test and combined AND rule.
+Split methods are `ShortestDiagonal`, `LongestDiagonal`, `MinimumArea`,
+`MaximumArea`, `MinimumAngle` and `MaximumAngle`. The older `MinimizeArea` and
+`MaximizeArea` names remain aliases. `Mode` aliases `SelectBy`; local `Mode=Both`
+uses both SDK criteria. Rhino's scripted SelectBy rejected Both and
+DistanceAndAngle in the retained discovery captures.
 
-SplitMethod also accepts `LongestDiagonal`, `MinimizeArea`, `MaximizeArea`,
-`MinimumAngle`, and `MaximumAngle`; native tie-breaking applies. First triangles
-replace their source quad slots; second triangles append in source order.
+OpenNURBS measures the range of distances to its face plane and checks both
+opposite corner-normal pairs before choosing a diagonal. With Both enabled,
+exceeding either limit splits the quad. Distance equality alone does not split;
+angular tests use native normal/cosine comparisons and native tie-breaking.
+First triangles replace source quad slots; second triangles append.
+
 Vertices and stored color, UV and normal channels remain unchanged. N-gons
 containing a split quad are removed; unaffected overlays survive. Empty removed
-slots in native n-gon tables are omitted from the model overlay vector.
+native slots are omitted from the model overlay vector. Mesh validation tolerance
+preserves valid small features below document tolerance.
 
-Geometry validation uses the mesh validation tolerance, preserving valid small
-features below document tolerance. Selected results are staged atomically and
-moved into the document without an extra geometry clone. Local command identity,
-attributes, groups, selection and Undo/Redo invariants remain unchanged.
+Success skips non-mesh selections, clears selection, moves processed meshes to
+the object table end and records one Undo step even when no quad splits. IDs,
+attributes and groups survive. All mesh results are staged before mutation and
+moved into the document without an extra geometry clone.
 
-The [qualification record](../nonplanar-quad-qualification.json) covers 42
-independent RhinoCommon inputs and local scripted command replays. It includes
-all six methods, angular holdouts straddling diagonal-normal angles, exact and
-adjacent representable distance thresholds, zero
-thresholds, independent distance/angle failures, concave and tiny geometry,
-channels, and n-gons with reordered owners. Native command workflow, option
-memory, degenerate repair, extreme coordinates and performance remain
-unqualified. An earlier failed import is retained with zero qualified geometry.
+The [SDK record](../nonplanar-quad-qualification.json) covers 42 independent
+inputs. The [command record](../nonplanar-command-qualification.json) covers 30
+native workflows, 26 registered command replays and 30 application getters.
+Five discovery workflows with rejected or misplaced options remain excluded;
+a failed import retains zero qualified geometry. Native face-based threshold
+sampling, dialogs/previews, spinner controls, physical postselection, restricted
+objects, grips, multi-mesh processing order, extreme coordinates, degenerate
+repair and comparative performance remain unqualified.
 
 [Public API documentation](https://mcneel.github.io/rhino3dm/javascript/api/classes/MeshFaceList.html#convertnonplanarquadstotriangles)

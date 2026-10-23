@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_select_menu",
+      "case": "nonplanar_command_select_menu"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_split_menu",
+      "case": "nonplanar_command_split_menu"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_distance_separate",
+      "case": "nonplanar_command_distance_separate"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_angle_separate",
+      "case": "nonplanar_command_angle_separate"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_combined_name",
+      "case": "nonplanar_command_combined_name"
+    },
+    {
+      "op": "nonplanar_quad_command",
+      "id": "nonplanar_command_selection_cancel",
+      "case": "nonplanar_command_selection_cancel"
+    }
+  ]
+}

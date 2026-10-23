@@ -1,4 +1,6 @@
 //! Shared immutable crease inputs and independent native geometry checks.
+#[path = "mesh_command.rs"]
+pub mod mesh_command;
 use super::{mesh_native, subd_native};
 use serde_json::{Value, json};
 use std::path::Path;

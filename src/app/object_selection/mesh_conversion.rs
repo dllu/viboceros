@@ -1,32 +1,98 @@
 //! Mesh selection and numeric options are staged until explicit acceptance.
 use super::*;
-use viboceros_command::quadrangulate_mesh::{self, Options};
+use viboceros_command::{quadrangulate_mesh as quad, triangulate_nonplanar_quads as nonplanar};
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::Tolerance;
 #[cfg(test)]
-mod tests;
+#[path = "mesh_conversion/tests.rs"]
+mod nonplanar_tests;
+#[cfg(test)]
+#[path = "quadrangulate_mesh/tests.rs"]
+mod quadrangulate_tests;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum Settings {
+    Quadrangulate(quad::Options),
+    Nonplanar(nonplanar::Options),
+}
+impl Settings {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Quadrangulate(_) => "QuadrangulateMesh",
+            Self::Nonplanar(_) => "TriangulateNonPlanarQuads",
+        }
+    }
+    fn command(self) -> String {
+        match self {
+            Self::Quadrangulate(o) => o.command(),
+            Self::Nonplanar(o) => o.command(),
+        }
+    }
+    fn initial(
+        name: &str,
+        registry: &viboceros_command::CommandRegistry,
+        args: &[&str],
+    ) -> Result<Self, viboceros_command::CommandError> {
+        if name == "QuadrangulateMesh" {
+            registry
+                .quadrangulate_mesh_options(args)
+                .map(Self::Quadrangulate)
+        } else {
+            registry
+                .triangulate_nonplanar_quads_options(args)
+                .map(Self::Nonplanar)
+        }
+    }
+    fn parse(self, args: &[&str]) -> Result<Self, viboceros_command::CommandError> {
+        match self {
+            Self::Quadrangulate(o) => quad::parse(args, o).map(Self::Quadrangulate),
+            Self::Nonplanar(o) => nonplanar::parse(args, o).map(Self::Nonplanar),
+        }
+    }
+    fn option(self, name: &str) -> Option<&'static str> {
+        let names: &[&str] = match self {
+            Self::Quadrangulate(_) => &["Planarity", "Rectangularity"],
+            Self::Nonplanar(_) => &["SelectBy", "Distance", "Angle", "SplitMethod"],
+        };
+        let name = if name.eq_ignore_ascii_case("Mode") {
+            "SelectBy"
+        } else if name.eq_ignore_ascii_case("Split") {
+            "SplitMethod"
+        } else {
+            name
+        };
+        names.iter().copied().find(|n| n.eq_ignore_ascii_case(name))
+    }
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub(in crate::app) struct Session {
-    options: Options,
+    options: Settings,
     value: Option<&'static str>,
     parents: Vec<(ObjectId, GeometrySnapshot)>,
     tolerance: Tolerance,
 }
 impl Session {
     pub(super) fn label(&self) -> &'static str {
-        self.value.unwrap_or("QuadrangulateMesh")
+        self.value.unwrap_or(self.options.name())
     }
     pub(super) fn hint(&self, phase: ObjectPromptPhase) -> &'static str {
         match self.value {
-            Some("Planarity") => {
+            Some("Planarity" | "Angle") => {
                 "Enter an angle from 0 to 180 degrees; Enter keeps the current value"
             }
-            Some(_) => "Enter a rectangularity ratio of at least 1; Enter keeps the current value",
-            None if phase == ObjectPromptPhase::Selecting => {
-                "Select meshes; Enter opens Planarity and Rectangularity options; Esc cancels"
+            Some("Rectangularity") => {
+                "Enter a rectangularity ratio of at least 1; Enter keeps the current value"
             }
-            None => "Change Planarity or Rectangularity; Enter quadrangulates, Esc cancels",
+            Some("Distance") => "Enter a nonnegative distance; Enter keeps the current value",
+            Some("SelectBy") => "Choose Distance, Angle or Both; Enter keeps the current value",
+            Some(_) => {
+                "Choose ShortestDiagonal, LongestDiagonal, MinimumArea, MaximumArea, MinimumAngle or MaximumAngle"
+            }
+            None if phase == ObjectPromptPhase::Selecting => {
+                "Select meshes; Enter opens conversion options; Esc cancels"
+            }
+            None => "Change conversion options; Enter applies, Esc cancels",
         }
     }
     fn pin(&mut self, doc: &Document) {
@@ -54,16 +120,17 @@ impl Session {
     }
 }
 impl VibocerosApp {
-    pub(super) fn initialize_quadrangulate_mesh(&mut self, command: &str) {
-        let Some(p) = self
-            .object_prompt
-            .as_mut()
-            .filter(|p| p.description.command == "QuadrangulateMesh")
-        else {
+    pub(super) fn initialize_mesh_conversion(&mut self, command: &str) {
+        let Some(p) = self.object_prompt.as_mut().filter(|p| {
+            matches!(
+                p.description.command,
+                "QuadrangulateMesh" | "TriangulateNonPlanarQuads"
+            )
+        }) else {
             return;
         };
         let words = command.split_whitespace().skip(1).collect::<Vec<_>>();
-        let Ok(options) = self.commands.quadrangulate_mesh_options(&words) else {
+        let Ok(options) = Settings::initial(p.description.command, &self.commands, &words) else {
             return;
         };
         let mut session = Session {
@@ -76,13 +143,13 @@ impl VibocerosApp {
             session.pin(&self.document);
         }
         p.command_override = Some(options.command());
-        p.quadrangulate_mesh = Some(session);
+        p.mesh_conversion = Some(session);
     }
-    pub(super) fn continue_quadrangulate_mesh(&mut self, input: &str) -> bool {
+    pub(super) fn continue_mesh_conversion(&mut self, input: &str) -> bool {
         let Some(pending) = self
             .object_prompt
             .as_ref()
-            .filter(|p| p.quadrangulate_mesh.is_some())
+            .filter(|p| p.mesh_conversion.is_some())
         else {
             return false;
         };
@@ -92,12 +159,20 @@ impl VibocerosApp {
             .unwrap_or("")
             .trim_start_matches(['_', '-']);
         if first.eq_ignore_ascii_case("Cancel")
-            || (!input.is_empty() && self.commands.recognizes(first))
+            || (!input.is_empty()
+                && self.commands.recognizes(first)
+                && pending
+                    .mesh_conversion
+                    .as_ref()
+                    .unwrap()
+                    .options
+                    .option(first)
+                    .is_none())
         {
             self.cancel_object_prompt(true);
             return first.eq_ignore_ascii_case("Cancel");
         }
-        let mut session = pending.quadrangulate_mesh.clone().unwrap();
+        let mut session = pending.mesh_conversion.clone().unwrap();
         let phase = pending.phase;
         if input.is_empty() && session.value.is_none() {
             if phase == ObjectPromptPhase::Selecting {
@@ -110,7 +185,10 @@ impl VibocerosApp {
             } else {
                 if !session.valid(&self.document) {
                     self.cancel_object_prompt(false);
-                    self.push_log("QuadrangulateMesh inputs changed; select meshes again".into());
+                    self.push_log(format!(
+                        "{} inputs changed; select meshes again",
+                        session.options.name()
+                    ));
                     return true;
                 }
                 let command = session.options.command();
@@ -126,16 +204,19 @@ impl VibocerosApp {
             }
         } else if phase == ObjectPromptPhase::Options
             && session.value.is_none()
-            && ["Planarity", "Rectangularity"]
-                .iter()
-                .any(|n| first.eq_ignore_ascii_case(n))
+            && session.options.option(first).is_some()
             && input.split_whitespace().count() == 1
         {
-            session.value = Some(if first.eq_ignore_ascii_case("Planarity") {
-                "Planarity"
+            if matches!(session.options, Settings::Nonplanar(_))
+                && first.eq_ignore_ascii_case("SelectBy")
+            {
+                session.options = session
+                    .options
+                    .parse(&["SelectBy"])
+                    .expect("bare SelectBy toggles the active criterion");
             } else {
-                "Rectangularity"
-            });
+                session.value = session.options.option(first);
+            }
         } else {
             let text = if let Some(name) = session.value {
                 if input.is_empty() {
@@ -147,7 +228,7 @@ impl VibocerosApp {
                 input.to_owned()
             };
             let words = text.split_whitespace().collect::<Vec<_>>();
-            match quadrangulate_mesh::parse(&words, session.options) {
+            match session.options.parse(&words) {
                 Ok(options) => {
                     session.options = options;
                     session.value = None;
@@ -161,7 +242,7 @@ impl VibocerosApp {
         }
         let p = self.object_prompt.as_mut().unwrap();
         p.command_override = Some(session.options.command());
-        p.quadrangulate_mesh = Some(session);
+        p.mesh_conversion = Some(session);
         self.command_input.clear();
         self.log_object_prompt();
         true
