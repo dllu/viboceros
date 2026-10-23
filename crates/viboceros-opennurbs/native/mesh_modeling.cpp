@@ -144,6 +144,15 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
       require(add_face_region_ngon(mesh,faces)>=0,"No valid outer boundary");
     }else if(operation==4)cull_degenerate_faces(mesh,*result);
     else if(operation==6){mesh.ComputeFaceNormals();mesh.ComputeVertexNormals();result->changed=1;}
+    else if(operation==7){
+      require(std::isfinite(angle)&&std::isfinite(distance)&&distance>=0.,"Invalid quad conversion parameters");
+      const int faces=mesh.FaceCount(),triangles=mesh.TriangleCount(),quads=mesh.QuadCount();
+      const bool changed=mesh.ConvertTrianglesToQuads(angle,distance);
+      require(mesh.FaceCount()<=faces,"Quad conversion increased face count");
+      const int pairs=faces-mesh.FaceCount();
+      require(changed==(pairs>0) && triangles-mesh.TriangleCount()==2*pairs && mesh.QuadCount()-quads==pairs,"Quad conversion culled unexpected faces");
+      result->changed=static_cast<size_t>(pairs);
+    }
     else if(operation==5){
       require(selected && selected_count && selected_count<=vertex_limit,"Invalid selected mesh vertices");
       ON_SimpleArray<ON_COMPONENT_INDEX> components;

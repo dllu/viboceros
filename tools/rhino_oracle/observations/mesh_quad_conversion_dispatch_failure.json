@@ -1,0 +1,18 @@
+{
+  "status": "worker_dispatch_failure",
+  "requested_workflows": 14,
+  "qualified_workflows": 0,
+  "response_retained": false,
+  "request_sha256": "10c0f575568931709096cf1da56b533121a54962abfa477c15803947ff5bdfd0",
+  "log_sha256": "6418abacf8005f3ecdb74d7ab453cd2ecf611e776287e4988f2b97eeb6090604",
+  "sources": {
+    "generate_quad_conversion.py": "b5188c97d9669cab51f7416ebc49b3f31c6468ca9d1e52c4a6a15b997161be7c",
+    "quad_conversion_cases.py": "b2192a9225e499ab5a7d0631b39ea5d385f2416d9059a198f0ca42ae5136c128",
+    "quad_conversion_probe.py": "8b7232cb299584536c871d810a74de48d0502770b164902653e3c44b73ad7f6c",
+    "client.py": "4c9e13ffd9918418c774283d7ebb9cd1f15e29b1293177723724f93fa3078224",
+    "rhino_worker.py": "92050b7993a00a62b9749d554132153ac9b98883e25cacce7e5b97159e00d3db",
+    "structural_sdk.py": "43ee959bd7edcac20b1eae9374a3a3ac85e16893f2b69f751dd0f40fb28ef92d",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1"
+  }
+}

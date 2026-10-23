@@ -1,8 +1,8 @@
 """Compare public triangulation and quad conversion on fixed captured regions."""
 try:
-    from .insert_point_mesh_sdk_cases import CASES, validate
+    from .insert_point_mesh_sdk_cases import CASES, SPATIAL_CASES, validate
 except (ImportError, ValueError):
-    from insert_point_mesh_sdk_cases import CASES, validate
+    from insert_point_mesh_sdk_cases import CASES, SPATIAL_CASES, validate
 
 
 def run(op, host, iterations, tolerance):
@@ -10,6 +10,9 @@ def run(op, host, iterations, tolerance):
     R = host['Rhino']; G = R.Geometry
     if iterations != 1 or list(R.RhinoDoc.ActiveDoc.Objects) or R.RhinoDoc.ActiveDoc.UndoRecordingIsActive:
         raise ValueError('owned empty idle document required')
+    if op.get('spatial'):
+        from insert_point_spatial_sdk import run as spatial
+        return spatial(SPATIAL_CASES[op['case']], host), 0
     case = CASES[op['case']]
     if op.get('methods'):
         from insert_point_mesh_methods import run as methods

@@ -21,34 +21,15 @@ struct Candidate {
 }
 
 impl TriangleMesh {
-    /// Greedily merges pairs of raw-vertex-welded triangles. The face-normal
-    /// angle and the ratio of the prospective quad's diagonal lengths must
-    /// meet the supplied limits. Existing n-gon boundaries are preserved.
-    /// Returns the unchanged mesh when no pair qualifies.
+    /// Convert triangle pairs with public OpenNURBS selection and angle policy.
+    /// Rectangularity is the maximum ratio between a quad's diagonal lengths.
+    /// Native conversion determines face slots and n-gon changes; existing
+    /// vertices and their stored channels remain unchanged.
     pub fn quadrangulate_triangles(
         &self,
         max_planarity_degrees: Real,
         max_diagonal_ratio: Real,
-        tolerance: Tolerance,
-    ) -> Result<(Self, usize), GeometryError> {
-        self.pair_triangles(max_planarity_degrees, max_diagonal_ratio, tolerance, false)
-    }
-
-    /// Prefer more coplanar pairs, then retain better standalone triangles.
-    /// New quads must remain valid when a source boundary changes their origin.
-    pub(crate) fn quadrangulate_inserted_region(
-        &self,
-        tolerance: Tolerance,
-    ) -> Result<(Self, usize), GeometryError> {
-        self.pair_triangles(180., Real::MAX, tolerance, true)
-    }
-
-    fn pair_triangles(
-        &self,
-        max_planarity_degrees: Real,
-        max_diagonal_ratio: Real,
-        tolerance: Tolerance,
-        insertion_region: bool,
+        _tolerance: Tolerance,
     ) -> Result<(Self, usize), GeometryError> {
         if !max_planarity_degrees.is_finite()
             || !(0.0..=180.0).contains(&max_planarity_degrees)
@@ -57,6 +38,44 @@ impl TriangleMesh {
         {
             return Err(GeometryError::InvalidMeshQuadrangulationOptions);
         }
+        self.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
+        let (mut data, changed) = viboceros_opennurbs::quadrangulate_mesh(
+            &self.open_nurbs_data(),
+            max_planarity_degrees.to_radians(),
+            1. / max_diagonal_ratio,
+        )?;
+        if changed == 0 {
+            return Ok((self.clone(), 0));
+        }
+        if data.vertices.len() != self.vertices.len()
+            || data
+                .vertices
+                .iter()
+                .zip(&self.vertices)
+                .any(|(native, point)| *native != point.to_array())
+        {
+            return Err(viboceros_opennurbs::MeshError(
+                "Quad conversion changed vertex storage".into(),
+            )
+            .into());
+        }
+        let ngons = std::mem::take(&mut data.ngons)
+            .into_iter()
+            .map(|g| MeshNgon::from_parts(g.vertices, g.faces))
+            .collect();
+        let mut result = Self::from_open_nurbs_data(data)?.retain_boundary_matched_ngons(ngons);
+        result.vertex_colors = self.vertex_colors.clone();
+        result.vertex_channels = self.vertex_channels.clone();
+        result.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
+        Ok((result, changed))
+    }
+
+    /// Prefer more coplanar pairs, then retain better standalone triangles.
+    /// New quads must remain valid when a source boundary changes their origin.
+    pub(crate) fn quadrangulate_inserted_region(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<(Self, usize), GeometryError> {
         if self.faces.iter().filter(|face| face.is_triangle()).count() < 2 {
             return Ok((self.clone(), 0));
         }
@@ -83,14 +102,9 @@ impl TriangleMesh {
             }
         }
         let normals = self.polygon_face_normals()?;
-        let triangle_quality = if insertion_region {
-            (0..self.face_count())
-                .map(|i| self.face_aspect_ratio(i).map(|ratio| 1. / ratio))
-                .collect::<Result<Vec<_>, _>>()?
-        } else {
-            vec![0.; self.face_count()]
-        };
-        let max_angle = max_planarity_degrees.to_radians();
+        let triangle_quality = (0..self.face_count())
+            .map(|i| self.face_aspect_ratio(i).map(|ratio| 1. / ratio))
+            .collect::<Result<Vec<_>, _>>()?;
         let mut candidates = Vec::new();
         for uses in edges.values() {
             let [first, second] = uses.as_slice() else {
@@ -109,9 +123,6 @@ impl TriangleMesh {
             let normal_angle = normals[first.face]
                 .as_vector()
                 .angle_to(normals[second.face].as_vector())?;
-            if normal_angle > max_angle {
-                continue;
-            }
             let (Ok(shared), Ok(other)) = (
                 self.vertices[u as usize].distance_to(self.vertices[v as usize]),
                 self.vertices[w as usize].distance_to(self.vertices[x as usize]),
@@ -121,11 +132,11 @@ impl TriangleMesh {
             let short = shared.min(other);
             let long = shared.max(other);
             let diagonal_ratio = long / short;
-            if !diagonal_ratio.is_finite() || diagonal_ratio > max_diagonal_ratio {
+            if !diagonal_ratio.is_finite() {
                 continue;
             }
             let quad = [u, x, v, w];
-            if insertion_region {
+            {
                 let Some(projected) =
                     project_mesh_hole_boundary(&quad.map(|i| self.vertices[i as usize]))?
                 else {
@@ -161,7 +172,7 @@ impl TriangleMesh {
             });
         }
         let planarity = |c: &Candidate| {
-            if insertion_region && c.normal_angle > 64. * Real::EPSILON {
+            if c.normal_angle > 64. * Real::EPSILON {
                 c.normal_angle
             } else {
                 0.
@@ -264,7 +275,7 @@ mod tests {
     }
 
     #[test]
-    fn merges_a_welded_square_and_retains_colors_and_ngon_boundary() {
+    fn merges_a_welded_square_and_retains_colors_with_native_ngon_cleanup() {
         let mesh = TriangleMesh::try_new(
             vec![
                 point(0.0, 0.0, 0.0),
@@ -287,9 +298,7 @@ mod tests {
         assert_eq!(converted.faces().len(), 1);
         assert!(matches!(converted.faces()[0], MeshFace::Quad(_)));
         assert_eq!(converted.vertex_colors(), mesh.vertex_colors());
-        assert_eq!(converted.ngons().len(), 1);
-        assert_eq!(converted.ngons()[0].faces(), &[0]);
-        assert_eq!(converted.ngons()[0].vertices(), &[0, 1, 2, 3]);
+        assert!(converted.ngons().is_empty());
         assert_eq!(
             converted
                 .triangulate_quads(Tolerance::DEFAULT)

@@ -122,6 +122,21 @@ pub fn merge_coplanar_mesh(
     edit(data, 1, distance, angle)
 }
 
+/// Public OpenNURBS conversion, including its mutual-longest-edge rule.
+pub fn quadrangulate_mesh(
+    data: &MeshData,
+    angle_radians: f64,
+    minimum_diagonal_ratio: f64,
+) -> Result<(MeshData, usize), MeshError> {
+    if !angle_radians.is_finite()
+        || !minimum_diagonal_ratio.is_finite()
+        || minimum_diagonal_ratio < 0.
+    {
+        return Err(MeshError("Invalid quad conversion parameters".into()));
+    }
+    edit(data, 7, minimum_diagonal_ratio, angle_radians)
+}
+
 pub fn recompute_mesh_normals(data: &MeshData) -> Result<MeshData, MeshError> {
     edit(data, 6, 0., 0.).map(|r| r.0)
 }

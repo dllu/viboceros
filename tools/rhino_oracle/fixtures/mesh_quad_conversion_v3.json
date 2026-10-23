@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_square",
+      "case": "quad_convert_square"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_square_extra",
+      "case": "quad_convert_square_extra"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_short_two",
+      "case": "quad_convert_short_two"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_short_extra",
+      "case": "quad_convert_short_extra"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_tied_fan",
+      "case": "quad_convert_tied_fan"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_unequal_fan",
+      "case": "quad_convert_unequal_fan"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_raw_seam",
+      "case": "quad_convert_raw_seam"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_opposed",
+      "case": "quad_convert_opposed"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_channels_ngon",
+      "case": "quad_convert_channels_ngon"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_adjacent_ngons",
+      "case": "quad_convert_adjacent_ngons"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_warp_reject",
+      "case": "quad_convert_warp_reject"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_warp_accept",
+      "case": "quad_convert_warp_accept"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_angle_reset",
+      "case": "quad_convert_angle_reset"
+    },
+    {
+      "op": "mesh_quad_conversion",
+      "id": "quad_convert_unused_vertex",
+      "case": "quad_convert_unused_vertex"
+    }
+  ]
+}

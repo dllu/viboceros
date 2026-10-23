@@ -94,7 +94,7 @@ SUBD_MODULES = [
 
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
-    for name in ['vertex_channels', 'native', 'append', 'face_records', 'components',
+    for name in ['vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
                  'rebuild', 'normals', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
                  'quadrangulate', 'aspect_ratio', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions']

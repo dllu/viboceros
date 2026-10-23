@@ -130,20 +130,30 @@ CASES = {'insert_point_full_mesh_adjacent_0': {'vertices': [[0.0, 1.504219948849
                                          'capture': 'insert_point_regions',
                                          'source_id': 'insert_point_regions_same_reverse'}}
 
-def request(origins=False, methods=False):
-    if origins and methods:raise ValueError('one fixed calibration variant required')
-    variant = 'methods' if methods else 'origins' if origins else None
+if __package__:
+    from .insert_point_spatial_sdk_cases import CASES as SPATIAL_CASES
+else:
+    from insert_point_spatial_sdk_cases import CASES as SPATIAL_CASES
+
+
+def request(origins=False, methods=False, spatial=False):
+    if sum(bool(v) for v in [origins, methods, spatial]) > 1:
+        raise ValueError('one fixed calibration variant required')
+    variant = 'spatial' if spatial else 'methods' if methods else 'origins' if origins else None
+    cases = SPATIAL_CASES if spatial else CASES
     operations = []
-    for key in CASES:
+    for key in cases:
         op = dict(op='insert_point_mesh_sdk', id=key+('_'+variant if variant else ''), case=key)
         if variant:op[variant] = True
         operations.append(op)
     return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=operations)
 
+
 def validate(op):
     if not isinstance(op, dict):raise ValueError('fixed insertion-region SDK recipe required')
     try:
-        variant = 'methods' if op.get('methods') is True else 'origins' if op.get('origins') is True else None
-        valid=isinstance(op,dict)and set(op)==({'op','id','case',variant}if variant else{'op','id','case'})and op['op']=='insert_point_mesh_sdk'and op['case']in CASES and op['id']==op['case']+('_'+variant if variant else'')
+        variant = 'spatial' if op.get('spatial') is True else 'methods' if op.get('methods') is True else 'origins' if op.get('origins') is True else None
+        cases = SPATIAL_CASES if variant == 'spatial' else CASES
+        valid=set(op)==({'op','id','case',variant}if variant else{'op','id','case'})and op['op']=='insert_point_mesh_sdk'and op['case']in cases and op['id']==op['case']+('_'+variant if variant else'')
     except TypeError:valid=False
-    if not valid:raise ValueError("fixed insertion-region SDK recipe required")
+    if not valid:raise ValueError('fixed insertion-region SDK recipe required')

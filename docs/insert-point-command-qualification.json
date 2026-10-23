@@ -12,7 +12,7 @@
   "shape_cases": 12,
   "depth_cases": 20,
   "spatial_cases": 12,
-  "calibration_recipes": 48,
+  "calibration_recipes": 60,
   "failed_import_requested_workflows": 12,
   "failed_import_qualified_workflows": 0,
   "maximum_error": 0.18249764854097586,
@@ -8810,6 +8810,62 @@
       }
     }
   ],
+  "spatial_sdk_calibration": [
+    {
+      "id": "insert_point_spatial_bottom_low_left_low_region_0_spatial",
+      "matching_cells": [
+        "triangles_1_quads",
+        "triangles_2_quads"
+      ]
+    },
+    {
+      "id": "insert_point_spatial_bottom_high_left_low_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_bottom_mid_left_high_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_left_low_bottom_mid_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_mild_warp_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_saddle_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_tilted_plane_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_rotated_warp_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_tall_warp_region_0_spatial",
+      "matching_cells": [
+        "triangles_3_quads",
+        "triangles_4_quads"
+      ]
+    },
+    {
+      "id": "insert_point_spatial_reversed_warp_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_cyclic_warp_region_0_spatial",
+      "matching_cells": []
+    },
+    {
+      "id": "insert_point_spatial_same_edge_warp_region_0_spatial",
+      "matching_cells": []
+    }
+  ],
   "full_native_parity": false,
   "performance_qualified": false,
   "limits": [
@@ -8819,7 +8875,7 @@
     "Twelve geometry holdouts cover spatial, triangular, original-edge, n-gon and raw-seam cases. Twelve n-gon command/getter cases cover overlays, repeated boundary picks, reordered faces, fans and paths across adjacent n-gons. All now match stored cells and facets.",
     "Twelve independent shape scenes cover skewed, trapezoid, rhombus, tall, rotated, reversed and warped quad boundaries. All match stored cells and facets.",
     "Twenty independent warped Mesh/SubD depth scenes cover inside/outside surface rays, translated sources, shifted camera targets, second picks and local Undo. Picks use the original control display mesh with fixed 0-2 facets, falling back to the camera-target plane, then closest 3D edge parameter. Generic SDK MeshRay hits use a different quad diagonal and are retained only as triangulation-policy diagnostics.",
-    "The forty-eight public meshing API calibration recipes use captured output regions, never independent input witnesses. No tested public triangulation or quad conversion reproduces all native InsertPoint cells. Calibration does not qualify command or kernel parity.",
+    "The sixty public meshing API calibration recipes use captured output regions, never independent input witnesses. No tested public triangulation or quad conversion reproduces all native InsertPoint cells, including relaxed 3D conversion across every boundary origin in the twelve spatial regions. Calibration does not qualify command or kernel parity.",
     "Original source edges remain the pick cage after new chords appear. Coordinates choose the nearest spatial source edge; viewport picks use screen distance and source-surface or camera-target depth. Older unchanged ZoomExtents Top captures recover target depth from ray midpoints; newer depth captures record the target and camera direction independently. Parallel crossing projection pins the first supplied view normal. Perspective crossing paths and changing views remain unqualified.",
     "Accepted points are staged until Enter. Cancel, Escape and another command discard them. Empty or Undo-all acceptance creates no geometry history and preserves redo. Stale source geometry, tolerance or editability rejects admission.",
     "The path budget is 256 picks and one million source point-plus-edge components, subject to native SubD archive limits. Intersecting inserted chords, arbitrary non-manifold/spatial topology, constrained Osnap behavior, native grip-state behavior, continuous surface error and comparative performance remain unqualified.",
@@ -8858,8 +8914,8 @@
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/client.py": "4c9e13ffd9918418c774283d7ebb9cd1f15e29b1293177723724f93fa3078224",
-    "tools/rhino_oracle/rhino_worker.py": "92050b7993a00a62b9749d554132153ac9b98883e25cacce7e5b97159e00d3db",
-    "tools/rhino_oracle/structural_sdk.py": "574e9f705053d2f96fa29355282aabcc4e8e2f94e50fa099c8ff04fba9b1c39c",
+    "tools/rhino_oracle/rhino_worker.py": "7a099de6197ac95b5b900f17871723be3c3731cff511c5e6c716942518664e75",
+    "tools/rhino_oracle/structural_sdk.py": "604d4bf437843a59c056f228395ecf885653cda2209673b431071e2e2409f046",
     "tools/rhino_oracle/report_insert_point.py": "72d6dbd165e1fcae06e9771c804fd3049f77b35f08ceb045c2fe332563a1d362",
     "tools/rhino_oracle/test_insert_point.py": "21aa66cc8673e39a64e7b781f328bfa3ff1ee2e976ce7c19172e3e3faad06422",
     "crates/viboceros-command/src/mesh_seams.rs": "fae9bbdb286bd2441cd3c953da2e3e92034edde5b4635f1e5c3e3e751ba70ea0",
@@ -8908,6 +8964,7 @@
     "crates/viboceros-opennurbs/src/subd/spin.rs": "d0d1a7fe592665d79edea42628e7e04d8cf8e59781fb67b4d4092f1bd390f326",
     "crates/viboceros-opennurbs/native/subd_spin.h": "2f6fcc055a2fd66d94d18f1c68c8a0d35d720d9e6be42a97959077983b8477f4",
     "crates/viboceros-geometry/src/mesh/vertex_channels.rs": "4cf015db3d66d77e2980e6ce7716e48f19b9a8b6d1bd07236b675f5d05e43385",
+    "crates/viboceros-geometry/src/mesh/ngon.rs": "72ff1b0ad5b86733a963016a89bd0d5a61c2821417e54d5c42d0b1cd1bf820c7",
     "crates/viboceros-geometry/src/mesh/native.rs": "dcd8df91be3091300698e08b808519388c4fcf259e5a9245013fd7e121cffeec",
     "crates/viboceros-geometry/src/mesh/append.rs": "2fbcba3e39a9b9a25ceb864d12a2daee0cd2368cc50073829fde29d106d0eced",
     "crates/viboceros-geometry/src/mesh/face_records.rs": "bf5438805e68438bf60ddf912490e8a4e2b03d7beec39ecc03eb087353f83e6d",
@@ -8934,7 +8991,7 @@
     "crates/viboceros-geometry/src/mesh/radial.rs": "2048def0e4605cb0153a13437b2bc705b9b6c7552fca51fa0ade62e3dffab03a",
     "crates/viboceros-geometry/src/mesh/compaction.rs": "1cdd6ad2f8ff7abdc09805c489c72c6bb9607927d32981cbb812834b73915596",
     "crates/viboceros-geometry/src/mesh/union_find.rs": "c108d4f4d3716312c8c3d7b64bb1865680b076777c5c5ffd609298415c429c93",
-    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "e0165c9008df54d8bfdab99952d9d303326ef82467fd426c76a824538150659e",
+    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "b13616132f33565c0757feb2a460a6e3a17533c276356568ef251e84fbeba92c",
     "crates/viboceros-geometry/src/mesh/aspect_ratio.rs": "eb3a14c99ce93a64ca5952c7d20fadc62b9ba0e721e6ab5ee52a334f2ef1aacf",
     "crates/viboceros-geometry/src/mesh/planar_cap.rs": "9bd66de6751bbd533a061be311ba42bb36fad7823cd8cf53e7d41d4afabe8f17",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
@@ -8946,9 +9003,9 @@
     "crates/viboceros-geometry/src/mesh/union_find/tests.rs": "8a827790749c23059f7dace385d7898295b99610158117a7ee87d1e7a51c40de",
     "crates/viboceros-geometry/tests/support/mesh_channels.rs": "edf4dd46061cdc16b651b9196a83a7906a596da7f8b2f39f5018d2699bd91aaa",
     "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
-    "crates/viboceros-opennurbs/src/mesh.rs": "e1ccdc906de63839869e5c05870d30597514bba092c32a2b269215dd128b358e",
+    "crates/viboceros-opennurbs/src/mesh.rs": "1c0f560c02caf996cc75234872c2956968ea64ba83a147cb68e89207fe915b60",
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "d42be78afa32f9f75405e497465f046f0c2dff2cad9ce6a5f3e81f5c42e06cf4",
-    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "5c4a56a9e03a9cdcdb07ad4f43c65452f915c4776f511b22fc20b4d458c63036",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "8b6bcfcd5b85ebf4953b914eb540fb76fe0a636c46bdf25ab1ca2ec9ba1de4a2",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "tools/rhino_oracle/insert_point_holdout_cases.py": "17c44c2bea78a69acead1ebc8633b2f280b0a74222ae47026652a8f776d93216",
     "tools/rhino_oracle/insert_point_ngon_cases.py": "32c57fdf830c3bb08cf78afd8adc7dfe4fe2ef453584ac699f4b3bc70bc53c71",
@@ -8958,7 +9015,7 @@
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
-    "tools/rhino_oracle/qualification_sources.py": "9799ed690f1c1fdea2f3c9355d76f22f92809d5d27d66e098d980478960d66fb",
+    "tools/rhino_oracle/qualification_sources.py": "8c0e00ad469789532b161c37631c62e5e068f04b0c3ad63dff852693b5b72edb",
     "crates/viboceros-geometry/src/mesh.rs": "560513d2e478988e56d8766a07b6900d7cde0bfff5df12dfac4a4caae1ac9efd",
     "crates/viboceros-command/tests/insert_point_command.rs": "82f68e48d0138a486ed501bf08b872e044b8741bf53c4469ba59c64da1d56039",
     "crates/viboceros-command/tests/insert_point_staging.rs": "5c170590b950b0cee4de4fa8691f2d651eb5da9701ed08196ebf5d10c7dd659d",
@@ -8978,14 +9035,16 @@
     "crates/viboceros-drafting/src/plane.rs": "4ee8032f1597794057c6297139bbc39cfd0d3921c325fbdf124ae1be7fa37ddf",
     "src/viewport/selection.rs": "97a0c529b7e43b496a55c38bfe3be56e78dcd30535ef8480902db6bab0acc1b6",
     "src/viewport/selection_clipping.rs": "9b6dda71519434b12cd5a0b82d0997eee42fc813fa18368bc85ec18df2b25d42",
-    "tools/rhino_oracle/insert_point_mesh_sdk_cases.py": "a28541f910e1bc890d2994b2a860679e34ac3de3c2b2084605bf162b8ab1106a",
-    "tools/rhino_oracle/insert_point_mesh_sdk_probe.py": "1536d52936a245a4e56ac20c7677bdec11877901f7ae6e77cc4e08f0855c7481",
-    "tools/rhino_oracle/generate_insert_point_mesh_sdk.py": "1296ba152965fa8974c89b18666ff66461c584982574d8959081f7e49d051217",
+    "tools/rhino_oracle/insert_point_mesh_sdk_cases.py": "dd391ccfe828a584c34f73e2c78d7a282744aa9f1a01cf7a19294075f23af6b1",
+    "tools/rhino_oracle/insert_point_mesh_sdk_probe.py": "8533b301daab95e840669e8561834e590718ea88ea116e083c21c6ecb2e3477e",
+    "tools/rhino_oracle/generate_insert_point_mesh_sdk.py": "06e30eeaff9510743411115ff206775d81b21ae5fea9fe4878cc9c5124c240d0",
     "tools/rhino_oracle/insert_point_mesh_methods.py": "e4246c7dae787097d5f72be72b24665dcbf35ed4956caddcc4ce68fa96213786",
-    "tools/rhino_oracle/report_insert_point_calibration.py": "0e325763b5cdfae0b80c31896308f72b6a26edf38ce0c2f02593805614da0180",
+    "tools/rhino_oracle/insert_point_spatial_sdk.py": "52b973905f6983d437cec6c7a2b9c94bdc17fdb94c8317b97b2d416824a2e142",
+    "tools/rhino_oracle/insert_point_spatial_sdk_cases.py": "9e581219175cac4e36e5681eb7d6d4e43488daf2c54543be962535a0008c3e77",
+    "tools/rhino_oracle/report_insert_point_calibration.py": "2e5bac3aea9a6d416299428d58c40b659832ce2fa885b8b6c73ab300fb237983",
     "tools/rhino_oracle/report_insert_point_inputs.py": "aaae3e1ec9fd8f4c9980d4ad198203b4c034f2fe4e7d48e4e7ac28406c905276",
-    "tools/rhino_oracle/report_insert_point_command.py": "7fe19ac18e38dda142db9062a46a263aad7b3a74e8fba8e419f945d1200d5f6d",
-    "tools/rhino_oracle/test_insert_point_command.py": "5b382c7ac8703cfe0dc3e7e113ab71b6ad9128ed4b385e75e6201508a5896fd1",
+    "tools/rhino_oracle/report_insert_point_command.py": "f3a7900d426f23542a5d06210d3e490b4f58e9ba533a91f9d553c66b6a136677",
+    "tools/rhino_oracle/test_insert_point_command.py": "847c6bfc7fdc4bd8e42f5ffa88bf7d018bbcde977871e79cd8db405f00c25792",
     "tools/rhino_oracle/fixtures/insert_point_holdouts.json": "328af06bba5ce46566528dc832863d1216be548bb088781b9e3bb1be3428c40d",
     "tools/rhino_oracle/observations/insert_point_holdouts_import_failure.json": "6eab038253b1c43a41a705b4f726f3cf7e07a61d04949222a1e4a664a75322d0",
     "tools/rhino_oracle/observations/insert_point_holdouts_import_failure.log": "73afbc32717a2ffc4411ae0e469b7c92bdb863fd178a198c82d18b4ef96fc80a",
@@ -9133,6 +9192,8 @@
     "tools/rhino_oracle/observations/insert_point_mesh_sdk_origins.json": "25a2a9410276b66403f2674afba975977e7fe7520eaff635e60139aa4aa6784c",
     "tools/rhino_oracle/fixtures/insert_point_mesh_sdk_methods.json": "9a29e3b84dcda64cbb16e0b552bb8b514482ecca18c365f3e48e3e4136af7af8",
     "tools/rhino_oracle/observations/insert_point_mesh_sdk_methods.json": "0998bcfca10e39be3098ceed65efc90ee02623b129a9264143bef5effa4cfc58",
+    "tools/rhino_oracle/fixtures/insert_point_mesh_sdk_spatial.json": "d8a767927dcb85bfa2beed783e377ee8a39b841fde07da9aea00e8dc7179e0b7",
+    "tools/rhino_oracle/observations/insert_point_mesh_sdk_spatial.json": "e4a4011e7ecf3e9e06d4c0db9d8863176be80d8d0bdb7513b57cfe070f2f75a9",
     "tools/rhino_oracle/fixtures/insert_point_mesh_shapes.json": "a9488cddb25e5940d23e9d19ce662ea6f43ef9ecec9c39e601f707d2c230bd23",
     "tools/rhino_oracle/observations/insert_point_mesh_shapes.json": "d3913e73c739d6ac3bf84d97cd2a1278f6596ccc8ed91feb33d6dd993cfa72b4",
     "tools/rhino_oracle/fixtures/insert_point_mesh_shapes/insert_point_shape_rhombus.3dm": "1299b4c6bba722f359deab7052bd7f6dc01742efb978b5b952100052e03f72e1",

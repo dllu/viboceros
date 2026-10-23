@@ -75,9 +75,9 @@ the ray midpoint for target depth. Replays reconstruct surface hints from the
 saved source and rays, without reading output geometry. Generic SDK `MeshRay`
 hits use a shorter quad diagonal and remain separate calibration diagnostics.
 
-Forty-eight public meshing API calibration recipes use captured *output*
+Sixty public meshing API calibration recipes use captured *output*
 regions. None reproduce all native InsertPoint layouts, including alternative
-boundary origins, line tessellation and planar meshing. These recipes do not
+boundary origins, relaxed 3D quad conversion, line tessellation and planar meshing. These recipes do not
 qualify command input behavior. An earlier failed holdout import retains its
 request, host log and frozen sources; no native response survived.
 

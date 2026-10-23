@@ -198,14 +198,20 @@ accepts `LongestDiagonal`, `MinimizeArea`, `MaximizeArea`, `MinimumAngle`, and
 and n-gon membership, vertex colors, identity, attributes, groups, selection,
 and undo are preserved. Degenerate candidate triangles are rejected.
 
-`QuadrangulateMesh Planarity=1 Rectangularity=2` merges consistently oriented
-triangle pairs that share raw vertex indices. `Planarity` is the maximum angle
-between face normals in degrees; `Rectangularity` bounds the ratio of the two
-prospective quad diagonal lengths. The local defaults are 1 degree and 2.
-The candidate must also form a convex, nondegenerate quad. Pairing favors the
-most balanced diagonals, then the smallest normal angle, with stable face-index
-tie breaking. Unwelded seams and n-gon boundaries remain intact; vertex colors,
-object identity, attributes, groups, selection, and undo are preserved.
+`QuadrangulateMesh Planarity=1 Rectangularity=2` uses the public OpenNURBS
+converter. Consistently oriented pairs must share raw vertices; on meshes with
+more than two faces, the shared edge must be strictly longest in both triangles.
+Equal-length ties therefore stay triangular. `Rectangularity` bounds diagonal
+length ratios. The local defaults remain 1 degree and 2.
+
+Native angle normalization applies: values above 90 degrees reset to 2.5 degrees,
+and the accepted normal-angle limit is capped at 60 degrees. Native face order
+and n-gon changes are retained, except stale overlays whose boundaries no longer
+match their faces are discarded. Full-precision vertices, stored channels, object
+identity, attributes, object groups, selection and Undo/Redo are preserved.
+The [conversion record](../quad-conversion-qualification.json) covers fourteen
+public API references and explicit-option command replays; native UI prompts
+and defaults remain unqualified.
 
 `SwapMeshEdge` replaces a welded interior edge shared by exactly two
 consistently oriented triangle faces with their opposite diagonal. Use

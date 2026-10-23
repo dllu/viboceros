@@ -65,3 +65,34 @@ def methods_calibration(capture):
                 counts[key] = len(mesh['vertices']) if mesh is not None else None
         result.append(dict(id=row['id'], api_matches=matches, vertex_counts=counts))
     return result
+
+
+def spatial_calibration(capture):
+    """Compare cell indices through a bounded coordinate bijection; no input parity claim."""
+    import math
+    from .insert_point_spatial_sdk_cases import CASES
+    result=[]
+    for row in capture('insert_point_mesh_sdk_spatial')['results']:
+        case=CASES[row['id'].removesuffix('_spatial')];value=row['value']
+        if value['input']!=case:raise ValueError('spatial calibration recipe differs')
+        target=dict(vertices=case['vertices'],faces=case['captured_faces'])
+        source=next(r['value']for r in capture(case['capture'])['results']if r['id']==case['source_id'])
+        mesh=next(o['mesh']for o in source['after']if o['source']==0)
+        if Counter(cells(target))-Counter(cells(mesh)):raise ValueError('spatial calibration is not an output region')
+        wanted=sorted(cycle(f)for f in case['captured_faces']);n=len(case['vertices'])
+        variants=value['variants']
+        if set(variants)!={method+'_'+str(i)for method in ['closed','triangles']for i in range(n)}:
+            raise ValueError('incomplete spatial boundary origin calibration')
+        matching=[]
+        for key,entry in variants.items():
+            if 'error'in entry:raise ValueError('public spatial calibration failed')
+            for kind in ['mesh','quads']:
+                mesh=entry[kind]
+                if mesh is None:continue
+                mapping=[min(range(n),key=lambda i:math.dist(p,case['vertices'][i]))for p in mesh['vertices']]
+                if (len(mapping)!=n or len(set(mapping))!=n or
+                    any(math.dist(p,case['vertices'][i])>1e-6 for p,i in zip(mesh['vertices'],mapping))):
+                    continue
+                if sorted(cycle([mapping[i]for i in f])for f in mesh['faces'])==wanted:matching.append(key+'_'+kind)
+        result.append(dict(id=row['id'],matching_cells=sorted(matching)))
+    return result

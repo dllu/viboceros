@@ -1,0 +1,15 @@
+Capturing public quad conversion
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_quad_conversion.py", line 28, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_quad_conversion.py", line 23, in main
+    data=OracleClient(settings_scheme='VibocerosOracleQuadConversion20261025').run_rhino(payload,timeout=240)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2090, in run_rhino
+    _validate_response(response, "rhino", request)
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2542, in _validate_response
+    raise OracleError(f"{engine} probe failed: {error}")
+tools.rhino_oracle.client.OracleError: rhino probe failed: ValueError at operation quad_convert_square: start: unsupported oracle operation: mesh_quad_conversion

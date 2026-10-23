@@ -30,35 +30,47 @@ impl TriangleMesh {
                     return Err(invalid());
                 }
             }
-            let Some(boundary) = self.ngon_boundary(&ngon.faces) else {
-                return Err(invalid());
-            };
-            let Some(start) = boundary
-                .iter()
-                .position(|&vertex| vertex == ngon.vertices[0])
-            else {
-                return Err(invalid());
-            };
-            if boundary.len() != ngon.vertices.len()
-                || !ngon
-                    .vertices
-                    .iter()
-                    .copied()
-                    .zip(
-                        boundary
-                            .iter()
-                            .cycle()
-                            .skip(start)
-                            .take(boundary.len())
-                            .copied(),
-                    )
-                    .all(|(expected, actual)| expected == actual)
-            {
+            if !self.ngon_boundary_matches(ngon) {
                 return Err(invalid());
             }
         }
         self.ngons = ngons;
         Ok(self)
+    }
+
+    fn ngon_boundary_matches(&self, ngon: &MeshNgon) -> bool {
+        let Some(&first) = ngon.vertices.first() else {
+            return false;
+        };
+        let Some(boundary) = self.ngon_boundary(&ngon.faces) else {
+            return false;
+        };
+        let Some(start) = boundary.iter().position(|&v| v == first) else {
+            return false;
+        };
+        boundary.len() == ngon.vertices.len()
+            && ngon.vertices.iter().copied().eq(boundary
+                .iter()
+                .cycle()
+                .skip(start)
+                .take(boundary.len())
+                .copied())
+    }
+
+    /// Discard stale native overlays without copying mesh-sized arrays per n-gon.
+    pub(super) fn retain_boundary_matched_ngons(mut self, ngons: Vec<MeshNgon>) -> Self {
+        let mut occupied = BTreeSet::new();
+        self.ngons = ngons
+            .into_iter()
+            .filter(|g| {
+                if g.faces.iter().any(|f| occupied.contains(f)) || !self.ngon_boundary_matches(g) {
+                    return false;
+                }
+                occupied.extend(g.faces.iter().copied());
+                true
+            })
+            .collect();
+        self
     }
 
     pub(crate) fn ngon_from_faces(&self, faces: Vec<u32>) -> Option<MeshNgon> {

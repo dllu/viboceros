@@ -22,7 +22,7 @@ from .qualification_sources import with_shared_sources
 VARIANTS = dict(insert_point_holdouts_v2='holdouts', insert_point_ngons='ngons',
                 insert_point_mesh_shapes='shapes', insert_point_pick_depth='depth',
                 insert_point_pick_depth_v2='witnesses', insert_point_spatial_layouts='spatial', insert_point_mesh_sdk=None,
-                insert_point_mesh_sdk_origins='origins', insert_point_mesh_sdk_methods='methods')
+                insert_point_mesh_sdk_origins='origins', insert_point_mesh_sdk_methods='methods', insert_point_mesh_sdk_spatial='spatial')
 
 
 def query_for(family):
@@ -38,7 +38,7 @@ class InsertPointCommandTests(unittest.TestCase):
                        for flag, (family, _) in variants.items()]
         invocations += [('insert_point_mesh_sdk'+('_'+flag if flag else ''),
                          'generate_insert_point_mesh_sdk', ['--'+flag] if flag else [])
-                        for flag in ['', 'origins', 'methods']]
+                        for flag in ['', 'origins', 'methods', 'spatial']]
         for family, module, flags in invocations:
             paths = [HERE/folder/(family+'.json') for folder in ['fixtures', 'observations']]
             before = [p.read_bytes() for p in paths]
@@ -149,7 +149,7 @@ class InsertPointCommandTests(unittest.TestCase):
         self.assertEqual(report['spatial_cases'], 12)
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        self.assertEqual(sum(FAMILIES.values()), 161)
+        self.assertEqual(sum(FAMILIES.values()), 173)
         self.assertEqual(report['captured_command_workflows'], 113)
         self.assertEqual(len(lines), 166)
 
@@ -166,10 +166,16 @@ class InsertPointCommandTests(unittest.TestCase):
         self.assertTrue(all(r['vertex_counts']['lines_4_mesh'] is None for r in methods))
         for key in methods[0]['api_matches']:
             self.assertLess(sum(r['api_matches'][key] for r in methods), 16)
+        from .report_insert_point_calibration import spatial_calibration
+        spatial=spatial_calibration(capture)
+        self.assertEqual(len(spatial),12)
+        for r in spatial:
+            if 'left_high' in r['id'] or 'same_edge_warp' in r['id']:self.assertEqual(r['matching_cells'],[])
         report, _ = self.evidence()
+        self.assertEqual(report['spatial_sdk_calibration'],spatial)
         self.assertEqual(report['sdk_calibration'], rows)
         self.assertEqual(report['methods_calibration'], methods)
-        self.assertEqual(report['calibration_recipes'], 48)
+        self.assertEqual(report['calibration_recipes'], 60)
 
     def test_every_stage_requires_overlay_storage_and_finite_geometry_evidence(self):
         report, lines = self.evidence()
