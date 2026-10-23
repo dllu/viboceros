@@ -11,6 +11,7 @@ use curve_array::{ArrayCurveCommand, CurveArraySpacing, curve_array_samples};
 mod block_edit;
 mod block_reset_scale;
 pub mod blocks;
+pub mod component_seams;
 pub mod contour;
 pub mod crease;
 pub mod extract_control_polygon;
@@ -13969,7 +13970,7 @@ pub enum CommandError {
     #[error("none of the selected meshes contains vertices to weld or compact")]
     NoMeshVerticesToWeld,
 
-    #[error("WeldEdge supports selected meshes only")]
+    #[error("WeldEdge supports mesh and SubD edges only")]
     UnsupportedWeldEdgeGeometry,
 
     #[error("WeldEdge edge index {edge} is outside the selected mesh's edge count {edge_count}")]
@@ -13995,7 +13996,7 @@ pub enum CommandError {
     #[error("none of the selected meshes contains edges to unweld or unused vertices to compact")]
     NoMeshEdgesToUnweld,
 
-    #[error("UnweldEdge supports selected meshes only")]
+    #[error("UnweldEdge supports mesh and SubD edges only")]
     UnsupportedUnweldEdgeGeometry,
 
     #[error("UnweldEdge edge index {edge} is outside the selected mesh's edge count {edge_count}")]
@@ -14020,6 +14021,12 @@ pub enum CommandError {
 
     #[error("vertex seam edit exceeds the component or geometry resource budget")]
     VertexSeamResourceLimit,
+
+    #[error("edge seam geometry, tolerance or editability changed; select again")]
+    EdgeSeamStale,
+
+    #[error("edge seam edit exceeds the component or geometry resource budget")]
+    EdgeSeamResourceLimit,
 
     #[error("CombineIdenticalMeshVertices supports selected meshes only")]
     UnsupportedCombineIdenticalMeshVerticesGeometry,

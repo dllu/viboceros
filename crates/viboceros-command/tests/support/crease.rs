@@ -81,7 +81,7 @@ pub fn setup_from_family(row: &Value, family: &str) -> (Document, Vec<ObjectId>)
     let layer = doc
         .add_layer("Crease input", ColorRgb::new(0, 0, 255))
         .unwrap();
-    let mut ids = Vec::new();
+    let mut source_ids = std::collections::BTreeMap::new();
     for source in native["before"]
         .as_array()
         .unwrap()
@@ -97,8 +97,9 @@ pub fn setup_from_family(row: &Value, family: &str) -> (Document, Vec<ObjectId>)
         doc.set_objects_layer([id], layer).unwrap();
         doc.set_objects_color([id], Some(ColorRgb::new(17, 43, 91)))
             .unwrap();
-        ids.push(id);
+        source_ids.insert(source["source"].as_u64().unwrap() as usize, id);
     }
+    let ids = source_ids.into_values().collect::<Vec<_>>();
     doc.add_group(Some("Crease assembly".into()), ids.iter().copied())
         .unwrap();
     let current = doc
@@ -161,13 +162,13 @@ pub fn setup_from_family(row: &Value, family: &str) -> (Document, Vec<ObjectId>)
 }
 pub fn targets(doc: &Document, ids: &[ObjectId], v: &Value) -> Vec<CreaseTarget> {
     let mut targets = Vec::new();
-    for (source, row) in v["before"]
+    for row in v["before"]
         .as_array()
         .unwrap()
         .iter()
         .filter(|s| s["source"].is_number())
-        .enumerate()
     {
+        let source = row["source"].as_u64().unwrap() as usize;
         let id = ids[source];
         match doc.object(id).unwrap().geometry() {
             Geometry::SubD(_) => {

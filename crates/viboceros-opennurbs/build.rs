@@ -18,6 +18,7 @@ fn main() {
         "subd_archive_sharpness.h",
         "subd_append.h",
         "subd_crease.h",
+        "subd_remap.h",
         "subd_soft_crease.h",
         "subd_chains.h",
         "subd_control_mesh.h",

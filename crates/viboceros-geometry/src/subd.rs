@@ -16,6 +16,7 @@ mod extrusion_conversion;
 mod interpolation;
 mod mesh_conversion;
 mod primitives;
+mod seams;
 mod soft_crease;
 mod sphere;
 mod subdivision;
@@ -27,6 +28,7 @@ pub use chains::{SubDDirectedEdge, SubDEdgeChain};
 pub use control_net::SubDControlNetPriority;
 pub use cylinder::SubDCylinderCap;
 pub use mesh_conversion::SubDFromMeshOptions;
+pub use seams::SubDEdgeSeamResult;
 pub use sphere::SubDSphereStyle;
 pub use surface_conversion::SubDFromSurfaceMethod;
 

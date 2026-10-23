@@ -2,8 +2,10 @@
 from copy import deepcopy
 try:
     from .subdivide_probe import source,STRIP,CUBE,CUBE_FACES,SEAM
+    from .component_edge_seams_cases import CASES as EDGE_CASES,HOLDOUTS as EDGE_HOLDOUTS,CONTACTS as EDGE_CONTACTS,TOLERANCES as EDGE_TOLERANCES
 except (ImportError,ValueError):
     from subdivide_probe import source,STRIP,CUBE,CUBE_FACES,SEAM
+    from component_edge_seams_cases import CASES as EDGE_CASES,HOLDOUTS as EDGE_HOLDOUTS,CONTACTS as EDGE_CONTACTS,TOLERANCES as EDGE_TOLERANCES
 CASES={}
 CYCLE=[[0,1],[1,2],[2,3],[0,3]]
 CORNER=[[0,1],[0,3],[0,4]]
@@ -87,13 +89,13 @@ for shape,definition in [('cube',cube()),('boundary',source()),('corner',cube(cr
         definition=deepcopy(definition);definition['selected_vertices']=selection
         GRIPS['surface_move_'+shape+('_pair'if len(selection)>1 else'_one')]=dict(command='Move',sources=[definition],grips=True,edit_points=True,command_arguments='0,0,0 0.1,0.2,0.3')
 GRIPS['surface_move_cube_all']=dict(command='Move',sources=[cube(selected_vertices=list(range(8)))],grips=True,edit_points=True,command_arguments='0,0,0 0.1,0.2,0.3')
-ALL_CASES=dict(CASES,**dict(FOLLOWUP,**GRIPS))
+ALL_CASES=dict(CASES,**dict(FOLLOWUP,**dict(GRIPS,**dict(EDGE_CASES,**dict(EDGE_HOLDOUTS,**dict(EDGE_CONTACTS,**EDGE_TOLERANCES))))))
 
 
-def request(followup=False,grips=False):
+def request(followup=False,grips=False,edges=False,edge_holdouts=False,edge_contacts=False,edge_tolerances=False):
     return dict(protocol_version=1,iterations=1,
                 tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),
-                operations=[dict(op='component_seams_subd',id=name,case=name)for name in (GRIPS if grips else FOLLOWUP if followup else CASES)])
+                operations=[dict(op='component_seams_subd',id=name,case=name)for name in (EDGE_TOLERANCES if edge_tolerances else EDGE_CONTACTS if edge_contacts else EDGE_HOLDOUTS if edge_holdouts else EDGE_CASES if edges else GRIPS if grips else FOLLOWUP if followup else CASES)])
 
 
 def validate(operation):

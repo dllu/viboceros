@@ -2,6 +2,7 @@
 
 [Mesh commands](meshes.md) · [Stored vertex channels](../geometry/mesh-channels.md)
 
+`WeldEdge` and `UnweldEdge` also support [SubD edges](subd-edge-seams.md).
 `WeldVertices` and `UnweldVertex` also support [SubD vertices](vertex-seams.md),
 with their own tag, grip-selection and history behavior.
 

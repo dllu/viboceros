@@ -63,7 +63,6 @@
     "crates/viboceros-command/tests/crease_native.rs": "3308a327dfe0634e53ae9adf20515b6853019f359feef4dd530fdaec6aee7e35",
     "crates/viboceros-command/tests/crease_staging.rs": "4b8be389108fb13249d2cdfea4a2c012612c237ea3ef64df8cb2b49df19c155a",
     "crates/viboceros-command/src/component_selection.rs": "1b9d1cfd2f2f3c87febad0a1c158ce83907ed8abfc7fcaf4b249657496faaa61",
-    "crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
     "crates/viboceros-command/tests/support/subd_facets.rs": "ad0be23c4f68083f9b43a85266d0c9e8dcb8d82f00c90c88affa4849472781ff",
     "crates/viboceros-geometry/tests/support/subdivision_native.rs": "34bca1d5a0b7a9f1b6d7a7c5ab2686ab0e079a2b9590a545460c552fd66fb0e1",
     "tools/rhino_oracle/crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
@@ -252,6 +251,7 @@
     "ef5a14115bbdea43ae5d203f53de232e2aca02f5:tools/rhino_oracle/crease_probe.py": "036cfbf54a3c3c7e25d1d8232332ee5bdc81b87ad3aefd0d734f8a8171b246f8",
     "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/crease.rs": "abbf160b6928a2104d8fa832b9ddfa568c3ee6d0ed336a96e247da5a2bbd2b7f",
     "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/crease/tests.rs": "c9045649a4f7d491914042e726575ceeba52c7627a9e00263d7131313e0aa186",
-    "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/crease/tests/native.rs": "4f15d7edfec974dd2418708b360b4d93f1716c51286b865c2e7ebf8ed1d2529f"
+    "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/crease/tests/native.rs": "4f15d7edfec974dd2418708b360b4d93f1716c51286b865c2e7ebf8ed1d2529f",
+    "ef01d06d59850ddc046398db2df33f6498846e9b:crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4"
   }
 }

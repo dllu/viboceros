@@ -1,49 +1,13 @@
-//! Crease and vertex-seam getters share component picking and atomic admission.
+//! Crease and seam getters share component picking and atomic admission.
 use super::*;
 use viboceros_command::{
     CommandError, ComponentSelectionKind,
-    crease::{CreaseMode, CreaseOutcome, CreaseSelection, CreaseTarget},
-    vertex_seams::{VertexSeamEdit, VertexSeamMode, VertexSeamTarget},
+    component_seams::{ComponentSeamEdit, EdgeSeamMode, SeamTarget},
+    crease::{CreaseMode, CreaseSelection, CreaseTarget},
+    vertex_seams::VertexSeamMode,
 };
-#[derive(Clone, Copy, Debug)]
-pub(super) enum Mode {
-    Crease(CreaseMode),
-    Vertices(VertexSeamMode),
-}
-impl Mode {
-    pub(super) fn command(self) -> &'static str {
-        match self {
-            Self::Crease(m) => m.command(),
-            Self::Vertices(m) => m.command(),
-        }
-    }
-    fn eligible(self, kind: ComponentSelectionKind) -> bool {
-        match self {
-            Self::Crease(_) => eligible(kind),
-            Self::Vertices(_) => kind == ComponentSelectionKind::SubDVertex,
-        }
-    }
-    fn commit(
-        self,
-        doc: &mut Document,
-        targets: Vec<CreaseTarget>,
-    ) -> Result<CreaseOutcome, CommandError> {
-        match self {
-            Self::Crease(m) => CreaseSelection::prepare(doc, m, targets)?.commit(doc),
-            Self::Vertices(m) => {
-                let targets = targets.into_iter().filter_map(|t| match t {
-                    CreaseTarget::Vertex(object, index) => Some(VertexSeamTarget { object, index }),
-                    _ => None,
-                });
-                let out = VertexSeamEdit::prepare(doc, m, targets)?.commit(doc)?;
-                Ok(CreaseOutcome {
-                    message: out.message,
-                    processed_objects: out.released_objects,
-                })
-            }
-        }
-    }
-}
+mod mode;
+use mode::{Mode, Outcome};
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct Prompt {
@@ -57,6 +21,9 @@ impl Prompt {
                 "Select mesh edges or SubD edges and vertices; Enter applies, Esc cancels"
             }
             Mode::Vertices(_) => "Select SubD vertices or grips; Enter applies, Esc cancels",
+            Mode::Edges(_) => {
+                "Select a mesh topology edge or SubD edge; Enter applies, Esc cancels"
+            }
         }
     }
     pub(super) fn eligible(self, kind: ComponentSelectionKind) -> bool {
@@ -94,12 +61,14 @@ impl VibocerosApp {
             .filter(|o| matches!(o.geometry(), Geometry::SubD(_)))
             .map(|o| o.id())
             .collect::<std::collections::BTreeSet<_>>();
-        targets.extend(
-            self.document
-                .selected_control_points()
-                .filter(|(g, _)| subds.contains(&g.object))
-                .map(|(g, _)| CreaseTarget::Vertex(g.object, g.index)),
-        );
+        if mode.eligible(ComponentSelectionKind::SubDVertex) {
+            targets.extend(
+                self.document
+                    .selected_control_points()
+                    .filter(|(g, _)| subds.contains(&g.object))
+                    .map(|(g, _)| CreaseTarget::Vertex(g.object, g.index)),
+            );
+        }
         Ok(targets)
     }
     pub(super) fn try_start_crease(&mut self, input: &str) -> bool {
@@ -107,47 +76,9 @@ impl VibocerosApp {
         let Some(name) = words.next().map(|s| s.trim_start_matches(['_', '-'])) else {
             return false;
         };
-        let mode = if name.eq_ignore_ascii_case("Crease") {
-            Mode::Crease(CreaseMode::Add)
-        } else if name.eq_ignore_ascii_case("RemoveCrease") {
-            Mode::Crease(CreaseMode::Remove)
-        } else if ["WeldVertices", "WeldVertex", "WeldMeshVertex"]
-            .iter()
-            .any(|s| name.eq_ignore_ascii_case(s))
-        {
-            Mode::Vertices(VertexSeamMode::Weld)
-        } else if ["UnweldVertex", "UnweldVertices", "UnweldMeshVertex"]
-            .iter()
-            .any(|s| name.eq_ignore_ascii_case(s))
-        {
-            let mut modify_normals = true;
-            if let Some(option) = words.next() {
-                let (key, value) = if let Some(pair) = option.split_once('=') {
-                    pair
-                } else if let Some(value) = words.next() {
-                    (option, value)
-                } else {
-                    return false;
-                };
-                if !key
-                    .trim_start_matches('_')
-                    .eq_ignore_ascii_case("ModifyNormals")
-                {
-                    return false;
-                }
-                modify_normals = match value.trim_start_matches('_') {
-                    s if s.eq_ignore_ascii_case("Yes") => true,
-                    s if s.eq_ignore_ascii_case("No") => false,
-                    _ => return false,
-                };
-            }
-            Mode::Vertices(VertexSeamMode::Unweld { modify_normals })
-        } else {
+        let Some(mode) = Mode::parse(name, &mut words) else {
             return false;
         };
-        if words.next().is_some() {
-            return false;
-        }
         let targets = match self.crease_targets(mode) {
             Ok(t) => t,
             Err(e) => {
@@ -157,7 +88,7 @@ impl VibocerosApp {
         };
         // Existing object-selected point picking remains available for meshes
         // and SubDs; component-first input uses the shared multi-pick getter.
-        if matches!(mode, Mode::Vertices(_))
+        if matches!(mode, Mode::Vertices(_) | Mode::Edges(_))
             && targets.is_empty()
             && self.document.selected_object_count() != 0
             && !self.document.selectable_objects().any(|o| {
@@ -227,11 +158,17 @@ impl VibocerosApp {
         self.command_input.clear();
         true
     }
-    fn accept_crease(&mut self, out: CreaseOutcome) {
+    fn accept_crease(&mut self, out: Outcome) {
         self.component_selection
             .release_objects(&out.processed_objects);
         self.component_selection
             .release_grip_vertices(&self.document);
+        if let Err(e) = self
+            .component_selection
+            .retain_subd_edges(&self.document, out.retained_edges)
+        {
+            self.push_log(format!("Error: {e}"));
+        }
         self.push_log(out.message);
     }
     pub(super) fn cancel_crease(&mut self) {

@@ -3,7 +3,7 @@
 #[cfg(test)]
 mod tests;
 
-pub(super) fn union_faces(parents: &mut [usize], ranks: &mut [u8], first: usize, second: usize) {
+pub(crate) fn union_faces(parents: &mut [usize], ranks: &mut [u8], first: usize, second: usize) {
     let first_root = index_root(parents, first);
     let second_root = index_root(parents, second);
     if first_root == second_root {
@@ -21,7 +21,7 @@ pub(super) fn union_faces(parents: &mut [usize], ranks: &mut [u8], first: usize,
     }
 }
 
-pub(super) fn index_root(parents: &mut [usize], index: usize) -> usize {
+pub(crate) fn index_root(parents: &mut [usize], index: usize) -> usize {
     let mut root = index;
     while parents[root] != root {
         root = parents[root];
@@ -45,7 +45,7 @@ pub(super) fn union_indices_keep_later(parents: &mut [usize], first: usize, seco
     }
 }
 
-pub(super) fn union_indices_keep_earlier(parents: &mut [usize], first: usize, second: usize) {
+pub(crate) fn union_indices_keep_earlier(parents: &mut [usize], first: usize, second: usize) {
     let first = index_root(parents, first);
     let second = index_root(parents, second);
     if first < second {

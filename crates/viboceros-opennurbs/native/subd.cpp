@@ -164,6 +164,7 @@ extern "C" int vibo_subd_set_tags(const uint8_t* bytes,size_t count,int vertex,
   });
 }
 #include "subd_crease.h"
+#include "subd_remap.h"
 #include "subd_soft_crease.h"
 #include "subd_chains.h"
 #include "subd_sharpness.h"
@@ -197,6 +198,18 @@ extern "C" int vibo_subd_crease(const uint8_t* bytes,size_t count,
     require(changed && (crease==0 || crease==1),"Invalid crease operation");
     auto subd=vibo_subd::decode(bytes,count);
     *changed=vibo_subd::crease_components(*subd,edges,edge_count,vertices,vertex_count,crease!=0);
+    return extract(*subd);
+  });
+}
+extern "C" int vibo_subd_remap(const uint8_t* bytes,size_t count,const size_t* copies,size_t copy_count,
+    const size_t* retired,size_t retired_count,const size_t* edges,size_t edge_count,
+    const uint32_t* corners,size_t corner_count,int weld,size_t* changed,
+    ViboSubDResult** out,char* error,size_t capacity) {
+  if(changed) *changed=0;
+  return guard(out,error,capacity,[&] {
+    require(changed && (weld==0 || weld==1),"Invalid SubD seam remap mode");
+    auto subd=vibo_subd::decode(bytes,count);
+    *changed=vibo_subd::remap_vertices(*subd,copies,copy_count,retired,retired_count,edges,edge_count,corners,corner_count,weld!=0);
     return extract(*subd);
   });
 }

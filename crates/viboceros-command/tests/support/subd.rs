@@ -97,30 +97,119 @@ pub fn compare(subd: &SubD, native: &Value) -> Value {
         )
         .unwrap()
     };
-    let mut permutation = Vec::new();
-    let mut maximum = 0f64;
-    for (i, &p) in subd.control_points().iter().enumerate() {
-        let (j, distance) = points
+    let permutation = subd
+        .control_points()
+        .iter()
+        .map(|&p| {
+            points
+                .iter()
+                .enumerate()
+                .map(|(j, q)| (j, p.distance_to(point(q)).unwrap()))
+                .min_by(|a, b| a.1.total_cmp(&b.1))
+                .unwrap()
+                .0
+        })
+        .collect::<Vec<_>>();
+    let unique = permutation
+        .iter()
+        .copied()
+        .collect::<std::collections::BTreeSet<_>>()
+        .len()
+        == points.len();
+    let permutation = if unique {
+        permutation
+    } else {
+        control_map_with_face_incidence(subd, native)
+    };
+    compare_with_control_map(subd, native, &permutation)
+}
+
+/// Seam edits preserve source faces, allowing coincident controls to be
+/// distinguished by their incident face ordinals instead of their positions.
+pub fn control_map_with_face_incidence(subd: &SubD, native: &Value) -> Vec<usize> {
+    let mut a = vec![Vec::new(); subd.control_points().len()];
+    let mut b = vec![Vec::new(); native["points"].as_array().unwrap().len()];
+    assert_eq!(
+        subd.faces().len(),
+        native["faces"].as_array().unwrap().len()
+    );
+    for (f, face) in subd.faces().iter().enumerate() {
+        for &v in face {
+            a[v as usize].push(f);
+        }
+    }
+    for (f, face) in native["faces"].as_array().unwrap().iter().enumerate() {
+        for v in face.as_array().unwrap() {
+            b[v.as_u64().unwrap() as usize].push(f);
+        }
+    }
+    subd.control_points()
+        .iter()
+        .enumerate()
+        .map(|(i, &p)| {
+            native["points"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .enumerate()
+                .filter(|(j, _)| a[i] == b[*j])
+                .map(|(j, v)| {
+                    (
+                        j,
+                        p.distance_to(
+                            Point3::try_new(
+                                v[0].as_f64().unwrap(),
+                                v[1].as_f64().unwrap(),
+                                v[2].as_f64().unwrap(),
+                            )
+                            .unwrap(),
+                        )
+                        .unwrap(),
+                    )
+                })
+                .min_by(|a, b| a.1.total_cmp(&b.1))
+                .expect("matching incident faces")
+                .0
+        })
+        .collect()
+}
+
+/// Explicit correspondence supports coincident controls with distinct topology.
+pub fn compare_with_control_map(subd: &SubD, native: &Value, permutation: &[usize]) -> Value {
+    assert_eq!(native["valid"], true);
+    let points = native["points"].as_array().unwrap();
+    assert_eq!(subd.control_points().len(), points.len());
+    assert_eq!(permutation.len(), points.len());
+    assert_eq!(
+        permutation
             .iter()
-            .enumerate()
-            .map(|(j, q)| (j, p.distance_to(point(q)).unwrap()))
-            .min_by(|a, b| a.1.total_cmp(&b.1))
-            .unwrap();
-        assert!(
-            !permutation.contains(&j),
-            "control matching collided: actual={:?} native={points:?}",
-            subd.control_points()
-        );
-        permutation.push(j);
-        maximum = maximum.max(distance);
-        assert_eq!(
-            subd.vertex_tags()[i] as u64,
-            native["vertex_tags"][j].as_u64().unwrap()
+            .copied()
+            .collect::<std::collections::BTreeSet<_>>(),
+        (0..points.len()).collect()
+    );
+    let point = |p: &Value| {
+        Point3::try_new(
+            p[0].as_f64().unwrap(),
+            p[1].as_f64().unwrap(),
+            p[2].as_f64().unwrap(),
+        )
+        .unwrap()
+    };
+    let mut maximum = 0f64;
+    for (i, &j) in permutation.iter().enumerate() {
+        maximum = maximum.max(
+            subd.control_points()[i]
+                .distance_to(point(&points[j]))
+                .unwrap(),
         );
         maximum = maximum.max(
             subd.surface_points()[i]
                 .distance_to(point(&native["surface_points"][j]))
                 .unwrap(),
+        );
+        assert_eq!(
+            subd.vertex_tags()[i] as u64,
+            native["vertex_tags"][j].as_u64().unwrap()
         );
     }
     let cyclic = |face: Vec<usize>| {

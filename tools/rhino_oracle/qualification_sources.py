@@ -25,6 +25,8 @@ APPLICATION_MODULES = [
     'src/app/soft_crease/tests.rs',
     'src/app/soft_crease/tests/native.rs',
     'src/app/crease/tests/vertex_seams.rs',
+    'src/app/crease/mode.rs',
+    'src/app/crease/tests/edge_seams.rs',
     'src/viewport/soft_crease.rs',
     'src/app/drafting_input.rs',
     'src/app/interactive_cancel.rs',
@@ -68,6 +70,10 @@ SUBD_MODULES = [
     'crates/viboceros-geometry/src/subd/soft_crease.rs',
     'crates/viboceros-geometry/src/subd/interpolation.rs',
     'crates/viboceros-geometry/src/subd/interpolation/grips.rs',
+    'crates/viboceros-opennurbs/native/subd_remap.h',
+    'crates/viboceros-opennurbs/src/subd/remap.rs',
+    'crates/viboceros-geometry/src/subd/seams.rs',
+    'crates/viboceros-geometry/src/subd/seams/topology.rs',
 ]
 
 MESH_MODULES = [
@@ -90,7 +96,7 @@ MESH_MODULES = [
 
 
 def with_shared_sources(paths):
-    expanded = list(paths)
+    expanded = [p.replace('src/vertex_seams/arguments.rs', 'src/component_seams/arguments.rs') for p in paths]
     if 'crates/viboceros-document/src/control_points.rs' in expanded:
         expanded.append('crates/viboceros-document/src/control_points/geometry.rs')
     if any(p in expanded for p in ['src/viewport.rs', 'src/viewport/scene.rs',
@@ -103,7 +109,9 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/mesh_component_unweld.rs',
             'crates/viboceros-command/src/mesh_component_weld.rs',
             'crates/viboceros-command/src/vertex_seams.rs',
-            'crates/viboceros-command/src/vertex_seams/arguments.rs',
+            'crates/viboceros-command/src/component_seams.rs',
+            'crates/viboceros-command/src/component_seams/arguments.rs',
+            'crates/viboceros-command/src/component_seams/mode.rs',
             'crates/viboceros-command/src/extract_control_polygon.rs',
             'crates/viboceros-command/src/extract_control_polygon/options.rs',
             'crates/viboceros-command/src/extract_control_polygon/arguments.rs',
@@ -114,7 +122,7 @@ def with_shared_sources(paths):
         ])
     if 'src/app.rs' in expanded:
         expanded.extend(APPLICATION_MODULES)
-    if 'crates/viboceros-opennurbs/native/subd.cpp' in expanded:
+    if any(p in expanded for p in ['crates/viboceros-opennurbs/native/subd.cpp', 'crates/viboceros-geometry/src/subd.rs']):
         expanded.extend(SUBD_MODULES)
     if ('crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp' in expanded or
             'crates/viboceros-opennurbs/native/extrusion_queries.h' in expanded):

@@ -2,6 +2,7 @@ use super::*;
 use crate::app::tests::test_app;
 use crate::viewport::{ComponentClick, ComponentPick};
 use viboceros_geometry::SubD;
+mod edge_seams;
 mod native;
 mod vertex_seams;
 fn p(x: f64, y: f64, z: f64) -> Point3 {

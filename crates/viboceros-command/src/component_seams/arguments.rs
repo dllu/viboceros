@@ -1,16 +1,16 @@
-//! The two vertex commands use one validated selector and nearest-point picker.
+//! Seam commands share validated component selectors and nearest-point picking.
 use super::*;
 
 pub(crate) fn run(
     document: &mut Document,
-    mut mode: VertexSeamMode,
+    mut mode: SeamMode,
     arguments: &[&str],
 ) -> Result<String, CommandError> {
-    let usage = match mode {
-        VertexSeamMode::Weld => "WeldVertices (point|Vertices=All|Vertices=0,2,...)",
-        VertexSeamMode::Unweld { .. } => {
-            "UnweldVertex (point|Vertices=All|Vertices=0,2,...) [ModifyNormals=Yes|No]"
-        }
+    let usage = mode.usage();
+    let (option_name, option_alias) = if mode.is_edge() {
+        ("Edges", "EdgeIndices")
+    } else {
+        ("Vertices", "VertexIndices")
     };
     let mut indices = None;
     let mut normals = None;
@@ -20,7 +20,7 @@ pub(crate) fn run(
         let arg = arguments[i];
         let option = if let Some((name, value)) = arg.split_once('=') {
             Some((name, value, 1))
-        } else if ["Vertices", "VertexIndices", "ModifyNormals"]
+        } else if [option_name, option_alias, "ModifyNormals"]
             .iter()
             .any(|name| option_name_eq(arg, name))
         {
@@ -33,14 +33,11 @@ pub(crate) fn run(
             None
         };
         if let Some((name, value, used)) = option {
-            if (option_name_eq(name, "Vertices") || option_name_eq(name, "VertexIndices"))
+            if (option_name_eq(name, option_name) || option_name_eq(name, option_alias))
                 && indices.is_none()
             {
                 indices = Some(parse_surface_face_indices(value, usage)?);
-            } else if option_name_eq(name, "ModifyNormals")
-                && matches!(mode, VertexSeamMode::Unweld { .. })
-                && normals.is_none()
-            {
+            } else if option_name_eq(name, "ModifyNormals") && !mode.weld() && normals.is_none() {
                 normals = Some(parse_yes_no(value).ok_or(CommandError::Usage(usage))?);
             } else {
                 return Err(CommandError::Usage(usage));
@@ -52,10 +49,13 @@ pub(crate) fn run(
         }
     }
     if let Some(modify_normals) = normals {
-        mode = VertexSeamMode::Unweld { modify_normals };
+        mode = mode.with_normals(modify_normals);
     }
     let bare = indices.is_none() && positional.is_empty();
     if bare {
+        if mode.is_edge() {
+            return Err(CommandError::Usage(usage));
+        }
         let available = available(document);
         let targets = document
             .selected_control_points()
@@ -65,7 +65,7 @@ pub(crate) fn run(
                         .object(g.object)
                         .is_some_and(|o| matches!(o.geometry(), Geometry::SubD(_)))
             })
-            .map(|(g, _)| VertexSeamTarget {
+            .map(|(g, _)| SeamTarget {
                 object: g.object,
                 index: g.index,
             })
@@ -73,7 +73,7 @@ pub(crate) fn run(
         if targets.is_empty() {
             return Err(CommandError::Usage(usage));
         }
-        return VertexSeamEdit::prepare(document, mode, targets)?
+        return ComponentSeamEdit::prepare(document, mode, targets)?
             .apply(document)
             .map(|out| out.message);
     }
@@ -99,7 +99,7 @@ pub(crate) fn run(
     let mut targets = Vec::new();
     if let Some(selection) = indices {
         for object in &sources {
-            let count = vertex_count(object.geometry(), mode)?;
+            let count = component_count(object.geometry(), mode)?;
             let indices = match &selection {
                 SurfaceFaceIndices::All => (0..count).collect(),
                 SurfaceFaceIndices::Indices(values) => values.clone(),
@@ -107,7 +107,7 @@ pub(crate) fn run(
             if let Some(&index) = indices.iter().find(|&&i| i >= count) {
                 return Err(mode.index_error(index, count));
             }
-            targets.extend(indices.into_iter().map(|index| VertexSeamTarget {
+            targets.extend(indices.into_iter().map(|index| SeamTarget {
                 object: object.id(),
                 index,
             }));
@@ -121,7 +121,7 @@ pub(crate) fn run(
                 if best.is_none_or(|(d, _)| distance < d) {
                     best = Some((
                         distance,
-                        VertexSeamTarget {
+                        SeamTarget {
                             object: object.id(),
                             index,
                         },
@@ -130,9 +130,44 @@ pub(crate) fn run(
                 Ok(())
             };
             match object.geometry() {
+                Geometry::Mesh(mesh) if mode.is_edge() => {
+                    for (i, line) in mesh
+                        .wireframe_lines(document.tolerance())?
+                        .into_iter()
+                        .enumerate()
+                    {
+                        consider(i, line.closest_point(target, document.tolerance())?)?;
+                    }
+                }
                 Geometry::Mesh(mesh) => {
                     for (i, p) in mesh.topology_vertex_points().into_iter().enumerate() {
                         consider(i, p)?;
+                    }
+                }
+                Geometry::SubD(subd) if mode.is_edge() => {
+                    let lines = if document.grip_mode(object.id()).is_some() {
+                        subd.edges()
+                            .iter()
+                            .map(|&[a, b]| {
+                                vec![
+                                    subd.control_points()[a as usize],
+                                    subd.control_points()[b as usize],
+                                ]
+                            })
+                            .collect()
+                    } else {
+                        subd.display_edge_polylines()?
+                    };
+                    for (i, points) in lines.into_iter().enumerate() {
+                        for pair in points.windows(2) {
+                            let point = if pair[0].is_near(pair[1], document.tolerance()) {
+                                pair[0]
+                            } else {
+                                LineSegment::try_new(pair[0], pair[1], document.tolerance())?
+                                    .closest_point(target, document.tolerance())?
+                            };
+                            consider(i, point)?;
+                        }
                     }
                 }
                 Geometry::SubD(subd) => {
@@ -155,7 +190,7 @@ pub(crate) fn run(
         .iter()
         .filter(|o| matches!(o.geometry(), Geometry::Mesh(_)))
         .count();
-    let mut plan = VertexSeamEdit::prepare(document, mode, targets)?;
+    let mut plan = ComponentSeamEdit::prepare(document, mode, targets)?;
     plan.source_count = count;
     plan.apply(document).map(|out| out.message)
 }

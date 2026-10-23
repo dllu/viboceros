@@ -122,6 +122,25 @@ impl ComponentSelection {
         self.order.clear();
         self.clear_choices();
     }
+    /// Store fresh witnesses for surviving edge components after a topology edit.
+    pub(super) fn retain_subd_edges(
+        &mut self,
+        document: &Document,
+        edges: Vec<(ObjectId, usize)>,
+    ) -> Result<(), &'static str> {
+        self.apply(
+            document,
+            edges
+                .into_iter()
+                .map(|(object, index)| ComponentPick {
+                    object,
+                    index,
+                    kind: ComponentSelectionKind::SubDEdge,
+                })
+                .collect(),
+            ComponentAction::Add,
+        )
+    }
     pub(super) fn clear_choices(&mut self) {
         self.candidates.clear();
         self.choice_action = ComponentAction::Add;

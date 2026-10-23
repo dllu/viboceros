@@ -37,6 +37,5 @@ cases and an unstable all-selected cube solve retain explicit native gaps;
 Viboceros meets the requested selected stations and uses exact whole-object
 affine transforms.
 
-SubD `WeldEdge` and `UnweldEdge` remain unimplemented. Their 26 captures are
-diagnostics: the weld automation made no pure-SubD edit, and unwelding can split
-crease topology. `Crease` and `RemoveCrease` remain available for tag-only edits.
+[SubD edge seams](subd-edge-seams.md) support `WeldEdge` and `UnweldEdge` for
+topology edits. `Crease` and `RemoveCrease` remain available for tag edits.

@@ -91,6 +91,8 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
                     continue
                 if isinstance(g,G.SubD):
                     vv=vertices(g);mapping={int(v.Id):i for i,v in enumerate(vv)}
+                    edge_pairs=d.get('seed_edges',[])if seed else d.get('edges',[])
+                    seen_pairs=set()
                     if case.get('grips'):
                         if case.get('edit_points'):
                             obj.Select(True);R.RhinoApp.RunScript('_EditPtOn',False)
@@ -100,11 +102,18 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
                     else:
                         for i in d.get('selected_vertices',[]):
                             if not obj.SelectSubObject(vv[i].ComponentIndex(),True,True,False):raise ValueError('vertex preselection failed')
-                    for edge in g.Edges:
+                    for edge_index,edge in enumerate(g.Edges):
                         pair=sorted([mapping[int(edge.VertexFrom.Id)],mapping[int(edge.VertexTo.Id)]])
-                        if pair in d.get('edges',[]):
+                        match=tuple(pair)if pair in edge_pairs else None
+                        if case.get('edges_by_position')and not seed:
+                            points=sorted([host['_xyz'](edge.VertexFrom.ControlNetPoint),host['_xyz'](edge.VertexTo.ControlNetPoint)])
+                            match=next((tuple(sorted(p))for p in edge_pairs if points==sorted([d['vertices'][p[0]],d['vertices'][p[1]]])),None)
+                        if 'selected_edge_indices'in d and not seed:match=(edge_index,)if edge_index in d['selected_edge_indices']else None
+                        if match is not None and(not case.get('one_edge_per_pair')or match not in seen_pairs):
                             if not obj.SelectSubObject(edge.ComponentIndex(),True,True,False):raise ValueError('edge preselection failed')
+                            seen_pairs.add(match)
                 else:
+                    if seed:continue
                     for i in d.get('selected_vertices',[]):
                         if not obj.SelectSubObject(G.ComponentIndex(G.ComponentIndexType.MeshTopologyVertex,i),True,True,False):raise ValueError('mesh vertex preselection failed')
                     for i in range(g.TopologyEdges.Count):
@@ -113,6 +122,27 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
                         if any(sorted([x,y])in d.get('edges',[])for x in a for y in b):
                             if not obj.SelectSubObject(G.ComponentIndex(G.ComponentIndexType.MeshTopologyEdge,i),True,True,False):raise ValueError('mesh edge preselection failed')
         if not discovery:
+            if case.get('seed_unweld'):
+                R.RhinoApp.RunScript('_-UnweldEdge _ModifyNormals=_Yes _Enter',False)
+                select_components(seed=True)
+                seeded=[]
+                def seed_ended(sender,event):
+                    if event.CommandEnglishName=='UnweldEdge':seeded.append(str(event.CommandResult))
+                R.Commands.Command.EndCommand+=seed_ended
+                try:R.RhinoApp.RunScript('_-UnweldEdge _Enter _Cancel _Cancel',False)
+                finally:R.Commands.Command.EndCommand-=seed_ended
+                if seeded!=['Success']:raise ValueError('edge cut seed failed: '+str(seeded))
+                for o in doc.Objects:o.UnselectAllSubObjects();o.Select(False)
+            for key,d in zip(ids,case['sources']):
+                if 'offset_vertices'not in d:continue
+                g=doc.Objects.FindId(key).Geometry.Duplicate()
+                try:
+                    vv=vertices(g);delta=d['offset']
+                    for i in d['offset_vertices']:
+                        p=vv[i].ControlNetPoint;vv[i].ControlNetPoint=G.Point3d(p.X+delta[0],p.Y+delta[1],p.Z+delta[2])
+                    g.UpdateAllTagsAndSectorCoefficients()
+                    if not doc.Objects.Replace(key,g):raise ValueError('offset source replacement failed')
+                finally:g.Dispose()
             for key,d in zip(ids,case['sources']):
                 if not d.get('soft'):continue
                 obj=doc.Objects.FindId(key);g=obj.Geometry;vv=vertices(g);mapping={int(v.Id):i for i,v in enumerate(vv)}

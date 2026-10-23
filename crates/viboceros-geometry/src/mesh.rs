@@ -64,7 +64,7 @@ use radial::{
 };
 mod native;
 mod rebuild;
-mod union_find;
+pub(crate) mod union_find;
 mod unweld;
 mod vertex_channels;
 mod vertex_unweld;

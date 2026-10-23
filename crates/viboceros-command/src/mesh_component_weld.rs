@@ -1,154 +1,22 @@
-//! Selected mesh welding, component selectors and atomic document edits.
+//! Seam command registrations share component staging and parsing.
 use super::*;
-
-const WELD_EDGE_USAGE: &str = "WeldEdge (point|Edges=All|Edges=0,2,...)";
-
-#[derive(Clone, Debug, PartialEq)]
-enum WeldEdgeSelection {
-    Point(Point3),
-    Edges(SurfaceFaceIndices),
-}
-
 pub(super) struct WeldEdgeCommand;
-
 impl Command for WeldEdgeCommand {
     fn name(&self) -> &'static str {
         "WeldEdge"
     }
-
     fn aliases(&self) -> &'static [&'static str] {
         &["WeldMeshEdge"]
     }
-
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selection = parse_weld_edge_arguments(arguments)?;
-        let sources =
-            selected_mesh_topology_sources(document, || CommandError::UnsupportedWeldEdgeGeometry)?;
-
-        let selections = selected_weld_edges(&sources, &selection, document.tolerance())?;
-        let mesh_count = sources.len();
-        let mut selected_edge_count = 0_usize;
-        let mut welded_edge_count = 0_usize;
-        let mut removed_vertex_count = 0_usize;
-        let mut replacements = Vec::new();
-        for (source_index, edge_indices) in selections {
-            selected_edge_count += edge_indices.len();
-            let source = &sources[source_index];
-            let (welded, welded_edges) = source
-                .mesh
-                .welded_topology_edges_with_normal_generation(&edge_indices, true)?;
-            welded_edge_count += welded_edges;
-            removed_vertex_count += source.mesh.vertices().len() - welded.vertices().len();
-            // Generating display normals alone is not a topology edit and
-            // must not add a history entry for an already welded mesh.
-            if welded.vertices() != source.mesh.vertices() || welded.faces() != source.mesh.faces()
-            {
-                replacements.push((source.id, Geometry::Mesh(welded)));
-            }
-        }
-        if replacements.is_empty() {
-            return Err(CommandError::NoSelectedMeshEdgesToWeld);
-        }
-        let changed_mesh_count = document.replace_object_geometries(replacements)?;
-        Ok(format!(
-            "Processed {selected_edge_count} selected mesh edge(s) in {changed_mesh_count} changed mesh(es): welded {welded_edge_count} divided edge(s) and removed {removed_vertex_count} raw vertex occurrence(s); {} mesh(es) unchanged",
-            mesh_count - changed_mesh_count
-        ))
+        component_seams::run(
+            document,
+            component_seams::EdgeSeamMode::Weld.into(),
+            arguments,
+        )
     }
 }
-
-fn selected_weld_edges(
-    sources: &[MeshTopologySource<'_>],
-    selection: &WeldEdgeSelection,
-    tolerance: Tolerance,
-) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
-    match selection {
-        WeldEdgeSelection::Edges(selection) => sources
-            .iter()
-            .enumerate()
-            .map(|(source_index, source)| {
-                let edge_count = source.mesh.topology().edge_count();
-                let edge_indices = match selection {
-                    SurfaceFaceIndices::All => (0..edge_count).collect(),
-                    SurfaceFaceIndices::Indices(indices) => {
-                        if let Some(&edge) = indices.iter().find(|&&edge| edge >= edge_count) {
-                            return Err(CommandError::WeldEdgeIndexOutOfRange { edge, edge_count });
-                        }
-                        indices.clone()
-                    }
-                };
-                Ok((source_index, edge_indices))
-            })
-            .collect(),
-        WeldEdgeSelection::Point(target) => {
-            let mut best = None;
-            for (source_index, source) in sources.iter().enumerate() {
-                for (edge_index, edge) in source
-                    .mesh
-                    .wireframe_lines(tolerance)?
-                    .into_iter()
-                    .enumerate()
-                {
-                    let closest = edge.closest_point(*target, tolerance)?;
-                    let distance = closest.distance_to(*target)?;
-                    if best.is_none_or(|(best_distance, _, _)| distance < best_distance) {
-                        best = Some((distance, source_index, edge_index));
-                    }
-                }
-            }
-            let Some((_, source, edge)) = best else {
-                return Err(CommandError::NoSelectedMeshEdgesToWeld);
-            };
-            Ok(vec![(source, vec![edge])])
-        }
-    }
-}
-
-fn parse_weld_edge_arguments(arguments: &[&str]) -> Result<WeldEdgeSelection, CommandError> {
-    let mut edge_selection = None;
-    let mut positional = Vec::new();
-    let mut index = 0;
-    while index < arguments.len() {
-        let argument = arguments[index];
-        let option = if let Some((name, value)) = argument.split_once('=') {
-            Some((name, value, 1))
-        } else if option_name_eq(argument, "Edges") || option_name_eq(argument, "EdgeIndices") {
-            let value = arguments
-                .get(index + 1)
-                .ok_or(CommandError::Usage(WELD_EDGE_USAGE))?;
-            Some((argument, *value, 2))
-        } else {
-            None
-        };
-        if let Some((name, value, consumed)) = option {
-            if (option_name_eq(name, "Edges") || option_name_eq(name, "EdgeIndices"))
-                && edge_selection.is_none()
-            {
-                edge_selection = Some(parse_surface_face_indices(value, WELD_EDGE_USAGE)?);
-            } else {
-                return Err(CommandError::Usage(WELD_EDGE_USAGE));
-            }
-            index += consumed;
-        } else {
-            positional.push(argument);
-            index += 1;
-        }
-    }
-    if let Some(edges) = edge_selection {
-        require_consumed(&positional, 0, WELD_EDGE_USAGE)?;
-        Ok(WeldEdgeSelection::Edges(edges))
-    } else {
-        if positional.is_empty() {
-            return Err(CommandError::Usage(WELD_EDGE_USAGE));
-        }
-        let (point, consumed) = parse_point(&positional)?;
-        require_consumed(&positional, consumed, WELD_EDGE_USAGE)?;
-        Ok(WeldEdgeSelection::Point(point))
-    }
-}
-
 pub(super) struct WeldVerticesCommand;
-
 impl Command for WeldVerticesCommand {
     fn name(&self) -> &'static str {
         "WeldVertices"

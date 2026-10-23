@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_objects_exact",
+      "case": "edge_weld_objects_exact"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_objects_one_side",
+      "case": "edge_weld_objects_one_side"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_objects_cooriented",
+      "case": "edge_weld_objects_cooriented"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_objects_near",
+      "case": "edge_weld_objects_near"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_objects_gap",
+      "case": "edge_weld_objects_gap"
+    }
+  ]
+}

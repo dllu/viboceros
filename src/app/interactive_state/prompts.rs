@@ -617,13 +617,13 @@ impl InteractiveCommand {
                 "FillMeshHole: pick a closed naked boundary on a selected mesh (Esc to cancel)"
             }
             Self::WeldEdge => {
-                "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
+                "WeldEdge: pick a mesh topology edge or SubD boundary edge on a selected object (Esc to cancel)"
             }
             Self::WeldVertices => {
                 "WeldVertices: pick a mesh topology vertex or SubD vertex on a selected object (Esc to cancel)"
             }
             Self::UnweldEdge { .. } => {
-                "UnweldEdge: pick a topology edge on a selected mesh (Esc to cancel)"
+                "UnweldEdge: pick a mesh topology edge or SubD edge on a selected object (Esc to cancel)"
             }
             Self::UnweldVertex { .. } => {
                 "UnweldVertex: pick a mesh topology vertex or SubD vertex on a selected object (Esc to cancel)"

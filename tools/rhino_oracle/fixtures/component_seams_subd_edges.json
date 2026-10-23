@@ -1,0 +1,181 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_strip_smooth_modify",
+      "case": "edge_unweld_strip_smooth_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_strip_crease_modify",
+      "case": "edge_unweld_strip_crease_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_strip_corner_modify",
+      "case": "edge_unweld_strip_corner_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_cube_smooth_cycle_modify",
+      "case": "edge_unweld_cube_smooth_cycle_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_cube_crease_cycle_modify",
+      "case": "edge_unweld_cube_crease_cycle_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_cube_open_path_modify",
+      "case": "edge_unweld_cube_open_path_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_panel_path_modify",
+      "case": "edge_unweld_panel_path_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_panel_cross_modify",
+      "case": "edge_unweld_panel_cross_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_panel_loop_modify",
+      "case": "edge_unweld_panel_loop_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_panel_disjoint_modify",
+      "case": "edge_unweld_panel_disjoint_modify"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_strip_smooth_preserve",
+      "case": "edge_unweld_strip_smooth_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_strip_crease_preserve",
+      "case": "edge_unweld_strip_crease_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_strip_corner_preserve",
+      "case": "edge_unweld_strip_corner_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_cube_smooth_cycle_preserve",
+      "case": "edge_unweld_cube_smooth_cycle_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_cube_crease_cycle_preserve",
+      "case": "edge_unweld_cube_crease_cycle_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_cube_open_path_preserve",
+      "case": "edge_unweld_cube_open_path_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_panel_path_preserve",
+      "case": "edge_unweld_panel_path_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_panel_cross_preserve",
+      "case": "edge_unweld_panel_cross_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_panel_loop_preserve",
+      "case": "edge_unweld_panel_loop_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_panel_disjoint_preserve",
+      "case": "edge_unweld_panel_disjoint_preserve"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_strip_pair",
+      "case": "edge_weld_strip_pair"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_strip_pair_one_side",
+      "case": "edge_weld_strip_pair_one_side"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_strip_corner_pair",
+      "case": "edge_weld_strip_corner_pair"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_strip_corner_pair_one_side",
+      "case": "edge_weld_strip_corner_pair_one_side"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_cube_cycle",
+      "case": "edge_weld_cube_cycle"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_cube_cycle_one_side",
+      "case": "edge_weld_cube_cycle_one_side"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_cube_one_pair",
+      "case": "edge_weld_cube_one_pair"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_cube_one_pair_one_side",
+      "case": "edge_weld_cube_one_pair_one_side"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_cube_partial_loop",
+      "case": "edge_weld_cube_partial_loop"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_cube_partial_loop_one_side",
+      "case": "edge_weld_cube_partial_loop_one_side"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_mixed",
+      "case": "edge_unweld_mixed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_mixed",
+      "case": "edge_weld_mixed"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_unweld_mixed_reverse",
+      "case": "edge_unweld_mixed_reverse"
+    },
+    {
+      "op": "component_seams_subd",
+      "id": "edge_weld_mixed_reverse",
+      "case": "edge_weld_mixed_reverse"
+    }
+  ]
+}
