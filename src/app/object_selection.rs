@@ -14,6 +14,8 @@ mod mesh_polyline_tests;
 mod modify_radius;
 #[cfg(test)]
 mod planar_mesh_tests;
+#[cfg(test)]
+mod rebuild_normals_tests;
 mod reduce_polyline;
 #[cfg(test)]
 mod triangulate_tests;

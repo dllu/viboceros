@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_triangle",
+      "case": "rebuild_normals_triangle"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_quad",
+      "case": "rebuild_normals_quad"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_zero",
+      "case": "rebuild_normals_zero"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_custom",
+      "case": "rebuild_normals_custom"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_warp",
+      "case": "rebuild_normals_warp"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_fold",
+      "case": "rebuild_normals_fold"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_seam",
+      "case": "rebuild_normals_seam"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_opposed",
+      "case": "rebuild_normals_opposed"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_unused",
+      "case": "rebuild_normals_unused"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_tiny",
+      "case": "rebuild_normals_tiny"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_channels",
+      "case": "rebuild_normals_channels"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_ngon",
+      "case": "rebuild_normals_ngon"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_nonmanifold",
+      "case": "rebuild_normals_nonmanifold"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_collapsed",
+      "case": "rebuild_normals_collapsed"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_reversed",
+      "case": "rebuild_normals_reversed"
+    }
+  ]
+}

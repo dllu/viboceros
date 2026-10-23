@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_triangle",
+      "case": "rebuild_normals_command_triangle"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_quad",
+      "case": "rebuild_normals_command_quad"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_custom",
+      "case": "rebuild_normals_command_custom"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_warp",
+      "case": "rebuild_normals_command_warp"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_fold",
+      "case": "rebuild_normals_command_fold"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_seam",
+      "case": "rebuild_normals_command_seam"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_opposed",
+      "case": "rebuild_normals_command_opposed"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_unused",
+      "case": "rebuild_normals_command_unused"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_tiny",
+      "case": "rebuild_normals_command_tiny"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_channels",
+      "case": "rebuild_normals_command_channels"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_ngon",
+      "case": "rebuild_normals_command_ngon"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_nonmanifold",
+      "case": "rebuild_normals_command_nonmanifold"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_reversed",
+      "case": "rebuild_normals_command_reversed"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_mixed",
+      "case": "rebuild_normals_command_mixed"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_two",
+      "case": "rebuild_normals_command_two"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_postselect",
+      "case": "rebuild_normals_command_postselect"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_cancel",
+      "case": "rebuild_normals_command_cancel"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_command_cancel_picks",
+      "case": "rebuild_normals_command_cancel_picks"
+    }
+  ]
+}

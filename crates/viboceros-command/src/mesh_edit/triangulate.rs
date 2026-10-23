@@ -72,26 +72,11 @@ impl TriangulateMeshCommand {
             .map(|(_, _, quad_count, _)| quad_count)
             .sum::<usize>();
         let unchanged = staged.len() - changed_mesh_count;
-        let ids = staged.iter().map(|(id, _, _, _)| *id).collect::<Vec<_>>();
-        let released = document
-            .selected_objects()
-            .filter(|object| postselected || !matches!(object.geometry(), Geometry::Mesh(_)))
-            .map(|object| object.id())
-            .collect::<Vec<_>>();
-        document.release_command_selection_on_history_replay(released)?;
-        if postselected {
-            document.clear_selection();
-        }
-        document.replace_object_geometries_with_history(
-            staged
-                .into_iter()
-                .map(|(id, mesh, _, _)| (id, Geometry::Mesh(mesh))),
-            viboceros_document::ReplacementHistory::EveryReplacement,
+        super::replacement::replace_meshes(
+            document,
+            staged.into_iter().map(|(id, mesh, _, _)| (id, mesh)),
+            postselected,
         )?;
-        document.move_objects_to_end_in_order(ids.iter().copied())?;
-        if !postselected {
-            document.release_transform_selection_on_history_replay(ids)?;
-        }
         Ok(format!(
             "Triangulated {converted_quad_count} quadrilateral face(s) in {changed_mesh_count} mesh(es); {unchanged} mesh(es) unchanged"
         ))

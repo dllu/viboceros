@@ -6,6 +6,25 @@ use crate::{Real, Vector3};
 mod tests;
 
 impl TriangleMesh {
+    /// Reconstruct stored vertex normals through public OpenNURBS face and
+    /// vertex calculations, regardless of an existing or absent channel.
+    /// Unused vertices are removed in source order, remapping their channels
+    /// and n-gons. Face winding and coincident referenced raw seams survive.
+    /// Collapsed faces contribute zero; cancelling sums use the world Z axis.
+    pub fn rebuilt_normals(&self) -> Result<Self, GeometryError> {
+        let (mesh, _) = self.culled_unused_vertices();
+        let data = viboceros_opennurbs::recompute_mesh_normals(&mesh.open_nurbs_data())?;
+        let normals = data.vertex_normals.ok_or(GeometryError::Degenerate {
+            context: "missing rebuilt mesh normals",
+        })?;
+        mesh.try_with_vertex_normals(Some(
+            normals
+                .into_iter()
+                .map(Vector3::try_from)
+                .collect::<Result<_, _>>()?,
+        ))
+    }
+
     /// Computes unit vertex normals from raw vertex sharing without changing
     /// the stored normal channel. Each incident polygon contributes its unit
     /// normal once, including non-planar quads as one polygon.

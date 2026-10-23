@@ -218,7 +218,8 @@ mod mesh_face_filter;
 use mesh_edit::{
     CollapseMeshEdgeCommand, DeleteFacesCommand, ExtractDuplicateMeshFacesCommand,
     ExtractMeshFacesCommand, ExtractNonManifoldMeshEdgesCommand, FillMeshHoleCommand,
-    FillMeshHolesCommand, SplitMeshEdgeCommand, SwapMeshEdgeCommand, TriangulateMeshCommand,
+    FillMeshHolesCommand, RebuildMeshNormalsCommand, SplitMeshEdgeCommand, SwapMeshEdgeCommand,
+    TriangulateMeshCommand,
 };
 mod mesh_ngon_commands;
 mod polygon_count;
@@ -1762,6 +1763,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(UnifyMeshNormalsCommand)
+            .expect("unique built-in command");
+        registry
+            .register(RebuildMeshNormalsCommand)
             .expect("unique built-in command");
         registry
             .register(WeldCommand)
@@ -13993,6 +13997,8 @@ pub enum CommandError {
 
     #[error("UnifyMeshNormals supports selected meshes only")]
     UnsupportedUnifyMeshNormalsGeometry,
+    #[error("RebuildMeshNormals requires selected mesh objects")]
+    UnsupportedRebuildMeshNormalsGeometry,
 
     #[error("Weld supports selected meshes only")]
     UnsupportedWeldGeometry,

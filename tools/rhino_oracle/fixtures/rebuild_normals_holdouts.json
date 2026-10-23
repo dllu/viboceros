@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_holdout_channels",
+      "case": "rebuild_normals_holdout_channels"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_holdout_seams",
+      "case": "rebuild_normals_holdout_seams"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_holdout_ngons",
+      "case": "rebuild_normals_holdout_ngons"
+    },
+    {
+      "op": "rebuild_mesh_normals_sdk",
+      "id": "rebuild_normals_holdout_nonunit",
+      "case": "rebuild_normals_holdout_nonunit"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_holdout_command_channels",
+      "case": "rebuild_normals_holdout_command_channels"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_holdout_command_seams",
+      "case": "rebuild_normals_holdout_command_seams"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_holdout_command_ngons",
+      "case": "rebuild_normals_holdout_command_ngons"
+    },
+    {
+      "op": "rebuild_mesh_normals_command",
+      "id": "rebuild_normals_holdout_command_noop",
+      "case": "rebuild_normals_holdout_command_noop"
+    }
+  ]
+}

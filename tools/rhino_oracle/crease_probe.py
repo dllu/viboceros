@@ -76,6 +76,7 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
                 m.Normals.ComputeNormals()
                 for uv in d.get('texture_coordinates',[]):m.TextureCoordinates.Add(float(uv[0]),float(uv[1]))
                 for i,n in enumerate(d.get('normals',[])):m.Normals.SetNormal(i,G.Vector3f(*n))
+                if d.get('clear_normals'):m.Normals.Clear();m.FaceNormals.Clear()
                 a=R.DocObjects.ObjectAttributes();a.LayerIndex=layers[0];a.Name='Input '+str(index);a.ObjectColor=S.Drawing.Color.FromArgb(17,43,91);a.ColorSource=R.DocObjects.ObjectColorSource.ColorFromObject;a.AddToGroup(group)
                 if d['kind']=='subd':
                     g=G.SubD.CreateFromMesh(m)

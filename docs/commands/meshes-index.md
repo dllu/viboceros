@@ -24,6 +24,7 @@
 - [SubDCylinder](subd-cylinder.md): circle bases, caps, face counts and spatial axes.
 - [PlanarMesh from planar curve regions](planar-mesh.md)
 - [TriangulateMesh: quad splitting and n-gon removal](triangulate-mesh.md)
+- [RebuildMeshNormals: stored normal reconstruction and vertex compaction](rebuild-mesh-normals.md)
 - [TriangulateNonPlanarQuads: selective quad splitting](triangulate-nonplanar-quads.md)
 - [QuadrangulateMesh: selection and triangle conversion](quadrangulate-mesh.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
