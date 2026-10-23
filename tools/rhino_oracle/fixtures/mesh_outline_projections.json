@@ -1,0 +1,196 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_box_top",
+      "case": "outline_projection_viewport_box_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_box_top",
+      "case": "outline_projection_info_plane_box_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_frame_top",
+      "case": "outline_projection_viewport_frame_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_frame_top",
+      "case": "outline_projection_info_plane_frame_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_overlap_top",
+      "case": "outline_projection_viewport_overlap_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_overlap_top",
+      "case": "outline_projection_info_plane_overlap_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_warped_top",
+      "case": "outline_projection_viewport_warped_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_warped_top",
+      "case": "outline_projection_info_plane_warped_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_box_front",
+      "case": "outline_projection_viewport_box_front"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_box_front",
+      "case": "outline_projection_info_plane_box_front"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_frame_front",
+      "case": "outline_projection_viewport_frame_front"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_frame_front",
+      "case": "outline_projection_info_plane_frame_front"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_overlap_front",
+      "case": "outline_projection_viewport_overlap_front"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_overlap_front",
+      "case": "outline_projection_info_plane_overlap_front"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_warped_front",
+      "case": "outline_projection_viewport_warped_front"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_warped_front",
+      "case": "outline_projection_info_plane_warped_front"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_box_oblique",
+      "case": "outline_projection_viewport_box_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_box_oblique",
+      "case": "outline_projection_info_plane_box_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_frame_oblique",
+      "case": "outline_projection_viewport_frame_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_frame_oblique",
+      "case": "outline_projection_info_plane_frame_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_overlap_oblique",
+      "case": "outline_projection_viewport_overlap_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_overlap_oblique",
+      "case": "outline_projection_info_plane_overlap_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_warped_oblique",
+      "case": "outline_projection_viewport_warped_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_warped_oblique",
+      "case": "outline_projection_info_plane_warped_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_box_perspective",
+      "case": "outline_projection_viewport_box_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_box_perspective",
+      "case": "outline_projection_info_plane_box_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_frame_perspective",
+      "case": "outline_projection_viewport_frame_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_frame_perspective",
+      "case": "outline_projection_info_plane_frame_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_overlap_perspective",
+      "case": "outline_projection_viewport_overlap_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_overlap_perspective",
+      "case": "outline_projection_info_plane_overlap_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_viewport_warped_perspective",
+      "case": "outline_projection_viewport_warped_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_warped_perspective",
+      "case": "outline_projection_info_plane_warped_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_offset_top",
+      "case": "outline_projection_info_plane_offset_top"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_offset_oblique",
+      "case": "outline_projection_info_plane_offset_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_info_plane_offset_perspective",
+      "case": "outline_projection_info_plane_offset_perspective"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_far_oblique",
+      "case": "outline_projection_far_oblique"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_projection_far_perspective",
+      "case": "outline_projection_far_perspective"
+    }
+  ]
+}

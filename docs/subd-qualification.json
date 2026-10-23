@@ -588,7 +588,7 @@
     "Construction permits 100000 vertices and faces, 400000 corners and a 64 MiB archive. Tessellation accepts density 1..6 with a one-million-quad budget."
   ],
   "sha256": {
-    "Cargo.toml": "3c295d751cff0799aa55e2f96ff3eeaba3a9b9b1e59b0b09b67735bbacc0e9a3",
+    "Cargo.toml": "187e2a174c7406fc3311c74ea64a0abbe4d097135f035074df580749a706150d",
     "crates/viboceros-opennurbs/src/subd_interpolation.rs": "97c4529555beb702dbe9a16aa60f64a4ab1c7eee4d363f9bbb82b2ced5404bd8",
     "crates/viboceros-opennurbs/native/subd_interpolation.h": "fe3f6d607f1b4cd94556b6ba667b579de06efee53dc970bc0ae35444d31d29bd",
     "crates/viboceros-geometry/src/subd/interpolation.rs": "e3fcee8fe9e0d0cb3934c150d4fe05380e9a2f120b68e71f43ab4b94a4bd7d3f",
@@ -606,11 +606,11 @@
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "ee04edd5c0b301746e66136c924b3456427db9e70a90a521dd5daf1b36bb27c8",
     "crates/viboceros-geometry/src/subd.rs": "0977f351f9100b105acfe9fb61b6b5ae5245a7ec01c5cf6946b3d522389fd076",
     "crates/viboceros-geometry/src/subd/append.rs": "28171f689e95cc242f035c4147f056677ee6a8b5780b9b2f5f6222a6c505ee34",
-    "crates/viboceros-geometry/src/lib.rs": "6c9453eeec067084af263a216630910905bb7fb36a10bb0ae7d483f954873156",
-    "crates/viboceros-geometry/src/error.rs": "cdb0fab17d79a55f6a0ec02fc33f92b6093af3bf397d9e67185a9bda86db64a7",
+    "crates/viboceros-geometry/src/lib.rs": "646d158f745b6c55f4ee029bfbf54743716dd8241045203886660a1dfc80a358",
+    "crates/viboceros-geometry/src/error.rs": "913063c381ae5d7e8526c5a35d37a2e4fe1677fc2d6ee4d86cd554a8853bda4a",
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/transform.rs": "e8b24486c8963c14828765f7d29ab5e4ce1c79006eef1b912508374e4da8ac9f",
-    "crates/viboceros-geometry/src/mesh.rs": "6eb6b53a3c2a6d0f438bcb68d22aa511a469e55781a68f0cf9f84acbf95e98e7",
+    "crates/viboceros-geometry/src/mesh.rs": "b1039aae9064b5e1059bb72e245ceb7981bbb632dfd0580bfdcc7a1370922b61",
     "crates/viboceros-geometry/src/mesh/face_create.rs": "8e30235e97616ce91117e6ed0477edcc0bfea75a7b766a1c9ef41a9910da57e8",
     "crates/viboceros-geometry/src/mesh/face_records.rs": "bf5438805e68438bf60ddf912490e8a4e2b03d7beec39ecc03eb087353f83e6d",
     "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
@@ -667,7 +667,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "d6b6dd28653d482563745b383f4491121fa95224b0047aace5a094e2dd9b8c4d",
     "src/app/viewport_input.rs": "3df7f0793ba9ad712e0b16b5dbd3d64390c3391eba0c884075df96d9266e48b7",
-    "tools/rhino_oracle/qualification_sources.py": "8d0de8f80827b25310215c4076d76eb9db4daa246d300d2bf8d030bfb2831f99",
+    "tools/rhino_oracle/qualification_sources.py": "1aa44d50aa9eadcc966bcad908de78a496b066f4b6d753d69228d2d13688bd5c",
     "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
@@ -827,6 +827,7 @@
     "crates/viboceros-command/src/mesh_edit/unify_normals.rs": "e6e453fde97f391edbb79ae31ea29eb052c8b51b028b85102e37edeb323f954c",
     "src/app/object_selection/unify_normals_tests.rs": "2662146aac4633c57192bec8e0696461a21d3a81e5f903dfab10fb50f9352a48",
     "crates/viboceros-command/tests/support/unify_normals.rs": "bcd483a5483a8faabfc44d75423c989aaa9045961b118ace964ecdd90c4d48b3",
-    "crates/viboceros-geometry/src/mesh/orientation.rs": "0f93eea8c70b6c42bd07f750e13f94854ccdbe290aa7cee86eb74539f8f0a4f7"
+    "crates/viboceros-geometry/src/mesh/orientation.rs": "0f93eea8c70b6c42bd07f750e13f94854ccdbe290aa7cee86eb74539f8f0a4f7",
+    "crates/viboceros-geometry/src/mesh/outline.rs": "99136125bba39be3dceb499edce9eaee122454eb1ccdf754a869aec06e33f561"
   }
 }

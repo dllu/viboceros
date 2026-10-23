@@ -626,7 +626,7 @@
     "Sampling on n-gon meshes, native wireframe/ghosted input, dialog previews, spinner controls, other views/units, degenerate source repair, restricted objects, multi-target ordering, numeric extremes and comparative speed remain unqualified. Local raw face selection inside n-gons is covered independently, without claiming native command parity."
   ],
   "sha256": {
-    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.lock": "4a4b5de09374005646d1790217675069b8e25e153037bce71fb05bd8c0623252",
     "src/app.rs": "d004640e42228b2665f1775ee50c70fa343245e5068fa82176967aee9604a0ca",
     "src/app/component_selection.rs": "94a1c809f99a270cb31ebc85c61cd33649d084312ab4a726e763f25922812127",
     "src/app/prompt_cancel.rs": "949887685957c2f8eb2be17f1cc30efa5f36539b3ad40c8d7df69f4480ac4b8b",
@@ -645,9 +645,9 @@
     "crates/viboceros-command/tests/support/mesh_conversion.rs": "59ba61dbaf543aa86ad88524db80b633c17275d5e24239ef99cc5cabe8da14e1",
     "crates/viboceros-command/tests/support/subd.rs": "1953846077b1266e17378e1c865078cb98f3ead90dcc2495447d4e8b73f02e25",
     "crates/viboceros-geometry/tests/support/subdivision_native.rs": "34bca1d5a0b7a9f1b6d7a7c5ab2686ab0e079a2b9590a545460c552fd66fb0e1",
-    "crates/viboceros-geometry/src/lib.rs": "6c9453eeec067084af263a216630910905bb7fb36a10bb0ae7d483f954873156",
-    "crates/viboceros-geometry/src/error.rs": "cdb0fab17d79a55f6a0ec02fc33f92b6093af3bf397d9e67185a9bda86db64a7",
-    "crates/viboceros-geometry/src/mesh.rs": "6eb6b53a3c2a6d0f438bcb68d22aa511a469e55781a68f0cf9f84acbf95e98e7",
+    "crates/viboceros-geometry/src/lib.rs": "646d158f745b6c55f4ee029bfbf54743716dd8241045203886660a1dfc80a358",
+    "crates/viboceros-geometry/src/error.rs": "913063c381ae5d7e8526c5a35d37a2e4fe1677fc2d6ee4d86cd554a8853bda4a",
+    "crates/viboceros-geometry/src/mesh.rs": "b1039aae9064b5e1059bb72e245ceb7981bbb632dfd0580bfdcc7a1370922b61",
     "crates/viboceros-geometry/src/mesh/quad_planarity.rs": "562d620abc34f2e15ec69948268c55312b43e6d3030caaf0720c9de645cccada",
     "crates/viboceros-opennurbs/src/mesh.rs": "5f7c67743b623a375b12872e45c8b8d641089637ce47f444f493b93778e409b2",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "50da8b4782440543b5bc1209c4988b0bf5ac44ace55ff040b587e54c3020ee67",
@@ -674,9 +674,9 @@
     "tools/rhino_oracle/snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
     "tools/rhino_oracle/catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
     "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
-    "tools/rhino_oracle/client.py": "b2a5d1c666da628d0dfee46a2cc39bf7cc5fd6df33f84066ace7dd190edb1981",
-    "tools/rhino_oracle/structural_sdk.py": "9e4a385dcc8d5fa4c5b7e8a7ac632a98002add86f35b52b3d3d2e5f55d969684",
-    "tools/rhino_oracle/rhino_worker.py": "b9c0cfe2aeeb2ab140a3d137a68e8fa5580ae26be91d9c75dcb6d14a3dfe96e5",
+    "tools/rhino_oracle/client.py": "3264025344162243d19d92c4785b1ce917c8813bfea13e2e0bd1ce6897597c20",
+    "tools/rhino_oracle/structural_sdk.py": "889ab3fa32da902a36b429165794661f826cf6e46bff9a8ebcffa8e21f5eee33",
+    "tools/rhino_oracle/rhino_worker.py": "b07f293cf100628f640e3345f4a59c1c6ec814a443a60a0ffb9f7d2f0ef56d18",
     "tools/rhino_oracle/fixtures/nonplanar_sample_discovery.json": "600603ddc11c7a5ab839ab864ab27c5855e2b5727479035494da6ed35122fefb",
     "tools/rhino_oracle/observations/nonplanar_sample_discovery.json": "23759100e47a6de2b8c336c56264e77e8060b2f56d88c30eaa2221609895b06a",
     "tools/rhino_oracle/fixtures/nonplanar_sample_main.json": "d95657f932ddeee2ddd6c5fbf5ea243577d1be302512dd74a4a2598f728af0a8",
@@ -817,7 +817,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "8d0de8f80827b25310215c4076d76eb9db4daa246d300d2bf8d030bfb2831f99",
+    "tools/rhino_oracle/qualification_sources.py": "1aa44d50aa9eadcc966bcad908de78a496b066f4b6d753d69228d2d13688bd5c",
     "tools/rhino_oracle/fixtures/nonplanar_sample_shaded.json": "64837a3938537fc68151ca2b0c147539d74d83e23ba2a6ae5714e4fd23ec3b0c",
     "tools/rhino_oracle/observations/nonplanar_sample_shaded.json": "45061456e515baa50db7082e48db0a7f190466df28f18fc053dc59fcd970888d",
     "tools/rhino_oracle/fixtures/nonplanar_sample_shaded/nonplanar_sample_shaded_angle.3dm": "35c66fcc99ea846d2427eb7798e1697e6442941fe323b3736386f722c239cbbb",
@@ -874,6 +874,7 @@
     "crates/viboceros-command/src/mesh_edit/unify_normals.rs": "e6e453fde97f391edbb79ae31ea29eb052c8b51b028b85102e37edeb323f954c",
     "src/app/object_selection/unify_normals_tests.rs": "2662146aac4633c57192bec8e0696461a21d3a81e5f903dfab10fb50f9352a48",
     "crates/viboceros-command/tests/support/unify_normals.rs": "bcd483a5483a8faabfc44d75423c989aaa9045961b118ace964ecdd90c4d48b3",
-    "crates/viboceros-geometry/src/mesh/orientation.rs": "0f93eea8c70b6c42bd07f750e13f94854ccdbe290aa7cee86eb74539f8f0a4f7"
+    "crates/viboceros-geometry/src/mesh/orientation.rs": "0f93eea8c70b6c42bd07f750e13f94854ccdbe290aa7cee86eb74539f8f0a4f7",
+    "crates/viboceros-geometry/src/mesh/outline.rs": "99136125bba39be3dceb499edce9eaee122454eb1ccdf754a869aec06e33f561"
   }
 }

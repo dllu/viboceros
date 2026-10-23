@@ -40,6 +40,8 @@ mod quad_planarity;
 pub use quad_planarity::MeshQuadPlanarity;
 mod normals;
 mod orientation;
+mod outline;
+pub use outline::MeshOutlineProjection;
 mod smoothing;
 mod subdivision;
 mod vertex_weld;

@@ -27,6 +27,10 @@ pub enum GeometryError {
     EmptyMeshPatch,
     #[error("a continuous directed section between mesh locations could not be resolved")]
     MeshPolylinePathUnresolved,
+    #[error("mesh outline crosses the eye plane and has an unbounded projection")]
+    MeshOutlineCrossesEyePlane,
+    #[error("mesh outline coordinates exceed the polygon overlay precision range")]
+    MeshOutlineCoordinateRange,
     #[error("polyline reduction would collapse the curve to an invalid result")]
     CollapsedPolylineReduction,
     #[error("Flow local radii must be finite and satisfy 0 <= inner < outer")]

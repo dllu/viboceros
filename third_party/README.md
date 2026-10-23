@@ -1,5 +1,9 @@
 # Third-party code
 
+- Mesh outline coverage uses the Cargo dependency `i_overlay` 9.1.0 under
+  MIT OR Apache-2.0. Its polygon arrangement handles projected overlaps and
+  holes; see the [upstream project](https://github.com/iShape-Rust/iOverlay).
+
 - `rhino3dm-polyline` retains pinned MIT-licensed public C# polyline code as a
   reference for Rust reduction; see its [README](rhino3dm-polyline/README.md) and
   [license](rhino3dm-polyline/LICENSE).
