@@ -51,7 +51,7 @@ def summarize(text):
         invalid=[0]if r['id']=='quad_convert_adjacent_ngons'else[]
         if r.get('native_invalid_ngons')!=invalid or r.get('native_ngons_correspond')is not (not invalid):
             raise ValueError('invalid native n-gon difference relabelled')
-        for key,wanted in [('pairs',pairs),('faces',len(v['after']['faces'])),('vertices',len(v['after']['vertices'])),('ngons',len(v['after']['ngons'])-len(invalid))]:
+        for key,wanted in [('command_syntaxes',2),('pairs',pairs),('faces',len(v['after']['faces'])),('vertices',len(v['after']['vertices'])),('ngons',len(v['after']['ngons'])-len(invalid))]:
             if type(r.get(key))is not int or r[key]!=wanted:raise ValueError('conversion count differs')
         maximum=max(maximum,error(r.get('maximum_error')))
     rows.sort(key=lambda r:list(expected).index(r['id']))
@@ -61,7 +61,7 @@ def summarize(text):
         performance_qualified=False,full_native_parity=False,earlier_geometry_only_references=14,
         failed_dispatch_qualified_cases=0,cases=rows,
         limits=[
-            'Fourteen independently constructed native SDK inputs match raw vertices, face records and channels exactly. The registered command replays explicit options and verifies identity, attributes, groups, selection, Undo/Redo and no-op redo preservation.',
+            'Fourteen independently constructed native SDK inputs match raw vertices, face records and channels exactly. The registered command replays both equals and separate-token explicit options and verifies identity, attributes, groups, selection, Undo/Redo and no-op redo preservation.',
             'OpenNURBS performs conversion directly, including strict mutual-longest-edge selection on meshes with more than two faces, angle normalization, raw seam preservation and native face ordering. Source vertex and channel storage remain intact.',
             'Native conversion may invalidate an n-gon while Mesh.IsValid remains true. The adjacent-ngon reference exposes a three-vertex boundary attached to a quad; Viboceros discards this invalid overlay. That metadata difference remains explicit.',
             'Native UI prompts and defaults are not exercised. Inputs use valid stored geometry and ordinary representable coordinates; extreme float32 selection behavior and comparative performance remain unqualified. Native packing is bounded to four million vertices and one million faces.',

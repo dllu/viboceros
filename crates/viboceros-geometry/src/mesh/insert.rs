@@ -1,6 +1,7 @@
 //! InsertPoint retains polygon regions and interpolates each raw seam independently.
 use super::*;
 mod ngons;
+mod pairing;
 mod regions;
 use crate::{
     PolygonEdgePoint,

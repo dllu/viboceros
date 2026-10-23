@@ -14,17 +14,22 @@ impl Command for QuadrangulateMeshCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let mut planarity = None;
         let mut rectangularity = None;
-        for &argument in arguments {
-            let Some((key, value)) = argument.split_once('=') else {
-                return Err(CommandError::Usage(USAGE));
+        let mut index = 0;
+        while index < arguments.len() {
+            let argument = arguments[index];
+            let (key, value, consumed) = if let Some((key, value)) = argument.split_once('=') {
+                (key, value, 1)
+            } else {
+                let value = arguments.get(index + 1).ok_or(CommandError::Usage(USAGE))?;
+                (argument, *value, 2)
             };
-            if key.eq_ignore_ascii_case("Planarity") && planarity.is_none() {
+            if option_name_eq(key, "Planarity") && planarity.is_none() {
                 planarity = Some(
                     value
                         .parse::<Real>()
                         .map_err(|_| CommandError::Usage(USAGE))?,
                 );
-            } else if key.eq_ignore_ascii_case("Rectangularity") && rectangularity.is_none() {
+            } else if option_name_eq(key, "Rectangularity") && rectangularity.is_none() {
                 rectangularity = Some(
                     value
                         .parse::<Real>()
@@ -33,6 +38,7 @@ impl Command for QuadrangulateMeshCommand {
             } else {
                 return Err(CommandError::Usage(USAGE));
             }
+            index += consumed;
         }
         let planarity = planarity.unwrap_or(1.0);
         let rectangularity = rectangularity.unwrap_or(2.0);
@@ -144,6 +150,13 @@ mod tests {
             "QuadrangulateMesh Planarity=-1",
             "QuadrangulateMesh Rectangularity=0.5",
             "QuadrangulateMesh Planarity=1 Planarity=2",
+            "QuadrangulateMesh _Planarity 1 Planarity=2",
+            "QuadrangulateMesh Rectangularity=2 _Rectangularity 3",
+            "QuadrangulateMesh Planarity",
+            "QuadrangulateMesh Rectangularity",
+            "QuadrangulateMesh Planarity=NaN",
+            "QuadrangulateMesh Rectangularity inf",
+            "QuadrangulateMesh Unexpected=1",
             "QuadrangulateMesh Planarity=1",
         ] {
             assert!(registry.execute(&mut document, input).is_err());

@@ -25,6 +25,6 @@ pub(super) fn tile(
         triangles.into_iter().map(MeshFace::Triangle).collect(),
         tolerance,
     )?;
-    let (region, _) = region.quadrangulate_inserted_region(tolerance)?;
+    let (region, _) = super::pairing::merge(region, tolerance)?;
     Ok(region.faces().to_vec())
 }

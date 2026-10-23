@@ -20,6 +20,7 @@ FAMILIES = {
     'depth': ('insert_point_pick_depth', 'PickDepth'),
     'witnesses': ('insert_point_pick_depth_v2', 'PickDepthV2'),
     'spatial': ('insert_point_spatial_layouts', 'SpatialLayouts'),
+    'sequences': ('insert_point_spatial_prefixes', 'SpatialPrefixes'),
 }
 
 

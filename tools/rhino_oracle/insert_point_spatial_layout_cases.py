@@ -34,3 +34,19 @@ case('tall_warp', [[0., 0., 0.], [2., 0., 0.], [2., 6., 1.2], [0., 6., .4]], [(0
 case('reversed_warp', QUAD, [(0, .5), (3, .75)], [0, 3, 2, 1])
 case('cyclic_warp', QUAD, [(0, .5), (3, .75)], [1, 2, 3, 0])
 case('same_edge_warp', QUAD, [(3, .75), (3, .25)])
+
+# Prefix and reversed-path inputs distinguish final-boundary meshing from a
+# tessellation carried forward across successive picks.
+SEQUENCES = {}
+for _name, _picks in [
+    ('bottom_mid', [(0, .5)]),
+    ('bottom_low', [(0, .25)]),
+    ('left_low', [(3, .75)]),
+    ('left_high', [(3, .25)]),
+    ('left_high_bottom_mid', [(3, .25), (0, .5)]),
+    ('same_edge_reverse', [(3, .25), (3, .75)]),
+    ('same_edge_three', [(3, .75), (3, .5), (3, .25)]),
+]:
+    _key = 'insert_point_spatial_prefix_' + _name
+    case('prefix_' + _name, QUAD, _picks)
+    SEQUENCES[_key] = CASES.pop(_key)

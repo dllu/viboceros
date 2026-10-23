@@ -12,6 +12,11 @@ pub const SPATIAL_SURFACE_GAPS: [&str; 2] = [
     "insert_point_spatial_bottom_mid_left_high",
     "insert_point_spatial_same_edge_warp",
 ];
+pub const PREFIX_GAPS: [&str; 3] = [
+    "insert_point_spatial_prefix_left_high_bottom_mid",
+    "insert_point_spatial_prefix_same_edge_reverse",
+    "insert_point_spatial_prefix_same_edge_three",
+];
 #[path = "insert_point/mesh.rs"]
 mod mesh;
 pub use mesh::{compare_mesh, compare_mesh_diagnostic};
@@ -252,7 +257,7 @@ pub fn check_scene(
     selection: bool,
     family: &str,
 ) -> Value {
-    if family != "insert_point_spatial_layouts" {
+    if !family.starts_with("insert_point_spatial_") {
         return check(doc, ids, rows, selection);
     }
     native::check_metadata(doc, rows, selection);
@@ -271,18 +276,24 @@ pub fn check_scene(
     result
 }
 pub fn assert_spatial_result(id: &str, report: &Value) {
-    assert_eq!(report["qualified"], !SPATIAL_SURFACE_GAPS.contains(&id));
+    assert_layout_result(id, report, &SPATIAL_CELL_GAPS, &SPATIAL_SURFACE_GAPS);
+}
+pub fn assert_prefix_result(id: &str, report: &Value) {
+    assert_layout_result(id, report, &PREFIX_GAPS, &PREFIX_GAPS);
+}
+fn assert_layout_result(id: &str, report: &Value, cell_gaps: &[&str], surface_gaps: &[&str]) {
+    assert_eq!(report["qualified"], !surface_gaps.contains(&id));
     assert_eq!(
         report["fixed_facet_surface_qualified"],
-        !SPATIAL_SURFACE_GAPS.contains(&id)
+        !surface_gaps.contains(&id)
     );
     for field in ["stored_pieces_correspond", "stored_facets_correspond"] {
-        assert_eq!(report[field], !SPATIAL_CELL_GAPS.contains(&id));
+        assert_eq!(report[field], !cell_gaps.contains(&id));
     }
     let maximum = report["maximum_error"]
         .as_f64()
         .unwrap()
         .max(report["maximum_fixed_facet_sample_error"].as_f64().unwrap());
     assert!(maximum.is_finite());
-    assert_eq!(maximum <= 1e-6, !SPATIAL_SURFACE_GAPS.contains(&id));
+    assert_eq!(maximum <= 1e-6, !surface_gaps.contains(&id));
 }

@@ -4,6 +4,7 @@ from copy import deepcopy
 import gzip
 import hashlib
 import json
+import math
 from pathlib import Path
 import subprocess
 import sys
@@ -21,7 +22,7 @@ from .qualification_sources import with_shared_sources
 
 VARIANTS = dict(insert_point_holdouts_v2='holdouts', insert_point_ngons='ngons',
                 insert_point_mesh_shapes='shapes', insert_point_pick_depth='depth',
-                insert_point_pick_depth_v2='witnesses', insert_point_spatial_layouts='spatial', insert_point_mesh_sdk=None,
+                insert_point_pick_depth_v2='witnesses', insert_point_spatial_layouts='spatial', insert_point_spatial_prefixes='sequences', insert_point_mesh_sdk=None,
                 insert_point_mesh_sdk_origins='origins', insert_point_mesh_sdk_methods='methods', insert_point_mesh_sdk_spatial='spatial')
 
 
@@ -57,6 +58,7 @@ class InsertPointCommandTests(unittest.TestCase):
                 'crates/viboceros-geometry/src/mesh/aspect_ratio.rs',
                 'crates/viboceros-geometry/src/mesh/insert/ngons.rs',
                 'crates/viboceros-geometry/src/mesh/insert/regions.rs',
+                'crates/viboceros-geometry/src/mesh/insert/pairing.rs',
                 'crates/viboceros-geometry/src/edge_insertion/polygons.rs']),
             ('crates/viboceros-command/tests/support/insert_point.rs', ['crates/viboceros-command/tests/support/insert_point/mesh.rs']),
             ('crates/viboceros-command/src/lib.rs', ['crates/viboceros-command/src/insert_point/arguments.rs']),
@@ -91,6 +93,28 @@ class InsertPointCommandTests(unittest.TestCase):
                     self.assertEqual(recipe, ALL_CASES[row['id']])
                     path = HERE/'fixtures'/family/(row['id']+'.3dm')
                     self.assertEqual(path.read_bytes(), base64.b64decode(row['value']['source_3dm'], validate=True))
+
+    def test_reversed_native_paths_preserve_cells_after_coordinate_correspondence(self):
+        from .report_insert_point_calibration import cycle
+        spatial = {r['id']: r['value'] for r in capture('insert_point_spatial_layouts')['results']}
+        prefixes = {r['id']: r['value'] for r in capture('insert_point_spatial_prefixes')['results']}
+        for original, reverse in [
+            ('bottom_mid_left_high', 'left_high_bottom_mid'),
+            ('same_edge_warp', 'same_edge_reverse'),
+        ]:
+            def mesh(value):
+                return next(o['mesh'] for o in value['after'] if o['source'] == 0)
+            a = mesh(spatial['insert_point_spatial_' + original])
+            b = mesh(prefixes['insert_point_spatial_prefix_' + reverse])
+            remaining = set(range(len(b['vertices'])))
+            correspondence = []
+            for point in a['vertices']:
+                matches = [i for i in remaining if math.dist(point, b['vertices'][i]) <= 1e-6]
+                self.assertEqual(len(matches), 1)
+                correspondence.append(matches[0]); remaining.remove(matches[0])
+            self.assertFalse(remaining)
+            self.assertEqual(sorted(cycle([correspondence[i] for i in f]) for f in a['faces']),
+                             sorted(cycle(f) for f in b['faces']))
 
     def test_failed_import_is_a_diagnostic_with_no_surviving_response(self):
         failure = json.loads((HERE/'observations/insert_point_holdouts_import_failure.json').read_text())
@@ -134,7 +158,7 @@ class InsertPointCommandTests(unittest.TestCase):
         report, lines = self.evidence()
         self.assertEqual(summarize('\n'.join(reversed(lines))), report)
         self.assertTrue(report['command_implemented'])
-        self.assertEqual((report['command_cases'], report['getter_cases']), (77, 77))
+        self.assertEqual((report['command_cases'], report['getter_cases']), (84, 84))
         self.assertEqual(report['additional_geometry_cases'], 12)
         self.assertEqual(report['primary_cell_gaps'], sorted(CELL_GAPS))
         self.assertEqual(report['depth_cell_gaps'], [])
@@ -147,11 +171,12 @@ class InsertPointCommandTests(unittest.TestCase):
             self.assertEqual(report[key], [])
         self.assertEqual((report['ngon_cases'], report['ngon_getter_cases']), (12, 12))
         self.assertEqual(report['spatial_cases'], 12)
+        self.assertEqual(report['prefix_cases'], 7)
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        self.assertEqual(sum(FAMILIES.values()), 173)
-        self.assertEqual(report['captured_command_workflows'], 113)
-        self.assertEqual(len(lines), 166)
+        self.assertEqual(sum(FAMILIES.values()), 180)
+        self.assertEqual(report['captured_command_workflows'], 120)
+        self.assertEqual(len(lines), 180)
 
     def test_calibration_does_not_substitute_for_command_input_evidence(self):
         rows = sdk_calibration()

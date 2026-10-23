@@ -62,6 +62,6 @@ def witnessed(capture, family):
                            for p in click['ray']+[click['projected_point']] for x in p)):
                 raise ValueError('missing native physical point witness')
         for click in clicks:
-            validate_depth(click, required='pick_depth' in family or family == 'insert_point_spatial_layouts', diagnostic=family.endswith('depth_v2'))
+            validate_depth(click, required='pick_depth' in family or family.startswith('insert_point_spatial_'), diagnostic=family.endswith('depth_v2'))
         result[row['id']] = value
     return result

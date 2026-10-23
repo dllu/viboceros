@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_prefix_bottom_mid",
+      "case": "insert_point_spatial_prefix_bottom_mid"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_prefix_bottom_low",
+      "case": "insert_point_spatial_prefix_bottom_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_prefix_left_low",
+      "case": "insert_point_spatial_prefix_left_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_prefix_left_high",
+      "case": "insert_point_spatial_prefix_left_high"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_prefix_left_high_bottom_mid",
+      "case": "insert_point_spatial_prefix_left_high_bottom_mid"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_prefix_same_edge_reverse",
+      "case": "insert_point_spatial_prefix_same_edge_reverse"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_prefix_same_edge_three",
+      "case": "insert_point_spatial_prefix_same_edge_three"
+    }
+  ]
+}

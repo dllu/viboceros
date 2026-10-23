@@ -15,13 +15,16 @@ from .report_subd_box import HERE, ROOT, error
 FAMILIES = dict(KERNEL_FAMILIES, insert_point_holdouts_v2=12, insert_point_ngons=12,
                 insert_point_mesh_sdk=16, insert_point_mesh_sdk_origins=16,
                 insert_point_mesh_sdk_methods=16, insert_point_mesh_sdk_spatial=12, insert_point_mesh_shapes=12,
-                insert_point_pick_depth=12, insert_point_pick_depth_v2=8, insert_point_spatial_layouts=12)
+                insert_point_pick_depth=12, insert_point_pick_depth_v2=8, insert_point_spatial_layouts=12, insert_point_spatial_prefixes=7)
 CELL_GAPS = {'insert_point_full_mesh_same_edge'}
 DEPTH_CELL_GAPS = set()
 SPATIAL_CELL_GAPS = {'insert_point_spatial_bottom_mid_left_high', 'insert_point_spatial_tilted_plane',
                      'insert_point_spatial_same_edge_warp'}
-FACET_GAPS = CELL_GAPS | SPATIAL_CELL_GAPS
-SURFACE_GAPS = {'insert_point_spatial_bottom_mid_left_high', 'insert_point_spatial_same_edge_warp'}
+PREFIX_GAPS = {'insert_point_spatial_prefix_left_high_bottom_mid',
+               'insert_point_spatial_prefix_same_edge_reverse',
+               'insert_point_spatial_prefix_same_edge_three'}
+FACET_GAPS = CELL_GAPS | SPATIAL_CELL_GAPS | PREFIX_GAPS
+SURFACE_GAPS = {'insert_point_spatial_bottom_mid_left_high', 'insert_point_spatial_same_edge_warp'} | PREFIX_GAPS
 HOLDOUT_CELL_GAPS = NGON_CELL_GAPS = set()
 REPLAYS = [
     ('COMMAND', 'cases', 'insert_point_full'), ('GETTER', 'getters', 'insert_point_full'),
@@ -35,6 +38,8 @@ REPLAYS = [
     ('DEPTH_V2_GETTER', 'depth_witness_getters', 'insert_point_pick_depth_v2'),
     ('SPATIAL', 'spatial', 'insert_point_spatial_layouts'),
     ('SPATIAL_GETTER', 'spatial_getters', 'insert_point_spatial_layouts'),
+    ('PREFIX', 'prefixes', 'insert_point_spatial_prefixes'),
+    ('PREFIX_GETTER', 'prefix_getters', 'insert_point_spatial_prefixes'),
 ]
 SOURCES = with_shared_sources(KERNEL_SOURCES + [
     'crates/viboceros-geometry/src/mesh.rs',
@@ -105,7 +110,7 @@ def surface_error(value, qualified):
 
 
 def check_mesh(actual, native, key):
-    pieces = key not in CELL_GAPS | DEPTH_CELL_GAPS | SPATIAL_CELL_GAPS
+    pieces = key not in CELL_GAPS | DEPTH_CELL_GAPS | SPATIAL_CELL_GAPS | PREFIX_GAPS
     facets = key not in FACET_GAPS
     surface_qualified = key not in SURFACE_GAPS
     fixed_error = surface_error(actual.get('maximum_fixed_facet_sample_error'), surface_qualified)
@@ -193,7 +198,8 @@ def summarize(text):
                 captured_command_workflows=sum(FAMILIES[f] for f in FAMILIES if 'sdk' not in f),
                 ngon_cases=len(replays['ngons']), ngon_getter_cases=len(replays['ngon_getters']),
                 shape_cases=len(replays['shapes']), depth_cases=len(replays['depths'])+len(replays['depth_witnesses']),
-                spatial_cases=len(replays['spatial']),
+                spatial_cases=len(replays['spatial']), prefix_cases=len(replays['prefixes']),
+                prefix_cell_gaps=sorted(PREFIX_GAPS),
                 calibration_recipes=60, failed_import_requested_workflows=12,
                 failed_import_qualified_workflows=0, maximum_error=max(maximum, maximum_fixed),
                 maximum_control_or_shortest_diagonal_sample_error=maximum,
@@ -206,9 +212,10 @@ def summarize(text):
                 spatial_sdk_calibration=calibration.spatial_calibration(capture),
                 full_native_parity=False, performance_qualified=False,
                 limits=[
-                    'Seventy-seven command/staging and seventy-seven application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.',
+                    'Eighty-four command/staging and eighty-four application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.',
                     'All original sixty-five command and getter workflows now agree on coordinates and both surface-sampling policies. The two earlier warped depth surface failures and all three depth cell gaps are resolved by coplanarity-aware pairing and full split-boundary origins. One planar primary repeated-edge cell/facet difference remains.',
                     'Twelve new independent spatial scenes cover changed warp, aspect, winding, cyclic origin, adjacent picks, reversed paths and repeated same-edge points. Ten match geometry at the unchanged epsilon; one of these planar scenes differs in stored cells. The upper-left second pick and repeated-edge warped cases still differ in geometry under both sampling policies and are explicitly unqualified. The repeated-edge scene now completes instead of rejecting a nearly collinear quad.',
+                    'Seven independent prefix scenes cover single picks, reversed high-left/bottom picks, reversed repeated-edge paths and three points on one edge. All four single-pick layouts match; the three multi-pick layouts remain unqualified, with errors up to 0.199. Reversed paths produce the same native cells after coordinate correspondence, so preserving first-pick tessellation alone cannot explain the native mesher.',
                     'Twelve geometry holdouts cover spatial, triangular, original-edge, n-gon and raw-seam cases. Twelve n-gon command/getter cases cover overlays, repeated boundary picks, reordered faces, fans and paths across adjacent n-gons. All now match stored cells and facets.',
                     'Twelve independent shape scenes cover skewed, trapezoid, rhombus, tall, rotated, reversed and warped quad boundaries. All match stored cells and facets.',
                     'Twenty independent warped Mesh/SubD depth scenes cover inside/outside surface rays, translated sources, shifted camera targets, second picks and local Undo. Picks use the original control display mesh with fixed 0-2 facets, falling back to the camera-target plane, then closest 3D edge parameter. Generic SDK MeshRay hits use a different quad diagonal and are retained only as triangulation-policy diagnostics.',

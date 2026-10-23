@@ -199,7 +199,8 @@ and n-gon membership, vertex colors, identity, attributes, groups, selection,
 and undo are preserved. Degenerate candidate triangles are rejected.
 
 `QuadrangulateMesh Planarity=1 Rectangularity=2` uses the public OpenNURBS
-converter. Consistently oriented pairs must share raw vertices; on meshes with
+converter. Options accept both `Name=value` and `Name value`, including English
+underscore prefixes. Consistently oriented pairs must share raw vertices; on meshes with
 more than two faces, the shared edge must be strictly longest in both triangles.
 Equal-length ties therefore stay triangular. `Rectangularity` bounds diagonal
 length ratios. The local defaults remain 1 degree and 2.
@@ -210,7 +211,7 @@ and n-gon changes are retained, except stale overlays whose boundaries no longer
 match their faces are discarded. Full-precision vertices, stored channels, object
 identity, attributes, object groups, selection and Undo/Redo are preserved.
 The [conversion record](../quad-conversion-qualification.json) covers fourteen
-public API references and explicit-option command replays; native UI prompts
+public API references and command replays using both option forms; native UI prompts
 and defaults remain unqualified.
 
 `SwapMeshEdge` replaces a welded interior edge shared by exactly two

@@ -15,10 +15,10 @@ Meshes keep raw seams separate, interpolate color/UV/normal channels, and reuse
 the existing constrained triangulation and quadrangulation code. Mesh geometry
 pairs more coplanar triangles first, then retains better standalone triangles.
 New quads have strictly convex projected corners so boundary-origin changes
-cannot create degenerate fixed facets. General-purpose quadrangulation ordering
-is unchanged. Insertion
-uses its validation tolerance so existing features below document tolerance
-survive. Original n-gon membership follows adjacency through original edges and
+cannot create degenerate fixed facets. This private pairing lives under
+`mesh/insert/`; general-purpose quadrangulation uses the OpenNURBS converter.
+Insertion uses its validation tolerance so existing features below document
+tolerance survive. Original n-gon membership follows adjacency through original edges and
 their split segments. Quad origins follow the entire refined source boundary,
 including splits between original corners; omitting them changes fixed diagonals.
 New tessellation edges join automatic n-gons only for
@@ -46,8 +46,8 @@ survives local Undo and preview chords. Snaps take precedence over free depth.
 
 The [kernel record](../insert-point-kernel-qualification.json) contains ten
 independent SubD replays. The separate
-[command record](../insert-point-command-qualification.json) covers 77 command
-and 77 application getter replays plus 12 additional geometry cases. Replays use
+[command record](../insert-point-command-qualification.json) covers 84 command
+and 84 application getter replays plus 12 additional geometry cases. Replays use
 saved source 3DM files and independent physical pixel rays. All original 65
 command/getter workflows now agree under both surface-sampling policies at the
 unchanged `1e-6` threshold; the two earlier warped depth failures are resolved.
@@ -61,6 +61,14 @@ warped scenes remain unqualified under both sampling policies, with errors up
 to `0.183`. The same-edge scene now completes instead of admitting a nearly
 collinear quad that later fails validation. Both failures remain in the report,
 with coordinates, channels, regions, preview isolation and history still checked.
+
+Seven independent prefix scenes add four single-pick layouts, reversed adjacent
+and same-edge paths, and a three-pick same-edge path. All four single picks
+match geometry and stored cells. The three multi-pick scenes expose the same
+meshing limitation, with sampled errors up to `0.199`. Reversing either path
+preserves native cells after coordinate correspondence; retaining first-pick
+tessellation alone cannot explain these layouts. These additional failures
+remain explicit alongside the original two.
 
 Twelve dedicated n-gon scenes cover triangle overlays, repeated boundary picks,
 reordered faces, triangulated fans, interior picks, crossing paths and adjacent
@@ -77,9 +85,10 @@ hits use a shorter quad diagonal and remain separate calibration diagnostics.
 
 Sixty public meshing API calibration recipes use captured *output*
 regions. None reproduce all native InsertPoint layouts, including alternative
-boundary origins, relaxed 3D quad conversion, line tessellation and planar meshing. These recipes do not
-qualify command input behavior. An earlier failed holdout import retains its
-request, host log and frozen sources; no native response survived.
+boundary origins, relaxed 3D quad conversion, line tessellation and planar
+meshing. These recipes do not qualify command input behavior. An earlier failed
+holdout import retains its request, host log and frozen sources; no native
+response survived.
 
 Perspective point picking has local spatial-edge tests, but native perspective
 crossing paths, changing views, constrained Osnap, grips, arbitrary spatial or

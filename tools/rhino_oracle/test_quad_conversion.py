@@ -92,7 +92,7 @@ class QuadConversionTests(unittest.TestCase):
         for text in ['\n'.join(lines[1:]),'\n'.join(lines+lines[:1])]:
             with self.assertRaises(ValueError):summarize(text)
         row=report['cases'][0]
-        for key,value in [('qualified',False),('history',False),('metadata',False),('channels',False),('selection',False),('raw_faces',False),('changed',False),('pairs',True),('maximum_error',float('nan')),('maximum_error',1e-3)]:
+        for key,value in [('qualified',False),('history',False),('metadata',False),('channels',False),('selection',False),('raw_faces',False),('changed',False),('command_syntaxes',1),('pairs',True),('maximum_error',float('nan')),('maximum_error',1e-3)]:
             bad=deepcopy(row);bad[key]=value
             with self.assertRaises(ValueError):summarize('\n'.join(['QUAD_CONVERSION '+json.dumps(bad)]+lines[1:]))
         gap=next(r for r in report['cases']if r['id']=='quad_convert_adjacent_ngons')

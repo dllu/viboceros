@@ -91,50 +91,53 @@ fn sdk_conversion_and_command_history_match_independent_native_inputs() {
         assert_eq!(converted, expected);
         assert_eq!(pairs, source.face_count() - expected.face_count());
         assert_eq!(value["changed"], pairs > 0);
-        let mut doc = Document::default();
-        let id = doc.add_geometry(Geometry::Mesh(source.clone())).unwrap();
-        doc.set_object_names([(id, Some("Quad reference".to_owned()))])
-            .unwrap();
-        doc.set_object_user_text([id], "oracle", row["id"].as_str())
-            .unwrap();
-        doc.add_group(Some("Quad group".to_owned()), [id]).unwrap();
-        registry.execute(&mut doc, "Point 50,50,50").unwrap();
-        doc.undo().unwrap();
-        doc.select_objects_direct([id], SelectionMode::Replace)
-            .unwrap();
-        let undo = doc.undo_label().map(str::to_owned);
-        let redo = doc.redo_label().map(str::to_owned);
-        let attributes = doc.object(id).unwrap().attributes().clone();
-        let groups = doc.object(id).unwrap().group_ids().to_vec();
-        registry
-            .execute(
-                &mut doc,
-                &format!("QuadrangulateMesh Planarity={angle:.17} Rectangularity={bound:.17}"),
-            )
-            .unwrap();
-        assert_eq!(
-            doc.object(id).unwrap().geometry(),
-            &Geometry::Mesh(expected.clone())
-        );
-        assert_eq!(doc.object(id).unwrap().attributes(), &attributes);
-        assert_eq!(doc.object(id).unwrap().group_ids(), &groups);
-        assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), vec![id]);
-        if pairs > 0 {
-            assert_eq!(doc.undo_label(), Some("QuadrangulateMesh"));
+        for script in [
+            format!("QuadrangulateMesh Planarity={angle:.17} Rectangularity={bound:.17}"),
+            format!("_-QuadrangulateMesh _Rectangularity {bound:.17} _Planarity {angle:.17}"),
+        ] {
+            let mut doc = Document::default();
+            let id = doc.add_geometry(Geometry::Mesh(source.clone())).unwrap();
+            doc.set_object_names([(id, Some("Quad reference".to_owned()))])
+                .unwrap();
+            doc.set_object_user_text([id], "oracle", row["id"].as_str())
+                .unwrap();
+            doc.add_group(Some("Quad group".to_owned()), [id]).unwrap();
+            registry.execute(&mut doc, "Point 50,50,50").unwrap();
             doc.undo().unwrap();
-            assert_eq!(doc.object(id).unwrap().geometry(), &Geometry::Mesh(source));
-            doc.redo().unwrap();
+            doc.select_objects_direct([id], SelectionMode::Replace)
+                .unwrap();
+            let undo = doc.undo_label().map(str::to_owned);
+            let redo = doc.redo_label().map(str::to_owned);
+            let attributes = doc.object(id).unwrap().attributes().clone();
+            let groups = doc.object(id).unwrap().group_ids().to_vec();
+            registry.execute(&mut doc, &script).unwrap();
             assert_eq!(
                 doc.object(id).unwrap().geometry(),
                 &Geometry::Mesh(expected.clone())
             );
-        } else {
-            assert_eq!(doc.undo_label(), undo.as_deref());
-            assert_eq!(doc.redo_label(), redo.as_deref());
+            assert_eq!(doc.object(id).unwrap().attributes(), &attributes);
+            assert_eq!(doc.object(id).unwrap().group_ids(), &groups);
+            assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), vec![id]);
+            if pairs > 0 {
+                assert_eq!(doc.undo_label(), Some("QuadrangulateMesh"));
+                doc.undo().unwrap();
+                assert_eq!(
+                    doc.object(id).unwrap().geometry(),
+                    &Geometry::Mesh(source.clone())
+                );
+                doc.redo().unwrap();
+                assert_eq!(
+                    doc.object(id).unwrap().geometry(),
+                    &Geometry::Mesh(expected.clone())
+                );
+            } else {
+                assert_eq!(doc.undo_label(), undo.as_deref());
+                assert_eq!(doc.redo_label(), redo.as_deref());
+            }
         }
         println!(
             "QUAD_CONVERSION {}",
-            json!({"id":row["id"],"qualified":true,"faces":expected.face_count(),"vertices":expected.vertices().len(),"ngons":expected.ngons().len(),"pairs":pairs,"changed":pairs>0,"history":true,"metadata":true,"selection":true,"channels":true,"raw_faces":true,"native_invalid_ngons":native_invalid,"native_ngons_correspond":native_invalid.is_empty(),"maximum_error":0.})
+            json!({"id":row["id"],"qualified":true,"faces":expected.face_count(),"vertices":expected.vertices().len(),"ngons":expected.ngons().len(),"pairs":pairs,"changed":pairs>0,"history":true,"metadata":true,"selection":true,"channels":true,"raw_faces":true,"native_invalid_ngons":native_invalid,"native_ngons_correspond":native_invalid.is_empty(),"maximum_error":0.,"command_syntaxes":2})
         );
     }
 }

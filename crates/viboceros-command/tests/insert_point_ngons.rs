@@ -65,6 +65,16 @@ fn independent_spatial_layouts_keep_geometry_failures_explicit() {
         replay(row, "insert_point_spatial_layouts", "SPATIAL");
     }
 }
+#[test]
+fn spatial_prefixes_and_reversed_paths_retain_geometry_diagnostics() {
+    let capture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/insert_point_spatial_prefixes.json"
+    ))
+    .unwrap();
+    for row in capture["results"].as_array().unwrap() {
+        replay(row, "insert_point_spatial_prefixes", "PREFIX");
+    }
+}
 fn replay(row: &serde_json::Value, family: &str, stage: &str) {
     eprintln!("N-gon {}", row["id"]);
     let v = &row["value"];
@@ -84,7 +94,9 @@ fn replay(row: &serde_json::Value, family: &str, stage: &str) {
     assert_eq!(document.object(ids[0]).unwrap().geometry(), &original);
     session.finish(&mut document).unwrap();
     let comparison = fixtures::check_scene(&document, &ids, &v["after"], true, family);
-    if stage == "NGON" {
+    if stage == "PREFIX" {
+        fixtures::assert_prefix_result(row["id"].as_str().unwrap(), &comparison);
+    } else if stage == "NGON" {
         fixtures::assert_ngon_cell_gap(row["id"].as_str().unwrap(), &comparison);
     } else if stage == "SPATIAL" {
         fixtures::assert_spatial_result(row["id"].as_str().unwrap(), &comparison);
