@@ -185,6 +185,8 @@ throughput separately from command and Rhino timings.
 [`RebuildMeshNormals`](rebuild-mesh-normals.md) reconstructs stored normals and
 removes unused vertices, preserving raw seams, channels and n-gon overlays.
 It supports preselection, command-first selection and document Undo/Redo.
+[`RebuildMesh`](rebuild-mesh.md) also removes n-gons and provides independent
+UV/color preservation options with remembered accepted settings.
 
 [`TriangulateMesh`](triangulate-mesh.md) uses OpenNURBS to split quads while
 retaining vertex channels. Its command removes all n-gon overlays; the geometry

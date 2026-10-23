@@ -422,6 +422,27 @@ impl CommandRegistry {
             .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
         self.commands[*index].object_selection_confirmation(document, &tokens.collect::<Vec<_>>())
     }
+    /// Dispatch staged option parsing to the active command. Ordinary commands
+    /// retain the descriptor parser; native toggle getters may override it.
+    pub fn update_object_selection_options(
+        &self,
+        prompt: &mut ObjectSelectionPrompt,
+        input: &str,
+    ) -> Result<(), CommandError> {
+        let name = normalize_command_name(
+            prompt
+                .command
+                .split_whitespace()
+                .next()
+                .ok_or(CommandError::EmptyInput)?,
+        );
+        let index = self
+            .lookup
+            .get(&name)
+            .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
+        self.commands[*index].update_object_selection_options(prompt, input)
+    }
+
     pub fn accept_object_selection_options(
         &self,
         prompt: &ObjectSelectionPrompt,

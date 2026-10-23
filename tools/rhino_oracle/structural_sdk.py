@@ -6,6 +6,8 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'rebuild_mesh_sdk': ('rebuild_mesh_probe', ('rebuild_mesh_cases','mesh_channel_capture','join_probe','merge_edges_probe')),
+    'rebuild_mesh_command': ('rebuild_mesh_probe', ('rebuild_mesh_cases','mesh_channel_capture','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'rebuild_mesh_normals_sdk': ('rebuild_normals_probe', ('rebuild_normals_cases','mesh_channel_capture','join_probe','merge_edges_probe')),
     'rebuild_mesh_normals_command': ('rebuild_normals_probe', ('rebuild_normals_cases','mesh_channel_capture','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'triangulate_mesh_sdk': ('triangulate_probe', ('triangulate_cases','mesh_channel_capture','join_probe','merge_edges_probe')),

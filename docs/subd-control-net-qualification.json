@@ -389,7 +389,7 @@
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "c20619d7a3861b87af0225a5df25582d52613291d6c42db0f61a075be57f364c",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "6b58f98fb8ebdccd049410d56804bdba066abd54ec7227fc18bb97e977da0ffb",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
-    "tools/rhino_oracle/qualification_sources.py": "64fe71d122ab83ea036a1ac87b6f1bf2f5304d665c6c4bb34cd1ec99b520507f",
+    "tools/rhino_oracle/qualification_sources.py": "fd15503230845746e663b29318bd284a8f4c370e318cf8ca153ff44d948f598d",
     "tools/rhino_oracle/fixtures/control_polygon.json": "edaba3375349b6001d10b87b256988ffe2bbe40ce67a64dcf721ba5e5f453f17",
     "tools/rhino_oracle/observations/control_polygon.json": "d266d21f0fe302f67ab0c54940640547f260d17163fe27eb932d59789e2f2204",
     "tools/rhino_oracle/fixtures/control_polygon/result/box.3dm": "e35b71c6303d64ce780754cb855a22563f8d2201dddd2c8ad2ad2dc2d0c974c8",
@@ -560,6 +560,7 @@
     "crates/viboceros-geometry/src/mesh/insert/pairing.rs": "908235c3ad3f17df5ea3030f938777d9b4cb3a932bfe8419930162922bbf7318",
     "crates/viboceros-geometry/src/mesh/nonplanar_quads.rs": "5f9945267d8831a91497d255a06438b5d6ed89cb429d025a4235a51da60ae690",
     "crates/viboceros-geometry/src/mesh/quad_planarity.rs": "562d620abc34f2e15ec69948268c55312b43e6d3030caaf0720c9de645cccada",
-    "crates/viboceros-geometry/src/mesh/triangulate.rs": "c53e5b5665edc816f02a69125dd9d82d108469fd75598662e1d3900427193fd6"
+    "crates/viboceros-geometry/src/mesh/triangulate.rs": "c53e5b5665edc816f02a69125dd9d82d108469fd75598662e1d3900427193fd6",
+    "crates/viboceros-geometry/src/mesh/rebuild_mesh.rs": "0bd719e4330e36a3ffe2b9c141dee8d9c55a36beaadc63f620142227346c8c25"
   }
 }

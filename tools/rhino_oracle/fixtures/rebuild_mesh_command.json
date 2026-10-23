@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_fresh",
+      "case": "rebuild_mesh_command_fresh"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_set_both",
+      "case": "rebuild_mesh_command_set_both"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_after_both",
+      "case": "rebuild_mesh_command_after_both"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_set_uv",
+      "case": "rebuild_mesh_command_set_uv"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_after_uv",
+      "case": "rebuild_mesh_command_after_uv"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_set_colors",
+      "case": "rebuild_mesh_command_set_colors"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_after_colors",
+      "case": "rebuild_mesh_command_after_colors"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_set_neither",
+      "case": "rebuild_mesh_command_set_neither"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_after_neither",
+      "case": "rebuild_mesh_command_after_neither"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_cancel_options",
+      "case": "rebuild_mesh_command_cancel_options"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_after_cancel",
+      "case": "rebuild_mesh_command_after_cancel"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_noop",
+      "case": "rebuild_mesh_command_noop"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_mixed",
+      "case": "rebuild_mesh_command_mixed"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_two",
+      "case": "rebuild_mesh_command_two"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_unused",
+      "case": "rebuild_mesh_command_unused"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_seam",
+      "case": "rebuild_mesh_command_seam"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_ngon_order",
+      "case": "rebuild_mesh_command_ngon_order"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_tiny",
+      "case": "rebuild_mesh_command_tiny"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_translated",
+      "case": "rebuild_mesh_command_translated"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_collinear",
+      "case": "rebuild_mesh_command_collinear"
+    },
+    {
+      "op": "rebuild_mesh_command",
+      "id": "rebuild_mesh_command_cancel_empty",
+      "case": "rebuild_mesh_command_cancel_empty"
+    }
+  ]
+}

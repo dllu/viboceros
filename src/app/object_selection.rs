@@ -15,6 +15,8 @@ mod modify_radius;
 #[cfg(test)]
 mod planar_mesh_tests;
 #[cfg(test)]
+mod rebuild_mesh_tests;
+#[cfg(test)]
 mod rebuild_normals_tests;
 mod reduce_polyline;
 #[cfg(test)]
@@ -1545,7 +1547,9 @@ impl VibocerosApp {
                     pending.description.update_menu_options(index, input)
                 }
                 ObjectPromptPhase::Choice(index) => pending.description.choices[index].set(input),
-                _ => pending.description.update_options(input),
+                _ => self
+                    .commands
+                    .update_object_selection_options(&mut pending.description, input),
             }
         };
         match update.and_then(|()| {

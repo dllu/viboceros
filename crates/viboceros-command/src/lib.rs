@@ -214,6 +214,7 @@ mod match_curve_direction;
 mod match_mesh_edge;
 use extrude_mesh::ExtrudeMeshCommand;
 mod mesh_edit;
+pub use mesh_edit::MeshRebuildOptions;
 mod mesh_face_filter;
 use mesh_edit::{
     CollapseMeshEdgeCommand, DeleteFacesCommand, ExtractDuplicateMeshFacesCommand,
@@ -762,6 +763,15 @@ pub trait Command: Send + Sync {
         false
     }
 
+    /// Stage command-specific option syntax without changing model or saved defaults.
+    fn update_object_selection_options(
+        &self,
+        prompt: &mut ObjectSelectionPrompt,
+        input: &str,
+    ) -> Result<(), CommandError> {
+        prompt.update_options(input)
+    }
+
     /// Accepts choices entered at an object prompt, independently of model edits.
     fn accept_object_selection_options(&self, _arguments: &[&str]) -> Result<(), CommandError> {
         Ok(())
@@ -910,6 +920,7 @@ pub struct CommandRegistry {
         std::sync::Arc<remembered::Remembered<triangulate_nonplanar_quads::Options>>,
     quadrangulate_mesh_preferences:
         std::sync::Arc<remembered::Remembered<quadrangulate_mesh::Options>>,
+    rebuild_mesh_preferences: std::sync::Arc<remembered::Remembered<MeshRebuildOptions>>,
     mesh_from_lines_preferences:
         std::sync::Arc<remembered::Remembered<mesh_from_lines::Preferences>>,
 }
@@ -1766,6 +1777,11 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(RebuildMeshNormalsCommand)
+            .expect("unique built-in command");
+        registry
+            .register(mesh_edit::RebuildMeshCommand(
+                registry.rebuild_mesh_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(WeldCommand)
@@ -13999,6 +14015,8 @@ pub enum CommandError {
     UnsupportedUnifyMeshNormalsGeometry,
     #[error("RebuildMeshNormals requires selected mesh objects")]
     UnsupportedRebuildMeshNormalsGeometry,
+    #[error("RebuildMesh requires selected mesh objects")]
+    UnsupportedRebuildMeshGeometry,
 
     #[error("Weld supports selected meshes only")]
     UnsupportedWeldGeometry,

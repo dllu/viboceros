@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_default",
+      "case": "rebuild_mesh_default"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_neither",
+      "case": "rebuild_mesh_neither"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_uv",
+      "case": "rebuild_mesh_uv"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_colors",
+      "case": "rebuild_mesh_colors"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_both",
+      "case": "rebuild_mesh_both"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_unused",
+      "case": "rebuild_mesh_unused"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_warp",
+      "case": "rebuild_mesh_warp"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_seam",
+      "case": "rebuild_mesh_seam"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_ngon_order",
+      "case": "rebuild_mesh_ngon_order"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_tiny",
+      "case": "rebuild_mesh_tiny"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_translated",
+      "case": "rebuild_mesh_translated"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_reversed",
+      "case": "rebuild_mesh_reversed"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_opposed",
+      "case": "rebuild_mesh_opposed"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_zero_normals",
+      "case": "rebuild_mesh_zero_normals"
+    },
+    {
+      "op": "rebuild_mesh_sdk",
+      "id": "rebuild_mesh_collinear",
+      "case": "rebuild_mesh_collinear"
+    }
+  ]
+}
