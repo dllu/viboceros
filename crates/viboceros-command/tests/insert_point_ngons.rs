@@ -20,35 +20,80 @@ fn original_ngon_adjacency_and_new_large_regions_match_independent_native_cases(
     ))
     .unwrap();
     for row in capture["results"].as_array().unwrap() {
-        eprintln!("N-gon {}", row["id"]);
-        let v = &row["value"];
-        let (mut document, ids) = native::setup_from_family(row, "insert_point_ngons");
-        let original = document.object(ids[0]).unwrap().geometry().clone();
-        let mut session = InsertSession::new(&document, ids[0]).unwrap();
-        assert!(fixtures::stage(&mut session, &document, v));
-        let mut preview = document.clone();
-        session.apply_preview(&mut preview).unwrap();
-        fixtures::check(&preview, &ids, &v["after"], true);
-        assert_eq!(document.object(ids[0]).unwrap().geometry(), &original);
-        session.finish(&mut document).unwrap();
-        let comparison = fixtures::check(&document, &ids, &v["after"], true);
-        fixtures::assert_ngon_cell_gap(row["id"].as_str().unwrap(), &comparison);
-        let (mut scripted, script_ids) = native::setup_from_family(row, "insert_point_ngons");
-        CommandRegistry::with_builtins()
-            .execute(&mut scripted, &fixtures::script(v))
-            .unwrap();
-        assert_eq!(
-            fixtures::check(&scripted, &script_ids, &v["after"], true),
-            comparison
-        );
-        assert_eq!(document.undo_label(), Some("InsertPoint"));
-        document.undo().unwrap();
-        fixtures::check(&document, &ids, &v["undo"], false);
-        document.redo().unwrap();
-        fixtures::check(&document, &ids, &v["redo"], false);
-        println!(
-            "INSERT_POINT_NGON {}",
-            json!({"id":row["id"],"comparison":comparison,"identity":true,"metadata":true,"history":true,"preview":true,"changed":true})
-        );
+        replay(row, "insert_point_ngons", "NGON");
     }
+}
+#[test]
+fn skewed_rotated_tall_and_warped_quad_regions_match_native_geometry() {
+    let capture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/insert_point_mesh_shapes.json"
+    ))
+    .unwrap();
+    for row in capture["results"].as_array().unwrap() {
+        replay(row, "insert_point_mesh_shapes", "SHAPE");
+    }
+}
+#[test]
+fn control_surface_hits_and_camera_target_fallback_match_native_depth_picks() {
+    for (family, text, stage) in [
+        (
+            "insert_point_pick_depth",
+            include_str!("../../../tools/rhino_oracle/observations/insert_point_pick_depth.json"),
+            "DEPTH",
+        ),
+        (
+            "insert_point_pick_depth_v2",
+            include_str!(
+                "../../../tools/rhino_oracle/observations/insert_point_pick_depth_v2.json"
+            ),
+            "DEPTH_V2",
+        ),
+    ] {
+        let capture: serde_json::Value = serde_json::from_str(text).unwrap();
+        for row in capture["results"].as_array().unwrap() {
+            replay(row, family, stage);
+        }
+    }
+}
+fn replay(row: &serde_json::Value, family: &str, stage: &str) {
+    eprintln!("N-gon {}", row["id"]);
+    let v = &row["value"];
+    let (mut document, ids) = native::setup_from_family(row, family);
+    let original = document.object(ids[0]).unwrap().geometry().clone();
+    let mut session = InsertSession::new(&document, ids[0]).unwrap();
+    session.prepare_picking().unwrap();
+    let script = if stage != "NGON" {
+        fixtures::edge_script(&session, v)
+    } else {
+        fixtures::script(v)
+    };
+    assert!(fixtures::stage(&mut session, &document, v));
+    let mut preview = document.clone();
+    session.apply_preview(&mut preview).unwrap();
+    fixtures::check(&preview, &ids, &v["after"], true);
+    assert_eq!(document.object(ids[0]).unwrap().geometry(), &original);
+    session.finish(&mut document).unwrap();
+    let comparison = fixtures::check(&document, &ids, &v["after"], true);
+    if stage == "NGON" {
+        fixtures::assert_ngon_cell_gap(row["id"].as_str().unwrap(), &comparison);
+    } else {
+        fixtures::assert_additional_cell_gap(row["id"].as_str().unwrap(), &comparison);
+    }
+    let (mut scripted, script_ids) = native::setup_from_family(row, family);
+    CommandRegistry::with_builtins()
+        .execute(&mut scripted, &script)
+        .unwrap();
+    assert_eq!(
+        fixtures::check(&scripted, &script_ids, &v["after"], true),
+        comparison
+    );
+    assert_eq!(document.undo_label(), Some("InsertPoint"));
+    document.undo().unwrap();
+    fixtures::check(&document, &ids, &v["undo"], false);
+    document.redo().unwrap();
+    fixtures::check(&document, &ids, &v["redo"], false);
+    println!(
+        "INSERT_POINT_{stage} {}",
+        json!({"id":row["id"],"comparison":comparison,"identity":true,"metadata":true,"history":true,"preview":true,"changed":true})
+    );
 }

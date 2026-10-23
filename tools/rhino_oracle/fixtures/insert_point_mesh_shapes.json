@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_trapezoid",
+      "case": "insert_point_shape_trapezoid"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_trapezoid_reversed",
+      "case": "insert_point_shape_trapezoid_reversed"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_trapezoid_adjacent",
+      "case": "insert_point_shape_trapezoid_adjacent"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_rhombus",
+      "case": "insert_point_shape_rhombus"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_rhombus_same_edge",
+      "case": "insert_point_shape_rhombus_same_edge"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_tall_low",
+      "case": "insert_point_shape_tall_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_tall_high",
+      "case": "insert_point_shape_tall_high"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_rotated_low",
+      "case": "insert_point_shape_rotated_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_rotated_high",
+      "case": "insert_point_shape_rotated_high"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_warped_low",
+      "case": "insert_point_shape_warped_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_warped_high",
+      "case": "insert_point_shape_warped_high"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_shape_skewed",
+      "case": "insert_point_shape_skewed"
+    }
+  ]
+}

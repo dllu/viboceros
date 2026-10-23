@@ -6,6 +6,8 @@ Select one editable mesh or SubD and run `InsertPoint`, or run the command first
 and pick its source. Click original control edges to insert points. Consecutive
 picks connect across faces, inserting crossing points on intermediate source
 edges. The original edge cage remains available after preview chords appear.
+Free picks take depth from the original control mesh under the cursor, or the
+camera-target plane outside it, then project onto the selected spatial edge.
 Enabled Osnap features project onto the chosen edge; the cursor shows both the
 feature and its constrained edge point when they differ.
 
@@ -30,6 +32,7 @@ geometry, tolerance or editability invalidate a staged preview.
 Mesh vertex channels and seams survive insertion. Existing n-gon memberships
 follow original face adjacency; new polygon regions with more than four boundary
 vertices receive n-gon overlays. Some native triangle/quad layout choices still
-differ. The [qualification record](../insert-point-command-qualification.json)
+differ, including display surfaces in two warped-mesh cases. The
+[qualification record](../insert-point-command-qualification.json)
 keeps those differences visible. Native perspective crossing paths, changing
 views, constrained Osnap, grip behavior and comparative speed remain unqualified.

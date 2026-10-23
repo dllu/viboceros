@@ -17,6 +17,14 @@ impl Prompt {
     }
 }
 impl VibocerosApp {
+    fn insertion_session(
+        &self,
+        id: ObjectId,
+    ) -> Result<InsertSession, viboceros_command::CommandError> {
+        let mut session = InsertSession::new(&self.document, id)?;
+        session.prepare_picking()?;
+        Ok(session)
+    }
     pub(super) fn insert_prompt(&self) -> Option<&Prompt> {
         match self.crease_prompt.as_ref()? {
             crease::Prompt::Insert(p) => Some(p),
@@ -36,7 +44,7 @@ impl VibocerosApp {
         }
         let ids = self.document.selected_object_ids().collect::<Vec<_>>();
         let session = if let [id] = ids.as_slice() {
-            InsertSession::new(&self.document, *id).ok()
+            self.insertion_session(*id).ok()
         } else {
             None
         };
@@ -52,7 +60,7 @@ impl VibocerosApp {
         true
     }
     pub(super) fn select_insert_source(&mut self, id: ObjectId) {
-        let result = InsertSession::new(&self.document, id);
+        let result = self.insertion_session(id);
         match result {
             Ok(session) => {
                 self.document.clear_selection();

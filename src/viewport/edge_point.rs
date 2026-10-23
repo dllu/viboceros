@@ -9,6 +9,11 @@ pub(super) struct EdgePointCursor {
     pub(super) parameter: Real,
     snap: Option<ObjectSnap>,
 }
+impl EdgePointCursor {
+    pub(super) fn has_snap(self) -> bool {
+        self.snap.is_some()
+    }
+}
 
 pub(super) struct EdgeSnapCache {
     curve: NurbsCurve,

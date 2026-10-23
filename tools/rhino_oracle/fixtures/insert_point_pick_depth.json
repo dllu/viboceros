@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_mesh_low",
+      "case": "insert_point_depth_mesh_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_mesh_high",
+      "case": "insert_point_depth_mesh_high"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_mesh_target_plus",
+      "case": "insert_point_depth_mesh_target_plus"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_mesh_undo_repick",
+      "case": "insert_point_depth_mesh_undo_repick"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_mesh_translated",
+      "case": "insert_point_depth_mesh_translated"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_mesh_second_point",
+      "case": "insert_point_depth_mesh_second_point"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_subd_low",
+      "case": "insert_point_depth_subd_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_subd_high",
+      "case": "insert_point_depth_subd_high"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_subd_target_plus",
+      "case": "insert_point_depth_subd_target_plus"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_subd_undo_repick",
+      "case": "insert_point_depth_subd_undo_repick"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_subd_translated",
+      "case": "insert_point_depth_subd_translated"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_subd_second_point",
+      "case": "insert_point_depth_subd_second_point"
+    }
+  ]
+}

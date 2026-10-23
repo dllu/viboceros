@@ -4,6 +4,10 @@ import json,os
 def drive(op,host,guides,command="Conic"):
     if command not in ("InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
+    if command=='InsertPoint' and op.get('view_target_offset_z'):
+        target=vp.CameraTarget
+        vp.SetCameraTarget(R.Geometry.Point3d(target.X,target.Y,target.Z+op['view_target_offset_z']),False)
+        view.Redraw()
     plan_view=None
     if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','InterpCrvOnSrf','PolylineOnMesh'):
         vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned surface curve array input',False);vp.ZoomExtents();view.Redraw()
@@ -108,8 +112,22 @@ def drive(op,host,guides,command="Conic"):
             mouse_steps.append((i,marker,pixel,ready,[],base))
             clicks.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]));tokens.append(None)
             if command=='InsertPoint':
+                clicks[-1]['view_target']=host['_xyz'](vp.CameraTarget)
+                clicks[-1]['camera_direction']=host['_xyz'](vp.CameraDirection)
                 ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
                 clicks[-1]['ray']=[[float(ray.From.X),float(ray.From.Y),float(ray.From.Z)],[float(ray.To.X),float(ray.To.Y),float(ray.To.Z)]]
+                if op.get('capture_pick_hint'):
+                    geometry=next(obj.Geometry for obj in doc.Objects if isinstance(obj.Geometry,(R.Geometry.Mesh,R.Geometry.SubD)))
+                    mesh=R.Geometry.Mesh.CreateFromSubDControlNet(geometry)if isinstance(geometry,R.Geometry.SubD)else geometry
+                    try:
+                        direction=ray.Direction;direction.Unitize()
+                        pick_ray=R.Geometry.Ray3d(ray.From,direction)
+                        distance=R.Geometry.Intersect.Intersection.MeshRay(mesh,pick_ray)
+                        clicks[-1]['ray_hit_point']=host['_xyz'](pick_ray.PointAt(distance))if distance>=0. else None
+                        ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,R.Geometry.Plane(vp.CameraTarget,vp.CameraDirection))
+                        if ok:clicks[-1]['view_target_point']=host['_xyz'](ray.PointAt(t))
+                    finally:
+                        if mesh is not geometry:mesh.Dispose()
                 ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,vp.GetConstructionPlane().Plane)
                 if ok:clicks[-1]['projected_point']=host['_xyz'](ray.PointAt(t))
             if op.get('op')=='arc_command':

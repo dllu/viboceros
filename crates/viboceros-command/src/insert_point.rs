@@ -14,6 +14,7 @@ pub struct InsertSession {
     picks: Vec<PolygonEdgePoint>,
     candidate: Geometry,
     view_normal: Option<UnitVector3>,
+    pick_mesh: Option<std::sync::Arc<TriangleMesh>>,
 }
 impl InsertSession {
     pub fn new(document: &Document, object: ObjectId) -> Result<Self, CommandError> {
@@ -47,6 +48,7 @@ impl InsertSession {
             picks: Vec::new(),
             candidate: source.geometry().clone(),
             view_normal: None,
+            pick_mesh: None,
         })
     }
     pub fn object(&self) -> ObjectId {
@@ -60,6 +62,22 @@ impl InsertSession {
     }
     pub fn candidate(&self) -> &Geometry {
         &self.candidate
+    }
+    /// Prepare the original control cage only when a graphical getter needs it.
+    pub fn prepare_picking(&mut self) -> Result<(), CommandError> {
+        if self.pick_mesh.is_none()
+            && let Geometry::SubD(subd) = &*self.snapshot
+        {
+            self.pick_mesh = Some(std::sync::Arc::new(subd.control_mesh()?));
+        }
+        Ok(())
+    }
+    pub fn source_pick_mesh(&self) -> Option<&TriangleMesh> {
+        match &*self.snapshot {
+            Geometry::Mesh(mesh) => Some(mesh),
+            Geometry::SubD(_) => self.pick_mesh.as_deref(),
+            _ => None,
+        }
     }
     pub fn validate(&self, document: &Document) -> Result<(), CommandError> {
         if document.tolerance() != self.tolerance

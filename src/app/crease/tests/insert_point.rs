@@ -22,6 +22,40 @@ fn ngon_getter_preserves_native_overlays_and_document_history() {
         replay(row, "insert_point_ngons", "NGON_GETTER");
     }
 }
+#[test]
+fn shape_getter_uses_native_top_rays_for_warped_and_rotated_edges() {
+    let capture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/insert_point_mesh_shapes.json"
+    ))
+    .unwrap();
+    for row in capture["results"].as_array().unwrap() {
+        replay(row, "insert_point_mesh_shapes", "SHAPE_GETTER");
+    }
+}
+#[test]
+fn depth_getters_use_source_surface_and_camera_target_before_and_after_undo() {
+    for (family, text, stage) in [
+        (
+            "insert_point_pick_depth",
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/insert_point_pick_depth.json"
+            ),
+            "DEPTH_GETTER",
+        ),
+        (
+            "insert_point_pick_depth_v2",
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/insert_point_pick_depth_v2.json"
+            ),
+            "DEPTH_V2_GETTER",
+        ),
+    ] {
+        let capture: serde_json::Value = serde_json::from_str(text).unwrap();
+        for row in capture["results"].as_array().unwrap() {
+            replay(row, family, stage);
+        }
+    }
+}
 fn replay(row: &serde_json::Value, family: &str, stage: &str) {
     let v = &row["value"];
     eprintln!("Getter {}", row["id"]);
@@ -35,17 +69,14 @@ fn replay(row: &serde_json::Value, family: &str, stage: &str) {
         "{:?}",
         app.command_log
     );
-    for action in fixtures::actions(v) {
+    for (index, action) in fixtures::actions(v).into_iter().enumerate() {
         match action {
-            InsertAction::Point(point) => {
-                let pick = app
-                    .insert_prompt()
-                    .unwrap()
-                    .session
-                    .as_ref()
-                    .unwrap()
-                    .pick_point(point)
-                    .unwrap();
+            InsertAction::Point(_) => {
+                let pick = fixtures::captured_pick(
+                    app.insert_prompt().unwrap().session.as_ref().unwrap(),
+                    v,
+                    index,
+                );
                 app.handle_viewport_action(ViewportOutput {
                     insert_point: Some((
                         pick,
@@ -75,8 +106,10 @@ fn replay(row: &serde_json::Value, family: &str, stage: &str) {
     let comparison = fixtures::check(&app.document, &ids, &v["after"], true);
     if stage == "GETTER" {
         fixtures::assert_known_cell_gap(row["id"].as_str().unwrap(), &comparison);
-    } else {
+    } else if stage == "NGON_GETTER" {
         fixtures::assert_ngon_cell_gap(row["id"].as_str().unwrap(), &comparison);
+    } else {
+        fixtures::assert_additional_cell_gap(row["id"].as_str().unwrap(), &comparison);
     }
     let changed = app.document.undo_label() == Some("InsertPoint");
     enter(&mut app, "Undo");

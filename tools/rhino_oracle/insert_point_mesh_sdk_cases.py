@@ -130,10 +130,20 @@ CASES = {'insert_point_full_mesh_adjacent_0': {'vertices': [[0.0, 1.504219948849
                                          'capture': 'insert_point_regions',
                                          'source_id': 'insert_point_regions_same_reverse'}}
 
-def request(origins=False):
-    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op="insert_point_mesh_sdk",id=k+'_origins',case=k,origins=True)if origins else dict(op="insert_point_mesh_sdk",id=k,case=k)for k in CASES])
+def request(origins=False, methods=False):
+    if origins and methods:raise ValueError('one fixed calibration variant required')
+    variant = 'methods' if methods else 'origins' if origins else None
+    operations = []
+    for key in CASES:
+        op = dict(op='insert_point_mesh_sdk', id=key+('_'+variant if variant else ''), case=key)
+        if variant:op[variant] = True
+        operations.append(op)
+    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=operations)
 
 def validate(op):
-    try:valid=isinstance(op,dict)and set(op)==({"op","id","case","origins"}if op.get('origins')is True else{"op","id","case"})and op["op"]=="insert_point_mesh_sdk"and op["case"]in CASES and op["id"]==op["case"]+('_origins'if op.get('origins')is True else'')
+    if not isinstance(op, dict):raise ValueError('fixed insertion-region SDK recipe required')
+    try:
+        variant = 'methods' if op.get('methods') is True else 'origins' if op.get('origins') is True else None
+        valid=isinstance(op,dict)and set(op)==({'op','id','case',variant}if variant else{'op','id','case'})and op['op']=='insert_point_mesh_sdk'and op['case']in CASES and op['id']==op['case']+('_'+variant if variant else'')
     except TypeError:valid=False
     if not valid:raise ValueError("fixed insertion-region SDK recipe required")

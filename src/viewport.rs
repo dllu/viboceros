@@ -339,6 +339,7 @@ pub enum FacePickMode {
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
+    pub insert_mesh: Option<&'a TriangleMesh>,
     pub soft_crease: Option<soft_crease::Overlay<'a>>,
     pub drafting: DraftingInput,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
@@ -460,6 +461,7 @@ impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
             insert_edges: None,
+            insert_mesh: None,
             soft_crease: None,
             drafting: DraftingInput::default(),
             point_filter: None,
@@ -2780,7 +2782,14 @@ impl Viewport {
             && self.has_unmeshed_selected_face_source(document, input.face_pick.unwrap());
         let insert_cursor = input.insert_edges.and_then(|edges| {
             response.hover_pos().and_then(|p| {
-                self.insert_point_cursor(edges, p, rect, document, drafting.snap_options())
+                self.insert_point_cursor(
+                    edges,
+                    p,
+                    rect,
+                    document,
+                    drafting.snap_options(),
+                    input.insert_mesh,
+                )
             })
         });
         if let Some(edges) = input.insert_edges {

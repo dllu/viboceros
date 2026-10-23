@@ -13,6 +13,8 @@ operations in one archive decode/edit/encode, retaining existing tags and
 component identities. Near-endpoint user parameters clamp to `[0.001, 0.999]`.
 Meshes keep raw seams separate, interpolate color/UV/normal channels, and reuse
 the existing constrained triangulation and quadrangulation code. Mesh geometry
+prioritizes pairing poorer triangles to retain better standalone triangles;
+the public general-purpose quadrangulation ordering is unchanged. Insertion
 uses its validation tolerance so existing features below document tolerance
 survive. Original n-gon membership follows adjacency through original edges and
 their split segments. New tessellation edges join automatic n-gons only for
@@ -31,27 +33,45 @@ separate document; Enter admits one transaction, while Cancel discards it.
 Geometry, tolerance and editability changes invalidate admission. Typed input
 is parsed completely and staged on a trial session before accepting the line.
 
+The viewport chooses an original edge in screen space, then derives the free
+point's depth from the original control display mesh using fixed 0-2 quad
+facets. Rays outside that mesh use the camera-target plane. The closest 3D edge
+parameter supplies the insertion and its cursor marker. SubD control meshes are
+prepared lazily and shared across session clones. The original pick surface
+survives local Undo and preview chords. Snaps take precedence over free depth.
+
 The [kernel record](../insert-point-kernel-qualification.json) contains ten
 independent SubD replays. The separate
-[command record](../insert-point-command-qualification.json) covers 33 command
-and 33 application getter replays plus 12 spatial, triangular, seam, n-gon and
+[command record](../insert-point-command-qualification.json) covers 65 command
+and 65 application getter replays plus 12 spatial, triangular, seam, n-gon and
 original-edge cases. Replays use saved source 3DM files and independently
-captured physical pixel rays. The largest coordinate or sampled surface
-difference is about `2.35e-12` at a `1e-6` acceptance threshold. All captured
-explicit n-gon overlays and logical regions agree. Three primary cases, two
-additional holdouts and one adjacent-overlay case still differ in their stored
-triangle/quad layouts; those diagnostics remain explicit.
+captured physical pixel rays. Coordinates and shorter-diagonal surface samples
+differ by at most about `2.35e-12` at a `1e-6` acceptance threshold. All captured
+explicit n-gon overlays and logical regions agree. Five earlier triangle/quad
+layout differences are resolved. One repeated-edge primary case and three new
+depth cases retain different stored cells; three also differ in fixed facets.
+Fixed-facet surface samples exceed that threshold in the two second-pick warped
+depth cases, with errors around `0.14`. They remain geometrically unqualified;
+matching shorter-diagonal samples does not establish display-surface agreement.
 
 Twelve dedicated n-gon scenes cover triangle overlays, repeated boundary picks,
 reordered faces, triangulated fans, interior picks, crossing paths and adjacent
 n-gons. Command and application replays compare boundaries, memberships,
 coordinates, channels, preview isolation, metadata and document Undo/Redo.
 
-Thirty-two public meshing API calibration recipes use captured *output*
-regions. Neither public triangulation nor quad conversion, across every cyclic
-boundary origin, reproduces all native InsertPoint layouts. These recipes do
-not qualify command input behavior. An earlier failed holdout import retains
-its request, host log and frozen sources; no native response survived.
+Twelve independent shape scenes cover skewed, tall, rotated, reversed and warped
+quads. Twenty warped Mesh/SubD depth scenes cover inside/outside rays, translated
+sources, shifted camera targets, second picks and local Undo. New depth captures
+record target/direction witnesses; older unchanged Top ZoomExtents captures use
+the ray midpoint for target depth. Replays reconstruct surface hints from the
+saved source and rays, without reading output geometry. Generic SDK `MeshRay`
+hits use a shorter quad diagonal and remain separate calibration diagnostics.
+
+Forty-eight public meshing API calibration recipes use captured *output*
+regions. None reproduce all native InsertPoint layouts, including alternative
+boundary origins, line tessellation and planar meshing. These recipes do not
+qualify command input behavior. An earlier failed holdout import retains its
+request, host log and frozen sources; no native response survived.
 
 Perspective point picking has local spatial-edge tests, but native perspective
 crossing paths, changing views, constrained Osnap, grips, arbitrary spatial or

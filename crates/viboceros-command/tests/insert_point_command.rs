@@ -91,18 +91,8 @@ fn spatial_ngon_seam_and_original_edge_holdouts_retain_all_geometry_diagnostics(
         if let Geometry::Mesh(_) = doc.object(ids[0]).unwrap().geometry() {
             let id = row["id"].as_str().unwrap();
             assert_eq!(check["logical_regions"], true);
-            assert_eq!(
-                check["stored_pieces_correspond"],
-                ![
-                    "insert_point_holdout_mesh_ngon_island",
-                    "insert_point_holdout_mesh_reverse",
-                ]
-                .contains(&id)
-            );
-            assert_eq!(
-                check["stored_facets_correspond"],
-                id != "insert_point_holdout_mesh_reverse"
-            );
+            assert_eq!(check["stored_pieces_correspond"], true, "{id}");
+            assert_eq!(check["stored_facets_correspond"], true, "{id}");
         }
         println!(
             "INSERT_POINT_HOLDOUT {}",

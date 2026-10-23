@@ -14,6 +14,7 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         osnap: impl Into<viboceros_drafting::ObjectSnapOptions>,
+        source_mesh: Option<&TriangleMesh>,
     ) -> Option<InsertPointCursor> {
         if !rect.contains(pointer) {
             return None;
@@ -28,8 +29,28 @@ impl Viewport {
             })
             .min_by(|a, b| a.0.total_cmp(&b.0).then(a.1.cmp(&b.1)))?;
         let curve = edges[edge].to_nurbs().ok()?;
-        let constrained = self.edge_point_cursor(&curve, None, pointer, rect, document, osnap)?;
+        let osnap = osnap.into();
+        let mut constrained =
+            self.edge_point_cursor(&curve, None, pointer, rect, document, osnap)?;
         let domain = curve.domain();
+        let endpoint_snap = osnap
+            .modes
+            .contains(viboceros_drafting::ObjectSnapKind::End)
+            && (constrained.parameter == *domain.start() || constrained.parameter == *domain.end());
+        if let Some(mesh) = source_mesh
+            && !constrained.has_snap()
+            && !endpoint_snap
+        {
+            let hint = self
+                .mesh_face_pick_with_point(pointer, rect, mesh)
+                .filter(|(hit, _, _)| hit.distance == 0.)
+                .and_then(|(_, _, point)| point)
+                .or_else(|| self.insert_target_plane_point(pointer, rect))?;
+            let parameter = edges[edge]
+                .closest_parameter(hint, Tolerance::MESH_VALIDATION)
+                .ok()?;
+            constrained.parameter = domain.start() + (domain.end() - domain.start()) * parameter;
+        }
         Some(InsertPointCursor {
             pick: PolygonEdgePoint {
                 edge,
@@ -39,6 +60,23 @@ impl Viewport {
             },
             constrained,
         })
+    }
+    fn insert_target_plane_point(&self, pointer: Pos2, rect: Rect) -> Option<Point3> {
+        let frame = self.construction_plane_aligned_to_view().ok()?;
+        let (origin, direction) =
+            self.drafting_view_line_relative_to(frame.origin(), pointer, rect)?;
+        let local = viboceros_drafting::plane::intersect_view_line(
+            Point3::try_from(origin.to_array()).ok()?,
+            direction,
+            frame.with_origin(Point3::try_new(0., 0., 0.).ok()?),
+            self.kind == ViewKind::Perspective,
+        )
+        .ok()
+        .flatten()?;
+        frame
+            .origin()
+            .translated(viboceros_geometry::Vector3::try_from(local.to_array()).ok()?)
+            .ok()
     }
     pub(super) fn paint_insert_edges(
         &self,
@@ -139,11 +177,11 @@ mod tests {
         let document = Document::default();
         let modes = viboceros_drafting::ObjectSnapModes::NONE;
         assert!(
-            view.insert_point_cursor(&edges, Pos2::new(-1., 300.), rect, &document, modes)
+            view.insert_point_cursor(&edges, Pos2::new(-1., 300.), rect, &document, modes, None)
                 .is_none()
         );
         assert!(
-            view.insert_point_cursor(&edges, Pos2::new(10., 10.), rect, &document, modes)
+            view.insert_point_cursor(&edges, Pos2::new(10., 10.), rect, &document, modes, None)
                 .is_none()
         );
     }
@@ -159,7 +197,14 @@ mod tests {
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
         let pointer = view.project(feature, rect).unwrap();
         let free = view
-            .insert_point_cursor(&edges, pointer, rect, &document, ObjectSnapModes::NONE)
+            .insert_point_cursor(
+                &edges,
+                pointer,
+                rect,
+                &document,
+                ObjectSnapModes::NONE,
+                None,
+            )
             .unwrap()
             .pick;
         let snapped = view
@@ -169,6 +214,7 @@ mod tests {
                 rect,
                 &document,
                 ObjectSnapModes::only(ObjectSnapKind::Point),
+                None,
             )
             .unwrap()
             .pick;
@@ -178,5 +224,85 @@ mod tests {
         assert!((snapped.parameter - expected).abs() < 1e-7);
         assert!((free.parameter - snapped.parameter).abs() > 0.01);
         assert_ne!(edges[0].point_at(snapped.parameter).unwrap(), feature);
+    }
+    #[test]
+    fn mesh_depth_hints_follow_display_facets_and_fall_back_to_the_view_target() {
+        use viboceros_drafting::ObjectSnapModes;
+        use viboceros_geometry::MeshFace;
+        for (shift, offset) in [(0., 0.), (0., 5.), (10., 0.)] {
+            let mesh = TriangleMesh::try_new_faces(
+                [[0., 0., 0.], [4., 0., 0.], [4., 3., 1.2], [0., 3., 0.4]]
+                    .into_iter()
+                    .map(|v| p(v[0], v[1], v[2] + shift))
+                    .collect(),
+                vec![MeshFace::Quad([0, 1, 2, 3])],
+                Tolerance::MESH_VALIDATION,
+            )
+            .unwrap();
+            let edges = mesh.wireframe_lines(Tolerance::MESH_VALIDATION).unwrap();
+            let mut view = Viewport::new(ViewKind::Top);
+            view.target = NaVector3::new(0., 0., shift + 0.6 + offset);
+            let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+            let mut document = Document::default();
+            document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+            for x in [-0.025, 0.025] {
+                let pointer = view.project(p(x, 0.75, shift), rect).unwrap();
+                let cursor = view
+                    .insert_point_cursor(
+                        &edges,
+                        pointer,
+                        rect,
+                        &document,
+                        ObjectSnapModes::NONE,
+                        Some(&mesh),
+                    )
+                    .unwrap();
+                let hint = if x < 0. {
+                    p(x, 0.75, shift + 0.6 + offset)
+                } else {
+                    p(x, 0.75, shift + 0.1 + 0.2 * x)
+                };
+                let expected = edges[cursor.pick.edge]
+                    .closest_parameter(hint, Tolerance::MESH_VALIDATION)
+                    .unwrap();
+                assert!((cursor.pick.parameter - expected).abs() < 1e-6);
+                let context = egui::Context::default();
+                let input = ViewportInput {
+                    insert_edges: Some(&edges),
+                    insert_mesh: Some(&mesh),
+                    ..Default::default()
+                };
+                frame(&context, &mut view, &document, input, vec![]);
+                let pointer = view
+                    .project(p(x, 0.75, shift), view.last_rect.unwrap())
+                    .unwrap();
+                let output = frame(
+                    &context,
+                    &mut view,
+                    &document,
+                    input,
+                    vec![
+                        egui::Event::PointerMoved(pointer),
+                        egui::Event::PointerButton {
+                            pos: pointer,
+                            button: PointerButton::Primary,
+                            pressed: true,
+                            modifiers: Default::default(),
+                        },
+                        egui::Event::PointerButton {
+                            pos: pointer,
+                            button: PointerButton::Primary,
+                            pressed: false,
+                            modifiers: Default::default(),
+                        },
+                    ],
+                );
+                let frame_pick = output.insert_point.unwrap_or_else(|| {
+                    panic!("no depth pick: shift={shift} offset={offset} x={x} pointer={pointer:?} rect={:?}", view.last_rect)
+                });
+                assert!((frame_pick.0.parameter - expected).abs() < 1e-6);
+                assert!(output.picked_point.is_none() && output.selection_click.is_none());
+            }
+        }
     }
 }

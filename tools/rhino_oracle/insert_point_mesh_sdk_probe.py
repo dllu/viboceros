@@ -11,6 +11,9 @@ def run(op, host, iterations, tolerance):
     if iterations != 1 or list(R.RhinoDoc.ActiveDoc.Objects) or R.RhinoDoc.ActiveDoc.UndoRecordingIsActive:
         raise ValueError('owned empty idle document required')
     case = CASES[op['case']]
+    if op.get('methods'):
+        from insert_point_mesh_methods import run as methods
+        return methods(case, host), 0
     points = [G.Point3d(*p) for p in case['vertices']]
     if op.get('origins'):
         results={}

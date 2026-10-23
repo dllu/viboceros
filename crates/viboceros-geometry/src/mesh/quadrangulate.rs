@@ -17,6 +17,7 @@ struct Candidate {
     quad: [u32; 4],
     diagonal_ratio: Real,
     normal_angle: Real,
+    removed_quality: Real,
 }
 
 impl TriangleMesh {
@@ -29,6 +30,25 @@ impl TriangleMesh {
         max_planarity_degrees: Real,
         max_diagonal_ratio: Real,
         tolerance: Tolerance,
+    ) -> Result<(Self, usize), GeometryError> {
+        self.pair_triangles(max_planarity_degrees, max_diagonal_ratio, tolerance, false)
+    }
+
+    /// Merge less well-shaped triangle pairs first, retaining better triangles
+    /// when two candidate quads compete for the same facet.
+    pub(crate) fn quadrangulate_preserving_triangle_quality(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<(Self, usize), GeometryError> {
+        self.pair_triangles(180., Real::MAX, tolerance, true)
+    }
+
+    fn pair_triangles(
+        &self,
+        max_planarity_degrees: Real,
+        max_diagonal_ratio: Real,
+        tolerance: Tolerance,
+        preserve_triangle_quality: bool,
     ) -> Result<(Self, usize), GeometryError> {
         if !max_planarity_degrees.is_finite()
             || !(0.0..=180.0).contains(&max_planarity_degrees)
@@ -63,6 +83,13 @@ impl TriangleMesh {
             }
         }
         let normals = self.polygon_face_normals()?;
+        let triangle_quality = if preserve_triangle_quality {
+            (0..self.face_count())
+                .map(|i| self.face_aspect_ratio(i).map(|ratio| 1. / ratio))
+                .collect::<Result<Vec<_>, _>>()?
+        } else {
+            vec![0.; self.face_count()]
+        };
         let max_angle = max_planarity_degrees.to_radians();
         let mut candidates = Vec::new();
         for uses in edges.values() {
@@ -117,11 +144,13 @@ impl TriangleMesh {
                 quad,
                 diagonal_ratio,
                 normal_angle,
+                removed_quality: triangle_quality[first.face] + triangle_quality[second.face],
             });
         }
         candidates.sort_by(|a, b| {
-            a.diagonal_ratio
-                .total_cmp(&b.diagonal_ratio)
+            a.removed_quality
+                .total_cmp(&b.removed_quality)
+                .then_with(|| a.diagonal_ratio.total_cmp(&b.diagonal_ratio))
                 .then_with(|| a.normal_angle.total_cmp(&b.normal_angle))
                 .then_with(|| (a.first, a.second).cmp(&(b.first, b.second)))
         });

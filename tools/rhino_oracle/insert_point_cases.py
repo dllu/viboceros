@@ -3,9 +3,15 @@ from copy import deepcopy
 if __package__:
     from .insert_point_holdout_cases import CASES as HOLDOUTS
     from .insert_point_ngon_cases import CASES as NGONS
+    from .insert_point_mesh_shape_cases import CASES as SHAPES
+    from .insert_point_pick_depth_cases import CASES as DEPTH
+    from .insert_point_pick_depth_cases import WITNESSES
 else:
     from insert_point_holdout_cases import CASES as HOLDOUTS
     from insert_point_ngon_cases import CASES as NGONS
+    from insert_point_mesh_shape_cases import CASES as SHAPES
+    from insert_point_pick_depth_cases import CASES as DEPTH
+    from insert_point_pick_depth_cases import WITNESSES
 if __package__:
     from .subdivide_probe import source
 else:
@@ -54,10 +60,10 @@ for side in range(4):
 for name,points in [('low',[[0.,.3,0.],[2.,3.,0.]]),('high',[[0.,2.7,0.],[2.,3.,0.]]),('reverse',[[2.,3.,0.],[0.,1.5,0.]]),('same_reverse',[[0.,2.25,0.],[0.,.75,0.]])]:
     row=deepcopy(LIVE['insert_point_live_mesh_2']);row['points']=points;row['actions']=[dict(click=p)for p in points]+['Enter'];REGIONS['insert_point_regions_'+name]=row
 ALL_CASES = {}
-for family in (CASES, LIVE, FULL, REGIONS, HOLDOUTS, NGONS):
+for family in (CASES, LIVE, FULL, REGIONS, HOLDOUTS, NGONS, SHAPES, DEPTH, WITNESSES):
     ALL_CASES.update(family)
-def request(live=False,full=False,regions=False,holdouts=False,ngons=False):
-    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='insert_point_command',id=k,case=k)for k in (NGONS if ngons else HOLDOUTS if holdouts else REGIONS if regions else FULL if full else LIVE if live else CASES)])
+def request(live=False,full=False,regions=False,holdouts=False,ngons=False,shapes=False,depth=False,witnesses=False):
+    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='insert_point_command',id=k,case=k)for k in (WITNESSES if witnesses else DEPTH if depth else SHAPES if shapes else NGONS if ngons else HOLDOUTS if holdouts else REGIONS if regions else FULL if full else LIVE if live else CASES)])
 def validate(op):
     try:valid=isinstance(op,dict)and set(op)=={'op','id','case'}and op['op']=='insert_point_command'and op['case']in ALL_CASES and op['id']==op['case']
     except TypeError:valid=False

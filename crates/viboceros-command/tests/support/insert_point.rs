@@ -1,11 +1,12 @@
 //! Point witnesses, lifecycle evidence and explicit mesh representation comparisons.
 use super::{mesh_native, native, subd_native};
-pub const CELL_GAPS: [&str; 3] = [
-    "insert_point_full_mesh_adjacent",
-    "insert_point_full_mesh_same_edge",
-    "insert_point_full_mesh_strip_mid",
+pub const CELL_GAPS: [&str; 1] = ["insert_point_full_mesh_same_edge"];
+pub const NGON_CELL_GAPS: [&str; 0] = [];
+pub const DEPTH_CELL_GAPS: [&str; 3] = [
+    "insert_point_depth_mesh_target_plus",
+    "insert_point_depth_mesh_second_point",
+    "insert_point_depth_v2_mesh_second_inside",
 ];
-pub const NGON_CELL_GAPS: [&str; 1] = ["insert_point_ngon_two_overlays_shared"];
 use serde_json::{Value, json};
 use viboceros_command::insert_point::{InsertAction, InsertSession};
 use viboceros_document::{Document, Geometry, ObjectId};
@@ -59,11 +60,32 @@ pub fn script(v: &Value) -> String {
         .collect::<Vec<_>>()
         .join(" ")
 }
+pub fn edge_script(session: &InsertSession, v: &Value) -> String {
+    std::iter::once("InsertPoint".to_owned())
+        .chain(
+            actions(v)
+                .into_iter()
+                .enumerate()
+                .map(|(index, a)| match a {
+                    InsertAction::Point(_) => {
+                        let pick = captured_pick(session, v, index);
+                        format!("Edge={} Parameter={:.17}", pick.edge, pick.parameter)
+                    }
+                    InsertAction::Undo => "Undo".into(),
+                    InsertAction::Finish => "Enter".into(),
+                    InsertAction::Cancel => "Cancel".into(),
+                    _ => panic!(),
+                }),
+        )
+        .collect::<Vec<_>>()
+        .join(" ")
+}
 pub fn stage(session: &mut InsertSession, doc: &Document, v: &Value) -> bool {
-    for action in actions(v) {
+    session.prepare_picking().unwrap();
+    for (index, action) in actions(v).into_iter().enumerate() {
         match action {
-            InsertAction::Point(p) => {
-                let pick = pick_in_top_view(session, p);
+            InsertAction::Point(_) => {
+                let pick = captured_pick(session, v, index);
                 session
                     .insert(
                         doc,
@@ -86,6 +108,55 @@ pub fn stage(session: &mut InsertSession, doc: &Document, v: &Value) -> bool {
         }
     }
     true
+}
+/// Resolve source-surface depth or camera-target depth from independent input rays.
+/// Old captures used an unchanged ZoomExtents view, whose target is the ray midpoint.
+/// Generic SDK MeshRay witnesses use the shorter quad diagonal. Display picking
+/// uses fixed 0-2 facets, computed here from the original source archive instead.
+pub fn captured_pick(session: &InsertSession, v: &Value, action: usize) -> PolygonEdgePoint {
+    let click = v["input_trace"][0]["clicks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["action"] == action)
+        .unwrap();
+    let screen = native::point(&click["projected_point"]);
+    let mut pick = pick_in_top_view(session, screen);
+    let [a, b] = [
+        native::point(&click["ray"][0]),
+        native::point(&click["ray"][1]),
+    ];
+    let direction = a.vector_to(b).unwrap();
+    let mesh = session.source_pick_mesh().unwrap();
+    let triangles = TriangleMesh::try_from_face_records(
+        mesh.vertices().to_vec(),
+        mesh.triangles()
+            .iter()
+            .copied()
+            .map(viboceros_geometry::MeshFace::Triangle)
+            .collect(),
+    )
+    .unwrap();
+    let index = MeshProjectionIndex::new_owned(triangles).unwrap();
+    let hits = index
+        .project_point(a, direction, Tolerance::default())
+        .unwrap();
+    let surface = hits.last().copied();
+    let fallback = if click["view_target_point"].is_array() {
+        native::point(&click["view_target_point"])
+    } else if click["view_target"].is_array() {
+        let target = native::point(&click["view_target"]);
+        let normal = native::point(&click["camera_direction"]).to_array();
+        let dot = |v: [f64; 3]| v.into_iter().zip(normal).map(|(a, b)| a * b).sum::<f64>();
+        let parameter = dot(a.vector_to(target).unwrap().to_array()) / dot(direction.to_array());
+        a.translated(direction.scaled(parameter).unwrap()).unwrap()
+    } else {
+        a.translated(direction.scaled(0.5).unwrap()).unwrap()
+    };
+    pick.parameter = session.source_edges()[pick.edge]
+        .closest_parameter(surface.unwrap_or(fallback), Tolerance::MESH_VALIDATION)
+        .unwrap();
+    pick
 }
 pub fn pick_in_top_view(session: &InsertSession, point: Point3) -> PolygonEdgePoint {
     let flat = |p: Point3| Point3::try_new(p.x(), p.y(), 0.).unwrap();
@@ -259,10 +330,33 @@ pub fn compare_mesh_diagnostic(actual: &TriangleMesh, observed: &Value) -> Value
     let ngon_overlays = overlays(actual, &map) == overlays(&expected, &identity);
     let pieces = cells(actual, &map) == cells(&expected, &identity);
     let stored_facets = facets(actual, &map) == facets(&expected, &identity);
+    let sampled = sampled_mesh_error(actual, &expected, false);
+    let fixed_error = sampled_mesh_error(actual, &expected, true);
+    assert!(sampled <= 1e-6);
+    json!({"qualified":logical && ngon_overlays && fixed_error <= 1e-6,"logical_regions":logical,"ngon_overlays_correspond":ngon_overlays,"ngons":actual.ngons().len(),"channels":true,"vertices":actual.vertices().len(),"faces":actual.face_count(),"maximum_error":maximum.max(sampled),"maximum_fixed_facet_sample_error":fixed_error,"fixed_facet_surface_qualified":fixed_error <= 1e-6,"stored_pieces_correspond":pieces,"stored_facets_correspond":stored_facets,"actual_cells":cells(actual,&map),"native_cells":cells(&expected,&identity)})
+}
+fn sampled_mesh_error(actual: &TriangleMesh, expected: &TriangleMesh, fixed: bool) -> f64 {
     let mut sampled = 0f64;
-    for (a, b) in [(actual, &expected), (&expected, actual)] {
-        let index = MeshProjectionIndex::new(b).unwrap();
-        let (triangulated, _) = a.triangulate_quads(Tolerance::MESH_VALIDATION).unwrap();
+    for (a, b) in [(actual, expected), (expected, actual)] {
+        let triangulated = |mesh: &TriangleMesh| {
+            if fixed {
+                TriangleMesh::try_from_face_records(
+                    mesh.vertices().to_vec(),
+                    mesh.triangles()
+                        .iter()
+                        .copied()
+                        .map(viboceros_geometry::MeshFace::Triangle)
+                        .collect(),
+                )
+                .unwrap()
+            } else {
+                mesh.triangulate_quads(Tolerance::MESH_VALIDATION)
+                    .unwrap()
+                    .0
+            }
+        };
+        let index = MeshProjectionIndex::new_owned(triangulated(b)).unwrap();
+        let triangulated = triangulated(a);
         for t in triangulated.triangles() {
             let p = t.map(|i| triangulated.vertices()[i as usize]);
             for weights in [[1. / 3.; 3], [0.5, 0.25, 0.25], [0.25, 0.5, 0.25]] {
@@ -278,9 +372,9 @@ pub fn compare_mesh_diagnostic(actual: &TriangleMesh, observed: &Value) -> Value
             }
         }
     }
-    assert!(sampled <= 1e-6);
-    json!({"qualified":logical && ngon_overlays,"logical_regions":logical,"ngon_overlays_correspond":ngon_overlays,"ngons":actual.ngons().len(),"channels":true,"vertices":actual.vertices().len(),"faces":actual.face_count(),"maximum_error":maximum.max(sampled),"stored_pieces_correspond":pieces,"stored_facets_correspond":stored_facets,"actual_cells":cells(actual,&map),"native_cells":cells(&expected,&identity)})
+    sampled
 }
+
 pub fn check(doc: &Document, ids: &[ObjectId], rows: &Value, selection: bool) -> Value {
     native::check_metadata(doc, rows, selection);
     let target = rows
@@ -318,4 +412,20 @@ pub fn assert_ngon_cell_gap(id: &str, report: &Value) {
             "n-gon cell gap changed: {id}"
         );
     }
+}
+pub fn assert_additional_cell_gap(id: &str, report: &Value) {
+    assert_eq!(
+        report["stored_pieces_correspond"],
+        !DEPTH_CELL_GAPS.contains(&id)
+    );
+    let surface_gap = matches!(
+        id,
+        "insert_point_depth_mesh_second_point" | "insert_point_depth_v2_mesh_second_inside"
+    );
+    assert_eq!(report["qualified"], !surface_gap);
+    if report.get("maximum_fixed_facet_sample_error").is_some() {
+        assert_eq!(report["fixed_facet_surface_qualified"], !surface_gap);
+    }
+    let facet_gap = DEPTH_CELL_GAPS.contains(&id) && id != "insert_point_depth_mesh_target_plus";
+    assert_eq!(report["stored_facets_correspond"], !facet_gap);
 }

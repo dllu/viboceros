@@ -1022,6 +1022,12 @@ impl eframe::App for VibocerosApp {
             Some(crease::Prompt::Insert(p)) => p.session.as_ref().map(|s| s.source_edges()),
             _ => None,
         };
+        let insert_mesh = match self.crease_prompt.as_ref() {
+            Some(crease::Prompt::Insert(p)) => {
+                p.session.as_ref().and_then(|s| s.source_pick_mesh())
+            }
+            _ => None,
+        };
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -1048,6 +1054,7 @@ impl eframe::App for VibocerosApp {
                         document,
                         ViewportInput {
                             insert_edges,
+                            insert_mesh,
                             soft_crease: self.soft_crease_prompt.as_ref().and_then(|p| p.overlay()),
                             drafting,
                             angle_plane,

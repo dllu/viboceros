@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_v2_mesh_inside",
+      "case": "insert_point_depth_v2_mesh_inside"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_v2_mesh_inside_target_plus",
+      "case": "insert_point_depth_v2_mesh_inside_target_plus"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_v2_mesh_inside_translated",
+      "case": "insert_point_depth_v2_mesh_inside_translated"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_v2_mesh_second_inside",
+      "case": "insert_point_depth_v2_mesh_second_inside"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_v2_subd_inside",
+      "case": "insert_point_depth_v2_subd_inside"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_v2_subd_inside_target_plus",
+      "case": "insert_point_depth_v2_subd_inside_target_plus"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_v2_subd_inside_translated",
+      "case": "insert_point_depth_v2_subd_inside_translated"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_depth_v2_subd_second_inside",
+      "case": "insert_point_depth_v2_subd_second_inside"
+    }
+  ]
+}

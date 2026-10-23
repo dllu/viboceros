@@ -221,7 +221,10 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
             for key in ids:bounds.Union(doc.Objects.FindId(key).Geometry.GetBoundingBox(True))
             view.ActiveViewport.ZoomBoundingBox(bounds);view.Redraw()
             def execute():
-                result,trace=drive(dict(op='insert_point_command',id=case['capture_id'],actions=case['actions']),host,[],command=case['command']);input_trace.append(trace);return result
+                operation=dict(op='insert_point_command',id=case['capture_id'],actions=case['actions'])
+                if 'view_target_offset_z'in case:operation['view_target_offset_z']=case['view_target_offset_z']
+                if case.get('capture_pick_hint'):operation['capture_pick_hint']=True
+                result,trace=drive(operation,host,[],command=case['command']);input_trace.append(trace);return result
         else:execute=lambda:R.RhinoApp.RunScript(macro,True)
         try:success,after,events=observe_command(R.Commands.Command,case['command'],execute,snapshot,lambda:[],True)
         finally:

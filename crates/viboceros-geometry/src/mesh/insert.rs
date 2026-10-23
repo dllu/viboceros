@@ -1,6 +1,7 @@
 //! InsertPoint retains polygon regions and interpolates each raw seam independently.
 use super::*;
 mod ngons;
+mod regions;
 use crate::{
     PolygonEdgePoint,
     edge_insertion::{Plan, invalid},
@@ -144,31 +145,14 @@ impl TriangleMesh {
                 .iter()
                 .map(|&i| vertices[i as usize])
                 .collect::<Vec<_>>();
-            let projected = project_mesh_hole_boundary(&points)?
-                .ok_or_else(|| invalid("degenerate inserted mesh region"))?;
-            let strict_quad = raw.len() == 4
-                && (0..4).all(|i| {
-                    mesh_hole_cross(projected[i], projected[(i + 1) % 4], projected[(i + 2) % 4])
-                        > 64. * Real::EPSILON
-                });
-            match raw[..] {
-                [a, b, c] => records.push(MeshFace::Triangle([a, b, c])),
-                [a, b, c, d] if strict_quad => records.push(MeshFace::Quad([a, b, c, d])),
-                _ => {
-                    let triangles = triangulate_projected_mesh_hole(&projected)?
-                        .ok_or_else(|| invalid("cannot triangulate inserted mesh region"))?;
-                    let region = Self::try_new_faces(
-                        points,
-                        triangles.into_iter().map(MeshFace::Triangle).collect(),
-                        tolerance,
-                    )?;
-                    let (region, _) = region.quadrangulate_triangles(180., Real::MAX, tolerance)?;
-                    records.extend(region.faces().iter().map(|f| match f {
+            records.extend(
+                regions::tile(points, tolerance)?
+                    .into_iter()
+                    .map(|f| match f {
                         MeshFace::Triangle(v) => MeshFace::Triangle(v.map(|i| raw[i as usize])),
                         MeshFace::Quad(v) => MeshFace::Quad(v.map(|i| raw[i as usize])),
-                    }));
-                }
-            }
+                    }),
+            );
             face_sources.extend(std::iter::repeat_n(source, records.len() - first_record));
             // A split triangle may have four boundary vertices with one
             // collinear point. Its two triangles remain separate cells;
