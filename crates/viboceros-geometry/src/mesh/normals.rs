@@ -13,11 +13,15 @@ impl TriangleMesh {
     /// Collapsed faces contribute zero; cancelling sums use the world Z axis.
     pub fn rebuilt_normals(&self) -> Result<Self, GeometryError> {
         let (mesh, _) = self.culled_unused_vertices();
-        let data = viboceros_opennurbs::recompute_mesh_normals(&mesh.open_nurbs_data())?;
+        mesh.with_recomputed_normal_channel()
+    }
+
+    pub(super) fn with_recomputed_normal_channel(self) -> Result<Self, GeometryError> {
+        let data = viboceros_opennurbs::recompute_mesh_normals(&self.open_nurbs_data())?;
         let normals = data.vertex_normals.ok_or(GeometryError::Degenerate {
             context: "missing rebuilt mesh normals",
         })?;
-        mesh.try_with_vertex_normals(Some(
+        self.try_with_vertex_normals(Some(
             normals
                 .into_iter()
                 .map(Vector3::try_from)

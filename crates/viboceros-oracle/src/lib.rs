@@ -4419,7 +4419,7 @@ fn execute(
                 tolerance,
             )?;
             let ((unified, flipped_faces), elapsed) =
-                measure(iterations, || black_box(&mesh).unified_face_orientations())?;
+                measure(iterations, || black_box(&mesh).unified_normals())?;
             (
                 json!({
                     "flipped_faces": flipped_faces,

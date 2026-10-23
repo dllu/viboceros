@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_00",
+      "case": "unify_holdout_rotation_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_01",
+      "case": "unify_holdout_rotation_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_02",
+      "case": "unify_holdout_rotation_02"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_10",
+      "case": "unify_holdout_rotation_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_11",
+      "case": "unify_holdout_rotation_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_12",
+      "case": "unify_holdout_rotation_12"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_20",
+      "case": "unify_holdout_rotation_20"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_21",
+      "case": "unify_holdout_rotation_21"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_rotation_22",
+      "case": "unify_holdout_rotation_22"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_regions_2",
+      "case": "unify_holdout_regions_2"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_regions_reversed_2",
+      "case": "unify_holdout_regions_reversed_2"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_regions_3",
+      "case": "unify_holdout_regions_3"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_regions_reversed_3",
+      "case": "unify_holdout_regions_reversed_3"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_regions_4",
+      "case": "unify_holdout_regions_4"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_regions_reversed_4",
+      "case": "unify_holdout_regions_reversed_4"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_regions_5",
+      "case": "unify_holdout_regions_5"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_regions_reversed_5",
+      "case": "unify_holdout_regions_reversed_5"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_reindex_2301",
+      "case": "unify_holdout_reindex_2301"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_reindex_3210",
+      "case": "unify_holdout_reindex_3210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_holdout_reindex_1032",
+      "case": "unify_holdout_reindex_1032"
+    }
+  ]
+}

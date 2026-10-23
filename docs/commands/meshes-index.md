@@ -26,6 +26,7 @@
 - [TriangulateMesh: quad splitting and n-gon removal](triangulate-mesh.md)
 - [RebuildMeshNormals: stored normal reconstruction and vertex compaction](rebuild-mesh-normals.md)
 - [RebuildMesh: channel preservation and mesh reconstruction](rebuild-mesh.md)
+- [UnifyMeshNormals: winding repair and command history](unify-mesh-normals.md)
 - [TriangulateNonPlanarQuads: selective quad splitting](triangulate-nonplanar-quads.md)
 - [QuadrangulateMesh: selection and triangle conversion](quadrangulate-mesh.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)

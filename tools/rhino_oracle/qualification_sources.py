@@ -13,8 +13,10 @@ APPLICATION_MODULES = [
     'src/app/object_selection/triangulate_tests.rs',
     'src/app/object_selection/rebuild_normals_tests.rs',
     'src/app/object_selection/rebuild_mesh_tests.rs',
+    'src/app/object_selection/unify_normals_tests.rs',
     'crates/viboceros-command/tests/support/rebuild_mesh.rs',
     'crates/viboceros-command/tests/support/rebuild_normals.rs',
+    'crates/viboceros-command/tests/support/unify_normals.rs',
     'crates/viboceros-command/tests/support/triangulate.rs',
     'src/app/object_selection/mesh_conversion.rs',
     'src/app/object_selection/mesh_conversion/face_sample.rs',
@@ -114,7 +116,7 @@ SUBD_MODULES = [
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
     for name in ['vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
-                 'rebuild', 'rebuild_mesh', 'normals', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
+                 'rebuild', 'rebuild_mesh', 'normals', 'orientation', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
                  'quadrangulate', 'triangulate', 'nonplanar_quads', 'quad_planarity', 'aspect_ratio', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions', 'insert/pairing']
 ] + [
@@ -157,6 +159,7 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/mesh_edit/rebuild_normals/tests.rs',
             'crates/viboceros-command/src/mesh_edit/rebuild_mesh.rs',
             'crates/viboceros-command/src/mesh_edit/rebuild_mesh/tests.rs',
+            'crates/viboceros-command/src/mesh_edit/unify_normals.rs',
             'crates/viboceros-command/src/object_selection.rs',
             'crates/viboceros-command/src/quadrangulate_mesh.rs',
             'crates/viboceros-command/src/triangulate_nonplanar_quads.rs',

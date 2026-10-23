@@ -1,0 +1,126 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_pair",
+      "case": "unify_command_pair"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_consistent",
+      "case": "unify_command_consistent"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_channels",
+      "case": "unify_command_channels"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_pair_reordered",
+      "case": "unify_command_pair_reordered"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_seam",
+      "case": "unify_command_seam"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_unused",
+      "case": "unify_command_unused"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_quads",
+      "case": "unify_command_quads"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_nonmanifold",
+      "case": "unify_command_nonmanifold"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_duplicate",
+      "case": "unify_command_duplicate"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_opposed",
+      "case": "unify_command_opposed"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_ngon",
+      "case": "unify_command_ngon"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_ngon_first_outside",
+      "case": "unify_command_ngon_first_outside"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_tetra_0",
+      "case": "unify_command_tetra_0"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_disjoint",
+      "case": "unify_command_disjoint"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_tiny",
+      "case": "unify_command_tiny"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_translated",
+      "case": "unify_command_translated"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_mixed",
+      "case": "unify_command_mixed"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_unchanged_peer",
+      "case": "unify_command_unchanged_peer"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_two_noops",
+      "case": "unify_command_two_noops"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_postselect_channels",
+      "case": "unify_command_postselect_channels"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_postselect_consistent",
+      "case": "unify_command_postselect_consistent"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_cancel_picked",
+      "case": "unify_command_cancel_picked"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_command_cancel_empty",
+      "case": "unify_command_cancel_empty"
+    }
+  ]
+}

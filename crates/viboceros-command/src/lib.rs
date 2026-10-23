@@ -220,7 +220,7 @@ use mesh_edit::{
     CollapseMeshEdgeCommand, DeleteFacesCommand, ExtractDuplicateMeshFacesCommand,
     ExtractMeshFacesCommand, ExtractNonManifoldMeshEdgesCommand, FillMeshHoleCommand,
     FillMeshHolesCommand, RebuildMeshNormalsCommand, SplitMeshEdgeCommand, SwapMeshEdgeCommand,
-    TriangulateMeshCommand,
+    TriangulateMeshCommand, UnifyMeshNormalsCommand,
 };
 mod mesh_ngon_commands;
 mod polygon_count;
@@ -12255,44 +12255,6 @@ fn parse_direction_edit(arguments: &[&str]) -> Result<DirectionEdit, CommandErro
     }
 }
 
-struct UnifyMeshNormalsCommand;
-
-impl Command for UnifyMeshNormalsCommand {
-    fn name(&self) -> &'static str {
-        "UnifyMeshNormals"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, "UnifyMeshNormals")?;
-        let selected = document
-            .selected_objects()
-            .map(|object| (object.id(), object.geometry()))
-            .collect::<Vec<_>>();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-
-        let mesh_count = selected.len();
-        let mut flipped_face_count = 0;
-        let mut replacements = Vec::new();
-        for (id, geometry) in selected {
-            let Geometry::Mesh(mesh) = geometry else {
-                return Err(CommandError::UnsupportedUnifyMeshNormalsGeometry);
-            };
-            let (unified, flipped) = mesh.unified_face_orientations()?;
-            flipped_face_count += flipped;
-            if flipped > 0 {
-                replacements.push((id, Geometry::Mesh(unified)));
-            }
-        }
-        let changed_mesh_count = document.replace_object_geometries(replacements)?;
-        Ok(format!(
-            "Unified {mesh_count} mesh(es): flipped {flipped_face_count} face(s) in {changed_mesh_count} mesh(es); {} already consistent",
-            mesh_count - changed_mesh_count
-        ))
-    }
-}
-
 struct MeshTopologySource<'a> {
     id: ObjectId,
     mesh: &'a TriangleMesh,
@@ -14011,7 +13973,7 @@ pub enum CommandError {
     #[error("the requested Dir mode is unsupported for one or more selected object types")]
     UnsupportedDirectionEditGeometry,
 
-    #[error("UnifyMeshNormals supports selected meshes only")]
+    #[error("UnifyMeshNormals requires selected mesh objects")]
     UnsupportedUnifyMeshNormalsGeometry,
     #[error("RebuildMeshNormals requires selected mesh objects")]
     UnsupportedRebuildMeshNormalsGeometry,

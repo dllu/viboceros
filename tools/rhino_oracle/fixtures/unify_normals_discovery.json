@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "unify_normals_command",
+      "id": "unify_normals_discovery_pair",
+      "case": "unify_normals_discovery_pair"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_normals_discovery_noop",
+      "case": "unify_normals_discovery_noop"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_normals_discovery_two",
+      "case": "unify_normals_discovery_two"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_normals_discovery_postselect",
+      "case": "unify_normals_discovery_postselect"
+    }
+  ]
+}

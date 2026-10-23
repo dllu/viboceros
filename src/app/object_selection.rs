@@ -21,6 +21,8 @@ mod rebuild_normals_tests;
 mod reduce_polyline;
 #[cfg(test)]
 mod triangulate_tests;
+#[cfg(test)]
+mod unify_normals_tests;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ObjectPromptPhase {

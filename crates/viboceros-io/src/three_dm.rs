@@ -2898,6 +2898,10 @@ mod tests {
         .unwrap()
         .try_with_vertex_colors(Some(vec![[4, 5, 6, 0], [7, 8, 9, 128], [10, 11, 12, 255]]))
         .unwrap();
+        let opposite_boundary = mesh
+            .clone()
+            .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 3, 2, 1], vec![0, 1])])
+            .unwrap();
         let model = ThreeDmModel::new(
             vec![ThreeDmLayer {
                 name: "Default".to_owned(),
@@ -2909,14 +2913,19 @@ mod tests {
             vec![
                 ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh.clone()), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Mesh(triangle.clone()), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Mesh(opposite_boundary.clone()), 0),
             ],
         );
         write_3dm_file(&path, &model).unwrap();
         let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
         assert_eq!(loaded.unsupported_object_count(), 0);
-        assert_eq!(loaded.objects.len(), 2);
+        assert_eq!(loaded.objects.len(), 3);
         assert_eq!(loaded.objects[0].geometry, ThreeDmGeometry::Mesh(mesh));
         assert_eq!(loaded.objects[1].geometry, ThreeDmGeometry::Mesh(triangle));
+        assert_eq!(
+            loaded.objects[2].geometry,
+            ThreeDmGeometry::Mesh(opposite_boundary)
+        );
         fs::remove_file(path).unwrap();
     }
 

@@ -2,9 +2,10 @@
 
 [Polygon meshes](meshes.md) · [Meshes and SubDs](meshes-index.md)
 
-`UnifyMeshNormals` repairs inconsistent face winding across exact
-location-welded manifold edges, including STL-style triangle soup, and rejects
-non-orientable constraints atomically. `Dir UReverse|VReverse|SwapUV` reverses
+[`UnifyMeshNormals`](unify-mesh-normals.md) repairs inconsistent face winding
+across exact coincident locations, with distinct SDK normal-channel and command
+replacement behavior. Its guide records component-seed and contradictory-cycle
+limits. `Dir UReverse|VReverse|SwapUV` reverses
 either parameter direction or transposes selected untrimmed NURBS surfaces
 exactly; `Mode=FlipU|FlipV|SwapUV` is also accepted. Rational weights,
 non-clamped domains, periodic directions, identities, attributes, groups,

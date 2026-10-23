@@ -39,6 +39,7 @@ mod nonplanar_quads;
 mod quad_planarity;
 pub use quad_planarity::MeshQuadPlanarity;
 mod normals;
+mod orientation;
 mod smoothing;
 mod subdivision;
 mod vertex_weld;
@@ -2910,75 +2911,6 @@ impl TriangleMesh {
                 )
             })
             .collect()
-    }
-
-    /// Reorients each manifold-connected face component consistently while
-    /// retaining face and vertex order. Exact coincident locations define
-    /// adjacency, as they do for [`Self::topology`]. Non-manifold edges do not
-    /// impose an ambiguous orientation constraint.
-    pub fn unified_face_orientations(&self) -> Result<(Self, usize), GeometryError> {
-        let data = self.topology_data();
-        let mut neighbors = vec![Vec::<(usize, bool)>::new(); self.faces.len()];
-        for incidence in data.edges.values() {
-            if incidence.count != 2 {
-                continue;
-            }
-            let first = incidence
-                .first_use
-                .expect("an edge used twice records its first face");
-            let second = incidence
-                .second_use
-                .expect("an edge used twice records its second face");
-            // Equal traversal directions require exactly one adjacent face to
-            // flip; opposite directions require both to retain equal parity.
-            let opposite_parity = first.forward == second.forward;
-            neighbors[first.face].push((second.face, opposite_parity));
-            neighbors[second.face].push((first.face, opposite_parity));
-        }
-
-        let mut flipped = vec![None; self.faces.len()];
-        let mut pending = VecDeque::new();
-        for root in 0..self.faces.len() {
-            if flipped[root].is_some() {
-                continue;
-            }
-            flipped[root] = Some(false);
-            pending.push_back(root);
-            while let Some(face) = pending.pop_front() {
-                let face_flipped = flipped[face].expect("queued faces have assigned parity");
-                for &(neighbor, opposite_parity) in &neighbors[face] {
-                    let expected = face_flipped ^ opposite_parity;
-                    match flipped[neighbor] {
-                        Some(actual) if actual != expected => {
-                            return Err(GeometryError::NonOrientableMesh);
-                        }
-                        Some(_) => {}
-                        None => {
-                            flipped[neighbor] = Some(expected);
-                            pending.push_back(neighbor);
-                        }
-                    }
-                }
-            }
-        }
-
-        let mut faces = self.faces.clone();
-        let mut flipped_face_count = 0;
-        for (face, flip) in faces.iter_mut().zip(flipped) {
-            if flip.expect("every face component receives an orientation") {
-                *face = face.reversed();
-                flipped_face_count += 1;
-            }
-        }
-        if flipped_face_count == 0 {
-            return Ok((self.clone(), 0));
-        }
-        let mut unified = Self::from_validated_parts(self.vertices.clone(), faces)
-            .rebuild_ngons_for_same_faces(&self.ngons)?;
-        unified.vertex_colors = self.vertex_colors.clone();
-        unified.vertex_channels = self.vertex_channels.clone();
-        unified.recompute_stored_normals()?;
-        Ok((unified, flipped_face_count))
     }
 
     /// Removes the requested source faces into a separate mesh.

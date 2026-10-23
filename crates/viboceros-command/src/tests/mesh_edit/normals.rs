@@ -63,6 +63,8 @@ fn unifies_and_flips_mesh_normals_without_changing_identity_or_groups() {
     assert_eq!(restored.triangles(), inconsistent_faces);
     assert!(!restored.topology().is_oriented());
     registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.selected_object_count(), 0);
+    registry.execute(&mut document, "SelMesh").unwrap();
 
     assert_eq!(
         registry.execute(&mut document, "Flip").unwrap(),
@@ -72,7 +74,12 @@ fn unifies_and_flips_mesh_normals_without_changing_identity_or_groups() {
         let Geometry::Mesh(mesh) = document.object(id).unwrap().geometry() else {
             panic!("expected flipped mesh")
         };
-        assert_eq!(mesh, &oriented.reversed());
+        let expected = if id == first {
+            oriented.rebuilt_normals().unwrap().reversed()
+        } else {
+            oriented.reversed()
+        };
+        assert_eq!(mesh, &expected);
     }
     registry.execute(&mut document, "Undo").unwrap();
     assert_eq!(document.undo_label(), Some("UnifyMeshNormals"));
@@ -80,14 +87,17 @@ fn unifies_and_flips_mesh_normals_without_changing_identity_or_groups() {
     registry.execute(&mut document, "Point 9,9").unwrap();
     registry.execute(&mut document, "SelAll").unwrap();
     let before = document.objects().cloned().collect::<Vec<_>>();
-    assert!(matches!(
-        registry.execute(&mut document, "UnifyMeshNormals"),
-        Err(CommandError::UnsupportedUnifyMeshNormalsGeometry)
-    ));
+    registry.execute(&mut document, "UnifyMeshNormals").unwrap();
     assert_eq!(
         document.objects().collect::<Vec<_>>(),
         before.iter().collect::<Vec<_>>()
     );
+    document.clear_selection();
+    registry.execute(&mut document, "SelPt").unwrap();
+    assert!(matches!(
+        registry.execute(&mut document, "UnifyMeshNormals"),
+        Err(CommandError::UnsupportedUnifyMeshNormalsGeometry)
+    ));
 }
 
 #[test]

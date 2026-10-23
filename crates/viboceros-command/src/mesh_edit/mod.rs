@@ -8,6 +8,7 @@ mod rebuild_mesh;
 mod rebuild_normals;
 mod replacement;
 mod triangulate;
+mod unify_normals;
 
 pub(super) use edges::{CollapseMeshEdgeCommand, SplitMeshEdgeCommand, SwapMeshEdgeCommand};
 pub(super) use extraction::{ExtractDuplicateMeshFacesCommand, ExtractNonManifoldMeshEdgesCommand};
@@ -17,6 +18,7 @@ pub use rebuild_mesh::MeshRebuildOptions;
 pub(super) use rebuild_mesh::RebuildMeshCommand;
 pub(super) use rebuild_normals::RebuildMeshNormalsCommand;
 pub(super) use triangulate::TriangulateMeshCommand;
+pub(super) use unify_normals::UnifyMeshNormalsCommand;
 
 #[cfg(test)]
 use extraction::stage_selected_mesh_face_extractions;

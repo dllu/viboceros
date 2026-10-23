@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_inward",
+      "case": "unify_extra_inward"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_inward_bad_0",
+      "case": "unify_extra_inward_bad_0"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_inward_bad_3",
+      "case": "unify_extra_inward_bad_3"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_two_bad_01",
+      "case": "unify_extra_two_bad_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_two_bad_02",
+      "case": "unify_extra_two_bad_02"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_two_bad_03",
+      "case": "unify_extra_two_bad_03"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_two_bad_12",
+      "case": "unify_extra_two_bad_12"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_two_bad_13",
+      "case": "unify_extra_two_bad_13"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_two_bad_23",
+      "case": "unify_extra_two_bad_23"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_repeat_normals",
+      "case": "unify_extra_repeat_normals"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_nonmanifold_first",
+      "case": "unify_extra_nonmanifold_first"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_nonmanifold_last",
+      "case": "unify_extra_nonmanifold_last"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_open_fan",
+      "case": "unify_extra_open_fan"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_boolean_overload",
+      "case": "unify_extra_boolean_overload"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_extra_mobius",
+      "case": "unify_extra_mobius"
+    }
+  ]
+}

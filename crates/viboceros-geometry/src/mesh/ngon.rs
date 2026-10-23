@@ -8,7 +8,9 @@ impl TriangleMesh {
 
     /// Attaches logical polygons without changing the underlying mesh faces.
     /// An n-gon covers an edge-connected, compatibly oriented face group.
-    /// The stored cycle is its outer boundary; holes remain in the face table.
+    /// The stored cycle is its outer boundary in either direction; holes remain
+    /// in the face table. Native winding edits can reverse faces independently
+    /// of the stored n-gon boundary direction.
     /// No mesh face may belong to more than one n-gon.
     pub fn try_with_ngons(mut self, ngons: Vec<MeshNgon>) -> Result<Self, GeometryError> {
         let mut occupied_faces = BTreeSet::new();
@@ -49,12 +51,17 @@ impl TriangleMesh {
             return false;
         };
         boundary.len() == ngon.vertices.len()
-            && ngon.vertices.iter().copied().eq(boundary
+            && (ngon.vertices.iter().copied().eq(boundary
                 .iter()
                 .cycle()
                 .skip(start)
                 .take(boundary.len())
                 .copied())
+                || ngon
+                    .vertices
+                    .iter()
+                    .enumerate()
+                    .all(|(i, &v)| v == boundary[(start + boundary.len() - i) % boundary.len()]))
     }
 
     /// Discard stale native overlays without copying mesh-sized arrays per n-gon.
@@ -299,9 +306,17 @@ mod tests {
             4
         );
         assert_eq!(decorated.topology_edge_points().len(), 5);
+        let reverse_cycle = MeshNgon::from_parts(vec![0, 3, 2, 1], vec![0, 1]);
+        assert_eq!(
+            mesh.clone()
+                .try_with_ngons(vec![reverse_cycle.clone()])
+                .unwrap()
+                .ngons(),
+            &[reverse_cycle]
+        );
         assert!(
             mesh.clone()
-                .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 3, 2, 1], vec![0, 1])])
+                .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 2, 1, 3], vec![0, 1])])
                 .is_err()
         );
         assert!(
