@@ -20,93 +20,48 @@ pub enum QuadSplitMethod {
 }
 
 impl TriangleMesh {
-    /// Splits only quads meeting the selected nonplanarity threshold.
-    /// The distance is from D to the ABC plane; the angle compares the two
-    /// triangle normals for the chosen diagonal. Equality passes either test.
+    /// Split quads using OpenNURBS' face-plane distance range and both opposite
+    /// corner-normal pairs. With both tests enabled, exceeding either threshold
+    /// splits the quad. Qualification is independent of the chosen split method.
     pub fn triangulate_nonplanar_quads(
         &self,
         criterion: NonPlanarQuadCriterion,
         method: QuadSplitMethod,
-        tolerance: Tolerance,
+        _tolerance: Tolerance,
     ) -> Result<(Self, usize), GeometryError> {
-        let valid = match criterion {
-            NonPlanarQuadCriterion::Distance(distance) => distance.is_finite() && distance > 0.,
-            NonPlanarQuadCriterion::Angle(angle) => {
-                angle.is_finite() && (0. ..=std::f64::consts::PI).contains(&angle)
-            }
-            NonPlanarQuadCriterion::Both { distance, angle } => {
-                distance.is_finite()
-                    && distance > 0.
-                    && angle.is_finite()
-                    && (0. ..=std::f64::consts::PI).contains(&angle)
-            }
+        let (distance, angle) = match criterion {
+            NonPlanarQuadCriterion::Distance(d) => (Some(d), None),
+            NonPlanarQuadCriterion::Angle(a) => (None, Some(a)),
+            NonPlanarQuadCriterion::Both { distance, angle } => (Some(distance), Some(angle)),
         };
-        if !valid {
+        if distance.is_some_and(|d| !d.is_finite() || d < 0.)
+            || angle.is_some_and(|a| !a.is_finite() || !(0. ..=std::f64::consts::PI).contains(&a))
+        {
             return Err(GeometryError::InvalidTolerance);
         }
-        self.triangulate_selected_quads(tolerance, |vertices, quad| {
-            let points = quad.map(|index| vertices[index as usize]);
-            let ac = [[quad[0], quad[1], quad[2]], [quad[0], quad[2], quad[3]]];
-            let bd = [[quad[0], quad[1], quad[3]], [quad[1], quad[2], quad[3]]];
-            let choose_ac = match method {
-                QuadSplitMethod::ShortestDiagonal => mass_triangles::split(vertices, quad) == ac,
-                QuadSplitMethod::LongestDiagonal => mass_triangles::split(vertices, quad) != ac,
-                QuadSplitMethod::MinimizeArea | QuadSplitMethod::MaximizeArea => {
-                    let ac_area = triangle_area(vertices, ac[0])? + triangle_area(vertices, ac[1])?;
-                    let bd_area = triangle_area(vertices, bd[0])? + triangle_area(vertices, bd[1])?;
-                    if method == QuadSplitMethod::MinimizeArea {
-                        ac_area <= bd_area
-                    } else {
-                        ac_area >= bd_area
-                    }
-                }
-                QuadSplitMethod::MinimumAngle | QuadSplitMethod::MaximumAngle => {
-                    let ac_angle = normal_angle(vertices, ac)?;
-                    let bd_angle = normal_angle(vertices, bd)?;
-                    if method == QuadSplitMethod::MinimumAngle {
-                        ac_angle <= bd_angle
-                    } else {
-                        ac_angle >= bd_angle
-                    }
-                }
-            };
-            let triangles = if choose_ac { ac } else { bd };
-            let distance = || -> Result<Real, GeometryError> {
-                let ab = points[0].direction_to(points[1])?.as_vector();
-                let ac = points[0].direction_to(points[2])?.as_vector();
-                let normal = ab.cross(ac)?.normalized_nonzero()?.as_vector();
-                Ok(normal.dot_point_difference(points[3], points[0]).abs())
-            };
-            let passes = match criterion {
-                NonPlanarQuadCriterion::Distance(limit) => distance()? >= limit,
-                NonPlanarQuadCriterion::Angle(limit) => normal_angle(vertices, triangles)? >= limit,
-                NonPlanarQuadCriterion::Both {
-                    distance: limit,
-                    angle,
-                } => distance()? >= limit && normal_angle(vertices, triangles)? >= angle,
-            };
-            Ok(passes.then_some(triangles))
-        })
+        if !self.faces.iter().any(|f| f.is_quad()) {
+            return Ok((self.clone(), 0));
+        }
+        self.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
+        let method = match method {
+            QuadSplitMethod::ShortestDiagonal => 1,
+            QuadSplitMethod::LongestDiagonal => 2,
+            QuadSplitMethod::MinimizeArea => 3,
+            QuadSplitMethod::MaximizeArea => 4,
+            QuadSplitMethod::MinimumAngle => 5,
+            QuadSplitMethod::MaximumAngle => 6,
+        };
+        let (data, converted) = viboceros_opennurbs::triangulate_nonplanar_mesh(
+            &self.open_nurbs_data(),
+            distance,
+            angle,
+            method,
+        )?;
+        if converted == 0 {
+            return Ok((self.clone(), 0));
+        }
+        Ok((self.decode_native_face_conversion(data)?, converted))
     }
-}
-
-fn triangle_normal(
-    vertices: &[Point3],
-    triangle: [u32; 3],
-) -> Result<crate::Vector3, GeometryError> {
-    let [a, b, c] = triangle.map(|index| vertices[index as usize]);
-    let ab = a.direction_to(b)?.as_vector();
-    let ac = a.direction_to(c)?.as_vector();
-    Ok(ab.cross(ac)?.normalized_nonzero()?.as_vector())
-}
-
-fn normal_angle(vertices: &[Point3], triangles: [[u32; 3]; 2]) -> Result<Real, GeometryError> {
-    triangle_normal(vertices, triangles[0])?.angle_to(triangle_normal(vertices, triangles[1])?)
-}
-
-fn triangle_area(vertices: &[Point3], triangle: [u32; 3]) -> Result<Real, GeometryError> {
-    let [a, b, c] = triangle.map(|index| vertices[index as usize]);
-    a.vector_to(b)?.half_cross_length(a.vector_to(c)?)
 }
 
 #[cfg(test)]
@@ -139,7 +94,7 @@ mod tests {
         .unwrap();
         let (split, count) = mesh
             .triangulate_nonplanar_quads(
-                NonPlanarQuadCriterion::Distance(0.3),
+                NonPlanarQuadCriterion::Distance(0.1),
                 QuadSplitMethod::ShortestDiagonal,
                 Tolerance::DEFAULT,
             )
@@ -147,8 +102,9 @@ mod tests {
         assert_eq!(count, 1);
         assert_eq!(split.face_count(), 3);
         assert!(matches!(split.faces()[1], MeshFace::Quad(_)));
-        assert_eq!(split.ngons()[0].faces(), &[0, 2]);
-        assert_eq!(split.ngons()[1].faces(), &[1]);
+        assert_eq!(split.ngons().len(), 1);
+        assert_eq!(split.ngons()[0].faces(), &[1]);
+        assert_eq!(split.ngons()[0].vertices(), &[4, 5, 6, 7]);
         let (unchanged, count) = mesh
             .triangulate_nonplanar_quads(
                 NonPlanarQuadCriterion::Distance(0.5),
@@ -166,13 +122,14 @@ mod tests {
         ] {
             let (result, count) = mesh
                 .triangulate_nonplanar_quads(
-                    NonPlanarQuadCriterion::Distance(0.3),
+                    NonPlanarQuadCriterion::Distance(0.1),
                     method,
                     Tolerance::DEFAULT,
                 )
                 .unwrap();
             assert_eq!(count, 1);
-            assert_eq!(result.ngons()[0].faces(), &[0, 2]);
+            assert_eq!(result.ngons().len(), 1);
+            assert_eq!(result.ngons()[0].faces(), &[1]);
         }
         let (long, count) = mesh
             .triangulate_nonplanar_quads(

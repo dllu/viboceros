@@ -21,7 +21,7 @@ impl TriangleMesh {
             return Err(GeometryError::InvalidMeshQuadrangulationOptions);
         }
         self.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
-        let (mut data, changed) = viboceros_opennurbs::quadrangulate_mesh(
+        let (data, changed) = viboceros_opennurbs::quadrangulate_mesh(
             &self.open_nurbs_data(),
             max_planarity_degrees.to_radians(),
             1. / max_diagonal_ratio,
@@ -29,26 +29,7 @@ impl TriangleMesh {
         if changed == 0 {
             return Ok((self.clone(), 0));
         }
-        if data.vertices.len() != self.vertices.len()
-            || data
-                .vertices
-                .iter()
-                .zip(&self.vertices)
-                .any(|(native, point)| *native != point.to_array())
-        {
-            return Err(viboceros_opennurbs::MeshError(
-                "Quad conversion changed vertex storage".into(),
-            )
-            .into());
-        }
-        let ngons = std::mem::take(&mut data.ngons)
-            .into_iter()
-            .map(|g| MeshNgon::from_parts(g.vertices, g.faces))
-            .collect();
-        let mut result = Self::from_open_nurbs_data(data)?.retain_boundary_matched_ngons(ngons);
-        result.vertex_colors = self.vertex_colors.clone();
-        result.vertex_channels = self.vertex_channels.clone();
-        result.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
+        let result = self.decode_native_face_conversion(data)?;
         Ok((result, changed))
     }
 }

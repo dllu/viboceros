@@ -1,0 +1,15 @@
+Capturing 32 selective quad triangulations
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_quads.py", line 30, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_quads.py", line 25, in main
+    data=OracleClient(settings_scheme='VibocerosOracleNonplanarQuads20261023').run_rhino(payload,timeout=240)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2090, in run_rhino
+    _validate_response(response, "rhino", request)
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2542, in _validate_response
+    raise OracleError(f"{engine} probe failed: {error}")
+tools.rhino_oracle.client.OracleError: rhino probe failed: ImportError at operation nonplanar_distance_ShortestDiagonal: start: Cannot import name nextafter

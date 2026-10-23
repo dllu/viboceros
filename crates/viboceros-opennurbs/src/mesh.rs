@@ -137,6 +137,33 @@ pub fn quadrangulate_mesh(
     edit(data, 7, minimum_diagonal_ratio, angle_radians)
 }
 
+/// Selective quad conversion using native planarity, corner normals and tie rules.
+/// `None` disables that test; at least one test must be enabled.
+/// N-gons containing split quads are removed, matching RhinoCommon.
+pub fn triangulate_nonplanar_mesh(
+    data: &MeshData,
+    distance: Option<f64>,
+    angle_radians: Option<f64>,
+    split_method: u32,
+) -> Result<(MeshData, usize), MeshError> {
+    if (distance.is_none() && angle_radians.is_none())
+        || distance.is_some_and(|d| !d.is_finite() || d < 0.)
+        || angle_radians
+            .is_some_and(|a| !a.is_finite() || !(0. ..=std::f64::consts::PI).contains(&a))
+        || !(1..=6).contains(&split_method)
+    {
+        return Err(MeshError(
+            "Invalid nonplanar quad conversion parameters".into(),
+        ));
+    }
+    edit(
+        data,
+        7 + split_method,
+        distance.unwrap_or(-1.),
+        angle_radians.unwrap_or(-1.),
+    )
+}
+
 pub fn recompute_mesh_normals(data: &MeshData) -> Result<MeshData, MeshError> {
     edit(data, 6, 0., 0.).map(|r| r.0)
 }
@@ -430,6 +457,23 @@ pub(crate) unsafe fn read_mesh_result(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn rejects_invalid_selective_quad_parameters_before_native_editing() {
+        let data = mesh();
+        for (distance, angle, method) in [
+            (None, None, 1),
+            (Some(-1.), None, 1),
+            (Some(f64::NAN), None, 1),
+            (None, Some(f64::INFINITY), 1),
+            (None, Some(-1.), 1),
+            (None, Some(4.), 1),
+            (Some(0.), None, 0),
+            (Some(0.), None, 7),
+        ] {
+            assert!(triangulate_nonplanar_mesh(&data, distance, angle, method).is_err());
+        }
+    }
+
     fn mesh() -> MeshData {
         MeshData {
             vertices: vec![[0., 0., 0.], [1., 0., 0.], [1., 1., 0.], [0., 1., 0.]],

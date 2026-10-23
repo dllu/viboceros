@@ -1,6 +1,34 @@
 //! Shared mesh conversion at the safe OpenNURBS boundary.
 use super::*;
 impl TriangleMesh {
+    /// Face-only native edits retain raw vertices and stored channels exactly.
+    pub(super) fn decode_native_face_conversion(
+        &self,
+        mut data: viboceros_opennurbs::MeshData,
+    ) -> Result<Self, GeometryError> {
+        if data.vertices.len() != self.vertices.len()
+            || data
+                .vertices
+                .iter()
+                .zip(&self.vertices)
+                .any(|(native, point)| *native != point.to_array())
+        {
+            return Err(viboceros_opennurbs::MeshError(
+                "Face conversion changed vertex storage".into(),
+            )
+            .into());
+        }
+        let ngons = std::mem::take(&mut data.ngons)
+            .into_iter()
+            .map(|g| MeshNgon::from_parts(g.vertices, g.faces))
+            .collect();
+        let mut result = Self::from_open_nurbs_data(data)?.retain_boundary_matched_ngons(ngons);
+        result.vertex_colors = self.vertex_colors.clone();
+        result.vertex_channels = self.vertex_channels.clone();
+        result.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
+        Ok(result)
+    }
+
     pub(crate) fn open_nurbs_data(&self) -> viboceros_opennurbs::MeshData {
         viboceros_opennurbs::MeshData {
             vertices: self.vertices.iter().map(|p| p.to_array()).collect(),

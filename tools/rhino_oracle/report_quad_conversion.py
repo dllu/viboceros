@@ -12,7 +12,7 @@ SOURCES=with_shared_sources([
     'Cargo.lock','crates/viboceros-command/src/lib.rs','crates/viboceros-geometry/src/mesh.rs','crates/viboceros-geometry/src/mesh/native.rs',
     'crates/viboceros-opennurbs/src/mesh.rs','crates/viboceros-opennurbs/native/mesh_modeling.cpp',
     'crates/viboceros-opennurbs/native/mesh_modeling.h','crates/viboceros-opennurbs/native/mesh_codec.h',
-    'crates/viboceros-command/src/quadrangulate_mesh.rs','crates/viboceros-command/tests/quad_conversion_native.rs',
+    'crates/viboceros-command/src/quadrangulate_mesh.rs','crates/viboceros-command/tests/quad_conversion_native.rs', 'crates/viboceros-command/tests/support/mesh_conversion.rs',
     'crates/viboceros-document/src/lib.rs','crates/viboceros-document/src/history.rs',
     'third_party/opennurbs/opennurbs_mesh.cpp',
 ]+['tools/rhino_oracle/'+p for p in [

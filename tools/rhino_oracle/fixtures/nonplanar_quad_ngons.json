@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_ngons_reverse_owners",
+      "case": "nonplanar_ngons_reverse_owners"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_ngons_preserved_first",
+      "case": "nonplanar_ngons_preserved_first"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_ngons_preserved_middle",
+      "case": "nonplanar_ngons_preserved_middle"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_ngons_all_removed",
+      "case": "nonplanar_ngons_all_removed"
+    }
+  ]
+}

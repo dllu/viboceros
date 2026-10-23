@@ -187,16 +187,10 @@ diagonal, choosing A-C on exact ties. First triangles replace their source
 quads in place and second triangles append in source-quad order; vertices,
 object identity, attributes, groups, and selection remain unchanged.
 
-`TriangulateNonPlanarQuads Mode=Both Distance=0.01 Angle=1
-SplitMethod=ShortestDiagonal` splits selected quads that meet both thresholds.
-`Mode=Distance` (the local default) uses the fourth vertex's distance from the
-plane of the first three; `Mode=Angle` compares the two resulting triangle
-normals. The default distance is the document tolerance and the default angle
-is one degree. Values equal to the threshold qualify. `SplitMethod` also
-accepts `LongestDiagonal`, `MinimizeArea`, `MaximizeArea`, `MinimumAngle`, and
-`MaximumAngle`. Unchanged faces retain their slots, second triangles append,
-and n-gon membership, vertex colors, identity, attributes, groups, selection,
-and undo are preserved. Degenerate candidate triangles are rejected.
+[`TriangulateNonPlanarQuads`](triangulate-nonplanar-quads.md) uses OpenNURBS
+planarity tests and six diagonal policies. With `Mode=Both`, exceeding either
+active threshold splits a quad. N-gons containing split quads are removed;
+unaffected overlays and stored vertex channels survive.
 
 [`QuadrangulateMesh`](quadrangulate-mesh.md) merges triangles through OpenNURBS.
 Start with selected meshes or select them after starting the command, adjust

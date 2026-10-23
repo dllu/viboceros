@@ -153,6 +153,15 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
       require(changed==(pairs>0) && triangles-mesh.TriangleCount()==2*pairs && mesh.QuadCount()-quads==pairs,"Quad conversion culled unexpected faces");
       result->changed=static_cast<size_t>(pairs);
     }
+    else if(operation>=8 && operation<=13){
+      require(std::isfinite(distance)&&std::isfinite(angle)&&distance>=-1.&&angle>=-1.,"Invalid nonplanar quad parameters");
+      const int faces=mesh.FaceCount(),triangles=mesh.TriangleCount(),quads=mesh.QuadCount();
+      // The deleting overload reads the face-to-ngon map before splitting.
+      if(mesh.HasNgons())require(mesh.CreateNgonMap()!=nullptr,"Cannot map nonplanar quad n-gons");
+      result->changed=mesh.ConvertNonPlanarQuadsToTriangles(distance<0.?ON_UNSET_VALUE:distance,angle<0.?ON_UNSET_VALUE:angle,operation-7,true);
+      const int added=mesh.FaceCount()-faces;
+      require(added>=0 && static_cast<size_t>(added)<=result->changed && static_cast<size_t>(quads-mesh.QuadCount())==result->changed && static_cast<size_t>(mesh.TriangleCount()-triangles)==result->changed+static_cast<size_t>(added),"Inconsistent nonplanar quad conversion counts");
+    }
     else if(operation==5){
       require(selected && selected_count && selected_count<=vertex_limit,"Invalid selected mesh vertices");
       ON_SimpleArray<ON_COMPONENT_INDEX> components;

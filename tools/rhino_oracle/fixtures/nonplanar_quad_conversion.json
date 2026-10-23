@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_ShortestDiagonal",
+      "case": "nonplanar_distance_ShortestDiagonal"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_angle_ShortestDiagonal",
+      "case": "nonplanar_angle_ShortestDiagonal"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_LongestDiagonal",
+      "case": "nonplanar_distance_LongestDiagonal"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_angle_LongestDiagonal",
+      "case": "nonplanar_angle_LongestDiagonal"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_MinimizeArea",
+      "case": "nonplanar_distance_MinimizeArea"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_angle_MinimizeArea",
+      "case": "nonplanar_angle_MinimizeArea"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_MaximizeArea",
+      "case": "nonplanar_distance_MaximizeArea"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_angle_MaximizeArea",
+      "case": "nonplanar_angle_MaximizeArea"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_MinimumAngle",
+      "case": "nonplanar_distance_MinimumAngle"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_angle_MinimumAngle",
+      "case": "nonplanar_angle_MinimumAngle"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_MaximumAngle",
+      "case": "nonplanar_distance_MaximumAngle"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_angle_MaximumAngle",
+      "case": "nonplanar_angle_MaximumAngle"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_flat_distance_zero",
+      "case": "nonplanar_flat_distance_zero"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_flat_angle_zero",
+      "case": "nonplanar_flat_angle_zero"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_flat_both_zero",
+      "case": "nonplanar_flat_both_zero"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_equal",
+      "case": "nonplanar_distance_equal"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_below",
+      "case": "nonplanar_distance_below"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_distance_above",
+      "case": "nonplanar_distance_above"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_both_distance_only",
+      "case": "nonplanar_both_distance_only"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_both_angle_only",
+      "case": "nonplanar_both_angle_only"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_both_neither",
+      "case": "nonplanar_both_neither"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_channels_ngon",
+      "case": "nonplanar_channels_ngon"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_multiple_faces",
+      "case": "nonplanar_multiple_faces"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_concave_1",
+      "case": "nonplanar_concave_1"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_concave_2",
+      "case": "nonplanar_concave_2"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_concave_3",
+      "case": "nonplanar_concave_3"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_concave_5",
+      "case": "nonplanar_concave_5"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_tiny",
+      "case": "nonplanar_tiny"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_translated",
+      "case": "nonplanar_translated"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_unused_vertex",
+      "case": "nonplanar_unused_vertex"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_reversed",
+      "case": "nonplanar_reversed"
+    },
+    {
+      "op": "nonplanar_quad_conversion",
+      "id": "nonplanar_cyclic",
+      "case": "nonplanar_cyclic"
+    }
+  ]
+}

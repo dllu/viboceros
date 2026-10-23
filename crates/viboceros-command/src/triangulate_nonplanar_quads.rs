@@ -28,15 +28,16 @@ impl Command for TriangulateNonPlanarQuadsCommand {
             .collect::<Result<Vec<_>, CommandError>>()?;
         let converted = staged.iter().map(|(_, _, count)| count).sum::<usize>();
         let changed = staged.iter().filter(|(_, _, count)| *count > 0).count();
+        let unchanged = staged.len() - changed;
         document.replace_object_geometries(
             staged
-                .iter()
+                .into_iter()
                 .filter(|(_, _, count)| *count > 0)
-                .map(|(id, mesh, _)| (*id, Geometry::Mesh(mesh.clone()))),
+                .map(|(id, mesh, _)| (id, Geometry::Mesh(mesh))),
         )?;
         Ok(format!(
             "Triangulated {converted} nonplanar quad(s) in {changed} mesh(es); {} mesh(es) unchanged",
-            staged.len() - changed
+            unchanged
         ))
     }
 }
@@ -108,7 +109,7 @@ fn parse_options(
         }
         index += consumed;
     }
-    if distance <= 0. || !(0. ..=180.).contains(&angle) {
+    if distance < 0. || !(0. ..=180.).contains(&angle) {
         return Err(CommandError::Usage(USAGE));
     }
     let angle = angle.to_radians();
@@ -166,7 +167,7 @@ mod tests {
         );
         assert!(
             registry
-                .execute(&mut document, "TriangulateNonPlanarQuads Distance=0")
+                .execute(&mut document, "TriangulateNonPlanarQuads Distance=-1")
                 .is_err()
         );
     }
