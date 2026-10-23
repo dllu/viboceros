@@ -15,6 +15,8 @@ mod modify_radius;
 #[cfg(test)]
 mod planar_mesh_tests;
 mod reduce_polyline;
+#[cfg(test)]
+mod triangulate_tests;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ObjectPromptPhase {

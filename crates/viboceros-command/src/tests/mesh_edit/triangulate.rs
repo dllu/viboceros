@@ -102,7 +102,9 @@ fn triangulates_mesh_quads_with_rhino_order_identity_groups_and_undo() {
         registry.execute(&mut document, "TriangulateMesh").unwrap(),
         "Triangulated 0 quadrilateral face(s) in 0 mesh(es); 1 mesh(es) unchanged"
     );
-    assert_eq!(document.undo_label(), history.as_deref());
+    assert_ne!(document.undo_label(), history.as_deref());
+    assert_eq!(document.undo_label(), Some("TriangulateMesh"));
+    assert!(document.redo_label().is_none());
     assert_eq!(
         document.object(unchanged).unwrap().geometry(),
         &Geometry::Mesh(triangles)
@@ -110,7 +112,7 @@ fn triangulates_mesh_quads_with_rhino_order_identity_groups_and_undo() {
 }
 
 #[test]
-fn triangulate_mesh_rejects_empty_mixed_and_invalid_input_atomically() {
+fn triangulate_mesh_skips_non_meshes_and_rejects_invalid_input_atomically() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
     assert!(matches!(
@@ -135,12 +137,15 @@ fn triangulate_mesh_rejects_empty_mixed_and_invalid_input_atomically() {
     document
         .select_objects_direct([mesh_id, point_id], SelectionMode::Replace)
         .unwrap();
+    registry.execute(&mut document, "TriangulateMesh").unwrap();
+    assert!(document.is_selected(mesh_id));
+    assert!(document.is_selected(point_id));
+    assert!(matches!(
+        document.object(point_id).unwrap().geometry(),
+        Geometry::Point(_)
+    ));
     let before = document.objects().cloned().collect::<Vec<_>>();
     let history = document.undo_label().map(str::to_owned);
-    assert!(matches!(
-        registry.execute(&mut document, "TriangulateMesh"),
-        Err(CommandError::UnsupportedTriangulateMeshGeometry)
-    ));
     assert!(
         registry
             .execute(&mut document, "TriangulateMesh extra")
@@ -151,4 +156,34 @@ fn triangulate_mesh_rejects_empty_mixed_and_invalid_input_atomically() {
         before.iter().collect::<Vec<_>>()
     );
     assert_eq!(document.undo_label(), history.as_deref());
+}
+
+#[test]
+fn triangulate_late_invalid_input_preserves_geometry_order_selection_and_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let vertices = [[0., 0., 0.], [1., 0., 0.], [1., 1., 0.], [0., 1., 0.]]
+        .map(|p| Point3::try_from(p).unwrap());
+    let faces = vec![viboceros_geometry::MeshFace::Quad([0, 1, 2, 3])];
+    let good = TriangleMesh::try_from_face_records(vertices.to_vec(), faces.clone()).unwrap();
+    let mut collapsed = vertices;
+    collapsed[3] = collapsed[0];
+    let bad = TriangleMesh::try_from_face_records(collapsed.to_vec(), faces).unwrap();
+    let ids = [good, bad].map(|mesh| doc.add_geometry(Geometry::Mesh(mesh)).unwrap());
+    registry.execute(&mut doc, "Point 9,9,9").unwrap();
+    doc.undo().unwrap();
+    doc.select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    let objects = doc.objects().cloned().collect::<Vec<_>>();
+    let selection = doc.selected_object_ids().collect::<Vec<_>>();
+    let undo = doc.undo_label().map(str::to_owned);
+    let redo = doc.redo_label().map(str::to_owned);
+    assert!(registry.execute(&mut doc, "TriangulateMesh").is_err());
+    assert_eq!(
+        doc.objects().collect::<Vec<_>>(),
+        objects.iter().collect::<Vec<_>>()
+    );
+    assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), selection);
+    assert_eq!(doc.undo_label(), undo.as_deref());
+    assert_eq!(doc.redo_label(), redo.as_deref());
 }

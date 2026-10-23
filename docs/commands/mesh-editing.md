@@ -182,10 +182,9 @@ Multi-region extraction uses a batched mesh subset path; the
 [local benchmark](../mesh-face-groups-performance.json) records its kernel
 throughput separately from command and Rhino timings.
 
-`TriangulateMesh` splits every quad on selected meshes along its shortest 3D
-diagonal, choosing A-C on exact ties. First triangles replace their source
-quads in place and second triangles append in source-quad order; vertices,
-object identity, attributes, groups, and selection remain unchanged.
+[`TriangulateMesh`](triangulate-mesh.md) uses OpenNURBS to split quads while
+retaining vertex channels. Its command removes all n-gon overlays; the geometry
+API retains and remaps them. The command page describes selection and history.
 
 [`TriangulateNonPlanarQuads`](triangulate-nonplanar-quads.md) uses OpenNURBS
 planarity tests and six diagonal policies. With `Mode=Both`, exceeding either

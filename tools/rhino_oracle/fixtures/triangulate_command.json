@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_square",
+      "case": "triangulate_command_square"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_short_bd",
+      "case": "triangulate_command_short_bd"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_warp",
+      "case": "triangulate_command_warp"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_triangles",
+      "case": "triangulate_command_triangles"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_channels",
+      "case": "triangulate_command_channels"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_ngon",
+      "case": "triangulate_command_ngon"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_two_ngons",
+      "case": "triangulate_command_two_ngons"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_mixed_slots",
+      "case": "triangulate_command_mixed_slots"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_ngon_two_quads",
+      "case": "triangulate_command_ngon_two_quads"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_tiny",
+      "case": "triangulate_command_tiny"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_mixed",
+      "case": "triangulate_command_mixed"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_two_meshes",
+      "case": "triangulate_command_two_meshes"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_postselect",
+      "case": "triangulate_command_postselect"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_command_cancel",
+      "case": "triangulate_command_cancel"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_square",
+      "case": "triangulate_square"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_short_bd",
+      "case": "triangulate_short_bd"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_warp",
+      "case": "triangulate_warp"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_concave",
+      "case": "triangulate_concave"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_reversed",
+      "case": "triangulate_reversed"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_cyclic",
+      "case": "triangulate_cyclic"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_spatial_tie",
+      "case": "triangulate_spatial_tie"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_triangles",
+      "case": "triangulate_triangles"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_unused",
+      "case": "triangulate_unused"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_tiny",
+      "case": "triangulate_tiny"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_translated",
+      "case": "triangulate_translated"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_skinny",
+      "case": "triangulate_skinny"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_channels",
+      "case": "triangulate_channels"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_ngon",
+      "case": "triangulate_ngon"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_two_ngons",
+      "case": "triangulate_two_ngons"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_mixed_slots",
+      "case": "triangulate_mixed_slots"
+    },
+    {
+      "op": "triangulate_mesh_sdk",
+      "id": "triangulate_ngon_two_quads",
+      "case": "triangulate_ngon_two_quads"
+    }
+  ]
+}

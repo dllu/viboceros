@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_holdout_triangle_ngon",
+      "case": "triangulate_holdout_triangle_ngon"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_holdout_partial_ngons",
+      "case": "triangulate_holdout_partial_ngons"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_holdout_reversed_ngons",
+      "case": "triangulate_holdout_reversed_ngons"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_holdout_cancel_picks",
+      "case": "triangulate_holdout_cancel_picks"
+    },
+    {
+      "op": "triangulate_mesh_command",
+      "id": "triangulate_holdout_postselect_triangles",
+      "case": "triangulate_holdout_postselect_triangles"
+    }
+  ]
+}

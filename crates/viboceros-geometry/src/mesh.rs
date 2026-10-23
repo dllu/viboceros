@@ -62,6 +62,7 @@ mod planar_cap;
 pub use patch_single_face::MeshSingleFaceComponents;
 mod quadrangulate;
 mod radial;
+mod triangulate;
 use radial::{
     ordered_vertex_face_components, radial_vertex_face_walk, radially_sorted_vertex_edges,
 };
@@ -2015,79 +2016,6 @@ impl TriangleMesh {
             })
             .collect();
         reversed
-    }
-
-    /// Splits every quadrilateral along its shortest three-dimensional
-    /// diagonal, choosing A-C on an exact tie.
-    ///
-    /// Each first triangle replaces its source quad in place. Second
-    /// triangles are appended in source-quad order, matching OpenNURBS and
-    /// Rhino's `ConvertQuadsToTriangles` face ordering. Vertices are retained
-    /// verbatim, including unused vertices.
-    pub fn triangulate_quads(&self, tolerance: Tolerance) -> Result<(Self, usize), GeometryError> {
-        self.triangulate_selected_quads(tolerance, |vertices, quad| {
-            Ok(Some(mass_triangles::split(vertices, quad)))
-        })
-    }
-
-    fn triangulate_selected_quads(
-        &self,
-        tolerance: Tolerance,
-        mut split: impl FnMut(&[Point3], [u32; 4]) -> Result<Option<[[u32; 3]; 2]>, GeometryError>,
-    ) -> Result<(Self, usize), GeometryError> {
-        let quad_count = self.faces.iter().filter(|face| face.is_quad()).count();
-        if quad_count == 0 {
-            return Ok((self.clone(), 0));
-        }
-        let mut faces = self.faces.clone();
-        faces
-            .try_reserve(quad_count)
-            .map_err(|_| GeometryError::TooManyMeshFaces)?;
-        let mut appended_by_source = if self.ngons.is_empty() {
-            Vec::new()
-        } else {
-            vec![None; self.faces.len()]
-        };
-        let mut converted = 0;
-        for face_index in 0..self.faces.len() {
-            let MeshFace::Quad([a, b, c, d]) = self.faces[face_index] else {
-                continue;
-            };
-            let Some([first, second]) = split(&self.vertices, [a, b, c, d])? else {
-                continue;
-            };
-            converted += 1;
-            faces[face_index] = MeshFace::Triangle(first);
-            if !self.ngons.is_empty() {
-                appended_by_source[face_index] =
-                    Some(u32::try_from(faces.len()).map_err(|_| GeometryError::TooManyMeshFaces)?);
-            }
-            faces.push(MeshFace::Triangle(second));
-        }
-        if converted == 0 {
-            return Ok((self.clone(), 0));
-        }
-        let mut triangulated = Self::try_new_faces(self.vertices.clone(), faces, tolerance)?;
-        triangulated.vertex_colors = self.vertex_colors.clone();
-        triangulated.vertex_channels = self.vertex_channels.clone();
-        if !self.ngons.is_empty() {
-            let ngons = self
-                .ngons
-                .iter()
-                .map(|ngon| {
-                    let faces = ngon
-                        .faces
-                        .iter()
-                        .flat_map(|&face| {
-                            std::iter::once(face).chain(appended_by_source[face as usize])
-                        })
-                        .collect();
-                    MeshNgon::from_parts(ngon.vertices.clone(), faces)
-                })
-                .collect();
-            triangulated = triangulated.try_with_ngons(ngons)?;
-        }
-        Ok((triangulated, converted))
     }
 
     /// Replaces one welded interior triangle edge with the opposite diagonal.

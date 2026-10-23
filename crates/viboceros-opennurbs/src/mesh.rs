@@ -202,6 +202,11 @@ pub fn triangulate_nonplanar_mesh(
     )
 }
 
+/// Public OpenNURBS quad splitting with native face slots and n-gon remapping.
+pub fn triangulate_mesh(data: &MeshData) -> Result<(MeshData, usize), MeshError> {
+    edit(data, 14, 0., 0.)
+}
+
 pub fn recompute_mesh_normals(data: &MeshData) -> Result<MeshData, MeshError> {
     edit(data, 6, 0., 0.).map(|r| r.0)
 }

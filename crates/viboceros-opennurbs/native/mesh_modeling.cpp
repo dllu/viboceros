@@ -153,6 +153,13 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
       require(changed==(pairs>0) && triangles-mesh.TriangleCount()==2*pairs && mesh.QuadCount()-quads==pairs,"Quad conversion culled unexpected faces");
       result->changed=static_cast<size_t>(pairs);
     }
+    else if(operation==14){
+      const int faces=mesh.FaceCount(),quads=mesh.QuadCount(),triangles=mesh.TriangleCount();
+      require(mesh.ConvertQuadsToTriangles(),"Native quad triangulation failed");
+      result->changed=static_cast<size_t>(quads-mesh.QuadCount());
+      const int added=mesh.FaceCount()-faces;
+      require(added>=0 && static_cast<size_t>(added)<=result->changed && mesh.TriangleCount()-triangles==quads+added,"Inconsistent quad triangulation counts");
+    }
     else if(operation>=8 && operation<=13){
       require(std::isfinite(distance)&&std::isfinite(angle)&&distance>=-1.&&angle>=-1.,"Invalid nonplanar quad parameters");
       const int faces=mesh.FaceCount(),triangles=mesh.TriangleCount(),quads=mesh.QuadCount();
