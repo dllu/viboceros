@@ -227,7 +227,7 @@
     "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/structural_sdk.py": "0cc602cf0f95338ffca1e46822ee69f5b0f82f5e3d12d7dcbfe7e18f2a18371e",
+    "tools/rhino_oracle/structural_sdk.py": "70ad0c5df4915931413f5c0b33fb5924ea0e6a1e2694945b4de7ca8e738b9676",
     "tools/rhino_oracle/rhino_worker.py": "92050b7993a00a62b9749d554132153ac9b98883e25cacce7e5b97159e00d3db",
     "tools/rhino_oracle/report_extrusions.py": "5c5a1296894ca353b0f7e900769dd65aaff9d1cfe2b1aecc80d8cae336b444be",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
@@ -247,7 +247,7 @@
     "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_circle_shear_00.3dm": "9c9c956827aa77b5f9b62a56ff4ed2556c7eef40b4da59144ac023be4fd7a84f",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_000.3dm": "de42c2eee5bd5370ce9693bc05060dc325ef754346e9dd7461ee7c706d39c355",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_100.3dm": "0361293bbb2dc587f5e61d31f68d15732a52e584d23360b44a9964b13a52527a",
-    "tools/rhino_oracle/qualification_sources.py": "bcbf4f8f295c57ae8e5c1ca764c444092af100a019a0d50a6d2c1190a531a035",
+    "tools/rhino_oracle/qualification_sources.py": "8cefb7ddecc22a37db83bad9b72e96f1d705d2c05bf4710b87e7f2a0c965accc",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5",
     "crates/viboceros-io/src/three_dm/mesh_ngon.rs": "a8b04d6c4a5b62ee1c2caa3accc7cdec72a30eeaffd1ce6d31f4fb4aceb22a2a"
   }

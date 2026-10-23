@@ -667,7 +667,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "8f2ea820c738cd6ea2f36ccd2274b00ded9593fafde8224a1f913e7f6038a069",
     "src/app/viewport_input.rs": "3df7f0793ba9ad712e0b16b5dbd3d64390c3391eba0c884075df96d9266e48b7",
-    "tools/rhino_oracle/qualification_sources.py": "bcbf4f8f295c57ae8e5c1ca764c444092af100a019a0d50a6d2c1190a531a035",
+    "tools/rhino_oracle/qualification_sources.py": "8cefb7ddecc22a37db83bad9b72e96f1d705d2c05bf4710b87e7f2a0c965accc",
     "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
@@ -782,10 +782,10 @@
     "crates/viboceros-command/src/insert_point.rs": "ea4cb816cc4b31819e557baa7979d0c60a50201d810d0c81502766b2211bc1a3",
     "crates/viboceros-command/src/insert_point/arguments.rs": "bb58f088febb9cc55239a0b98ac937ed20d85c4b77cfc1ab60fc5bde00236455",
     "src/app/insert_point.rs": "8da2ad5c5735c9cd0e8b99fc30403f8d8c5a8bca7b770fcc670247129c4ddd8b",
-    "src/app/crease/tests/insert_point.rs": "bb0cd188f0af8a796d32c2c7d7a473e1000ef90dd80123ef7226cea873bf6dfe",
-    "crates/viboceros-command/tests/support/insert_point.rs": "27a991ed96efbc3df3db2d26ff69dea0ad865b9a660fb0c5683ff3f8648a119b",
+    "src/app/crease/tests/insert_point.rs": "9285595a67aa9fe2b48a5a6d1b8347ecea6f631a8a0338914ea5f072383692d5",
+    "crates/viboceros-command/tests/support/insert_point.rs": "aad1c95d9b2c2047377bb2e9a5b950164fc36a384f67a3686ddb12a934f1375d",
     "crates/viboceros-geometry/src/edge_insertion/polygons.rs": "0eae7a74c74332fade464a68550865930bf1957f60843c2a8bd05b32922d8439",
-    "crates/viboceros-geometry/src/mesh/insert.rs": "b4ab2add154fd29023527b3373853426b28be8922a7197f196baf0909b0cb6b9",
-    "crates/viboceros-geometry/src/mesh/insert/ngons.rs": "9967bbb0352d3788b903c073ca5cb530d03fca72c7c81cc27a2e59eae13839b9"
+    "crates/viboceros-geometry/src/mesh/insert.rs": "32d73dcb02c5aae1686a13c7f6b09e7d785e24982f47581a3f62329e9f13ca8e",
+    "crates/viboceros-geometry/src/mesh/insert/ngons.rs": "a244b7b7ab5dce38011d47570bf3a3e0c5ca8f7e9e6f9ceee0577ed6cd2d0732"
   }
 }

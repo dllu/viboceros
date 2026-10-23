@@ -5,6 +5,7 @@ pub const CELL_GAPS: [&str; 3] = [
     "insert_point_full_mesh_same_edge",
     "insert_point_full_mesh_strip_mid",
 ];
+pub const NGON_CELL_GAPS: [&str; 1] = ["insert_point_ngon_two_overlays_shared"];
 use serde_json::{Value, json};
 use viboceros_command::insert_point::{InsertAction, InsertSession};
 use viboceros_document::{Document, Geometry, ObjectId};
@@ -164,11 +165,29 @@ fn facets(mesh: &TriangleMesh, map: &[u32]) -> Vec<Vec<u32>> {
     out.sort();
     out
 }
+fn overlays(mesh: &TriangleMesh, map: &[u32]) -> Vec<(Vec<u32>, usize)> {
+    let mut out = mesh
+        .ngons()
+        .iter()
+        .map(|n| {
+            (
+                cycle(n.vertices().iter().map(|&i| map[i as usize]).collect()),
+                n.faces().len(),
+            )
+        })
+        .collect::<Vec<_>>();
+    out.sort();
+    out
+}
 pub fn compare_mesh(actual: &TriangleMesh, observed: &Value) -> Value {
     let result = compare_mesh_diagnostic(actual, observed);
     assert_eq!(
         result["logical_regions"], true,
         "oriented logical polygon regions differ"
+    );
+    assert_eq!(
+        result["ngon_overlays_correspond"], true,
+        "explicit n-gon overlays differ"
     );
     result
 }
@@ -237,6 +256,7 @@ pub fn compare_mesh_diagnostic(actual: &TriangleMesh, observed: &Value) -> Value
     }
     let identity = (0..expected.vertices().len() as u32).collect::<Vec<_>>();
     let logical = regions(actual, &map) == regions(&expected, &identity);
+    let ngon_overlays = overlays(actual, &map) == overlays(&expected, &identity);
     let pieces = cells(actual, &map) == cells(&expected, &identity);
     let stored_facets = facets(actual, &map) == facets(&expected, &identity);
     let mut sampled = 0f64;
@@ -259,7 +279,7 @@ pub fn compare_mesh_diagnostic(actual: &TriangleMesh, observed: &Value) -> Value
         }
     }
     assert!(sampled <= 1e-6);
-    json!({"qualified":logical,"logical_regions":logical,"channels":true,"vertices":actual.vertices().len(),"faces":actual.face_count(),"maximum_error":maximum.max(sampled),"stored_pieces_correspond":pieces,"stored_facets_correspond":stored_facets,"actual_cells":cells(actual,&map),"native_cells":cells(&expected,&identity)})
+    json!({"qualified":logical && ngon_overlays,"logical_regions":logical,"ngon_overlays_correspond":ngon_overlays,"ngons":actual.ngons().len(),"channels":true,"vertices":actual.vertices().len(),"faces":actual.face_count(),"maximum_error":maximum.max(sampled),"stored_pieces_correspond":pieces,"stored_facets_correspond":stored_facets,"actual_cells":cells(actual,&map),"native_cells":cells(&expected,&identity)})
 }
 pub fn check(doc: &Document, ids: &[ObjectId], rows: &Value, selection: bool) -> Value {
     native::check_metadata(doc, rows, selection);
@@ -289,4 +309,13 @@ pub fn assert_known_cell_gap(id: &str, report: &Value) {
         !CELL_GAPS.contains(&id),
         "native mesh facet gap set changed: {id}"
     );
+}
+pub fn assert_ngon_cell_gap(id: &str, report: &Value) {
+    for flag in ["stored_pieces_correspond", "stored_facets_correspond"] {
+        assert_eq!(
+            report[flag],
+            !NGON_CELL_GAPS.contains(&id),
+            "n-gon cell gap changed: {id}"
+        );
+    }
 }

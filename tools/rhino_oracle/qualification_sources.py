@@ -158,6 +158,11 @@ def with_shared_sources(paths):
         expanded.extend(MESH_MODULES)
     if 'crates/viboceros-io/src/three_dm.rs' in expanded:
         expanded.append('crates/viboceros-io/src/three_dm/mesh_ngon.rs')
+    if 'tools/rhino_oracle/insert_point_cases.py' in expanded:
+        expanded.extend([
+            'tools/rhino_oracle/insert_point_holdout_cases.py',
+            'tools/rhino_oracle/insert_point_ngon_cases.py',
+        ])
     if ('crates/viboceros-geometry/src/nurbs_surface.rs' in expanded or
             'crates/viboceros-opennurbs/src/surface.rs' in expanded or
             'crates/viboceros-command/src/extract_control_polygon.rs' in expanded):

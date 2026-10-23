@@ -5,7 +5,9 @@
   "command_cases": 21,
   "getter_cases": 21,
   "additional_geometry_cases": 12,
-  "captured_command_workflows": 57,
+  "captured_command_workflows": 69,
+  "ngon_cases": 12,
+  "ngon_getter_cases": 12,
   "calibration_recipes": 32,
   "failed_import_requested_workflows": 12,
   "failed_import_qualified_workflows": 0,
@@ -19,9 +21,9 @@
     "insert_point_holdout_mesh_ngon_island",
     "insert_point_holdout_mesh_reverse"
   ],
-  "holdout_region_gaps": [
-    "insert_point_holdout_mesh_ngon_internal",
-    "insert_point_holdout_mesh_ngon_one"
+  "holdout_region_gaps": [],
+  "ngon_cell_gaps": [
+    "insert_point_ngon_two_overlays_shared"
   ],
   "cases": [
     {
@@ -67,6 +69,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": false,
         "stored_pieces_correspond": false,
@@ -123,6 +127,8 @@
             2
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -177,6 +183,8 @@
             5
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": false,
         "stored_pieces_correspond": false,
@@ -231,6 +239,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -277,6 +287,8 @@
             1
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -343,6 +355,8 @@
             3
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
         "qualified": true,
         "stored_facets_correspond": false,
         "stored_pieces_correspond": false,
@@ -413,6 +427,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -483,6 +499,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -517,6 +535,8 @@
             3
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -551,6 +571,8 @@
             3
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -777,6 +799,8 @@
             1
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -833,6 +857,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": false,
         "stored_pieces_correspond": false,
@@ -890,6 +916,8 @@
             2
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -945,6 +973,8 @@
             5
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": false,
         "stored_pieces_correspond": false,
@@ -1000,6 +1030,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1047,6 +1079,8 @@
             1
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1114,6 +1148,8 @@
             3
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
         "qualified": true,
         "stored_facets_correspond": false,
         "stored_pieces_correspond": false,
@@ -1185,6 +1221,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1256,6 +1294,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1291,6 +1331,8 @@
             3
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1326,6 +1368,8 @@
             3
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1563,6 +1607,8 @@
             1
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1611,6 +1657,8 @@
             1
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1652,6 +1700,8 @@
             1
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1705,6 +1755,8 @@
             2
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1777,7 +1829,7 @@
         ],
         "channels": true,
         "faces": 3,
-        "logical_regions": false,
+        "logical_regions": true,
         "maximum_error": 6.280369834735101e-16,
         "native_cells": [
           [
@@ -1796,7 +1848,9 @@
             3
           ]
         ],
-        "qualified": false,
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
         "vertices": 5
@@ -1859,6 +1913,8 @@
             2
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -1894,7 +1950,7 @@
         ],
         "channels": true,
         "faces": 4,
-        "logical_regions": false,
+        "logical_regions": true,
         "maximum_error": 6.280369834735101e-16,
         "native_cells": [
           [
@@ -1918,7 +1974,9 @@
             1
           ]
         ],
-        "qualified": false,
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
         "vertices": 5
@@ -1979,6 +2037,8 @@
             8
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": false,
@@ -2046,6 +2106,8 @@
             7
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
         "qualified": true,
         "stored_facets_correspond": true,
         "stored_pieces_correspond": true,
@@ -2097,6 +2159,8 @@
             4
           ]
         ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": false,
         "stored_pieces_correspond": false,
@@ -2105,6 +2169,1798 @@
       "id": "insert_point_holdout_mesh_reverse",
       "identity": true,
       "metadata": true
+    }
+  ],
+  "ngons": [
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "channels": true,
+        "faces": 2,
+        "logical_regions": true,
+        "maximum_error": 6.280369834735101e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 4
+      },
+      "history": true,
+      "id": "insert_point_ngon_triangle_uncovered",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "channels": true,
+        "faces": 2,
+        "logical_regions": true,
+        "maximum_error": 6.280369834735101e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 4
+      },
+      "history": true,
+      "id": "insert_point_ngon_triangle_overlay",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "logical_regions": true,
+        "maximum_error": 6.280369834735101e-16,
+        "native_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 5
+      },
+      "history": true,
+      "id": "insert_point_ngon_triangle_same_edge",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "logical_regions": true,
+        "maximum_error": 4.965068306494546e-16,
+        "native_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 5
+      },
+      "history": true,
+      "id": "insert_point_ngon_quad_bottom",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            1,
+            4,
+            2
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "logical_regions": true,
+        "maximum_error": 6.280369834735101e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            1,
+            4,
+            2
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 5
+      },
+      "history": true,
+      "id": "insert_point_ngon_quad_reordered",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            2,
+            4,
+            3
+          ],
+          [
+            2,
+            5,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 4,
+        "logical_regions": true,
+        "maximum_error": 8.005932084973442e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            2,
+            4,
+            3
+          ],
+          [
+            2,
+            5,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_ngon_quad_same_edge",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            5
+          ],
+          [
+            0,
+            5,
+            6
+          ],
+          [
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            7,
+            1
+          ]
+        ],
+        "channels": true,
+        "faces": 7,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            5
+          ],
+          [
+            0,
+            5,
+            6
+          ],
+          [
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            7,
+            1
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 8
+      },
+      "history": true,
+      "id": "insert_point_ngon_fan_boundary",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            7,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            1,
+            6,
+            7
+          ]
+        ],
+        "channels": true,
+        "faces": 8,
+        "logical_regions": true,
+        "maximum_error": 4.440892098500626e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            7,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            1,
+            6,
+            7
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 8
+      },
+      "history": true,
+      "id": "insert_point_ngon_fan_internal",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            7,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            1,
+            6,
+            7
+          ]
+        ],
+        "channels": true,
+        "faces": 8,
+        "logical_regions": true,
+        "maximum_error": 4.440892098500626e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            7,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            1,
+            6,
+            7
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 8
+      },
+      "history": true,
+      "id": "insert_point_ngon_fan_uncovered",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5,
+            6
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            7,
+            8,
+            3
+          ],
+          [
+            1,
+            2,
+            5
+          ],
+          [
+            1,
+            3,
+            4,
+            2
+          ],
+          [
+            3,
+            8,
+            9
+          ],
+          [
+            3,
+            9,
+            10
+          ],
+          [
+            3,
+            10,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 9,
+        "logical_regions": true,
+        "maximum_error": 4.965068306494546e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5,
+            6
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            7,
+            8,
+            3
+          ],
+          [
+            1,
+            2,
+            5
+          ],
+          [
+            1,
+            3,
+            4,
+            2
+          ],
+          [
+            3,
+            8,
+            9
+          ],
+          [
+            3,
+            9,
+            10
+          ],
+          [
+            3,
+            10,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 11
+      },
+      "history": true,
+      "id": "insert_point_ngon_fan_cross",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            6
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            6,
+            3
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            2,
+            5,
+            6
+          ]
+        ],
+        "channels": true,
+        "faces": 6,
+        "logical_regions": true,
+        "maximum_error": 4.440892098500626e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            6
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            6,
+            3
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            2,
+            5,
+            6
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 7
+      },
+      "history": true,
+      "id": "insert_point_ngon_two_ngons_shared",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            2,
+            5,
+            6
+          ],
+          [
+            0,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            1,
+            2
+          ],
+          [
+            0,
+            6,
+            3
+          ]
+        ],
+        "channels": true,
+        "faces": 4,
+        "logical_regions": true,
+        "maximum_error": 4.965068306494546e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            5
+          ],
+          [
+            0,
+            3,
+            4,
+            1
+          ],
+          [
+            0,
+            5,
+            6,
+            3
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
+        "stored_facets_correspond": false,
+        "stored_pieces_correspond": false,
+        "vertices": 7
+      },
+      "history": true,
+      "id": "insert_point_ngon_two_overlays_shared",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    }
+  ],
+  "ngon_getters": [
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "channels": true,
+        "faces": 2,
+        "logical_regions": true,
+        "maximum_error": 6.280369834735101e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 4
+      },
+      "history": true,
+      "id": "insert_point_ngon_triangle_uncovered",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "channels": true,
+        "faces": 2,
+        "logical_regions": true,
+        "maximum_error": 6.280369834735101e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 4
+      },
+      "history": true,
+      "id": "insert_point_ngon_triangle_overlay",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "logical_regions": true,
+        "maximum_error": 6.280369834735101e-16,
+        "native_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 5
+      },
+      "history": true,
+      "id": "insert_point_ngon_triangle_same_edge",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "logical_regions": true,
+        "maximum_error": 4.965068306494546e-16,
+        "native_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 5
+      },
+      "history": true,
+      "id": "insert_point_ngon_quad_bottom",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            1,
+            4,
+            2
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "logical_regions": true,
+        "maximum_error": 6.280369834735101e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            1,
+            4,
+            2
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 5
+      },
+      "history": true,
+      "id": "insert_point_ngon_quad_reordered",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            2,
+            4,
+            3
+          ],
+          [
+            2,
+            5,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 4,
+        "logical_regions": true,
+        "maximum_error": 8.005932084973442e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            2,
+            4,
+            3
+          ],
+          [
+            2,
+            5,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_ngon_quad_same_edge",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            5
+          ],
+          [
+            0,
+            5,
+            6
+          ],
+          [
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            7,
+            1
+          ]
+        ],
+        "channels": true,
+        "faces": 7,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            5
+          ],
+          [
+            0,
+            5,
+            6
+          ],
+          [
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            7,
+            1
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 8
+      },
+      "history": true,
+      "id": "insert_point_ngon_fan_boundary",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            7,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            1,
+            6,
+            7
+          ]
+        ],
+        "channels": true,
+        "faces": 8,
+        "logical_regions": true,
+        "maximum_error": 4.440892098500626e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            7,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            1,
+            6,
+            7
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 8
+      },
+      "history": true,
+      "id": "insert_point_ngon_fan_internal",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            7,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            1,
+            6,
+            7
+          ]
+        ],
+        "channels": true,
+        "faces": 8,
+        "logical_regions": true,
+        "maximum_error": 4.440892098500626e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            7,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            1,
+            6,
+            7
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 0,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 8
+      },
+      "history": true,
+      "id": "insert_point_ngon_fan_uncovered",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5,
+            6
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            7,
+            8,
+            3
+          ],
+          [
+            1,
+            2,
+            5
+          ],
+          [
+            1,
+            3,
+            4,
+            2
+          ],
+          [
+            3,
+            8,
+            9
+          ],
+          [
+            3,
+            9,
+            10
+          ],
+          [
+            3,
+            10,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 9,
+        "logical_regions": true,
+        "maximum_error": 4.965068306494546e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5,
+            6
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            6,
+            7
+          ],
+          [
+            0,
+            7,
+            8,
+            3
+          ],
+          [
+            1,
+            2,
+            5
+          ],
+          [
+            1,
+            3,
+            4,
+            2
+          ],
+          [
+            3,
+            8,
+            9
+          ],
+          [
+            3,
+            9,
+            10
+          ],
+          [
+            3,
+            10,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 11
+      },
+      "history": true,
+      "id": "insert_point_ngon_fan_cross",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            6
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            6,
+            3
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            2,
+            5,
+            6
+          ]
+        ],
+        "channels": true,
+        "faces": 6,
+        "logical_regions": true,
+        "maximum_error": 4.440892098500626e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            6
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            0,
+            6,
+            3
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            2,
+            5,
+            6
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 7
+      },
+      "history": true,
+      "id": "insert_point_ngon_two_ngons_shared",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            2,
+            5,
+            6
+          ],
+          [
+            0,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            1,
+            2
+          ],
+          [
+            0,
+            6,
+            3
+          ]
+        ],
+        "channels": true,
+        "faces": 4,
+        "logical_regions": true,
+        "maximum_error": 4.965068306494546e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            5
+          ],
+          [
+            0,
+            3,
+            4,
+            1
+          ],
+          [
+            0,
+            5,
+            6,
+            3
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 2,
+        "qualified": true,
+        "stored_facets_correspond": false,
+        "stored_pieces_correspond": false,
+        "vertices": 7
+      },
+      "history": true,
+      "id": "insert_point_ngon_two_overlays_shared",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
     }
   ],
   "sdk_calibration": [
@@ -2328,9 +4184,10 @@
   "full_native_parity": false,
   "performance_qualified": false,
   "limits": [
-    "Twenty-one command/staging and twenty-one application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.",
+    "Thirty-three command/staging and thirty-three application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.",
     "Primary mesh logical regions, vertex channels and sampled geometry agree, but three planar cases retain different stored triangle/quad cells and fixed 0-2 facets. Eighteen of twenty-one primary workflows also match those stored representations.",
-    "Twelve additional spatial, triangular, original-edge, n-gon and raw-seam cases preserve control/vertex coordinates, channels and sampled geometry. Two n-gon cases have different logical group boundaries; two other cases have different stored cells, including one different fixed-facet layout. These remain explicit diagnostics.",
+    "Twelve additional spatial, triangular, original-edge, n-gon and raw-seam cases preserve control/vertex coordinates, explicit n-gon overlays, logical regions, channels and sampled geometry. Both earlier n-gon grouping differences are resolved. Two cases still have different stored cells, including one different fixed-facet layout.",
+    "Twelve new n-gon command and getter cases cover uncovered triangles, single-face overlays, repeated points on one edge, reordered source faces, triangulated fans, interior picks, paths across fans and adjacent n-gons. Original n-gon adjacency survives through split original edges; new tessellation edges only join automatic n-gons for regions with more than four boundary vertices. All explicit overlays and logical regions agree. One case with adjacent single-quad overlays still has different stored cells and fixed facets.",
     "The public meshing API calibration uses captured output regions, never independent input witnesses. Neither public triangulation nor quad conversion reproduces all native InsertPoint cell choices, even across every boundary origin. It does not qualify command or kernel parity.",
     "Original source edges remain the pick cage, including after new chords appear. Coordinates choose the nearest spatial source edge; viewport picks use screen distance and a constrained spatial edge parameter. Parallel crossing projection pins the first supplied view normal; perspective crossing paths and changing views are not natively qualified.",
     "Accepted points are staged until Enter. Cancel, Escape and starting another command discard them. Empty or Undo-all acceptance creates no geometry history and preserves redo. Stale source geometry, tolerance or editability rejects admission.",
@@ -2354,9 +4211,9 @@
     "crates/viboceros-command/tests/support/subd.rs": "1953846077b1266e17378e1c865078cb98f3ead90dcc2495447d4e8b73f02e25",
     "third_party/opennurbs/opennurbs_subd.cpp": "27442e42c74c06e63d2a60eb756e01f7c8f3d2c95a6cf8e9a4db062006f291eb",
     "third_party/opennurbs/opennurbs_subd.h": "5e533e2dcf92dab195ad1000fca95b02df01f90c69c67ca8630034dcfa746296",
-    "tools/rhino_oracle/insert_point_cases.py": "d1d5739eb36b90e11da20744242d383fafa0eb84afe7cbbe5760680a62737a2c",
+    "tools/rhino_oracle/insert_point_cases.py": "b0e7342f05f209d0fea354dc1c427419b15a8053483137c0542eaf69b2290c7d",
     "tools/rhino_oracle/insert_point_probe.py": "ce2e01e29e88e694a3b5ba68876ab4de5843c1f8d6e7fe650410e94412cb69a6",
-    "tools/rhino_oracle/generate_insert_point.py": "29b320439ddc933a2c8a48bf48eddb1453d16051a1b4f1e00ebd3f277a4f6af7",
+    "tools/rhino_oracle/generate_insert_point.py": "b01a7a9be4bc805a07a0644a691907ad76625485ff555fb9a86c3dc30954d570",
     "tools/rhino_oracle/conic_getter_input.py": "6541ef7e3c79364c63789dffff5b1863904003fb3aa896eed069be4dcb5c25fd",
     "tools/rhino_oracle/managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
     "tools/rhino_oracle/snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
@@ -2371,7 +4228,7 @@
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/client.py": "4c9e13ffd9918418c774283d7ebb9cd1f15e29b1293177723724f93fa3078224",
     "tools/rhino_oracle/rhino_worker.py": "92050b7993a00a62b9749d554132153ac9b98883e25cacce7e5b97159e00d3db",
-    "tools/rhino_oracle/structural_sdk.py": "0cc602cf0f95338ffca1e46822ee69f5b0f82f5e3d12d7dcbfe7e18f2a18371e",
+    "tools/rhino_oracle/structural_sdk.py": "70ad0c5df4915931413f5c0b33fb5924ea0e6a1e2694945b4de7ca8e738b9676",
     "tools/rhino_oracle/report_insert_point.py": "72d6dbd165e1fcae06e9771c804fd3049f77b35f08ceb045c2fe332563a1d362",
     "tools/rhino_oracle/test_insert_point.py": "21aa66cc8673e39a64e7b781f328bfa3ff1ee2e976ce7c19172e3e3faad06422",
     "crates/viboceros-command/src/mesh_seams.rs": "fae9bbdb286bd2441cd3c953da2e3e92034edde5b4635f1e5c3e3e751ba70ea0",
@@ -2449,8 +4306,8 @@
     "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "29dacc136b082428469f2b12e916b1a9d3867f78feaf9b6380f1d8f595534590",
     "crates/viboceros-geometry/src/mesh/planar_cap.rs": "9bd66de6751bbd533a061be311ba42bb36fad7823cd8cf53e7d41d4afabe8f17",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
-    "crates/viboceros-geometry/src/mesh/insert.rs": "b4ab2add154fd29023527b3373853426b28be8922a7197f196baf0909b0cb6b9",
-    "crates/viboceros-geometry/src/mesh/insert/ngons.rs": "9967bbb0352d3788b903c073ca5cb530d03fca72c7c81cc27a2e59eae13839b9",
+    "crates/viboceros-geometry/src/mesh/insert.rs": "32d73dcb02c5aae1686a13c7f6b09e7d785e24982f47581a3f62329e9f13ca8e",
+    "crates/viboceros-geometry/src/mesh/insert/ngons.rs": "a244b7b7ab5dce38011d47570bf3a3e0c5ca8f7e9e6f9ceee0577ed6cd2d0732",
     "crates/viboceros-geometry/src/mesh/normals/tests.rs": "d10885e9cef9ddd7f8b725c0e87e1eee8fced36be67b1cef4fc256199ee2cf05",
     "crates/viboceros-geometry/src/mesh/edge_weld/tests.rs": "ee8d7efd03417eb62f26bfec74cc87a2144987a383c64de69abcb4433eadd13f",
     "crates/viboceros-geometry/src/mesh/union_find/tests.rs": "8a827790749c23059f7dace385d7898295b99610158117a7ee87d1e7a51c40de",
@@ -2460,14 +4317,17 @@
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "d42be78afa32f9f75405e497465f046f0c2dff2cad9ce6a5f3e81f5c42e06cf4",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "5c4a56a9e03a9cdcdb07ad4f43c65452f915c4776f511b22fc20b4d458c63036",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
+    "tools/rhino_oracle/insert_point_holdout_cases.py": "17c44c2bea78a69acead1ebc8633b2f280b0a74222ae47026652a8f776d93216",
+    "tools/rhino_oracle/insert_point_ngon_cases.py": "32c57fdf830c3bb08cf78afd8adc7dfe4fe2ef453584ac699f4b3bc70bc53c71",
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
-    "tools/rhino_oracle/qualification_sources.py": "bcbf4f8f295c57ae8e5c1ca764c444092af100a019a0d50a6d2c1190a531a035",
+    "tools/rhino_oracle/qualification_sources.py": "8cefb7ddecc22a37db83bad9b72e96f1d705d2c05bf4710b87e7f2a0c965accc",
     "crates/viboceros-geometry/src/mesh.rs": "560513d2e478988e56d8766a07b6900d7cde0bfff5df12dfac4a4caae1ac9efd",
-    "crates/viboceros-command/tests/insert_point_command.rs": "76cfa37333feec5725daf4f3b5be4156b2024d166185692bdb625e94ca5ae7cd",
+    "crates/viboceros-command/tests/insert_point_command.rs": "8e5b2e78b8521b780a725113c8ec1f3996725fe9af2becd43cc194b3d1b5c154",
     "crates/viboceros-command/tests/insert_point_staging.rs": "5c170590b950b0cee4de4fa8691f2d651eb5da9701ed08196ebf5d10c7dd659d",
-    "crates/viboceros-command/tests/support/insert_point.rs": "27a991ed96efbc3df3db2d26ff69dea0ad865b9a660fb0c5683ff3f8648a119b",
+    "crates/viboceros-command/tests/insert_point_ngons.rs": "320e3219a0360129241c9900238efe960c194ce4462402e0bf8e57028d3d35dd",
+    "crates/viboceros-command/tests/support/insert_point.rs": "aad1c95d9b2c2047377bb2e9a5b950164fc36a384f67a3686ddb12a934f1375d",
     "crates/viboceros-geometry/tests/support/subdivision_native.rs": "34bca1d5a0b7a9f1b6d7a7c5ab2686ab0e079a2b9590a545460c552fd66fb0e1",
     "crates/viboceros-document/src/lib.rs": "b78d1a285240b372def86297543aa6bf598b7c412eb7dc9df77b4d11a3ba2225",
     "crates/viboceros-document/src/history.rs": "e31ee8a9de612e53753fa049a75a6cabb1ae30219313e088722ec855ac79e3f5",
@@ -2479,12 +4339,11 @@
     "src/viewport/edge_point/tests.rs": "f818e53f8332fba97146165d07262067c14e48e2d40aed558599d7ef35014e9b",
     "src/viewport/selection.rs": "97a0c529b7e43b496a55c38bfe3be56e78dcd30535ef8480902db6bab0acc1b6",
     "src/viewport/selection_clipping.rs": "9b6dda71519434b12cd5a0b82d0997eee42fc813fa18368bc85ec18df2b25d42",
-    "tools/rhino_oracle/insert_point_holdout_cases.py": "17c44c2bea78a69acead1ebc8633b2f280b0a74222ae47026652a8f776d93216",
     "tools/rhino_oracle/insert_point_mesh_sdk_cases.py": "0d8a1c904de05d00a293bf7adcd73b31c060968dd213312bac7f5b55e7b0e76c",
     "tools/rhino_oracle/insert_point_mesh_sdk_probe.py": "5e7d70934cf0b74051a4c840371dc1e736a66a1b7646e832a92d86b29b838a95",
     "tools/rhino_oracle/generate_insert_point_mesh_sdk.py": "58adbc066cfecd0b5c114e49996cce7722ae8b69a523ab94bcac189ad14aad39",
-    "tools/rhino_oracle/report_insert_point_command.py": "5dd9cc440212f8f2d2c7b7c4812cd1bd184077d4e05213f7678efe8b79505dec",
-    "tools/rhino_oracle/test_insert_point_command.py": "a1507b394b8a82db811ee72de8eb78ba881cd5605964d07c73b7ef28697bfa18",
+    "tools/rhino_oracle/report_insert_point_command.py": "a225cdd1ea3758ba3a087b8f7391cab66e45fe784341ba8b6d25c21888b0e8e2",
+    "tools/rhino_oracle/test_insert_point_command.py": "43c7b228b2377be3f46044b2ba704a9e0e8bddeea66ab842a13d7ac84886f6c1",
     "tools/rhino_oracle/fixtures/insert_point_holdouts.json": "328af06bba5ce46566528dc832863d1216be548bb088781b9e3bb1be3428c40d",
     "tools/rhino_oracle/observations/insert_point_holdouts_import_failure.json": "6eab038253b1c43a41a705b4f726f3cf7e07a61d04949222a1e4a664a75322d0",
     "tools/rhino_oracle/observations/insert_point_holdouts_import_failure.log": "73afbc32717a2ffc4411ae0e469b7c92bdb863fd178a198c82d18b4ef96fc80a",
@@ -2516,7 +4375,7 @@
     "src/app/subd_spin_edge.rs": "b5c566795e33fac8b8202cf8815e2cf2c8580464648377d0d64f0ed506e925ab",
     "src/app/crease/tests/subd_spin_edge.rs": "f5317bfa584f3f9b68095a9da2399afe861064928135d4a7e49bcdbc63793a7c",
     "src/app/insert_point.rs": "8da2ad5c5735c9cd0e8b99fc30403f8d8c5a8bca7b770fcc670247129c4ddd8b",
-    "src/app/crease/tests/insert_point.rs": "bb0cd188f0af8a796d32c2c7d7a473e1000ef90dd80123ef7226cea873bf6dfe",
+    "src/app/crease/tests/insert_point.rs": "9285595a67aa9fe2b48a5a6d1b8347ecea6f631a8a0338914ea5f072383692d5",
     "crates/viboceros-command/tests/support/subd_spin_edge.rs": "54294d02182e8ee6d4615fc97bfac21b6e08494a100df1359c9574e0088d8b80",
     "src/app/crease/tests/edge_seams.rs": "981275cf511598df522b9ff48c77675271c34d77cf6b83e15d9463a283c72257",
     "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
@@ -2611,6 +4470,20 @@
     "tools/rhino_oracle/fixtures/insert_point_holdouts_v2/insert_point_holdout_subd_created_edge.3dm": "707f253374e07250858e51707a070a0b0846a74557b6ea0fda2afd60735de943",
     "tools/rhino_oracle/fixtures/insert_point_holdouts_v2/insert_point_holdout_subd_triangle.3dm": "4ea484171c921746c15fb08591a74a5e99c9612b4f6a1112e9308af769562c08",
     "tools/rhino_oracle/fixtures/insert_point_holdouts_v2/insert_point_holdout_subd_warped.3dm": "ba7fb14a24cb246eda787b30155ab25d9deba77bdf3961c21921abf67b0ac46e",
+    "tools/rhino_oracle/fixtures/insert_point_ngons.json": "9ccab7dcdf1d9a2831162415fc97b59dcda36dc7bd4d2e80eb4e98a5e5c0c5a5",
+    "tools/rhino_oracle/observations/insert_point_ngons.json": "6d57ff0d9c10b0c54759cc913c54b8bae02259b07c7bbdcc8acde70a23532990",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_fan_boundary.3dm": "63b7d9c0d9f432d19e83ce7d05e73bd587b14c2699e18469d9d38d8974dc9048",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_fan_cross.3dm": "e4998f44647c44a525572bf69114aa312265ac6c01be6bdfbc40bed960ea5186",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_fan_internal.3dm": "30c09016679593ab5f7a803bb4ad87e61758666753897ac8857f635a13a148aa",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_fan_uncovered.3dm": "a25aa53515c1cccdcf7ec361124fdae29833a527cc4fbbd343a92ba96a4d7827",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_quad_bottom.3dm": "6566d7e8c91beebd80473728b91e47cbff0b7e6b6e816cbd897667a69ad1bf44",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_quad_reordered.3dm": "d9baf8f967e8480fd74b1db560b68c795a8fa22e261f29ebbeadc457b0c299e4",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_quad_same_edge.3dm": "99a88ea48a116f9bdbd0b686f0ecd8321d85d8e84a659216cc4fd79ecdad1121",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_triangle_overlay.3dm": "6555e06d1902104b6b81f92ad5fb1b5c24f09492b27d5db57107454138b6476c",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_triangle_same_edge.3dm": "f6692494a454d7b29c2d3af552ce1203f12fec8c7aad44a7b5a5db2c40c5574f",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_triangle_uncovered.3dm": "b35680702fbb887796677209c74fbdc99141db2590a70d2e671581aae9c4dc27",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_two_ngons_shared.3dm": "32d3ed1dc83557daa53598fa7a6543b73a13fc2756e55c7420d34fa297345864",
+    "tools/rhino_oracle/fixtures/insert_point_ngons/insert_point_ngon_two_overlays_shared.3dm": "c9c8f0799cb5ddc3364f6a9cd8dc42e17fc1e4d60df85dcb1fbcad645d2d762f",
     "tools/rhino_oracle/fixtures/insert_point_mesh_sdk.json": "cd7bcd9019502474027cd7ea1a579b80a7f595316156a6ae78d345cda3b8009b",
     "tools/rhino_oracle/observations/insert_point_mesh_sdk.json": "65a979fab19b6c4ded033950792d55aac1f94c3c1f761352ca1314241a583ac9",
     "tools/rhino_oracle/fixtures/insert_point_mesh_sdk_origins.json": "e167b2e47842143590cb0e31c16974faf27e3fdd5789a42c9942fc6d35b5114f",

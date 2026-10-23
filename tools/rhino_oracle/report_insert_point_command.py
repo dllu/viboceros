@@ -10,18 +10,18 @@ from .qualification_sources import with_shared_sources
 from .report_insert_point import FAMILIES as KERNEL_FAMILIES, SOURCES as KERNEL_SOURCES
 from .report_subd_box import HERE, ROOT, error
 
-FAMILIES = dict(KERNEL_FAMILIES, insert_point_holdouts_v2=12,
+FAMILIES = dict(KERNEL_FAMILIES, insert_point_holdouts_v2=12, insert_point_ngons=12,
                 insert_point_mesh_sdk=16, insert_point_mesh_sdk_origins=16)
 CELL_GAPS = {'insert_point_full_mesh_adjacent', 'insert_point_full_mesh_same_edge',
              'insert_point_full_mesh_strip_mid'}
 HOLDOUT_CELL_GAPS = {'insert_point_holdout_mesh_ngon_island',
                      'insert_point_holdout_mesh_reverse'}
-HOLDOUT_REGION_GAPS = {'insert_point_holdout_mesh_ngon_one',
-                       'insert_point_holdout_mesh_ngon_internal'}
+NGON_CELL_GAPS = {'insert_point_ngon_two_overlays_shared'}
 SOURCES = with_shared_sources(KERNEL_SOURCES + [
     'crates/viboceros-geometry/src/mesh.rs',
     'crates/viboceros-command/tests/insert_point_command.rs',
     'crates/viboceros-command/tests/insert_point_staging.rs',
+    'crates/viboceros-command/tests/insert_point_ngons.rs',
     'crates/viboceros-command/tests/support/insert_point.rs',
     'crates/viboceros-geometry/tests/support/subdivision_native.rs',
     'crates/viboceros-document/src/lib.rs',
@@ -131,16 +131,17 @@ def replay_rows(text, stage, expected):
     return sorted(rows, key=lambda r: list(expected).index(r['id']))
 
 
-def check_mesh(actual, native, key, holdout):
-    region_match = key not in HOLDOUT_REGION_GAPS if holdout else True
-    pieces = key not in (HOLDOUT_CELL_GAPS if holdout else CELL_GAPS)
-    facets = key != 'insert_point_holdout_mesh_reverse' if holdout else pieces
-    for field, expected in [('qualified', region_match), ('logical_regions', region_match),
+def check_mesh(actual, native, key, group):
+    pieces = key not in {'primary': CELL_GAPS, 'holdout': HOLDOUT_CELL_GAPS, 'ngon': NGON_CELL_GAPS}[group]
+    facets = key != 'insert_point_holdout_mesh_reverse' if group == 'holdout' else pieces
+    for field, expected in [('qualified', True), ('logical_regions', True),
+                            ('ngon_overlays_correspond', True),
                             ('channels', True), ('stored_pieces_correspond', pieces),
                             ('stored_facets_correspond', facets)]:
         if actual.get(field) is not expected:
             raise ValueError('unexpected insertion mesh '+field+' result: '+key)
-    for field, values in [('vertices', native['vertices']), ('faces', native['faces'])]:
+    for field, values in [('vertices', native['vertices']), ('faces', native['faces']),
+                           ('ngons', native['ngons'])]:
         if type(actual.get(field)) is not int or actual[field] != len(values):
             raise ValueError('insertion mesh count differs')
     wanted = sorted([list(cycle(f)) for f in native['faces']])
@@ -160,17 +161,21 @@ def check_mesh(actual, native, key, holdout):
 def summarize(text):
     expected = witnessed('insert_point_full')
     holdouts = witnessed('insert_point_holdouts_v2')
+    ngon_expected = witnessed('insert_point_ngons')
     commands = replay_rows(text, 'COMMAND', expected)
     getters = replay_rows(text, 'GETTER', expected)
     extra = replay_rows(text, 'HOLDOUT', holdouts)
+    ngons = replay_rows(text, 'NGON', ngon_expected)
+    ngon_getters = replay_rows(text, 'NGON_GETTER', ngon_expected)
     maximum = 0.
     for stage, rows, wanted in [('command', commands, expected), ('getter', getters, expected),
-                                 ('holdout', extra, holdouts)]:
+                                 ('holdout', extra, holdouts), ('ngon_command', ngons, ngon_expected),
+                                 ('ngon_getter', ngon_getters, ngon_expected)]:
         for row in rows:
             value = wanted[row['id']]
             target = next(o for o in value['after'] if o['source'] == 0)
             for flag in ['identity', 'metadata'] + ([] if stage == 'holdout' else
-                         ['history', 'preview'] + (['selection'] if stage == 'getter' else [])):
+                         ['history', 'preview'] + (['selection'] if stage.endswith('getter') else [])):
                 if row.get(flag) is not True:
                     raise ValueError('unqualified insertion '+flag)
             if stage != 'holdout':
@@ -179,7 +184,8 @@ def summarize(text):
                     raise ValueError('incorrect insertion history admission')
             actual = row['comparison']
             if 'mesh' in target:
-                maximum = max(maximum, check_mesh(actual, target['mesh'], row['id'], stage == 'holdout'))
+                group = 'ngon' if stage.startswith('ngon') else 'holdout' if stage == 'holdout' else 'primary'
+                maximum = max(maximum, check_mesh(actual, target['mesh'], row['id'], group))
             else:
                 native = target['subd']
                 if actual.get('qualified') is not True or native['valid'] is not True:
@@ -204,17 +210,20 @@ def summarize(text):
         raise ValueError('mixed insertion native versions')
     return dict(native_engine_version=engines.pop(), model_epsilon=1e-6,
                 command_implemented=True, command_cases=len(commands), getter_cases=len(getters),
-                additional_geometry_cases=len(extra), captured_command_workflows=57,
+                additional_geometry_cases=len(extra), captured_command_workflows=69,
+                ngon_cases=len(ngons), ngon_getter_cases=len(ngon_getters),
                 calibration_recipes=32, failed_import_requested_workflows=12,
                 failed_import_qualified_workflows=0, maximum_error=maximum,
                 primary_cell_gaps=sorted(CELL_GAPS), holdout_cell_gaps=sorted(HOLDOUT_CELL_GAPS),
-                holdout_region_gaps=sorted(HOLDOUT_REGION_GAPS),
-                cases=commands, getters=getters, holdouts=extra, sdk_calibration=sdk_calibration(),
+                holdout_region_gaps=[], ngon_cell_gaps=sorted(NGON_CELL_GAPS),
+                cases=commands, getters=getters, holdouts=extra, ngons=ngons,
+                ngon_getters=ngon_getters, sdk_calibration=sdk_calibration(),
                 full_native_parity=False, performance_qualified=False,
                 limits=[
-                    'Twenty-one command/staging and twenty-one application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.',
+                    'Thirty-three command/staging and thirty-three application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.',
                     'Primary mesh logical regions, vertex channels and sampled geometry agree, but three planar cases retain different stored triangle/quad cells and fixed 0-2 facets. Eighteen of twenty-one primary workflows also match those stored representations.',
-                    'Twelve additional spatial, triangular, original-edge, n-gon and raw-seam cases preserve control/vertex coordinates, channels and sampled geometry. Two n-gon cases have different logical group boundaries; two other cases have different stored cells, including one different fixed-facet layout. These remain explicit diagnostics.',
+                    'Twelve additional spatial, triangular, original-edge, n-gon and raw-seam cases preserve control/vertex coordinates, explicit n-gon overlays, logical regions, channels and sampled geometry. Both earlier n-gon grouping differences are resolved. Two cases still have different stored cells, including one different fixed-facet layout.',
+                    'Twelve new n-gon command and getter cases cover uncovered triangles, single-face overlays, repeated points on one edge, reordered source faces, triangulated fans, interior picks, paths across fans and adjacent n-gons. Original n-gon adjacency survives through split original edges; new tessellation edges only join automatic n-gons for regions with more than four boundary vertices. All explicit overlays and logical regions agree. One case with adjacent single-quad overlays still has different stored cells and fixed facets.',
                     'The public meshing API calibration uses captured output regions, never independent input witnesses. Neither public triangulation nor quad conversion reproduces all native InsertPoint cell choices, even across every boundary origin. It does not qualify command or kernel parity.',
                     'Original source edges remain the pick cage, including after new chords appear. Coordinates choose the nearest spatial source edge; viewport picks use screen distance and a constrained spatial edge parameter. Parallel crossing projection pins the first supplied view normal; perspective crossing paths and changing views are not natively qualified.',
                     'Accepted points are staged until Enter. Cancel, Escape and starting another command discard them. Empty or Undo-all acceptance creates no geometry history and preserves redo. Stale source geometry, tolerance or editability rejects admission.',

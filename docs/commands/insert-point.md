@@ -27,8 +27,9 @@ selection and moves an accepted source to the end of the object table, matching
 the captured Rhino workflows. Input is limited to 256 points. Changes to source
 geometry, tolerance or editability invalidate a staged preview.
 
-Mesh vertex channels and seams survive insertion. Native mesh tessellation is
-still incomplete: some triangle/quad layouts and two existing n-gon grouping
-choices differ. The [qualification record](../insert-point-command-qualification.json)
-keeps these differences visible. Native perspective crossing paths, changing
+Mesh vertex channels and seams survive insertion. Existing n-gon memberships
+follow original face adjacency; new polygon regions with more than four boundary
+vertices receive n-gon overlays. Some native triangle/quad layout choices still
+differ. The [qualification record](../insert-point-command-qualification.json)
+keeps those differences visible. Native perspective crossing paths, changing
 views, constrained Osnap, grip behavior and comparative speed remain unqualified.

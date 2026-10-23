@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_triangle_uncovered",
+      "case": "insert_point_ngon_triangle_uncovered"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_triangle_overlay",
+      "case": "insert_point_ngon_triangle_overlay"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_triangle_same_edge",
+      "case": "insert_point_ngon_triangle_same_edge"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_quad_bottom",
+      "case": "insert_point_ngon_quad_bottom"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_quad_reordered",
+      "case": "insert_point_ngon_quad_reordered"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_quad_same_edge",
+      "case": "insert_point_ngon_quad_same_edge"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_fan_boundary",
+      "case": "insert_point_ngon_fan_boundary"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_fan_internal",
+      "case": "insert_point_ngon_fan_internal"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_fan_uncovered",
+      "case": "insert_point_ngon_fan_uncovered"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_fan_cross",
+      "case": "insert_point_ngon_fan_cross"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_two_ngons_shared",
+      "case": "insert_point_ngon_two_ngons_shared"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_ngon_two_overlays_shared",
+      "case": "insert_point_ngon_two_overlays_shared"
+    }
+  ]
+}

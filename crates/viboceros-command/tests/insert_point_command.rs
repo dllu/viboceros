@@ -84,20 +84,13 @@ fn spatial_ngon_seam_and_original_edge_holdouts_retain_all_geometry_diagnostics(
             .find(|o| o["source"] == 0)
             .unwrap();
         let check = match doc.object(ids[0]).unwrap().geometry() {
-            Geometry::Mesh(m) => fixtures::compare_mesh_diagnostic(m, &target["mesh"]),
+            Geometry::Mesh(m) => fixtures::compare_mesh(m, &target["mesh"]),
             Geometry::SubD(s) => subd_native::compare(s, &target["subd"]),
             _ => panic!(),
         };
         if let Geometry::Mesh(_) = doc.object(ids[0]).unwrap().geometry() {
             let id = row["id"].as_str().unwrap();
-            assert_eq!(
-                check["logical_regions"],
-                ![
-                    "insert_point_holdout_mesh_ngon_one",
-                    "insert_point_holdout_mesh_ngon_internal",
-                ]
-                .contains(&id)
-            );
+            assert_eq!(check["logical_regions"], true);
             assert_eq!(
                 check["stored_pieces_correspond"],
                 ![

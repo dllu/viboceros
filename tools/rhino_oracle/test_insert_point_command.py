@@ -19,6 +19,19 @@ from .qualification_sources import with_shared_sources
 
 
 class InsertPointCommandTests(unittest.TestCase):
+    def test_generator_rejects_immutable_recaptures_before_launch_or_fixture_mutation(self):
+        from .generate_insert_point import FAMILIES as variants
+        for flag, (family, _) in variants.items():
+            paths = [HERE/folder/(family+'.json') for folder in ['fixtures', 'observations']]
+            before = [p.read_bytes() for p in paths]
+            args = [sys.executable, '-m', 'tools.rhino_oracle.generate_insert_point']
+            result = subprocess.run(args+([] if flag == 'discovery' else ['--'+flag]),
+                                    cwd=ROOT, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('native observations are immutable', result.stderr)
+            self.assertNotIn('Capturing ', result.stdout)
+            self.assertEqual([p.read_bytes() for p in paths], before)
+
     def test_shared_source_expansion_binds_extracted_code_in_one_pass(self):
         for root, required in [
             ('src/app.rs', ['src/app/insert_point.rs', 'src/viewport/insert_point.rs']),
@@ -27,16 +40,17 @@ class InsertPointCommandTests(unittest.TestCase):
                 'crates/viboceros-geometry/src/mesh/insert/ngons.rs',
                 'crates/viboceros-geometry/src/edge_insertion/polygons.rs']),
             ('crates/viboceros-command/src/lib.rs', ['crates/viboceros-command/src/insert_point/arguments.rs']),
+            ('tools/rhino_oracle/insert_point_cases.py', ['tools/rhino_oracle/insert_point_ngon_cases.py']),
         ]:
             paths = with_shared_sources([root])
             self.assertTrue(set(required) <= set(paths))
             self.assertEqual(set(paths), set(with_shared_sources(paths)))
 
     def test_new_captures_bind_requests_frozen_producers_and_source_archives(self):
-        for family in ['insert_point_holdouts_v2', 'insert_point_mesh_sdk', 'insert_point_mesh_sdk_origins']:
+        for family in ['insert_point_holdouts_v2', 'insert_point_ngons', 'insert_point_mesh_sdk', 'insert_point_mesh_sdk_origins']:
             path = HERE/'fixtures'/(family+'.json')
             query = json.loads(path.read_text())
-            wanted = request(holdouts=True) if 'holdouts' in family else sdk_request(origins=family.endswith('origins'))
+            wanted = request(ngons=True) if family == 'insert_point_ngons' else request(holdouts=True) if 'holdouts' in family else sdk_request(origins=family.endswith('origins'))
             self.assertEqual(query, wanted)
             validate_operations(query)
             native = capture(family)
@@ -49,7 +63,7 @@ class InsertPointCommandTests(unittest.TestCase):
                     self.assertEqual(current, frozen)
             for row in native['results']:
                 self.assertNotIn('error', row)
-                if family == 'insert_point_holdouts_v2':
+                if family in ['insert_point_holdouts_v2', 'insert_point_ngons']:
                     recipe = deepcopy(row['value']['input'])
                     self.assertEqual(recipe.pop('capture_id'), row['id'])
                     self.assertEqual(recipe, ALL_CASES[row['id']])
@@ -71,6 +85,7 @@ class InsertPointCommandTests(unittest.TestCase):
 
     def test_standalone_new_probes_and_recipe_allowlists(self):
         for query, module in [(request(holdouts=True), 'insert_point_probe'),
+                              (request(ngons=True), 'insert_point_probe'),
                               (sdk_request(), 'insert_point_mesh_sdk_probe'),
                               (sdk_request(origins=True), 'insert_point_mesh_sdk_probe')]:
             for extra in [{'case': 'arbitrary'}, {'id': 'arbitrary'}, {'path': 'arbitrary'}]:
@@ -86,7 +101,8 @@ class InsertPointCommandTests(unittest.TestCase):
     def evidence(self):
         report = json.loads((ROOT/'docs/insert-point-command-qualification.json').read_text())
         lines = []
-        for stage, key in [('COMMAND', 'cases'), ('GETTER', 'getters'), ('HOLDOUT', 'holdouts')]:
+        for stage, key in [('COMMAND', 'cases'), ('GETTER', 'getters'), ('HOLDOUT', 'holdouts'),
+                           ('NGON', 'ngons'), ('NGON_GETTER', 'ngon_getters')]:
             lines.extend('INSERT_POINT_'+stage+' '+json.dumps(r) for r in report[key])
         return report, lines
 
@@ -98,10 +114,13 @@ class InsertPointCommandTests(unittest.TestCase):
         self.assertEqual(report['getter_cases'], 21)
         self.assertEqual(report['additional_geometry_cases'], 12)
         self.assertEqual(report['primary_cell_gaps'], sorted(CELL_GAPS))
-        self.assertEqual(len(report['holdout_region_gaps']), 2)
+        self.assertEqual(report['holdout_region_gaps'], [])
+        self.assertEqual(report['ngon_cases'], 12)
+        self.assertEqual(report['ngon_getter_cases'], 12)
+        self.assertEqual(report['ngon_cell_gaps'], ['insert_point_ngon_two_overlays_shared'])
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        self.assertEqual(sum(FAMILIES.values()), 89)
+        self.assertEqual(sum(FAMILIES.values()), 101)
 
     def test_calibration_does_not_substitute_for_command_input_evidence(self):
         rows = sdk_calibration()
@@ -112,6 +131,28 @@ class InsertPointCommandTests(unittest.TestCase):
         report, _ = self.evidence()
         self.assertEqual(report['sdk_calibration'], rows)
         self.assertEqual(report['calibration_recipes'], 32)
+
+    def test_ngon_coverage_requires_both_stages_and_explicit_overlay_checks(self):
+        report, lines = self.evidence()
+        for stage, field in [('NGON', 'ngons'), ('NGON_GETTER', 'ngon_getters')]:
+            row = report[field][0]
+            needle = 'INSERT_POINT_'+stage+' '+json.dumps(row)
+            remaining = [line for line in lines if line != needle]
+            with self.assertRaises(ValueError):
+                summarize('\n'.join(remaining))
+            for key, value in [('ngon_overlays_correspond', False), ('ngons', False),
+                               ('qualified', False), ('maximum_error', float('nan'))]:
+                bad = deepcopy(row)
+                bad['comparison'][key] = value
+                with self.assertRaises(ValueError):
+                    summarize('\n'.join(remaining+['INSERT_POINT_'+stage+' '+json.dumps(bad)]))
+            gap = next(r for r in report[field] if r['id'] == 'insert_point_ngon_two_overlays_shared')
+            for key in ['stored_pieces_correspond', 'stored_facets_correspond']:
+                bad = deepcopy(gap)
+                bad['comparison'][key] = True
+                without_gap = [line for line in lines if line != 'INSERT_POINT_'+stage+' '+json.dumps(gap)]
+                with self.assertRaises(ValueError):
+                    summarize('\n'.join(without_gap+['INSERT_POINT_'+stage+' '+json.dumps(bad)]))
 
     def test_missing_duplicate_nonfinite_and_relabelled_replays_fail(self):
         report, lines = self.evidence()
@@ -128,6 +169,7 @@ class InsertPointCommandTests(unittest.TestCase):
         for field, value in [('maximum_error', float('nan')), ('maximum_error', float('inf')),
                              ('maximum_error', 1e-3), ('vertices', True), ('faces', -1),
                              ('channels', False), ('logical_regions', False),
+                             ('ngon_overlays_correspond', False), ('ngons', True),
                              ('stored_pieces_correspond', True), ('stored_facets_correspond', True),
                              ('native_cells', []), ('actual_cells', [])]:
             bad = deepcopy(row)
@@ -137,11 +179,11 @@ class InsertPointCommandTests(unittest.TestCase):
         bad = dict(row, id='unrelated')
         with self.assertRaises(ValueError):
             summarize('\n'.join(['INSERT_POINT_COMMAND '+json.dumps(bad)]+lines[1:]))
-        gap = next(r for r in report['holdouts'] if not r['comparison']['qualified'])
-        for flag in ['qualified', 'logical_regions']:
-            forged = deepcopy(gap)
-            forged['comparison'][flag] = True
-            text = '\n'.join(s for s in lines if not s.startswith('INSERT_POINT_HOLDOUT '+json.dumps(gap)))
+        resolved = next(r for r in report['holdouts'] if r['id'] == 'insert_point_holdout_mesh_ngon_internal')
+        for flag in ['qualified', 'logical_regions', 'ngon_overlays_correspond']:
+            forged = deepcopy(resolved)
+            forged['comparison'][flag] = False
+            text = '\n'.join(s for s in lines if not s.startswith('INSERT_POINT_HOLDOUT '+json.dumps(resolved)))
             with self.assertRaises(ValueError):
                 summarize(text+'\nINSERT_POINT_HOLDOUT '+json.dumps(forged))
 

@@ -14,8 +14,11 @@ component identities. Near-endpoint user parameters clamp to `[0.001, 0.999]`.
 Meshes keep raw seams separate, interpolate color/UV/normal channels, and reuse
 the existing constrained triangulation and quadrangulation code. Mesh geometry
 uses its validation tolerance so existing features below document tolerance
-survive. Original logical n-gons are retained or divided along inserted chords;
-two captured native n-gon grouping choices still differ.
+survive. Original n-gon membership follows adjacency through original edges and
+their split segments. New tessellation edges join automatic n-gons only for
+regions with more than four boundary vertices; a four-corner region containing
+a collinear inserted point retains separate triangle cells. Inserted chords
+separate the resulting groups. This resolves both earlier n-gon grouping gaps.
 
 The plan accepts an optional parallel-view normal for crossing projection;
 otherwise it uses the first incident face normal. The session pins the first
@@ -30,13 +33,19 @@ is parsed completely and staged on a trial session before accepting the line.
 
 The [kernel record](../insert-point-kernel-qualification.json) contains ten
 independent SubD replays. The separate
-[command record](../insert-point-command-qualification.json) covers 21 command
-and 21 application getter replays plus 12 spatial, triangular, seam, n-gon and
+[command record](../insert-point-command-qualification.json) covers 33 command
+and 33 application getter replays plus 12 spatial, triangular, seam, n-gon and
 original-edge cases. Replays use saved source 3DM files and independently
 captured physical pixel rays. The largest coordinate or sampled surface
-difference is about `2.35e-12` at a `1e-6` acceptance threshold. Three primary mesh cases differ
-in their stored triangle/quad cells; extra holdouts retain two grouping and
-two cell-layout differences. These are explicit diagnostics.
+difference is about `2.35e-12` at a `1e-6` acceptance threshold. All captured
+explicit n-gon overlays and logical regions agree. Three primary cases, two
+additional holdouts and one adjacent-overlay case still differ in their stored
+triangle/quad layouts; those diagnostics remain explicit.
+
+Twelve dedicated n-gon scenes cover triangle overlays, repeated boundary picks,
+reordered faces, triangulated fans, interior picks, crossing paths and adjacent
+n-gons. Command and application replays compare boundaries, memberships,
+coordinates, channels, preview isolation, metadata and document Undo/Redo.
 
 Thirty-two public meshing API calibration recipes use captured *output*
 regions. Neither public triangulation nor quad conversion, across every cyclic

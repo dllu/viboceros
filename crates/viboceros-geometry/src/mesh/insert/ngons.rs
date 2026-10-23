@@ -1,4 +1,4 @@
-//! Retain original logical regions and split them only across inserted chords.
+//! Preserve original n-gon adjacency and overlay newly tessellated large polygons.
 use super::*;
 use crate::mesh::union_find::{index_root, union_faces};
 pub(super) fn rebuild(
@@ -6,6 +6,7 @@ pub(super) fn rebuild(
     result: TriangleMesh,
     plan: &Plan,
     face_sources: &[usize],
+    polygon_groups: &[Option<usize>],
 ) -> Result<TriangleMesh, GeometryError> {
     let mut owners = (0..source.face_count())
         .map(|i| source.ngons().len() + i)
@@ -51,7 +52,12 @@ pub(super) fn rebuild(
         let mut uses = incidence.uses();
         let Some(first) = uses.next() else { continue };
         for other in uses {
-            if owners[face_sources[first.face]] == owners[face_sources[other.face]] {
+            let a = face_sources[first.face];
+            let b = face_sources[other.face];
+            let original_adjacency = a != b && owners[a] == owners[b];
+            let tessellated_ngon = polygon_groups[first.face].is_some()
+                && polygon_groups[first.face] == polygon_groups[other.face];
+            if original_adjacency || tessellated_ngon {
                 union_faces(&mut parents, &mut ranks, first.face, other.face);
             }
         }

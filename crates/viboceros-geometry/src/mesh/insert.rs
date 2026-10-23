@@ -99,6 +99,7 @@ impl TriangleMesh {
         }
         let mut records = Vec::new();
         let mut face_sources = Vec::new();
+        let mut polygon_groups = Vec::new();
         let edge_lookup = edges
             .iter()
             .enumerate()
@@ -108,7 +109,7 @@ impl TriangleMesh {
         for (i, pick) in plan.splits.iter().enumerate() {
             edge_splits[pick.edge].push(i);
         }
-        for region in plan.polygons(&faces)? {
+        for (region_index, region) in plan.polygons(&faces)?.into_iter().enumerate() {
             let source = region.source;
             let polygon = region.vertices;
             let source_boundary = self.faces[source].indices();
@@ -127,6 +128,7 @@ impl TriangleMesh {
             if raw == source_boundary {
                 records.push(self.faces[source]);
                 face_sources.push(source);
+                polygon_groups.push(None);
                 continue;
             }
             let closing = edge_lookup[&crate::edge_insertion::key([
@@ -168,6 +170,13 @@ impl TriangleMesh {
                 }
             }
             face_sources.extend(std::iter::repeat_n(source, records.len() - first_record));
+            // A split triangle may have four boundary vertices with one
+            // collinear point. Its two triangles remain separate cells;
+            // automatic n-gons describe regions with more than four corners.
+            polygon_groups.extend(std::iter::repeat_n(
+                (raw.len() > 4).then_some(region_index),
+                records.len() - first_record,
+            ));
             // The original closing side precedes the source face's first
             // corner. Keep that boundary origin when retaining quad records;
             // a cyclic shift by one changes their stored 0-2 facets.
@@ -182,6 +191,6 @@ impl TriangleMesh {
         let mut result =
             Self::try_new_faces(vertices, records, tolerance)?.try_with_vertex_colors(colors)?;
         result.vertex_channels = channels.finish();
-        ngons::rebuild(self, result, &plan, &face_sources)
+        ngons::rebuild(self, result, &plan, &face_sources, &polygon_groups)
     }
 }
