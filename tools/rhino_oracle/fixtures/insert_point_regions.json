@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_side_0_25",
+      "case": "insert_point_regions_side_0_25"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_side_0_75",
+      "case": "insert_point_regions_side_0_75"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_side_1_25",
+      "case": "insert_point_regions_side_1_25"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_side_1_75",
+      "case": "insert_point_regions_side_1_75"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_side_2_25",
+      "case": "insert_point_regions_side_2_25"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_side_2_75",
+      "case": "insert_point_regions_side_2_75"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_side_3_25",
+      "case": "insert_point_regions_side_3_25"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_side_3_75",
+      "case": "insert_point_regions_side_3_75"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_low",
+      "case": "insert_point_regions_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_high",
+      "case": "insert_point_regions_high"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_reverse",
+      "case": "insert_point_regions_reverse"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_regions_same_reverse",
+      "case": "insert_point_regions_same_reverse"
+    }
+  ]
+}

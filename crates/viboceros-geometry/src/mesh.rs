@@ -4054,7 +4054,11 @@ fn mesh_hole_cross(first: [Real; 2], second: [Real; 2], third: [Real; 2]) -> Rea
     first_edge[0].mul_add(second_edge[1], -first_edge[1] * second_edge[0])
 }
 
-fn point_in_mesh_hole_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real) -> bool {
+pub(crate) fn point_in_mesh_hole_polygon(
+    point: [Real; 2],
+    polygon: &[[Real; 2]],
+    epsilon: Real,
+) -> bool {
     let mut winding = 0_i64;
     for index in 0..polygon.len() {
         let start = polygon[index];

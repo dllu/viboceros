@@ -54,6 +54,7 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
                 row['mesh']['vertex_normals']=[[float(n.X),float(n.Y),float(n.Z)]for n in g.Normals]
                 row['mesh']['colors']=[[int(c.R),int(c.G),int(c.B),int(c.A)]for c in g.VertexColors]if g.VertexColors.Count else None
                 row['mesh']['ngons']=[dict(vertices=[int(i)for i in n.BoundaryVertexIndexList()],faces=[int(i)for i in n.FaceIndexList()])for n in g.Ngons]
+                if case.get('mesh_channels'):row['mesh']['uv']=[[float(t.X),float(t.Y)]for t in g.TextureCoordinates]
                 row['selected_edges']=[i for i in range(g.TopologyEdges.Count)if obj.IsSubObjectSelected(G.ComponentIndex(G.ComponentIndexType.MeshTopologyEdge,i))]
             result.append(row)
         return result
@@ -70,6 +71,8 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
                 for color in d.get('colors',[]):m.VertexColors.Add(S.Drawing.Color.FromArgb(color[3],color[0],color[1],color[2]))
                 for ngon in d.get('ngons',[]):m.Ngons.AddNgon(G.MeshNgon.Create(S.Array[S.UInt32](ngon['vertices']),S.Array[S.UInt32](ngon['faces'])))
                 m.Normals.ComputeNormals()
+                for uv in d.get('texture_coordinates',[]):m.TextureCoordinates.Add(float(uv[0]),float(uv[1]))
+                for i,n in enumerate(d.get('normals',[])):m.Normals.SetNormal(i,G.Vector3f(*n))
                 a=R.DocObjects.ObjectAttributes();a.LayerIndex=layers[0];a.Name='Input '+str(index);a.ObjectColor=S.Drawing.Color.FromArgb(17,43,91);a.ColorSource=R.DocObjects.ObjectColorSource.ColorFromObject;a.AddToGroup(group)
                 if d['kind']=='subd':
                     g=G.SubD.CreateFromMesh(m)
@@ -209,13 +212,24 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
                 except Exception as error:
                     timer.Stop();tick_errors.append(str(error));R.RhinoApp.SendKeystrokes('_Cancel',True)
             timer.Tick+=tick;timer.Start()
-        try:success,after,events=observe_command(R.Commands.Command,case['command'],lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
+        input_trace=[]
+        if case.get('live'):
+            from conic_getter_input import drive
+            view=doc.Views.ActiveView
+            view.ActiveViewport.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned '+case['command']+' input',False)
+            bounds=G.BoundingBox.Empty
+            for key in ids:bounds.Union(doc.Objects.FindId(key).Geometry.GetBoundingBox(True))
+            view.ActiveViewport.ZoomBoundingBox(bounds);view.Redraw()
+            def execute():
+                result,trace=drive(dict(op='insert_point_command',id=case['capture_id'],actions=case['actions']),host,[],command=case['command']);input_trace.append(trace);return result
+        else:execute=lambda:R.RhinoApp.RunScript(macro,True)
+        try:success,after,events=observe_command(R.Commands.Command,case['command'],execute,snapshot,lambda:[],True)
         finally:
             if timer is not None:timer.Stop();timer.Tick-=tick;timer.Dispose()
         if tick_errors:raise ValueError(str(tick_errors))
         history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip()
         after_script=snapshot();R.RhinoApp.RunScript('_Undo',False);undone=snapshot();R.RhinoApp.RunScript('_Redo',False);redone=snapshot()
-        return dict(source_3dm=source_3dm,input=case,macro=macro,before=before,success=success,events=events,after=after,after_script=after_script,history=history,undo=undone,redo=redone),0
+        return dict(source_3dm=source_3dm,input=case,macro=macro,input_trace=input_trace,before=before,success=success,events=events,after=after,after_script=after_script,history=history,undo=undone,redo=redone),0
     finally:
         doc.Layers.SetCurrentLayerIndex(0,True)
         for obj in list(doc.Objects):doc.Objects.Delete(obj.Id,True)

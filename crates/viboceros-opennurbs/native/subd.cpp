@@ -166,6 +166,7 @@ extern "C" int vibo_subd_set_tags(const uint8_t* bytes,size_t count,int vertex,
 #include "subd_crease.h"
 #include "subd_remap.h"
 #include "subd_spin.h"
+#include "subd_insert.h"
 #include "subd_soft_crease.h"
 #include "subd_chains.h"
 #include "subd_sharpness.h"

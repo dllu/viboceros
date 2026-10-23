@@ -4,12 +4,14 @@
 //! or produce degenerate geometry return [`GeometryError`] rather than letting
 //! invalid values enter the model.
 
+mod edge_insertion;
 pub mod interop;
+pub use edge_insertion::PolygonEdgePoint;
 mod subd;
 pub use subd::{
     SubD, SubDAppendResult, SubDControlNetPriority, SubDCylinderCap, SubDDirectedEdge,
     SubDDisplayMesh, SubDEdgeChain, SubDEdgeSeamResult, SubDFromMeshOptions, SubDFromSurfaceMethod,
-    SubDSphereStyle,
+    SubDSphereStyle, SubDVertexInsertion,
 };
 mod area_mass_properties;
 mod mass_integration;

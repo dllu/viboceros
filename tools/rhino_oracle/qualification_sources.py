@@ -59,6 +59,11 @@ APPLICATION_MODULES = [
 
 
 SUBD_MODULES = [
+    'crates/viboceros-opennurbs/native/subd_insert.h',
+    'crates/viboceros-opennurbs/src/subd/insert.rs',
+    'crates/viboceros-geometry/src/subd/insert.rs',
+    'crates/viboceros-geometry/src/edge_insertion.rs',
+    'crates/viboceros-geometry/src/edge_insertion/crossings.rs',
     'crates/viboceros-opennurbs/native/subd_control_mesh.h',
     'crates/viboceros-opennurbs/src/subd/control_net.rs',
     'crates/viboceros-geometry/src/subd/control_net.rs',

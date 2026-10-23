@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
     if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','InterpCrvOnSrf','PolylineOnMesh'):
@@ -47,6 +47,7 @@ def drive(op,host,guides,command="Conic"):
     if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch','Number of points per turn','Points per turn')
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
+    if command=='InsertPoint':prefixes=('Select','Pick')
     if command=='SubDSpinEdge':prefixes=('Pick','Select','Direction','Spin')
     if command=='SubDCrease':prefixes=('Select highlighted vertex','Weight','Enter','Select interior SubD')
     if command=='SubDSphere':prefixes=('Center of sphere','Radius','Diameter','Circumference','Area','First','Second','Third','Fourth','Sphere','Orientation','Direction','Point','Select','Style','Subdivisions','Around','Vertical')
@@ -106,6 +107,11 @@ def drive(op,host,guides,command="Conic"):
                         E.IfThen(confirm,block([E.Assign(item(counts,i),integer(10)),E.Assign(item(last,0),now)]+([E.Assign(stage,integer(i+1))]if i+1==len(actions)else[])+[log('\nReparameterize accepts selection %s\n'%op['id']),send_token('')]))])
             mouse_steps.append((i,marker,pixel,ready,[],base))
             clicks.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]));tokens.append(None)
+            if command=='InsertPoint':
+                ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+                clicks[-1]['ray']=[[float(ray.From.X),float(ray.From.Y),float(ray.From.Z)],[float(ray.To.X),float(ray.To.Y),float(ray.To.Z)]]
+                ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,vp.GetConstructionPlane().Plane)
+                if ok:clicks[-1]['projected_point']=host['_xyz'](ray.PointAt(t))
             if op.get('op')=='arc_command':
                 tilt=actions.index('Tilted');center=[p for p in actions[:tilt]if isinstance(p,list)][0]
                 plane=R.Geometry.Plane(R.Geometry.Point3d(*center),R.Geometry.Point3d(*actions[tilt+1]),R.Geometry.Point3d(*actions[tilt+2]))

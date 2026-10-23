@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_adjacent",
+      "case": "insert_point_full_mesh_adjacent"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_three",
+      "case": "insert_point_full_mesh_three"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_same_edge",
+      "case": "insert_point_full_mesh_same_edge"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_diagonal",
+      "case": "insert_point_full_mesh_diagonal"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_smooth",
+      "case": "insert_point_full_mesh_smooth"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_strip_mid",
+      "case": "insert_point_full_mesh_strip_mid"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_strip_cross",
+      "case": "insert_point_full_mesh_strip_cross"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_strip_skip",
+      "case": "insert_point_full_mesh_strip_skip"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_undo_all",
+      "case": "insert_point_full_mesh_undo_all"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_cancel_empty",
+      "case": "insert_point_full_mesh_cancel_empty"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_adjacent",
+      "case": "insert_point_full_subd_adjacent"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_three",
+      "case": "insert_point_full_subd_three"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_same_edge",
+      "case": "insert_point_full_subd_same_edge"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_diagonal",
+      "case": "insert_point_full_subd_diagonal"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_smooth",
+      "case": "insert_point_full_subd_smooth"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_strip_mid",
+      "case": "insert_point_full_subd_strip_mid"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_strip_cross",
+      "case": "insert_point_full_subd_strip_cross"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_strip_skip",
+      "case": "insert_point_full_subd_strip_skip"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_undo_all",
+      "case": "insert_point_full_subd_undo_all"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_subd_cancel_empty",
+      "case": "insert_point_full_subd_cancel_empty"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_full_mesh_channels",
+      "case": "insert_point_full_mesh_channels"
+    }
+  ]
+}
