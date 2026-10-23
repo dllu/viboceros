@@ -318,7 +318,7 @@
     "tools/rhino_oracle/test_mesh_unweld_channels.py": "e794f39ab6c574fc972c223e0ca7604ac0e3f6cf3e6d38911cc36473ec8a9f9b",
     "tools/rhino_oracle/client.py": "b2a5d1c666da628d0dfee46a2cc39bf7cc5fd6df33f84066ace7dd190edb1981",
     "tools/rhino_oracle/rhino_worker.py": "b9c0cfe2aeeb2ab140a3d137a68e8fa5580ae26be91d9c75dcb6d14a3dfe96e5",
-    "tools/rhino_oracle/structural_sdk.py": "07b1d65472414efe6d531cb025860b2f22d4430f5f53e1da731b68fbf02885f2",
+    "tools/rhino_oracle/structural_sdk.py": "db909e1bbd26bee4adbaa63661147bcac95235854370f19ed42e9bb060bd42f9",
     "crates/viboceros-command/src/mesh_seams.rs": "fae9bbdb286bd2441cd3c953da2e3e92034edde5b4635f1e5c3e3e751ba70ea0",
     "crates/viboceros-command/src/mesh_component_unweld.rs": "a9b596459c86e8c4a3f339b1d45c32e647ccdfa1c786572b78a3e510c44ba1af",
     "crates/viboceros-command/src/extract_control_polygon.rs": "34dcb893d9424ecf9dab92368babdcfb8c7961866f9af0286e08387b4065874d",
@@ -356,9 +356,9 @@
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
     "crates/viboceros-geometry/tests/support/mesh_channels.rs": "edf4dd46061cdc16b651b9196a83a7906a596da7f8b2f39f5018d2699bd91aaa",
     "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
-    "crates/viboceros-opennurbs/src/mesh.rs": "397a4a1206bfd58cc774cd9d29eb25bb40870eede51f7af645e3e3d65b520aa9",
+    "crates/viboceros-opennurbs/src/mesh.rs": "5f7c67743b623a375b12872e45c8b8d641089637ce47f444f493b93778e409b2",
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "c20619d7a3861b87af0225a5df25582d52613291d6c42db0f61a075be57f364c",
-    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "6b58f98fb8ebdccd049410d56804bdba066abd54ec7227fc18bb97e977da0ffb",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "50da8b4782440543b5bc1209c4988b0bf5ac44ace55ff040b587e54c3020ee67",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
@@ -413,6 +413,6 @@
     "crates/viboceros-command/src/object_selection.rs": "6ff706b4e1c74524956641d5e4b952422bd50cdd8fa2d8fd577e2f3f6a1b519c",
     "crates/viboceros-geometry/src/mesh/rebuild_mesh.rs": "0bd719e4330e36a3ffe2b9c141dee8d9c55a36beaadc63f620142227346c8c25",
     "crates/viboceros-command/src/mesh_edit/unify_normals.rs": "e6e453fde97f391edbb79ae31ea29eb052c8b51b028b85102e37edeb323f954c",
-    "crates/viboceros-geometry/src/mesh/orientation.rs": "e2ccb2a5c5f65621805019117c10d7c8aa69e6253f017100ef774e5f19f5ae1b"
+    "crates/viboceros-geometry/src/mesh/orientation.rs": "c2b49d1728b154e042f4fe4e0355a585a656dd7f6c76c05306ca8882eda1aa90"
   }
 }

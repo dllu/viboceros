@@ -5,8 +5,7 @@ impl TriangleMesh {
     /// SDK-style winding unification. Stored vertex normals referenced
     /// by flipped faces are negated once; unrelated channels and n-gon cycles
     /// remain unchanged. Nonmanifold edges follow their first incident face.
-    /// Component seed ordering has a known native corner-renumbering gap;
-    /// this operation does not guarantee outward orientation.
+    /// This operation does not guarantee outward orientation.
     pub fn unified_normals(&self) -> Result<(Self, usize), GeometryError> {
         let flipped = self.normal_unification_plan();
         let count = flipped.iter().filter(|&&f| f).count();
@@ -56,8 +55,9 @@ impl TriangleMesh {
         if count == 0 {
             return Ok((mesh, count));
         }
-        let mesh = mesh.rebuild_ngons_for_same_faces(&self.ngons)?;
-        Ok((mesh.with_recomputed_normal_channel()?, count))
+        let data =
+            viboceros_opennurbs::recompute_mesh_normals_and_orient_ngons(&mesh.open_nurbs_data())?;
+        Ok((Self::from_open_nurbs_data(data)?, count))
     }
 
     fn normal_unification_plan(&self) -> Vec<bool> {
@@ -73,16 +73,16 @@ impl TriangleMesh {
                 neighbors[other.face].push((first.face, opposite));
             }
         }
-        let canonical = |face: usize| {
+        let reversed_closing_edge = |face: usize| {
             let indices = self.faces[face].indices();
-            indices.first() == indices.iter().min()
+            data.topological_vertices[indices[0] as usize]
+                < data.topological_vertices[*indices.last().unwrap() as usize]
         };
-        // Seed one component with the first minimum-corner face, then visit
-        // remaining components from the end. Native cyclic-origin and
-        // disconnected-region captures constrain this ordering; arbitrary
-        // vertex renumbering remains an explicit compatibility limit.
+        // Seed the first component from a closing side directed toward a lower
+        // topology vertex index, then visit unassigned components from the end.
+        // Cyclic origin and topology numbering both affect the initial seed.
         let roots = (0..self.faces.len())
-            .find(|&f| canonical(f))
+            .find(|&f| reversed_closing_edge(f))
             .into_iter()
             .chain((0..self.faces.len()).rev());
         let mut assigned = vec![None; self.faces.len()];

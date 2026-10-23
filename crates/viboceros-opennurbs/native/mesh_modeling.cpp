@@ -135,7 +135,7 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
   if(out)*out=nullptr;
   try{
     require(input && out,"Missing mesh arguments");vibo_begin_open_nurbs();
-    ON_Mesh mesh;vibo_mesh::import_mesh(*input,mesh,operation==4,operation==6);auto result=std::make_unique<ViboMeshResult>();
+    ON_Mesh mesh;vibo_mesh::import_mesh(*input,mesh,operation==4,operation==6 || operation==15);auto result=std::make_unique<ViboMeshResult>();
     if(operation==1)result->changed=merge(mesh,distance,angle,selected,selected_count,region);
     else if(operation==2){require(std::isfinite(distance)&&distance>=0,"Invalid planar tolerance");result->changed=mesh.AddPlanarNgons(nullptr,distance,3,2,false);}
     else if(operation==3){
@@ -143,7 +143,10 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
       ON_SimpleArray<unsigned> faces;for(int f=0;f<mesh.FaceCount();++f)faces.Append(static_cast<unsigned>(f));
       require(add_face_region_ngon(mesh,faces)>=0,"No valid outer boundary");
     }else if(operation==4)cull_degenerate_faces(mesh,*result);
-    else if(operation==6){mesh.ComputeFaceNormals();mesh.ComputeVertexNormals();result->changed=1;}
+    else if(operation==6 || operation==15){
+      if(operation==15)require(mesh.OrientNgons(true),"Cannot orient mesh n-gons");
+      mesh.ComputeFaceNormals();mesh.ComputeVertexNormals();result->changed=1;
+    }
     else if(operation==7){
       require(std::isfinite(angle)&&std::isfinite(distance)&&distance>=0.,"Invalid quad conversion parameters");
       const int faces=mesh.FaceCount(),triangles=mesh.TriangleCount(),quads=mesh.QuadCount();

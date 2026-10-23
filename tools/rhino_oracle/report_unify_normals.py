@@ -4,18 +4,13 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from .unify_normals_cases import SDK, EXTRA, HOLDOUTS, DISCOVERY, COMMANDS, request
+from .unify_normals_cases import CASE_GROUPS, request
 from .qualification_sources import with_shared_sources
 from .report_subd_box import HERE, ROOT, error
 
-GAP = 'unify_holdout_reindex_1032'
-FAMILIES = {
-    'unify_normals_sdk': ({}, SDK),
-    'unify_normals_extra': ({'extra': True}, EXTRA),
-    'unify_normals_holdouts': ({'holdouts': True}, HOLDOUTS),
-    'unify_normals_discovery': ({'discovery': True}, DISCOVERY),
-    'unify_normals_commands': ({'commands': True}, COMMANDS),
-}
+GAPS = {'unify_followup_regions_' + suffix for suffix in ['01', '10', '11', '20', '30', '31']}
+FAMILIES = {'unify_normals_' + name: ({} if name == 'sdk' else {name: True}, cases)
+            for name, cases in CASE_GROUPS.items()}
 SOURCES = with_shared_sources([
     'Cargo.lock', 'src/app.rs', 'src/app/object_selection.rs',
     'src/app/object_selection/unify_normals_tests.rs',
@@ -45,8 +40,11 @@ SOURCES = with_shared_sources([
     'crates/viboceros-oracle/tests/unify_normals.rs',
     'third_party/opennurbs/opennurbs_mesh.cpp',
     'third_party/opennurbs/opennurbs_mesh.h',
+    'third_party/opennurbs/opennurbs_mesh_ngon.cpp',
+    'tools/rhino_oracle/diagnostics/unify_normals/seed-staging-failure.json',
+    'tools/rhino_oracle/diagnostics/unify_normals/seed-staging-failure.log',
 ] + ['tools/rhino_oracle/' + p for p in [
-    'unify_normals_cases.py', 'unify_normals_probe.py',
+    'unify_normals_cases.py', 'unify_normals_seed_cases.py', 'unify_normals_probe.py',
     'generate_unify_normals.py', 'report_unify_normals.py', 'test_unify_normals.py',
     'mesh_channel_capture.py', 'crease_probe.py', 'crease_cases.py',
     'subdivide_probe.py', 'subd_box_probe.py', 'join_probe.py', 'merge_edges_probe.py',
@@ -99,7 +97,7 @@ def summarize(text):
             raise ValueError('missing or duplicate normal unification ' + stage)
         for row in rows:
             v = expected[row['id']]
-            gap = stage == 'SDK' and row['id'] == GAP
+            gap = stage == 'SDK' and row['id'] in GAPS
             flags = ['qualified', 'geometry', 'channels', 'normals', 'ngons']
             flags += (['count_only', 'source_unchanged', 'idempotent'] if stage == 'SDK'
                       else ['identity', 'metadata', 'selection', 'object_order', 'history'])
@@ -124,15 +122,17 @@ def summarize(text):
         sources.extend(str(p.relative_to(ROOT)) for p in sorted((HERE / 'fixtures' / family).glob('*.3dm')))
     return dict(
         native_engine_version=version, model_epsilon=1e-6,
-        sdk_cases=55, qualified_sdk_cases=54, sdk_orientation_gaps=1,
-        native_command_workflows=27, registered_command_cases=25, getter_cases=27,
+        sdk_cases=622, qualified_sdk_cases=616, sdk_orientation_gaps=6,
+        native_command_workflows=47, registered_command_cases=45, getter_cases=47,
         maximum_error=maximum, full_native_parity=False, performance_qualified=False,
         **stages, limits=[
-            'Fifty-five independent SDK inputs compare raw vertices and face winding, stored normal sign changes, UV/colors, n-gon cycles, read-only counts and idempotence. Fifty-four match exactly. One vertex-renumbered two-triangle holdout selects the opposite consistent component orientation and remains unqualified; its zero positional error does not qualify winding parity.',
+            'Six hundred twenty-two independent SDK inputs compare raw vertices and face winding, stored normal sign changes, UV/colors, n-gon cycles, read-only counts and idempotence. Six hundred sixteen match exactly. Six three-region inputs select different consistent component orientations and remain unqualified; their zero positional error does not qualify winding parity. The earlier two-triangle vertex-renumbering gap is resolved.',
+            'Seed controls cover all 24 raw vertex permutations, all nine pairs of cyclic triangle origins and both face orders (432 inputs), plus 135 controls for raw seams, quad origins, unused aliases and disconnected regions. The local initial seed follows the direction of a face closing edge in welded topology indices. Disconnected component seed ordering remains a compatibility limit.',
             'The SDK path preserves unused vertices, raw coincident seams and n-gon boundary cycles. Stored normals on the union of vertices referenced by flipped faces are negated once. Both overloads and count-only queries are captured. Cached face-normal storage is not represented locally.',
-            'Twenty-five accepted registered commands and twenty-seven application getters compare saved source archives, exact raw channels and geometry, identity, attributes/groups, selection, object order and Undo/Redo. Changed meshes reconstruct normals through public OpenNURBS and orient n-gon cycles; unused vertices survive. Non-mesh selections are skipped.',
+            'Forty-five accepted registered commands and forty-seven application getters compare saved source archives, exact raw channels and geometry, identity, attributes/groups, selection, object order and Undo/Redo. Changed meshes use public OpenNURBS OrientNgons and normal reconstruction without rotating n-gon origins or rebuilding face membership; unused vertices survive. Source document admission already aligns n-gon cycles. Non-mesh selections are skipped.',
             'Only changed meshes move to the table end and record geometry history. Preselected changes remain selected on acceptance and Undo; Redo releases them. Unchanged and ignored peers release selection on history replay. All-no-op acceptance retains current picks without creating an Undo step, including command-first picks. Cancel abandons command-first selection without geometry edits.',
             'The compatibility graph follows the first incident face at nonmanifold edges and accepts a best-effort spanning orientation for contradictory cycles. The separate strict constructor operation still skips nonmanifold constraints and rejects nonorientable manifold constraints. Arbitrary component seeds, additional nonorientable/nonmanifold meshes, invalid n-gon repair, restricted objects, grips, physical native postselection, numeric extremes and comparative performance remain unqualified.',
+            'One failed seed capture omitted a staged helper and stopped on import at operation zero. Its frozen producer manifest and log are diagnostic evidence and qualify no geometry. The dependency staging check passed before the subsequent successful capture.',
         ], sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
                    for p in dict.fromkeys(sources)})
 

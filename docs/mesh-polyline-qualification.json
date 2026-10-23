@@ -500,6 +500,6 @@
     "crates/viboceros-command/tests/support/rebuild_mesh.rs": "daa94ff9704882b1c7f29e18ffaff178200e9b9ca588134f2f07251801e9d18f",
     "crates/viboceros-command/src/mesh_edit/unify_normals.rs": "e6e453fde97f391edbb79ae31ea29eb052c8b51b028b85102e37edeb323f954c",
     "src/app/object_selection/unify_normals_tests.rs": "2662146aac4633c57192bec8e0696461a21d3a81e5f903dfab10fb50f9352a48",
-    "crates/viboceros-command/tests/support/unify_normals.rs": "e5dd87e11cc56d1d7f7c531b2d2642702c21294d05864713e26a13fbb229c8dc"
+    "crates/viboceros-command/tests/support/unify_normals.rs": "8d319665f4572deec5e93f5841d56df96e577e8de11d766119977a1af220df16"
   }
 }

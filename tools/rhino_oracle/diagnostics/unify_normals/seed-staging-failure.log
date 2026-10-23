@@ -1,0 +1,15 @@
+Capturing 432 native normal unification workflows
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_unify_normals.py", line 35, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_unify_normals.py", line 27, in main
+    data=OracleClient(settings_scheme='VibocerosOracleUnifyNormals20261023'+suffix.title()).run_rhino(payload,timeout=240)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2097, in run_rhino
+    _validate_response(response, "rhino", request)
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2549, in _validate_response
+    raise OracleError(f"{engine} probe failed: {error}")
+tools.rhino_oracle.client.OracleError: rhino probe failed: ImportError at operation unify_seed_0123_000: start: No module named unify_normals_seed_cases

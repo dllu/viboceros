@@ -10,14 +10,14 @@ import sys
 import tempfile
 import unittest
 from .unify_normals_cases import request, validate
-from .report_unify_normals import HERE, ROOT, FAMILIES, GAP, native, summarize
+from .report_unify_normals import HERE, ROOT, FAMILIES, GAPS, native, summarize
 from .structural_sdk import validate_operations, stage_helpers
 
 
 class UnifyNormalsTests(unittest.TestCase):
     def test_fixed_inputs_frozen_producers_and_saved_sources(self):
         _, groups = native()
-        self.assertEqual((len(groups['sdk']), len(groups['command'])), (55, 27))
+        self.assertEqual((len(groups['sdk']), len(groups['command'])), (622, 47))
         for family, (flags, _) in FAMILIES.items():
             payload = request(**flags)
             validate_operations(payload)
@@ -31,6 +31,13 @@ class UnifyNormalsTests(unittest.TestCase):
                 if 'command' in row['value']['input']:
                     self.assertEqual((HERE / 'fixtures' / family / (row['id'] + '.3dm')).read_bytes(),
                                      base64.b64decode(row['value']['source_3dm'], validate=True))
+        folder = HERE / 'diagnostics/unify_normals'
+        failed = json.loads((folder / 'seed-staging-failure.json').read_text())
+        self.assertIs(failed['qualification'], False)
+        self.assertEqual(failed['log_sha256'], hashlib.sha256((folder / 'seed-staging-failure.log').read_bytes()).hexdigest())
+        self.assertEqual(failed['request_sha256'], hashlib.sha256((HERE / 'fixtures/unify_normals_seeds.json').read_bytes()).hexdigest())
+        for digest in failed['sources'].values():
+            self.assertEqual(hashlib.sha256(gzip.decompress((HERE / 'observations/source_snapshots' / (digest + '.gz')).read_bytes())).hexdigest(), digest)
 
     def test_count_only_normals_union_seams_and_raw_ngon_cycles(self):
         rows = native()[1]['sdk']
@@ -55,9 +62,15 @@ class UnifyNormalsTests(unittest.TestCase):
         self.assertEqual([o['source'] for o in v['undo']], [0, 1])
         self.assertTrue(all(o['selected'] for o in v['after'] if o['source'] is not None))
         self.assertTrue(all(not o['selected'] for o in v['undo']))
+        for name, v in rows.items():
+            if name.startswith('unify_followup_command_ngon') and 'noop' not in name:
+                before = next(o['mesh']['ngons'][0] for o in v['before'] if o['source'] == 0)
+                after = next(o['mesh']['ngons'][0] for o in v['after'] if o['source'] == 0)
+                self.assertEqual(before['vertices'][0], after['vertices'][0])
+                self.assertEqual(before['faces'], after['faces'])
 
     def test_allowlist_standalone_staging_and_recapture_refusal(self):
-        payload = request(commands=True)
+        payload = request(followups=True)
         for op in [None, {}, [], dict(payload['operations'][0], case='arbitrary'),
                    dict(payload['operations'][0], path='arbitrary')]:
             with self.assertRaises(ValueError):
@@ -81,14 +94,13 @@ class UnifyNormalsTests(unittest.TestCase):
         return data, ['UNIFY_NORMALS_' + stage.upper() + ' ' + json.dumps(row)
                       for stage in ['sdk', 'command', 'getter'] for row in data[stage]]
 
-    def test_report_reconstructs_and_preserves_the_orientation_gap(self):
+    def test_report_reconstructs_resolves_renumbering_and_keeps_component_gaps(self):
         data, lines = self.evidence()
         self.assertEqual(summarize('\n'.join(reversed(lines))), data)
         self.assertEqual((data['qualified_sdk_cases'], data['sdk_orientation_gaps'],
-                          data['registered_command_cases'], data['getter_cases']), (54, 1, 25, 27))
-        gap = next(r for r in data['sdk'] if r['id'] == GAP)
-        self.assertIs(gap['geometry'], False)
-        self.assertIs(gap['qualified'], False)
+                          data['registered_command_cases'], data['getter_cases']), (616, 6, 45, 47))
+        self.assertEqual({r['id'] for r in data['sdk'] if r['qualified'] is False}, GAPS)
+        self.assertTrue(next(r for r in data['sdk'] if r['id'] == 'unify_holdout_reindex_1032')['qualified'])
         self.assertIs(data['full_native_parity'], False)
         self.assertIs(data['performance_qualified'], False)
 
@@ -108,7 +120,7 @@ class UnifyNormalsTests(unittest.TestCase):
                 bad[key] = value
                 with self.assertRaises(ValueError):
                     summarize('\n'.join(remaining + [prefix + json.dumps(bad)]))
-        gap = next(r for r in data['sdk'] if r['id'] == GAP)
+        gap = next(r for r in data['sdk'] if r['id'] in GAPS)
         remaining = [s for s in lines if s != 'UNIFY_NORMALS_SDK ' + json.dumps(gap)]
         for key in ['geometry', 'qualified']:
             bad = dict(gap, **{key: True})

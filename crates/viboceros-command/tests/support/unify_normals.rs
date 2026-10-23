@@ -9,6 +9,7 @@ pub fn groups() -> Vec<(&'static str, Vec<Value>)> {
     [
         ("unify_normals_discovery", 4),
         ("unify_normals_commands", 23),
+        ("unify_normals_followups", 20),
     ]
     .into_iter()
     .map(|(family, count)| {
@@ -20,7 +21,13 @@ pub fn groups() -> Vec<(&'static str, Vec<Value>)> {
             .unwrap(),
         )
         .unwrap();
-        let rows = data["results"].as_array().unwrap().to_vec();
+        let rows = data["results"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|r| r["value"]["input"]["command"] == "UnifyMeshNormals")
+            .cloned()
+            .collect::<Vec<_>>();
         assert_eq!(rows.len(), count);
         (family, rows)
     })

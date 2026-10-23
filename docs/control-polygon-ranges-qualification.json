@@ -311,9 +311,9 @@
     "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "1a4f9b7ef87902125ad0d173c272a8a32e46db7aa44c1898b03d12283c7bafa4",
     "crates/viboceros-geometry/src/mesh/planar_cap.rs": "9bd66de6751bbd533a061be311ba42bb36fad7823cd8cf53e7d41d4afabe8f17",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
-    "crates/viboceros-opennurbs/src/mesh.rs": "397a4a1206bfd58cc774cd9d29eb25bb40870eede51f7af645e3e3d65b520aa9",
+    "crates/viboceros-opennurbs/src/mesh.rs": "5f7c67743b623a375b12872e45c8b8d641089637ce47f444f493b93778e409b2",
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "c20619d7a3861b87af0225a5df25582d52613291d6c42db0f61a075be57f364c",
-    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "6b58f98fb8ebdccd049410d56804bdba066abd54ec7227fc18bb97e977da0ffb",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "50da8b4782440543b5bc1209c4988b0bf5ac44ace55ff040b587e54c3020ee67",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
@@ -486,7 +486,7 @@
     "crates/viboceros-geometry/src/mesh/rebuild_mesh.rs": "0bd719e4330e36a3ffe2b9c141dee8d9c55a36beaadc63f620142227346c8c25",
     "crates/viboceros-command/src/mesh_edit/unify_normals.rs": "e6e453fde97f391edbb79ae31ea29eb052c8b51b028b85102e37edeb323f954c",
     "src/app/object_selection/unify_normals_tests.rs": "2662146aac4633c57192bec8e0696461a21d3a81e5f903dfab10fb50f9352a48",
-    "crates/viboceros-command/tests/support/unify_normals.rs": "e5dd87e11cc56d1d7f7c531b2d2642702c21294d05864713e26a13fbb229c8dc",
-    "crates/viboceros-geometry/src/mesh/orientation.rs": "e2ccb2a5c5f65621805019117c10d7c8aa69e6253f017100ef774e5f19f5ae1b"
+    "crates/viboceros-command/tests/support/unify_normals.rs": "8d319665f4572deec5e93f5841d56df96e577e8de11d766119977a1af220df16",
+    "crates/viboceros-geometry/src/mesh/orientation.rs": "c2b49d1728b154e042f4fe4e0355a585a656dd7f6c76c05306ca8882eda1aa90"
   }
 }

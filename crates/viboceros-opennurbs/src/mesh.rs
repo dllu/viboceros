@@ -210,6 +210,11 @@ pub fn triangulate_mesh(data: &MeshData) -> Result<(MeshData, usize), MeshError>
 pub fn recompute_mesh_normals(data: &MeshData) -> Result<MeshData, MeshError> {
     edit(data, 6, 0., 0.).map(|r| r.0)
 }
+/// Orient existing n-gon boundaries through public OpenNURBS without rotating
+/// their first vertex or rebuilding face memberships, then reconstruct normals.
+pub fn recompute_mesh_normals_and_orient_ngons(data: &MeshData) -> Result<MeshData, MeshError> {
+    edit(data, 15, 0., 0.).map(|r| r.0)
+}
 /// Dissolve selected vertices through OpenNURBS' face-set executive, retaining
 /// its n-gon overlays and vertex colors. An empty result has no faces or vertices.
 pub fn dissolve_mesh_vertices(data: &MeshData, vertices: &[usize]) -> Result<MeshData, MeshError> {

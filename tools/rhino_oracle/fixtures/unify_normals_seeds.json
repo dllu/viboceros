@@ -1,0 +1,2171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_000",
+      "case": "unify_seed_0123_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_001",
+      "case": "unify_seed_0123_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_010",
+      "case": "unify_seed_0123_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_011",
+      "case": "unify_seed_0123_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_020",
+      "case": "unify_seed_0123_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_021",
+      "case": "unify_seed_0123_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_100",
+      "case": "unify_seed_0123_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_101",
+      "case": "unify_seed_0123_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_110",
+      "case": "unify_seed_0123_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_111",
+      "case": "unify_seed_0123_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_120",
+      "case": "unify_seed_0123_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_121",
+      "case": "unify_seed_0123_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_200",
+      "case": "unify_seed_0123_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_201",
+      "case": "unify_seed_0123_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_210",
+      "case": "unify_seed_0123_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_211",
+      "case": "unify_seed_0123_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_220",
+      "case": "unify_seed_0123_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0123_221",
+      "case": "unify_seed_0123_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_000",
+      "case": "unify_seed_0132_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_001",
+      "case": "unify_seed_0132_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_010",
+      "case": "unify_seed_0132_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_011",
+      "case": "unify_seed_0132_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_020",
+      "case": "unify_seed_0132_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_021",
+      "case": "unify_seed_0132_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_100",
+      "case": "unify_seed_0132_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_101",
+      "case": "unify_seed_0132_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_110",
+      "case": "unify_seed_0132_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_111",
+      "case": "unify_seed_0132_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_120",
+      "case": "unify_seed_0132_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_121",
+      "case": "unify_seed_0132_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_200",
+      "case": "unify_seed_0132_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_201",
+      "case": "unify_seed_0132_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_210",
+      "case": "unify_seed_0132_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_211",
+      "case": "unify_seed_0132_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_220",
+      "case": "unify_seed_0132_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0132_221",
+      "case": "unify_seed_0132_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_000",
+      "case": "unify_seed_0213_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_001",
+      "case": "unify_seed_0213_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_010",
+      "case": "unify_seed_0213_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_011",
+      "case": "unify_seed_0213_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_020",
+      "case": "unify_seed_0213_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_021",
+      "case": "unify_seed_0213_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_100",
+      "case": "unify_seed_0213_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_101",
+      "case": "unify_seed_0213_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_110",
+      "case": "unify_seed_0213_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_111",
+      "case": "unify_seed_0213_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_120",
+      "case": "unify_seed_0213_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_121",
+      "case": "unify_seed_0213_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_200",
+      "case": "unify_seed_0213_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_201",
+      "case": "unify_seed_0213_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_210",
+      "case": "unify_seed_0213_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_211",
+      "case": "unify_seed_0213_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_220",
+      "case": "unify_seed_0213_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0213_221",
+      "case": "unify_seed_0213_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_000",
+      "case": "unify_seed_0231_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_001",
+      "case": "unify_seed_0231_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_010",
+      "case": "unify_seed_0231_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_011",
+      "case": "unify_seed_0231_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_020",
+      "case": "unify_seed_0231_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_021",
+      "case": "unify_seed_0231_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_100",
+      "case": "unify_seed_0231_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_101",
+      "case": "unify_seed_0231_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_110",
+      "case": "unify_seed_0231_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_111",
+      "case": "unify_seed_0231_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_120",
+      "case": "unify_seed_0231_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_121",
+      "case": "unify_seed_0231_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_200",
+      "case": "unify_seed_0231_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_201",
+      "case": "unify_seed_0231_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_210",
+      "case": "unify_seed_0231_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_211",
+      "case": "unify_seed_0231_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_220",
+      "case": "unify_seed_0231_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0231_221",
+      "case": "unify_seed_0231_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_000",
+      "case": "unify_seed_0312_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_001",
+      "case": "unify_seed_0312_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_010",
+      "case": "unify_seed_0312_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_011",
+      "case": "unify_seed_0312_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_020",
+      "case": "unify_seed_0312_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_021",
+      "case": "unify_seed_0312_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_100",
+      "case": "unify_seed_0312_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_101",
+      "case": "unify_seed_0312_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_110",
+      "case": "unify_seed_0312_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_111",
+      "case": "unify_seed_0312_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_120",
+      "case": "unify_seed_0312_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_121",
+      "case": "unify_seed_0312_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_200",
+      "case": "unify_seed_0312_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_201",
+      "case": "unify_seed_0312_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_210",
+      "case": "unify_seed_0312_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_211",
+      "case": "unify_seed_0312_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_220",
+      "case": "unify_seed_0312_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0312_221",
+      "case": "unify_seed_0312_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_000",
+      "case": "unify_seed_0321_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_001",
+      "case": "unify_seed_0321_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_010",
+      "case": "unify_seed_0321_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_011",
+      "case": "unify_seed_0321_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_020",
+      "case": "unify_seed_0321_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_021",
+      "case": "unify_seed_0321_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_100",
+      "case": "unify_seed_0321_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_101",
+      "case": "unify_seed_0321_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_110",
+      "case": "unify_seed_0321_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_111",
+      "case": "unify_seed_0321_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_120",
+      "case": "unify_seed_0321_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_121",
+      "case": "unify_seed_0321_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_200",
+      "case": "unify_seed_0321_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_201",
+      "case": "unify_seed_0321_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_210",
+      "case": "unify_seed_0321_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_211",
+      "case": "unify_seed_0321_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_220",
+      "case": "unify_seed_0321_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_0321_221",
+      "case": "unify_seed_0321_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_000",
+      "case": "unify_seed_1023_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_001",
+      "case": "unify_seed_1023_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_010",
+      "case": "unify_seed_1023_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_011",
+      "case": "unify_seed_1023_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_020",
+      "case": "unify_seed_1023_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_021",
+      "case": "unify_seed_1023_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_100",
+      "case": "unify_seed_1023_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_101",
+      "case": "unify_seed_1023_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_110",
+      "case": "unify_seed_1023_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_111",
+      "case": "unify_seed_1023_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_120",
+      "case": "unify_seed_1023_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_121",
+      "case": "unify_seed_1023_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_200",
+      "case": "unify_seed_1023_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_201",
+      "case": "unify_seed_1023_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_210",
+      "case": "unify_seed_1023_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_211",
+      "case": "unify_seed_1023_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_220",
+      "case": "unify_seed_1023_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1023_221",
+      "case": "unify_seed_1023_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_000",
+      "case": "unify_seed_1032_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_001",
+      "case": "unify_seed_1032_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_010",
+      "case": "unify_seed_1032_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_011",
+      "case": "unify_seed_1032_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_020",
+      "case": "unify_seed_1032_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_021",
+      "case": "unify_seed_1032_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_100",
+      "case": "unify_seed_1032_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_101",
+      "case": "unify_seed_1032_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_110",
+      "case": "unify_seed_1032_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_111",
+      "case": "unify_seed_1032_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_120",
+      "case": "unify_seed_1032_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_121",
+      "case": "unify_seed_1032_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_200",
+      "case": "unify_seed_1032_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_201",
+      "case": "unify_seed_1032_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_210",
+      "case": "unify_seed_1032_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_211",
+      "case": "unify_seed_1032_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_220",
+      "case": "unify_seed_1032_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1032_221",
+      "case": "unify_seed_1032_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_000",
+      "case": "unify_seed_1203_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_001",
+      "case": "unify_seed_1203_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_010",
+      "case": "unify_seed_1203_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_011",
+      "case": "unify_seed_1203_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_020",
+      "case": "unify_seed_1203_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_021",
+      "case": "unify_seed_1203_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_100",
+      "case": "unify_seed_1203_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_101",
+      "case": "unify_seed_1203_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_110",
+      "case": "unify_seed_1203_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_111",
+      "case": "unify_seed_1203_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_120",
+      "case": "unify_seed_1203_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_121",
+      "case": "unify_seed_1203_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_200",
+      "case": "unify_seed_1203_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_201",
+      "case": "unify_seed_1203_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_210",
+      "case": "unify_seed_1203_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_211",
+      "case": "unify_seed_1203_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_220",
+      "case": "unify_seed_1203_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1203_221",
+      "case": "unify_seed_1203_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_000",
+      "case": "unify_seed_1230_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_001",
+      "case": "unify_seed_1230_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_010",
+      "case": "unify_seed_1230_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_011",
+      "case": "unify_seed_1230_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_020",
+      "case": "unify_seed_1230_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_021",
+      "case": "unify_seed_1230_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_100",
+      "case": "unify_seed_1230_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_101",
+      "case": "unify_seed_1230_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_110",
+      "case": "unify_seed_1230_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_111",
+      "case": "unify_seed_1230_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_120",
+      "case": "unify_seed_1230_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_121",
+      "case": "unify_seed_1230_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_200",
+      "case": "unify_seed_1230_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_201",
+      "case": "unify_seed_1230_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_210",
+      "case": "unify_seed_1230_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_211",
+      "case": "unify_seed_1230_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_220",
+      "case": "unify_seed_1230_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1230_221",
+      "case": "unify_seed_1230_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_000",
+      "case": "unify_seed_1302_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_001",
+      "case": "unify_seed_1302_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_010",
+      "case": "unify_seed_1302_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_011",
+      "case": "unify_seed_1302_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_020",
+      "case": "unify_seed_1302_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_021",
+      "case": "unify_seed_1302_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_100",
+      "case": "unify_seed_1302_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_101",
+      "case": "unify_seed_1302_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_110",
+      "case": "unify_seed_1302_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_111",
+      "case": "unify_seed_1302_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_120",
+      "case": "unify_seed_1302_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_121",
+      "case": "unify_seed_1302_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_200",
+      "case": "unify_seed_1302_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_201",
+      "case": "unify_seed_1302_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_210",
+      "case": "unify_seed_1302_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_211",
+      "case": "unify_seed_1302_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_220",
+      "case": "unify_seed_1302_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1302_221",
+      "case": "unify_seed_1302_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_000",
+      "case": "unify_seed_1320_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_001",
+      "case": "unify_seed_1320_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_010",
+      "case": "unify_seed_1320_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_011",
+      "case": "unify_seed_1320_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_020",
+      "case": "unify_seed_1320_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_021",
+      "case": "unify_seed_1320_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_100",
+      "case": "unify_seed_1320_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_101",
+      "case": "unify_seed_1320_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_110",
+      "case": "unify_seed_1320_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_111",
+      "case": "unify_seed_1320_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_120",
+      "case": "unify_seed_1320_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_121",
+      "case": "unify_seed_1320_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_200",
+      "case": "unify_seed_1320_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_201",
+      "case": "unify_seed_1320_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_210",
+      "case": "unify_seed_1320_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_211",
+      "case": "unify_seed_1320_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_220",
+      "case": "unify_seed_1320_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_1320_221",
+      "case": "unify_seed_1320_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_000",
+      "case": "unify_seed_2013_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_001",
+      "case": "unify_seed_2013_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_010",
+      "case": "unify_seed_2013_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_011",
+      "case": "unify_seed_2013_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_020",
+      "case": "unify_seed_2013_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_021",
+      "case": "unify_seed_2013_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_100",
+      "case": "unify_seed_2013_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_101",
+      "case": "unify_seed_2013_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_110",
+      "case": "unify_seed_2013_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_111",
+      "case": "unify_seed_2013_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_120",
+      "case": "unify_seed_2013_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_121",
+      "case": "unify_seed_2013_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_200",
+      "case": "unify_seed_2013_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_201",
+      "case": "unify_seed_2013_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_210",
+      "case": "unify_seed_2013_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_211",
+      "case": "unify_seed_2013_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_220",
+      "case": "unify_seed_2013_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2013_221",
+      "case": "unify_seed_2013_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_000",
+      "case": "unify_seed_2031_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_001",
+      "case": "unify_seed_2031_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_010",
+      "case": "unify_seed_2031_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_011",
+      "case": "unify_seed_2031_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_020",
+      "case": "unify_seed_2031_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_021",
+      "case": "unify_seed_2031_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_100",
+      "case": "unify_seed_2031_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_101",
+      "case": "unify_seed_2031_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_110",
+      "case": "unify_seed_2031_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_111",
+      "case": "unify_seed_2031_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_120",
+      "case": "unify_seed_2031_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_121",
+      "case": "unify_seed_2031_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_200",
+      "case": "unify_seed_2031_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_201",
+      "case": "unify_seed_2031_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_210",
+      "case": "unify_seed_2031_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_211",
+      "case": "unify_seed_2031_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_220",
+      "case": "unify_seed_2031_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2031_221",
+      "case": "unify_seed_2031_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_000",
+      "case": "unify_seed_2103_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_001",
+      "case": "unify_seed_2103_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_010",
+      "case": "unify_seed_2103_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_011",
+      "case": "unify_seed_2103_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_020",
+      "case": "unify_seed_2103_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_021",
+      "case": "unify_seed_2103_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_100",
+      "case": "unify_seed_2103_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_101",
+      "case": "unify_seed_2103_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_110",
+      "case": "unify_seed_2103_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_111",
+      "case": "unify_seed_2103_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_120",
+      "case": "unify_seed_2103_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_121",
+      "case": "unify_seed_2103_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_200",
+      "case": "unify_seed_2103_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_201",
+      "case": "unify_seed_2103_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_210",
+      "case": "unify_seed_2103_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_211",
+      "case": "unify_seed_2103_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_220",
+      "case": "unify_seed_2103_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2103_221",
+      "case": "unify_seed_2103_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_000",
+      "case": "unify_seed_2130_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_001",
+      "case": "unify_seed_2130_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_010",
+      "case": "unify_seed_2130_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_011",
+      "case": "unify_seed_2130_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_020",
+      "case": "unify_seed_2130_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_021",
+      "case": "unify_seed_2130_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_100",
+      "case": "unify_seed_2130_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_101",
+      "case": "unify_seed_2130_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_110",
+      "case": "unify_seed_2130_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_111",
+      "case": "unify_seed_2130_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_120",
+      "case": "unify_seed_2130_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_121",
+      "case": "unify_seed_2130_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_200",
+      "case": "unify_seed_2130_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_201",
+      "case": "unify_seed_2130_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_210",
+      "case": "unify_seed_2130_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_211",
+      "case": "unify_seed_2130_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_220",
+      "case": "unify_seed_2130_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2130_221",
+      "case": "unify_seed_2130_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_000",
+      "case": "unify_seed_2301_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_001",
+      "case": "unify_seed_2301_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_010",
+      "case": "unify_seed_2301_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_011",
+      "case": "unify_seed_2301_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_020",
+      "case": "unify_seed_2301_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_021",
+      "case": "unify_seed_2301_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_100",
+      "case": "unify_seed_2301_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_101",
+      "case": "unify_seed_2301_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_110",
+      "case": "unify_seed_2301_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_111",
+      "case": "unify_seed_2301_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_120",
+      "case": "unify_seed_2301_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_121",
+      "case": "unify_seed_2301_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_200",
+      "case": "unify_seed_2301_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_201",
+      "case": "unify_seed_2301_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_210",
+      "case": "unify_seed_2301_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_211",
+      "case": "unify_seed_2301_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_220",
+      "case": "unify_seed_2301_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2301_221",
+      "case": "unify_seed_2301_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_000",
+      "case": "unify_seed_2310_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_001",
+      "case": "unify_seed_2310_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_010",
+      "case": "unify_seed_2310_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_011",
+      "case": "unify_seed_2310_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_020",
+      "case": "unify_seed_2310_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_021",
+      "case": "unify_seed_2310_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_100",
+      "case": "unify_seed_2310_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_101",
+      "case": "unify_seed_2310_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_110",
+      "case": "unify_seed_2310_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_111",
+      "case": "unify_seed_2310_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_120",
+      "case": "unify_seed_2310_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_121",
+      "case": "unify_seed_2310_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_200",
+      "case": "unify_seed_2310_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_201",
+      "case": "unify_seed_2310_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_210",
+      "case": "unify_seed_2310_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_211",
+      "case": "unify_seed_2310_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_220",
+      "case": "unify_seed_2310_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_2310_221",
+      "case": "unify_seed_2310_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_000",
+      "case": "unify_seed_3012_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_001",
+      "case": "unify_seed_3012_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_010",
+      "case": "unify_seed_3012_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_011",
+      "case": "unify_seed_3012_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_020",
+      "case": "unify_seed_3012_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_021",
+      "case": "unify_seed_3012_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_100",
+      "case": "unify_seed_3012_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_101",
+      "case": "unify_seed_3012_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_110",
+      "case": "unify_seed_3012_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_111",
+      "case": "unify_seed_3012_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_120",
+      "case": "unify_seed_3012_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_121",
+      "case": "unify_seed_3012_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_200",
+      "case": "unify_seed_3012_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_201",
+      "case": "unify_seed_3012_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_210",
+      "case": "unify_seed_3012_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_211",
+      "case": "unify_seed_3012_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_220",
+      "case": "unify_seed_3012_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3012_221",
+      "case": "unify_seed_3012_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_000",
+      "case": "unify_seed_3021_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_001",
+      "case": "unify_seed_3021_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_010",
+      "case": "unify_seed_3021_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_011",
+      "case": "unify_seed_3021_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_020",
+      "case": "unify_seed_3021_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_021",
+      "case": "unify_seed_3021_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_100",
+      "case": "unify_seed_3021_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_101",
+      "case": "unify_seed_3021_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_110",
+      "case": "unify_seed_3021_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_111",
+      "case": "unify_seed_3021_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_120",
+      "case": "unify_seed_3021_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_121",
+      "case": "unify_seed_3021_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_200",
+      "case": "unify_seed_3021_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_201",
+      "case": "unify_seed_3021_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_210",
+      "case": "unify_seed_3021_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_211",
+      "case": "unify_seed_3021_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_220",
+      "case": "unify_seed_3021_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3021_221",
+      "case": "unify_seed_3021_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_000",
+      "case": "unify_seed_3102_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_001",
+      "case": "unify_seed_3102_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_010",
+      "case": "unify_seed_3102_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_011",
+      "case": "unify_seed_3102_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_020",
+      "case": "unify_seed_3102_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_021",
+      "case": "unify_seed_3102_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_100",
+      "case": "unify_seed_3102_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_101",
+      "case": "unify_seed_3102_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_110",
+      "case": "unify_seed_3102_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_111",
+      "case": "unify_seed_3102_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_120",
+      "case": "unify_seed_3102_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_121",
+      "case": "unify_seed_3102_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_200",
+      "case": "unify_seed_3102_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_201",
+      "case": "unify_seed_3102_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_210",
+      "case": "unify_seed_3102_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_211",
+      "case": "unify_seed_3102_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_220",
+      "case": "unify_seed_3102_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3102_221",
+      "case": "unify_seed_3102_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_000",
+      "case": "unify_seed_3120_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_001",
+      "case": "unify_seed_3120_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_010",
+      "case": "unify_seed_3120_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_011",
+      "case": "unify_seed_3120_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_020",
+      "case": "unify_seed_3120_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_021",
+      "case": "unify_seed_3120_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_100",
+      "case": "unify_seed_3120_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_101",
+      "case": "unify_seed_3120_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_110",
+      "case": "unify_seed_3120_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_111",
+      "case": "unify_seed_3120_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_120",
+      "case": "unify_seed_3120_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_121",
+      "case": "unify_seed_3120_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_200",
+      "case": "unify_seed_3120_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_201",
+      "case": "unify_seed_3120_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_210",
+      "case": "unify_seed_3120_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_211",
+      "case": "unify_seed_3120_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_220",
+      "case": "unify_seed_3120_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3120_221",
+      "case": "unify_seed_3120_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_000",
+      "case": "unify_seed_3201_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_001",
+      "case": "unify_seed_3201_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_010",
+      "case": "unify_seed_3201_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_011",
+      "case": "unify_seed_3201_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_020",
+      "case": "unify_seed_3201_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_021",
+      "case": "unify_seed_3201_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_100",
+      "case": "unify_seed_3201_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_101",
+      "case": "unify_seed_3201_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_110",
+      "case": "unify_seed_3201_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_111",
+      "case": "unify_seed_3201_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_120",
+      "case": "unify_seed_3201_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_121",
+      "case": "unify_seed_3201_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_200",
+      "case": "unify_seed_3201_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_201",
+      "case": "unify_seed_3201_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_210",
+      "case": "unify_seed_3201_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_211",
+      "case": "unify_seed_3201_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_220",
+      "case": "unify_seed_3201_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3201_221",
+      "case": "unify_seed_3201_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_000",
+      "case": "unify_seed_3210_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_001",
+      "case": "unify_seed_3210_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_010",
+      "case": "unify_seed_3210_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_011",
+      "case": "unify_seed_3210_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_020",
+      "case": "unify_seed_3210_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_021",
+      "case": "unify_seed_3210_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_100",
+      "case": "unify_seed_3210_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_101",
+      "case": "unify_seed_3210_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_110",
+      "case": "unify_seed_3210_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_111",
+      "case": "unify_seed_3210_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_120",
+      "case": "unify_seed_3210_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_121",
+      "case": "unify_seed_3210_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_200",
+      "case": "unify_seed_3210_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_201",
+      "case": "unify_seed_3210_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_210",
+      "case": "unify_seed_3210_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_211",
+      "case": "unify_seed_3210_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_220",
+      "case": "unify_seed_3210_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_seed_3210_221",
+      "case": "unify_seed_3210_221"
+    }
+  ]
+}

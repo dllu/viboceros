@@ -1,0 +1,786 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_00",
+      "case": "unify_followup_seam_012345_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_01",
+      "case": "unify_followup_seam_012345_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_02",
+      "case": "unify_followup_seam_012345_02"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_10",
+      "case": "unify_followup_seam_012345_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_11",
+      "case": "unify_followup_seam_012345_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_12",
+      "case": "unify_followup_seam_012345_12"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_20",
+      "case": "unify_followup_seam_012345_20"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_21",
+      "case": "unify_followup_seam_012345_21"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_012345_22",
+      "case": "unify_followup_seam_012345_22"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_00",
+      "case": "unify_followup_seam_543210_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_01",
+      "case": "unify_followup_seam_543210_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_02",
+      "case": "unify_followup_seam_543210_02"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_10",
+      "case": "unify_followup_seam_543210_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_11",
+      "case": "unify_followup_seam_543210_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_12",
+      "case": "unify_followup_seam_543210_12"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_20",
+      "case": "unify_followup_seam_543210_20"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_21",
+      "case": "unify_followup_seam_543210_21"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_543210_22",
+      "case": "unify_followup_seam_543210_22"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_00",
+      "case": "unify_followup_seam_123450_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_01",
+      "case": "unify_followup_seam_123450_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_02",
+      "case": "unify_followup_seam_123450_02"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_10",
+      "case": "unify_followup_seam_123450_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_11",
+      "case": "unify_followup_seam_123450_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_12",
+      "case": "unify_followup_seam_123450_12"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_20",
+      "case": "unify_followup_seam_123450_20"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_21",
+      "case": "unify_followup_seam_123450_21"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_123450_22",
+      "case": "unify_followup_seam_123450_22"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_00",
+      "case": "unify_followup_seam_315042_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_01",
+      "case": "unify_followup_seam_315042_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_02",
+      "case": "unify_followup_seam_315042_02"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_10",
+      "case": "unify_followup_seam_315042_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_11",
+      "case": "unify_followup_seam_315042_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_12",
+      "case": "unify_followup_seam_315042_12"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_20",
+      "case": "unify_followup_seam_315042_20"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_21",
+      "case": "unify_followup_seam_315042_21"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_seam_315042_22",
+      "case": "unify_followup_seam_315042_22"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_000",
+      "case": "unify_followup_quad_012345_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_001",
+      "case": "unify_followup_quad_012345_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_010",
+      "case": "unify_followup_quad_012345_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_011",
+      "case": "unify_followup_quad_012345_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_020",
+      "case": "unify_followup_quad_012345_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_021",
+      "case": "unify_followup_quad_012345_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_030",
+      "case": "unify_followup_quad_012345_030"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_031",
+      "case": "unify_followup_quad_012345_031"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_100",
+      "case": "unify_followup_quad_012345_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_101",
+      "case": "unify_followup_quad_012345_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_110",
+      "case": "unify_followup_quad_012345_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_111",
+      "case": "unify_followup_quad_012345_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_120",
+      "case": "unify_followup_quad_012345_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_121",
+      "case": "unify_followup_quad_012345_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_130",
+      "case": "unify_followup_quad_012345_130"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_131",
+      "case": "unify_followup_quad_012345_131"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_200",
+      "case": "unify_followup_quad_012345_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_201",
+      "case": "unify_followup_quad_012345_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_210",
+      "case": "unify_followup_quad_012345_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_211",
+      "case": "unify_followup_quad_012345_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_220",
+      "case": "unify_followup_quad_012345_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_221",
+      "case": "unify_followup_quad_012345_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_230",
+      "case": "unify_followup_quad_012345_230"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_231",
+      "case": "unify_followup_quad_012345_231"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_300",
+      "case": "unify_followup_quad_012345_300"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_301",
+      "case": "unify_followup_quad_012345_301"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_310",
+      "case": "unify_followup_quad_012345_310"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_311",
+      "case": "unify_followup_quad_012345_311"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_320",
+      "case": "unify_followup_quad_012345_320"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_321",
+      "case": "unify_followup_quad_012345_321"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_330",
+      "case": "unify_followup_quad_012345_330"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_012345_331",
+      "case": "unify_followup_quad_012345_331"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_000",
+      "case": "unify_followup_quad_543210_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_001",
+      "case": "unify_followup_quad_543210_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_010",
+      "case": "unify_followup_quad_543210_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_011",
+      "case": "unify_followup_quad_543210_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_020",
+      "case": "unify_followup_quad_543210_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_021",
+      "case": "unify_followup_quad_543210_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_030",
+      "case": "unify_followup_quad_543210_030"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_031",
+      "case": "unify_followup_quad_543210_031"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_100",
+      "case": "unify_followup_quad_543210_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_101",
+      "case": "unify_followup_quad_543210_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_110",
+      "case": "unify_followup_quad_543210_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_111",
+      "case": "unify_followup_quad_543210_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_120",
+      "case": "unify_followup_quad_543210_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_121",
+      "case": "unify_followup_quad_543210_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_130",
+      "case": "unify_followup_quad_543210_130"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_131",
+      "case": "unify_followup_quad_543210_131"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_200",
+      "case": "unify_followup_quad_543210_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_201",
+      "case": "unify_followup_quad_543210_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_210",
+      "case": "unify_followup_quad_543210_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_211",
+      "case": "unify_followup_quad_543210_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_220",
+      "case": "unify_followup_quad_543210_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_221",
+      "case": "unify_followup_quad_543210_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_230",
+      "case": "unify_followup_quad_543210_230"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_231",
+      "case": "unify_followup_quad_543210_231"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_300",
+      "case": "unify_followup_quad_543210_300"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_301",
+      "case": "unify_followup_quad_543210_301"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_310",
+      "case": "unify_followup_quad_543210_310"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_311",
+      "case": "unify_followup_quad_543210_311"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_320",
+      "case": "unify_followup_quad_543210_320"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_321",
+      "case": "unify_followup_quad_543210_321"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_330",
+      "case": "unify_followup_quad_543210_330"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_quad_543210_331",
+      "case": "unify_followup_quad_543210_331"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_regions_00",
+      "case": "unify_followup_regions_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_regions_01",
+      "case": "unify_followup_regions_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_regions_10",
+      "case": "unify_followup_regions_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_regions_11",
+      "case": "unify_followup_regions_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_regions_20",
+      "case": "unify_followup_regions_20"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_regions_21",
+      "case": "unify_followup_regions_21"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_regions_30",
+      "case": "unify_followup_regions_30"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_regions_31",
+      "case": "unify_followup_regions_31"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_000",
+      "case": "unify_followup_unused_alias_000"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_001",
+      "case": "unify_followup_unused_alias_001"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_002",
+      "case": "unify_followup_unused_alias_002"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_010",
+      "case": "unify_followup_unused_alias_010"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_011",
+      "case": "unify_followup_unused_alias_011"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_012",
+      "case": "unify_followup_unused_alias_012"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_020",
+      "case": "unify_followup_unused_alias_020"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_021",
+      "case": "unify_followup_unused_alias_021"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_022",
+      "case": "unify_followup_unused_alias_022"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_100",
+      "case": "unify_followup_unused_alias_100"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_101",
+      "case": "unify_followup_unused_alias_101"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_102",
+      "case": "unify_followup_unused_alias_102"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_110",
+      "case": "unify_followup_unused_alias_110"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_111",
+      "case": "unify_followup_unused_alias_111"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_112",
+      "case": "unify_followup_unused_alias_112"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_120",
+      "case": "unify_followup_unused_alias_120"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_121",
+      "case": "unify_followup_unused_alias_121"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_122",
+      "case": "unify_followup_unused_alias_122"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_200",
+      "case": "unify_followup_unused_alias_200"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_201",
+      "case": "unify_followup_unused_alias_201"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_202",
+      "case": "unify_followup_unused_alias_202"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_210",
+      "case": "unify_followup_unused_alias_210"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_211",
+      "case": "unify_followup_unused_alias_211"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_212",
+      "case": "unify_followup_unused_alias_212"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_220",
+      "case": "unify_followup_unused_alias_220"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_221",
+      "case": "unify_followup_unused_alias_221"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_followup_unused_alias_222",
+      "case": "unify_followup_unused_alias_222"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_000",
+      "case": "unify_followup_command_ngon_000"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_001",
+      "case": "unify_followup_command_ngon_001"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_010",
+      "case": "unify_followup_command_ngon_010"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_011",
+      "case": "unify_followup_command_ngon_011"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_020",
+      "case": "unify_followup_command_ngon_020"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_021",
+      "case": "unify_followup_command_ngon_021"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_030",
+      "case": "unify_followup_command_ngon_030"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_031",
+      "case": "unify_followup_command_ngon_031"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_100",
+      "case": "unify_followup_command_ngon_100"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_101",
+      "case": "unify_followup_command_ngon_101"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_110",
+      "case": "unify_followup_command_ngon_110"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_111",
+      "case": "unify_followup_command_ngon_111"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_120",
+      "case": "unify_followup_command_ngon_120"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_121",
+      "case": "unify_followup_command_ngon_121"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_130",
+      "case": "unify_followup_command_ngon_130"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_131",
+      "case": "unify_followup_command_ngon_131"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_reindex",
+      "case": "unify_followup_command_reindex"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_noop",
+      "case": "unify_followup_command_ngon_noop"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_postselect",
+      "case": "unify_followup_command_ngon_postselect"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_followup_command_ngon_peer",
+      "case": "unify_followup_command_ngon_peer"
+    }
+  ]
+}

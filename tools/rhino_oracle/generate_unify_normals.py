@@ -6,15 +6,16 @@ import hashlib
 import json
 from pathlib import Path
 from .client import OracleClient
-from .unify_normals_cases import request
+from .unify_normals_cases import CASE_GROUPS,request
 HERE=Path(__file__).resolve().parent
-SOURCES=['generate_unify_normals.py','unify_normals_cases.py','unify_normals_probe.py','mesh_channel_capture.py','crease_probe.py','crease_cases.py','subdivide_probe.py','subd_box_probe.py','join_probe.py','merge_edges_probe.py','client.py','rhino_worker.py','structural_sdk.py']
+SOURCES=['generate_unify_normals.py','unify_normals_cases.py','unify_normals_seed_cases.py','unify_normals_probe.py','mesh_channel_capture.py','crease_probe.py','crease_cases.py','subdivide_probe.py','subd_box_probe.py','join_probe.py','merge_edges_probe.py','client.py','rhino_worker.py','structural_sdk.py']
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);flags=parser.add_mutually_exclusive_group()
-    for flag in ['discovery','extra','holdouts','commands']:flags.add_argument('--'+flag,action='store_true')
-    args=parser.parse_args();suffix=next((flag for flag in ['discovery','extra','holdouts','commands']if getattr(args,flag)),'sdk')
+    for flag in CASE_GROUPS:
+        if flag!='sdk':flags.add_argument('--'+flag,action='store_true')
+    args=parser.parse_args();suffix=next((flag for flag,enabled in vars(args).items()if enabled),'sdk')
     family='unify_normals_'+suffix;output=HERE/'observations'/(family+'.json')
     if output.exists():raise ValueError('native observations are immutable; add a family')
     query=HERE/'fixtures'/(family+'.json');payload=request(**vars(args));query.write_text(json.dumps(payload,indent=2)+'\n')

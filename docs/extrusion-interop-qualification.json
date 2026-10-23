@@ -227,7 +227,7 @@
     "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/structural_sdk.py": "07b1d65472414efe6d531cb025860b2f22d4430f5f53e1da731b68fbf02885f2",
+    "tools/rhino_oracle/structural_sdk.py": "db909e1bbd26bee4adbaa63661147bcac95235854370f19ed42e9bb060bd42f9",
     "tools/rhino_oracle/rhino_worker.py": "b9c0cfe2aeeb2ab140a3d137a68e8fa5580ae26be91d9c75dcb6d14a3dfe96e5",
     "tools/rhino_oracle/report_extrusions.py": "5c5a1296894ca353b0f7e900769dd65aaff9d1cfe2b1aecc80d8cae336b444be",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",

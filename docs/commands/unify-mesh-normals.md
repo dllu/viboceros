@@ -10,6 +10,8 @@ Non-mesh selections are skipped. There are no numeric options.
 Changed meshes retain raw vertices, face order, unused vertices, UV coordinates,
 colors, identity, attributes and groups. The command rebuilds stored normals
 through public OpenNURBS and aligns n-gon boundary cycles with their member faces.
+N-gon starting vertices and member-face order are preserved; boundary repair
+uses OpenNURBS `OrientNgons` rather than rebuilding the overlays.
 Changed objects move to the table end and share one Undo step. Preselection
 survives acceptance and Undo; command-first picks and Redo selection are released.
 Unchanged peers release selection on history replay. An entirely consistent
@@ -29,14 +31,18 @@ the operation does not guarantee global consistency or outward normals. The
 separate strict `unified_face_orientations` operation used by constructors
 continues to skip nonmanifold edges and reject nonorientable manifold constraints.
 
-The [qualification record](../unify-normals-qualification.json) covers 55 SDK
-inputs and 27 native command workflows: 25 accepted command replays and 27
-application getters, including cancellation. Fifty-four SDK inputs match exactly.
-One vertex-renumbered two-triangle holdout chooses the opposite consistent
-component winding locally; its zero positional error does not qualify winding
-parity. Arbitrary seed ordering, additional contradictory meshes, invalid n-gon
+The [qualification record](../unify-normals-qualification.json) covers 622 SDK
+inputs and 47 native command workflows: 45 accepted command replays and 47
+application getters, including cancellation. The SDK controls include all 24
+vertex permutations, nine pairs of cyclic origins and both face orders (432 inputs),
+plus seams, quads, unused aliases and disconnected regions. Six hundred sixteen
+inputs match exactly, including the earlier two-triangle renumbering gap.
+Six three-region inputs choose different consistent component windings locally;
+their zero positional error does not qualify winding parity. Disconnected seed
+ordering, additional contradictory meshes, invalid n-gon
 repair, cached face normals, restricted objects, grips, physical native
 postselection and comparative performance remain unqualified.
 
 [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/unifymeshnormals.htm)
 · [Public SDK overload](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Mesh_UnifyNormals_1.htm)
+· [Command normal reconstruction](https://developer.rhino3d.com/guides/cpp/unifying-mesh-normals/)

@@ -1,19 +1,19 @@
 """Public UnifyNormals count-only and editing overloads, plus owned commands."""
 try:
-    from .unify_normals_cases import SDK,DISCOVERY,EXTRA,HOLDOUTS,COMMANDS,validate
+    from .unify_normals_cases import SDK,DISCOVERY,EXTRA,HOLDOUTS,COMMANDS,SEEDS,FOLLOWUPS,validate
 except (ImportError,ValueError):
-    from unify_normals_cases import SDK,DISCOVERY,EXTRA,HOLDOUTS,COMMANDS,validate
+    from unify_normals_cases import SDK,DISCOVERY,EXTRA,HOLDOUTS,COMMANDS,SEEDS,FOLLOWUPS,validate
 
 
 def run(op,host,iterations,tolerance):
     validate(op)
     if op['op']=='unify_normals_command':
         from crease_probe import run_scene
-        return run_scene((DISCOVERY if op['case']in DISCOVERY else COMMANDS)[op['case']],host,iterations,tolerance)
+        return run_scene(next(cases[op['case']]for cases in [DISCOVERY,COMMANDS,FOLLOWUPS]if op['case']in cases),host,iterations,tolerance)
     R,S=host['Rhino'],host['System'];G=R.Geometry
     if iterations!=1 or list(R.RhinoDoc.ActiveDoc.Objects)or R.RhinoDoc.ActiveDoc.UndoRecordingIsActive:raise ValueError('owned empty idle document required')
     from mesh_channel_capture import snapshot
-    case=next(cases[op['case']]for cases in [SDK,EXTRA,HOLDOUTS]if op['case']in cases);m=G.Mesh();m.Vertices.UseDoublePrecisionVertices=True
+    case=next(cases[op['case']]for cases in [SDK,EXTRA,HOLDOUTS,SEEDS,FOLLOWUPS]if op['case']in cases);m=G.Mesh();m.Vertices.UseDoublePrecisionVertices=True
     try:
         for p in case['vertices']:m.Vertices.Add(*p)
         for f in case['faces']:m.Faces.AddFace(*f)

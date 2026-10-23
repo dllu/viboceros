@@ -1,0 +1,22 @@
+{
+  "qualification": false,
+  "reason": "The isolated job omitted the new case helper; operation zero failed import. No geometry result was captured.",
+  "request_sha256": "bac7565cc08ff6cebeddbe66377f377f31706ef9ad9d7b6f39d1a2879dac406b",
+  "sources": {
+    "generate_unify_normals.py": "8f0dc81e3a0d6262553db78de3ad8cb2f9f2d89e57ed477c45e5fe15ef99f73d",
+    "unify_normals_cases.py": "ec5f24aa22326a6c9f3894904e86e1960dee0f273936ce4c684ff0a283d38ec1",
+    "unify_normals_seed_cases.py": "cfb4f5beee0bae5ba7efcfc1575775f18ad0741a65497ddf481de6a213631ec2",
+    "unify_normals_probe.py": "d6cf8f6da818e68aa266c240a7c7459e22e019009d974ed976b2e35652c187f4",
+    "mesh_channel_capture.py": "d9b8ef0ad8ccb9dc63fb91cbf495a59182e4165b1d65f1d611d4070aac0ce41c",
+    "crease_probe.py": "96c3e3f50291821a087db16d5a22a0fdaefc138a8a57b78ce448d899afee9f62",
+    "crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
+    "subdivide_probe.py": "08d751e391bc593ab7263f00e3f77e64ceb91199a46360c2d396868cc579cb99",
+    "subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "client.py": "b2a5d1c666da628d0dfee46a2cc39bf7cc5fd6df33f84066ace7dd190edb1981",
+    "rhino_worker.py": "b9c0cfe2aeeb2ab140a3d137a68e8fa5580ae26be91d9c75dcb6d14a3dfe96e5",
+    "structural_sdk.py": "07b1d65472414efe6d531cb025860b2f22d4430f5f53e1da731b68fbf02885f2"
+  },
+  "log_sha256": "313b56b7caa8e4a0f25f9b6793899e4dd80ef942386985d5f6196e0e3f8a72cd"
+}

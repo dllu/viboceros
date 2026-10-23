@@ -1,6 +1,16 @@
 """Independent winding, channel and connected-region normal unification inputs."""
 from copy import deepcopy
 import math
+try:
+    STRING_TYPES = (basestring,)
+except NameError:
+    STRING_TYPES = (str,)
+try:
+    from .unify_normals_seed_cases import sdk_cases,followup_cases
+except (ImportError,ValueError):
+    from unify_normals_seed_cases import sdk_cases,followup_cases
+SEEDS=sdk_cases()
+FOLLOWUPS=followup_cases()
 SQUARE=[[0.,0.,0.],[2.,0.,0.],[2.,1.,0.],[0.,1.,0.]]
 TETRA=[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.],[0.,0.,1.]]
 TETRA_FACES=[[0,2,1],[0,1,3],[0,3,2],[1,2,3]]
@@ -104,13 +114,26 @@ COMMANDS['unify_command_cancel_picked']=scene('pair',whole=False,preselected=Fal
 COMMANDS['unify_command_cancel_empty']=scene('pair',whole=False,preselected=False,cancel=True)
 
 
-def request(discovery=False,extra=False,holdouts=False,commands=False):
-    if sum([discovery,extra,holdouts,commands])>1:raise ValueError('one normal unification family required')
-    cases=COMMANDS if commands else HOLDOUTS if holdouts else EXTRA if extra else DISCOVERY if discovery else SDK
-    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='unify_normals_command'if discovery or commands else'unify_normals_sdk',id=k,case=k)for k in cases])
+CASE_GROUPS = dict(sdk=SDK, extra=EXTRA, holdouts=HOLDOUTS, discovery=DISCOVERY,
+                   commands=COMMANDS, seeds=SEEDS, followups=FOLLOWUPS)
+
+
+def request(discovery=False, extra=False, holdouts=False, commands=False, seeds=False, followups=False):
+    enabled = [name for name, value in dict(discovery=discovery, extra=extra,
+               holdouts=holdouts, commands=commands, seeds=seeds, followups=followups).items() if value]
+    if len(enabled) > 1:
+        raise ValueError('one normal unification family required')
+    cases = CASE_GROUPS[enabled[0] if enabled else 'sdk']
+    return dict(protocol_version=1, iterations=1,
+                tolerance=dict(absolute=1e-6, relative=1e-12, angular=1e-6),
+                operations=[dict(op='unify_normals_command' if 'command' in case else 'unify_normals_sdk',
+                                 id=name, case=name) for name, case in cases.items()])
 
 
 def validate(op):
-    try:valid=isinstance(op,dict)and set(op)=={'op','id','case'}and op['id']==op['case']and((op['op']=='unify_normals_sdk'and any(op['case']in cases for cases in [SDK,EXTRA,HOLDOUTS]))or(op['op']=='unify_normals_command'and any(op['case']in cases for cases in [DISCOVERY,COMMANDS])))
-    except TypeError:valid=False
-    if not valid:raise ValueError('fixed normal unification recipe required')
+    if (not isinstance(op, dict) or set(op) != {'op', 'id', 'case'}
+            or not isinstance(op['case'], STRING_TYPES) or op['id'] != op['case']):
+        raise ValueError('fixed normal unification recipe required')
+    case = next((cases[op['case']] for cases in CASE_GROUPS.values() if op['case'] in cases), None)
+    if case is None or op['op'] != ('unify_normals_command' if 'command' in case else 'unify_normals_sdk'):
+        raise ValueError('fixed normal unification recipe required')
