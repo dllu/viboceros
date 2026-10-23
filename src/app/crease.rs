@@ -9,28 +9,56 @@ use viboceros_command::{
 mod mode;
 use mode::{Mode, Outcome};
 
-#[derive(Clone, Copy, Debug)]
-pub(super) struct Prompt {
-    pub mode: Mode,
-    tolerance: Tolerance,
+pub(super) enum Prompt {
+    Components { mode: Mode, tolerance: Tolerance },
+    Spin(Box<super::subd_spin_edge::Prompt>),
 }
 impl Prompt {
-    pub(super) fn hint(self) -> &'static str {
-        match self.mode {
-            Mode::Crease(_) => {
-                "Select mesh edges or SubD edges and vertices; Enter applies, Esc cancels"
-            }
-            Mode::Vertices(_) => "Select SubD vertices or grips; Enter applies, Esc cancels",
-            Mode::Edges(_) => {
-                "Select a mesh topology edge or SubD edge; Enter applies, Esc cancels"
+    pub(super) fn command(&self) -> &'static str {
+        match self {
+            Self::Components { mode, .. } => mode.command(),
+            Self::Spin(_) => "SubDSpinEdge",
+        }
+    }
+    pub(super) fn hint(&self) -> &'static str {
+        match self {
+            Self::Components {
+                mode: Mode::Crease(_),
+                ..
+            } => "Select mesh edges or SubD edges and vertices; Enter applies, Esc cancels",
+            Self::Components {
+                mode: Mode::Vertices(_),
+                ..
+            } => "Select SubD vertices or grips; Enter applies, Esc cancels",
+            Self::Components {
+                mode: Mode::Edges(_),
+                ..
+            } => "Select a mesh topology edge or SubD edge; Enter applies, Esc cancels",
+            Self::Spin(_) => {
+                "Pick a SubD edge to spin; Enter finishes (Direction SpinEdgeAgain Undo)"
             }
         }
     }
-    pub(super) fn eligible(self, kind: ComponentSelectionKind) -> bool {
-        self.mode.eligible(kind)
+    pub(super) fn eligible(&self, kind: ComponentSelectionKind) -> bool {
+        match self {
+            Self::Components { mode, .. } => mode.eligible(kind),
+            Self::Spin(_) => kind == ComponentSelectionKind::SubDEdge,
+        }
     }
-    pub(super) fn preserves_grip_owners(self) -> bool {
-        matches!(self.mode, Mode::Vertices(_))
+    pub(super) fn preserves_grip_owners(&self) -> bool {
+        matches!(
+            self,
+            Self::Components {
+                mode: Mode::Vertices(_),
+                ..
+            }
+        )
+    }
+    pub(super) fn scene(&self) -> Option<&Document> {
+        match self {
+            Self::Spin(p) => Some(&p.scene),
+            _ => None,
+        }
     }
 }
 pub(super) fn eligible(kind: ComponentSelectionKind) -> bool {
@@ -72,6 +100,9 @@ impl VibocerosApp {
         Ok(targets)
     }
     pub(super) fn try_start_crease(&mut self, input: &str) -> bool {
+        if self.try_start_spin_edge(input) {
+            return true;
+        }
         let mut words = input.split_whitespace();
         let Some(name) = words.next().map(|s| s.trim_start_matches(['_', '-'])) else {
             return false;
@@ -110,27 +141,31 @@ impl VibocerosApp {
             if matches!(mode, Mode::Crease(_)) {
                 self.document.clear_selection();
             }
-            let prompt = Prompt {
+            let prompt = Prompt::Components {
                 mode,
                 tolerance: self.document.tolerance(),
             };
-            self.crease_prompt = Some(prompt);
             self.push_log(format!("{}: {}", mode.command(), prompt.hint()));
+            self.crease_prompt = Some(prompt);
         }
         self.command_input.clear();
         true
     }
     pub(super) fn try_continue_crease(&mut self, input: &str) -> bool {
-        let Some(prompt) = self.crease_prompt else {
+        if self.picking_spin_edge() {
+            return self.continue_spin_edge(input);
+        }
+        let Some(Prompt::Components { mode, tolerance }) = self.crease_prompt.as_ref() else {
             return false;
         };
+        let (mode, tolerance) = (*mode, *tolerance);
         let input = input.trim().trim_start_matches(['_', '-']);
         if input.is_empty() || input.eq_ignore_ascii_case("Enter") {
-            let result = if self.document.tolerance() != prompt.tolerance {
+            let result = if self.document.tolerance() != tolerance {
                 Err(CommandError::CreaseStale)
             } else {
-                self.crease_targets(prompt.mode)
-                    .and_then(|t| prompt.mode.commit(&mut self.document, t))
+                self.crease_targets(mode)
+                    .and_then(|t| mode.commit(&mut self.document, t))
             };
             match result {
                 Ok(out) => {
@@ -153,7 +188,7 @@ impl VibocerosApp {
             self.cancel_crease();
             return false;
         } else {
-            self.push_log(prompt.hint().into());
+            self.push_log(self.crease_prompt.as_ref().unwrap().hint().into());
         }
         self.command_input.clear();
         true
@@ -172,6 +207,10 @@ impl VibocerosApp {
         self.push_log(out.message);
     }
     pub(super) fn cancel_crease(&mut self) {
+        if self.picking_spin_edge() {
+            self.finish_spin_edge();
+            return;
+        }
         if self.crease_prompt.take().is_some() {
             self.component_selection.clear();
             self.document.clear_selection();

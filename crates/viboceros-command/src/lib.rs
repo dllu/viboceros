@@ -54,6 +54,7 @@ pub mod subd_cylinder;
 pub mod subd_ellipsoid;
 pub mod subd_plane;
 pub mod subd_sphere;
+pub mod subd_spin_edge;
 pub mod subd_torus;
 pub mod subd_truncated_cone;
 pub mod subdivide;
@@ -1181,6 +1182,9 @@ impl CommandRegistry {
         registry
             .register(soft_crease::SubDCreaseCommand)
             .expect("unique built-in SubDCrease");
+        registry
+            .register(subd_spin_edge::SubDSpinEdgeCommand)
+            .expect("unique built-in SubDSpinEdge");
         registry
             .register(subdivide::SubDivideCommand)
             .expect("unique built-in SubDivide");
@@ -13275,6 +13279,14 @@ fn format_point(point: Point3) -> String {
 
 #[derive(Debug, Error)]
 pub enum CommandError {
+    #[error("select an available interior SubD edge")]
+    SpinEdgeUnavailable,
+    #[error("SubD spin source, editability or tolerance changed; select again")]
+    SpinEdgeStale,
+    #[error("SubD edge spin exceeds the staged session resource budget")]
+    SpinEdgeResourceLimit,
+    #[error("SubD spin edge {edge} is outside a source with {count} edges")]
+    SpinEdgeOutOfRange { edge: usize, count: usize },
     #[error("select mesh edges or SubD edges and vertices")]
     CreaseUnavailable,
     #[error("crease input geometry, tolerance or editability changed; select again")]

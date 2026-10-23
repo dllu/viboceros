@@ -218,8 +218,8 @@ impl VibocerosApp {
                         prompt.name()
                     } else if let Some(prompt) = &self.hole_prompt {
                         prompt.name()
-                    } else if let Some(prompt) = self.crease_prompt {
-                        prompt.mode.command()
+                    } else if let Some(prompt) = &self.crease_prompt {
+                        prompt.command()
                     } else if self.soft_crease_prompt.is_some() {
                         "SubDCrease"
                     } else if let Some(prompt) = self.edge_fillet_prompt {
@@ -328,7 +328,7 @@ impl VibocerosApp {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.hole_prompt {
                                 prompt.hint()
-                            } else if let Some(prompt)=self.crease_prompt {
+                            } else if let Some(prompt)=&self.crease_prompt {
                                 prompt.hint()
                             } else if let Some(prompt)=&self.soft_crease_prompt {
                                 prompt.hint()

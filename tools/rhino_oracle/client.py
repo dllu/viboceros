@@ -502,6 +502,18 @@ class OracleClient:
             if any(op.get('case') in PICKS for op in request['operations']):
                 from .component_picking import ComponentPicker
                 interaction = ComponentPicker()
+        if any(op.get('op') == 'subd_spin_edge' for op in request.get('operations', [])):
+            from .subd_spin_edge_cases import ALL_CASES
+            operations = request['operations']
+            if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1 or any(op.get('op') != 'subd_spin_edge' for op in operations):
+                raise OracleProtocolError('SubD edge spins require a dedicated private workflow')
+            if not 1 <= len(operations) <= 128 or len({op['id'] for op in operations}) != len(operations):
+                raise OracleProtocolError('SubD edge spins require 1 through 128 unique recipes')
+            if any(ALL_CASES[op['case']].get('live') for op in operations):
+                from .catenary_point_picker import CatenaryPointPicker
+                interaction = CatenaryPointPicker(dict(request, operations=[dict(op, actions=[
+                    dict(click=True) if isinstance(a, dict) else a
+                    for a in ALL_CASES[op['case']]['actions']]) for op in operations]))
         if any(op.get('op') == 'soft_crease_command' for op in request.get('operations', [])):
             from .soft_crease_cases import all_cases
             cases = all_cases()

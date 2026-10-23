@@ -26,6 +26,9 @@ APPLICATION_MODULES = [
     'src/app/soft_crease/tests/native.rs',
     'src/app/crease/tests/vertex_seams.rs',
     'src/app/crease/mode.rs',
+    'src/app/subd_spin_edge.rs',
+    'src/app/crease/tests/subd_spin_edge.rs',
+    'crates/viboceros-command/tests/support/subd_spin_edge.rs',
     'src/app/crease/tests/edge_seams.rs',
     'src/viewport/soft_crease.rs',
     'src/app/drafting_input.rs',
@@ -74,6 +77,9 @@ SUBD_MODULES = [
     'crates/viboceros-opennurbs/src/subd/remap.rs',
     'crates/viboceros-geometry/src/subd/seams.rs',
     'crates/viboceros-geometry/src/subd/seams/topology.rs',
+    'crates/viboceros-geometry/src/subd/spin.rs',
+    'crates/viboceros-opennurbs/src/subd/spin.rs',
+    'crates/viboceros-opennurbs/native/subd_spin.h',
 ]
 
 MESH_MODULES = [
@@ -97,6 +103,8 @@ MESH_MODULES = [
 
 def with_shared_sources(paths):
     expanded = [p.replace('src/vertex_seams/arguments.rs', 'src/component_seams/arguments.rs') for p in paths]
+    if 'crates/viboceros-document/src/lib.rs' in expanded:
+        expanded.append('crates/viboceros-document/src/object_geometry.rs')
     if 'crates/viboceros-document/src/control_points.rs' in expanded:
         expanded.append('crates/viboceros-document/src/control_points/geometry.rs')
     if any(p in expanded for p in ['src/viewport.rs', 'src/viewport/scene.rs',
@@ -112,6 +120,8 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/component_seams.rs',
             'crates/viboceros-command/src/component_seams/arguments.rs',
             'crates/viboceros-command/src/component_seams/mode.rs',
+            'crates/viboceros-command/src/subd_spin_edge.rs',
+            'crates/viboceros-command/src/subd_spin_edge/arguments.rs',
             'crates/viboceros-command/src/extract_control_polygon.rs',
             'crates/viboceros-command/src/extract_control_polygon/options.rs',
             'crates/viboceros-command/src/extract_control_polygon/arguments.rs',

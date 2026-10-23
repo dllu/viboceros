@@ -137,6 +137,7 @@ mod merge_coplanar_face;
 mod shell;
 mod shrink_trimmed;
 mod soft_crease;
+mod subd_spin_edge;
 mod subdivide;
 mod to_subd;
 #[cfg(test)]

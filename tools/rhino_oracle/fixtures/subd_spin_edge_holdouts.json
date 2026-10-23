@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_spin_edge",
+      "id": "spin_holdout_two_objects",
+      "case": "spin_holdout_two_objects"
+    },
+    {
+      "op": "subd_spin_edge",
+      "id": "spin_holdout_multiple_edges",
+      "case": "spin_holdout_multiple_edges"
+    },
+    {
+      "op": "subd_spin_edge",
+      "id": "spin_holdout_boundary_and_interior",
+      "case": "spin_holdout_boundary_and_interior"
+    },
+    {
+      "op": "subd_spin_edge",
+      "id": "spin_holdout_triangles",
+      "case": "spin_holdout_triangles"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+Capturing 6 SubD edge-spin scenes
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_subd_spin_edge.py", line 41, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_subd_spin_edge.py", line 30, in main
+    result=OracleClient(settings_scheme='VibocerosOracleSubDSpinEdge20261023'+('LiveV4'if args.live_v4 else'Holdouts'if args.holdouts else'LiveV3'if args.live_v3 else'LiveV2'if args.live_v2 else'Live'if args.live else'Discovery'if args.discovery else'Main')).run_rhino(payload,timeout=480)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2060, in run_rhino
+    raise OracleError(
+tools.rhino_oracle.client.OracleError: Rhino probe did not respond within 480 seconds (owned_pids=[2035998], owned_window='0x00e00006', ui_fallback_sent=True)
+Worker progress:
+worker: started
+worker: started
+worker: request loaded
+operation spin_live_v4_two_objects: start
+
+PICK @catenary-click:spin_live_v4_two_objects-0 1025 412
+
+PICK @catenary-click:spin_live_v4_two_objects-1 1484 412
+
+SubDSpinEdge input spin_live_v4_two_objects 2: _Enter
+operation spin_live_v4_undo_second: start
+
+PICK @catenary-click:spin_live_v4_undo_second-0 1025 412
+
+PICK @catenary-click:spin_live_v4_undo_second-1 1484 412
+
+SubDSpinEdge input spin_live_v4_undo_second 2: _Undo
+
+SubDSpinEdge input spin_live_v4_undo_second 3: _Enter
+operation spin_live_v4_undo_both: start
+
+PICK @catenary-click:spin_live_v4_undo_both-0 1025 412
+
+PICK @catenary-click:spin_live_v4_undo_both-1 1484 412
+
+SubDSpinEdge input spin_live_v4_undo_both 2: _Undo
+
+SubDSpinEdge input spin_live_v4_undo_both 3: _Undo
+
+SubDSpinEdge input spin_live_v4_undo_both 4: _Enter
+operation spin_live_v4_revisit_first: start
+
+PICK @catenary-click:spin_live_v4_revisit_first-0 1025 412
+
+PICK @catenary-click:spin_live_v4_revisit_first-1 1484 412
+
+PICK @catenary-click:spin_live_v4_revisit_first-2 1025 412
+
+SubDSpinEdge input spin_live_v4_revisit_first 3: _Enter
+operation spin_live_v4_grips: start
+
+PICK @catenary-click:spin_live_v4_grips-0 1255 412
+
+SubDSpinEdge input spin_live_v4_grips 1: _Enter
+Launcher output:
+Launched Rhino 8 through direct ARM64 Wine
+Wine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine
+WINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix
+Executable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe
+Launcher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log

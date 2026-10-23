@@ -370,7 +370,7 @@ impl VibocerosApp {
                 .into_iter()
                 .filter(|pick| soft_crease::eligible_edge(&self.document, pick))
                 .collect()
-        } else if let Some(prompt) = self.crease_prompt {
+        } else if let Some(prompt) = &self.crease_prompt {
             click
                 .picks
                 .into_iter()
@@ -450,6 +450,11 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+        if self.picking_spin_edge() {
+            self.pick_spin_edge(&picks);
+            return;
+        }
+
         if self.picking_spiral_rail() {
             if let [pick] = picks.as_slice()
                 && pick.kind == viboceros_command::ComponentSelectionKind::BrepEdge
@@ -567,6 +572,7 @@ impl VibocerosApp {
             .filter(|pick| {
                 !(self
                     .crease_prompt
+                    .as_ref()
                     .is_some_and(|p| p.preserves_grip_owners())
                     && self.document.grip_mode(pick.object).is_some())
             })
@@ -616,7 +622,7 @@ impl VibocerosApp {
                 )
             });
         }
-        if let Some(prompt) = self.crease_prompt {
+        if let Some(prompt) = &self.crease_prompt {
             window.picks.retain(|p| prompt.eligible(p.kind));
         }
         if self.picking_soft_crease_edges() {

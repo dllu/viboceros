@@ -754,7 +754,8 @@ impl eframe::App for VibocerosApp {
                 .and_then(|p| p.scene())
                 .or_else(|| self.refinement_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.weight_prompt.as_ref().and_then(|p| p.scene()))
-                .or_else(|| self.soft_crease_prompt.as_ref().and_then(|p| p.scene())),
+                .or_else(|| self.soft_crease_prompt.as_ref().and_then(|p| p.scene()))
+                .or_else(|| self.crease_prompt.as_ref().and_then(|p| p.scene())),
         );
         let twist_preview = self
             .twist_session

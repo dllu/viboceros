@@ -1,0 +1,30 @@
+{
+  "status": "owned_runner_timeout",
+  "timeout_seconds": 480,
+  "qualified_workflows": 0,
+  "last_started_case": "spin_live_v4_grips",
+  "request_sha256": "51deb28a2868f2ec5fdb40cb8a530b2439e5d1f01ea228da50776c01b800fd01",
+  "sources": {
+    "generate_subd_spin_edge.py": "8db17ff97ad2e8848559a93ab458727f1d52daf16b3ef66c36dff3bcd9ff5942",
+    "subd_spin_edge_cases.py": "0cb22fec9b3a6c0b3d8246983fd14928831d695e0572799f809585fa8921b4f6",
+    "subd_spin_edge_probe.py": "e19e364d7350966a3a5bfd9ed4a65115aaaebde6514edfe5354978cdb98b59e6",
+    "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "subd_edit_scene.py": "d461327ba3dc736e8b7727d1ff29a39b87022d056da6ba684e6381e6792a5cc7",
+    "conic_getter_input.py": "61e24935ab253540e60e256c8abc16301f100230a9d6c72c78b25566dde3f5b0",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+    "number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "crease_probe.py": "f38bacb780f187955cacc2ccc8fb9920276a819f56c627cd703c3b69e5edb9f4",
+    "crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
+    "subdivide_probe.py": "08d751e391bc593ab7263f00e3f77e64ceb91199a46360c2d396868cc579cb99",
+    "subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "client.py": "a41624b895eda1fd63c00ef63a0022527cfdc8427653b362dc1be5a3cf6cd63a",
+    "rhino_worker.py": "e733cf83a90319210621be87e36b36263722ff55a449715db9563d8873f89ef5",
+    "structural_sdk.py": "bae926753cd5e28f179d50e54bf555217694eca311c8d2c44141faafb2d1e234"
+  },
+  "log_sha256": "2faacb06fc05abb8ba176b6d6961298eb39bf021ba1675117ab9b81a15e77136",
+  "note": "The owned process stalled during a grip-enabled workflow after delivering its two input actions. The runner terminated only its owned instance. No response geometry from this run is qualified."
+}

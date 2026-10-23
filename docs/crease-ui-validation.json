@@ -57,7 +57,6 @@
     "crates/viboceros-opennurbs/src/subd/edges.rs": "964405af7e7efed5091a7f416b8ed852843ea66dfd24699ca21e371933386778",
     "crates/viboceros-geometry/src/subd/edges.rs": "b45a57b11ebd445ef1f26cdce266dea50922a67cdd3b15700653c40bd690af4f",
     "crates/viboceros-geometry/tests/subd_edges.rs": "ddb85c3c11699b036031c42c40a66e2a7bdf140189e10a07d3af1171d9aa03fd",
-    "crates/viboceros-document/src/object_geometry.rs": "c1c77eba480c5bced476fb4ac59eefcfba52255667e9a40d4024c72b6ade2378",
     "crates/viboceros-command/src/crease.rs": "dc858497580204417b208457493ef053ce6b09bbe931a2c4a5bf2d7d649d40e4",
     "crates/viboceros-command/src/crease/arguments.rs": "2a9257eae35d24c7f2a4b4da89fab2621d942cde9cedb6de92eda148d1a79813",
     "crates/viboceros-command/tests/crease_native.rs": "3308a327dfe0634e53ae9adf20515b6853019f359feef4dd530fdaec6aee7e35",
@@ -252,6 +251,7 @@
     "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/crease.rs": "abbf160b6928a2104d8fa832b9ddfa568c3ee6d0ed336a96e247da5a2bbd2b7f",
     "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/crease/tests.rs": "c9045649a4f7d491914042e726575ceeba52c7627a9e00263d7131313e0aa186",
     "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/crease/tests/native.rs": "4f15d7edfec974dd2418708b360b4d93f1716c51286b865c2e7ebf8ed1d2529f",
-    "ef01d06d59850ddc046398db2df33f6498846e9b:crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4"
+    "ef01d06d59850ddc046398db2df33f6498846e9b:crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
+    "91e2b7c9b0ed7f3920396dc7264c6c1b853d9e8d:crates/viboceros-document/src/object_geometry.rs": "c1c77eba480c5bced476fb4ac59eefcfba52255667e9a40d4024c72b6ade2378"
   }
 }

@@ -19,6 +19,7 @@ mod primitives;
 mod seams;
 mod soft_crease;
 mod sphere;
+mod spin;
 mod subdivision;
 mod surface_conversion;
 mod torus;

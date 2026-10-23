@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "subd_spin_edge",
+      "id": "spin_live_v5_two_objects",
+      "case": "spin_live_v5_two_objects"
+    },
+    {
+      "op": "subd_spin_edge",
+      "id": "spin_live_v5_undo_second",
+      "case": "spin_live_v5_undo_second"
+    },
+    {
+      "op": "subd_spin_edge",
+      "id": "spin_live_v5_undo_both",
+      "case": "spin_live_v5_undo_both"
+    },
+    {
+      "op": "subd_spin_edge",
+      "id": "spin_live_v5_revisit_first",
+      "case": "spin_live_v5_revisit_first"
+    }
+  ]
+}

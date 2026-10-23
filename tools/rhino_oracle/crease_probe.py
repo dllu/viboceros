@@ -165,6 +165,8 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
         else:doc.ClearUndoRecords(True)
         if 'modify_normals'in case:
             R.RhinoApp.RunScript('_-'+case['command']+' _ModifyNormals=_'+('Yes'if case['modify_normals']else 'No')+' _Enter',False)
+        if case.get('prime_arguments'):
+            R.RhinoApp.RunScript('_-'+case['command']+' '+case['prime_arguments']+' _Enter _Cancel _Cancel',False)
         if not case.get('postselect'):select_components()
         if case.get('soft_vertex_only'):
             for obj in doc.Objects:

@@ -50,6 +50,18 @@ impl Document {
         &mut self,
         replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<usize, DocumentError> {
+        self.replace_object_geometries_preserving_control_selection_with_history(
+            replacements,
+            ReplacementHistory::ChangesOnly,
+        )
+    }
+
+    /// Preserve control identities while choosing whether equal outputs record a replacement.
+    pub fn replace_object_geometries_preserving_control_selection_with_history(
+        &mut self,
+        replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
+        history: ReplacementHistory,
+    ) -> Result<usize, DocumentError> {
         let mut replacements = replacements.into_iter().collect::<BTreeMap<_, _>>();
         let indices = self.resolve_object_indices(replacements.keys().copied())?;
         for &index in &indices {
@@ -64,7 +76,7 @@ impl Document {
             .collect::<Result<Vec<_>, DocumentError>>()?;
         self.commit_object_geometries_with_control_selection(
             staged,
-            ReplacementHistory::ChangesOnly,
+            history,
             "Replace object geometry",
         )
     }

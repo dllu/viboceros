@@ -79,7 +79,10 @@ pub fn setup_from_family(row: &Value, family: &str) -> (Document, Vec<ObjectId>)
         viboceros_command::open_3dm_with_views(path.to_str().unwrap()).unwrap();
     let native = &row["value"];
     let layer = doc
-        .add_layer("Crease input", ColorRgb::new(0, 0, 255))
+        .add_layer(
+            native["before"][0]["layer"].as_str().unwrap(),
+            ColorRgb::new(0, 0, 255),
+        )
         .unwrap();
     let mut source_ids = std::collections::BTreeMap::new();
     for source in native["before"]
@@ -100,10 +103,18 @@ pub fn setup_from_family(row: &Value, family: &str) -> (Document, Vec<ObjectId>)
         source_ids.insert(source["source"].as_u64().unwrap() as usize, id);
     }
     let ids = source_ids.into_values().collect::<Vec<_>>();
-    doc.add_group(Some("Crease assembly".into()), ids.iter().copied())
-        .unwrap();
+    doc.add_group(
+        Some(native["before"][0]["groups"][0].as_str().unwrap().into()),
+        ids.iter().copied(),
+    )
+    .unwrap();
     let current = doc
-        .add_layer("Crease current", ColorRgb::new(0, 128, 0))
+        .add_layer(
+            native["before"].as_array().unwrap().last().unwrap()["layer"]
+                .as_str()
+                .unwrap(),
+            ColorRgb::new(0, 128, 0),
+        )
         .unwrap();
     doc.set_current_layer(current).unwrap();
     let witness = doc
