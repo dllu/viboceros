@@ -62,40 +62,44 @@ impl TriangleMesh {
 
     fn normal_unification_plan(&self) -> Vec<bool> {
         let data = self.topology_data();
-        let mut neighbors = vec![Vec::<(usize, bool)>::new(); self.faces.len()];
+        let mut neighbors = vec![Vec::<(usize, usize, bool)>::new(); self.faces.len()];
         for incidence in data.edges.values() {
             let Some(first) = incidence.first_use else {
                 continue;
             };
             for other in incidence.uses().skip(1) {
                 let opposite = first.forward == other.forward;
-                neighbors[first.face].push((other.face, opposite));
-                neighbors[other.face].push((first.face, opposite));
+                let side = |use_: EdgeUse| (use_.side + 1) % self.faces[use_.face].indices().len();
+                neighbors[first.face].push((side(first), other.face, opposite));
+                neighbors[other.face].push((side(other), first.face, opposite));
             }
+        }
+        for adjacent in &mut neighbors {
+            adjacent.sort_by_key(|&(side, _, _)| side);
         }
         let reversed_closing_edge = |face: usize| {
             let indices = self.faces[face].indices();
             data.topological_vertices[indices[0] as usize]
                 < data.topological_vertices[*indices.last().unwrap() as usize]
         };
-        // Seed the first component from a closing side directed toward a lower
-        // topology vertex index, then visit unassigned components from the end.
-        // Cyclic origin and topology numbering both affect the initial seed.
+        // Traverse the first face, then remaining components from the end.
+        // Every component shares the first face's initial orientation choice.
+        // Closing sides precede the remaining polygon sides. Later isolated
+        // faces retain the native unvisited state, including repeat edits.
         let roots = (0..self.faces.len())
-            .find(|&f| reversed_closing_edge(f))
-            .into_iter()
+            .take(1)
             .chain((0..self.faces.len()).rev());
         let mut assigned = vec![None; self.faces.len()];
         let mut pending = VecDeque::new();
         for root in roots {
-            if assigned[root].is_some() {
+            if assigned[root].is_some() || (root != 0 && neighbors[root].is_empty()) {
                 continue;
             }
             assigned[root] = Some(false);
             pending.push_back(root);
             while let Some(face) = pending.pop_front() {
                 let orientation = assigned[face].unwrap();
-                for &(next, opposite) in &neighbors[face] {
+                for &(_, next, opposite) in &neighbors[face] {
                     if assigned[next].is_none() {
                         assigned[next] = Some(orientation ^ opposite);
                         pending.push_back(next);
@@ -103,7 +107,15 @@ impl TriangleMesh {
                 }
             }
         }
-        assigned.into_iter().map(|f| f.unwrap()).collect()
+        let reverse = !self.faces.is_empty() && !reversed_closing_edge(0);
+        let mut flipped = assigned
+            .into_iter()
+            .map(|orientation| orientation.is_none_or(|flip| flip ^ reverse))
+            .collect::<Vec<_>>();
+        if flipped.iter().all(|&flip| flip) {
+            flipped.fill(false);
+        }
+        flipped
     }
 
     /// Reorients each manifold-connected face component consistently while

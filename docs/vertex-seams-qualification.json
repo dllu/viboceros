@@ -1233,7 +1233,7 @@
     "tools/rhino_oracle/generate_crease.py": "4af359530ca4b67ac8dd624c8287d93f068dbd659eb418576f53e82aeda56c40",
     "tools/rhino_oracle/report_crease.py": "97317547a49f11be348430c760dc6be6ecb3ac1fe1f8f7a0352994d266d968a6",
     "tools/rhino_oracle/test_crease.py": "6aa8d28fbc90c8b461e55b228b7cd5fae59eb3e42dfe68e7f61edf1aa15b8ec9",
-    "tools/rhino_oracle/structural_sdk.py": "db909e1bbd26bee4adbaa63661147bcac95235854370f19ed42e9bb060bd42f9",
+    "tools/rhino_oracle/structural_sdk.py": "9e4a385dcc8d5fa4c5b7e8a7ac632a98002add86f35b52b3d3d2e5f55d969684",
     "tools/rhino_oracle/rhino_worker.py": "b9c0cfe2aeeb2ab140a3d137a68e8fa5580ae26be91d9c75dcb6d14a3dfe96e5",
     "src/app.rs": "d004640e42228b2665f1775ee50c70fa343245e5068fa82176967aee9604a0ca",
     "src/app/crease.rs": "7c7adf43830985709b398e834d3c72d65ea941bbc190f9916a2656b06c7ff611",
@@ -1533,7 +1533,7 @@
     "crates/viboceros-geometry/src/mesh/rebuild_mesh.rs": "0bd719e4330e36a3ffe2b9c141dee8d9c55a36beaadc63f620142227346c8c25",
     "crates/viboceros-command/src/mesh_edit/unify_normals.rs": "e6e453fde97f391edbb79ae31ea29eb052c8b51b028b85102e37edeb323f954c",
     "src/app/object_selection/unify_normals_tests.rs": "2662146aac4633c57192bec8e0696461a21d3a81e5f903dfab10fb50f9352a48",
-    "crates/viboceros-command/tests/support/unify_normals.rs": "8d319665f4572deec5e93f5841d56df96e577e8de11d766119977a1af220df16",
-    "crates/viboceros-geometry/src/mesh/orientation.rs": "c2b49d1728b154e042f4fe4e0355a585a656dd7f6c76c05306ca8882eda1aa90"
+    "crates/viboceros-command/tests/support/unify_normals.rs": "bcd483a5483a8faabfc44d75423c989aaa9045961b118ace964ecdd90c4d48b3",
+    "crates/viboceros-geometry/src/mesh/orientation.rs": "0f93eea8c70b6c42bd07f750e13f94854ccdbe290aa7cee86eb74539f8f0a4f7"
   }
 }

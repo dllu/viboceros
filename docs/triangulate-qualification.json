@@ -765,7 +765,7 @@
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/client.py": "b2a5d1c666da628d0dfee46a2cc39bf7cc5fd6df33f84066ace7dd190edb1981",
     "tools/rhino_oracle/rhino_worker.py": "b9c0cfe2aeeb2ab140a3d137a68e8fa5580ae26be91d9c75dcb6d14a3dfe96e5",
-    "tools/rhino_oracle/structural_sdk.py": "db909e1bbd26bee4adbaa63661147bcac95235854370f19ed42e9bb060bd42f9",
+    "tools/rhino_oracle/structural_sdk.py": "9e4a385dcc8d5fa4c5b7e8a7ac632a98002add86f35b52b3d3d2e5f55d969684",
     "crates/viboceros-document/src/object_geometry.rs": "0c51c545c026fa9a158eb06f17c28b682cebda9bd1a00d78c1984f9a217b0b0f",
     "crates/viboceros-command/src/mesh_seams.rs": "fae9bbdb286bd2441cd3c953da2e3e92034edde5b4635f1e5c3e3e751ba70ea0",
     "crates/viboceros-command/src/mesh_edit/mod.rs": "9ea0d33c865352aee0efc43b20b885ec73f19519c2778163d0122ffa2f9d5b35",
@@ -947,7 +947,7 @@
     "crates/viboceros-geometry/src/mesh/rebuild_mesh.rs": "0bd719e4330e36a3ffe2b9c141dee8d9c55a36beaadc63f620142227346c8c25",
     "crates/viboceros-command/src/mesh_edit/unify_normals.rs": "e6e453fde97f391edbb79ae31ea29eb052c8b51b028b85102e37edeb323f954c",
     "src/app/object_selection/unify_normals_tests.rs": "2662146aac4633c57192bec8e0696461a21d3a81e5f903dfab10fb50f9352a48",
-    "crates/viboceros-command/tests/support/unify_normals.rs": "8d319665f4572deec5e93f5841d56df96e577e8de11d766119977a1af220df16",
-    "crates/viboceros-geometry/src/mesh/orientation.rs": "c2b49d1728b154e042f4fe4e0355a585a656dd7f6c76c05306ca8882eda1aa90"
+    "crates/viboceros-command/tests/support/unify_normals.rs": "bcd483a5483a8faabfc44d75423c989aaa9045961b118ace964ecdd90c4d48b3",
+    "crates/viboceros-geometry/src/mesh/orientation.rs": "0f93eea8c70b6c42bd07f750e13f94854ccdbe290aa7cee86eb74539f8f0a4f7"
   }
 }

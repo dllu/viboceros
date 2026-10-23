@@ -10,6 +10,8 @@ pub fn groups() -> Vec<(&'static str, Vec<Value>)> {
         ("unify_normals_discovery", 4),
         ("unify_normals_commands", 23),
         ("unify_normals_followups", 20),
+        ("unify_normals_walks", 6),
+        ("unify_normals_components", 12),
     ]
     .into_iter()
     .map(|(family, count)| {

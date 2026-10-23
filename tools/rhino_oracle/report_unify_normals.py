@@ -7,8 +7,12 @@ from pathlib import Path
 from .unify_normals_cases import CASE_GROUPS, request
 from .qualification_sources import with_shared_sources
 from .report_subd_box import HERE, ROOT, error
+from .unify_normals_evidence import check_sdk_row, raw
 
-GAPS = {'unify_followup_regions_' + suffix for suffix in ['01', '10', '11', '20', '30', '31']}
+GAPS = {'unify_component_' + name for name in [
+    'nonmanifold_01', 'nonmanifold_11', 'nonmanifold_21', 'tetra_201', 'tetra_211', 'tetra_221',
+    'mobius_011', 'mobius_111', 'mobius_211',
+]} | {'unify_runtime_tetra_201', 'unify_runtime_nonmanifold_01'}
 FAMILIES = {'unify_normals_' + name: ({} if name == 'sdk' else {name: True}, cases)
             for name, cases in CASE_GROUPS.items()}
 SOURCES = with_shared_sources([
@@ -44,7 +48,8 @@ SOURCES = with_shared_sources([
     'tools/rhino_oracle/diagnostics/unify_normals/seed-staging-failure.json',
     'tools/rhino_oracle/diagnostics/unify_normals/seed-staging-failure.log',
 ] + ['tools/rhino_oracle/' + p for p in [
-    'unify_normals_cases.py', 'unify_normals_seed_cases.py', 'unify_normals_probe.py',
+    'unify_normals_cases.py', 'unify_normals_seed_cases.py', 'unify_normals_walk_cases.py',
+    'unify_normals_probe.py', 'unify_normals_evidence.py',
     'generate_unify_normals.py', 'report_unify_normals.py', 'test_unify_normals.py',
     'mesh_channel_capture.py', 'crease_probe.py', 'crease_cases.py',
     'subdivide_probe.py', 'subd_box_probe.py', 'join_probe.py', 'merge_edges_probe.py',
@@ -74,10 +79,17 @@ def native():
                         or events[0]['result'] != ('Success' if accepted else 'Cancel')
                         or 'Unknown command' in v['history']):
                     raise ValueError('native normal command admission differs')
-            elif (v['before'] != v['after_count'] or v['after'] != v['after_second']
-                    or v['predicted'] != v['changed'] or v['second'] != 0
-                    or v['after']['valid'] is not True):
-                raise ValueError('native count-only or idempotence reference differs')
+            else:
+                if (v['before'] != v['after_count'] or v['predicted'] != v['changed']
+                        or v['after']['valid'] is not True or v['after_second']['valid'] is not True
+                        or any(v[k]['vertices'] != v['before']['vertices'] for k in ['after', 'after_second'])):
+                    raise ValueError('native count-only or storage reference differs')
+                if v['input'].get('runtime_checks'):
+                    for trial in v['runtime'].values():
+                        if (raw(trial['before']) != raw(v['after'])
+                                or raw(trial['after']) != raw(v['after_second'])
+                                or trial['changed'] != v['second']):
+                            raise ValueError('fresh mesh runtime reference differs')
             groups['command' if command else 'sdk'][row['id']] = v
     if len(versions) != 1:
         raise ValueError('mixed normal unification engines')
@@ -97,22 +109,15 @@ def summarize(text):
             raise ValueError('missing or duplicate normal unification ' + stage)
         for row in rows:
             v = expected[row['id']]
-            gap = stage == 'SDK' and row['id'] in GAPS
-            flags = ['qualified', 'geometry', 'channels', 'normals', 'ngons']
-            flags += (['count_only', 'source_unchanged', 'idempotent'] if stage == 'SDK'
-                      else ['identity', 'metadata', 'selection', 'object_order', 'history'])
-            for key in flags:
-                wanted = not (gap and key in ['qualified', 'geometry'])
-                if row.get(key) is not wanted:
-                    raise ValueError('unqualified or relabelled normal unification evidence')
             if stage == 'SDK':
-                for key, wanted in [('vertices', len(v['after']['vertices'])),
-                                    ('faces', len(v['after']['faces'])),
-                                    ('predicted', v['predicted']), ('changed', v['changed'])]:
-                    if type(row.get(key)) is not int or row[key] != wanted:
-                        raise ValueError('incorrect normal unification counts')
-            elif row.get('accepted') is not v['success']:
-                raise ValueError('incorrect normal unification acceptance')
+                check_sdk_row(row, v)
+                if row['qualified'] is not (row['id'] not in GAPS):
+                    raise ValueError('SDK winding differences changed')
+            else:
+                flags = ['qualified', 'geometry', 'channels', 'normals', 'ngons', 'identity',
+                         'metadata', 'selection', 'object_order', 'history']
+                if any(row.get(key) is not True for key in flags) or row.get('accepted') is not v['success']:
+                    raise ValueError('incorrect normal unification command evidence')
             maximum = max(maximum, error(row.get('maximum_error')))
         stages[stage.lower()] = sorted(rows, key=lambda r: list(expected).index(r['id']))
     sources = list(SOURCES)
@@ -122,17 +127,21 @@ def summarize(text):
         sources.extend(str(p.relative_to(ROOT)) for p in sorted((HERE / 'fixtures' / family).glob('*.3dm')))
     return dict(
         native_engine_version=version, model_epsilon=1e-6,
-        sdk_cases=622, qualified_sdk_cases=616, sdk_orientation_gaps=6,
-        native_command_workflows=47, registered_command_cases=45, getter_cases=47,
+        sdk_cases=len(stages['sdk']), qualified_sdk_cases=sum(r['qualified'] for r in stages['sdk']),
+        sdk_orientation_gaps=len(GAPS), native_repeat_edit_cases=sum(v['second'] != 0 for v in groups['sdk'].values()),
+        native_command_workflows=len(groups['command']), registered_command_cases=len(stages['command']),
+        getter_cases=len(stages['getter']),
         maximum_error=maximum, full_native_parity=False, performance_qualified=False,
         **stages, limits=[
-            'Six hundred twenty-two independent SDK inputs compare raw vertices and face winding, stored normal sign changes, UV/colors, n-gon cycles, read-only counts and idempotence. Six hundred sixteen match exactly. Six three-region inputs select different consistent component orientations and remain unqualified; their zero positional error does not qualify winding parity. The earlier two-triangle vertex-renumbering gap is resolved.',
-            'Seed controls cover all 24 raw vertex permutations, all nine pairs of cyclic triangle origins and both face orders (432 inputs), plus 135 controls for raw seams, quad origins, unused aliases and disconnected regions. The local initial seed follows the direction of a face closing edge in welded topology indices. Disconnected component seed ordering remains a compatibility limit.',
-            'The SDK path preserves unused vertices, raw coincident seams and n-gon boundary cycles. Stored normals on the union of vertices referenced by flipped faces are negated once. Both overloads and count-only queries are captured. Cached face-normal storage is not represented locally.',
-            'Forty-five accepted registered commands and forty-seven application getters compare saved source archives, exact raw channels and geometry, identity, attributes/groups, selection, object order and Undo/Redo. Changed meshes use public OpenNURBS OrientNgons and normal reconstruction without rotating n-gon origins or rebuilding face membership; unused vertices survive. Source document admission already aligns n-gon cycles. Non-mesh selections are skipped.',
-            'Only changed meshes move to the table end and record geometry history. Preselected changes remain selected on acceptance and Undo; Redo releases them. Unchanged and ignored peers release selection on history replay. All-no-op acceptance retains current picks without creating an Undo step, including command-first picks. Cancel abandons command-first selection without geometry edits.',
-            'The compatibility graph follows the first incident face at nonmanifold edges and accepts a best-effort spanning orientation for contradictory cycles. The separate strict constructor operation still skips nonmanifold constraints and rejects nonorientable manifold constraints. Arbitrary component seeds, additional nonorientable/nonmanifold meshes, invalid n-gon repair, restricted objects, grips, physical native postselection, numeric extremes and comparative performance remain unqualified.',
-            'One failed seed capture omitted a staged helper and stopped on import at operation zero. Its frozen producer manifest and log are diagnostic evidence and qualify no geometry. The dependency staging check passed before the subsequent successful capture.',
+            'There are 1180 recorded SDK workflows: 1169 match raw geometry, channels, face counts and repeat calls exactly. Eleven workflows remain unqualified: nine secondary-component inputs and two runtime controls for those inputs. The earlier six three-region differences and the two-triangle renumbering gap are resolved. Zero positional error alone does not qualify winding parity.',
+            'Every SDK row records first-call and repeat face-index edits. An independent permutation checker reconstructs winding and the union of affected raw normal vertices from those edits, then derives geometry, channel, count, repeat and qualification flags against native snapshots. It does not duplicate the traversal algorithm.',
+            'Controls include 432 raw-index/cyclic-origin permutations, 135 seam/quad/alias inputs, 24 mixed-region inputs, 480 systematic consistent/inconsistent region combinations and 48 structural inputs involving isolated faces, vertex contacts, closed tetrahedra, nonmanifold fans and twisted strips. Traversal follows face-local sides, beginning with the closing side. Disconnected regions share an initial orientation choice.',
+            'Eight native workflows perform repeat edits on isolated faces; matching those workflows does not imply idempotence. Six runtime controls compare duplicates and freshly rebuilt meshes, with and without count-only queries: their repeat geometry and counts agree with the original instances. This evidence does not cover other cached state. Cached face-normal storage is not represented locally.',
+            'The SDK path preserves unused vertices, raw coincident seams and n-gon boundary cycles. Stored normals on the union of vertices referenced by flipped faces are negated once. Both overloads and read-only counts are captured.',
+            'Sixty-three accepted registered commands and sixty-five application getters compare source archives, raw channels and geometry, identity, attributes/groups, selection, order and Undo/Redo. Changed meshes use public OpenNURBS OrientNgons and normal reconstruction without rotating n-gon origins or rebuilding membership; unused vertices survive. Native document admission already aligns n-gon cycles. Non-mesh selections are skipped.',
+            'Only changed meshes move to the table end and record geometry history. Preselection survives acceptance and Undo; Redo releases it. Unchanged and ignored peers release selection on replay. All-no-op acceptance retains current picks without a new Undo step, including command-first picks. Cancel abandons picking without geometry edits.',
+            'Secondary closed, nonmanifold and twisted component seed choices still differ in eleven workflows. The compatibility graph uses first-incident-face constraints at nonmanifold edges and a best-effort spanning orientation for contradictory cycles. The strict constructor operation still skips nonmanifold edges and rejects nonorientable manifold constraints. Broader seed ordering, invalid n-gon repair, restricted objects, grips, physical native postselection, numeric extremes and performance remain unqualified.',
+            'One earlier seed capture omitted a staged helper and stopped on import at operation zero. Its frozen manifest and log qualify no geometry. Later captures passed standalone staging checks.',
         ], sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
                    for p in dict.fromkeys(sources)})
 

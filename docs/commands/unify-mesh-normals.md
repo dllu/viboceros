@@ -25,21 +25,27 @@ counts face edits without copying geometry or channels. The command uses
 `unified_normals_for_command` to rebuild normals without removing unused vertices.
 The Python oracle's triangle `mesh_unify_normals` operation uses the SDK path.
 
-Nonmanifold edges constrain their other incident faces relative to the first
-incident face. Contradictory cycles receive a best-effort spanning orientation;
-the operation does not guarantee global consistency or outward normals. The
-separate strict `unified_face_orientations` operation used by constructors
+Traversal visits a face's closing side before its other sides and shares an
+initial orientation choice across disconnected regions. Nonmanifold constraints
+follow the first incident face. Contradictory cycles receive a best-effort
+spanning orientation; the operation does not guarantee global consistency or
+outward normals. Repeated SDK calls are not always idempotent: some isolated
+faces can flip again. Freshly rebuilt meshes reproduce that observed behavior.
+The separate strict `unified_face_orientations` operation used by constructors
 continues to skip nonmanifold edges and reject nonorientable manifold constraints.
 
-The [qualification record](../unify-normals-qualification.json) covers 622 SDK
-inputs and 47 native command workflows: 45 accepted command replays and 47
-application getters, including cancellation. The SDK controls include all 24
-vertex permutations, nine pairs of cyclic origins and both face orders (432 inputs),
-plus seams, quads, unused aliases and disconnected regions. Six hundred sixteen
-inputs match exactly, including the earlier two-triangle renumbering gap.
-Six three-region inputs choose different consistent component windings locally;
-their zero positional error does not qualify winding parity. Disconnected seed
-ordering, additional contradictory meshes, invalid n-gon
+The [qualification record](../unify-normals-qualification.json) covers 1,180 SDK
+workflows and 65 native command workflows: 63 accepted registered commands and
+65 application getters, including cancellation. Controls cover vertex and cyclic
+origin permutations, seams, quads, unused aliases, consistent/inconsistent region
+combinations, isolated faces, closed tetrahedra, nonmanifold fans and twisted strips.
+Of these, 1,169 SDK workflows match exactly. The earlier six three-region and
+two-triangle renumbering differences are resolved. Recorded face-index edits
+independently verify counts, raw winding, normal sign changes and repeat calls.
+
+Eleven workflows remain unqualified: nine secondary closed, nonmanifold or twisted
+component inputs and two diagnostic probes for those inputs. Zero positional
+error does not qualify their winding parity. Broader seed ordering, invalid n-gon
 repair, cached face normals, restricted objects, grips, physical native
 postselection and comparative performance remain unqualified.
 

@@ -2943,7 +2943,7 @@
     "tools/rhino_oracle/report_planar_mesh.py": "fe5ec384cf4d18c5be78ee6ca0c0126bc11baf8de2127053617d4c66fe4938f9",
     "tools/rhino_oracle/test_planar_mesh.py": "0039629674295a8eaa9f819e677ea2c1f9f5ec8e76bc00e20705660304766f64",
     "tools/rhino_oracle/client.py": "b2a5d1c666da628d0dfee46a2cc39bf7cc5fd6df33f84066ace7dd190edb1981",
-    "tools/rhino_oracle/structural_sdk.py": "db909e1bbd26bee4adbaa63661147bcac95235854370f19ed42e9bb060bd42f9",
+    "tools/rhino_oracle/structural_sdk.py": "9e4a385dcc8d5fa4c5b7e8a7ac632a98002add86f35b52b3d3d2e5f55d969684",
     "tools/rhino_oracle/rhino_worker.py": "b9c0cfe2aeeb2ab140a3d137a68e8fa5580ae26be91d9c75dcb6d14a3dfe96e5",
     "tools/rhino_oracle/fixtures/planar_mesh.json": "12ae5506ed587c9fbe60a566dc129b8d34187e0c73907ab6f8bd6b4a0bbeb5a8",
     "tools/rhino_oracle/observations/planar_mesh.json": "f7b5402a4276dc707247518da4c62d31189dbcd018eac8ba0140a935fb6f259f",
@@ -3033,6 +3033,6 @@
     "crates/viboceros-command/src/object_selection.rs": "6ff706b4e1c74524956641d5e4b952422bd50cdd8fa2d8fd577e2f3f6a1b519c",
     "crates/viboceros-geometry/src/mesh/rebuild_mesh.rs": "0bd719e4330e36a3ffe2b9c141dee8d9c55a36beaadc63f620142227346c8c25",
     "crates/viboceros-command/src/mesh_edit/unify_normals.rs": "e6e453fde97f391edbb79ae31ea29eb052c8b51b028b85102e37edeb323f954c",
-    "crates/viboceros-geometry/src/mesh/orientation.rs": "c2b49d1728b154e042f4fe4e0355a585a656dd7f6c76c05306ca8882eda1aa90"
+    "crates/viboceros-geometry/src/mesh/orientation.rs": "0f93eea8c70b6c42bd07f750e13f94854ccdbe290aa7cee86eb74539f8f0a4f7"
   }
 }

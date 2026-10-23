@@ -17,7 +17,7 @@ from .structural_sdk import validate_operations, stage_helpers
 class UnifyNormalsTests(unittest.TestCase):
     def test_fixed_inputs_frozen_producers_and_saved_sources(self):
         _, groups = native()
-        self.assertEqual((len(groups['sdk']), len(groups['command'])), (622, 47))
+        self.assertEqual((len(groups['sdk']), len(groups['command'])), (1180, 65))
         for family, (flags, _) in FAMILIES.items():
             payload = request(**flags)
             validate_operations(payload)
@@ -43,7 +43,7 @@ class UnifyNormalsTests(unittest.TestCase):
         rows = native()[1]['sdk']
         for v in rows.values():
             self.assertEqual(v['before'], v['after_count'])
-            self.assertEqual(v['after'], v['after_second'])
+            self.assertTrue(v['after_second']['valid'])
         v = rows['unify_extra_repeat_normals']
         self.assertEqual(v['changed'], 2)
         self.assertEqual(v['after']['normals'], [[-1., 0., 0.]] * 4 + [[1., 0., 0.]])
@@ -98,9 +98,11 @@ class UnifyNormalsTests(unittest.TestCase):
         data, lines = self.evidence()
         self.assertEqual(summarize('\n'.join(reversed(lines))), data)
         self.assertEqual((data['qualified_sdk_cases'], data['sdk_orientation_gaps'],
-                          data['registered_command_cases'], data['getter_cases']), (616, 6, 45, 47))
+                          data['registered_command_cases'], data['getter_cases']), (1169, 11, 63, 65))
+        self.assertEqual(data['native_repeat_edit_cases'], 8)
         self.assertEqual({r['id'] for r in data['sdk'] if r['qualified'] is False}, GAPS)
         self.assertTrue(next(r for r in data['sdk'] if r['id'] == 'unify_holdout_reindex_1032')['qualified'])
+        self.assertTrue(all(r['qualified'] for r in data['sdk'] if r['id'].startswith('unify_followup_regions_')))
         self.assertIs(data['full_native_parity'], False)
         self.assertIs(data['performance_qualified'], False)
 
@@ -114,7 +116,9 @@ class UnifyNormalsTests(unittest.TestCase):
             prefix = 'UNIFY_NORMALS_' + stage.upper() + ' '
             remaining = [s for s in lines if s != prefix + json.dumps(row)]
             edits = [('qualified', False), ('normals', False), ('ngons', False), ('maximum_error', float('nan'))]
-            edits += [('predicted', True), ('source_unchanged', False)] if stage == 'sdk' else [('accepted', False), ('history', False)]
+            edits += [('predicted', True), ('source_unchanged', False), ('repeat', False),
+                      ('flipped_faces', [True]), ('flipped_faces', [0, 0]),
+                      ('repeat_flipped_faces', [999])] if stage == 'sdk' else [('accepted', False), ('history', False)]
             for key, value in edits:
                 bad = deepcopy(row)
                 bad[key] = value
@@ -126,6 +130,19 @@ class UnifyNormalsTests(unittest.TestCase):
             bad = dict(gap, **{key: True})
             with self.assertRaises(ValueError):
                 summarize('\n'.join(remaining + ['UNIFY_NORMALS_SDK ' + json.dumps(bad)]))
+
+    def test_fresh_and_duplicate_runtime_controls_reproduce_repeat_edits(self):
+        rows = native()[1]['sdk']
+        controls = [v for v in rows.values() if v['input'].get('runtime_checks')]
+        self.assertEqual(len(controls), 6)
+        for v in controls:
+            for trial in v['runtime'].values():
+                self.assertEqual(trial['changed'], v['second'])
+                self.assertEqual(trial['before']['face_edges'], v['after']['face_edges'])
+                self.assertEqual(trial['after']['faces'], v['after_second']['faces'])
+        v = rows['unify_runtime_isolated_00']
+        self.assertEqual((v['changed'], v['second']), (2, 1))
+        self.assertNotEqual(v['after']['faces'], v['after_second']['faces'])
 
 
 if __name__ == '__main__':

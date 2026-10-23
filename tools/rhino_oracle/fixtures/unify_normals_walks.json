@@ -1,0 +1,161 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_01_00",
+      "case": "unify_walk_01_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_01_01",
+      "case": "unify_walk_01_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_01_10",
+      "case": "unify_walk_01_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_01_11",
+      "case": "unify_walk_01_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_31_00",
+      "case": "unify_walk_31_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_31_01",
+      "case": "unify_walk_31_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_31_10",
+      "case": "unify_walk_31_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_31_11",
+      "case": "unify_walk_31_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_10_00",
+      "case": "unify_walk_10_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_10_01",
+      "case": "unify_walk_10_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_10_10",
+      "case": "unify_walk_10_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_10_11",
+      "case": "unify_walk_10_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_13_00",
+      "case": "unify_walk_13_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_13_01",
+      "case": "unify_walk_13_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_13_10",
+      "case": "unify_walk_13_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_13_11",
+      "case": "unify_walk_13_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_11_00",
+      "case": "unify_walk_11_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_11_01",
+      "case": "unify_walk_11_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_11_10",
+      "case": "unify_walk_11_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_11_11",
+      "case": "unify_walk_11_11"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_33_00",
+      "case": "unify_walk_33_00"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_33_01",
+      "case": "unify_walk_33_01"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_33_10",
+      "case": "unify_walk_33_10"
+    },
+    {
+      "op": "unify_normals_sdk",
+      "id": "unify_walk_33_11",
+      "case": "unify_walk_33_11"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_walk_command_01",
+      "case": "unify_walk_command_01"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_walk_command_31",
+      "case": "unify_walk_command_31"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_walk_command_10",
+      "case": "unify_walk_command_10"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_walk_command_13",
+      "case": "unify_walk_command_13"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_walk_command_11",
+      "case": "unify_walk_command_11"
+    },
+    {
+      "op": "unify_normals_command",
+      "id": "unify_walk_command_33",
+      "case": "unify_walk_command_33"
+    }
+  ]
+}

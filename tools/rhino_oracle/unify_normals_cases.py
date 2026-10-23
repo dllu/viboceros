@@ -7,10 +7,19 @@ except NameError:
     STRING_TYPES = (str,)
 try:
     from .unify_normals_seed_cases import sdk_cases,followup_cases
+    from .unify_normals_walk_cases import walk_cases,component_cases
 except (ImportError,ValueError):
     from unify_normals_seed_cases import sdk_cases,followup_cases
+    from unify_normals_walk_cases import walk_cases,component_cases
 SEEDS=sdk_cases()
 FOLLOWUPS=followup_cases()
+WALKS=walk_cases()
+COMPONENTS=component_cases(FOLLOWUPS)
+RUNTIME = {name.replace('unify_component_', 'unify_runtime_'):
+           dict(deepcopy(COMPONENTS[name]), runtime_checks=True) for name in [
+               'unify_component_isolated_00', 'unify_component_isolated_10',
+               'unify_component_mobius_100', 'unify_component_mobius_010',
+               'unify_component_tetra_201', 'unify_component_nonmanifold_01']}
 SQUARE=[[0.,0.,0.],[2.,0.,0.],[2.,1.,0.],[0.,1.,0.]]
 TETRA=[[0.,0.,0.],[1.,0.,0.],[0.,1.,0.],[0.,0.,1.]]
 TETRA_FACES=[[0,2,1],[0,1,3],[0,3,2],[1,2,3]]
@@ -115,12 +124,14 @@ COMMANDS['unify_command_cancel_empty']=scene('pair',whole=False,preselected=Fals
 
 
 CASE_GROUPS = dict(sdk=SDK, extra=EXTRA, holdouts=HOLDOUTS, discovery=DISCOVERY,
-                   commands=COMMANDS, seeds=SEEDS, followups=FOLLOWUPS)
+                   commands=COMMANDS, seeds=SEEDS, followups=FOLLOWUPS, walks=WALKS,
+                   components=COMPONENTS, runtime=RUNTIME)
 
 
-def request(discovery=False, extra=False, holdouts=False, commands=False, seeds=False, followups=False):
+def request(discovery=False, extra=False, holdouts=False, commands=False, seeds=False, followups=False, walks=False, components=False, runtime=False):
     enabled = [name for name, value in dict(discovery=discovery, extra=extra,
-               holdouts=holdouts, commands=commands, seeds=seeds, followups=followups).items() if value]
+               holdouts=holdouts, commands=commands, seeds=seeds, followups=followups,
+               walks=walks, components=components, runtime=runtime).items() if value]
     if len(enabled) > 1:
         raise ValueError('one normal unification family required')
     cases = CASE_GROUPS[enabled[0] if enabled else 'sdk']

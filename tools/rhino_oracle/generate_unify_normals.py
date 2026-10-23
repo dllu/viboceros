@@ -8,7 +8,7 @@ from pathlib import Path
 from .client import OracleClient
 from .unify_normals_cases import CASE_GROUPS,request
 HERE=Path(__file__).resolve().parent
-SOURCES=['generate_unify_normals.py','unify_normals_cases.py','unify_normals_seed_cases.py','unify_normals_probe.py','mesh_channel_capture.py','crease_probe.py','crease_cases.py','subdivide_probe.py','subd_box_probe.py','join_probe.py','merge_edges_probe.py','client.py','rhino_worker.py','structural_sdk.py']
+SOURCES=['generate_unify_normals.py','unify_normals_cases.py','unify_normals_seed_cases.py','unify_normals_walk_cases.py','unify_normals_probe.py','mesh_channel_capture.py','crease_probe.py','crease_cases.py','subdivide_probe.py','subd_box_probe.py','join_probe.py','merge_edges_probe.py','client.py','rhino_worker.py','structural_sdk.py']
 
 
 def main():
