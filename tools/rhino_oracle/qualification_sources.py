@@ -11,6 +11,12 @@ APPLICATION_MODULES = [
     'src/app/crease_native_tests.rs',
     'src/app/object_selection.rs',
     'src/app/object_selection/mesh_conversion.rs',
+    'src/app/object_selection/mesh_conversion/face_sample.rs',
+    'src/app/object_selection/mesh_conversion/face_sample_tests.rs',
+    'src/app/component_selection.rs',
+    'src/viewport/component_picking.rs',
+    'src/viewport/polygon_components/tests.rs',
+    'crates/viboceros-command/tests/support/nonplanar_sample.rs',
     'src/app/object_selection/mesh_conversion/tests.rs',
     'crates/viboceros-command/tests/support/mesh_command.rs',
     'crates/viboceros-command/tests/support/mesh_conversion.rs',
@@ -104,7 +110,7 @@ MESH_MODULES = [
     for name in ['vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
                  'rebuild', 'normals', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
-                 'quadrangulate', 'nonplanar_quads', 'aspect_ratio', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions', 'insert/pairing']
+                 'quadrangulate', 'nonplanar_quads', 'quad_planarity', 'aspect_ratio', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions', 'insert/pairing']
 ] + [
     'crates/viboceros-geometry/src/edge_insertion.rs',
     'crates/viboceros-geometry/src/edge_insertion/crossings.rs',

@@ -663,6 +663,13 @@ impl eframe::App for VibocerosApp {
                 && !end_analysis_picking)
                 .then_some(crate::viewport::ComponentPickFilter::Faces)
         });
+        let component_pick = component_pick.or_else(|| {
+            (self.picking_nonplanar_threshold()
+                && model_input_active
+                && self.plane_prompt.is_none()
+                && !end_analysis_picking)
+                .then_some(crate::viewport::ComponentPickFilter::RawMeshFaces)
+        });
         let fence_selection = if end_analysis_picking || !model_input_active {
             None
         } else {

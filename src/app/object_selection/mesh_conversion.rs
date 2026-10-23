@@ -3,6 +3,7 @@ use super::*;
 use viboceros_command::{quadrangulate_mesh as quad, triangulate_nonplanar_quads as nonplanar};
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::Tolerance;
+mod face_sample;
 #[cfg(test)]
 #[path = "mesh_conversion/tests.rs"]
 mod nonplanar_tests;
@@ -26,6 +27,18 @@ impl Settings {
         match self {
             Self::Quadrangulate(o) => o.command(),
             Self::Nonplanar(o) => o.command(),
+        }
+    }
+    fn apply(
+        self,
+        registry: &viboceros_command::CommandRegistry,
+        document: &mut Document,
+    ) -> Result<String, viboceros_command::CommandError> {
+        match self {
+            Self::Quadrangulate(options) => registry.execute(document, &options.command()),
+            Self::Nonplanar(options) => {
+                registry.execute_triangulate_nonplanar_quads(document, options)
+            }
         }
     }
     fn initial(
@@ -78,13 +91,18 @@ impl Session {
     }
     pub(super) fn hint(&self, phase: ObjectPromptPhase) -> &'static str {
         match self.value {
+            Some("Angle") if matches!(self.options, Settings::Nonplanar(_)) => {
+                "Pick a quad mesh face or enter an angle; Enter keeps the current value, Esc returns to options"
+            }
             Some("Planarity" | "Angle") => {
                 "Enter an angle from 0 to 180 degrees; Enter keeps the current value"
             }
             Some("Rectangularity") => {
                 "Enter a rectangularity ratio of at least 1; Enter keeps the current value"
             }
-            Some("Distance") => "Enter a nonnegative distance; Enter keeps the current value",
+            Some("Distance") => {
+                "Pick a quad mesh face or enter a nonnegative distance; Enter keeps the value, Esc returns to options"
+            }
             Some("SelectBy") => "Choose Distance, Angle or Both; Enter keeps the current value",
             Some(_) => {
                 "Choose ShortestDiagonal, LongestDiagonal, MinimumArea, MaximumArea, MinimumAngle or MaximumAngle"
@@ -146,6 +164,14 @@ impl VibocerosApp {
         p.mesh_conversion = Some(session);
     }
     pub(super) fn continue_mesh_conversion(&mut self, input: &str) -> bool {
+        let first = input
+            .split_whitespace()
+            .next()
+            .unwrap_or("")
+            .trim_start_matches(['_', '-']);
+        if first.eq_ignore_ascii_case("Cancel") && self.cancel_mesh_conversion_value() {
+            return true;
+        }
         let Some(pending) = self
             .object_prompt
             .as_ref()
@@ -153,11 +179,6 @@ impl VibocerosApp {
         else {
             return false;
         };
-        let first = input
-            .split_whitespace()
-            .next()
-            .unwrap_or("")
-            .trim_start_matches(['_', '-']);
         if first.eq_ignore_ascii_case("Cancel")
             || (!input.is_empty()
                 && self.commands.recognizes(first)
@@ -191,8 +212,7 @@ impl VibocerosApp {
                     ));
                     return true;
                 }
-                let command = session.options.command();
-                match self.commands.execute(&mut self.document, &command) {
+                match session.options.apply(&self.commands, &mut self.document) {
                     Ok(message) => {
                         self.object_prompt = None;
                         self.push_log(message);

@@ -497,6 +497,13 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='nonplanar_quad_sample'for op in request.get('operations',[])):
+            from .nonplanar_sample_cases import CASES
+            operations=request['operations']
+            if self.settings_scheme is None or request.get('iterations',1)!=1 or any(op.get('op')!='nonplanar_quad_sample'for op in operations):
+                raise OracleProtocolError('Face threshold getters require an owned dedicated one-iteration request')
+            from .catenary_point_picker import CatenaryPointPicker
+            interaction=CatenaryPointPicker(dict(request,operations=[dict(op,actions=CASES[op['case']].get('actions',[]))for op in operations]))
         if any(op.get('op') == 'control_polygon_command' for op in request.get('operations', [])):
             from .control_polygon_cases import PICKS
             if any(op.get('case') in PICKS for op in request['operations']):

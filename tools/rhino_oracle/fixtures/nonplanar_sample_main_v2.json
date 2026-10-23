@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_distance_switch_main",
+      "case": "nonplanar_sample_distance_switch_main"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_angle_switch_main",
+      "case": "nonplanar_sample_angle_switch_main"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_cyclic_distance",
+      "case": "nonplanar_sample_cyclic_distance"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_reverse_angle",
+      "case": "nonplanar_sample_reverse_angle"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_scaled_large",
+      "case": "nonplanar_sample_scaled_large"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_scaled_small",
+      "case": "nonplanar_sample_scaled_small"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_tolerance_low",
+      "case": "nonplanar_sample_tolerance_low"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_tolerance_high",
+      "case": "nonplanar_sample_tolerance_high"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_angular_tolerance",
+      "case": "nonplanar_sample_angular_tolerance"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_flat_distance",
+      "case": "nonplanar_sample_flat_distance"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_flat_angle",
+      "case": "nonplanar_sample_flat_angle"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_ngon_second",
+      "case": "nonplanar_sample_ngon_second"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_external_reference",
+      "case": "nonplanar_sample_external_reference"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_cancel_face",
+      "case": "nonplanar_sample_cancel_face"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_after_cancel",
+      "case": "nonplanar_sample_after_cancel"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_enter_keeps",
+      "case": "nonplanar_sample_enter_keeps"
+    }
+  ]
+}

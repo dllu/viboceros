@@ -1,0 +1,23 @@
+Capturing physical face threshold getters
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_sample.py", line 36, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_sample.py", line 27, in main
+    data=OracleClient(settings_scheme='VibocerosOracleNonplanarFaces20261023'+('MainV2'if args.main else'Shaded'if args.shaded else'Discovery')).run_rhino(payload,timeout=900 if args.main else 300)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2024, in run_rhino
+    _rhino_process_ids(windows_worker) - existing_pids
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2353, in _rhino_process_ids
+    command_line = (entry / "cmdline").read_bytes()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1021, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

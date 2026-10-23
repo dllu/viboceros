@@ -283,6 +283,9 @@ impl VibocerosApp {
             && self.lasso_selection.is_none()
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
+        if self.accept_mesh_conversion_face_click(&click) {
+            return;
+        }
         if !click.preselection
             && self.unjoin_prompt.is_none()
             && self.shell_prompt.is_none()

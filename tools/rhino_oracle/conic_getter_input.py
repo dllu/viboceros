@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("TriangulateNonPlanarQuads","InsertPoint","SubDSpinEdge","SubDCrease","SubDTorus","SubDTruncatedCone","SubDCone","SubDSphere","SubDCylinder","Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc","Reparameterize","Splop","ArrayCrvOnSrf","ArraySrf","ArrayCrv","OrientCrvToEdge","OffsetCrvOnSrf","ShortPath","InterpCrvOnSrf","PolylineOnMesh"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     if command=='InsertPoint' and op.get('view_target_offset_z'):
         target=vp.CameraTarget
@@ -52,6 +52,7 @@ def drive(op,host,guides,command="Conic"):
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
     if command=='InsertPoint':prefixes=('Select','Pick')
+    if command=='TriangulateNonPlanarQuads':prefixes=('Change option or press Enter to accept','Select mesh face','Select mesh')
     if command=='SubDSpinEdge':prefixes=('Pick','Select','Direction','Spin')
     if command=='SubDCrease':prefixes=('Select highlighted vertex','Weight','Enter','Select interior SubD')
     if command=='SubDSphere':prefixes=('Center of sphere','Radius','Diameter','Circumference','Area','First','Second','Third','Fourth','Sphere','Orientation','Direction','Point','Select','Style','Subdivisions','Around','Vertical')
@@ -90,7 +91,7 @@ def drive(op,host,guides,command="Conic"):
             receipt=[E.Assign(item(arc_pointer_initial,2*i),E.Property(position,'X')),E.Assign(item(arc_pointer_initial,2*i+1),E.Property(position,'Y'))]
         return E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1))]+receipt+[log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
     for i,a in enumerate(actions):
-        if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
+        if command in('TriangulateNonPlanarQuads','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf'):base=either([prompt_gate(p)for p in op['action_prompts'][i]])
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
         located=command in('SubDTorus','SubDTruncatedCone','SubDCone','SubDSphere','SubDCylinder','Circle','Arc','Splop','ArrayCrvOnSrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')and op.get('op')in('subd_torus_references','subd_truncated_cone_references','subd_cone_references','subd_sphere_references','subd_cylinder_references','circle_tangent','arc_tangent','arc_extension','splop_tangent','array_curve_surface','curve_array','orient_curve_edge')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
@@ -111,6 +112,9 @@ def drive(op,host,guides,command="Conic"):
                         E.IfThen(confirm,block([E.Assign(item(counts,i),integer(10)),E.Assign(item(last,0),now)]+([E.Assign(stage,integer(i+1))]if i+1==len(actions)else[])+[log('\nReparameterize accepts selection %s\n'%op['id']),send_token('')]))])
             mouse_steps.append((i,marker,pixel,ready,[],base))
             clicks.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]));tokens.append(None)
+            if command=='TriangulateNonPlanarQuads':
+                ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+                clicks[-1]['ray']=[host['_xyz'](ray.From),host['_xyz'](ray.To)]
             if command=='InsertPoint':
                 clicks[-1]['view_target']=host['_xyz'](vp.CameraTarget)
                 clicks[-1]['camera_direction']=host['_xyz'](vp.CameraDirection)
@@ -199,7 +203,7 @@ def drive(op,host,guides,command="Conic"):
     done=E.Label();body=[]
     for i,branch in enumerate(branches):body.append(E.IfThen(E.Equal(stage,integer(i)),block([branch,E.Goto(done)])))
     body.append(E.Label(done));ready=E.GreaterThan(elapsed(item(last,0)),E.Constant(.4))
-    action=compile_delegate(S.Action,E.IfThen(E.AndAlso(active,ready),block(body)))
+    action=compile_delegate(S.Action,E.IfThen(E.AndAlso(active,E.AndAlso(E.Equal(item(state,2),integer(0)),ready)),block(body)))
     cancel_input=send_token('_Cancel')
     cancel=compile_delegate(S.Action,E.IfThen(E.AndAlso(active,E.GreaterThan(elapsed(E.Constant(started)),E.Constant(45.))),block([E.Assign(item(state,2),integer(1)),cancel_input])))
     invoke=method(R.RhinoApp,'InvokeOnUiThread',[S.Delegate,S.Array[S.Object]])
@@ -230,7 +234,7 @@ def drive(op,host,guides,command="Conic"):
         handlers=[]
         for c in clicks:
             i=c['action'];x,y=c['pixel']
-            gate=either([prompt_gate(p)for p in op['action_prompts'][i]])if command in('ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')else base
+            gate=either([prompt_gate(p)for p in op['action_prompts'][i]])if command in('TriangulateNonPlanarQuads','ArrayCrvOnSrf','ArraySrf','ArrayCrv','OrientCrvToEdge','OffsetCrvOnSrf')else base
             near=E.AndAlso(E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'X'),integer(x-1)),E.LessThanOrEqual(E.Property(pixel,'X'),integer(x+1))),E.AndAlso(E.GreaterThanOrEqual(E.Property(pixel,'Y'),integer(y-1)),E.LessThanOrEqual(E.Property(pixel,'Y'),integer(y+1))))
             condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.Equal(item(counts,i),integer(7)),E.AndAlso(same_view,E.AndAlso(gate,E.AndAlso(near,E.AndAlso(left,E.Not(E.Property(event,'Cancel'))))))))
             advance=[E.Assign(item(observed,i),prompt),E.Assign(item(counts,i),integer(9)),E.Assign(item(last,0),now)]
@@ -245,7 +249,7 @@ def drive(op,host,guides,command="Conic"):
         with environment(dict(persistent_snaps=op.get('persistent_snaps',[])if command=='Catenary'else[]),host):
             aid=R.ApplicationSettings.ModelAidSettings
             snap_settings=dict(enabled=bool(aid.Osnap),modes=int(aid.OsnapModes),project_to_cplane=bool(aid.ProjectSnapToCPlane),capture_radius=int(aid.OsnapPickboxRadius))
-            returned=R.RhinoApp.RunScript(('_-ArrayCrv'if command=='ArrayCrv'else '_'+command)+' _Pause',True)
+            returned=R.RhinoApp.RunScript(('_-'+command if command in('ArrayCrv','TriangulateNonPlanarQuads')else '_'+command)+' _Pause',True)
     finally:
         state[1]=0;timer.Dispose();timeout.Dispose()
         if mouse is not None:mouse.Enabled=False

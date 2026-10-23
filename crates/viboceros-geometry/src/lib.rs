@@ -298,10 +298,10 @@ pub use mesh::{
     MeshEdgeMatchOptions, MeshEdgeMatchResult, MeshEdgePick, MeshEllipsoidOptions,
     MeshExtrudeDirection, MeshExtrudeSelection, MeshFace, MeshFaceBoundaryGraph,
     MeshFaceCullResult, MeshFaceExtraction, MeshHoleFill, MeshJoinComponent, MeshJoinOptions,
-    MeshNgon, MeshOffsetDirection, MeshPartBoundary, MeshSingleFaceComponents, MeshSolid,
-    MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions, MeshTruncatedConeOptions,
-    MeshUvSphereOptions, NonPlanarQuadCriterion, QuadSplitMethod, SolidPointLocation, TriangleMesh,
-    align_mesh_vertices, join_meshes, match_mesh_edges,
+    MeshNgon, MeshOffsetDirection, MeshPartBoundary, MeshQuadPlanarity, MeshSingleFaceComponents,
+    MeshSolid, MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions,
+    MeshTruncatedConeOptions, MeshUvSphereOptions, NonPlanarQuadCriterion, QuadSplitMethod,
+    SolidPointLocation, TriangleMesh, align_mesh_vertices, join_meshes, match_mesh_edges,
 };
 pub use mesh::{MAX_MESH_PATCH_POINTS, MeshPatchOptions};
 pub use mesh::{MeshClosestLocation, MeshProjectionIndex};

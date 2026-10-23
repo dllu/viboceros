@@ -6,6 +6,9 @@ impl VibocerosApp {
         if self.cancel_face_corner() {
             return;
         }
+        if self.cancel_mesh_conversion_value() {
+            return;
+        }
         if self.discard_surface_offset_subcurve() {
             return;
         }

@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_power_below",
+      "case": "nonplanar_sample_power_below"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_power_above",
+      "case": "nonplanar_sample_power_above"
+    }
+  ]
+}

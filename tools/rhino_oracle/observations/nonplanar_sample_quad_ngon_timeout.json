@@ -1,0 +1,28 @@
+{
+  "status": "worker_timeout",
+  "requested_workflows": 1,
+  "qualified_workflows": 0,
+  "response_retained": false,
+  "request_sha256": "d4952f73169637e7fe8616b93b7a16191f3a9432e776ee2882e1557fc73de887",
+  "log_sha256": "96d24e4e1e2727dc170c5b093f1cbb34f069f14842fcb7ac07a03e218bbed76b",
+  "sources": {
+    "generate_nonplanar_sample.py": "6ae3ffc82260d6f81a5810ae7c07a6393f42ffa0d0f10bd0b9fe1980ca967ff8",
+    "nonplanar_sample_cases.py": "bfc43fedd4320838fd75145a7581c79a38c9a0d9499eaae2c5f40442c0c8329f",
+    "nonplanar_sample_probe.py": "82fdffb84c6a490df6961af6fdfda63f135c2ca35d3f4f08411b3105628613a2",
+    "crease_probe.py": "e78a2fcdd16c2b8bc62871ac55192c4cdddaeaac73c59a3143c53b9dbca193b3",
+    "crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
+    "subdivide_probe.py": "08d751e391bc593ab7263f00e3f77e64ceb91199a46360c2d396868cc579cb99",
+    "subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+    "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "client.py": "b2a5d1c666da628d0dfee46a2cc39bf7cc5fd6df33f84066ace7dd190edb1981",
+    "rhino_worker.py": "b3bed24c3f40c5ed35fdab4c5ec463ba6148d40cd7743aaeef18190779ee01fa",
+    "structural_sdk.py": "f21b1ac42e6cddfd66538fe5c9ff1b4c61ee22f29847b4935ed7cfec505c7587",
+    "conic_getter_input.py": "5e3ff7a5ef94de501e9cb0de307c12bb9e4d6cfb86513a3724a8961d2e2d5842",
+    "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+    "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+    "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+    "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa"
+  },
+  "cause": "The isolated quad n-gon getter exceeded its host timeout after the acknowledged pick marker. No batch response survived and no geometry is qualified."
+}

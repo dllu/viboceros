@@ -65,6 +65,13 @@ pub(crate) struct EditResult {
     removed_vertices: usize,
 }
 unsafe extern "C" {
+    fn vibo_quad_planarity(
+        points: *const f64,
+        distance: *mut f64,
+        angle: *mut f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_mesh_dissolve_vertices(
         input: *const MeshView,
         indices: *const usize,
@@ -108,6 +115,37 @@ unsafe extern "C" {
     fn vibo_mesh_result_free(result: *mut NativeResult);
 }
 struct Owner(NonNull<NativeResult>);
+/// Face-plane distance range and largest opposite-corner normal angle, in radians.
+/// Queries four borrowed double-precision points without copying mesh channels.
+pub fn quad_planarity(points: &[[f64; 3]; 4]) -> Result<(f64, f64), MeshError> {
+    if points.iter().flatten().any(|v| !v.is_finite()) {
+        return Err(MeshError("Nonfinite quad coordinate".into()));
+    }
+    let (mut distance, mut angle) = (f64::NAN, f64::NAN);
+    let mut error = [0u8; 512];
+    // The fixed-size arrays stay live during this synchronous read-only call.
+    let status = unsafe {
+        vibo_quad_planarity(
+            points.as_ptr().cast(),
+            &mut distance,
+            &mut angle,
+            error.as_mut_ptr().cast(),
+            error.len(),
+        )
+    };
+    if status != 1
+        || !distance.is_finite()
+        || distance < 0.
+        || !angle.is_finite()
+        || !(0. ..=std::f64::consts::PI).contains(&angle)
+    {
+        let end = error.iter().position(|b| *b == 0).unwrap_or(error.len());
+        return Err(MeshError(
+            String::from_utf8_lossy(&error[..end]).into_owned(),
+        ));
+    }
+    Ok((distance, angle))
+}
 impl Drop for Owner {
     fn drop(&mut self) {
         unsafe { vibo_mesh_result_free(self.0.as_ptr()) }
@@ -457,6 +495,21 @@ pub(crate) unsafe fn read_mesh_result(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn quad_measurements_reject_nonfinite_and_degenerate_points() {
+        assert!(quad_planarity(&[[0.0; 3]; 4]).is_err());
+        let mut points = [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [1.0, 1.0, 0.0],
+            [0.0, 1.0, 0.0],
+        ];
+        assert_eq!(quad_planarity(&points).unwrap(), (0.0, 0.0));
+        for value in [f64::NAN, f64::INFINITY] {
+            points[0][0] = value;
+            assert!(quad_planarity(&points).is_err());
+        }
+    }
     #[test]
     fn rejects_invalid_selective_quad_parameters_before_native_editing() {
         let data = mesh();

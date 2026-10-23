@@ -208,3 +208,24 @@ extern "C" int vibo_mesh_cleanup_counts(const ViboMeshResult *r,size_t *removed,
   *removed=r->removed_faces;*repaired=r->repaired_faces;*vertices=r->removed_vertices;return 1;
 }
 extern "C" void vibo_mesh_result_free(ViboMeshResult *r){delete r;}
+extern "C" int vibo_quad_planarity(const double *points,double *distance,double *angle,char *error,size_t capacity){
+  try{
+    vibo_begin_open_nurbs();
+    require(points && distance && angle,"Missing quad planarity input");
+    for(size_t i=0;i<12;++i)require(std::isfinite(points[i]),"Nonfinite quad coordinate");
+    const auto vertices=ON_3dPointListRef::FromDoubleArray(4,3,points);
+    ON_MeshFace face;for(int i=0;i<4;++i)face.vi[i]=i;
+    ON_PlaneEquation plane;
+    require(face.GetPlaneEquation(vertices,plane),"Degenerate quad plane");
+    double low=0.,high=0.;
+    for(int i=1;i<4;++i){const double value=plane.ValueAt(vertices[i]);require(std::isfinite(value),"Invalid quad plane distance");low=std::min(low,value);high=std::max(high,value);}
+    ON_3dVector normals[4];face.GetCornerNormals(vertices,normals);
+    double cosine=1.;unsigned pairs=0;
+    for(int i=0;i<2;++i)if(normals[i].IsValid() && normals[i+2].IsValid()){
+      cosine=std::min(cosine,std::clamp(normals[i]*normals[i+2],-1.,1.));++pairs;
+    }
+    require(pairs>0 && std::isfinite(high-low),"Invalid quad corner normals");
+    *distance=high-low;*angle=std::acos(cosine);return 1;
+  }catch(const std::exception &e){if(error && capacity){std::strncpy(error,e.what(),capacity-1);error[capacity-1]=0;}return 0;}
+  catch(...){if(error && capacity){std::strncpy(error,"Unknown quad planarity error",capacity-1);error[capacity-1]=0;}return 0;}
+}

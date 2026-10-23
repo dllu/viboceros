@@ -1,0 +1,277 @@
+Capturing physical face threshold getters
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_sample.py", line 36, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_sample.py", line 27, in main
+    data=OracleClient(settings_scheme='VibocerosOracleNonplanarFaces20261023'+('Main'if args.main else'Shaded'if args.shaded else'Discovery')).run_rhino(payload,timeout=300)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2079, in run_rhino
+    raise OracleError(
+tools.rhino_oracle.client.OracleError: Rhino probe did not respond within 300 seconds (owned_pids=[3081757], owned_window='0x00e00006', ui_fallback_sent=True)
+Worker progress:
+worker: started
+worker: started
+worker: request loaded
+operation nonplanar_sample_distance_switch_main: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_distance_switch_main-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 9: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_distance_switch_main 10: _Enter
+operation nonplanar_sample_angle_switch_main: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 6: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 7: _Angle
+
+PICK @catenary-click:nonplanar_sample_angle_switch_main-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 9: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_angle_switch_main 10: _Enter
+operation nonplanar_sample_cyclic_distance: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_cyclic_distance-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_cyclic_distance 9: _Enter
+operation nonplanar_sample_reverse_angle: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 6: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 7: _Angle
+
+PICK @catenary-click:nonplanar_sample_reverse_angle-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_reverse_angle 9: _Enter
+operation nonplanar_sample_scaled_large: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_scaled_large-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_large 9: _Enter
+operation nonplanar_sample_scaled_small: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_scaled_small-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_scaled_small 9: _Enter
+operation nonplanar_sample_tolerance_low: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_tolerance_low-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_low 9: _Enter
+operation nonplanar_sample_tolerance_high: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_tolerance_high-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_tolerance_high 9: _Enter
+operation nonplanar_sample_angular_tolerance: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 6: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 7: _Angle
+
+PICK @catenary-click:nonplanar_sample_angular_tolerance-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_angular_tolerance 9: _Enter
+operation nonplanar_sample_flat_distance: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_flat_distance-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_distance 9: _Enter
+operation nonplanar_sample_flat_angle: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 6: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 7: _Angle
+
+PICK @catenary-click:nonplanar_sample_flat_angle-8 1190 380
+
+TriangulateNonPlanarQuads input nonplanar_sample_flat_angle 9: _Enter
+operation nonplanar_sample_ngon_second: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_ngon_second 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_ngon_second 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_ngon_second 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_ngon_second 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_ngon_second 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_ngon_second 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_ngon_second 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_ngon_second 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_ngon_second-8 1415 412
+Launcher output:
+Launched Rhino 8 through direct ARM64 Wine
+Wine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine
+WINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix
+Executable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe
+Launcher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log

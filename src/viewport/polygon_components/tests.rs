@@ -139,7 +139,10 @@ fn logical_mesh_ngons_share_boundaries_and_emit_one_pick_per_region() {
     )])
     .unwrap();
     let id = doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
-    let view = Viewport::new(ViewKind::Top);
+    let mut view = Viewport::new(ViewKind::Top);
+    view.last_rect = Some(rect());
+    view.zoom_extents(&doc, ZoomExtentsBorders::default())
+        .unwrap();
     let display = view
         .display_cache
         .borrow_mut()
@@ -164,6 +167,30 @@ fn logical_mesh_ngons_share_boundaries_and_emit_one_pick_per_region() {
             .iter()
             .all(|p| p.kind == ComponentSelectionKind::MeshFace)
     );
+    for mode in [
+        DisplayMode::Wireframe,
+        DisplayMode::Shaded,
+        DisplayMode::Ghosted,
+    ] {
+        view.display_mode = mode;
+        for (index, target) in [p(1., 1.5, 0.), p(3., 1.5, 0.)].into_iter().enumerate() {
+            let pointer = view.project(target, rect()).unwrap();
+            assert_eq!(
+                view.pick_components(pointer, rect(), &doc, ComponentPickFilter::MeshAndSubDFaces)
+                    [0]
+                .index,
+                0
+            );
+            assert_eq!(
+                view.pick_components(pointer, rect(), &doc, ComponentPickFilter::RawMeshFaces),
+                vec![ComponentPick {
+                    object: id,
+                    kind: ComponentSelectionKind::MeshFace,
+                    index
+                }]
+            );
+        }
+    }
 }
 #[test]
 fn polygon_regions_follow_new_geometry_snapshots_and_archive_face_indices() {

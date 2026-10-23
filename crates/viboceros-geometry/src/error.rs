@@ -832,6 +832,8 @@ pub enum GeometryError {
 
     #[error("mesh face index {face} is outside the face count {face_count}")]
     MeshFaceIndexOutOfRange { face: usize, face_count: usize },
+    #[error("mesh face {face} is not a quadrangle")]
+    MeshFaceNotQuad { face: usize },
 
     #[error("mesh face index {face} appears more than once")]
     DuplicateMeshFaceIndex { face: usize },

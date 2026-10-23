@@ -15,6 +15,8 @@ pub enum ComponentPickFilter {
     Edges,
     Faces,
     MeshAndSubDFaces,
+    /// Individual stored mesh faces, including faces inside logical n-gons.
+    RawMeshFaces,
     Crease,
 }
 
@@ -114,10 +116,18 @@ impl Viewport {
                 .map(ComponentPick::from)
                 .collect();
         }
-        let allowed = (filter == ComponentPickFilter::MeshAndSubDFaces).then(|| {
+        let allowed = matches!(
+            filter,
+            ComponentPickFilter::MeshAndSubDFaces | ComponentPickFilter::RawMeshFaces
+        )
+        .then(|| {
             document
                 .selectable_objects()
-                .filter(|o| matches!(o.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)))
+                .filter(|o| {
+                    matches!(o.geometry(), Geometry::Mesh(_))
+                        || filter == ComponentPickFilter::MeshAndSubDFaces
+                            && matches!(o.geometry(), Geometry::SubD(_))
+                })
                 .map(|o| o.id())
                 .collect::<std::collections::BTreeSet<_>>()
         });
@@ -135,7 +145,9 @@ impl Viewport {
         )
         .map_or_else(Vec::new, |(object, face, _)| {
             let source = document.object(object).unwrap();
-            let face = if matches!(source.geometry(), Geometry::Mesh(_)) {
+            let face = if filter != ComponentPickFilter::RawMeshFaces
+                && matches!(source.geometry(), Geometry::Mesh(_))
+            {
                 self.display_cache
                     .borrow_mut()
                     .get(source, document.tolerance())
@@ -165,6 +177,10 @@ impl Viewport {
         crossing: bool,
         inverted: bool,
     ) -> Vec<ComponentPick> {
+        // A face used to measure a numeric threshold is picked individually.
+        if filter == ComponentPickFilter::RawMeshFaces {
+            return Vec::new();
+        }
         if !viewport.is_finite()
             || !selection.is_finite()
             || selection.width() < 2.

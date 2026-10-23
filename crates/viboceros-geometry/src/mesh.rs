@@ -36,6 +36,8 @@ mod edge_unweld_tests;
 mod edge_weld;
 mod ngon;
 mod nonplanar_quads;
+mod quad_planarity;
+pub use quad_planarity::MeshQuadPlanarity;
 mod normals;
 mod smoothing;
 mod subdivision;

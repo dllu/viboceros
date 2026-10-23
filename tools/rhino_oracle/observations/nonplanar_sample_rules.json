@@ -1,0 +1,3839 @@
+{
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "before": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": true,
+            "crc": 2389038961,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.5
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.5
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.5
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.5
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "TriangulateNonPlanarQuads",
+            "selected": [],
+            "objects": [
+              {
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "selected": false,
+                "crc": 0,
+                "source": null,
+                "point": [
+                  19.0,
+                  23.0,
+                  29.0
+                ],
+                "selected_grips": [],
+                "name": "Undo witness",
+                "grips_on": false,
+                "layer": "Crease current",
+                "groups": [],
+                "color_source": 0
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "selected": false,
+                "crc": 511690434,
+                "mesh": {
+                  "colors": null,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      0,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -1.0,
+                      -1.0,
+                      0.5
+                    ],
+                    [
+                      1.0,
+                      -1.0,
+                      -0.5
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.5
+                    ],
+                    [
+                      -1.0,
+                      1.0,
+                      -0.5
+                    ]
+                  ],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "ngons": []
+                },
+                "selected_edges": [],
+                "source": 0,
+                "selected_grips": [],
+                "name": "Input 0",
+                "grips_on": false,
+                "layer": "Crease input",
+                "groups": [
+                  "Crease assembly"
+                ],
+                "color_source": 1
+              }
+            ]
+          }
+        ],
+        "macro": "_-TriangulateNonPlanarQuads _Enter _Cancel _Cancel",
+        "after": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 511690434,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.5
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.5
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.5
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.5
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "undo": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2389038961,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.5
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.5
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.5
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.5
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "history": "Command: _-TriangulateNonPlanarQuads\nCommand: _Pause\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal ): _SelectBy=Distance\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal ): _Distance\nSelect mesh face <0.000>: 0.123\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal ): _SelectBy=Angle\nChange option or press Enter to accept ( SelectBy=Angle  Angle=0  SplitMethod=ShortestDiagonal ): _Angle\nSelect mesh face <0.000>: 7.0\nChange option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal ): _SelectBy=Distance\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal ): _Distance\nSelect mesh face <0.123>\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal ): _Enter\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal )",
+        "input_trace": [
+          {
+            "edge_picks": [],
+            "prompts": [
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <0.000>",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Angle  Angle=0  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <0.000>",
+              "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <0.123>",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal )"
+            ],
+            "motion": [],
+            "sent": [
+              {
+                "action": 0,
+                "token": "_SelectBy=Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 1,
+                "token": "_Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 2,
+                "token": "0.123",
+                "prompt": "Select mesh face <0.000>"
+              },
+              {
+                "action": 3,
+                "token": "_SelectBy=Angle",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 4,
+                "token": "_Angle",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Angle  Angle=0  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 5,
+                "token": "7.0",
+                "prompt": "Select mesh face <0.000>"
+              },
+              {
+                "action": 6,
+                "token": "_SelectBy=Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 7,
+                "token": "_Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 9,
+                "token": "_Enter",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal )"
+              }
+            ],
+            "clicks": [
+              {
+                "pixel": [
+                  354,
+                  195
+                ],
+                "action": 8,
+                "marker": "@catenary-click:nonplanar_sample_power_one-8",
+                "ray": [
+                  [
+                    0.0,
+                    0.0028132992327364994,
+                    -0.6749999999999936
+                  ],
+                  [
+                    0.0,
+                    0.0028132992327364994,
+                    0.6750000000000007
+                  ]
+                ],
+                "aim": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "click_acknowledged": true,
+                "motion_acknowledged": true
+              }
+            ],
+            "errors": [],
+            "snap_settings": {
+              "project_to_cplane": false,
+              "capture_radius": 12,
+              "modes": 0,
+              "enabled": true
+            },
+            "expected": 10,
+            "completed": 10,
+            "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click."
+          }
+        ],
+        "success": true,
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAABorQqa5sYNRo6aqnBAKaFGAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAAC1olMM/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABA2BAAAAAAAAHCAACBQAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAIC/AACAvwAAAL8AAIA/AACAPwAAAD8AAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAAejrsAwAAAIC/AACAvwAAAD8AAIA/AACAvwAAAL8AAIA/AACAPwAAAD8AAIC/AACAPwAAAL8wAAAAeLagZwAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABApAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAaTyYowAAAAABAIAAQHkAAAAAAAAAAQAAAAAAAAAEAAAAYAAAALfPV3kAAAAAAAAA8L8AAAAAAADwvwAAAAAAAOA/AAAAAAAA8D8AAAAAAADwvwAAAAAAAOC/AAAAAAAA8D8AAAAAAADwPwAAAAAAAOA/AAAAAAAA8L8AAAAAAADwPwAAAAAAAOC/iNnhlgAAAAAAAPC/AAAAAAAA8L8AAAAAAADgvwAAAAAAAPA/AAAAAAAA8D8AAAAAAADgP3lxCfH/fwKAAAAAAAAAAABygAACNgAAAAAAAAAtfthzmU4bTEextYuVqY28rwAAAAABCAAAAEkAbgBwAHUAdAAgADAAAAAGEStbAA0BAIpUiJt/AACCAAAAAAAAAAAAAAAAcIAAIMIAAAAAAAAAcQAAggEAAAAAAAAA+n8CAFUAAAAAAAAA+/8CABQAAAAAAAAAHRoQw1fx0xG/5wAQgwEi8ExUB6T8/wIAHQAAAAAAAAAQAAAAAAAAM0AAAAAAAAA3QAAAAAAAAD1AN+Z0Pf9/AoAAAAAAAAAAAHKAAAI5AAAAAAAAAC1PDHlspEzGRof9SZajK6+JAAAAAAENAAAAVQBuAGQAbwAgAHcAaQB0AG4AZQBzAHMAAAAAjVgCeH8AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAA0gAAAAAAAA",
+        "sample_environment": {
+          "absolute": 1e-06,
+          "units": "Millimeters",
+          "angular": 1e-06
+        },
+        "redo": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 511690434,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.5
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.5
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.5
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.5
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "after_script": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 511690434,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.5
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.5
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.5
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.5
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "input": {
+          "capture_id": "nonplanar_sample_power_one",
+          "live": true,
+          "switch": false,
+          "sample_shaded": true,
+          "actions": [
+            "SelectBy=Distance",
+            "Distance",
+            0.123,
+            "SelectBy=Angle",
+            "Angle",
+            7.0,
+            "SelectBy=Distance",
+            "Distance",
+            {
+              "click": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "Enter"
+          ],
+          "sample_face": 0,
+          "whole": true,
+          "preselected": true,
+          "sample_angle": false,
+          "sources": [
+            {
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.5
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.5
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.5
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.5
+                ]
+              ],
+              "kind": "mesh",
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ]
+            }
+          ],
+          "command": "TriangulateNonPlanarQuads",
+          "action_prompts": [
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ]
+          ]
+        }
+      },
+      "id": "nonplanar_sample_power_one"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "before": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": true,
+            "crc": 1438682850,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.05
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.05
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.05
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.05
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "TriangulateNonPlanarQuads",
+            "selected": [],
+            "objects": [
+              {
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "selected": false,
+                "crc": 0,
+                "source": null,
+                "point": [
+                  19.0,
+                  23.0,
+                  29.0
+                ],
+                "selected_grips": [],
+                "name": "Undo witness",
+                "grips_on": false,
+                "layer": "Crease current",
+                "groups": [],
+                "color_source": 0
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "selected": false,
+                "crc": 4045080213,
+                "mesh": {
+                  "colors": null,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      0,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      -1.0,
+                      -1.0,
+                      0.05
+                    ],
+                    [
+                      1.0,
+                      -1.0,
+                      -0.05
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.05
+                    ],
+                    [
+                      -1.0,
+                      1.0,
+                      -0.05
+                    ]
+                  ],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "ngons": []
+                },
+                "selected_edges": [],
+                "source": 0,
+                "selected_grips": [],
+                "name": "Input 0",
+                "grips_on": false,
+                "layer": "Crease input",
+                "groups": [
+                  "Crease assembly"
+                ],
+                "color_source": 1
+              }
+            ]
+          }
+        ],
+        "macro": "_-TriangulateNonPlanarQuads _Enter _Cancel _Cancel",
+        "after": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 4045080213,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.05
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.05
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.05
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.05
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "undo": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 1438682850,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.05
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.05
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.05
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.05
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "history": "Command: _-TriangulateNonPlanarQuads\nCommand: _Pause\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal ): _SelectBy=Distance\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal ): _Distance\nSelect mesh face <0.999>: 0.123\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal ): _SelectBy=Angle\nChange option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal ): _Angle\nSelect mesh face <7.000>: 7.0\nChange option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal ): _SelectBy=Distance\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal ): _Distance\nSelect mesh face <0.123>\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal ): _Enter\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal )",
+        "input_trace": [
+          {
+            "edge_picks": [],
+            "prompts": [
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <0.999>",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <7.000>",
+              "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <0.123>",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal )"
+            ],
+            "motion": [],
+            "sent": [
+              {
+                "action": 0,
+                "token": "_SelectBy=Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 1,
+                "token": "_Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.999  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 2,
+                "token": "0.123",
+                "prompt": "Select mesh face <0.999>"
+              },
+              {
+                "action": 3,
+                "token": "_SelectBy=Angle",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 4,
+                "token": "_Angle",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 5,
+                "token": "7.0",
+                "prompt": "Select mesh face <7.000>"
+              },
+              {
+                "action": 6,
+                "token": "_SelectBy=Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 7,
+                "token": "_Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 9,
+                "token": "_Enter",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal )"
+              }
+            ],
+            "clicks": [
+              {
+                "pixel": [
+                  354,
+                  195
+                ],
+                "action": 8,
+                "marker": "@catenary-click:nonplanar_sample_power_tenth-8",
+                "ray": [
+                  [
+                    0.0,
+                    0.0028132992327364994,
+                    -0.17999999999999794
+                  ],
+                  [
+                    0.0,
+                    0.0028132992327364994,
+                    0.1800000000000015
+                  ]
+                ],
+                "aim": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "click_acknowledged": true,
+                "motion_acknowledged": true
+              }
+            ],
+            "errors": [],
+            "snap_settings": {
+              "project_to_cplane": false,
+              "capture_radius": 12,
+              "modes": 0,
+              "enabled": true
+            },
+            "expected": 10,
+            "completed": 10,
+            "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click."
+          }
+        ],
+        "success": true,
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAACI5GhExHlARawLLMRkBey6AAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAAAdfgyX/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABA2BAAAAAAAAHCAACBQAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAIC/AACAv87MTL0AAIA/AACAP87MTD0AAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAAVT5LQgAAAIC/AACAv83MTD0AAIA/AACAv83MTL0AAIA/AACAP83MTD0AAIC/AACAP83MTL0wAAAAeLagZwAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABApAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAaTyYowAAAAABAIAAQHkAAAAAAAAAAQAAAAAAAAAEAAAAYAAAAFrJwtsAAAAAAAAA8L8AAAAAAADwv5qZmZmZmak/AAAAAAAA8D8AAAAAAADwv5qZmZmZmam/AAAAAAAA8D8AAAAAAADwP5qZmZmZmak/AAAAAAAA8L8AAAAAAADwP5qZmZmZmam/sG+17AAAAAAAAPC/AAAAAAAA8L+amZmZmZmpvwAAAAAAAPA/AAAAAAAA8D+amZmZmZmpPyt9sWj/fwKAAAAAAAAAAABygAACNgAAAAAAAAAtZ6I09R56TUSHg6gZRCwrzgAAAAABCAAAAEkAbgBwAHUAdAAgADAAAAAGEStbAA0BAMXBgNh/AACCAAAAAAAAAAAAAAAAcIAAIMIAAAAAAAAAcQAAggEAAAAAAAAA+n8CAFUAAAAAAAAA+/8CABQAAAAAAAAAHRoQw1fx0xG/5wAQgwEi8ExUB6T8/wIAHQAAAAAAAAAQAAAAAAAAM0AAAAAAAAA3QAAAAAAAAD1AN+Z0Pf9/AoAAAAAAAAAAAHKAAAI5AAAAAAAAAC1xqz6fuAyHTagsl9nsZ+ZrAAAAAAENAAAAVQBuAGQAbwAgAHcAaQB0AG4AZQBzAHMAAAAABhlVJn8AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAA0gAAAAAAAA",
+        "sample_environment": {
+          "absolute": 1e-06,
+          "units": "Millimeters",
+          "angular": 1e-06
+        },
+        "redo": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 4045080213,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.05
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.05
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.05
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.05
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "after_script": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 4045080213,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.05
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.05
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.05
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.05
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "input": {
+          "capture_id": "nonplanar_sample_power_tenth",
+          "live": true,
+          "switch": false,
+          "sample_shaded": true,
+          "actions": [
+            "SelectBy=Distance",
+            "Distance",
+            0.123,
+            "SelectBy=Angle",
+            "Angle",
+            7.0,
+            "SelectBy=Distance",
+            "Distance",
+            {
+              "click": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "Enter"
+          ],
+          "sample_face": 0,
+          "whole": true,
+          "preselected": true,
+          "sample_angle": false,
+          "sources": [
+            {
+              "vertices": [
+                [
+                  -1.0,
+                  -1.0,
+                  0.05
+                ],
+                [
+                  1.0,
+                  -1.0,
+                  -0.05
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.05
+                ],
+                [
+                  -1.0,
+                  1.0,
+                  -0.05
+                ]
+              ],
+              "kind": "mesh",
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ]
+            }
+          ],
+          "command": "TriangulateNonPlanarQuads",
+          "action_prompts": [
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ]
+          ]
+        }
+      },
+      "id": "nonplanar_sample_power_tenth"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "before": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": true,
+            "crc": 689836841,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0001
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "name": "Enter",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "TriangulateNonPlanarQuads",
+            "selected": [],
+            "objects": [
+              {
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "selected": false,
+                "crc": 0,
+                "source": null,
+                "point": [
+                  19.0,
+                  23.0,
+                  29.0
+                ],
+                "selected_grips": [],
+                "name": "Undo witness",
+                "grips_on": false,
+                "layer": "Crease current",
+                "groups": [],
+                "color_source": 0
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "selected": false,
+                "crc": 2834673488,
+                "mesh": {
+                  "colors": null,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      0,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0001
+                    ]
+                  ],
+                  "vertex_normals": [
+                    [
+                      2.499999936844688e-05,
+                      -4.999999873689376e-05,
+                      1.0
+                    ],
+                    [
+                      2.499999936844688e-05,
+                      -4.999999873689376e-05,
+                      1.0
+                    ],
+                    [
+                      2.499999936844688e-05,
+                      -4.999999873689376e-05,
+                      1.0
+                    ],
+                    [
+                      2.499999936844688e-05,
+                      -4.999999873689376e-05,
+                      1.0
+                    ]
+                  ],
+                  "ngons": []
+                },
+                "selected_edges": [],
+                "source": 0,
+                "selected_grips": [],
+                "name": "Input 0",
+                "grips_on": false,
+                "layer": "Crease input",
+                "groups": [
+                  "Crease assembly"
+                ],
+                "color_source": 1
+              }
+            ]
+          }
+        ],
+        "macro": "_-TriangulateNonPlanarQuads _Enter _Cancel _Cancel",
+        "after": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2834673488,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0001
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "undo": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 689836841,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0001
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "history": "Command: _-TriangulateNonPlanarQuads\nCommand: _Pause\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal ): _SelectBy=Distance\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal ): _Distance\nSelect mesh face <0.100>: 0.123\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal ): _SelectBy=Angle\nChange option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal ): _Angle\nSelect mesh face <7.000>: 7.0\nChange option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal ): _SelectBy=Angle\nChange option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal ): _Angle\nSelect mesh face <7.000>\nChange option or press Enter to accept ( SelectBy=Angle  Angle=0.006404862817729765  SplitMethod=ShortestDiagonal ): _Enter\nChange option or press Enter to accept ( SelectBy=Angle  Angle=0.006404862817729765  SplitMethod=ShortestDiagonal )",
+        "input_trace": [
+          {
+            "edge_picks": [],
+            "prompts": [
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <0.100>",
+              "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <7.000>",
+              "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )",
+              "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )",
+              "Select mesh face <7.000>",
+              "Change option or press Enter to accept ( SelectBy=Angle  Angle=0.006404862817729765  SplitMethod=ShortestDiagonal )"
+            ],
+            "motion": [],
+            "sent": [
+              {
+                "action": 0,
+                "token": "_SelectBy=Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 1,
+                "token": "_Distance",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.0999  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 2,
+                "token": "0.123",
+                "prompt": "Select mesh face <0.100>"
+              },
+              {
+                "action": 3,
+                "token": "_SelectBy=Angle",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 4,
+                "token": "_Angle",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 5,
+                "token": "7.0",
+                "prompt": "Select mesh face <7.000>"
+              },
+              {
+                "action": 6,
+                "token": "_SelectBy=Angle",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 7,
+                "token": "_Angle",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Angle  Angle=7  SplitMethod=ShortestDiagonal )"
+              },
+              {
+                "action": 9,
+                "token": "_Enter",
+                "prompt": "Change option or press Enter to accept ( SelectBy=Angle  Angle=0.006404862817729765  SplitMethod=ShortestDiagonal )"
+              }
+            ],
+            "clicks": [
+              {
+                "pixel": [
+                  289,
+                  163
+                ],
+                "action": 8,
+                "marker": "@catenary-click:nonplanar_sample_small_angle-8",
+                "ray": [
+                  [
+                    0.7980225988700564,
+                    0.6009887005649718,
+                    -0.12500500000000114
+                  ],
+                  [
+                    0.7980225988700564,
+                    0.6009887005649718,
+                    0.1251050000000018
+                  ]
+                ],
+                "aim": [
+                  0.8,
+                  0.6,
+                  0.2
+                ],
+                "click_acknowledged": true,
+                "motion_acknowledged": true
+              }
+            ],
+            "errors": [],
+            "snap_settings": {
+              "project_to_cplane": false,
+              "capture_radius": 12,
+              "modes": 0,
+              "enabled": true
+            },
+            "expected": 10,
+            "completed": 10,
+            "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click."
+          }
+        ],
+        "success": true,
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAAA83pC8iMp5SJXQm25tbU7WAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAABj5HeV/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABA2BAAAAAAAAHCAACBQAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAACAPxi30TgAAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAAAXKDBgAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAABAAACAPwAAAAAAAAAAAACAPxe30TgwAAAAKQcd/gAXt9E3F7dRuAAAgD8Xt9E3F7dRuAAAgD8Xt9E3F7dRuAAAgD8Xt9E3F7dRuAAAgD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABApAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAaTyYowAAAAABAIAAQHkAAAAAAAAAAQAAAAAAAAAEAAAAYAAAAH0XGIsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPy1DHOviNho/pJpykQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAA8D8tQxzr4jYaP9Gxn4L/fwKAAAAAAAAAAABygAACNgAAAAAAAAAtGMezKkssxUqkSh6uoFEcMgAAAAABCAAAAEkAbgBwAHUAdAAgADAAAAAGEStbAA0BAGaqOC5/AACCAAAAAAAAAAAAAAAAcIAAIMIAAAAAAAAAcQAAggEAAAAAAAAA+n8CAFUAAAAAAAAA+/8CABQAAAAAAAAAHRoQw1fx0xG/5wAQgwEi8ExUB6T8/wIAHQAAAAAAAAAQAAAAAAAAM0AAAAAAAAA3QAAAAAAAAD1AN+Z0Pf9/AoAAAAAAAAAAAHKAAAI5AAAAAAAAAC2UJ+SairXHT6a8lKb58ConAAAAAAENAAAAVQBuAGQAbwAgAHcAaQB0AG4AZQBzAHMAAAAAXgxN4n8AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAA0gAAAAAAAA",
+        "sample_environment": {
+          "absolute": 1e-06,
+          "units": "Millimeters",
+          "angular": 1e-06
+        },
+        "redo": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2834673488,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0001
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "after_script": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2834673488,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0001
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ],
+                [
+                  2.499999936844688e-05,
+                  -4.999999873689376e-05,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "input": {
+          "capture_id": "nonplanar_sample_small_angle",
+          "live": true,
+          "switch": false,
+          "sample_shaded": true,
+          "actions": [
+            "SelectBy=Distance",
+            "Distance",
+            0.123,
+            "SelectBy=Angle",
+            "Angle",
+            7.0,
+            "SelectBy=Angle",
+            "Angle",
+            {
+              "click": [
+                0.8,
+                0.6,
+                0.2
+              ]
+            },
+            "Enter"
+          ],
+          "sample_face": 0,
+          "whole": true,
+          "preselected": true,
+          "sample_angle": true,
+          "sources": [
+            {
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0001
+                ]
+              ],
+              "kind": "mesh",
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ]
+            }
+          ],
+          "command": "TriangulateNonPlanarQuads",
+          "action_prompts": [
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ],
+            [
+              "Select mesh face"
+            ],
+            [
+              "Change option or press Enter to accept"
+            ]
+          ]
+        }
+      },
+      "id": "nonplanar_sample_small_angle"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "before": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": true,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "name": "TriangulateNonPlanarQuads",
+            "selected": [],
+            "objects": [
+              {
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "selected": false,
+                "crc": 0,
+                "source": null,
+                "point": [
+                  19.0,
+                  23.0,
+                  29.0
+                ],
+                "selected_grips": [],
+                "name": "Undo witness",
+                "grips_on": false,
+                "layer": "Crease current",
+                "groups": [],
+                "color_source": 0
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "selected": false,
+                "crc": 2165275203,
+                "mesh": {
+                  "colors": null,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ]
+                  ],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "ngons": []
+                },
+                "selected_edges": [],
+                "source": 0,
+                "selected_grips": [],
+                "name": "Input 0",
+                "grips_on": false,
+                "layer": "Crease input",
+                "groups": [
+                  "Crease assembly"
+                ],
+                "color_source": 1
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "macro": "_-TriangulateNonPlanarQuads _SelectBy=_Distance _Distance -0.01 _Enter _Cancel _Cancel",
+        "after": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "undo": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "history": "Command: _-TriangulateNonPlanarQuads\nChange option or press Enter to accept ( SelectBy=Angle  Angle=0.006404862817729765  SplitMethod=ShortestDiagonal ): _SelectBy=_Distance\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0.123  SplitMethod=ShortestDiagonal ): _Distance\nSelect mesh face <0.123>: -0.01\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal ): _Enter\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal )\nCommand: _Cancel\nCommand: _Cancel",
+        "input_trace": [],
+        "success": true,
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAADpD9TJQsuRRqOK21jsW5YWAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAAANBosD/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABA2BAAAAAAAAHCAACBQAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAACAPwAAAAAAAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAAcrl9uwAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAABAAACAPwAAAAAAAAAAAACAPwAAAAAwAAAAeLagZwAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABApAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAaTyYowAAAAABAIAAQHkAAAAAAAAAAQAAAAAAAAAEAAAAYAAAAEf8Q+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAH/4IrQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAA8D8AAAAAAAAAAJmXgRj/fwKAAAAAAAAAAABygAACNgAAAAAAAAAtYOXn9NHRg02zUfNlGK/UYAAAAAABCAAAAEkAbgBwAHUAdAAgADAAAAAGEStbAA0BAIgGq3V/AACCAAAAAAAAAAAAAAAAcIAAIMIAAAAAAAAAcQAAggEAAAAAAAAA+n8CAFUAAAAAAAAA+/8CABQAAAAAAAAAHRoQw1fx0xG/5wAQgwEi8ExUB6T8/wIAHQAAAAAAAAAQAAAAAAAAM0AAAAAAAAA3QAAAAAAAAD1AN+Z0Pf9/AoAAAAAAAAAAAHKAAAI5AAAAAAAAAC1qDnihVpClS7HE6q/9rm0xAAAAAAENAAAAVQBuAGQAbwAgAHcAaQB0AG4AZQBzAHMAAAAApkc+rH8AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAA0gAAAAAAAA",
+        "redo": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "after_script": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "input": {
+          "actions": [],
+          "whole": true,
+          "preselected": true,
+          "sources": [
+            {
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "kind": "mesh",
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ]
+            }
+          ],
+          "command": "TriangulateNonPlanarQuads",
+          "command_arguments": "_SelectBy=_Distance _Distance -0.01"
+        }
+      },
+      "id": "nonplanar_sample_negative_distance"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "before": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": true,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "name": "TriangulateNonPlanarQuads",
+            "selected": [],
+            "objects": [
+              {
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "selected": false,
+                "crc": 0,
+                "source": null,
+                "point": [
+                  19.0,
+                  23.0,
+                  29.0
+                ],
+                "selected_grips": [],
+                "name": "Undo witness",
+                "grips_on": false,
+                "layer": "Crease current",
+                "groups": [],
+                "color_source": 0
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "selected": false,
+                "crc": 2165275203,
+                "mesh": {
+                  "colors": null,
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ]
+                  ],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "ngons": []
+                },
+                "selected_edges": [],
+                "source": 0,
+                "selected_grips": [],
+                "name": "Input 0",
+                "grips_on": false,
+                "layer": "Crease input",
+                "groups": [
+                  "Crease assembly"
+                ],
+                "color_source": 1
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "Cancel",
+            "selected": []
+          }
+        ],
+        "macro": "_-TriangulateNonPlanarQuads _SelectBy=_Angle _Angle -0.01 _Enter _Cancel _Cancel",
+        "after": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "undo": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          }
+        ],
+        "history": "Command: _-TriangulateNonPlanarQuads\nChange option or press Enter to accept ( SelectBy=Distance  Distance=0  SplitMethod=ShortestDiagonal ): _SelectBy=_Angle\nChange option or press Enter to accept ( SelectBy=Angle  Angle=0.006404862817729765  SplitMethod=ShortestDiagonal ): _Angle\nSelect mesh face <0.006>: -0.01\nChange option or press Enter to accept ( SelectBy=Angle  Angle=0  SplitMethod=ShortestDiagonal ): _Enter\nChange option or press Enter to accept ( SelectBy=Angle  Angle=0  SplitMethod=ShortestDiagonal )\nCommand: _Cancel\nCommand: _Cancel",
+        "input_trace": [],
+        "success": true,
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAABNC9vjQlQoRI7k2H+l1JegAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAAAffc7N/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABA2BAAAAAAAAHCAACBQAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAACAPwAAAAAAAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAAcrl9uwAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAABAAACAPwAAAAAAAAAAAACAPwAAAAAwAAAAeLagZwAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABApAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAaTyYowAAAAABAIAAQHkAAAAAAAAAAQAAAAAAAAAEAAAAYAAAAEf8Q+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAH/4IrQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAA8D8AAAAAAAAAAJmXgRj/fwKAAAAAAAAAAABygAACNgAAAAAAAAAtUUmzFN2rQkSYPYWHOsb34AAAAAABCAAAAEkAbgBwAHUAdAAgADAAAAAGEStbAA0BAH4Ss39/AACCAAAAAAAAAAAAAAAAcIAAIMIAAAAAAAAAcQAAggEAAAAAAAAA+n8CAFUAAAAAAAAA+/8CABQAAAAAAAAAHRoQw1fx0xG/5wAQgwEi8ExUB6T8/wIAHQAAAAAAAAAQAAAAAAAAM0AAAAAAAAA3QAAAAAAAAD1AN+Z0Pf9/AoAAAAAAAAAAAHKAAAI5AAAAAAAAAC1OSwLnyQGZTIL7Fn1WrunFAAAAAAENAAAAVQBuAGQAbwAgAHcAaQB0AG4AZQBzAHMAAAAAqRX2PX8AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAA0gAAAAAAAA",
+        "redo": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "after_script": [
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected": false,
+            "crc": 0,
+            "source": null,
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "selected_grips": [],
+            "name": "Undo witness",
+            "grips_on": false,
+            "layer": "Crease current",
+            "groups": [],
+            "color_source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected": false,
+            "crc": 2165275203,
+            "mesh": {
+              "colors": null,
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "ngons": []
+            },
+            "selected_edges": [],
+            "source": 0,
+            "selected_grips": [],
+            "name": "Input 0",
+            "grips_on": false,
+            "layer": "Crease input",
+            "groups": [
+              "Crease assembly"
+            ],
+            "color_source": 1
+          }
+        ],
+        "input": {
+          "actions": [],
+          "whole": true,
+          "preselected": true,
+          "sources": [
+            {
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "kind": "mesh",
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ]
+            }
+          ],
+          "command": "TriangulateNonPlanarQuads",
+          "command_arguments": "_SelectBy=_Angle _Angle -0.01"
+        }
+      },
+      "id": "nonplanar_sample_negative_angle"
+    }
+  ],
+  "engine": "rhino",
+  "protocol_version": 1,
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "provenance": {
+    "request_sha256": "b3e00d198a01a4215c39b65edb4b555a4d5256ba517cbb99721ec515eb358607",
+    "sources": {
+      "generate_nonplanar_sample.py": "54b8a68a501c9966b844696a8cd55b76e609fa391e15ceb60116181d9950dbd5",
+      "nonplanar_sample_cases.py": "b10586f736284aa1c299480ae55a5bad2455e44e0699daaf567101dabc4c8526",
+      "nonplanar_sample_probe.py": "82fdffb84c6a490df6961af6fdfda63f135c2ca35d3f4f08411b3105628613a2",
+      "crease_probe.py": "e78a2fcdd16c2b8bc62871ac55192c4cdddaeaac73c59a3143c53b9dbca193b3",
+      "crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
+      "subdivide_probe.py": "08d751e391bc593ab7263f00e3f77e64ceb91199a46360c2d396868cc579cb99",
+      "subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "b2a5d1c666da628d0dfee46a2cc39bf7cc5fd6df33f84066ace7dd190edb1981",
+      "rhino_worker.py": "b3bed24c3f40c5ed35fdab4c5ec463ba6148d40cd7743aaeef18190779ee01fa",
+      "structural_sdk.py": "f21b1ac42e6cddfd66538fe5c9ff1b4c61ee22f29847b4935ed7cfec505c7587",
+      "conic_getter_input.py": "5e3ff7a5ef94de501e9cb0de307c12bb9e4d6cfb86513a3724a8961d2e2d5842",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+      "catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa"
+    }
+  }
+}

@@ -31,6 +31,9 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
     if iterations!=1 or list(doc.Objects)or doc.UndoRecordingIsActive:
         raise ValueError('empty owned idle document required')
     case=deepcopy(recipe);ids=[];layers=[];group=-1
+    original_tolerance=doc.ModelAbsoluteTolerance;original_angle=doc.ModelAngleToleranceRadians
+    if 'sample_tolerance'in case:doc.ModelAbsoluteTolerance=float(case['sample_tolerance'])
+    if 'sample_angle_tolerance'in case:doc.ModelAngleToleranceRadians=float(case['sample_angle_tolerance'])
     def vertices(g):
         result=[];v=g.Vertices.First
         while v is not None:
@@ -87,7 +90,8 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
             doc.Layers.SetCurrentLayerIndex(layers[1],True)
         finally:doc.EndUndoRecord(undo)
         def select_components(seed=False):
-            for key,d in zip(ids,case['sources']):
+            for source_index,(key,d) in enumerate(zip(ids,case['sources'])):
+                if 'selected_sources'in case and source_index not in case['selected_sources']:continue
                 obj=doc.Objects.FindId(key);g=obj.Geometry
                 if case.get('whole'):
                     if case.get('preselected'):doc.Objects.Select(key)
@@ -217,11 +221,15 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
             from conic_getter_input import drive
             view=doc.Views.ActiveView
             view.ActiveViewport.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned '+case['command']+' input',False)
+            if case.get('sample_shaded'):
+                view.ActiveViewport.DisplayMode=R.Display.DisplayModeDescription.FindByName('Shaded')
             bounds=G.BoundingBox.Empty
             for key in ids:bounds.Union(doc.Objects.FindId(key).Geometry.GetBoundingBox(True))
             view.ActiveViewport.ZoomBoundingBox(bounds);view.Redraw()
             def execute():
                 operation=dict(op='insert_point_command',id=case['capture_id'],actions=case['actions'])
+                if case['command']=='TriangulateNonPlanarQuads':
+                    operation['op']='nonplanar_quad_sample';operation['action_prompts']=case['action_prompts']
                 if 'view_target_offset_z'in case:operation['view_target_offset_z']=case['view_target_offset_z']
                 if case.get('capture_pick_hint'):operation['capture_pick_hint']=True
                 result,trace=drive(operation,host,[],command=case['command']);input_trace.append(trace);return result
@@ -232,8 +240,11 @@ def run_scene(recipe,host,iterations,tolerance,discovery=False):
         if tick_errors:raise ValueError(str(tick_errors))
         history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[1].strip()
         after_script=snapshot();R.RhinoApp.RunScript('_Undo',False);undone=snapshot();R.RhinoApp.RunScript('_Redo',False);redone=snapshot()
-        return dict(source_3dm=source_3dm,input=case,macro=macro,input_trace=input_trace,before=before,success=success,events=events,after=after,after_script=after_script,history=history,undo=undone,redo=redone),0
+        result=dict(source_3dm=source_3dm,input=case,macro=macro,input_trace=input_trace,before=before,success=success,events=events,after=after,after_script=after_script,history=history,undo=undone,redo=redone)
+        if case.get('sample_shaded'):result['sample_environment']=dict(absolute=doc.ModelAbsoluteTolerance,angular=doc.ModelAngleToleranceRadians,units=str(doc.ModelUnitSystem))
+        return result,0
     finally:
+        doc.ModelAbsoluteTolerance=original_tolerance;doc.ModelAngleToleranceRadians=original_angle
         doc.Layers.SetCurrentLayerIndex(0,True)
         for obj in list(doc.Objects):doc.Objects.Delete(obj.Id,True)
         if group>=0:doc.Groups.Delete(group)

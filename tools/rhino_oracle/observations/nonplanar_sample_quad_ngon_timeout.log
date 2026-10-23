@@ -1,0 +1,42 @@
+Capturing physical face threshold getters
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_sample.py", line 51, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_nonplanar_sample.py", line 42, in main
+    data=OracleClient(settings_scheme='VibocerosOracleNonplanarFaces20261023'+suffix).run_rhino(payload,timeout=timeout)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2079, in run_rhino
+    raise OracleError(
+tools.rhino_oracle.client.OracleError: Rhino probe did not respond within 120 seconds (owned_pids=[3140972], owned_window='0x00e00006', ui_fallback_sent=True)
+Worker progress:
+worker: started
+worker: started
+worker: request loaded
+operation nonplanar_sample_quad_ngon: start
+
+TriangulateNonPlanarQuads input nonplanar_sample_quad_ngon 0: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_quad_ngon 1: _Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_quad_ngon 2: 0.123
+
+TriangulateNonPlanarQuads input nonplanar_sample_quad_ngon 3: _SelectBy=Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_quad_ngon 4: _Angle
+
+TriangulateNonPlanarQuads input nonplanar_sample_quad_ngon 5: 7.0
+
+TriangulateNonPlanarQuads input nonplanar_sample_quad_ngon 6: _SelectBy=Distance
+
+TriangulateNonPlanarQuads input nonplanar_sample_quad_ngon 7: _Distance
+
+PICK @catenary-click:nonplanar_sample_quad_ngon-8 1415 412
+Launcher output:
+Launched Rhino 8 through direct ARM64 Wine
+Wine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine
+WINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix
+Executable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe
+Launcher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log

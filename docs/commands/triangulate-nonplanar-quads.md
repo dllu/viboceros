@@ -4,7 +4,8 @@
 
 Start `TriangulateNonPlanarQuads`, select meshes and press Enter to open its
 text options. Preselected meshes open the options immediately. Change options,
-then press Enter to apply; Escape or Cancel discards the edit and clears selection.
+then press Enter to apply. Escape or Cancel returns from value entry to options;
+another cancels the edit and clears selection.
 Geometry, tolerance, selection or editability changes reject staged acceptance.
 
 Complete preselected scripts execute directly:
@@ -17,9 +18,18 @@ _-TriangulateNonPlanarQuads _SelectBy=_Angle _Angle 1 _SplitMethod _MinimumArea
 Fresh defaults are Distance selection, zero distance, zero angle and
 ShortestDiagonal. Accepted settings persist across documents and Undo/Redo
 within one registry; cancelled or invalid updates preserve the accepted values.
-Distance uses model units and Angle uses degrees. Zero is allowed.
+Distance uses model units and Angle uses degrees. Zero is allowed; explicitly
+typed negative thresholds clamp to zero.
 Bare `SelectBy` toggles Distance and Angle; `Distance`, `Angle` and `SplitMethod`
 also accept separate responses. Local scripts additionally accept `Name=value`.
+
+While entering Distance or Angle, click a quad mesh face to sample that value.
+An unselected mesh can supply the reference without becoming a conversion target.
+The other threshold stays unchanged. Sampling uses the public OpenNURBS face-plane
+range and largest opposite-corner angle, then subtracts Rhino's decimal step.
+Flat samples produce `-0.01`, which persists as a disabled criterion; conversion
+leaves geometry unchanged when no test is active. Typed acceptance preserves
+these sampled settings. No geometry changes until the conversion is accepted.
 
 Split methods are `ShortestDiagonal`, `LongestDiagonal`, `MinimumArea`,
 `MaximumArea`, `MinimumAngle` and `MaximumAngle`. The older `MinimizeArea` and
@@ -46,9 +56,13 @@ moved into the document without an extra geometry clone.
 The [SDK record](../nonplanar-quad-qualification.json) covers 42 independent
 inputs. The [command record](../nonplanar-command-qualification.json) covers 30
 native workflows, 26 registered command replays and 30 application getters.
+The [sampling record](../nonplanar-sample-qualification.json) adds 25 native
+workflows, including 20 acknowledged face picks, numeric boundaries, flat values,
+nested cancellation and document-tolerance changes.
 Five discovery workflows with rejected or misplaced options remain excluded;
-a failed import retains zero qualified geometry. Native face-based threshold
-sampling, dialogs/previews, spinner controls, physical postselection, restricted
+a failed import retains zero qualified geometry. Incomplete and stalled n-gon
+sampling attempts retain their evidence with zero qualified geometry. Sampling
+on n-gon meshes, native wireframe/ghosted input, dialogs/previews, spinner controls, physical postselection, restricted
 objects, grips, multi-mesh processing order, extreme coordinates, degenerate
 repair and comparative performance remain unqualified.
 

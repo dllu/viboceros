@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_power_one",
+      "case": "nonplanar_sample_power_one"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_power_tenth",
+      "case": "nonplanar_sample_power_tenth"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_small_angle",
+      "case": "nonplanar_sample_small_angle"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_negative_distance",
+      "case": "nonplanar_sample_negative_distance"
+    },
+    {
+      "op": "nonplanar_quad_sample",
+      "id": "nonplanar_sample_negative_angle",
+      "case": "nonplanar_sample_negative_angle"
+    }
+  ]
+}
