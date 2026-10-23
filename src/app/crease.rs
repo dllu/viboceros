@@ -12,12 +12,14 @@ use mode::{Mode, Outcome};
 pub(super) enum Prompt {
     Components { mode: Mode, tolerance: Tolerance },
     Spin(Box<super::subd_spin_edge::Prompt>),
+    Insert(Box<super::insert_point::Prompt>),
 }
 impl Prompt {
     pub(super) fn command(&self) -> &'static str {
         match self {
             Self::Components { mode, .. } => mode.command(),
             Self::Spin(_) => "SubDSpinEdge",
+            Self::Insert(_) => "InsertPoint",
         }
     }
     pub(super) fn hint(&self) -> &'static str {
@@ -37,12 +39,20 @@ impl Prompt {
             Self::Spin(_) => {
                 "Pick a SubD edge to spin; Enter finishes (Direction SpinEdgeAgain Undo)"
             }
+            Self::Insert(p) => {
+                if p.session.is_none() {
+                    "Select one mesh or SubD"
+                } else {
+                    "Pick points on original control edges (Undo); Enter finishes, Esc cancels"
+                }
+            }
         }
     }
     pub(super) fn eligible(&self, kind: ComponentSelectionKind) -> bool {
         match self {
             Self::Components { mode, .. } => mode.eligible(kind),
             Self::Spin(_) => kind == ComponentSelectionKind::SubDEdge,
+            Self::Insert(_) => false,
         }
     }
     pub(super) fn preserves_grip_owners(&self) -> bool {
@@ -57,6 +67,7 @@ impl Prompt {
     pub(super) fn scene(&self) -> Option<&Document> {
         match self {
             Self::Spin(p) => Some(&p.scene),
+            Self::Insert(p) => Some(&p.scene),
             _ => None,
         }
     }
@@ -100,6 +111,9 @@ impl VibocerosApp {
         Ok(targets)
     }
     pub(super) fn try_start_crease(&mut self, input: &str) -> bool {
+        if self.try_start_insert_point(input) {
+            return true;
+        }
         if self.try_start_spin_edge(input) {
             return true;
         }
@@ -152,6 +166,9 @@ impl VibocerosApp {
         true
     }
     pub(super) fn try_continue_crease(&mut self, input: &str) -> bool {
+        if self.insert_prompt().is_some() {
+            return self.continue_insert_point(input);
+        }
         if self.picking_spin_edge() {
             return self.continue_spin_edge(input);
         }
@@ -207,6 +224,10 @@ impl VibocerosApp {
         self.push_log(out.message);
     }
     pub(super) fn cancel_crease(&mut self) {
+        if self.insert_prompt().is_some() {
+            self.cancel_insert_point();
+            return;
+        }
         if self.picking_spin_edge() {
             self.finish_spin_edge();
             return;

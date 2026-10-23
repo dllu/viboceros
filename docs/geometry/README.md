@@ -8,7 +8,7 @@ validation. Command behavior belongs in the [command reference](../commands/READ
 - [Surface intersection coverage, tangencies and remaining limits](surface-intersections.md)
 - [Typed extrusion creators and native geometry qualification](../creator-extrusions.md)
 - [SubD geometry](../subd.md)
-- [InsertPoint kernel foundation and remaining implementation](insert-point.md)
+- [InsertPoint geometry, staging and compatibility limits](insert-point.md)
 - [Mesh vertex channels and 3DM preservation](mesh-channels.md)
 - [Stretch fitting performance and native 3dm readback](../stretch-performance.md)
 - [Control and edit-point workflows, HidePt and ShowPt](../control-points.md)

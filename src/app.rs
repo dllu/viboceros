@@ -133,6 +133,7 @@ mod control_polygon;
 mod copy_options;
 mod crease;
 mod extract_surface;
+mod insert_point;
 mod merge_coplanar_face;
 mod shell;
 mod shrink_trimmed;

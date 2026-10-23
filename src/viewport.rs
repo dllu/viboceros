@@ -102,6 +102,7 @@ mod arc_tilted;
 mod tangent;
 pub use tangent::TangentPreview;
 mod edge_point;
+mod insert_point;
 use curve_sampling::ViewportCurve;
 pub use edge_picking::EdgePick;
 const TRACK_CAPTURE_PIXELS: f32 = 8.0;
@@ -337,6 +338,7 @@ pub enum FacePickMode {
 
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
+    pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub soft_crease: Option<soft_crease::Overlay<'a>>,
     pub drafting: DraftingInput,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
@@ -457,6 +459,7 @@ fn selection_candidate(
 impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
+            insert_edges: None,
             soft_crease: None,
             drafting: DraftingInput::default(),
             point_filter: None,
@@ -545,6 +548,10 @@ impl Default for ViewportInput<'_> {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
+    pub insert_point: Option<(
+        viboceros_geometry::PolygonEdgePoint,
+        viboceros_geometry::UnitVector3,
+    )>,
     pub soft_crease_vertex: Option<(usize, usize)>,
     pub(crate) surface_corner_click: Option<SurfaceCornerAction>,
     pub zoom_window_result: Option<Result<bool, &'static str>>,
@@ -1428,6 +1435,7 @@ impl Viewport {
             self.edge_snap_cache.borrow_mut().take();
         }
         let selecting = !input.zoom_window
+            && input.insert_edges.is_none()
             && input.zoom_target.is_none()
             && input.circular_selection.is_none()
             && input.fence_selection.is_none()
@@ -2770,7 +2778,23 @@ impl Viewport {
         ) && face_click.is_none()
             && response.clicked_by(PointerButton::Primary)
             && self.has_unmeshed_selected_face_source(document, input.face_pick.unwrap());
+        let insert_cursor = input.insert_edges.and_then(|edges| {
+            response.hover_pos().and_then(|p| {
+                self.insert_point_cursor(edges, p, rect, document, drafting.snap_options())
+            })
+        });
+        if let Some(edges) = input.insert_edges {
+            self.paint_insert_edges(&painter, rect, edges, insert_cursor);
+        }
         ViewportOutput {
+            insert_point: response
+                .clicked_by(PointerButton::Primary)
+                .then(|| {
+                    insert_cursor
+                        .map(|c| c.pick)
+                        .zip(self.viewward_direction().normalized_nonzero().ok())
+                })
+                .flatten(),
             soft_crease_vertex: input.soft_crease.and_then(|overlay| {
                 self.paint_soft_crease(
                     &painter,
@@ -2847,12 +2871,14 @@ impl Viewport {
             component_window,
             control_point_selection,
             picked_point: (response.clicked_by(PointerButton::Primary)
+                && input.insert_edges.is_none()
                 && !input.parametric_pick
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
             picked_snap: (response.clicked_by(PointerButton::Primary)
+                && input.insert_edges.is_none()
                 && !input.parametric_pick
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))

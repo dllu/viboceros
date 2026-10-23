@@ -56,7 +56,7 @@ def observations():
             elif any(t.get('errors') or t.get('completed') != t.get('expected') for t in value['input_trace']):
                 excluded[key] = 'Incomplete native physical input; retained as a diagnostic.'
             elif not key.startswith('insert_point_full_subd_'):
-                excluded[key] = 'Mesh triangulation and quad selection remain under implementation; no kernel parity claim.'
+                excluded[key] = 'Outside this SubD-only kernel record; mesh command comparisons are in insert-point-command-qualification.json.'
             else:
                 if 'Unknown command' in value['history']:
                     raise ValueError('unexpected native insertion token')
@@ -101,13 +101,14 @@ def summarize(text):
                 captured_workflows=sum(FAMILIES.values()), subd_kernel_cases=len(rows),
                 maximum_control_or_limit_point_error=maximum_control,
                 maximum_sampled_surface_error=maximum_surface,
-                cases=rows, excluded=excluded, command_implemented=False,
+                cases=rows, excluded=excluded, command_implemented=True,
+                command_qualification_record='insert-point-command-qualification.json',
                 full_native_parity=False, performance_qualified=False,
                 limits=[
-                    'This is a kernel foundation, not a registered InsertPoint command or interactive getter. Document history, local Undo, cancellation and grip-state parity are not certified.',
+                    'This record qualifies only the SubD path kernel. The registered command, interactive getter, document history, local Undo and cancellation have separate evidence in insert-point-command-qualification.json. Grip-state parity remains unqualified.',
                     'The ten replays use exact saved source archives and captured physical projected-point witnesses in an owned Top viewport. Control-point ordinals, oriented faces, edge and vertex tags, limit stations and density-two facets agree within epsilon.',
                     'The path core uses public OpenNURBS SplitEdge and face-local-index SplitFace in one archive decode/edit/encode. Explicit edge points precede automatic crossings through intermediate faces. Near-endpoint user picks clamp to [0.001,0.999].',
-                    'Mesh captures, early unwitnessed physical input, typed-coordinate discovery and one incomplete physical input remain excluded. General mesh triangulation, channel interpolation and quad origins still need implementation and qualification.',
+                    'Mesh captures, early unwitnessed physical input, typed-coordinate discovery and one incomplete physical input remain excluded from this kernel record. Separate command evidence retains mesh channels, logical regions and explicit native tessellation differences.',
                     'The core accepts at most 256 original-edge picks and one million source point-plus-edge components. A supplied parallel-view normal controls crossing projection; otherwise the first incident face supplies its normal. Perspective views, intersecting path chords, arbitrary 3D topology, continuous surface error and comparative speed remain unqualified.',
                 ], sha256=source_hashes())
 

@@ -3,6 +3,12 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.selecting_insert_source() {
+            if let Some(id) = click.object_id {
+                self.select_insert_source(id);
+            }
+            return;
+        }
         if self.pick_mesh_polyline(click.object_id) {
             return;
         }

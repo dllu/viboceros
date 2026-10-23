@@ -1,8 +1,12 @@
 """Fixed mesh/SubD edge insertion paths and local Undo recipes."""
 from copy import deepcopy
-try:
+if __package__:
+    from .insert_point_holdout_cases import CASES as HOLDOUTS
+else:
+    from insert_point_holdout_cases import CASES as HOLDOUTS
+if __package__:
     from .subdivide_probe import source
-except (ImportError,ValueError):
+else:
     from subdivide_probe import source
 QUAD=[[0.,0.,0.],[4.,0.,0.],[4.,3.,0.],[0.,3.,0.]]
 DISCOVERY={}
@@ -47,9 +51,9 @@ for side in range(4):
         row=deepcopy(LIVE['insert_point_live_mesh_1']);row['points']=[p];row['actions']=[dict(click=p),'Enter'];REGIONS['insert_point_regions_side_'+str(side)+'_'+str(int(100*fraction))]=row
 for name,points in [('low',[[0.,.3,0.],[2.,3.,0.]]),('high',[[0.,2.7,0.],[2.,3.,0.]]),('reverse',[[2.,3.,0.],[0.,1.5,0.]]),('same_reverse',[[0.,2.25,0.],[0.,.75,0.]])]:
     row=deepcopy(LIVE['insert_point_live_mesh_2']);row['points']=points;row['actions']=[dict(click=p)for p in points]+['Enter'];REGIONS['insert_point_regions_'+name]=row
-ALL_CASES=dict(CASES,**dict(LIVE,**dict(FULL,**REGIONS)))
-def request(live=False,full=False,regions=False):
-    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='insert_point_command',id=k,case=k)for k in (REGIONS if regions else FULL if full else LIVE if live else CASES)])
+ALL_CASES=dict(CASES,**dict(LIVE,**dict(FULL,**dict(REGIONS,**HOLDOUTS))))
+def request(live=False,full=False,regions=False,holdouts=False):
+    return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-6),operations=[dict(op='insert_point_command',id=k,case=k)for k in (HOLDOUTS if holdouts else REGIONS if regions else FULL if full else LIVE if live else CASES)])
 def validate(op):
     try:valid=isinstance(op,dict)and set(op)=={'op','id','case'}and op['op']=='insert_point_command'and op['case']in ALL_CASES and op['id']==op['case']
     except TypeError:valid=False

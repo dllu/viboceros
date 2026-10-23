@@ -2,6 +2,7 @@
 use crate::{GeometryError, LineSegment, Point3, Real, Tolerance, UnitVector3};
 use std::collections::{BTreeMap, VecDeque};
 mod crossings;
+mod polygons;
 
 /// A point on an original control edge. Parameters follow that edge's direction.
 #[derive(Clone, Copy, Debug, PartialEq)]

@@ -1,8 +1,8 @@
 """Saved source topology and command/history observations for InsertPoint."""
-try:
+if __package__:
     from .insert_point_cases import ALL_CASES,validate
     from .crease_probe import run_scene
-except (ImportError,ValueError):
+else:
     from insert_point_cases import ALL_CASES,validate
     from crease_probe import run_scene
 def run(op,host,iterations,tolerance):

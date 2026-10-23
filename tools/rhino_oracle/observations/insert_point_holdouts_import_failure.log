@@ -1,0 +1,15 @@
+Capturing 12 InsertPoint scenes
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_insert_point.py", line 38, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/generate_insert_point.py", line 27, in main
+    result=OracleClient(settings_scheme='VibocerosOracleInsertPoint20261023'+('Holdouts'if args.holdouts else'Regions'if args.regions else'Full'if args.full else'Live'if args.live else'Discovery')).run_rhino(payload,timeout=240)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2090, in run_rhino
+    _validate_response(response, "rhino", request)
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 2542, in _validate_response
+    raise OracleError(f"{engine} probe failed: {error}")
+tools.rhino_oracle.client.OracleError: rhino probe failed: SystemError at operation insert_point_holdout_mesh_warped: start: Parent module '' not loaded, cannot perform relative import

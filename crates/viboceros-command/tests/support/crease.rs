@@ -225,6 +225,12 @@ pub fn mode(v: &Value) -> CreaseMode {
     }
 }
 pub fn check(doc: &Document, rows: &Value, selection: bool) -> f64 {
+    check_impl(doc, rows, selection, true)
+}
+pub fn check_metadata(doc: &Document, rows: &Value, selection: bool) {
+    check_impl(doc, rows, selection, false);
+}
+fn check_impl(doc: &Document, rows: &Value, selection: bool, geometry: bool) -> f64 {
     let rows = rows.as_array().unwrap();
     assert_eq!(doc.objects().len(), rows.len());
     let mut maximum = 0f64;
@@ -279,7 +285,7 @@ pub fn check(doc: &Document, rows: &Value, selection: bool) -> f64 {
             .collect::<Vec<_>>();
         assert_eq!(groups, expected);
         match object.geometry() {
-            Geometry::SubD(subd) => {
+            Geometry::SubD(subd) if geometry => {
                 let report = subd_native::compare(subd, &row["subd"]);
                 maximum = maximum
                     .max(
@@ -289,7 +295,7 @@ pub fn check(doc: &Document, rows: &Value, selection: bool) -> f64 {
                     )
                     .max(report["maximum_sampled_surface_error"].as_f64().unwrap());
             }
-            Geometry::Mesh(mesh) => {
+            Geometry::Mesh(mesh) if geometry => {
                 let mut expected = row["mesh"].clone();
                 // RhinoCommon Color.A is opacity; the model stores OpenNURBS
                 // transparency bytes. Retain the unconverted capture unchanged.
@@ -310,6 +316,7 @@ pub fn check(doc: &Document, rows: &Value, selection: bool) -> f64 {
             Geometry::Point(p) => {
                 maximum = maximum.max(p.distance_to(point(&row["point"])).unwrap())
             }
+            Geometry::Mesh(_) | Geometry::SubD(_) => {}
             _ => panic!("unexpected crease geometry"),
         }
     }

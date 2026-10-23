@@ -502,6 +502,9 @@ class OracleClient:
             if any(op.get('case') in PICKS for op in request['operations']):
                 from .component_picking import ComponentPicker
                 interaction = ComponentPicker()
+        if any(op.get('op') == 'insert_point_mesh_sdk' for op in request.get('operations', [])):
+            if self.settings_scheme is None or request.get('iterations',1)!=1 or any(op.get('op')!='insert_point_mesh_sdk' for op in request['operations']):
+                raise OracleProtocolError('Insertion meshing SDK calibration requires a dedicated private workflow')
         if any(op.get('op') == 'insert_point_command' for op in request.get('operations', [])):
             from .insert_point_cases import ALL_CASES
             operations=request['operations']

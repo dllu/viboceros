@@ -229,7 +229,11 @@ impl eframe::App for VibocerosApp {
         } else {
             self.zoom_target
         };
-        let object_filter = if self.picking_face_append() {
+        let object_filter = if self.selecting_insert_source() {
+            Some(viboceros_command::ObjectSelectionFilter::MeshAndSubD)
+        } else if self.insert_prompt().is_some() {
+            None
+        } else if self.picking_face_append() {
             Some(viboceros_command::ObjectSelectionFilter::FaceAppend)
         } else if self.picking_mesh_polyline() {
             Some(viboceros_command::ObjectSelectionFilter::Mesh)
@@ -645,7 +649,8 @@ impl eframe::App for VibocerosApp {
                     .then_some(crate::viewport::ComponentPickFilter::Edges)
             });
         let component_pick = component_pick.or_else(|| {
-            ((self.crease_prompt.is_some() || self.picking_soft_crease_edges())
+            (((self.crease_prompt.is_some() && self.insert_prompt().is_none())
+                || self.picking_soft_crease_edges())
                 && model_input_active
                 && self.plane_prompt.is_none()
                 && !end_analysis_picking)
@@ -1013,6 +1018,10 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .filter(|s| edge_pick && s.boundary_pick())
             .map(|s| s.boundary_segments());
+        let insert_edges = match self.crease_prompt.as_ref() {
+            Some(crease::Prompt::Insert(p)) => p.session.as_ref().map(|s| s.source_edges()),
+            _ => None,
+        };
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -1038,6 +1047,7 @@ impl eframe::App for VibocerosApp {
                         &mut child,
                         document,
                         ViewportInput {
+                            insert_edges,
                             soft_crease: self.soft_crease_prompt.as_ref().and_then(|p| p.overlay()),
                             drafting,
                             angle_plane,

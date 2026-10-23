@@ -35,6 +35,7 @@ mod mesh_seams;
 use mesh_component_unweld::{UnweldEdgeCommand, UnweldVertexCommand};
 use mesh_component_weld::{WeldEdgeCommand, WeldVerticesCommand};
 use mesh_seams::{UnweldCommand, WeldCommand};
+pub mod insert_point;
 mod morph_edit;
 pub mod orient_curve;
 pub mod orient_curve_edge;
@@ -1185,6 +1186,9 @@ impl CommandRegistry {
         registry
             .register(subd_spin_edge::SubDSpinEdgeCommand)
             .expect("unique built-in SubDSpinEdge");
+        registry
+            .register(insert_point::InsertPointCommand)
+            .expect("unique built-in InsertPoint");
         registry
             .register(subdivide::SubDivideCommand)
             .expect("unique built-in SubDivide");
@@ -13279,6 +13283,12 @@ fn format_point(point: Point3) -> String {
 
 #[derive(Debug, Error)]
 pub enum CommandError {
+    #[error("select one editable mesh or SubD for point insertion")]
+    InsertPointUnavailable,
+    #[error("insertion source, editability or tolerance changed; select again")]
+    InsertPointStale,
+    #[error("edge point insertion exceeds the staged resource budget")]
+    InsertPointResourceLimit,
     #[error("select an available interior SubD edge")]
     SpinEdgeUnavailable,
     #[error("SubD spin source, editability or tolerance changed; select again")]

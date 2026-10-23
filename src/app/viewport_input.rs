@@ -3,6 +3,12 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if self.insert_prompt().is_some_and(|p| p.session.is_some()) {
+            if let Some((pick, normal)) = output.insert_point {
+                self.pick_insert_point(pick, normal);
+            }
+            return true;
+        }
         if self
             .soft_crease_prompt
             .as_ref()

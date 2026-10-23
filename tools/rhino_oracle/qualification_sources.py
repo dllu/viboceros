@@ -7,6 +7,7 @@ APPLICATION_MODULES = [
     'src/viewport/display_cache.rs',
     'src/viewport/mesh_normals.rs',
     'src/viewport/mesh_normals/tests.rs',
+    'src/viewport/insert_point.rs',
     'src/app/object_selection.rs',
     'src/app/control_polygon.rs',
     'src/app/control_polygon/subcurve.rs',
@@ -28,6 +29,9 @@ APPLICATION_MODULES = [
     'src/app/crease/mode.rs',
     'src/app/subd_spin_edge.rs',
     'src/app/crease/tests/subd_spin_edge.rs',
+    'src/app/insert_point.rs',
+    'src/app/crease/tests/insert_point.rs',
+    'crates/viboceros-command/tests/support/insert_point.rs',
     'crates/viboceros-command/tests/support/subd_spin_edge.rs',
     'src/app/crease/tests/edge_seams.rs',
     'src/viewport/soft_crease.rs',
@@ -64,6 +68,7 @@ SUBD_MODULES = [
     'crates/viboceros-geometry/src/subd/insert.rs',
     'crates/viboceros-geometry/src/edge_insertion.rs',
     'crates/viboceros-geometry/src/edge_insertion/crossings.rs',
+    'crates/viboceros-geometry/src/edge_insertion/polygons.rs',
     'crates/viboceros-opennurbs/native/subd_control_mesh.h',
     'crates/viboceros-opennurbs/src/subd/control_net.rs',
     'crates/viboceros-geometry/src/subd/control_net.rs',
@@ -92,8 +97,11 @@ MESH_MODULES = [
     for name in ['vertex_channels', 'native', 'append', 'face_records', 'components',
                  'rebuild', 'normals', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
-                 'quadrangulate', 'planar_cap', 'coplanar_merge']
+                 'quadrangulate', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons']
 ] + [
+    'crates/viboceros-geometry/src/edge_insertion.rs',
+    'crates/viboceros-geometry/src/edge_insertion/crossings.rs',
+    'crates/viboceros-geometry/src/edge_insertion/polygons.rs',
     'crates/viboceros-geometry/src/mesh/normals/tests.rs',
     'crates/viboceros-geometry/src/mesh/edge_weld/tests.rs',
     'crates/viboceros-geometry/src/mesh/union_find/tests.rs',
@@ -115,7 +123,8 @@ def with_shared_sources(paths):
     if any(p in expanded for p in ['src/viewport.rs', 'src/viewport/scene.rs',
                                    'src/viewport/display_cache.rs']):
         expanded.extend(['src/viewport/mesh_normals.rs',
-                         'src/viewport/mesh_normals/tests.rs'])
+                         'src/viewport/mesh_normals/tests.rs',
+                         'src/viewport/insert_point.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
             'crates/viboceros-command/src/mesh_seams.rs',
@@ -127,6 +136,8 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/component_seams/mode.rs',
             'crates/viboceros-command/src/subd_spin_edge.rs',
             'crates/viboceros-command/src/subd_spin_edge/arguments.rs',
+            'crates/viboceros-command/src/insert_point.rs',
+            'crates/viboceros-command/src/insert_point/arguments.rs',
             'crates/viboceros-command/src/extract_control_polygon.rs',
             'crates/viboceros-command/src/extract_control_polygon/options.rs',
             'crates/viboceros-command/src/extract_control_polygon/arguments.rs',

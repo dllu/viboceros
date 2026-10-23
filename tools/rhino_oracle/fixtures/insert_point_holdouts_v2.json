@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_warped",
+      "case": "insert_point_holdout_mesh_warped"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_triangle",
+      "case": "insert_point_holdout_mesh_triangle"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_created_edge",
+      "case": "insert_point_holdout_mesh_created_edge"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_subd_warped",
+      "case": "insert_point_holdout_subd_warped"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_subd_triangle",
+      "case": "insert_point_holdout_subd_triangle"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_subd_created_edge",
+      "case": "insert_point_holdout_subd_created_edge"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_ngon_one",
+      "case": "insert_point_holdout_mesh_ngon_one"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_ngon_two",
+      "case": "insert_point_holdout_mesh_ngon_two"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_ngon_internal",
+      "case": "insert_point_holdout_mesh_ngon_internal"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_ngon_island",
+      "case": "insert_point_holdout_mesh_ngon_island"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_seam",
+      "case": "insert_point_holdout_mesh_seam"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_holdout_mesh_reverse",
+      "case": "insert_point_holdout_mesh_reverse"
+    }
+  ]
+}

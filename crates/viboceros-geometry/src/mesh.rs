@@ -15,6 +15,7 @@ mod compaction_tests;
 mod components;
 mod connected_faces;
 mod draft_angle;
+mod insert;
 pub use connected_faces::MeshPartBoundary;
 mod containment;
 mod section;

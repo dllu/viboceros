@@ -3,6 +3,7 @@ use crate::app::tests::test_app;
 use crate::viewport::{ComponentClick, ComponentPick};
 use viboceros_geometry::SubD;
 mod edge_seams;
+mod insert_point;
 mod native;
 mod subd_spin_edge;
 mod vertex_seams;

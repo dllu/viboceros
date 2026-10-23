@@ -1,0 +1,107 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_full_mesh_adjacent_0_origins",
+      "case": "insert_point_full_mesh_adjacent_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_full_mesh_same_edge_0_origins",
+      "case": "insert_point_full_mesh_same_edge_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_full_mesh_diagonal_0_origins",
+      "case": "insert_point_full_mesh_diagonal_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_full_mesh_strip_mid_0_origins",
+      "case": "insert_point_full_mesh_strip_mid_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_full_mesh_strip_mid_1_origins",
+      "case": "insert_point_full_mesh_strip_mid_1",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_side_0_25_0_origins",
+      "case": "insert_point_regions_side_0_25_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_side_0_75_0_origins",
+      "case": "insert_point_regions_side_0_75_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_side_1_25_0_origins",
+      "case": "insert_point_regions_side_1_25_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_side_1_75_0_origins",
+      "case": "insert_point_regions_side_1_75_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_side_2_25_0_origins",
+      "case": "insert_point_regions_side_2_25_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_side_3_25_0_origins",
+      "case": "insert_point_regions_side_3_25_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_side_3_75_0_origins",
+      "case": "insert_point_regions_side_3_75_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_low_0_origins",
+      "case": "insert_point_regions_low_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_high_0_origins",
+      "case": "insert_point_regions_high_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_reverse_0_origins",
+      "case": "insert_point_regions_reverse_0",
+      "origins": true
+    },
+    {
+      "op": "insert_point_mesh_sdk",
+      "id": "insert_point_regions_same_reverse_0_origins",
+      "case": "insert_point_regions_same_reverse_0",
+      "origins": true
+    }
+  ]
+}
