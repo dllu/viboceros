@@ -97,7 +97,7 @@ MESH_MODULES = [
     for name in ['vertex_channels', 'native', 'append', 'face_records', 'components',
                  'rebuild', 'normals', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
-                 'quadrangulate', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions']
+                 'quadrangulate', 'aspect_ratio', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions']
 ] + [
     'crates/viboceros-geometry/src/edge_insertion.rs',
     'crates/viboceros-geometry/src/edge_insertion/crossings.rs',
@@ -164,6 +164,7 @@ def with_shared_sources(paths):
             'tools/rhino_oracle/insert_point_ngon_cases.py',
             'tools/rhino_oracle/insert_point_mesh_shape_cases.py',
             'tools/rhino_oracle/insert_point_pick_depth_cases.py',
+            'tools/rhino_oracle/insert_point_spatial_layout_cases.py',
         ])
     if ('crates/viboceros-geometry/src/nurbs_surface.rs' in expanded or
             'crates/viboceros-opennurbs/src/surface.rs' in expanded or
@@ -173,5 +174,7 @@ def with_shared_sources(paths):
             'crates/viboceros-opennurbs/src/surface.rs',
             'crates/viboceros-opennurbs/native/surface_queries.h',
         ])
+    if 'crates/viboceros-command/tests/support/insert_point.rs' in expanded:
+        expanded.append('crates/viboceros-command/tests/support/insert_point/mesh.rs')
     expanded.append('tools/rhino_oracle/qualification_sources.py')
     return list(dict.fromkeys(expanded))

@@ -8,7 +8,7 @@ from pathlib import Path
 from .client import OracleClient
 from .insert_point_cases import request
 HERE=Path(__file__).resolve().parent
-SOURCES=['generate_insert_point.py','insert_point_cases.py','insert_point_holdout_cases.py','insert_point_ngon_cases.py','insert_point_mesh_shape_cases.py','insert_point_pick_depth_cases.py','insert_point_probe.py','conic_getter_input.py','managed_mouse_callback.py','snap_environment.py','number_token.py','catenary_point_picker.py','group_picking.py','crease_probe.py','crease_cases.py','subdivide_probe.py','subd_box_probe.py','join_probe.py','merge_edges_probe.py','client.py','rhino_worker.py','structural_sdk.py']
+SOURCES=['generate_insert_point.py','insert_point_cases.py','insert_point_holdout_cases.py','insert_point_ngon_cases.py','insert_point_mesh_shape_cases.py','insert_point_pick_depth_cases.py','insert_point_spatial_layout_cases.py','insert_point_probe.py','conic_getter_input.py','managed_mouse_callback.py','snap_environment.py','number_token.py','catenary_point_picker.py','group_picking.py','crease_probe.py','crease_cases.py','subdivide_probe.py','subd_box_probe.py','join_probe.py','merge_edges_probe.py','client.py','rhino_worker.py','structural_sdk.py']
 FAMILIES = {
     'discovery': ('insert_point_discovery', 'Discovery'),
     'live': ('insert_point_live', 'Live'),
@@ -19,6 +19,7 @@ FAMILIES = {
     'shapes': ('insert_point_mesh_shapes', 'MeshShapes'),
     'depth': ('insert_point_pick_depth', 'PickDepth'),
     'witnesses': ('insert_point_pick_depth_v2', 'PickDepthV2'),
+    'spatial': ('insert_point_spatial_layouts', 'SpatialLayouts'),
 }
 
 

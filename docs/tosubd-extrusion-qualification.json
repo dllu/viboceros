@@ -1046,7 +1046,7 @@
     "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/structural_sdk.py": "a4e6962565588ce29e003aed93f72e529bd5619f7967f378daed9dab6c4a8483",
+    "tools/rhino_oracle/structural_sdk.py": "574e9f705053d2f96fa29355282aabcc4e8e2f94e50fa099c8ff04fba9b1c39c",
     "tools/rhino_oracle/rhino_worker.py": "92050b7993a00a62b9749d554132153ac9b98883e25cacce7e5b97159e00d3db",
     "tools/rhino_oracle/report_extrusions.py": "5c5a1296894ca353b0f7e900769dd65aaff9d1cfe2b1aecc80d8cae336b444be",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
@@ -1089,7 +1089,7 @@
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_rectangle_0.3dm": "405160ef963cd96713931684719fde45969285339f749fbce1f748ab663dc7f4",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_circle_0.3dm": "bf628228dec65c8402320746f753223a0ea4dd02c26eabad1c0d3ff76357e0d3",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_transposed_pipe_0.3dm": "b9b8316c4428ddb225c323cee42fa28ca28c8c834a709054832b07edf3e10498",
-    "tools/rhino_oracle/qualification_sources.py": "178a8216942929283f01257770283b990fe22f2851452105a56dd38f6fab9121",
+    "tools/rhino_oracle/qualification_sources.py": "9799ed690f1c1fdea2f3c9355d76f22f92809d5d27d66e098d980478960d66fb",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5",
     "crates/viboceros-geometry/src/mesh/vertex_channels.rs": "4cf015db3d66d77e2980e6ce7716e48f19b9a8b6d1bd07236b675f5d05e43385",
     "crates/viboceros-geometry/src/mesh/native.rs": "dcd8df91be3091300698e08b808519388c4fcf259e5a9245013fd7e121cffeec",
@@ -1106,7 +1106,7 @@
     "crates/viboceros-geometry/src/mesh/join.rs": "eb2e74a63d64b25d8280eced61be132033e49b296ec4c94a1d18dfbbffb29f27",
     "crates/viboceros-geometry/src/mesh/match_edges.rs": "2adbad45d20fe820e297ebb6c298a7935bab7aa52f1c46a6ab465d38a97425fc",
     "crates/viboceros-geometry/src/mesh/alignment.rs": "e3a1ba2c33713e265ef474c197a3c9fd46729af227f6dad4ad9332c0dfad5bb1",
-    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "e4036d3f74e53d6a4b5015c32ae3073a9c9be22b78edf755e380a885d1b227b0",
+    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "e0165c9008df54d8bfdab99952d9d303326ef82467fd426c76a824538150659e",
     "crates/viboceros-geometry/src/mesh/planar_cap.rs": "9bd66de6751bbd533a061be311ba42bb36fad7823cd8cf53e7d41d4afabe8f17",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
     "crates/viboceros-opennurbs/src/mesh.rs": "e1ccdc906de63839869e5c05870d30597514bba092c32a2b269215dd128b358e",
@@ -1158,8 +1158,9 @@
     "crates/viboceros-geometry/src/edge_insertion.rs": "4c22e7f30c0cf0d5b60bbf01b0a3cf5f812fbab8eb814aa2bb80d06694f95be5",
     "crates/viboceros-geometry/src/edge_insertion/crossings.rs": "fe7312d6d83b30866886db56288af54a66179f9089905b221125aa6496673422",
     "crates/viboceros-geometry/src/edge_insertion/polygons.rs": "0eae7a74c74332fade464a68550865930bf1957f60843c2a8bd05b32922d8439",
-    "crates/viboceros-geometry/src/mesh/insert.rs": "0fb4e2a3bf17f6eee6cf788ffefda8b5c774bf7d5f86a938248a2b5699ffaed5",
+    "crates/viboceros-geometry/src/mesh/insert.rs": "81c51c377a3c040a16dea0bb1a5a823dbe8f7360bfe2e7844398b562b57b4f9c",
     "crates/viboceros-geometry/src/mesh/insert/ngons.rs": "a244b7b7ab5dce38011d47570bf3a3e0c5ca8f7e9e6f9ceee0577ed6cd2d0732",
-    "crates/viboceros-geometry/src/mesh/insert/regions.rs": "dbfeafcbb7f09b5d1c9e10a9125b02883995f39a662ed5e0340f9fc5b7839850"
+    "crates/viboceros-geometry/src/mesh/insert/regions.rs": "a39006e23e1a45bef3db6825d90d99797e4b47ed1490a603bd66bffe1810fdba",
+    "crates/viboceros-geometry/src/mesh/aspect_ratio.rs": "eb3a14c99ce93a64ca5952c7d20fadc62b9ba0e721e6ab5ee52a334f2ef1aacf"
   }
 }

@@ -55,6 +55,16 @@ fn control_surface_hits_and_camera_target_fallback_match_native_depth_picks() {
         }
     }
 }
+#[test]
+fn independent_spatial_layouts_keep_geometry_failures_explicit() {
+    let capture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/insert_point_spatial_layouts.json"
+    ))
+    .unwrap();
+    for row in capture["results"].as_array().unwrap() {
+        replay(row, "insert_point_spatial_layouts", "SPATIAL");
+    }
+}
 fn replay(row: &serde_json::Value, family: &str, stage: &str) {
     eprintln!("N-gon {}", row["id"]);
     let v = &row["value"];
@@ -70,12 +80,14 @@ fn replay(row: &serde_json::Value, family: &str, stage: &str) {
     assert!(fixtures::stage(&mut session, &document, v));
     let mut preview = document.clone();
     session.apply_preview(&mut preview).unwrap();
-    fixtures::check(&preview, &ids, &v["after"], true);
+    fixtures::check_scene(&preview, &ids, &v["after"], true, family);
     assert_eq!(document.object(ids[0]).unwrap().geometry(), &original);
     session.finish(&mut document).unwrap();
-    let comparison = fixtures::check(&document, &ids, &v["after"], true);
+    let comparison = fixtures::check_scene(&document, &ids, &v["after"], true, family);
     if stage == "NGON" {
         fixtures::assert_ngon_cell_gap(row["id"].as_str().unwrap(), &comparison);
+    } else if stage == "SPATIAL" {
+        fixtures::assert_spatial_result(row["id"].as_str().unwrap(), &comparison);
     } else {
         fixtures::assert_additional_cell_gap(row["id"].as_str().unwrap(), &comparison);
     }
@@ -84,14 +96,14 @@ fn replay(row: &serde_json::Value, family: &str, stage: &str) {
         .execute(&mut scripted, &script)
         .unwrap();
     assert_eq!(
-        fixtures::check(&scripted, &script_ids, &v["after"], true),
+        fixtures::check_scene(&scripted, &script_ids, &v["after"], true, family),
         comparison
     );
     assert_eq!(document.undo_label(), Some("InsertPoint"));
     document.undo().unwrap();
-    fixtures::check(&document, &ids, &v["undo"], false);
+    fixtures::check_scene(&document, &ids, &v["undo"], false, family);
     document.redo().unwrap();
-    fixtures::check(&document, &ids, &v["redo"], false);
+    fixtures::check_scene(&document, &ids, &v["redo"], false, family);
     println!(
         "INSERT_POINT_{stage} {}",
         json!({"id":row["id"],"comparison":comparison,"identity":true,"metadata":true,"history":true,"preview":true,"changed":true})

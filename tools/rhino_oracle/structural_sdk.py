@@ -7,7 +7,7 @@ import shutil
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
     'insert_point_mesh_sdk': ('insert_point_mesh_sdk_probe', ('insert_point_mesh_sdk_cases','insert_point_mesh_methods','join_probe','merge_edges_probe')),
-    'insert_point_command': ('insert_point_probe', ('conic_getter_input','managed_mouse_callback','snap_environment','number_token','insert_point_cases','insert_point_holdout_cases','insert_point_ngon_cases','insert_point_mesh_shape_cases','insert_point_pick_depth_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
+    'insert_point_command': ('insert_point_probe', ('conic_getter_input','managed_mouse_callback','snap_environment','number_token','insert_point_cases','insert_point_holdout_cases','insert_point_ngon_cases','insert_point_mesh_shape_cases','insert_point_pick_depth_cases','insert_point_spatial_layout_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'subd_spin_edge': ('subd_spin_edge_probe', ('subd_edit_scene','conic_getter_input','managed_mouse_callback','snap_environment','number_token','subd_spin_edge_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'component_seams_subd': ('component_seams_subd_probe', ('component_seams_subd_cases','component_edge_seams_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'mesh_component_weld_commands': ('mesh_component_weld_probe', ('mesh_component_weld_cases','mesh_component_weld_followup_cases','mesh_component_weld_holdout_cases','mesh_channel_capture')),

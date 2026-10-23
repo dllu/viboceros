@@ -2,24 +2,26 @@
   "native_engine_version": "8.32.26160.13001",
   "model_epsilon": 1e-06,
   "command_implemented": true,
-  "command_cases": 65,
-  "getter_cases": 65,
+  "command_cases": 77,
+  "getter_cases": 77,
   "primary_cases": 21,
   "additional_geometry_cases": 12,
-  "captured_command_workflows": 101,
+  "captured_command_workflows": 113,
   "ngon_cases": 12,
   "ngon_getter_cases": 12,
   "shape_cases": 12,
   "depth_cases": 20,
+  "spatial_cases": 12,
   "calibration_recipes": 48,
   "failed_import_requested_workflows": 12,
   "failed_import_qualified_workflows": 0,
-  "maximum_error": 0.1420808431971155,
-  "maximum_control_or_shortest_diagonal_sample_error": 2.3470600418735663e-12,
-  "maximum_fixed_facet_sample_error": 0.1420808431971155,
+  "maximum_error": 0.18249764854097586,
+  "maximum_control_or_shortest_diagonal_sample_error": 0.18249764854097586,
+  "maximum_fixed_facet_sample_error": 0.18249764854097586,
+  "maximum_qualified_error": 2.3470600418735663e-12,
   "geometry_unqualified": [
-    "insert_point_depth_mesh_second_point",
-    "insert_point_depth_v2_mesh_second_inside"
+    "insert_point_spatial_bottom_mid_left_high",
+    "insert_point_spatial_same_edge_warp"
   ],
   "primary_cell_gaps": [
     "insert_point_full_mesh_same_edge"
@@ -28,15 +30,17 @@
   "holdout_region_gaps": [],
   "ngon_cell_gaps": [],
   "shape_cell_gaps": [],
-  "depth_cell_gaps": [
-    "insert_point_depth_mesh_second_point",
-    "insert_point_depth_mesh_target_plus",
-    "insert_point_depth_v2_mesh_second_inside"
-  ],
+  "depth_cell_gaps": [],
   "facet_gaps": [
-    "insert_point_depth_mesh_second_point",
-    "insert_point_depth_v2_mesh_second_inside",
-    "insert_point_full_mesh_same_edge"
+    "insert_point_full_mesh_same_edge",
+    "insert_point_spatial_bottom_mid_left_high",
+    "insert_point_spatial_same_edge_warp",
+    "insert_point_spatial_tilted_plane"
+  ],
+  "spatial_cell_gaps": [
+    "insert_point_spatial_bottom_mid_left_high",
+    "insert_point_spatial_same_edge_warp",
+    "insert_point_spatial_tilted_plane"
   ],
   "cases": [
     {
@@ -5398,11 +5402,11 @@
           [
             0,
             1,
-            2
+            2,
+            3
           ],
           [
             0,
-            2,
             3,
             4
           ]
@@ -5430,7 +5434,7 @@
         "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": true,
-        "stored_pieces_correspond": false,
+        "stored_pieces_correspond": true,
         "vertices": 5
       },
       "history": true,
@@ -5542,7 +5546,6 @@
           [
             0,
             1,
-            4,
             5
           ],
           [
@@ -5553,15 +5556,16 @@
           [
             1,
             3,
-            4
+            4,
+            5
           ]
         ],
         "channels": true,
         "faces": 3,
-        "fixed_facet_surface_qualified": false,
+        "fixed_facet_surface_qualified": true,
         "logical_regions": true,
         "maximum_error": 4.577566798522237e-16,
-        "maximum_fixed_facet_sample_error": 0.13796905934530304,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
         "native_cells": [
           [
             0,
@@ -5582,9 +5586,9 @@
         ],
         "ngon_overlays_correspond": true,
         "ngons": 1,
-        "qualified": false,
-        "stored_facets_correspond": false,
-        "stored_pieces_correspond": false,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
         "vertices": 6
       },
       "history": true,
@@ -5808,11 +5812,11 @@
           [
             0,
             1,
-            2
+            2,
+            3
           ],
           [
             0,
-            2,
             3,
             4
           ]
@@ -5840,7 +5844,7 @@
         "ngons": 1,
         "qualified": true,
         "stored_facets_correspond": true,
-        "stored_pieces_correspond": false,
+        "stored_pieces_correspond": true,
         "vertices": 5
       },
       "history": true,
@@ -5955,7 +5959,6 @@
           [
             0,
             1,
-            4,
             5
           ],
           [
@@ -5966,15 +5969,16 @@
           [
             1,
             3,
-            4
+            4,
+            5
           ]
         ],
         "channels": true,
         "faces": 3,
-        "fixed_facet_surface_qualified": false,
+        "fixed_facet_surface_qualified": true,
         "logical_regions": true,
         "maximum_error": 4.577566798522237e-16,
-        "maximum_fixed_facet_sample_error": 0.13796905934530304,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
         "native_cells": [
           [
             0,
@@ -5995,9 +5999,9 @@
         ],
         "ngon_overlays_correspond": true,
         "ngons": 1,
-        "qualified": false,
-        "stored_facets_correspond": false,
-        "stored_pieces_correspond": false,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
         "vertices": 6
       },
       "history": true,
@@ -6274,7 +6278,6 @@
           [
             0,
             1,
-            4,
             5
           ],
           [
@@ -6285,15 +6288,16 @@
           [
             1,
             3,
-            4
+            4,
+            5
           ]
         ],
         "channels": true,
         "faces": 3,
-        "fixed_facet_surface_qualified": false,
+        "fixed_facet_surface_qualified": true,
         "logical_regions": true,
         "maximum_error": 4.577566798522237e-16,
-        "maximum_fixed_facet_sample_error": 0.1420808431971155,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
         "native_cells": [
           [
             0,
@@ -6314,9 +6318,9 @@
         ],
         "ngon_overlays_correspond": true,
         "ngons": 1,
-        "qualified": false,
-        "stored_facets_correspond": false,
-        "stored_pieces_correspond": false,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
         "vertices": 6
       },
       "history": true,
@@ -6553,7 +6557,6 @@
           [
             0,
             1,
-            4,
             5
           ],
           [
@@ -6564,15 +6567,16 @@
           [
             1,
             3,
-            4
+            4,
+            5
           ]
         ],
         "channels": true,
         "faces": 3,
-        "fixed_facet_surface_qualified": false,
+        "fixed_facet_surface_qualified": true,
         "logical_regions": true,
         "maximum_error": 4.577566798522237e-16,
-        "maximum_fixed_facet_sample_error": 0.1420808431971155,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
         "native_cells": [
           [
             0,
@@ -6593,9 +6597,9 @@
         ],
         "ngon_overlays_correspond": true,
         "ngons": 1,
-        "qualified": false,
-        "stored_facets_correspond": false,
-        "stored_pieces_correspond": false,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
         "vertices": 6
       },
       "history": true,
@@ -6676,6 +6680,1414 @@
       },
       "history": true,
       "id": "insert_point_depth_v2_subd_second_inside",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    }
+  ],
+  "spatial": [
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_bottom_low_left_low",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_bottom_high_left_low",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": false,
+        "logical_regions": true,
+        "maximum_error": 0.14203083361686925,
+        "maximum_fixed_facet_sample_error": 0.14203083361686925,
+        "native_cells": [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": false,
+        "stored_facets_correspond": false,
+        "stored_pieces_correspond": false,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_bottom_mid_left_high",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_left_low_bottom_mid",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.440892098500626e-16,
+        "maximum_fixed_facet_sample_error": 4.440892098500626e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_mild_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_saddle",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.965068306494546e-16,
+        "maximum_fixed_facet_sample_error": 6.66133814775094e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": false,
+        "stored_pieces_correspond": false,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_tilted_plane",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.969430220045889e-16,
+        "maximum_fixed_facet_sample_error": 4.969430220045889e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_rotated_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            3,
+            4
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 8.95090418262362e-16,
+        "maximum_fixed_facet_sample_error": 8.95090418262362e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            3,
+            4
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_tall_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 3.1524274001217126e-16,
+        "maximum_fixed_facet_sample_error": 3.1524274001217126e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_reversed_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            1
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            1
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_cyclic_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": false,
+        "logical_regions": true,
+        "maximum_error": 0.18249764854097586,
+        "maximum_fixed_facet_sample_error": 0.18249764854097586,
+        "native_cells": [
+          [
+            0,
+            2,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            1
+          ],
+          [
+            1,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": false,
+        "stored_facets_correspond": false,
+        "stored_pieces_correspond": false,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_same_edge_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true
+    }
+  ],
+  "spatial_getters": [
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_bottom_low_left_low",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_bottom_high_left_low",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": false,
+        "logical_regions": true,
+        "maximum_error": 0.14203083361686925,
+        "maximum_fixed_facet_sample_error": 0.14203083361686925,
+        "native_cells": [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": false,
+        "stored_facets_correspond": false,
+        "stored_pieces_correspond": false,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_bottom_mid_left_high",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_left_low_bottom_mid",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.440892098500626e-16,
+        "maximum_fixed_facet_sample_error": 4.440892098500626e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_mild_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_saddle",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.965068306494546e-16,
+        "maximum_fixed_facet_sample_error": 6.66133814775094e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": false,
+        "stored_pieces_correspond": false,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_tilted_plane",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.969430220045889e-16,
+        "maximum_fixed_facet_sample_error": 4.969430220045889e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_rotated_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            3,
+            4
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 8.95090418262362e-16,
+        "maximum_fixed_facet_sample_error": 8.95090418262362e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            3,
+            4
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_tall_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 3.1524274001217126e-16,
+        "maximum_fixed_facet_sample_error": 3.1524274001217126e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            0,
+            3,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_reversed_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            1
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": true,
+        "logical_regions": true,
+        "maximum_error": 4.577566798522237e-16,
+        "maximum_fixed_facet_sample_error": 4.577566798522237e-16,
+        "native_cells": [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            2,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            1
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": true,
+        "stored_facets_correspond": true,
+        "stored_pieces_correspond": true,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_cyclic_warp",
+      "identity": true,
+      "metadata": true,
+      "preview": true,
+      "selection": true
+    },
+    {
+      "changed": true,
+      "comparison": {
+        "actual_cells": [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            0,
+            3,
+            1
+          ],
+          [
+            1,
+            3,
+            4,
+            5
+          ]
+        ],
+        "channels": true,
+        "faces": 3,
+        "fixed_facet_surface_qualified": false,
+        "logical_regions": true,
+        "maximum_error": 0.18249764854097586,
+        "maximum_fixed_facet_sample_error": 0.18249764854097586,
+        "native_cells": [
+          [
+            0,
+            2,
+            3,
+            4
+          ],
+          [
+            0,
+            4,
+            1
+          ],
+          [
+            1,
+            4,
+            5
+          ]
+        ],
+        "ngon_overlays_correspond": true,
+        "ngons": 1,
+        "qualified": false,
+        "stored_facets_correspond": false,
+        "stored_pieces_correspond": false,
+        "vertices": 6
+      },
+      "history": true,
+      "id": "insert_point_spatial_same_edge_warp",
       "identity": true,
       "metadata": true,
       "preview": true,
@@ -7401,8 +8813,9 @@
   "full_native_parity": false,
   "performance_qualified": false,
   "limits": [
-    "Sixty-five command/staging and sixty-five application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.",
-    "All replayed mesh logical regions, explicit n-gon overlays, vertex channels and shorter-diagonal surface samples agree. Five earlier stored triangle/quad layout gaps are resolved by pairing poorer triangles first. One primary and three new depth cases still have different stored cells; three also differ in fixed 0-2 facets. Two warped depth cases exceed the unchanged epsilon for fixed-facet surface samples and remain explicitly geometrically unqualified.",
+    "Seventy-seven command/staging and seventy-seven application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.",
+    "All original sixty-five command and getter workflows now agree on coordinates and both surface-sampling policies. The two earlier warped depth surface failures and all three depth cell gaps are resolved by coplanarity-aware pairing and full split-boundary origins. One planar primary repeated-edge cell/facet difference remains.",
+    "Twelve new independent spatial scenes cover changed warp, aspect, winding, cyclic origin, adjacent picks, reversed paths and repeated same-edge points. Ten match geometry at the unchanged epsilon; one of these planar scenes differs in stored cells. The upper-left second pick and repeated-edge warped cases still differ in geometry under both sampling policies and are explicitly unqualified. The repeated-edge scene now completes instead of rejecting a nearly collinear quad.",
     "Twelve geometry holdouts cover spatial, triangular, original-edge, n-gon and raw-seam cases. Twelve n-gon command/getter cases cover overlays, repeated boundary picks, reordered faces, fans and paths across adjacent n-gons. All now match stored cells and facets.",
     "Twelve independent shape scenes cover skewed, trapezoid, rhombus, tall, rotated, reversed and warped quad boundaries. All match stored cells and facets.",
     "Twenty independent warped Mesh/SubD depth scenes cover inside/outside surface rays, translated sources, shifted camera targets, second picks and local Undo. Picks use the original control display mesh with fixed 0-2 facets, falling back to the camera-target plane, then closest 3D edge parameter. Generic SDK MeshRay hits use a different quad diagonal and are retained only as triangulation-policy diagnostics.",
@@ -7429,9 +8842,9 @@
     "crates/viboceros-command/tests/support/subd.rs": "1953846077b1266e17378e1c865078cb98f3ead90dcc2495447d4e8b73f02e25",
     "third_party/opennurbs/opennurbs_subd.cpp": "27442e42c74c06e63d2a60eb756e01f7c8f3d2c95a6cf8e9a4db062006f291eb",
     "third_party/opennurbs/opennurbs_subd.h": "5e533e2dcf92dab195ad1000fca95b02df01f90c69c67ca8630034dcfa746296",
-    "tools/rhino_oracle/insert_point_cases.py": "4a9d807a40b68a542d998bc94a00a8e50cf8ab5fcef25ca0a6d5dd8e6719818b",
+    "tools/rhino_oracle/insert_point_cases.py": "3dad114b1b3d61395890c42c9f86cff35347dae477f641f5cf8e6f4a5986d7ee",
     "tools/rhino_oracle/insert_point_probe.py": "ce2e01e29e88e694a3b5ba68876ab4de5843c1f8d6e7fe650410e94412cb69a6",
-    "tools/rhino_oracle/generate_insert_point.py": "e7f9ea5254e81bc9d3a7596f051e85f73db5b90ac47fab24c59dbf631718ea0a",
+    "tools/rhino_oracle/generate_insert_point.py": "982f6878b95f389d68630c954b0533ce8f851223222a7602a34147e736c38835",
     "tools/rhino_oracle/conic_getter_input.py": "2507eea53e152f11b928331a40a6c572378a33c8cec12ac9b4cc883c8a0699f4",
     "tools/rhino_oracle/managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
     "tools/rhino_oracle/snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
@@ -7446,7 +8859,7 @@
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/client.py": "4c9e13ffd9918418c774283d7ebb9cd1f15e29b1293177723724f93fa3078224",
     "tools/rhino_oracle/rhino_worker.py": "92050b7993a00a62b9749d554132153ac9b98883e25cacce7e5b97159e00d3db",
-    "tools/rhino_oracle/structural_sdk.py": "a4e6962565588ce29e003aed93f72e529bd5619f7967f378daed9dab6c4a8483",
+    "tools/rhino_oracle/structural_sdk.py": "574e9f705053d2f96fa29355282aabcc4e8e2f94e50fa099c8ff04fba9b1c39c",
     "tools/rhino_oracle/report_insert_point.py": "72d6dbd165e1fcae06e9771c804fd3049f77b35f08ceb045c2fe332563a1d362",
     "tools/rhino_oracle/test_insert_point.py": "21aa66cc8673e39a64e7b781f328bfa3ff1ee2e976ce7c19172e3e3faad06422",
     "crates/viboceros-command/src/mesh_seams.rs": "fae9bbdb286bd2441cd3c953da2e3e92034edde5b4635f1e5c3e3e751ba70ea0",
@@ -7521,12 +8934,13 @@
     "crates/viboceros-geometry/src/mesh/radial.rs": "2048def0e4605cb0153a13437b2bc705b9b6c7552fca51fa0ade62e3dffab03a",
     "crates/viboceros-geometry/src/mesh/compaction.rs": "1cdd6ad2f8ff7abdc09805c489c72c6bb9607927d32981cbb812834b73915596",
     "crates/viboceros-geometry/src/mesh/union_find.rs": "c108d4f4d3716312c8c3d7b64bb1865680b076777c5c5ffd609298415c429c93",
-    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "e4036d3f74e53d6a4b5015c32ae3073a9c9be22b78edf755e380a885d1b227b0",
+    "crates/viboceros-geometry/src/mesh/quadrangulate.rs": "e0165c9008df54d8bfdab99952d9d303326ef82467fd426c76a824538150659e",
+    "crates/viboceros-geometry/src/mesh/aspect_ratio.rs": "eb3a14c99ce93a64ca5952c7d20fadc62b9ba0e721e6ab5ee52a334f2ef1aacf",
     "crates/viboceros-geometry/src/mesh/planar_cap.rs": "9bd66de6751bbd533a061be311ba42bb36fad7823cd8cf53e7d41d4afabe8f17",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
-    "crates/viboceros-geometry/src/mesh/insert.rs": "0fb4e2a3bf17f6eee6cf788ffefda8b5c774bf7d5f86a938248a2b5699ffaed5",
+    "crates/viboceros-geometry/src/mesh/insert.rs": "81c51c377a3c040a16dea0bb1a5a823dbe8f7360bfe2e7844398b562b57b4f9c",
     "crates/viboceros-geometry/src/mesh/insert/ngons.rs": "a244b7b7ab5dce38011d47570bf3a3e0c5ca8f7e9e6f9ceee0577ed6cd2d0732",
-    "crates/viboceros-geometry/src/mesh/insert/regions.rs": "dbfeafcbb7f09b5d1c9e10a9125b02883995f39a662ed5e0340f9fc5b7839850",
+    "crates/viboceros-geometry/src/mesh/insert/regions.rs": "a39006e23e1a45bef3db6825d90d99797e4b47ed1490a603bd66bffe1810fdba",
     "crates/viboceros-geometry/src/mesh/normals/tests.rs": "d10885e9cef9ddd7f8b725c0e87e1eee8fced36be67b1cef4fc256199ee2cf05",
     "crates/viboceros-geometry/src/mesh/edge_weld/tests.rs": "ee8d7efd03417eb62f26bfec74cc87a2144987a383c64de69abcb4433eadd13f",
     "crates/viboceros-geometry/src/mesh/union_find/tests.rs": "8a827790749c23059f7dace385d7898295b99610158117a7ee87d1e7a51c40de",
@@ -7540,15 +8954,16 @@
     "tools/rhino_oracle/insert_point_ngon_cases.py": "32c57fdf830c3bb08cf78afd8adc7dfe4fe2ef453584ac699f4b3bc70bc53c71",
     "tools/rhino_oracle/insert_point_mesh_shape_cases.py": "fae8de63b15fb080d7b243fcce30a1a6400c54baad66fe52399504e608927e62",
     "tools/rhino_oracle/insert_point_pick_depth_cases.py": "b8c972d5a5e4c8a2ef5b71160a8fe6528da7504317108c344006342d560c0b2e",
+    "tools/rhino_oracle/insert_point_spatial_layout_cases.py": "c6bde5f201fa419f96b684495b43dd0a66b41b78c521fc6f7e480ca0d572497f",
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
-    "tools/rhino_oracle/qualification_sources.py": "178a8216942929283f01257770283b990fe22f2851452105a56dd38f6fab9121",
+    "tools/rhino_oracle/qualification_sources.py": "9799ed690f1c1fdea2f3c9355d76f22f92809d5d27d66e098d980478960d66fb",
     "crates/viboceros-geometry/src/mesh.rs": "560513d2e478988e56d8766a07b6900d7cde0bfff5df12dfac4a4caae1ac9efd",
     "crates/viboceros-command/tests/insert_point_command.rs": "82f68e48d0138a486ed501bf08b872e044b8741bf53c4469ba59c64da1d56039",
     "crates/viboceros-command/tests/insert_point_staging.rs": "5c170590b950b0cee4de4fa8691f2d651eb5da9701ed08196ebf5d10c7dd659d",
-    "crates/viboceros-command/tests/insert_point_ngons.rs": "909875f0fd8065664cd247796aa3418a43f738cc3bfa69f5bd01aa18b2fa2551",
-    "crates/viboceros-command/tests/support/insert_point.rs": "9c8facb7a65a947dc3a547d7a5aa932c1555e25c4b40a36848caf0951613c9c1",
+    "crates/viboceros-command/tests/insert_point_ngons.rs": "6585cacc093f8a9cbe0b2b18b9431949597941a99a523fcebd6e022bdd124eda",
+    "crates/viboceros-command/tests/support/insert_point.rs": "3f8eae805094641e9f42315c6811b6113c76704cc1e9bb8c34da2c1929286e3a",
     "crates/viboceros-geometry/tests/support/subdivision_native.rs": "34bca1d5a0b7a9f1b6d7a7c5ab2686ab0e079a2b9590a545460c552fd66fb0e1",
     "crates/viboceros-document/src/lib.rs": "b78d1a285240b372def86297543aa6bf598b7c412eb7dc9df77b4d11a3ba2225",
     "crates/viboceros-document/src/history.rs": "e31ee8a9de612e53753fa049a75a6cabb1ae30219313e088722ec855ac79e3f5",
@@ -7568,9 +8983,9 @@
     "tools/rhino_oracle/generate_insert_point_mesh_sdk.py": "1296ba152965fa8974c89b18666ff66461c584982574d8959081f7e49d051217",
     "tools/rhino_oracle/insert_point_mesh_methods.py": "e4246c7dae787097d5f72be72b24665dcbf35ed4956caddcc4ce68fa96213786",
     "tools/rhino_oracle/report_insert_point_calibration.py": "0e325763b5cdfae0b80c31896308f72b6a26edf38ce0c2f02593805614da0180",
-    "tools/rhino_oracle/report_insert_point_inputs.py": "ff0a4cbfd0b0a983bacd6ba899426b49eb00149b96ac362f0406e51597cb9e99",
-    "tools/rhino_oracle/report_insert_point_command.py": "793610d466f50accdfbb0409050ada8410e72a28285e6001a0a3a6f961d184ef",
-    "tools/rhino_oracle/test_insert_point_command.py": "25bd784c3d408989d0e6ac175ca0b98127d837299897bfc83a45125ef8be43a0",
+    "tools/rhino_oracle/report_insert_point_inputs.py": "aaae3e1ec9fd8f4c9980d4ad198203b4c034f2fe4e7d48e4e7ac28406c905276",
+    "tools/rhino_oracle/report_insert_point_command.py": "7fe19ac18e38dda142db9062a46a263aad7b3a74e8fba8e419f945d1200d5f6d",
+    "tools/rhino_oracle/test_insert_point_command.py": "5b382c7ac8703cfe0dc3e7e113ab71b6ad9128ed4b385e75e6201508a5896fd1",
     "tools/rhino_oracle/fixtures/insert_point_holdouts.json": "328af06bba5ce46566528dc832863d1216be548bb088781b9e3bb1be3428c40d",
     "tools/rhino_oracle/observations/insert_point_holdouts_import_failure.json": "6eab038253b1c43a41a705b4f726f3cf7e07a61d04949222a1e4a664a75322d0",
     "tools/rhino_oracle/observations/insert_point_holdouts_import_failure.log": "73afbc32717a2ffc4411ae0e469b7c92bdb863fd178a198c82d18b4ef96fc80a",
@@ -7602,7 +9017,7 @@
     "src/app/subd_spin_edge.rs": "b5c566795e33fac8b8202cf8815e2cf2c8580464648377d0d64f0ed506e925ab",
     "src/app/crease/tests/subd_spin_edge.rs": "f5317bfa584f3f9b68095a9da2399afe861064928135d4a7e49bcdbc63793a7c",
     "src/app/insert_point.rs": "646e84c5cfb4c9c2a2f3e8122ada54ebfff8ba1130eaea7d1d296ed7184fcff1",
-    "src/app/crease/tests/insert_point.rs": "46e4a0a61aa0598740941c38a589358373f894b052d459c17cca2e328f6ac056",
+    "src/app/crease/tests/insert_point.rs": "d51ecf8b59fc76f6e05caecddf83b1b21aea0f67b54740c294ce8ea1795f28c1",
     "crates/viboceros-command/tests/support/subd_spin_edge.rs": "54294d02182e8ee6d4615fc97bfac21b6e08494a100df1359c9574e0088d8b80",
     "src/app/crease/tests/edge_seams.rs": "981275cf511598df522b9ff48c77675271c34d77cf6b83e15d9463a283c72257",
     "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
@@ -7630,6 +9045,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "c22c542b7e8306b2ce61f7199beb252bb4e563326207dd8ee5fc1773d24b69cd",
     "src/app/viewport_input.rs": "3df7f0793ba9ad712e0b16b5dbd3d64390c3391eba0c884075df96d9266e48b7",
+    "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
     "tools/rhino_oracle/fixtures/insert_point_discovery.json": "fce270107431ad5ba0fcc50e7c8fc9dfe9e49c2d5759f5e6d05682cb147b932f",
     "tools/rhino_oracle/observations/insert_point_discovery.json": "019d2aa207461ae4da777b8fa339c6c916c51d40acee75dec227d8ad2703bbfd",
     "tools/rhino_oracle/fixtures/insert_point_discovery/insert_point_mesh_1.3dm": "9bccbaedb4145aedc20953e94293e93dd6d8b86436e5b5f67c140a55e5fd3b12",
@@ -7754,6 +9170,20 @@
     "tools/rhino_oracle/fixtures/insert_point_pick_depth_v2/insert_point_depth_v2_subd_inside.3dm": "bb1916e069869c4625b5cdf16c2e961f9fc5de93d3fe5a59d4fdad45a9f14ed0",
     "tools/rhino_oracle/fixtures/insert_point_pick_depth_v2/insert_point_depth_v2_subd_inside_target_plus.3dm": "c0e753acdba35e8c865389e08d652d85a2c789839a0aa99efb13288cf7c47b92",
     "tools/rhino_oracle/fixtures/insert_point_pick_depth_v2/insert_point_depth_v2_subd_inside_translated.3dm": "25ba29e00b463e375637730cf170b75722c95f35d18cccfb2dc73e15798a5030",
-    "tools/rhino_oracle/fixtures/insert_point_pick_depth_v2/insert_point_depth_v2_subd_second_inside.3dm": "b2f39936b6ee40e4b6ef72ebc30ae75eaa5e6b4a61967e66003b64fda637ee4b"
+    "tools/rhino_oracle/fixtures/insert_point_pick_depth_v2/insert_point_depth_v2_subd_second_inside.3dm": "b2f39936b6ee40e4b6ef72ebc30ae75eaa5e6b4a61967e66003b64fda637ee4b",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts.json": "b7180a21c3166d4ab54d2a68525419015bd31f11b1bc999ae8f4691a14968edf",
+    "tools/rhino_oracle/observations/insert_point_spatial_layouts.json": "33de0cfc75f47d53d4bf6cc2a2bcae037a47ef699097093e774aa49d98caa509",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_bottom_high_left_low.3dm": "3db15fb851d62e47cf727c33982f9adda8e0ec43e03ac69f299ffa9387ed3d80",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_bottom_low_left_low.3dm": "feb301ca1ca75849ad84329d2195e982b3353aea1d3cd65635da538d94308623",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_bottom_mid_left_high.3dm": "c836d5ce7fa7f8fcd1ea6188b53cc58006d5d451ce390c9227c8fab7ce6efd35",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_cyclic_warp.3dm": "f463bf3096ae12a76ebe322c4f4cc382038aa87082f35045f7a870612b88ca8a",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_left_low_bottom_mid.3dm": "ba234404427aaf106be689ec7c4897121e4c684ad78625851982f645e445ee9c",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_mild_warp.3dm": "7073ae147c3d16f4880c2f5399b8c685ea586f85ead59ede0a44c2ba9736353a",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_reversed_warp.3dm": "ce91f8f96b53f5eb6fae9d0da16cfc4a12ec21885127df5b0d2923fcfb623f43",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_rotated_warp.3dm": "2cdfc08cc120b297174f003fa48b97658df3af83b38db27d7c0834d8b08fe425",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_saddle.3dm": "5c1b7d13e6a5ed190c4bfcaaaf124545129c2245800ad86d3d5e1bdbf534aa87",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_same_edge_warp.3dm": "e7066b734fb698163923f19b782d6b06beacf23779b0fd1b7fa98f84b8965408",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_tall_warp.3dm": "2f3b2826da55ed39b5ad028bf4260d5f6b860d69de303d3e6edd7bfa60238f0d",
+    "tools/rhino_oracle/fixtures/insert_point_spatial_layouts/insert_point_spatial_tilted_plane.3dm": "5c5e9ba9c31767ca3dcd6af73460b943cc31b4b416b08d4a21faf522d2c8c91f"
   }
 }

@@ -56,6 +56,16 @@ fn depth_getters_use_source_surface_and_camera_target_before_and_after_undo() {
         }
     }
 }
+#[test]
+fn independent_spatial_layouts_keep_geometry_failures_explicit() {
+    let capture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/insert_point_spatial_layouts.json"
+    ))
+    .unwrap();
+    for row in capture["results"].as_array().unwrap() {
+        replay(row, "insert_point_spatial_layouts", "SPATIAL_GETTER");
+    }
+}
 fn replay(row: &serde_json::Value, family: &str, stage: &str) {
     let v = &row["value"];
     eprintln!("Getter {}", row["id"]);
@@ -103,19 +113,21 @@ fn replay(row: &serde_json::Value, family: &str, stage: &str) {
         }
     }
     assert!(app.insert_prompt().is_none(), "{:?}", app.command_log);
-    let comparison = fixtures::check(&app.document, &ids, &v["after"], true);
+    let comparison = fixtures::check_scene(&app.document, &ids, &v["after"], true, family);
     if stage == "GETTER" {
         fixtures::assert_known_cell_gap(row["id"].as_str().unwrap(), &comparison);
     } else if stage == "NGON_GETTER" {
         fixtures::assert_ngon_cell_gap(row["id"].as_str().unwrap(), &comparison);
+    } else if stage == "SPATIAL_GETTER" {
+        fixtures::assert_spatial_result(row["id"].as_str().unwrap(), &comparison);
     } else {
         fixtures::assert_additional_cell_gap(row["id"].as_str().unwrap(), &comparison);
     }
     let changed = app.document.undo_label() == Some("InsertPoint");
     enter(&mut app, "Undo");
-    fixtures::check(&app.document, &ids, &v["undo"], false);
+    fixtures::check_scene(&app.document, &ids, &v["undo"], false, family);
     enter(&mut app, "Redo");
-    fixtures::check(&app.document, &ids, &v["redo"], false);
+    fixtures::check_scene(&app.document, &ids, &v["redo"], false, family);
     println!(
         "INSERT_POINT_{stage} {}",
         serde_json::json!({"id":row["id"],"comparison":comparison,"identity":true,"metadata":true,"history":true,"selection":true,"preview":true,"changed":changed})

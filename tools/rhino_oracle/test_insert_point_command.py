@@ -12,7 +12,7 @@ import unittest
 from .insert_point_cases import ALL_CASES, request
 from .insert_point_mesh_sdk_cases import request as sdk_request, validate as sdk_validate
 from .report_insert_point_command import (
-    CELL_GAPS, DEPTH_CELL_GAPS, SURFACE_GAPS, FAMILIES, REPLAYS, HERE, ROOT, capture, sdk_calibration, summarize,
+    CELL_GAPS, DEPTH_CELL_GAPS, SPATIAL_CELL_GAPS, SURFACE_GAPS, FAMILIES, REPLAYS, HERE, ROOT, capture, sdk_calibration, summarize,
 )
 from .report_insert_point_calibration import methods_calibration
 from .report_insert_point_inputs import validate_depth
@@ -21,7 +21,7 @@ from .qualification_sources import with_shared_sources
 
 VARIANTS = dict(insert_point_holdouts_v2='holdouts', insert_point_ngons='ngons',
                 insert_point_mesh_shapes='shapes', insert_point_pick_depth='depth',
-                insert_point_pick_depth_v2='witnesses', insert_point_mesh_sdk=None,
+                insert_point_pick_depth_v2='witnesses', insert_point_spatial_layouts='spatial', insert_point_mesh_sdk=None,
                 insert_point_mesh_sdk_origins='origins', insert_point_mesh_sdk_methods='methods')
 
 
@@ -54,9 +54,11 @@ class InsertPointCommandTests(unittest.TestCase):
             ('src/app.rs', ['src/app/insert_point.rs', 'src/viewport/insert_point.rs']),
             ('src/viewport.rs', ['src/viewport/insert_point.rs']),
             ('crates/viboceros-geometry/src/mesh.rs', [
+                'crates/viboceros-geometry/src/mesh/aspect_ratio.rs',
                 'crates/viboceros-geometry/src/mesh/insert/ngons.rs',
                 'crates/viboceros-geometry/src/mesh/insert/regions.rs',
                 'crates/viboceros-geometry/src/edge_insertion/polygons.rs']),
+            ('crates/viboceros-command/tests/support/insert_point.rs', ['crates/viboceros-command/tests/support/insert_point/mesh.rs']),
             ('crates/viboceros-command/src/lib.rs', ['crates/viboceros-command/src/insert_point/arguments.rs']),
             ('tools/rhino_oracle/insert_point_cases.py', [
                 'tools/rhino_oracle/insert_point_ngon_cases.py',
@@ -132,22 +134,24 @@ class InsertPointCommandTests(unittest.TestCase):
         report, lines = self.evidence()
         self.assertEqual(summarize('\n'.join(reversed(lines))), report)
         self.assertTrue(report['command_implemented'])
-        self.assertEqual((report['command_cases'], report['getter_cases']), (65, 65))
+        self.assertEqual((report['command_cases'], report['getter_cases']), (77, 77))
         self.assertEqual(report['additional_geometry_cases'], 12)
         self.assertEqual(report['primary_cell_gaps'], sorted(CELL_GAPS))
-        self.assertEqual(report['depth_cell_gaps'], sorted(DEPTH_CELL_GAPS))
+        self.assertEqual(report['depth_cell_gaps'], [])
+        self.assertEqual(report['spatial_cell_gaps'], sorted(SPATIAL_CELL_GAPS))
         self.assertEqual(report['geometry_unqualified'], sorted(SURFACE_GAPS))
         self.assertGreater(report['maximum_fixed_facet_sample_error'], .1)
         self.assertEqual(report['maximum_error'], report['maximum_fixed_facet_sample_error'])
-        self.assertLessEqual(report['maximum_control_or_shortest_diagonal_sample_error'], 1e-6)
+        self.assertLessEqual(report['maximum_qualified_error'], 1e-6)
         for key in ['holdout_region_gaps', 'holdout_cell_gaps', 'ngon_cell_gaps', 'shape_cell_gaps']:
             self.assertEqual(report[key], [])
         self.assertEqual((report['ngon_cases'], report['ngon_getter_cases']), (12, 12))
+        self.assertEqual(report['spatial_cases'], 12)
         self.assertFalse(report['full_native_parity'])
         self.assertFalse(report['performance_qualified'])
-        self.assertEqual(sum(FAMILIES.values()), 149)
-        self.assertEqual(report['captured_command_workflows'], 101)
-        self.assertEqual(len(lines), 142)
+        self.assertEqual(sum(FAMILIES.values()), 161)
+        self.assertEqual(report['captured_command_workflows'], 113)
+        self.assertEqual(len(lines), 166)
 
     def test_calibration_does_not_substitute_for_command_input_evidence(self):
         rows = sdk_calibration()
@@ -236,7 +240,7 @@ class InsertPointCommandTests(unittest.TestCase):
                 needle = 'INSERT_POINT_'+stage+' '+json.dumps(row)
                 remaining = [line for line in lines if line != needle]
                 for key, value in [('qualified', True), ('fixed_facet_surface_qualified', True),
-                                   ('maximum_fixed_facet_sample_error', 0.),
+                                   ('maximum_fixed_facet_sample_error', 0.), ('maximum_error', 0.),
                                    ('maximum_fixed_facet_sample_error', float('nan'))]:
                     bad = deepcopy(row)
                     bad['comparison'][key] = value

@@ -25,6 +25,6 @@ pub(super) fn tile(
         triangles.into_iter().map(MeshFace::Triangle).collect(),
         tolerance,
     )?;
-    let (region, _) = region.quadrangulate_preserving_triangle_quality(tolerance)?;
+    let (region, _) = region.quadrangulate_inserted_region(tolerance)?;
     Ok(region.faces().to_vec())
 }

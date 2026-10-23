@@ -15,12 +15,13 @@ from .report_subd_box import HERE, ROOT, error
 FAMILIES = dict(KERNEL_FAMILIES, insert_point_holdouts_v2=12, insert_point_ngons=12,
                 insert_point_mesh_sdk=16, insert_point_mesh_sdk_origins=16,
                 insert_point_mesh_sdk_methods=16, insert_point_mesh_shapes=12,
-                insert_point_pick_depth=12, insert_point_pick_depth_v2=8)
+                insert_point_pick_depth=12, insert_point_pick_depth_v2=8, insert_point_spatial_layouts=12)
 CELL_GAPS = {'insert_point_full_mesh_same_edge'}
-DEPTH_CELL_GAPS = {'insert_point_depth_mesh_target_plus', 'insert_point_depth_mesh_second_point',
-                   'insert_point_depth_v2_mesh_second_inside'}
-FACET_GAPS = CELL_GAPS | (DEPTH_CELL_GAPS - {'insert_point_depth_mesh_target_plus'})
-SURFACE_GAPS = {'insert_point_depth_mesh_second_point', 'insert_point_depth_v2_mesh_second_inside'}
+DEPTH_CELL_GAPS = set()
+SPATIAL_CELL_GAPS = {'insert_point_spatial_bottom_mid_left_high', 'insert_point_spatial_tilted_plane',
+                     'insert_point_spatial_same_edge_warp'}
+FACET_GAPS = CELL_GAPS | SPATIAL_CELL_GAPS
+SURFACE_GAPS = {'insert_point_spatial_bottom_mid_left_high', 'insert_point_spatial_same_edge_warp'}
 HOLDOUT_CELL_GAPS = NGON_CELL_GAPS = set()
 REPLAYS = [
     ('COMMAND', 'cases', 'insert_point_full'), ('GETTER', 'getters', 'insert_point_full'),
@@ -32,6 +33,8 @@ REPLAYS = [
     ('DEPTH_GETTER', 'depth_getters', 'insert_point_pick_depth'),
     ('DEPTH_V2', 'depth_witnesses', 'insert_point_pick_depth_v2'),
     ('DEPTH_V2_GETTER', 'depth_witness_getters', 'insert_point_pick_depth_v2'),
+    ('SPATIAL', 'spatial', 'insert_point_spatial_layouts'),
+    ('SPATIAL_GETTER', 'spatial_getters', 'insert_point_spatial_layouts'),
 ]
 SOURCES = with_shared_sources(KERNEL_SOURCES + [
     'crates/viboceros-geometry/src/mesh.rs',
@@ -93,14 +96,20 @@ def replay_rows(text, stage, expected):
     return sorted(rows, key=lambda r: list(expected).index(r['id']))
 
 
+def surface_error(value, qualified):
+    if qualified:
+        return error(value)
+    if type(value) not in (int, float) or not math.isfinite(value) or value <= 1e-6:
+        raise ValueError('invalid unqualified surface error')
+    return value
+
+
 def check_mesh(actual, native, key):
-    pieces = key not in CELL_GAPS | DEPTH_CELL_GAPS
+    pieces = key not in CELL_GAPS | DEPTH_CELL_GAPS | SPATIAL_CELL_GAPS
     facets = key not in FACET_GAPS
     surface_qualified = key not in SURFACE_GAPS
-    fixed_error = actual.get('maximum_fixed_facet_sample_error')
-    if (type(fixed_error) not in (int, float) or not math.isfinite(fixed_error) or fixed_error < 0.
-            or (fixed_error <= 1e-6) is not surface_qualified):
-        raise ValueError('unexpected fixed-facet insertion surface error')
+    fixed_error = surface_error(actual.get('maximum_fixed_facet_sample_error'), surface_qualified)
+    short_error = surface_error(actual.get('maximum_error'), surface_qualified)
     for field, expected in [('qualified', surface_qualified), ('logical_regions', True),
                             ('fixed_facet_surface_qualified', surface_qualified),
                             ('ngon_overlays_correspond', True),
@@ -123,7 +132,7 @@ def check_mesh(actual, native, key):
         raise ValueError('invalid insertion cell diagnostic')
     if (records == wanted) is not pieces:
         raise ValueError('insertion cell gap relabeled')
-    return error(actual.get('maximum_error')), fixed_error
+    return short_error, fixed_error
 
 
 def summarize(text):
@@ -131,7 +140,7 @@ def summarize(text):
     stages = [(stage.lower(), replay_rows(text, stage, witnesses[family]), witnesses[family])
               for stage, _, family in REPLAYS]
     replays = {key: rows for (_, key, _), (_, rows, _) in zip(REPLAYS, stages)}
-    maximum = maximum_fixed = 0.
+    maximum = maximum_fixed = maximum_qualified = 0.
     for stage, rows, wanted in stages:
         for row in rows:
             value = wanted[row['id']]
@@ -149,6 +158,8 @@ def summarize(text):
                 geometry_error, fixed_error = check_mesh(actual, target['mesh'], row['id'])
                 maximum = max(maximum, geometry_error)
                 maximum_fixed = max(maximum_fixed, fixed_error)
+                if actual['qualified']:
+                    maximum_qualified = max(maximum_qualified, geometry_error, fixed_error)
             else:
                 native = target['subd']
                 if actual.get('qualified') is not True or native['valid'] is not True:
@@ -168,6 +179,9 @@ def summarize(text):
                         if actual.get(flag) is not True:
                             raise ValueError('unqualified insertion SubD '+flag)
                     maximum = max(maximum, error(actual.get('maximum_error')))
+                maximum_qualified = max(maximum_qualified,
+                    error(actual.get('maximum_error', actual.get('maximum_control_or_limit_point_error'))),
+                    error(actual.get('maximum_sampled_surface_error', 0.)))
     engines = {capture(f)['engine_version'] for f in FAMILIES}
     if len(engines) != 1:
         raise ValueError('mixed insertion native versions')
@@ -179,19 +193,21 @@ def summarize(text):
                 captured_command_workflows=sum(FAMILIES[f] for f in FAMILIES if 'sdk' not in f),
                 ngon_cases=len(replays['ngons']), ngon_getter_cases=len(replays['ngon_getters']),
                 shape_cases=len(replays['shapes']), depth_cases=len(replays['depths'])+len(replays['depth_witnesses']),
+                spatial_cases=len(replays['spatial']),
                 calibration_recipes=48, failed_import_requested_workflows=12,
                 failed_import_qualified_workflows=0, maximum_error=max(maximum, maximum_fixed),
                 maximum_control_or_shortest_diagonal_sample_error=maximum,
-                maximum_fixed_facet_sample_error=maximum_fixed,
+                maximum_fixed_facet_sample_error=maximum_fixed, maximum_qualified_error=maximum_qualified,
                 geometry_unqualified=sorted(SURFACE_GAPS),
                 primary_cell_gaps=sorted(CELL_GAPS), holdout_cell_gaps=[], holdout_region_gaps=[],
                 ngon_cell_gaps=[], shape_cell_gaps=[], depth_cell_gaps=sorted(DEPTH_CELL_GAPS),
-                facet_gaps=sorted(FACET_GAPS), **replays,
+                facet_gaps=sorted(FACET_GAPS), spatial_cell_gaps=sorted(SPATIAL_CELL_GAPS), **replays,
                 sdk_calibration=sdk_calibration(), methods_calibration=calibration.methods_calibration(capture),
                 full_native_parity=False, performance_qualified=False,
                 limits=[
-                    'Sixty-five command/staging and sixty-five application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.',
-                    'All replayed mesh logical regions, explicit n-gon overlays, vertex channels and shorter-diagonal surface samples agree. Five earlier stored triangle/quad layout gaps are resolved by pairing poorer triangles first. One primary and three new depth cases still have different stored cells; three also differ in fixed 0-2 facets. Two warped depth cases exceed the unchanged epsilon for fixed-facet surface samples and remain explicitly geometrically unqualified.',
+                    'Seventy-seven command/staging and seventy-seven application getter replays use saved source archives and independent physical Top-view input witnesses. Identity, attributes, groups, selection, preview isolation, document Undo/Redo, local Undo and cancellation match these captures.',
+                    'All original sixty-five command and getter workflows now agree on coordinates and both surface-sampling policies. The two earlier warped depth surface failures and all three depth cell gaps are resolved by coplanarity-aware pairing and full split-boundary origins. One planar primary repeated-edge cell/facet difference remains.',
+                    'Twelve new independent spatial scenes cover changed warp, aspect, winding, cyclic origin, adjacent picks, reversed paths and repeated same-edge points. Ten match geometry at the unchanged epsilon; one of these planar scenes differs in stored cells. The upper-left second pick and repeated-edge warped cases still differ in geometry under both sampling policies and are explicitly unqualified. The repeated-edge scene now completes instead of rejecting a nearly collinear quad.',
                     'Twelve geometry holdouts cover spatial, triangular, original-edge, n-gon and raw-seam cases. Twelve n-gon command/getter cases cover overlays, repeated boundary picks, reordered faces, fans and paths across adjacent n-gons. All now match stored cells and facets.',
                     'Twelve independent shape scenes cover skewed, trapezoid, rhombus, tall, rotated, reversed and warped quad boundaries. All match stored cells and facets.',
                     'Twenty independent warped Mesh/SubD depth scenes cover inside/outside surface rays, translated sources, shifted camera targets, second picks and local Undo. Picks use the original control display mesh with fixed 0-2 facets, falling back to the camera-target plane, then closest 3D edge parameter. Generic SDK MeshRay hits use a different quad diagonal and are retained only as triangulation-policy diagnostics.',

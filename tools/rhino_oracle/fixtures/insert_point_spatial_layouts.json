@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_bottom_low_left_low",
+      "case": "insert_point_spatial_bottom_low_left_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_bottom_high_left_low",
+      "case": "insert_point_spatial_bottom_high_left_low"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_bottom_mid_left_high",
+      "case": "insert_point_spatial_bottom_mid_left_high"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_left_low_bottom_mid",
+      "case": "insert_point_spatial_left_low_bottom_mid"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_mild_warp",
+      "case": "insert_point_spatial_mild_warp"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_saddle",
+      "case": "insert_point_spatial_saddle"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_tilted_plane",
+      "case": "insert_point_spatial_tilted_plane"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_rotated_warp",
+      "case": "insert_point_spatial_rotated_warp"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_tall_warp",
+      "case": "insert_point_spatial_tall_warp"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_reversed_warp",
+      "case": "insert_point_spatial_reversed_warp"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_cyclic_warp",
+      "case": "insert_point_spatial_cyclic_warp"
+    },
+    {
+      "op": "insert_point_command",
+      "id": "insert_point_spatial_same_edge_warp",
+      "case": "insert_point_spatial_same_edge_warp"
+    }
+  ]
+}

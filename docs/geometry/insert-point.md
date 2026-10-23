@@ -13,11 +13,15 @@ operations in one archive decode/edit/encode, retaining existing tags and
 component identities. Near-endpoint user parameters clamp to `[0.001, 0.999]`.
 Meshes keep raw seams separate, interpolate color/UV/normal channels, and reuse
 the existing constrained triangulation and quadrangulation code. Mesh geometry
-prioritizes pairing poorer triangles to retain better standalone triangles;
-the public general-purpose quadrangulation ordering is unchanged. Insertion
+pairs more coplanar triangles first, then retains better standalone triangles.
+New quads have strictly convex projected corners so boundary-origin changes
+cannot create degenerate fixed facets. General-purpose quadrangulation ordering
+is unchanged. Insertion
 uses its validation tolerance so existing features below document tolerance
 survive. Original n-gon membership follows adjacency through original edges and
-their split segments. New tessellation edges join automatic n-gons only for
+their split segments. Quad origins follow the entire refined source boundary,
+including splits between original corners; omitting them changes fixed diagonals.
+New tessellation edges join automatic n-gons only for
 regions with more than four boundary vertices; a four-corner region containing
 a collinear inserted point retains separate triangle cells. Inserted chords
 separate the resulting groups. This resolves both earlier n-gon grouping gaps.
@@ -42,17 +46,21 @@ survives local Undo and preview chords. Snaps take precedence over free depth.
 
 The [kernel record](../insert-point-kernel-qualification.json) contains ten
 independent SubD replays. The separate
-[command record](../insert-point-command-qualification.json) covers 65 command
-and 65 application getter replays plus 12 spatial, triangular, seam, n-gon and
-original-edge cases. Replays use saved source 3DM files and independently
-captured physical pixel rays. Coordinates and shorter-diagonal surface samples
-differ by at most about `2.35e-12` at a `1e-6` acceptance threshold. All captured
-explicit n-gon overlays and logical regions agree. Five earlier triangle/quad
-layout differences are resolved. One repeated-edge primary case and three new
-depth cases retain different stored cells; three also differ in fixed facets.
-Fixed-facet surface samples exceed that threshold in the two second-pick warped
-depth cases, with errors around `0.14`. They remain geometrically unqualified;
-matching shorter-diagonal samples does not establish display-surface agreement.
+[command record](../insert-point-command-qualification.json) covers 77 command
+and 77 application getter replays plus 12 additional geometry cases. Replays use
+saved source 3DM files and independent physical pixel rays. All original 65
+command/getter workflows now agree under both surface-sampling policies at the
+unchanged `1e-6` threshold; the two earlier warped depth failures are resolved.
+The largest qualified coordinate or sampled surface error is about `2.35e-12`.
+One planar repeated-edge primary case still differs in stored cells and facets.
+
+Twelve new spatial scenes cover altered warp, aspect, winding, cyclic boundary
+origin, reversed paths and repeated same-edge picks. Ten match geometry; one
+planar scene differs in stored cells. The upper-left second-pick and same-edge
+warped scenes remain unqualified under both sampling policies, with errors up
+to `0.183`. The same-edge scene now completes instead of admitting a nearly
+collinear quad that later fails validation. Both failures remain in the report,
+with coordinates, channels, regions, preview isolation and history still checked.
 
 Twelve dedicated n-gon scenes cover triangle overlays, repeated boundary picks,
 reordered faces, triangulated fans, interior picks, crossing paths and adjacent

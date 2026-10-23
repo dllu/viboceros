@@ -110,6 +110,13 @@ impl TriangleMesh {
         for (i, pick) in plan.splits.iter().enumerate() {
             edge_splits[pick.edge].push(i);
         }
+        for splits in &mut edge_splits {
+            splits.sort_by(|&a, &b| {
+                plan.splits[a]
+                    .parameter
+                    .total_cmp(&plan.splits[b].parameter)
+            });
+        }
         for (region_index, region) in plan.polygons(&faces)?.into_iter().enumerate() {
             let source = region.source;
             let polygon = region.vertices;
@@ -132,15 +139,27 @@ impl TriangleMesh {
                 polygon_groups.push(None);
                 continue;
             }
-            let closing = edge_lookup[&crate::edge_insertion::key([
-                faces[source][source_boundary.len() - 1],
-                faces[source][0],
-            ])];
-            let anchors = edge_splits[closing]
-                .iter()
-                .map(|&i| raw_points[&(source, (topology.topological_vertex_count + i) as u32)])
-                .chain(source_boundary.iter().copied())
-                .collect::<Vec<_>>();
+            let mut anchors = Vec::new();
+            for i in 0..source_boundary.len() {
+                let previous = (i + source_boundary.len() - 1) % source_boundary.len();
+                let a = faces[source][previous];
+                let edge = edge_lookup[&crate::edge_insertion::key([a, faces[source][i]])];
+                let splits = &edge_splits[edge];
+                for j in 0..splits.len() {
+                    let index = if edges[edge][0] == a {
+                        j
+                    } else {
+                        splits.len() - 1 - j
+                    };
+                    anchors.push(
+                        raw_points[&(
+                            source,
+                            (topology.topological_vertex_count + splits[index]) as u32,
+                        )],
+                    );
+                }
+                anchors.push(source_boundary[i]);
+            }
             let points = raw
                 .iter()
                 .map(|&i| vertices[i as usize])
@@ -161,9 +180,9 @@ impl TriangleMesh {
                 (raw.len() > 4).then_some(region_index),
                 records.len() - first_record,
             ));
-            // The original closing side precedes the source face's first
-            // corner. Keep that boundary origin when retaining quad records;
-            // a cyclic shift by one changes their stored 0-2 facets.
+            // Include every split in source-boundary order, starting on the
+            // closing side. Omitting splits on other sides changes a quad's
+            // stored 0-2 diagonal when its earliest original corner is removed.
             for face in &mut records[first_record..] {
                 if let MeshFace::Quad(v) = face
                     && let Some(start) = anchors.iter().find_map(|a| v.iter().position(|x| x == a))
