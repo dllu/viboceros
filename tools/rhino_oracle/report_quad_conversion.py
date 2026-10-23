@@ -9,7 +9,7 @@ from .qualification_sources import with_shared_sources
 from .quad_conversion_cases import CASES, request
 FAMILY='mesh_quad_conversion_v3'
 SOURCES=with_shared_sources([
-    'Cargo.lock','crates/viboceros-geometry/src/mesh.rs','crates/viboceros-geometry/src/mesh/native.rs',
+    'Cargo.lock','crates/viboceros-command/src/lib.rs','crates/viboceros-geometry/src/mesh.rs','crates/viboceros-geometry/src/mesh/native.rs',
     'crates/viboceros-opennurbs/src/mesh.rs','crates/viboceros-opennurbs/native/mesh_modeling.cpp',
     'crates/viboceros-opennurbs/native/mesh_modeling.h','crates/viboceros-opennurbs/native/mesh_codec.h',
     'crates/viboceros-command/src/quadrangulate_mesh.rs','crates/viboceros-command/tests/quad_conversion_native.rs',
@@ -61,10 +61,10 @@ def summarize(text):
         performance_qualified=False,full_native_parity=False,earlier_geometry_only_references=14,
         failed_dispatch_qualified_cases=0,cases=rows,
         limits=[
-            'Fourteen independently constructed native SDK inputs match raw vertices, face records and channels exactly. The registered command replays both equals and separate-token explicit options and verifies identity, attributes, groups, selection, Undo/Redo and no-op redo preservation.',
+            'Fourteen independently constructed native SDK inputs match raw vertices, face records and channels exactly. The registered command replays both equals and separate-token explicit options and verifies identity, attributes, groups, selection, Undo/Redo; accepted no-ops create Undo and clear redo.',
             'OpenNURBS performs conversion directly, including strict mutual-longest-edge selection on meshes with more than two faces, angle normalization, raw seam preservation and native face ordering. Source vertex and channel storage remain intact.',
             'Native conversion may invalidate an n-gon while Mesh.IsValid remains true. The adjacent-ngon reference exposes a three-vertex boundary attached to a quad; Viboceros discards this invalid overlay. That metadata difference remains explicit.',
-            'Native UI prompts and defaults are not exercised. Inputs use valid stored geometry and ordinary representable coordinates; extreme float32 selection behavior and comparative performance remain unqualified. Native packing is bounded to four million vertices and one million faces.',
+            'These SDK inputs do not qualify command prompts/defaults; a separate native command record covers those workflows. Inputs use valid stored geometry and ordinary representable coordinates; extreme float32 selection behavior and comparative performance remain unqualified. Native packing is bounded to four million vertices and one million faces.',
             'An earlier capture has geometry-only snapshots. The initial worker dispatch failure retains its request, log and frozen producers; no native geometry from that failed attempt is qualified.',
         ],sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in SOURCES})
 

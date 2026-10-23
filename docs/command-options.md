@@ -19,6 +19,10 @@ correspondence reset per invocation. Its 29-step private-Xvfb capture and eight-
 inactive-sample follow-up retain every prompt default and explicit native
 option-change object discrepancies; see [provenance](tween-options-provenance.json).
 
+[`QuadrangulateMesh`](commands/quadrangulate-mesh.md) remembers Planarity and
+Rectangularity only after acceptance, including successful conversions that merge
+no faces. Cancel discards staged values. Its observed fresh defaults are 5 and 2.
+
 Choices belong to typed command instances owned by `CommandRegistry`, not to
 the document or its undo history. Aliases share an instance. Reusing a registry
 across documents retains choices; separate registries are independent. The GUI

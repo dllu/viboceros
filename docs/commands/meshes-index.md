@@ -23,6 +23,7 @@
 - [SubDTruncatedCone: two-radius frusta and projected top-size inputs](subd-truncated-cone.md)
 - [SubDCylinder](subd-cylinder.md): circle bases, caps, face counts and spatial axes.
 - [PlanarMesh from planar curve regions](planar-mesh.md)
+- [QuadrangulateMesh: selection and triangle conversion](quadrangulate-mesh.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
 - [Polygon meshes](meshes.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)

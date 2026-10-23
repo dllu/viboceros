@@ -198,21 +198,10 @@ accepts `LongestDiagonal`, `MinimizeArea`, `MaximizeArea`, `MinimumAngle`, and
 and n-gon membership, vertex colors, identity, attributes, groups, selection,
 and undo are preserved. Degenerate candidate triangles are rejected.
 
-`QuadrangulateMesh Planarity=1 Rectangularity=2` uses the public OpenNURBS
-converter. Options accept both `Name=value` and `Name value`, including English
-underscore prefixes. Consistently oriented pairs must share raw vertices; on meshes with
-more than two faces, the shared edge must be strictly longest in both triangles.
-Equal-length ties therefore stay triangular. `Rectangularity` bounds diagonal
-length ratios. The local defaults remain 1 degree and 2.
-
-Native angle normalization applies: values above 90 degrees reset to 2.5 degrees,
-and the accepted normal-angle limit is capped at 60 degrees. Native face order
-and n-gon changes are retained, except stale overlays whose boundaries no longer
-match their faces are discarded. Full-precision vertices, stored channels, object
-identity, attributes, object groups, selection and Undo/Redo are preserved.
-The [conversion record](../quad-conversion-qualification.json) covers fourteen
-public API references and command replays using both option forms; native UI prompts
-and defaults remain unqualified.
+[`QuadrangulateMesh`](quadrangulate-mesh.md) merges triangles through OpenNURBS.
+Start with selected meshes or select them after starting the command, adjust
+Planarity and Rectangularity, then press Enter. Fresh defaults are 5 degrees
+and 2; accepted options persist. Cancel discards option edits.
 
 `SwapMeshEdge` replaces a welded interior edge shared by exactly two
 consistently oriented triangle faces with their opposite diagonal. Use

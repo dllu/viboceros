@@ -208,6 +208,8 @@ use interactive_state::{
     InteractiveCommand, InteractiveCurveExtensionJoin, InteractiveCurveExtensionStyle,
     InteractiveIsocurveDirection, InteractiveMeshSphereTopology, InteractiveScaleKind,
 };
+#[cfg(test)]
+mod crease_native_tests;
 mod intersect_two_sets;
 mod iplane;
 mod length;

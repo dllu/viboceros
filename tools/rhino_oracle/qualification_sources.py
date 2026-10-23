@@ -8,7 +8,11 @@ APPLICATION_MODULES = [
     'src/viewport/mesh_normals.rs',
     'src/viewport/mesh_normals/tests.rs',
     'src/viewport/insert_point.rs',
+    'src/app/crease_native_tests.rs',
     'src/app/object_selection.rs',
+    'src/app/object_selection/quadrangulate_mesh.rs',
+    'src/app/object_selection/quadrangulate_mesh/tests.rs',
+    'src/app/transform_sources.rs',
     'src/app/control_polygon.rs',
     'src/app/control_polygon/subcurve.rs',
     'src/app/control_polygon/tests.rs',
@@ -128,6 +132,7 @@ def with_shared_sources(paths):
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
             'crates/viboceros-command/src/mesh_seams.rs',
+            'crates/viboceros-command/src/quadrangulate_mesh.rs',
             'crates/viboceros-command/src/mesh_component_unweld.rs',
             'crates/viboceros-command/src/mesh_component_weld.rs',
             'crates/viboceros-command/src/vertex_seams.rs',

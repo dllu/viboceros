@@ -106,8 +106,6 @@ fn sdk_conversion_and_command_history_match_independent_native_inputs() {
             doc.undo().unwrap();
             doc.select_objects_direct([id], SelectionMode::Replace)
                 .unwrap();
-            let undo = doc.undo_label().map(str::to_owned);
-            let redo = doc.redo_label().map(str::to_owned);
             let attributes = doc.object(id).unwrap().attributes().clone();
             let groups = doc.object(id).unwrap().group_ids().to_vec();
             registry.execute(&mut doc, &script).unwrap();
@@ -117,9 +115,10 @@ fn sdk_conversion_and_command_history_match_independent_native_inputs() {
             );
             assert_eq!(doc.object(id).unwrap().attributes(), &attributes);
             assert_eq!(doc.object(id).unwrap().group_ids(), &groups);
-            assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), vec![id]);
-            if pairs > 0 {
+            assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), vec![]);
+            {
                 assert_eq!(doc.undo_label(), Some("QuadrangulateMesh"));
+                assert!(doc.redo_label().is_none());
                 doc.undo().unwrap();
                 assert_eq!(
                     doc.object(id).unwrap().geometry(),
@@ -130,9 +129,6 @@ fn sdk_conversion_and_command_history_match_independent_native_inputs() {
                     doc.object(id).unwrap().geometry(),
                     &Geometry::Mesh(expected.clone())
                 );
-            } else {
-                assert_eq!(doc.undo_label(), undo.as_deref());
-                assert_eq!(doc.redo_label(), redo.as_deref());
             }
         }
         println!(

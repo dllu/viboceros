@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_fresh_defaults",
+      "case": "quad_command_fresh_defaults"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_low_angle",
+      "case": "quad_command_low_angle"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_remembered_low",
+      "case": "quad_command_remembered_low"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_standard_angle",
+      "case": "quad_command_standard_angle"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_remembered_standard",
+      "case": "quad_command_remembered_standard"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_strict_ratio",
+      "case": "quad_command_strict_ratio"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_remembered_strict",
+      "case": "quad_command_remembered_strict"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_relaxed_ratio",
+      "case": "quad_command_relaxed_ratio"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_remembered_relaxed",
+      "case": "quad_command_remembered_relaxed"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_cancel_options",
+      "case": "quad_command_cancel_options"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_after_cancel",
+      "case": "quad_command_after_cancel"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_first_square",
+      "case": "quad_command_first_square"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_first_warp",
+      "case": "quad_command_first_warp"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_channels_ngon",
+      "case": "quad_command_channels_ngon"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_mixed",
+      "case": "quad_command_mixed"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_raw_seam",
+      "case": "quad_command_raw_seam"
+    },
+    {
+      "op": "quadrangulate_mesh_command",
+      "id": "quad_command_cancel_selection",
+      "case": "quad_command_cancel_selection"
+    }
+  ]
+}

@@ -1,13 +1,10 @@
 //! Getter replay uses saved native geometry; physical native gestures are separate.
 use super::*;
-use crate::app::{subd_native_tests as subd_native, subdivision_native_tests as mesh_native};
+pub(super) use crate::app::crease_native_tests::fixture;
 use serde_json::{Value, json};
 use std::collections::BTreeSet;
 use viboceros_command::crease::CreaseTarget;
 use viboceros_geometry::{PointCloud3, PointCloudProjection};
-#[allow(dead_code)]
-#[path = "../../../../crates/viboceros-command/tests/support/crease.rs"]
-pub(super) mod fixture;
 
 fn pick_kind(document: &Document, target: CreaseTarget) -> ComponentPick {
     match target {

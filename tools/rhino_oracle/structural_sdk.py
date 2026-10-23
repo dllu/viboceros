@@ -6,6 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'quadrangulate_mesh_command': ('quad_command_probe', ('quad_command_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),
     'mesh_quad_conversion': ('quad_conversion_probe', ('quad_conversion_cases','mesh_channel_capture','join_probe','merge_edges_probe')),
     'insert_point_mesh_sdk': ('insert_point_mesh_sdk_probe', ('insert_point_mesh_sdk_cases','insert_point_mesh_methods','insert_point_spatial_sdk','insert_point_spatial_sdk_cases','join_probe','merge_edges_probe')),
     'insert_point_command': ('insert_point_probe', ('conic_getter_input','managed_mouse_callback','snap_environment','number_token','insert_point_cases','insert_point_holdout_cases','insert_point_ngon_cases','insert_point_mesh_shape_cases','insert_point_pick_depth_cases','insert_point_spatial_layout_cases','crease_probe','crease_cases','subdivide_probe','subd_box_probe','join_probe','merge_edges_probe')),

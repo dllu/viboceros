@@ -77,6 +77,7 @@ impl VibocerosApp {
             divide: None,
             modify_radius: None,
             reduce_polyline: None,
+            quadrangulate_mesh: None,
             mesh_patch: None,
             mesh_from_lines: None,
             to_subd: None,

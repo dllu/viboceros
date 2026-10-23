@@ -236,7 +236,7 @@ mod object_selection;
 pub use component_selection::{
     ComponentSelectionKind, ComponentSelectionPrompt, NumberSelectionOption,
 };
-mod quadrangulate_mesh;
+pub mod quadrangulate_mesh;
 pub use object_selection::{
     BooleanSelectionMenu, BooleanSelectionOption, ChoiceSelectionOption, ObjectSelectionFilter,
     ObjectSelectionPrompt, ObjectSelectionWorkflow, SelectionToggle,
@@ -905,6 +905,8 @@ pub struct CommandRegistry {
     surface_rebuild_preferences: std::sync::Arc<remembered::Remembered<surface_rebuild::Options>>,
     tween_surface_preferences: std::sync::Arc<remembered::Remembered<tween_surfaces::Preferences>>,
     mesh_patch_preferences: std::sync::Arc<remembered::Remembered<mesh_patch::Preferences>>,
+    quadrangulate_mesh_preferences:
+        std::sync::Arc<remembered::Remembered<quadrangulate_mesh::Options>>,
     mesh_from_lines_preferences:
         std::sync::Arc<remembered::Remembered<mesh_from_lines::Preferences>>,
 }
@@ -1847,7 +1849,9 @@ impl CommandRegistry {
             .register(TriangulateNonPlanarQuadsCommand)
             .expect("unique built-in command");
         registry
-            .register(QuadrangulateMeshCommand)
+            .register(QuadrangulateMeshCommand(
+                registry.quadrangulate_mesh_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(SwapMeshEdgeCommand)

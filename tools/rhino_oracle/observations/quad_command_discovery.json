@@ -1,0 +1,2048 @@
+{
+  "results": [
+    {
+      "value": {
+        "redo": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  2,
+                  3,
+                  0,
+                  1
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 616495398,
+            "selected": false
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  2,
+                  3,
+                  0,
+                  1
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 616495398,
+            "selected": false
+          }
+        ],
+        "macro": "_-QuadrangulateMesh _Enter _Cancel _Cancel",
+        "events": [
+          {
+            "result": "Success",
+            "selected": [],
+            "objects": [
+              {
+                "point": [
+                  19.0,
+                  23.0,
+                  29.0
+                ],
+                "grips_on": false,
+                "name": "Undo witness",
+                "color_source": 0,
+                "layer": "Crease current",
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "selected_grips": [],
+                "groups": [],
+                "source": null,
+                "crc": 0,
+                "selected": false
+              },
+              {
+                "grips_on": false,
+                "name": "Input 0",
+                "color_source": 1,
+                "mesh": {
+                  "colors": null,
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ]
+                  ],
+                  "ngons": [],
+                  "faces": [
+                    [
+                      2,
+                      3,
+                      0,
+                      1
+                    ]
+                  ]
+                },
+                "layer": "Crease input",
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "selected_edges": [],
+                "selected_grips": [],
+                "groups": [
+                  "Crease assembly"
+                ],
+                "source": 0,
+                "crc": 616495398,
+                "selected": false
+              }
+            ],
+            "name": "QuadrangulateMesh"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "before": [
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1053098580,
+            "selected": true
+          },
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          }
+        ],
+        "undo": [
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1053098580,
+            "selected": false
+          },
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          }
+        ],
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAAB0JHmXbVlJT4jgmneYdSlxAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAADZbCcI/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABA6BAAAAAAAAHCAACBUAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDqAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CALICAAAAAAAAOAQAAAACAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgIAAgMDMAAAANK1U+oAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAMAAAAHi2oGcAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAQKQAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAGk8mKMAAAAAAQCAAEB5AAAAAAAAAAEAAAAAAAAABAAAAGAAAADoLdLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAFP33mkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAAAAB6XYOv/38CgAAAAAAAAAAAcoAAAjYAAAAAAAAALSaI8dguAEJLvtc7jY1SKqIAAAAAAQgAAABJAG4AcAB1AHQAIAAwAAAABhErWwANAQCuoeZZfwAAggAAAAAAAAAAAAAAAHCAACDCAAAAAAAAAHEAAIIBAAAAAAAAAPp/AgBVAAAAAAAAAPv/AgAUAAAAAAAAAB0aEMNX8dMRv+cAEIMBIvBMVAek/P8CAB0AAAAAAAAAEAAAAAAAADNAAAAAAAAAN0AAAAAAAAA9QDfmdD3/fwKAAAAAAAAAAABygAACOQAAAAAAAAAt+cl74Ls9TkW4gjG3VuOUPgAAAAABDQAAAFUAbgBkAG8AIAB3AGkAdABuAGUAcwBzAAAAAF/PLf9/AACCAAAAAAAAAAAAAAAA/////wAAAAAAAAAAJgAAEAwAAAAAAAAA/////wAAAAAAAAAAFwAAEGISAAAAAAAAgIAAIDUAAAAAAAAAWC1ZFi9KHUC/XjuHdBwbG4KAACAVAAAAAAAAAAEAAAAAAAAAAVAAAACZl4CQL9aM/y+zcC+BAAAgCRIAAAAAAAAEAAAA/REAADx4bWw+DQoJPHJlbmRlci1jb250ZW50LW1hbmFnZXItZG9jdW1lbnQ+DQoJCTxjb250ZW50Pg0KCQkJPGVudmlyb25tZW50Lz4NCgkJPC9jb250ZW50Pg0KCQk8ZGVmYXVsdC1jb250ZW50LXNlY3Rpb24vPg0KCQk8c2V0dGluZ3M+DQoJCQk8bmFtZWQtdmlld3M+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtdmlld3M+DQoJCQk8bmFtZWQtY3BsYW5lcz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1jcGxhbmVzPg0KCQkJPG5hbWVkLXBvc2l0aW9ucz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1wb3NpdGlvbnM+DQoJCQk8bmFtZWQtc25hcHNob3RzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXNuYXBzaG90cz4NCgkJCTxtaXNjZWxsYW5lb3VzPg0KCQkJCTxjdXN0b20taW1hZ2Utc2l6ZS1pcy1wcmVzZXQgdHlwZT0iYm9vbCI+ZmFsc2U8L2N1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldD4NCgkJCQk8c21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQkJCTxpbXBvcnQgdHlwZT0iYm9vbCI+ZmFsc2U8L2ltcG9ydD4NCgkJCQkJPHBhc3RlIHR5cGU9ImJvb2wiPmZhbHNlPC9wYXN0ZT4NCgkJCQk8L3NtYXJ0LW1lcmdlLW5hbWUtY29sbGlzaW9uLXN1cHByZXNzPg0KCQkJPC9taXNjZWxsYW5lb3VzPg0KCQkJPGV4Y2x1ZGVkLXJlbmRlci1lbmdpbmVzPg0KCQkJCTx1dWlkcyB0eXBlPSJzdHJpbmciLz4NCgkJCTwvZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQk8ZmlsdGVycz4NCgkJCQk8bmFtZS1maWx0ZXIgdHlwZT0ic3RyaW5nIi8+DQoJCQkJPG5hbWUtZmlsdGVyLWludmVydCB0eXBlPSJib29sIj5mYWxzZTwvbmFtZS1maWx0ZXItaW52ZXJ0Pg0KCQkJCTxzaG93LXVuYXNzaWduZWQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctdjQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdjQtbWF0ZXJpYWxzPg0KCQkJCTxzaG93LWhpZGRlbi1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctaGlkZGVuLW1hdGVyaWFscz4NCgkJCQk8c2hvdy1yZWZlcmVuY2UtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPmZhbHNlPC9zaG93LXJlZmVyZW5jZS1tYXRlcmlhbHM+DQoJCQk8L2ZpbHRlcnM+DQoJCQk8cG9zdC1lZmZlY3RzLW5ldz4NCgkJCQk8ZWFybHkvPg0KCQkJCTx0b25lLW1hcHBpbmcvPg0KCQkJCTxsYXRlLz4NCgkJCTwvcG9zdC1lZmZlY3RzLW5ldz4NCgkJCTxyZW5kZXJpbmc+DQoJCQkJPHJlbmRlci1jaGFubmVscz4NCgkJCQkJPGxpc3QgdHlwZT0ic3RyaW5nIj40NTNBOUExQy05MzA3LTQ5NzYtQjI4Mi00RUFENEQ1Mzk4Nzk7Qjc1MkNFMEItQzIxOS00QkRELUIxMzQtMjY0MjVFMUM0MzMxPC9saXN0Pg0KCQkJCQk8bW9kZSB0eXBlPSJzdHJpbmciPmF1dG9tYXRpYzwvbW9kZT4NCgkJCQk8L3JlbmRlci1jaGFubmVscz4NCgkJCQk8ZW1iZWQtc3VwcG9ydC1maWxlcy1vbiB0eXBlPSJib29sIj50cnVlPC9lbWJlZC1zdXBwb3J0LWZpbGVzLW9uPg0KCQkJCTx1c2UtZGl0aGVyaW5nIHR5cGU9ImJvb2wiPmZhbHNlPC91c2UtZGl0aGVyaW5nPg0KCQkJCTxkaXRoZXJpbmcgdHlwZT0ic3RyaW5nIj5mbG95ZC1zdGVpbmJlcmc8L2RpdGhlcmluZz4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmciB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L2N1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnI+DQoJCQkJPGN1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnItb24gdHlwZT0iYm9vbCI+dHJ1ZTwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbj4NCgkJCQk8dXNlLXBvc3QtcHJvY2Vzcy1nYW1tYSB0eXBlPSJib29sIj50cnVlPC91c2UtcG9zdC1wcm9jZXNzLWdhbW1hPg0KCQkJCTxnYW1tYSB0eXBlPSJmbG9hdCI+Mi4yMDAwMDAwNDc2ODM3MjwvZ2FtbWE+DQoJCQkJPHVzZS1saW5lYXItd29ya2Zsb3cgdHlwZT0iYm9vbCI+dHJ1ZTwvdXNlLWxpbmVhci13b3JrZmxvdz4NCgkJCTwvcmVuZGVyaW5nPg0KCQkJPHN1bj4NCgkJCQk8ZW5hYmxlLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvZW5hYmxlLWFsbG93ZWQ+DQoJCQkJPGVuYWJsZS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZW5hYmxlLW9uPg0KCQkJCTxtYW51YWwtY29udHJvbC1hbGxvd2VkIHR5cGU9ImJvb2wiPnRydWU8L21hbnVhbC1jb250cm9sLWFsbG93ZWQ+DQoJCQkJPG1hbnVhbC1jb250cm9sLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9tYW51YWwtY29udHJvbC1vbj4NCgkJCQk8aW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvaW50ZW5zaXR5Pg0KCQkJCTxzaGFkb3ctaW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvc2hhZG93LWludGVuc2l0eT4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9kYXlsaWdodC1zYXZpbmctb24+DQoJCQkJPGRheWxpZ2h0LXNhdmluZy1taW51dGVzIHR5cGU9ImludCI+NjA8L2RheWxpZ2h0LXNhdmluZy1taW51dGVzPg0KCQkJCTx5ZWFyIHR5cGU9ImludCI+MjAyNjwveWVhcj4NCgkJCQk8bW9udGggdHlwZT0iaW50Ij4zPC9tb250aD4NCgkJCQk8ZGF5IHR5cGU9ImludCI+MjE8L2RheT4NCgkJCQk8dGltZSB0eXBlPSJkb3VibGUiPjEyLjAwMDAwMDAxPC90aW1lPg0KCQkJCTxzdW4tYXppbXV0aCB0eXBlPSJkb3VibGUiPjE2OC4yNjkzODg1ODYxMDg8L3N1bi1hemltdXRoPg0KCQkJCTxzdW4tYWx0aXR1ZGUgdHlwZT0iZG91YmxlIj44OS42MDE4MzIwMzY3Mzc8L3N1bi1hbHRpdHVkZT4NCgkJCQk8c2t5bGlnaHQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtb24+DQoJCQkJPHNreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9za3lsaWdodC1zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtY3VzdG9tLWVudmlyb25tZW50LW9uPg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQgdHlwZT0idXVpZCI+MDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQ+DQoJCQkJPG9ic2VydmVyLXRpbWV6b25lIHR5cGU9ImRvdWJsZSI+MDwvb2JzZXJ2ZXItdGltZXpvbmU+DQoJCQk8L3N1bj4NCgkJCTxzYWZlLWZyYW1lPg0KCQkJCTxvbiB0eXBlPSJib29sIj5mYWxzZTwvb24+DQoJCQkJPHBlcnNwZWN0aXZlLW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvcGVyc3BlY3RpdmUtb25seT4NCgkJCQk8ZmllbGQtZGlzcGxheS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZmllbGQtZGlzcGxheS1vbj4NCgkJCQk8bGl2ZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTwvbGl2ZS1mcmFtZT4NCgkJCQk8YWN0aW9uLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJCTx4LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC94LXNjYWxlPg0KCQkJCQk8eS1zY2FsZSB0eXBlPSJkb3VibGUiPjAuOTwveS1zY2FsZT4NCgkJCQkJPGxpbmsgdHlwZT0iYm9vbCI+dHJ1ZTwvbGluaz4NCgkJCQk8L2FjdGlvbi1mcmFtZT4NCgkJCQk8dGl0bGUtZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC44PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvdGl0bGUtZnJhbWU+DQoJCQk8L3NhZmUtZnJhbWU+DQoJCQk8Z3JvdW5kLXBsYW5lPg0KCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQk8c2hvdy11bmRlcnNpZGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctdW5kZXJzaWRlPg0KCQkJCTxhbHRpdHVkZSB0eXBlPSJkb3VibGUiPjA8L2FsdGl0dWRlPg0KCQkJCTxhdXRvLWFsdGl0dWRlIHR5cGU9ImJvb2wiPnRydWU8L2F1dG8tYWx0aXR1ZGU+DQoJCQkJPHNoYWRvdy1vbmx5IHR5cGU9ImJvb2wiPnRydWU8L3NoYWRvdy1vbmx5Pg0KCQkJCTxtYXRlcmlhbCB0eXBlPSJzdHJpbmciLz4NCgkJCQk8dGV4dHVyZS1zaXplIHR5cGU9InZlY3RvcjJkIj4xLDE8L3RleHR1cmUtc2l6ZT4NCgkJCQk8dGV4dHVyZS1vZmZzZXQgdHlwZT0idmVjdG9yMmQiPjAsMDwvdGV4dHVyZS1vZmZzZXQ+DQoJCQkJPHRleHR1cmUtcm90YXRpb24gdHlwZT0iZG91YmxlIj4wPC90ZXh0dXJlLXJvdGF0aW9uPg0KCQkJCTxvZmZzZXQtbG9jayB0eXBlPSJib29sIj5mYWxzZTwvb2Zmc2V0LWxvY2s+DQoJCQkJPHJlcGVhdC1sb2NrIHR5cGU9ImJvb2wiPnRydWU8L3JlcGVhdC1sb2NrPg0KCQkJPC9ncm91bmQtcGxhbmU+DQoJCTwvc2V0dGluZ3M+DQoJCTxtYXRlcmlhbC1zZWN0aW9uLz4NCgkJPGVudmlyb25tZW50LXNlY3Rpb24vPg0KCQk8dGV4dHVyZS1zZWN0aW9uLz4NCgk8L3JlbmRlci1jb250ZW50LW1hbmFnZXItZG9jdW1lbnQ+DQo8L3htbD4NCgAAAAD/////AAAAAAAAAAD/fwAACAAAAAAAAAARIAAAAAAAAA==",
+        "after": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  2,
+                  3,
+                  0,
+                  1
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 616495398,
+            "selected": false
+          }
+        ],
+        "input_trace": [],
+        "history": "Command: _-QuadrangulateMesh\nChange option or press Enter to accept ( Planarity=5  Rectangularity=2 ): _Enter\nChange option or press Enter to accept ( Planarity=5  Rectangularity=2 )\nCommand: _Cancel\nCommand: _Cancel",
+        "input": {
+          "sources": [
+            {
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh"
+            }
+          ],
+          "whole": true,
+          "command": "QuadrangulateMesh",
+          "command_arguments": "",
+          "preselected": true
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "quad_command_default_square"
+    },
+    {
+      "value": {
+        "redo": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1424272551,
+            "selected": false
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1424272551,
+            "selected": false
+          }
+        ],
+        "macro": "_-QuadrangulateMesh _Enter _Cancel _Cancel",
+        "events": [
+          {
+            "result": "Success",
+            "selected": [],
+            "objects": [
+              {
+                "point": [
+                  19.0,
+                  23.0,
+                  29.0
+                ],
+                "grips_on": false,
+                "name": "Undo witness",
+                "color_source": 0,
+                "layer": "Crease current",
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "selected_grips": [],
+                "groups": [],
+                "source": null,
+                "crc": 0,
+                "selected": false
+              },
+              {
+                "grips_on": false,
+                "name": "Input 0",
+                "color_source": 1,
+                "mesh": {
+                  "colors": null,
+                  "vertex_normals": [
+                    [
+                      0.3250575661659241,
+                      -0.3250575661659241,
+                      0.8880738615989685
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.3250575661659241,
+                      -0.3250575661659241,
+                      0.8880738615989685
+                    ],
+                    [
+                      0.5773502588272095,
+                      -0.5773502588272095,
+                      0.5773502588272095
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      1.0
+                    ]
+                  ],
+                  "ngons": [],
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2
+                    ],
+                    [
+                      0,
+                      2,
+                      3
+                    ]
+                  ]
+                },
+                "layer": "Crease input",
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "selected_edges": [],
+                "selected_grips": [],
+                "groups": [
+                  "Crease assembly"
+                ],
+                "source": 0,
+                "crc": 1424272551,
+                "selected": false
+              }
+            ],
+            "name": "QuadrangulateMesh"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "before": [
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1424272551,
+            "selected": true
+          },
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          }
+        ],
+        "undo": [
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1424272551,
+            "selected": false
+          },
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          }
+        ],
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAACC4uppVSlXRL9qqyA86de2AAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAADXexJz/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABA6BAAAAAAAAHCAACBUAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDqAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CALICAAAAAAAAOAQAAAACAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAgD8AAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgIAAgMDMAAAAKQAtmcAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAAAAAAAAAAAAgD8AAIA/MAAAAI9b+msA8m2mPvJtpr7PWGM/AAAAAAAAAAAAAIA/8m2mPvJtpr7PWGM/Os0TPzrNE786zRM/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAQKQAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAGk8mKMAAAAAAQCAAEB5AAAAAAAAAAEAAAAAAAAABAAAAGAAAABo4QhyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAADwP+kH8m4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAA8D//GXcV/38CgAAAAAAAAAAAcoAAAjYAAAAAAAAALcopq28tOVNMurmCrvd2FxkAAAAAAQgAAABJAG4AcAB1AHQAIAAwAAAABhErWwANAQAx8M4BfwAAggAAAAAAAAAAAAAAAHCAACDCAAAAAAAAAHEAAIIBAAAAAAAAAPp/AgBVAAAAAAAAAPv/AgAUAAAAAAAAAB0aEMNX8dMRv+cAEIMBIvBMVAek/P8CAB0AAAAAAAAAEAAAAAAAADNAAAAAAAAAN0AAAAAAAAA9QDfmdD3/fwKAAAAAAAAAAABygAACOQAAAAAAAAAtv2rmSH0mkkqOBowH3rWyvwAAAAABDQAAAFUAbgBkAG8AIAB3AGkAdABuAGUAcwBzAAAAAEbx2VV/AACCAAAAAAAAAAAAAAAA/////wAAAAAAAAAAJgAAEAwAAAAAAAAA/////wAAAAAAAAAAFwAAEGISAAAAAAAAgIAAIDUAAAAAAAAAWC1ZFi9KHUC/XjuHdBwbG4KAACAVAAAAAAAAAAEAAAAAAAAAAVAAAACZl4CQL9aM/y+zcC+BAAAgCRIAAAAAAAAEAAAA/REAADx4bWw+DQoJPHJlbmRlci1jb250ZW50LW1hbmFnZXItZG9jdW1lbnQ+DQoJCTxjb250ZW50Pg0KCQkJPGVudmlyb25tZW50Lz4NCgkJPC9jb250ZW50Pg0KCQk8ZGVmYXVsdC1jb250ZW50LXNlY3Rpb24vPg0KCQk8c2V0dGluZ3M+DQoJCQk8bmFtZWQtdmlld3M+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtdmlld3M+DQoJCQk8bmFtZWQtY3BsYW5lcz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1jcGxhbmVzPg0KCQkJPG5hbWVkLXBvc2l0aW9ucz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1wb3NpdGlvbnM+DQoJCQk8bmFtZWQtc25hcHNob3RzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXNuYXBzaG90cz4NCgkJCTxtaXNjZWxsYW5lb3VzPg0KCQkJCTxjdXN0b20taW1hZ2Utc2l6ZS1pcy1wcmVzZXQgdHlwZT0iYm9vbCI+ZmFsc2U8L2N1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldD4NCgkJCQk8c21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQkJCTxpbXBvcnQgdHlwZT0iYm9vbCI+ZmFsc2U8L2ltcG9ydD4NCgkJCQkJPHBhc3RlIHR5cGU9ImJvb2wiPmZhbHNlPC9wYXN0ZT4NCgkJCQk8L3NtYXJ0LW1lcmdlLW5hbWUtY29sbGlzaW9uLXN1cHByZXNzPg0KCQkJPC9taXNjZWxsYW5lb3VzPg0KCQkJPGV4Y2x1ZGVkLXJlbmRlci1lbmdpbmVzPg0KCQkJCTx1dWlkcyB0eXBlPSJzdHJpbmciLz4NCgkJCTwvZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQk8ZmlsdGVycz4NCgkJCQk8bmFtZS1maWx0ZXIgdHlwZT0ic3RyaW5nIi8+DQoJCQkJPG5hbWUtZmlsdGVyLWludmVydCB0eXBlPSJib29sIj5mYWxzZTwvbmFtZS1maWx0ZXItaW52ZXJ0Pg0KCQkJCTxzaG93LXVuYXNzaWduZWQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctdjQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdjQtbWF0ZXJpYWxzPg0KCQkJCTxzaG93LWhpZGRlbi1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctaGlkZGVuLW1hdGVyaWFscz4NCgkJCQk8c2hvdy1yZWZlcmVuY2UtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPmZhbHNlPC9zaG93LXJlZmVyZW5jZS1tYXRlcmlhbHM+DQoJCQk8L2ZpbHRlcnM+DQoJCQk8cG9zdC1lZmZlY3RzLW5ldz4NCgkJCQk8ZWFybHkvPg0KCQkJCTx0b25lLW1hcHBpbmcvPg0KCQkJCTxsYXRlLz4NCgkJCTwvcG9zdC1lZmZlY3RzLW5ldz4NCgkJCTxyZW5kZXJpbmc+DQoJCQkJPHJlbmRlci1jaGFubmVscz4NCgkJCQkJPGxpc3QgdHlwZT0ic3RyaW5nIj40NTNBOUExQy05MzA3LTQ5NzYtQjI4Mi00RUFENEQ1Mzk4Nzk7Qjc1MkNFMEItQzIxOS00QkRELUIxMzQtMjY0MjVFMUM0MzMxPC9saXN0Pg0KCQkJCQk8bW9kZSB0eXBlPSJzdHJpbmciPmF1dG9tYXRpYzwvbW9kZT4NCgkJCQk8L3JlbmRlci1jaGFubmVscz4NCgkJCQk8ZW1iZWQtc3VwcG9ydC1maWxlcy1vbiB0eXBlPSJib29sIj50cnVlPC9lbWJlZC1zdXBwb3J0LWZpbGVzLW9uPg0KCQkJCTx1c2UtZGl0aGVyaW5nIHR5cGU9ImJvb2wiPmZhbHNlPC91c2UtZGl0aGVyaW5nPg0KCQkJCTxkaXRoZXJpbmcgdHlwZT0ic3RyaW5nIj5mbG95ZC1zdGVpbmJlcmc8L2RpdGhlcmluZz4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmciB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L2N1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnI+DQoJCQkJPGN1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnItb24gdHlwZT0iYm9vbCI+dHJ1ZTwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbj4NCgkJCQk8dXNlLXBvc3QtcHJvY2Vzcy1nYW1tYSB0eXBlPSJib29sIj50cnVlPC91c2UtcG9zdC1wcm9jZXNzLWdhbW1hPg0KCQkJCTxnYW1tYSB0eXBlPSJmbG9hdCI+Mi4yMDAwMDAwNDc2ODM3MjwvZ2FtbWE+DQoJCQkJPHVzZS1saW5lYXItd29ya2Zsb3cgdHlwZT0iYm9vbCI+dHJ1ZTwvdXNlLWxpbmVhci13b3JrZmxvdz4NCgkJCTwvcmVuZGVyaW5nPg0KCQkJPHN1bj4NCgkJCQk8ZW5hYmxlLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvZW5hYmxlLWFsbG93ZWQ+DQoJCQkJPGVuYWJsZS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZW5hYmxlLW9uPg0KCQkJCTxtYW51YWwtY29udHJvbC1hbGxvd2VkIHR5cGU9ImJvb2wiPnRydWU8L21hbnVhbC1jb250cm9sLWFsbG93ZWQ+DQoJCQkJPG1hbnVhbC1jb250cm9sLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9tYW51YWwtY29udHJvbC1vbj4NCgkJCQk8aW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvaW50ZW5zaXR5Pg0KCQkJCTxzaGFkb3ctaW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvc2hhZG93LWludGVuc2l0eT4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9kYXlsaWdodC1zYXZpbmctb24+DQoJCQkJPGRheWxpZ2h0LXNhdmluZy1taW51dGVzIHR5cGU9ImludCI+NjA8L2RheWxpZ2h0LXNhdmluZy1taW51dGVzPg0KCQkJCTx5ZWFyIHR5cGU9ImludCI+MjAyNjwveWVhcj4NCgkJCQk8bW9udGggdHlwZT0iaW50Ij4zPC9tb250aD4NCgkJCQk8ZGF5IHR5cGU9ImludCI+MjE8L2RheT4NCgkJCQk8dGltZSB0eXBlPSJkb3VibGUiPjEyLjAwMDAwMDAxPC90aW1lPg0KCQkJCTxzdW4tYXppbXV0aCB0eXBlPSJkb3VibGUiPjE2OC4yNjkzODg1ODYxMDg8L3N1bi1hemltdXRoPg0KCQkJCTxzdW4tYWx0aXR1ZGUgdHlwZT0iZG91YmxlIj44OS42MDE4MzIwMzY3Mzc8L3N1bi1hbHRpdHVkZT4NCgkJCQk8c2t5bGlnaHQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtb24+DQoJCQkJPHNreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9za3lsaWdodC1zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtY3VzdG9tLWVudmlyb25tZW50LW9uPg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQgdHlwZT0idXVpZCI+MDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQ+DQoJCQkJPG9ic2VydmVyLXRpbWV6b25lIHR5cGU9ImRvdWJsZSI+MDwvb2JzZXJ2ZXItdGltZXpvbmU+DQoJCQk8L3N1bj4NCgkJCTxzYWZlLWZyYW1lPg0KCQkJCTxvbiB0eXBlPSJib29sIj5mYWxzZTwvb24+DQoJCQkJPHBlcnNwZWN0aXZlLW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvcGVyc3BlY3RpdmUtb25seT4NCgkJCQk8ZmllbGQtZGlzcGxheS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZmllbGQtZGlzcGxheS1vbj4NCgkJCQk8bGl2ZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTwvbGl2ZS1mcmFtZT4NCgkJCQk8YWN0aW9uLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJCTx4LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC94LXNjYWxlPg0KCQkJCQk8eS1zY2FsZSB0eXBlPSJkb3VibGUiPjAuOTwveS1zY2FsZT4NCgkJCQkJPGxpbmsgdHlwZT0iYm9vbCI+dHJ1ZTwvbGluaz4NCgkJCQk8L2FjdGlvbi1mcmFtZT4NCgkJCQk8dGl0bGUtZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC44PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvdGl0bGUtZnJhbWU+DQoJCQk8L3NhZmUtZnJhbWU+DQoJCQk8Z3JvdW5kLXBsYW5lPg0KCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQk8c2hvdy11bmRlcnNpZGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctdW5kZXJzaWRlPg0KCQkJCTxhbHRpdHVkZSB0eXBlPSJkb3VibGUiPjA8L2FsdGl0dWRlPg0KCQkJCTxhdXRvLWFsdGl0dWRlIHR5cGU9ImJvb2wiPnRydWU8L2F1dG8tYWx0aXR1ZGU+DQoJCQkJPHNoYWRvdy1vbmx5IHR5cGU9ImJvb2wiPnRydWU8L3NoYWRvdy1vbmx5Pg0KCQkJCTxtYXRlcmlhbCB0eXBlPSJzdHJpbmciLz4NCgkJCQk8dGV4dHVyZS1zaXplIHR5cGU9InZlY3RvcjJkIj4xLDE8L3RleHR1cmUtc2l6ZT4NCgkJCQk8dGV4dHVyZS1vZmZzZXQgdHlwZT0idmVjdG9yMmQiPjAsMDwvdGV4dHVyZS1vZmZzZXQ+DQoJCQkJPHRleHR1cmUtcm90YXRpb24gdHlwZT0iZG91YmxlIj4wPC90ZXh0dXJlLXJvdGF0aW9uPg0KCQkJCTxvZmZzZXQtbG9jayB0eXBlPSJib29sIj5mYWxzZTwvb2Zmc2V0LWxvY2s+DQoJCQkJPHJlcGVhdC1sb2NrIHR5cGU9ImJvb2wiPnRydWU8L3JlcGVhdC1sb2NrPg0KCQkJPC9ncm91bmQtcGxhbmU+DQoJCTwvc2V0dGluZ3M+DQoJCTxtYXRlcmlhbC1zZWN0aW9uLz4NCgkJPGVudmlyb25tZW50LXNlY3Rpb24vPg0KCQk8dGV4dHVyZS1zZWN0aW9uLz4NCgk8L3JlbmRlci1jb250ZW50LW1hbmFnZXItZG9jdW1lbnQ+DQo8L3htbD4NCgAAAAD/////AAAAAAAAAAD/fwAACAAAAAAAAAARIAAAAAAAAA==",
+        "after": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1424272551,
+            "selected": false
+          }
+        ],
+        "input_trace": [],
+        "history": "Command: _-QuadrangulateMesh\nChange option or press Enter to accept ( Planarity=5  Rectangularity=2 ): _Enter\nChange option or press Enter to accept ( Planarity=5  Rectangularity=2 )\nCommand: _Cancel\nCommand: _Cancel",
+        "input": {
+          "sources": [
+            {
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh"
+            }
+          ],
+          "whole": true,
+          "command": "QuadrangulateMesh",
+          "command_arguments": "",
+          "preselected": true
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "quad_command_default_warp"
+    },
+    {
+      "value": {
+        "redo": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  2,
+                  3,
+                  0,
+                  1
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 607652435,
+            "selected": false
+          }
+        ],
+        "success": true,
+        "after_script": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  2,
+                  3,
+                  0,
+                  1
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 607652435,
+            "selected": false
+          }
+        ],
+        "macro": "_-QuadrangulateMesh _Planarity=90 _Rectangularity=2 _Enter _Cancel _Cancel",
+        "events": [
+          {
+            "result": "Success",
+            "selected": [],
+            "objects": [
+              {
+                "point": [
+                  19.0,
+                  23.0,
+                  29.0
+                ],
+                "grips_on": false,
+                "name": "Undo witness",
+                "color_source": 0,
+                "layer": "Crease current",
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "selected_grips": [],
+                "groups": [],
+                "source": null,
+                "crc": 0,
+                "selected": false
+              },
+              {
+                "grips_on": false,
+                "name": "Input 0",
+                "color_source": 1,
+                "mesh": {
+                  "colors": null,
+                  "vertex_normals": [
+                    [
+                      0.3250575661659241,
+                      -0.3250575661659241,
+                      0.8880738615989685
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.3250575661659241,
+                      -0.3250575661659241,
+                      0.8880738615989685
+                    ],
+                    [
+                      0.5773502588272095,
+                      -0.5773502588272095,
+                      0.5773502588272095
+                    ]
+                  ],
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      1.0
+                    ]
+                  ],
+                  "ngons": [],
+                  "faces": [
+                    [
+                      2,
+                      3,
+                      0,
+                      1
+                    ]
+                  ]
+                },
+                "layer": "Crease input",
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "selected_edges": [],
+                "selected_grips": [],
+                "groups": [
+                  "Crease assembly"
+                ],
+                "source": 0,
+                "crc": 607652435,
+                "selected": false
+              }
+            ],
+            "name": "QuadrangulateMesh"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "before": [
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1424272551,
+            "selected": true
+          },
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          }
+        ],
+        "undo": [
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 1424272551,
+            "selected": false
+          },
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          }
+        ],
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAABVVlrrH7HwSIrBx6UNTizEAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAADeLCTp/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABA6BAAAAAAAAHCAACBUAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDqAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CALICAAAAAAAAOAQAAAACAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAgD8AAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgIAAgMDMAAAAKQAtmcAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAAAAAAAAAAAAgD8AAIA/MAAAAI9b+msA8m2mPvJtpr7PWGM/AAAAAAAAAAAAAIA/8m2mPvJtpr7PWGM/Os0TPzrNE786zRM/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAQKQAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAGk8mKMAAAAAAQCAAEB5AAAAAAAAAAEAAAAAAAAABAAAAGAAAABo4QhyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAADwP+kH8m4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAA8D//GXcV/38CgAAAAAAAAAAAcoAAAjYAAAAAAAAALcf5vrjcpVFGiAFmgggrzy4AAAAAAQgAAABJAG4AcAB1AHQAIAAwAAAABhErWwANAQC7cZlsfwAAggAAAAAAAAAAAAAAAHCAACDCAAAAAAAAAHEAAIIBAAAAAAAAAPp/AgBVAAAAAAAAAPv/AgAUAAAAAAAAAB0aEMNX8dMRv+cAEIMBIvBMVAek/P8CAB0AAAAAAAAAEAAAAAAAADNAAAAAAAAAN0AAAAAAAAA9QDfmdD3/fwKAAAAAAAAAAABygAACOQAAAAAAAAAtJy5ON0l910a+XaYlzkT1zwAAAAABDQAAAFUAbgBkAG8AIAB3AGkAdABuAGUAcwBzAAAAAKfVzGx/AACCAAAAAAAAAAAAAAAA/////wAAAAAAAAAAJgAAEAwAAAAAAAAA/////wAAAAAAAAAAFwAAEGISAAAAAAAAgIAAIDUAAAAAAAAAWC1ZFi9KHUC/XjuHdBwbG4KAACAVAAAAAAAAAAEAAAAAAAAAAVAAAACZl4CQL9aM/y+zcC+BAAAgCRIAAAAAAAAEAAAA/REAADx4bWw+DQoJPHJlbmRlci1jb250ZW50LW1hbmFnZXItZG9jdW1lbnQ+DQoJCTxjb250ZW50Pg0KCQkJPGVudmlyb25tZW50Lz4NCgkJPC9jb250ZW50Pg0KCQk8ZGVmYXVsdC1jb250ZW50LXNlY3Rpb24vPg0KCQk8c2V0dGluZ3M+DQoJCQk8bmFtZWQtdmlld3M+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtdmlld3M+DQoJCQk8bmFtZWQtY3BsYW5lcz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1jcGxhbmVzPg0KCQkJPG5hbWVkLXBvc2l0aW9ucz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1wb3NpdGlvbnM+DQoJCQk8bmFtZWQtc25hcHNob3RzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXNuYXBzaG90cz4NCgkJCTxtaXNjZWxsYW5lb3VzPg0KCQkJCTxjdXN0b20taW1hZ2Utc2l6ZS1pcy1wcmVzZXQgdHlwZT0iYm9vbCI+ZmFsc2U8L2N1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldD4NCgkJCQk8c21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQkJCTxpbXBvcnQgdHlwZT0iYm9vbCI+ZmFsc2U8L2ltcG9ydD4NCgkJCQkJPHBhc3RlIHR5cGU9ImJvb2wiPmZhbHNlPC9wYXN0ZT4NCgkJCQk8L3NtYXJ0LW1lcmdlLW5hbWUtY29sbGlzaW9uLXN1cHByZXNzPg0KCQkJPC9taXNjZWxsYW5lb3VzPg0KCQkJPGV4Y2x1ZGVkLXJlbmRlci1lbmdpbmVzPg0KCQkJCTx1dWlkcyB0eXBlPSJzdHJpbmciLz4NCgkJCTwvZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQk8ZmlsdGVycz4NCgkJCQk8bmFtZS1maWx0ZXIgdHlwZT0ic3RyaW5nIi8+DQoJCQkJPG5hbWUtZmlsdGVyLWludmVydCB0eXBlPSJib29sIj5mYWxzZTwvbmFtZS1maWx0ZXItaW52ZXJ0Pg0KCQkJCTxzaG93LXVuYXNzaWduZWQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctdjQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdjQtbWF0ZXJpYWxzPg0KCQkJCTxzaG93LWhpZGRlbi1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctaGlkZGVuLW1hdGVyaWFscz4NCgkJCQk8c2hvdy1yZWZlcmVuY2UtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPmZhbHNlPC9zaG93LXJlZmVyZW5jZS1tYXRlcmlhbHM+DQoJCQk8L2ZpbHRlcnM+DQoJCQk8cG9zdC1lZmZlY3RzLW5ldz4NCgkJCQk8ZWFybHkvPg0KCQkJCTx0b25lLW1hcHBpbmcvPg0KCQkJCTxsYXRlLz4NCgkJCTwvcG9zdC1lZmZlY3RzLW5ldz4NCgkJCTxyZW5kZXJpbmc+DQoJCQkJPHJlbmRlci1jaGFubmVscz4NCgkJCQkJPGxpc3QgdHlwZT0ic3RyaW5nIj40NTNBOUExQy05MzA3LTQ5NzYtQjI4Mi00RUFENEQ1Mzk4Nzk7Qjc1MkNFMEItQzIxOS00QkRELUIxMzQtMjY0MjVFMUM0MzMxPC9saXN0Pg0KCQkJCQk8bW9kZSB0eXBlPSJzdHJpbmciPmF1dG9tYXRpYzwvbW9kZT4NCgkJCQk8L3JlbmRlci1jaGFubmVscz4NCgkJCQk8ZW1iZWQtc3VwcG9ydC1maWxlcy1vbiB0eXBlPSJib29sIj50cnVlPC9lbWJlZC1zdXBwb3J0LWZpbGVzLW9uPg0KCQkJCTx1c2UtZGl0aGVyaW5nIHR5cGU9ImJvb2wiPmZhbHNlPC91c2UtZGl0aGVyaW5nPg0KCQkJCTxkaXRoZXJpbmcgdHlwZT0ic3RyaW5nIj5mbG95ZC1zdGVpbmJlcmc8L2RpdGhlcmluZz4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmciB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L2N1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnI+DQoJCQkJPGN1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnItb24gdHlwZT0iYm9vbCI+dHJ1ZTwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbj4NCgkJCQk8dXNlLXBvc3QtcHJvY2Vzcy1nYW1tYSB0eXBlPSJib29sIj50cnVlPC91c2UtcG9zdC1wcm9jZXNzLWdhbW1hPg0KCQkJCTxnYW1tYSB0eXBlPSJmbG9hdCI+Mi4yMDAwMDAwNDc2ODM3MjwvZ2FtbWE+DQoJCQkJPHVzZS1saW5lYXItd29ya2Zsb3cgdHlwZT0iYm9vbCI+dHJ1ZTwvdXNlLWxpbmVhci13b3JrZmxvdz4NCgkJCTwvcmVuZGVyaW5nPg0KCQkJPHN1bj4NCgkJCQk8ZW5hYmxlLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvZW5hYmxlLWFsbG93ZWQ+DQoJCQkJPGVuYWJsZS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZW5hYmxlLW9uPg0KCQkJCTxtYW51YWwtY29udHJvbC1hbGxvd2VkIHR5cGU9ImJvb2wiPnRydWU8L21hbnVhbC1jb250cm9sLWFsbG93ZWQ+DQoJCQkJPG1hbnVhbC1jb250cm9sLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9tYW51YWwtY29udHJvbC1vbj4NCgkJCQk8aW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvaW50ZW5zaXR5Pg0KCQkJCTxzaGFkb3ctaW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvc2hhZG93LWludGVuc2l0eT4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9kYXlsaWdodC1zYXZpbmctb24+DQoJCQkJPGRheWxpZ2h0LXNhdmluZy1taW51dGVzIHR5cGU9ImludCI+NjA8L2RheWxpZ2h0LXNhdmluZy1taW51dGVzPg0KCQkJCTx5ZWFyIHR5cGU9ImludCI+MjAyNjwveWVhcj4NCgkJCQk8bW9udGggdHlwZT0iaW50Ij4zPC9tb250aD4NCgkJCQk8ZGF5IHR5cGU9ImludCI+MjE8L2RheT4NCgkJCQk8dGltZSB0eXBlPSJkb3VibGUiPjEyLjAwMDAwMDAxPC90aW1lPg0KCQkJCTxzdW4tYXppbXV0aCB0eXBlPSJkb3VibGUiPjE2OC4yNjkzODg1ODYxMDg8L3N1bi1hemltdXRoPg0KCQkJCTxzdW4tYWx0aXR1ZGUgdHlwZT0iZG91YmxlIj44OS42MDE4MzIwMzY3Mzc8L3N1bi1hbHRpdHVkZT4NCgkJCQk8c2t5bGlnaHQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtb24+DQoJCQkJPHNreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9za3lsaWdodC1zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtY3VzdG9tLWVudmlyb25tZW50LW9uPg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQgdHlwZT0idXVpZCI+MDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQ+DQoJCQkJPG9ic2VydmVyLXRpbWV6b25lIHR5cGU9ImRvdWJsZSI+MDwvb2JzZXJ2ZXItdGltZXpvbmU+DQoJCQk8L3N1bj4NCgkJCTxzYWZlLWZyYW1lPg0KCQkJCTxvbiB0eXBlPSJib29sIj5mYWxzZTwvb24+DQoJCQkJPHBlcnNwZWN0aXZlLW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvcGVyc3BlY3RpdmUtb25seT4NCgkJCQk8ZmllbGQtZGlzcGxheS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZmllbGQtZGlzcGxheS1vbj4NCgkJCQk8bGl2ZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTwvbGl2ZS1mcmFtZT4NCgkJCQk8YWN0aW9uLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJCTx4LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC94LXNjYWxlPg0KCQkJCQk8eS1zY2FsZSB0eXBlPSJkb3VibGUiPjAuOTwveS1zY2FsZT4NCgkJCQkJPGxpbmsgdHlwZT0iYm9vbCI+dHJ1ZTwvbGluaz4NCgkJCQk8L2FjdGlvbi1mcmFtZT4NCgkJCQk8dGl0bGUtZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC44PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvdGl0bGUtZnJhbWU+DQoJCQk8L3NhZmUtZnJhbWU+DQoJCQk8Z3JvdW5kLXBsYW5lPg0KCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQk8c2hvdy11bmRlcnNpZGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctdW5kZXJzaWRlPg0KCQkJCTxhbHRpdHVkZSB0eXBlPSJkb3VibGUiPjA8L2FsdGl0dWRlPg0KCQkJCTxhdXRvLWFsdGl0dWRlIHR5cGU9ImJvb2wiPnRydWU8L2F1dG8tYWx0aXR1ZGU+DQoJCQkJPHNoYWRvdy1vbmx5IHR5cGU9ImJvb2wiPnRydWU8L3NoYWRvdy1vbmx5Pg0KCQkJCTxtYXRlcmlhbCB0eXBlPSJzdHJpbmciLz4NCgkJCQk8dGV4dHVyZS1zaXplIHR5cGU9InZlY3RvcjJkIj4xLDE8L3RleHR1cmUtc2l6ZT4NCgkJCQk8dGV4dHVyZS1vZmZzZXQgdHlwZT0idmVjdG9yMmQiPjAsMDwvdGV4dHVyZS1vZmZzZXQ+DQoJCQkJPHRleHR1cmUtcm90YXRpb24gdHlwZT0iZG91YmxlIj4wPC90ZXh0dXJlLXJvdGF0aW9uPg0KCQkJCTxvZmZzZXQtbG9jayB0eXBlPSJib29sIj5mYWxzZTwvb2Zmc2V0LWxvY2s+DQoJCQkJPHJlcGVhdC1sb2NrIHR5cGU9ImJvb2wiPnRydWU8L3JlcGVhdC1sb2NrPg0KCQkJPC9ncm91bmQtcGxhbmU+DQoJCTwvc2V0dGluZ3M+DQoJCTxtYXRlcmlhbC1zZWN0aW9uLz4NCgkJPGVudmlyb25tZW50LXNlY3Rpb24vPg0KCQk8dGV4dHVyZS1zZWN0aW9uLz4NCgk8L3JlbmRlci1jb250ZW50LW1hbmFnZXItZG9jdW1lbnQ+DQo8L3htbD4NCgAAAAD/////AAAAAAAAAAD/fwAACAAAAAAAAAARIAAAAAAAAA==",
+        "after": [
+          {
+            "point": [
+              19.0,
+              23.0,
+              29.0
+            ],
+            "grips_on": false,
+            "name": "Undo witness",
+            "color_source": 0,
+            "layer": "Crease current",
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "selected_grips": [],
+            "groups": [],
+            "source": null,
+            "crc": 0,
+            "selected": false
+          },
+          {
+            "grips_on": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "mesh": {
+              "colors": null,
+              "vertex_normals": [
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.3250575661659241,
+                  -0.3250575661659241,
+                  0.8880738615989685
+                ],
+                [
+                  0.5773502588272095,
+                  -0.5773502588272095,
+                  0.5773502588272095
+                ]
+              ],
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "ngons": [],
+              "faces": [
+                [
+                  2,
+                  3,
+                  0,
+                  1
+                ]
+              ]
+            },
+            "layer": "Crease input",
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "selected_edges": [],
+            "selected_grips": [],
+            "groups": [
+              "Crease assembly"
+            ],
+            "source": 0,
+            "crc": 607652435,
+            "selected": false
+          }
+        ],
+        "input_trace": [],
+        "history": "Command: _-QuadrangulateMesh\nChange option or press Enter to accept ( Planarity=5  Rectangularity=2 ): _Planarity=90\nChange option or press Enter to accept ( Planarity=90  Rectangularity=2 ): _Rectangularity=2\nChange option or press Enter to accept ( Planarity=90  Rectangularity=2 ): _Enter\nChange option or press Enter to accept ( Planarity=90  Rectangularity=2 )\nCommand: _Cancel\nCommand: _Cancel",
+        "input": {
+          "sources": [
+            {
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh"
+            }
+          ],
+          "whole": true,
+          "command": "QuadrangulateMesh",
+          "command_arguments": "_Planarity=90 _Rectangularity=2",
+          "preselected": true
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "quad_command_explicit_warp"
+    }
+  ],
+  "protocol_version": 1,
+  "engine": "rhino",
+  "iterations": 1,
+  "engine_version": "8.32.26160.13001",
+  "provenance": {
+    "request_sha256": "37ff3f32868075a17d53431d9cba24b597ca2f80664913f7ce54580ed757d5da",
+    "sources": {
+      "generate_quad_command.py": "8665fe413d29cb3db97230c3329a257ac375f423ebbdcf4303933ed05fa26a9c",
+      "quad_command_cases.py": "fe5e41589721700ee857dde214c964a8905bee258fd2dc2f3295bf38c484beaf",
+      "quad_command_probe.py": "075e9bfcc040daa83dee4079458fc87844c21e5c671ddee06e75986fed34ee10",
+      "crease_probe.py": "d1eec75d19bd036997a2a5c1428480562a334c49d7c406324b1c30d0978e8d4e",
+      "crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
+      "subdivide_probe.py": "08d751e391bc593ab7263f00e3f77e64ceb91199a46360c2d396868cc579cb99",
+      "subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "4c9e13ffd9918418c774283d7ebb9cd1f15e29b1293177723724f93fa3078224",
+      "rhino_worker.py": "8bcc454241920c6391d769a7d82cdfa6e1c58cd28635f85f64c4aad2fe4cb7a8",
+      "structural_sdk.py": "7731b03203fba017da39e61be5fdd20acdcf393ec3c7b6fa182efa2b20732b1f"
+    }
+  }
+}

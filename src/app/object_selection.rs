@@ -13,6 +13,7 @@ mod mesh_polyline_tests;
 mod modify_radius;
 #[cfg(test)]
 mod planar_mesh_tests;
+mod quadrangulate_mesh;
 mod reduce_polyline;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -42,6 +43,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) divide: Option<divide::Session>,
     pub(super) modify_radius: Option<modify_radius::Session>,
     pub(super) reduce_polyline: Option<reduce_polyline::Session>,
+    pub(super) quadrangulate_mesh: Option<quadrangulate_mesh::Session>,
     pub(super) mesh_patch: Option<mesh_patch::Session>,
     pub(super) mesh_from_lines: Option<mesh_from_lines::Session>,
     pub(super) to_subd: Option<super::to_subd::Session>,
@@ -71,6 +73,7 @@ impl PendingObjectCommand {
             divide: None,
             modify_radius: None,
             reduce_polyline: None,
+            quadrangulate_mesh: None,
             mesh_patch: None,
             mesh_from_lines: None,
             to_subd: None,
@@ -84,6 +87,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn label(&self) -> &'static str {
+        if let Some(session) = &self.quadrangulate_mesh {
+            return session.label();
+        }
         if let Some(session) = &self.mesh_from_lines {
             return session.label();
         }
@@ -104,6 +110,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if let Some(session) = &self.quadrangulate_mesh {
+            return session.hint(self.phase);
+        }
         if let Some(session) = &self.mesh_from_lines {
             return session.hint();
         }
@@ -579,6 +588,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                quadrangulate_mesh: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
@@ -631,6 +641,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                quadrangulate_mesh: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
@@ -668,6 +679,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                quadrangulate_mesh: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
@@ -710,6 +722,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                quadrangulate_mesh: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
@@ -804,6 +817,9 @@ impl VibocerosApp {
             return false;
         }
         if preselected {
+            if description.command == "QuadrangulateMesh" && words.len() > 1 {
+                return false;
+            }
             if description.command == "ReducePolyline"
                 && viboceros_command::reduce_polyline::parse(&words[1..], Default::default())
                     .is_ok_and(|i| i.tolerance.is_some())
@@ -855,6 +871,7 @@ impl VibocerosApp {
                         divide: None,
                         modify_radius: None,
                         reduce_polyline: None,
+                        quadrangulate_mesh: None,
                         mesh_patch: None,
                         mesh_from_lines: None,
                         to_subd: None,
@@ -929,6 +946,7 @@ impl VibocerosApp {
                 divide: None,
                 modify_radius: None,
                 reduce_polyline: None,
+                quadrangulate_mesh: None,
                 mesh_patch: None,
                 mesh_from_lines: None,
                 to_subd: None,
@@ -940,6 +958,7 @@ impl VibocerosApp {
         self.initialize_divide_prompt();
         self.initialize_modify_radius(input);
         self.initialize_reduce_polyline(input);
+        self.initialize_quadrangulate_mesh(input);
         self.initialize_weight_prompt(input);
         self.push_log(format!("> {input}"));
         self.log_object_prompt();
@@ -972,6 +991,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_quadrangulate_mesh(input) {
+            return true;
+        }
         if self.continue_mesh_from_lines_prompt(input) {
             return true;
         }
@@ -1693,6 +1715,9 @@ impl VibocerosApp {
         self.rebuild_preview = None;
         self.weight_prompt = None;
         if let Some(pending) = self.object_prompt.take() {
+            if pending.description.command == "QuadrangulateMesh" {
+                self.document.clear_selection();
+            }
             if pending.description.command == "SubDTorus FitPoints" {
                 self.subd_torus_session = None;
                 self.active_command = None;
