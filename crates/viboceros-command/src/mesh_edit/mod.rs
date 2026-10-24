@@ -1,5 +1,6 @@
 //! Mesh-edit command adapters. Geometry algorithms remain in the kernel.
 
+mod edge_curves;
 mod edges;
 mod extraction;
 mod faces;
@@ -10,6 +11,7 @@ mod replacement;
 mod triangulate;
 mod unify_normals;
 
+pub(super) use edge_curves::ExtractMeshEdgesCommand;
 pub(super) use edges::{CollapseMeshEdgeCommand, SplitMeshEdgeCommand, SwapMeshEdgeCommand};
 pub(super) use extraction::{ExtractDuplicateMeshFacesCommand, ExtractNonManifoldMeshEdgesCommand};
 pub(super) use faces::{DeleteFacesCommand, ExtractMeshFacesCommand};

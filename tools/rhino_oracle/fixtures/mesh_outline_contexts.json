@@ -1,0 +1,121 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_0_quad",
+      "case": "outline_context_far_0_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_0_bd",
+      "case": "outline_context_far_0_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_1_quad",
+      "case": "outline_context_far_1_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_1_bd",
+      "case": "outline_context_far_1_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_2_quad",
+      "case": "outline_context_far_2_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_2_bd",
+      "case": "outline_context_far_2_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_3_quad",
+      "case": "outline_context_far_3_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_3_bd",
+      "case": "outline_context_far_3_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_4_quad",
+      "case": "outline_context_far_4_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_4_bd",
+      "case": "outline_context_far_4_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_5_quad",
+      "case": "outline_context_far_5_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_5_bd",
+      "case": "outline_context_far_5_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_6_quad",
+      "case": "outline_context_far_6_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_6_bd",
+      "case": "outline_context_far_6_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_7_quad",
+      "case": "outline_context_far_7_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_7_bd",
+      "case": "outline_context_far_7_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_8_quad",
+      "case": "outline_context_far_8_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_8_bd",
+      "case": "outline_context_far_8_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_9_quad",
+      "case": "outline_context_far_9_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_9_bd",
+      "case": "outline_context_far_9_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_10_quad",
+      "case": "outline_context_far_10_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_context_far_10_bd",
+      "case": "outline_context_far_10_bd"
+    }
+  ]
+}

@@ -8,7 +8,7 @@ use viboceros_geometry::{
 #[allow(dead_code)]
 #[path = "support/mesh_outline.rs"]
 mod reference;
-use reference::{compare, frame, mesh, point, vector};
+use reference::{boundary_error, frame, mesh, point, vector};
 
 fn projection(value: &Value) -> MeshOutlineProjection {
     let plane = frame(&value["plane"]);
@@ -67,6 +67,7 @@ fn projection(value: &Value) -> MeshOutlineProjection {
 #[test]
 fn public_plane_and_viewport_outline_references() {
     let mut cases = 0;
+    let mut gaps = 0;
     for (family, text) in [
         (
             "sdk",
@@ -75,6 +76,18 @@ fn public_plane_and_viewport_outline_references() {
         (
             "projections",
             include_str!("../../../tools/rhino_oracle/observations/mesh_outline_projections.json"),
+        ),
+        (
+            "scales",
+            include_str!("../../../tools/rhino_oracle/observations/mesh_outline_scales.json"),
+        ),
+        (
+            "contexts",
+            include_str!("../../../tools/rhino_oracle/observations/mesh_outline_contexts.json"),
+        ),
+        (
+            "facing",
+            include_str!("../../../tools/rhino_oracle/observations/mesh_outline_facing.json"),
         ),
     ] {
         let data: Value = serde_json::from_str(text).unwrap();
@@ -90,7 +103,18 @@ fn public_plane_and_viewport_outline_references() {
             let actual = source
                 .outlines(projection(value), Tolerance::MESH_VALIDATION)
                 .unwrap();
-            let max_error = compare(&actual, &value["outlines"], 1e-7);
+            let max_error = boundary_error(&actual, &value["outlines"], 1e-7);
+            if max_error.is_none_or(|error| error > 1e-7) {
+                // These controls expose native's quad coverage and precision gaps.
+                // The independent report verifies the exact gap IDs and derives
+                // boundary deviations from the measured output contours.
+                assert!(
+                    matches!(family, "scales" | "contexts" | "facing"),
+                    "{}",
+                    row["id"]
+                );
+                gaps += 1;
+            }
             assert_eq!(source, before);
             assert_eq!(value["source_unchanged"], true);
             assert_eq!(value["returned_null"], actual.is_empty());
@@ -103,7 +127,8 @@ fn public_plane_and_viewport_outline_references() {
             cases += 1;
         }
     }
-    assert_eq!(cases, 61);
+    assert_eq!(cases, 196);
+    assert_eq!(gaps, 20);
 }
 
 #[test]

@@ -17,10 +17,10 @@ viewport. Curved surface tessellation does **not** yet match Rhino's render mesh
 the captured sphere is an explicit geometry gap. The recorded planar surface and
 box workflows match. Projecting Rhino's saved sphere
 render mesh also matches, separating this gap from outline projection.
-Small-scale perspective projection of warped quads has a separate gap, recorded
-in two workflows. Native SDK controls reproduce that scale-dependent change.
-Flattening quads before triangulation would break the larger-scale controls, so
-the implementation retains the existing spatial split pending further evidence.
+Perspective projection of warped quads has a separate gap, recorded in two
+command workflows. SDK controls isolate a far-clipping-dependent change in the
+native quad outline. Flattening quads before triangulation breaks other controls,
+so the implementation retains the existing spatial split pending a general rule.
 
 The [command qualification](../mesh-outline-command-qualification.json) compares
 36 accepted commands and 39 getter workflows, including cancellation, metadata,

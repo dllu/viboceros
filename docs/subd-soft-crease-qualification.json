@@ -2755,7 +2755,7 @@
     "tools/rhino_oracle/generate_soft_crease.py": "c7e06ca92ee30306add2f501ec9cb9d0a14d0c69ab30cc642f82775e91ec15a7",
     "tools/rhino_oracle/conic_getter_input.py": "5e3ff7a5ef94de501e9cb0de307c12bb9e4d6cfb86513a3724a8961d2e2d5842",
     "tools/rhino_oracle/client.py": "9523ff97f32b39549ac3838686a0597af22668d812520613831b189de20cb180",
-    "tools/rhino_oracle/structural_sdk.py": "9c3ff147c3f72544fc4cd72d0cfaab21c8dc258344def4ab4eb5e550160b426a",
+    "tools/rhino_oracle/structural_sdk.py": "e6cad089f1c159404cd09cc4e5c798beda393afbf3a4f013c3f3474fb4a8f4da",
     "tools/rhino_oracle/rhino_worker.py": "96fc6a0684d3c54e66b20abd9959828849b1177d35603cbf57a23871e1d595eb",
     "crates/viboceros-opennurbs/native/subd_chains.h": "03d28b1e73f18540d5b7857ce4b88ed384ac28fb445fdc22130863bab57d10b2",
     "crates/viboceros-opennurbs/native/subd_sharpness.h": "4aa10d3a91dd82046545eb6a1c42a3e3e7c8efe0a86afc8f79b6a68b04dc2ec3",
@@ -2767,7 +2767,7 @@
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
     "crates/viboceros-geometry/src/subd/soft_crease.rs": "1f9bfbfca6b71418e39846e9847351267ee6a26023ac035a041d91247c232f3f",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5",
-    "tools/rhino_oracle/qualification_sources.py": "8cb498b9a1f55f26835a30c66ee45787e5ec36856a6e2b79a36769984febfff3",
+    "tools/rhino_oracle/qualification_sources.py": "501471c3ce0de9dc1587ac838d8949ba19f3e8ddfb4053530790c443459245e5",
     "tools/rhino_oracle/fixtures/soft_crease_discovery.json": "a4b4b8c11be52c6dd3fb40375fab38969adcbfdf7a7c4656456528d1554fff3a",
     "tools/rhino_oracle/observations/soft_crease_discovery.json": "1fd646203a9582e12b96643fcc9d4505b23c66a834b712a0c8fba93c55f85adc",
     "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_boundary.3dm": "9984321e1dbb0118f11da2b5c96d3cfdcdae7f2d88b4396e16545f23ee830f7d",
@@ -3239,7 +3239,7 @@
     "crates/viboceros-geometry/src/mesh/triangulate.rs": "c53e5b5665edc816f02a69125dd9d82d108469fd75598662e1d3900427193fd6",
     "crates/viboceros-geometry/src/mesh/rebuild_mesh.rs": "0bd719e4330e36a3ffe2b9c141dee8d9c55a36beaadc63f620142227346c8c25",
     "crates/viboceros-geometry/src/mesh/orientation.rs": "0f93eea8c70b6c42bd07f750e13f94854ccdbe290aa7cee86eb74539f8f0a4f7",
-    "crates/viboceros-geometry/src/mesh/outline.rs": "99136125bba39be3dceb499edce9eaee122454eb1ccdf754a869aec06e33f561",
+    "crates/viboceros-geometry/src/mesh/outline.rs": "bd4bc9f9bebc47eed1896bcd853eed42d92e6dc2bfa2fcb3eab4f5ab9f379b18",
     "crates/viboceros-geometry/tests/support/mesh_outline.rs": "a06977e91539f6731a2acc2b2b4cf078e369f2ea7ab99de9e18799ef8f9902f1"
   }
 }

@@ -46,9 +46,10 @@ impl TriangleMesh {
                 (plane, Some(eye))
             }
         };
-        // Rhino outlines use OpenNURBS' shortest spatial quad diagonal, which
-        // can change the silhouette of a warped quad in an oblique view. Reuse
-        // that public conversion instead of the renderer's fixed AC triangles.
+        // Reuse OpenNURBS' shortest spatial diagonal instead of the renderer's
+        // fixed AC triangles. Native perspective outlines have an additional
+        // frustum-dependent quad coverage change; that gap is recorded in
+        // the independent SDK captures and must not be hidden by flattening.
         let triangulated = self
             .faces
             .iter()

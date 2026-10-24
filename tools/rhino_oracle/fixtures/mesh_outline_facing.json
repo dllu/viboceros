@@ -1,0 +1,286 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_40",
+      "case": "outline_facing_far_40"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_41",
+      "case": "outline_facing_far_41"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_42",
+      "case": "outline_facing_far_42"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_43",
+      "case": "outline_facing_far_43"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_44",
+      "case": "outline_facing_far_44"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_45",
+      "case": "outline_facing_far_45"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_46",
+      "case": "outline_facing_far_46"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_47",
+      "case": "outline_facing_far_47"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_48",
+      "case": "outline_facing_far_48"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_49",
+      "case": "outline_facing_far_49"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_50",
+      "case": "outline_facing_far_50"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_51",
+      "case": "outline_facing_far_51"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_52",
+      "case": "outline_facing_far_52"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_53",
+      "case": "outline_facing_far_53"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_54",
+      "case": "outline_facing_far_54"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_55",
+      "case": "outline_facing_far_55"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_56",
+      "case": "outline_facing_far_56"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_57",
+      "case": "outline_facing_far_57"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_58",
+      "case": "outline_facing_far_58"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_59",
+      "case": "outline_facing_far_59"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_60",
+      "case": "outline_facing_far_60"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_61",
+      "case": "outline_facing_far_61"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_62",
+      "case": "outline_facing_far_62"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_63",
+      "case": "outline_facing_far_63"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_64",
+      "case": "outline_facing_far_64"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_65",
+      "case": "outline_facing_far_65"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_66",
+      "case": "outline_facing_far_66"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_67",
+      "case": "outline_facing_far_67"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_68",
+      "case": "outline_facing_far_68"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_69",
+      "case": "outline_facing_far_69"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_70",
+      "case": "outline_facing_far_70"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_71",
+      "case": "outline_facing_far_71"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_72",
+      "case": "outline_facing_far_72"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_73",
+      "case": "outline_facing_far_73"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_74",
+      "case": "outline_facing_far_74"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_75",
+      "case": "outline_facing_far_75"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_76",
+      "case": "outline_facing_far_76"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_77",
+      "case": "outline_facing_far_77"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_78",
+      "case": "outline_facing_far_78"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_79",
+      "case": "outline_facing_far_79"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_far_80",
+      "case": "outline_facing_far_80"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_40_01",
+      "case": "outline_facing_order_40_01"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_40_02",
+      "case": "outline_facing_order_40_02"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_40_03",
+      "case": "outline_facing_order_40_03"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_40_10",
+      "case": "outline_facing_order_40_10"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_40_11",
+      "case": "outline_facing_order_40_11"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_40_12",
+      "case": "outline_facing_order_40_12"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_40_13",
+      "case": "outline_facing_order_40_13"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_80_01",
+      "case": "outline_facing_order_80_01"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_80_02",
+      "case": "outline_facing_order_80_02"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_80_03",
+      "case": "outline_facing_order_80_03"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_80_10",
+      "case": "outline_facing_order_80_10"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_80_11",
+      "case": "outline_facing_order_80_11"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_80_12",
+      "case": "outline_facing_order_80_12"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_facing_order_80_13",
+      "case": "outline_facing_order_80_13"
+    }
+  ]
+}

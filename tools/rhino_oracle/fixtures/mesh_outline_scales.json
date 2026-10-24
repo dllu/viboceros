@@ -1,0 +1,301 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_0_quad",
+      "case": "outline_scale_near_0_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_0_bd",
+      "case": "outline_scale_near_0_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_0_ac",
+      "case": "outline_scale_near_0_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_1_quad",
+      "case": "outline_scale_near_1_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_1_bd",
+      "case": "outline_scale_near_1_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_1_ac",
+      "case": "outline_scale_near_1_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_2_quad",
+      "case": "outline_scale_near_2_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_2_bd",
+      "case": "outline_scale_near_2_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_2_ac",
+      "case": "outline_scale_near_2_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_3_quad",
+      "case": "outline_scale_near_3_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_3_bd",
+      "case": "outline_scale_near_3_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_3_ac",
+      "case": "outline_scale_near_3_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_4_quad",
+      "case": "outline_scale_near_4_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_4_bd",
+      "case": "outline_scale_near_4_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_4_ac",
+      "case": "outline_scale_near_4_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_5_quad",
+      "case": "outline_scale_near_5_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_5_bd",
+      "case": "outline_scale_near_5_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_5_ac",
+      "case": "outline_scale_near_5_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_6_quad",
+      "case": "outline_scale_near_6_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_6_bd",
+      "case": "outline_scale_near_6_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_6_ac",
+      "case": "outline_scale_near_6_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_7_quad",
+      "case": "outline_scale_near_7_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_7_bd",
+      "case": "outline_scale_near_7_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_7_ac",
+      "case": "outline_scale_near_7_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_8_quad",
+      "case": "outline_scale_near_8_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_8_bd",
+      "case": "outline_scale_near_8_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_8_ac",
+      "case": "outline_scale_near_8_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_9_quad",
+      "case": "outline_scale_near_9_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_9_bd",
+      "case": "outline_scale_near_9_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_near_9_ac",
+      "case": "outline_scale_near_9_ac"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_0_small_quad",
+      "case": "outline_scale_tolerance_0_small_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_0_small_bd",
+      "case": "outline_scale_tolerance_0_small_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_0_large_quad",
+      "case": "outline_scale_tolerance_0_large_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_0_large_bd",
+      "case": "outline_scale_tolerance_0_large_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_1_small_quad",
+      "case": "outline_scale_tolerance_1_small_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_1_small_bd",
+      "case": "outline_scale_tolerance_1_small_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_1_large_quad",
+      "case": "outline_scale_tolerance_1_large_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_1_large_bd",
+      "case": "outline_scale_tolerance_1_large_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_2_small_quad",
+      "case": "outline_scale_tolerance_2_small_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_2_small_bd",
+      "case": "outline_scale_tolerance_2_small_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_2_large_quad",
+      "case": "outline_scale_tolerance_2_large_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_2_large_bd",
+      "case": "outline_scale_tolerance_2_large_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_3_small_quad",
+      "case": "outline_scale_tolerance_3_small_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_3_small_bd",
+      "case": "outline_scale_tolerance_3_small_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_3_large_quad",
+      "case": "outline_scale_tolerance_3_large_quad"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_tolerance_3_large_bd",
+      "case": "outline_scale_tolerance_3_large_bd"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_source_0",
+      "case": "outline_scale_source_0"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_uniform_0",
+      "case": "outline_scale_uniform_0"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_source_1",
+      "case": "outline_scale_source_1"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_uniform_1",
+      "case": "outline_scale_uniform_1"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_source_2",
+      "case": "outline_scale_source_2"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_uniform_2",
+      "case": "outline_scale_uniform_2"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_source_3",
+      "case": "outline_scale_source_3"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_uniform_3",
+      "case": "outline_scale_uniform_3"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_source_4",
+      "case": "outline_scale_source_4"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_uniform_4",
+      "case": "outline_scale_uniform_4"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_source_5",
+      "case": "outline_scale_source_5"
+    },
+    {
+      "op": "mesh_outline_sdk",
+      "id": "outline_scale_uniform_5",
+      "case": "outline_scale_uniform_5"
+    }
+  ]
+}

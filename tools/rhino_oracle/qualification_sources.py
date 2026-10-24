@@ -143,6 +143,10 @@ def with_shared_sources(paths):
              'src/app/object_selection/mesh_conversion.rs'}
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
                                       'src/component_seams/arguments.rs') for p in paths]
+    if 'tools/rhino_oracle/mesh_outline_cases.py' in expanded:
+        expanded.append('tools/rhino_oracle/mesh_outline_scale_cases.py')
+    if 'tools/rhino_oracle/report_mesh_outline.py' in expanded:
+        expanded.append('tools/rhino_oracle/outline_comparison.py')
     if 'crates/viboceros-document/src/lib.rs' in expanded:
         expanded.append('crates/viboceros-document/src/object_geometry.rs')
     if 'crates/viboceros-document/src/control_points.rs' in expanded:
@@ -159,6 +163,7 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/mesh_seams.rs',
             'crates/viboceros-command/src/mesh_edit/triangulate.rs',
             'crates/viboceros-command/src/mesh_edit/mod.rs',
+            'crates/viboceros-command/src/mesh_edit/edge_curves.rs',
             'crates/viboceros-command/src/mesh_edit/replacement.rs',
             'crates/viboceros-command/src/mesh_edit/rebuild_normals.rs',
             'crates/viboceros-command/src/mesh_edit/rebuild_normals/tests.rs',

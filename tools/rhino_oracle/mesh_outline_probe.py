@@ -18,6 +18,7 @@ def run(operation, host, iterations, tolerance):
     old_plane = viewport.GetConstructionPlane()
     old_name = viewport.Name
     old_target = viewport.CameraTarget
+    old_tolerance = doc.ModelAbsoluteTolerance
 
     def xyz(p):
         return [float(p.X), float(p.Y), float(p.Z)]
@@ -26,6 +27,8 @@ def run(operation, host, iterations, tolerance):
         return dict(origin=xyz(p.Origin), x=xyz(p.XAxis), y=xyz(p.YAxis), z=xyz(p.ZAxis))
 
     try:
+        if 'document_tolerance' in case:
+            doc.ModelAbsoluteTolerance = float(case['document_tolerance'])
         mesh.Vertices.UseDoublePrecisionVertices = True
         for point in case['mesh']['vertices']:
             mesh.Vertices.Add(*point)
@@ -45,8 +48,10 @@ def run(operation, host, iterations, tolerance):
                               else R.Display.DefinedViewportProjection.Top)
                 viewport.SetProjection(projection, 'Owned MeshOutline input', False)
                 if view in ('oblique', 'perspective'):
-                    viewport.SetCameraLocations(G.Point3d(2., 1.5, 2.), G.Point3d(12., 16.5, 22.))
-                    viewport.CameraUp = G.Vector3d(0., 0., 1.)
+                    camera = case.get('camera', dict(target=[2., 1.5, 2.],
+                                                   location=[12., 16.5, 22.], up=[0., 0., 1.]))
+                    viewport.SetCameraLocations(G.Point3d(*camera['target']), G.Point3d(*camera['location']))
+                    viewport.CameraUp = G.Vector3d(*camera['up'])
                 viewport.SetConstructionPlane(plane)
                 info = R.DocObjects.ViewportInfo(viewport)
                 if 'frustum' in case:
@@ -62,17 +67,25 @@ def run(operation, host, iterations, tolerance):
             result = dict(input=case, plane=plane_value(plane), source_unchanged=before == int(mesh.DataCRC(0)),
                           returned_null=outlines is None,
                           outlines=[[xyz(point) for point in polyline] for polyline in (outlines or [])])
+            if operation['case'].startswith('outline_scale_'):
+                result['document_tolerance'] = float(doc.ModelAbsoluteTolerance)
             if info is not None:
                 result['view'] = dict(perspective=bool(viewport.IsPerspectiveProjection),
                                       location=xyz(viewport.CameraLocation), target=xyz(viewport.CameraTarget),
                                       direction=xyz(viewport.CameraDirection), up=xyz(viewport.CameraUp),
                                       frustum=[float(getattr(info, 'Frustum' + name))
                                                for name in ['Left', 'Right', 'Bottom', 'Top', 'Near', 'Far']])
+                if case.get('capture_transform'):
+                    matrix = viewport.GetTransform(R.DocObjects.CoordinateSystem.World,
+                                                   R.DocObjects.CoordinateSystem.Clip)
+                    result['view']['world_to_clip'] = [
+                        [float(getattr(matrix, 'M' + str(i) + str(j))) for j in range(4)] for i in range(4)]
             return result, 0
         finally:
             if info is not None:
                 info.Dispose()
     finally:
+        doc.ModelAbsoluteTolerance = old_tolerance
         viewport.SetViewProjection(original, False)
         viewport.SetCameraTarget(old_target, False)
         viewport.SetConstructionPlane(old_plane)

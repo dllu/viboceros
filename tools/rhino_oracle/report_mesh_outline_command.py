@@ -7,7 +7,8 @@ import json
 import math
 from pathlib import Path
 from .mesh_outline_command_cases import COMMANDS, LIFECYCLE, QUADS, request
-from .report_mesh_outline import HERE, ROOT, EPSILON, boundary_error, contour
+from .report_mesh_outline import HERE, ROOT
+from .outline_comparison import EPSILON, boundary_error, contour, sampled_boundary_distance
 from .qualification_sources import with_shared_sources
 
 SURFACE_GAPS = {'outline_lifecycle_sphere'}
@@ -18,6 +19,8 @@ SOURCES = with_shared_sources([
     'Cargo.lock','crates/viboceros-command/src/lib.rs','crates/viboceros-command/src/mesh_outline.rs',
     'crates/viboceros-command/src/interface.rs','crates/viboceros-command/src/picking.rs',
     'crates/viboceros-command/tests/mesh_outline_command_native.rs',
+    'crates/viboceros-command/src/tests/document/registry.rs',
+    'crates/viboceros-command/src/tests/mesh_edit/cleanup.rs',
     'crates/viboceros-command/tests/support/mesh_outline.rs',
     'crates/viboceros-geometry/src/mesh.rs','crates/viboceros-geometry/tests/support/mesh_outline.rs',
     'crates/viboceros-document/src/lib.rs','crates/viboceros-document/src/history.rs',
@@ -26,6 +29,7 @@ SOURCES = with_shared_sources([
     'docs/commands/mesh-outline.md',
 ] + ['tools/rhino_oracle/'+name for name in [
     'mesh_outline_command_cases.py','mesh_outline_command_probe.py','mesh_outline_cases.py',
+    'mesh_outline_scale_cases.py','outline_comparison.py',
     'generate_mesh_outline.py','report_mesh_outline.py','report_mesh_outline_command.py',
     'test_mesh_outline_command.py','client.py','rhino_worker.py','structural_sdk.py',
     'join_probe.py','merge_edges_probe.py','qualification_sources.py']])
@@ -66,22 +70,6 @@ def native():
                 references[name]=v
     if len(versions)!=1:raise ValueError('mixed native outline versions')
     return versions.pop(),references,paths
-
-
-def sampled_boundary_distance(actual, expected):
-    def samples(paths):
-        for path in paths:
-            yield from path
-            for a,b in zip(path,path[1:]):yield [(x+y)*.5 for x,y in zip(a,b)]
-    def point_segment(p,a,b):
-        d=[y-x for x,y in zip(a,b)];den=sum(x*x for x in d)
-        t=max(0.,min(1.,sum((y-x)*z for x,y,z in zip(a,p,d))/den))if den else 0.
-        return math.dist(p,[x+t*y for x,y in zip(a,d)])
-    def directed(a,b):
-        edges=[(p,q)for path in b for p,q in zip(path,path[1:])]
-        return max((min(point_segment(p,a,b)for a,b in edges)for p in samples(a)),default=0.)
-    if not actual or not expected:return 0. if actual==expected else None
-    return max(directed(actual,expected),directed(expected,actual))
 
 
 def stage(actual, expected):
@@ -141,13 +129,13 @@ def summarize(text):
         if label=='COMMAND'and control_gaps!=PROJECTION_GAPS:
             raise ValueError('outline projection control gap set differs')
         stages[label.lower()]=[rows[name]for name in sorted(rows)]
-    return dict(scope='MeshOutline command and getter lifecycle; render tessellation and small perspective quad fidelity incomplete',
+    return dict(scope='MeshOutline command and getter lifecycle; render tessellation and perspective quad fidelity incomplete',
                 native_version=version,epsilon=EPSILON,native_command_workflows=71,
                 exploratory_workflows_with_only_initial_viewport=32,
                 replayed_commands=len(stages['command']),replayed_getters=len(stages['getter']),
                 fully_matched_commands=len(stages['command'])-len(GAPS),fully_matched_getters=len(stages['getter'])-len(GAPS),
                 surface_render_mesh_gaps=sorted(SURFACE_GAPS),projection_gaps=sorted(PROJECTION_GAPS),maximum_qualified_error=maximum,
-                pending=['curved surface render tessellation parity','small perspective warped quad projection parity','native eye-plane and extreme range qualification'],
+                pending=['curved surface render tessellation parity','frustum-dependent perspective warped quad projection parity','native eye-plane and extreme range qualification'],
                 **stages,sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in sorted(paths)})
 
 

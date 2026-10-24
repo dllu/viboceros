@@ -13,11 +13,24 @@ and numerical boundary cases remain incomplete; see the command qualification.
 ## Native evidence
 
 The [qualification record](mesh-outline-qualification.json) binds source hashes,
-frozen producers and measured local contours. Its 61 comparisons cover 24 plane
-recipes and 37 viewport recipes: open faces, boxes, holes, overlapping and touching
-sheets, warped quads, offset/tilted planes, and parallel/perspective views. Contour
-order and starting vertex may differ; comparisons retain orientation and remove
-only redundant collinear vertices before matching cyclic boundaries.
+frozen producers and measured local contours. Of 196 replays, 176 match at `1e-7`
+model-unit tolerance. The original 61 cover plane and viewport recipes: open
+faces, boxes, holes, overlapping and touching sheets, warped quads, offset/tilted
+planes, and parallel/perspective views. Another 135 isolate face representation,
+camera clipping, document tolerance, model scale and cyclic/reversed face ordering.
+Contour order and starting vertex may differ; comparisons retain orientation and
+remove only redundant collinear vertices before matching cyclic boundaries.
+
+Nineteen replays expose a perspective quad topology gap. In the captured warped
+quad, changing only the far clipping distance from 43 to 44 changes Rhino's outline
+from a concave quadrilateral to a triangle. Equivalent explicit BD triangles stay
+triangular across the clipping sweep; rotating or reversing the quad record does
+not change its result. Changing near distance or document tolerance alone in the
+separate fixed-far controls does not reproduce the switch. A further triangle
+replay at 100× uniform scale has a maximum coordinate discrepancy of
+`3.1073e-7`. Both kinds of gap remain measured and excluded from qualification.
+The implementation retains public OpenNURBS spatial quad triangulation until
+there is evidence for a general replacement rule.
 
 An initial 35 viewport observations did not record clipping distances. They remain
 immutable exploratory evidence and are excluded from full-coordinate qualification.

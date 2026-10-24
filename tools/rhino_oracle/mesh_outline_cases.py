@@ -75,14 +75,23 @@ for view in ['oblique', 'perspective']:
     value = deepcopy(SDK['outline_viewport_box_' + view])
     value['frustum'] = [-1., 1., -1., 1., 2., 120.]
     PROJECTIONS['outline_projection_far_' + view] = value
-ALL_CASES = dict(SDK, **PROJECTIONS)
+try:
+    from .mesh_outline_scale_cases import scale_cases, context_cases, facing_cases
+except (ImportError, ValueError):
+    from mesh_outline_scale_cases import scale_cases, context_cases, facing_cases
+SCALES = scale_cases(SHAPES, PLANES)
+CONTEXTS = context_cases(SHAPES, PLANES)
+FACING = facing_cases(SHAPES, PLANES)
+FAMILIES = dict(sdk=SDK, projections=PROJECTIONS, scales=SCALES,
+                contexts=CONTEXTS, facing=FACING)
+ALL_CASES = {name: case for cases in FAMILIES.values() for name, case in cases.items()}
 
 
-def request(projections=False):
+def request(family='sdk'):
     return dict(protocol_version=1, iterations=1,
                 tolerance=dict(absolute=1e-6, relative=1e-12, angular=1e-6),
                 operations=[dict(op='mesh_outline_sdk', id=name, case=name)
-                            for name in (PROJECTIONS if projections else SDK)])
+                            for name in FAMILIES[family]])
 
 
 def validate(operation):

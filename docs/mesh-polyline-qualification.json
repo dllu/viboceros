@@ -358,7 +358,7 @@
     "Graph comparisons treat relative differences within 16 machine epsilons as ties and quantize heap distance to 16 adjacent floating-point values. These sampled native locus comparisons do not certify a universal mesh geodesic or exact shortest path."
   ],
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "919e9c610615c2c5d09712c26ac883462388a26932735443dfd79fc965d3a050",
+    "crates/viboceros-command/src/lib.rs": "55a266ce7dc71f22ae0c24cae90d99d1e533c615bde459fd41140e728be0c4a9",
     "crates/viboceros-geometry/src/error.rs": "913063c381ae5d7e8526c5a35d37a2e4fe1677fc2d6ee4d86cd554a8853bda4a",
     "crates/viboceros-geometry/src/mesh/normals.rs": "b9bffef3769e8e8525c37f21100090cb6cf5b6c416389b3489db060abf3f06ae",
     "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
@@ -414,7 +414,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "d6b6dd28653d482563745b383f4491121fa95224b0047aace5a094e2dd9b8c4d",
     "src/app/viewport_input.rs": "3df7f0793ba9ad712e0b16b5dbd3d64390c3391eba0c884075df96d9266e48b7",
-    "tools/rhino_oracle/qualification_sources.py": "8cb498b9a1f55f26835a30c66ee45787e5ec36856a6e2b79a36769984febfff3",
+    "tools/rhino_oracle/qualification_sources.py": "501471c3ce0de9dc1587ac838d8949ba19f3e8ddfb4053530790c443459245e5",
     "crates/viboceros-command/src/soft_crease.rs": "eec4487501312fc3090d932560599f5e18e4038017d7f7412ac268b5507e007b",
     "crates/viboceros-command/src/soft_crease/profile.rs": "018d7bed89c5fc71e98265f9b578345809f7b5e6937145d2046cb3a472cc6f0f",
     "crates/viboceros-command/src/soft_crease/arguments.rs": "7d38e43f5032110cda07782c1a4988a1bed1a7f2248b16ac94f8406c455034b6",
@@ -487,7 +487,7 @@
     "crates/viboceros-command/src/mesh_edit/triangulate.rs": "4f0ba4a9a758b582670e37753dbfdcb19daaa79d20fcb2cb15ca5c13960034b0",
     "src/app/object_selection/triangulate_tests.rs": "763b754b23f7832bfce385a727a2536f690a610d30f23a38c3cc428db7e862c3",
     "crates/viboceros-command/tests/support/triangulate.rs": "8f54ddc72c5b7e92fc507837f9e5c6601679a50d4da573a15c0c68e2dc2a7731",
-    "crates/viboceros-command/src/mesh_edit/mod.rs": "9ea0d33c865352aee0efc43b20b885ec73f19519c2778163d0122ffa2f9d5b35",
+    "crates/viboceros-command/src/mesh_edit/mod.rs": "7b6d392730b79a1fa06aa3729c65f016c3b65f96663a12b73bab12714e9e3326",
     "crates/viboceros-command/src/mesh_edit/replacement.rs": "2dc5ffb38790f1eafb17a757d1d7fdff8d610cfe628eb48aff70d88ba9057822",
     "crates/viboceros-command/src/mesh_edit/rebuild_normals.rs": "5e7fed1ae69d0db683d43fc7cf35c637bb459111a17d907b98397aa955e7a2d2",
     "crates/viboceros-command/src/mesh_edit/rebuild_normals/tests.rs": "696ec7f700c50d7fe48d6ccc9109ea67a6f9e84642806697c817906ff036d5ef",
@@ -504,6 +504,7 @@
     "crates/viboceros-command/src/mesh_outline.rs": "57832c88465933f091011cb9ed47e0530d7cbb7a48646d1909a1de4cc40cd6a6",
     "crates/viboceros-command/src/mesh_outline/tests.rs": "96897767125df29f62c863ae2716a78c2ecd42651dec20a989ea1652d1dc2489",
     "src/app/object_selection/mesh_outline_tests.rs": "f013cd2d0600620614b5fe215b8a3bc4644d4c74a120e0e7a10a2339d79111f7",
-    "crates/viboceros-command/tests/support/mesh_outline.rs": "bfe9c657b2908448f298379609afa075eeec994eff3945c4b9c6c59eb385438c"
+    "crates/viboceros-command/tests/support/mesh_outline.rs": "bfe9c657b2908448f298379609afa075eeec994eff3945c4b9c6c59eb385438c",
+    "crates/viboceros-command/src/mesh_edit/edge_curves.rs": "b7a59bcb2305a2065b2ef1c1dda3343389b3bd939ec2e39148b5371100379c84"
   }
 }
