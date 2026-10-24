@@ -30069,7 +30069,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "ddc6c9767e570f0a8a877b0b461607529846cee1e93d443302bd7ef51b57e9e3",
+    "tools/rhino_oracle/qualification_sources.py": "a15b93457b57ebd914e3cebdb6b23fb7e05582cfe7ad065a38f7df6816cce0cc",
     "tools/rhino_oracle/fixtures/unify_normals_sdk.json": "e34268b2b8cb364433abb27ffcd00137d639337a83b3e9b4f7e2873fc8f6dd6e",
     "tools/rhino_oracle/observations/unify_normals_sdk.json": "97cb862d570ae5661b8fd064973dade082d82872ee7f79bffc80437de315e7a4",
     "tools/rhino_oracle/fixtures/unify_normals_extra.json": "03514ffc7e0ca2ccf57e1ba027d07487ed218c13053a26892db6fe3c02028c9e",

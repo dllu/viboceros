@@ -279,7 +279,7 @@ fn check_native(root: &std::path::Path, id: &str) {
     assert!(actual.is_extrusion());
     assert_eq!(actual.explicit_brep(), source.explicit_brep(), "{id}");
     println!(
-        "EXTRUSION_NATIVE_FILE {}",
+        "\nEXTRUSION_NATIVE_FILE {}",
         serde_json::json!({"id":id,"vertices":source.vertices().len(),"edges":source.edges().len(),"faces":source.faces().len(),"solid":source.is_solid(),"native_type_retained":true,"canonical_view_unchanged":true,"identity_retained":saved.objects[0].id==model.objects[0].id,"native_surface_stations_and_orientation":true,"maximum_surface_sample_error":maximum_surface_error,"rational_control_nets_retained":true,"maximum_rational_control_error":maximum_control_error,"maximum_rational_weight_error":maximum_weight_error})
     );
 }
@@ -293,7 +293,7 @@ fn invalid_native_profile_frame_fixture_is_reported_as_unsupported() {
     assert_eq!(model.unsupported_object_count(), 1);
     assert!(model.objects.is_empty());
     println!(
-        "EXTRUSION_NATIVE_REJECTED {}",
+        "\nEXTRUSION_NATIVE_REJECTED {}",
         serde_json::json!({"id":"tosubd_extrusion_tube_00","native_invalid_canonical_view":true,"unsupported_object_count":1})
     );
 }
@@ -336,3 +336,6 @@ fn native_surface(v: &serde_json::Value) -> viboceros_geometry::NurbsSurface {
     )
     .unwrap()
 }
+
+#[path = "extrusion/rational_weights.rs"]
+mod rational_weights;

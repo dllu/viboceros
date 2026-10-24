@@ -13,12 +13,15 @@ NURBS profile, a frame, a nonzero height and a cap choice.
 `Brep::extrusion` exposes the retained representation; `explicit_brep` removes it.
 The geometry and IO layers share one versioned structural transfer codec.
 
-At very large coordinates, native planar caps can report zero edge tolerance
-despite a roundoff-sized gap between the trim image and its 3D edge. For matching
-positive-weight NURBS bases, the transfer bounds that gap by the largest control
-displacement and updates only the edge tolerance. Native validity checks still
-apply; the repair declines larger gaps or mismatched bases. Regression cases
-cover tilted cylinders through scale `2^80`, archive reloads and translation.
+Native planar caps can report unset or zero edge tolerances after closing
+roundoff-sized gaps. Their end-weight normalization can also make cap trims
+poorly conditioned when a profile has a large common weight scale. The transfer
+checks matching positive-weight Bézier forms, then builds well-scaled planar
+pullbacks with shared endpoint UVs. Control displacement bounds the complete
+lifted-curve error. The original archive, 3D curves and surfaces are retained;
+larger gaps or mismatched bases fail the check. Regressions cover weight gauges
+from `1e-100` to `1e100`, knot refinement, file round trips, tight bounds and tilted
+cylinders through coordinate scale `2^80`.
 Affine invertibility checks exclude translation from native determinant pivoting,
 so large translations cannot cause a false singularity.
 
@@ -51,3 +54,7 @@ cargo test -p viboceros-io --release --test extrusion -- --nocapture
 cargo test -p viboceros-command --release --test extrusion
 python3 -m unittest tools.rhino_oracle.test_extrusions
 ```
+
+With CMake 3.24+, the bridge build also provides the optional
+`viboceros_extrusion_roundoff_check` target. It checks 3D geometry preservation,
+closed cap UV loops, and rejection of a deliberately displaced cap.

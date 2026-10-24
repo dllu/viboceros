@@ -2130,7 +2130,7 @@
     "The initial 43-workflow discovery used an incorrect option phase; it is retained only as diagnostic evidence."
   ],
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "c13456742eccc120e95d068ee4a8a218389f1e16a7406b67d7fe7a7f61003c6d",
+    "crates/viboceros-opennurbs/build.rs": "9b61d6c87c6d657668cc8060940c1d426005f125a15138b8b9edecf45bef755f",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "50da8b4782440543b5bc1209c4988b0bf5ac44ace55ff040b587e54c3020ee67",
     "crates/viboceros-opennurbs/native/subd.cpp": "da23bdbf18b6709f4156d193546d09acc18a02cbb863a68a0fa8465e2b2cea55",
@@ -2256,6 +2256,6 @@
     "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "c20619d7a3861b87af0225a5df25582d52613291d6c42db0f61a075be57f364c",
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
-    "tools/rhino_oracle/qualification_sources.py": "ddc6c9767e570f0a8a877b0b461607529846cee1e93d443302bd7ef51b57e9e3"
+    "tools/rhino_oracle/qualification_sources.py": "a15b93457b57ebd914e3cebdb6b23fb7e05582cfe7ad065a38f7df6816cce0cc"
   }
 }

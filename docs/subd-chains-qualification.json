@@ -400,7 +400,7 @@
     }
   ],
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "c13456742eccc120e95d068ee4a8a218389f1e16a7406b67d7fe7a7f61003c6d",
+    "crates/viboceros-opennurbs/build.rs": "9b61d6c87c6d657668cc8060940c1d426005f125a15138b8b9edecf45bef755f",
     "crates/viboceros-opennurbs/native/subd.cpp": "da23bdbf18b6709f4156d193546d09acc18a02cbb863a68a0fa8465e2b2cea55",
     "crates/viboceros-opennurbs/native/subd.h": "4a94d9836d3dcab38f2694497a320b9a0e98dbf77eecd3de6717c23d60024808",
     "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
@@ -432,7 +432,7 @@
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
     "crates/viboceros-geometry/src/subd/soft_crease.rs": "1f9bfbfca6b71418e39846e9847351267ee6a26023ac035a041d91247c232f3f",
-    "tools/rhino_oracle/qualification_sources.py": "ddc6c9767e570f0a8a877b0b461607529846cee1e93d443302bd7ef51b57e9e3",
+    "tools/rhino_oracle/qualification_sources.py": "a15b93457b57ebd914e3cebdb6b23fb7e05582cfe7ad065a38f7df6816cce0cc",
     "tools/rhino_oracle/fixtures/soft_crease_chains.json": "52e803491ae30f9f947c0614de0eb658849a104e4d0ff7ae9329dae124cd5820",
     "tools/rhino_oracle/observations/soft_crease_chains.json": "b9e55a5c87b73ca0fa9c0d7a7d055c54307511f4e4d6a2777ebb6a5d8dcd382d",
     "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_branch_constant.3dm": "9949cf75dfed460c818a78d6b989fe18f675e274402f44948d450e13ca41fae9",

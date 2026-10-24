@@ -32,6 +32,7 @@ fn main() {
         "extrusion_codec.h",
         "extrusion_queries.h",
         "extrusion_roundoff.h",
+        "extrusion_cap_projection.h",
     ] {
         println!("cargo:rerun-if-changed=native/{file}");
     }

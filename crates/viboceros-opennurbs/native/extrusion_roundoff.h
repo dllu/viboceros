@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include "extrusion_cap_projection.h"
 namespace vibo_extrusion {
 // A plane is affine. When an edge and a lifted trim have the same positive
 // rational basis, their pointwise distance is bounded by the largest control
@@ -14,11 +15,20 @@ inline void bound_cap_roundoff(ON_Brep& brep) {
   for(int trim_index=0;trim_index<brep.m_T.Count();++trim_index) {
     auto& trim=brep.m_T[trim_index];
     auto* edge=trim.Edge();const auto* face=trim.Face();
-    if(!edge || !face || !ON_PlaneSurface::Cast(face->SurfaceOf())) continue;
+    const auto* plane=face?ON_PlaneSurface::Cast(face->SurfaceOf()):nullptr;
+    if(!edge || !plane) continue;
     ON_NurbsCurve c2,c3;
     if(trim.GetNurbForm(c2)<=0 || edge->GetNurbForm(c3)<=0 ||
-       c2.Order()!=c3.Order() || c2.CVCount()!=c3.CVCount() ||
-       c2.KnotCount()!=c3.KnotCount() || c2.CVCount()<2) continue;
+       c2.Order()!=c3.Order() || c2.Order()<2) continue;
+    // MakeCap2dCurvesHelper uses this public reparameterization for cap trims.
+    // Apply it to both temporary copies so scaled profile weights do not leave
+    // geometrically identical boundaries in different positive rational bases.
+    const auto budget=[](const ON_NurbsCurve& curve) {
+      return uint64_t(curve.SpanCount())*uint64_t(curve.Degree())+1<=4000000;
+    };
+    if(!budget(c2) || !budget(c3) || !c2.MakePiecewiseBezier(true) ||
+       !c3.MakePiecewiseBezier(true) || c2.CVCount()!=c3.CVCount() ||
+       c2.KnotCount()!=c3.KnotCount()) continue;
     work+=c2.CVCount();if(work>4000000) return;
     if(trim.m_bRev3d && !c2.Reverse()) continue;
     if(!c2.SetDomain(0.,1.) || !c3.SetDomain(0.,1.)) continue;
@@ -49,6 +59,13 @@ inline void bound_cap_roundoff(ON_Brep& brep) {
       bound=std::max(bound,std::hypot(p.x-q.x,p.y-q.y,p.z-q.z));
     }
     if(!common || !std::isfinite(bound) || bound>64.*std::numeric_limits<double>::epsilon()*scale) continue;
+    // The cap's original parameterization can be ill conditioned solely from
+    // a global profile weight scale. Rebuild only its derived 2D representation
+    // after the existing boundary and the projected replacement are bounded.
+    auto projected=project_cap_curve(brep,trim,*edge,*plane,bound,scale);
+    if(!projected || !std::isfinite(bound) || bound>64.*std::numeric_limits<double>::epsilon()*scale) continue;
+    const int curve=brep.AddTrimCurve(projected.release());
+    if(!trim.ChangeTrimCurve(curve)) continue;
     // Protect the computed bound from its final floating-point rounding.
     const double tolerance=std::nextafter(1.001*bound,std::numeric_limits<double>::infinity());
     if(std::isfinite(tolerance)) edge->m_tolerance=std::max(edge->m_tolerance,tolerance);

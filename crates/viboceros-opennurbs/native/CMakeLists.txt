@@ -18,6 +18,13 @@ target_include_directories(viboceros_opennurbs PRIVATE "${OPENNURBS_ROOT}")
 target_compile_definitions(viboceros_opennurbs PRIVATE ON_CMAKE_BUILD)
 target_link_libraries(viboceros_opennurbs PRIVATE opennurbsStatic)
 
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24")
+  add_executable(viboceros_extrusion_roundoff_check EXCLUDE_FROM_ALL extrusion_roundoff_test.cpp)
+  target_include_directories(viboceros_extrusion_roundoff_check PRIVATE "${OPENNURBS_ROOT}")
+  target_compile_definitions(viboceros_extrusion_roundoff_check PRIVATE ON_CMAKE_BUILD)
+  target_link_libraries(viboceros_extrusion_roundoff_check PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,opennurbsStatic>")
+endif()
+
 if(MSVC)
   target_compile_options(viboceros_opennurbs PRIVATE /W4 /permissive-)
 else()
@@ -27,6 +34,9 @@ else()
   # slightly tilted one, which changes the side of a singular Flow frame.
   target_compile_options(opennurbsStatic PRIVATE -ffp-contract=off)
   target_compile_options(viboceros_opennurbs PRIVATE -ffp-contract=off)
+  if(TARGET viboceros_extrusion_roundoff_check)
+    target_compile_options(viboceros_extrusion_roundoff_check PRIVATE -ffp-contract=off)
+  endif()
 endif()
 
 option(VIBOCEROS_OPENNURBS_ASAN "Instrument the native kernel and C ABI" OFF)

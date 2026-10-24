@@ -174,6 +174,10 @@ def with_shared_sources(paths):
                                       'src/component_seams/arguments.rs') for p in paths]
     if 'Cargo.toml' in expanded:
         expanded.append('.cargo/config.toml')
+    if 'crates/viboceros-geometry/tests/extrusion.rs' in expanded:
+        expanded.append('crates/viboceros-geometry/tests/extrusion/rational_caps.rs')
+    if 'crates/viboceros-io/tests/extrusion.rs' in expanded:
+        expanded.append('crates/viboceros-io/tests/extrusion/rational_weights.rs')
     if 'tools/rhino_oracle/mesh_trim_cases.py' in expanded:
         expanded.extend(['tools/rhino_oracle/mesh_trim_continuation_cases.py',
                          'tools/rhino_oracle/mesh_trim_snapshot_policy_cases.py',
@@ -318,6 +322,10 @@ def with_shared_sources(paths):
     if ('crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp' in expanded or
             'crates/viboceros-opennurbs/native/extrusion_queries.h' in expanded):
         expanded.append('crates/viboceros-opennurbs/native/extrusion_roundoff.h')
+    if 'crates/viboceros-opennurbs/native/extrusion_roundoff.h' in expanded:
+        expanded.extend(['crates/viboceros-opennurbs/native/extrusion_cap_projection.h',
+                         'crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp',
+                         'crates/viboceros-opennurbs/native/CMakeLists.txt'])
     if ('crates/viboceros-geometry/src/mesh.rs' in expanded or
             'crates/viboceros-geometry/src/subd.rs' in expanded):
         expanded.extend(MESH_MODULES)

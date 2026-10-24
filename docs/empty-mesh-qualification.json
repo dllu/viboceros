@@ -6031,7 +6031,7 @@
     "crates/viboceros-io/src/three_dm/mesh_ngon.rs": "a8b04d6c4a5b62ee1c2caa3accc7cdec72a30eeaffd1ce6d31f4fb4aceb22a2a",
     "crates/viboceros-io/src/three_dm_units.rs": "ab55684170034401161da3c8694d0f7a6bd3092b99d0f1045f0b3164ecea20f3",
     "crates/viboceros-io/tests/empty_mesh.rs": "942c6013803565c56644c58338ed20bc423875357f9d47c41880b9b08aa456be",
-    "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5",
+    "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "9cd89d3aad50a95045b60f466d39bf5af018ccd015cdfd6f9be8240fc98bc871",
     "crates/viboceros-opennurbs/native/structural_blocks.h": "5f0bd2a8e04288b957fde3b8d98913200268535d360f761b5eeddc4ac4f9097a",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "5762d07dad5f0b3d7d8b52d0b99f29e385d10707225aee347c6356c64f4a64fe",
@@ -6147,7 +6147,7 @@
     "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
     "tools/rhino_oracle/observations/source_snapshots/f55d00964df768da1b8367fe0db0ee0806e50be8804860517da06f13d8f6232b.gz": "61eaaf5dd4e6d2a2916b4a21103fcdcdb9d5e587719b3cabf9614ac0cd078f68",
     "tools/rhino_oracle/observations/source_snapshots/f98c6bd863d9638633cadf15d6e8bedff378aa16a06bb80491c251c3cd37bec5.gz": "a12d46a5476486aea5efd2eeebe4dcdb7e64e88a9db526d1e00d2b0f87940864",
-    "tools/rhino_oracle/qualification_sources.py": "ddc6c9767e570f0a8a877b0b461607529846cee1e93d443302bd7ef51b57e9e3",
+    "tools/rhino_oracle/qualification_sources.py": "a15b93457b57ebd914e3cebdb6b23fb7e05582cfe7ad065a38f7df6816cce0cc",
     "tools/rhino_oracle/report_mesh_boolean_commands.py": "5bae7df0d5edaf5c6ecdc296f518f5ed633f4c435c542d100d60a6e1cf19b0d2",
     "tools/rhino_oracle/report_mesh_boolean_empty.py": "dbec4f4b8b851d9238bc637cd77b5f1af191dd54af884e28a101e4240be2f043",
     "tools/rhino_oracle/rhino_worker.py": "6423e0381f254bb896a0204de8cc4f7d223797ac48f2be8e896ffd27e7682067",
@@ -6226,6 +6226,9 @@
     "src/app/extract_points.rs": "4be5c2bace72556eb34fae58b3c955095bbd2755cd81563e97ed48c8fabfa7dd",
     "src/app/extract_points/tests.rs": "0eea2e2088fcdda7af41a0b33ef6119b132a02326455386715a406ab9ad29d3c",
     "src/viewport/polygon_edges.rs": "95698de851458c69f37f90f60f6b563a41d61b27b4812f3df11d1f2b4cedb6e3",
-    "src/viewport/polygon_edges/tests.rs": "112aa221d629fe27d9201449afc76ca250ae4909e25c0da16994b5419b4a68bf"
+    "src/viewport/polygon_edges/tests.rs": "112aa221d629fe27d9201449afc76ca250ae4909e25c0da16994b5419b4a68bf",
+    "crates/viboceros-opennurbs/native/extrusion_cap_projection.h": "43726099974602db55c0bf95b4d37bedabdbda2852d27c5c04e07f3f1ac162ec",
+    "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "1fc44d0d3063e0c7c355f4aae602b41d676e37021bf758638990f402d7fa4d79"
   }
 }

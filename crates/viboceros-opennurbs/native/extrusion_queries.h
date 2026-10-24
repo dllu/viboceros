@@ -12,7 +12,7 @@ template<class F> int extrusion_guard(ViboExtrusionResult** out,char* error,size
     auto result=std::make_unique<ViboExtrusionResult>();result->archive=vibo_extrusion::encode(*extrusion);
     std::unique_ptr<ON_Brep> brep(extrusion->BrepForm(nullptr,true));
     vibo_extrusion::require(brep && brep->m_F.Count()<=100000 && brep->m_E.Count()<=1000000 && brep->m_V.Count()<=1000000,"Invalid extrusion B-rep or topology budget exceeded");
-    if(!brep->IsValid()) vibo_extrusion::bound_cap_roundoff(*brep);
+    vibo_extrusion::bound_cap_roundoff(*brep);
     BridgeObject transfer;std::string diagnostics;
     const bool transferred=append_brep(*brep,transfer,&diagnostics);
     vibo_extrusion::require(transferred,("Cannot transfer extrusion B-rep: "+diagnostics).c_str());

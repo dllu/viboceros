@@ -2590,7 +2590,7 @@
     "Wire/nonmanifold edges, ambiguous parallel source edges, more than two coincident boundary sides, arbitrary topology, continuous surface error and comparative performance remain unqualified."
   ],
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "c13456742eccc120e95d068ee4a8a218389f1e16a7406b67d7fe7a7f61003c6d",
+    "crates/viboceros-opennurbs/build.rs": "9b61d6c87c6d657668cc8060940c1d426005f125a15138b8b9edecf45bef755f",
     "crates/viboceros-opennurbs/native/subd.cpp": "da23bdbf18b6709f4156d193546d09acc18a02cbb863a68a0fa8465e2b2cea55",
     "crates/viboceros-opennurbs/native/subd.h": "4a94d9836d3dcab38f2694497a320b9a0e98dbf77eecd3de6717c23d60024808",
     "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
@@ -2763,7 +2763,7 @@
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
-    "tools/rhino_oracle/qualification_sources.py": "ddc6c9767e570f0a8a877b0b461607529846cee1e93d443302bd7ef51b57e9e3",
+    "tools/rhino_oracle/qualification_sources.py": "a15b93457b57ebd914e3cebdb6b23fb7e05582cfe7ad065a38f7df6816cce0cc",
     "crates/viboceros-command/src/control_points.rs": "c8e45c0a70dc71ec9982a70f21e49bcc65d8856f4c14a18923fda2687ab6d689",
     "crates/viboceros-command/src/object_selection.rs": "e2b78d2f66fe90a5276afe6bad89f05bbedd12059793578c1236290ce398ea6e",
     "crates/viboceros-command/tests/vertex_seams_native.rs": "d75b83f91acc91ecaf895d928224f6f51a3e568be888e6133a9a93ce687fdb28",
