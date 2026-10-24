@@ -124,7 +124,7 @@ def run(operation, host, iterations, tolerance):
         else:
             if not case['preselect']:
                 macro += ' '+' '.join('_SelID '+str(ids[i]) for i in first)+' _Enter'
-            if case['operation'] == 'difference' or (case['operation'] == 'intersection' and 'first' in case):
+            if case['operation'] in ('difference', 'split') or (case['operation'] == 'intersection' and 'first' in case):
                 macro += ' '+case.get('second_arguments', '')
                 if case.get('cancel_second'):
                     macro += ' _Cancel'

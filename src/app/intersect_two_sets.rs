@@ -26,6 +26,7 @@ pub(super) enum BooleanPromptKind {
     Split,
     MeshIntersection(&'static str),
     MeshDifference(&'static str),
+    MeshSplit(&'static str),
 }
 impl BooleanPromptKind {
     pub(super) fn name(self) -> &'static str {
@@ -35,6 +36,7 @@ impl BooleanPromptKind {
             Self::Split => "BooleanSplit",
             Self::MeshIntersection(_) => "MeshBooleanIntersection",
             Self::MeshDifference(_) => "MeshBooleanDifference",
+            Self::MeshSplit(_) => "MeshBooleanSplit",
         }
     }
     pub(super) fn is_intersection(self) -> bool {
@@ -52,7 +54,7 @@ impl BooleanPromptKind {
     }
     pub(super) fn mesh_tolerance(self) -> Option<&'static str> {
         match self {
-            Self::MeshIntersection(t) | Self::MeshDifference(t) => Some(t),
+            Self::MeshIntersection(t) | Self::MeshDifference(t) | Self::MeshSplit(t) => Some(t),
             _ => None,
         }
     }
@@ -60,6 +62,7 @@ impl BooleanPromptKind {
         match self {
             Self::MeshIntersection(_) => Self::MeshIntersection(value),
             Self::MeshDifference(_) => Self::MeshDifference(value),
+            Self::MeshSplit(_) => Self::MeshSplit(value),
             _ => self,
         }
     }
@@ -221,6 +224,16 @@ impl TwoSetsPrompt {
                 "Select cutters; Enter splits, Esc cancels"
             } else {
                 "Select targets; Enter continues, Esc cancels"
+            }
+        } else if self
+            .boolean
+            .as_ref()
+            .is_some_and(|o| matches!(o.kind, BooleanPromptKind::MeshSplit(_)))
+        {
+            if self.first.is_some() {
+                "Select cutting objects; Enter splits, Esc cancels"
+            } else {
+                "Select objects to split; Enter continues, Esc cancels"
             }
         } else if self
             .boolean

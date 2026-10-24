@@ -9,82 +9,34 @@ mod mesh_reference;
 #[allow(dead_code)]
 mod native;
 use serde_json::json;
-use viboceros_command::{CommandContext, CommandRegistry};
+use viboceros_command::CommandRegistry;
+
+#[path = "support/mesh_boolean_replay.rs"]
+mod replay;
 
 #[test]
 fn mesh_boolean_commands_replay_native_metadata_geometry_and_history() {
-    let mut registry = CommandRegistry::with_builtins();
-    let mut family = serde_json::Value::Null;
-    let mut count = 0;
-    let mut gaps = vec![];
-    for row in native::rows() {
-        if row["family"] != family {
-            registry = CommandRegistry::with_builtins();
-            family = row["family"].clone();
-        }
-        let value = &row["value"];
-        let input = &value["input"];
-        if input["cancel"] == true
-            || input["cancel_second"] == true
-            || row["id"] == "boolean_lifecycle_union_one"
-        {
-            // Native options are accepted even if the getter is then cancelled.
-            let scene = native::setup(&row);
-            registry
-                .accept_object_selection_input(&native::command(&scene, input))
-                .unwrap();
-            continue;
-        }
-        let mut scene = native::setup(&row);
-        let before = native::check(&scene, value, "before");
-        assert_eq!(before["metadata"], true, "{}", row["id"]);
-        assert_eq!(before["geometry"], true, "{}", row["id"]);
-        let (first, second) = native::sets(&scene, input);
-        if input["preselect"] == false {
-            native::pick(&mut scene, first.into_iter().chain(second));
-        }
-        let command = native::command(&scene, input);
-        eprintln!("Mesh Boolean command {}: {command}", row["id"]);
-        let result = if input["preselect"] == false {
-            registry.execute_postselected(&mut scene.doc, &command, CommandContext::default())
-        } else {
-            registry.execute(&mut scene.doc, &command)
-        };
-        let success = result.is_ok();
-        let prompt = registry
-            .object_selection_prompt(command.split_whitespace().next().unwrap())
-            .unwrap()
-            .unwrap();
-        if let Some(expected) = native::expected_tolerance(value) {
-            assert_eq!(prompt.choices[0].value, expected, "{}", row["id"]);
-        }
-        let after = native::check(&scene, value, "after");
-        scene.doc.undo().unwrap();
-        let undo = native::check(&scene, value, "undo");
-        let restored = native::sources_restored(&scene);
-        assert!(restored, "{}", row["id"]);
-        scene.doc.redo().unwrap();
-        let redo = native::check(&scene, value, "redo");
-        let matched = success == (value["success"] == true)
-            && [&after, &undo, &redo]
-                .iter()
-                .all(|v| v["metadata"] == true && v["geometry"] == true);
-        if !matched {
-            gaps.push(row["id"].clone());
-        }
-        println!(
-            "MESH_BOOLEAN_COMMAND {}",
-            json!({"id":row["id"],"success":success,"error":result.err().map(|e|e.to_string()),
-            "after":after,"undo":undo,"redo":redo,"sources_restored_on_undo":restored})
-        );
-        count += 1;
-    }
-    eprintln!("Mesh Boolean command replay: {count} cases; gaps {gaps:?}");
-    assert_eq!(count, 79);
-    gaps.sort_by(|a, b| a.as_str().cmp(&b.as_str()));
+    let (rows, gaps) = replay::replay(native::rows(), "MESH_BOOLEAN_COMMAND");
+    assert_eq!(rows.len(), 79);
     assert_eq!(
         gaps,
         json!(native::COMPATIBILITY_GAPS)
+            .as_array()
+            .unwrap()
+            .clone()
+    );
+}
+
+#[test]
+fn mesh_boolean_sets_commands_replay_native_metadata_geometry_and_history() {
+    let (rows, gaps) = replay::replay(
+        native::family_rows(&["sets", "split", "split_controls", "split_stages"]),
+        "MESH_BOOLEAN_SETS_COMMAND",
+    );
+    assert_eq!(rows.len(), 64);
+    assert_eq!(
+        gaps,
+        json!(native::SET_COMPATIBILITY_GAPS)
             .as_array()
             .unwrap()
             .clone()
@@ -224,5 +176,71 @@ fn mesh_boolean_auto_and_zero_resolve_slivers_below_document_tolerance() {
         };
         // A 0.0001-wide cut through a 3x2 cross section removes 0.0006.
         assert!((mesh.signed_volume().unwrap() - (24. - 0.0006)).abs() < 1e-9);
+    }
+}
+
+#[test]
+fn mesh_boolean_split_retains_cutter_stages_and_preserves_all_cutters() {
+    use viboceros_document::Geometry;
+    for (family, case, lengths, volumes) in [
+        (
+            "split",
+            "boolean_split_two_cutters",
+            vec![2, 3],
+            vec![24., 24.],
+        ),
+        (
+            "split_stages",
+            "boolean_split_stages_three_cutters",
+            vec![2, 3, 7],
+            vec![24., 24., 48.],
+        ),
+    ] {
+        let row = native::family_rows(&[family])
+            .into_iter()
+            .find(|r| r["id"] == case)
+            .unwrap();
+        let mut scene = native::setup(&row);
+        let command = native::command(&scene, &row["value"]["input"]);
+        CommandRegistry::with_builtins()
+            .execute(&mut scene.doc, &command)
+            .unwrap();
+        for index in 1..scene.ids.len() {
+            assert!(
+                scene
+                    .doc
+                    .object(scene.ids[index])
+                    .unwrap()
+                    .geometry_snapshot()
+                    .shares_storage_with(&scene.sources[index])
+            );
+        }
+        let pieces = scene
+            .doc
+            .objects()
+            .filter(|o| o.id() != scene.witness && !scene.ids[1..].contains(&o.id()))
+            .map(|o| {
+                let Geometry::Mesh(mesh) = o.geometry() else {
+                    panic!("split mesh expected")
+                };
+                mesh
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(pieces.len(), lengths.iter().sum::<usize>());
+        assert!(pieces.iter().all(|m| m.topology().is_solid()));
+        let mut offset = 0;
+        for (length, volume) in lengths.into_iter().zip(volumes) {
+            let stage = &pieces[offset..offset + length];
+            assert!(
+                (stage
+                    .iter()
+                    .map(|m| m.signed_volume().unwrap())
+                    .sum::<f64>()
+                    - volume)
+                    .abs()
+                    < 1e-9
+            );
+            offset += length;
+        }
     }
 }

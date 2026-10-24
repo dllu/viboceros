@@ -1,0 +1,126 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_overlap_pre",
+      "case": "boolean_split_overlap_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_overlap_post",
+      "case": "boolean_split_overlap_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_disjoint_pre",
+      "case": "boolean_split_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_disjoint_post",
+      "case": "boolean_split_disjoint_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_contained_pre",
+      "case": "boolean_split_contained_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_contained_post",
+      "case": "boolean_split_contained_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_identical_pre",
+      "case": "boolean_split_identical_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_identical_post",
+      "case": "boolean_split_identical_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_face_touch_pre",
+      "case": "boolean_split_face_touch_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_face_touch_post",
+      "case": "boolean_split_face_touch_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_keep",
+      "case": "boolean_split_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_after_keep",
+      "case": "boolean_split_after_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_reset",
+      "case": "boolean_split_reset"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_after_reset",
+      "case": "boolean_split_after_reset"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_cancel_first",
+      "case": "boolean_split_cancel_first"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_cancel_second",
+      "case": "boolean_split_cancel_second"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_tolerance_document",
+      "case": "boolean_split_tolerance_document"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_tolerance_zero",
+      "case": "boolean_split_tolerance_zero"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_tolerance_auto",
+      "case": "boolean_split_tolerance_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_sever",
+      "case": "boolean_split_sever"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_brep_boxes",
+      "case": "boolean_split_brep_boxes"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_many_targets",
+      "case": "boolean_split_many_targets"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_two_cutters",
+      "case": "boolean_split_two_cutters"
+    }
+  ]
+}

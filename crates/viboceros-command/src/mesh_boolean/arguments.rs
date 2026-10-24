@@ -1,6 +1,6 @@
 use super::*;
 
-const USAGE: &str = "MeshBooleanUnion [Tolerance=Auto|Document|Zero]; MeshBooleanIntersection|MeshBooleanDifference [Tolerance=Auto|Document|Zero] [DeleteInput=Yes|No] FirstSet=ids SecondSet=ids";
+const USAGE: &str = "MeshBooleanUnion [Tolerance=Auto|Document|Zero]; MeshBooleanIntersection|MeshBooleanDifference|MeshBooleanSplit [Tolerance=Auto|Document|Zero] [DeleteInput=Yes|No] FirstSet=ids SecondSet=ids";
 #[derive(Clone, Copy)]
 pub(super) struct Options {
     pub tolerance: &'static str,

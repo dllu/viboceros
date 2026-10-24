@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_target_inside",
+      "case": "boolean_split_controls_target_inside"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_cancel_document",
+      "case": "boolean_split_controls_cancel_document"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_union_after_split",
+      "case": "boolean_split_controls_union_after_split"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_difference_keep",
+      "case": "boolean_split_controls_difference_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_split_after_difference",
+      "case": "boolean_split_controls_split_after_difference"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_difference_after_split",
+      "case": "boolean_split_controls_difference_after_split"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_reverse_pre",
+      "case": "boolean_split_controls_reverse_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_reverse_post",
+      "case": "boolean_split_controls_reverse_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_untouched_peer",
+      "case": "boolean_split_controls_untouched_peer"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_two_cutters_repeat",
+      "case": "boolean_split_controls_two_cutters_repeat"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_split_controls_disjoint_cutter",
+      "case": "boolean_split_controls_disjoint_cutter"
+    }
+  ]
+}

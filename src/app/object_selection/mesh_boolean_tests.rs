@@ -17,13 +17,15 @@ fn options(app: &mut VibocerosApp, input: &str) {
     }
 }
 
-#[test]
-fn mesh_boolean_getters_replay_native_selection_options_geometry_and_history() {
+fn replay(
+    rows: Vec<serde_json::Value>,
+    prefix: &str,
+) -> (Vec<serde_json::Value>, Vec<serde_json::Value>) {
     let mut app = test_app();
     let mut family = serde_json::Value::Null;
     let mut gaps = vec![];
-    let mut count = 0;
-    for row in native::rows() {
+    let mut measurements = vec![];
+    for row in rows {
         if row["family"] != family {
             app = test_app();
             family = row["family"].clone();
@@ -38,6 +40,7 @@ fn mesh_boolean_getters_replay_native_selection_options_geometry_and_history() {
             "union" => "MeshBooleanUnion",
             "intersection" => "MeshBooleanIntersection",
             "difference" => "MeshBooleanDifference",
+            "split" => "MeshBooleanSplit",
             _ => unreachable!(),
         };
         app.command_log.clear();
@@ -107,24 +110,45 @@ fn mesh_boolean_getters_replay_native_selection_options_geometry_and_history() {
         assert!(restored, "{}", row["id"]);
         scene.doc.redo().unwrap();
         let redo = native::check(&scene, value, "redo");
-        if [&after, &undo, &redo]
-            .iter()
-            .any(|r| r["metadata"] != true || r["geometry"] != true)
+        if success != (value["success"] == true)
+            || [&after, &undo, &redo]
+                .iter()
+                .any(|r| r["metadata"] != true || r["geometry"] != true)
         {
             gaps.push(row["id"].clone());
         }
-        println!(
-            "MESH_BOOLEAN_GETTER {}",
-            json!({"id":row["id"],"success":success,"error":error,"after":after,"undo":undo,"redo":redo,"sources_restored_on_undo":restored})
-        );
-        count += 1;
+        let row = json!({"id":row["id"],"success":success,"error":error,"after":after,"undo":undo,"redo":redo,"sources_restored_on_undo":restored});
+        println!("{prefix} {row}");
+        measurements.push(row);
     }
-    eprintln!("Mesh Boolean getter replay: {count}; gaps {gaps:?}");
-    assert_eq!(count, 85);
     gaps.sort_by(|a, b| a.as_str().cmp(&b.as_str()));
+    eprintln!("{prefix}: {} getters; gaps {gaps:?}", measurements.len());
+    (measurements, gaps)
+}
+
+#[test]
+fn mesh_boolean_getters_replay_native_selection_options_geometry_and_history() {
+    let (rows, gaps) = replay(native::rows(), "MESH_BOOLEAN_GETTER");
+    assert_eq!(rows.len(), 85);
     assert_eq!(
         gaps,
         json!(native::COMPATIBILITY_GAPS)
+            .as_array()
+            .unwrap()
+            .clone()
+    );
+}
+
+#[test]
+fn mesh_boolean_sets_getters_replay_native_selection_options_geometry_and_history() {
+    let (rows, gaps) = replay(
+        native::family_rows(&["sets", "split", "split_controls", "split_stages"]),
+        "MESH_BOOLEAN_SETS_GETTER",
+    );
+    assert_eq!(rows.len(), 67);
+    assert_eq!(
+        gaps,
+        json!(native::SET_COMPATIBILITY_GAPS)
             .as_array()
             .unwrap()
             .clone()

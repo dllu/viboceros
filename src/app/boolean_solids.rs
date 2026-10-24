@@ -20,6 +20,8 @@ impl VibocerosApp {
             BooleanPromptKind::MeshIntersection("Auto")
         } else if name.eq_ignore_ascii_case("MeshBooleanDifference") {
             BooleanPromptKind::MeshDifference("Auto")
+        } else if name.eq_ignore_ascii_case("MeshBooleanSplit") {
+            BooleanPromptKind::MeshSplit("Auto")
         } else {
             return false;
         };

@@ -11,6 +11,7 @@ pub(super) enum Kind {
     Union,
     Intersection,
     Difference,
+    Split,
 }
 impl Kind {
     fn name(self) -> &'static str {
@@ -18,6 +19,7 @@ impl Kind {
             Self::Union => "MeshBooleanUnion",
             Self::Intersection => "MeshBooleanIntersection",
             Self::Difference => "MeshBooleanDifference",
+            Self::Split => "MeshBooleanSplit",
         }
     }
 }
@@ -27,11 +29,17 @@ pub(super) struct MeshBooleanCommand {
     options: std::sync::Arc<remembered::Remembered<Options>>,
 }
 impl MeshBooleanCommand {
-    pub(super) fn all() -> [Self; 3] {
-        // Native tolerance preferences are shared across all three commands,
+    pub(super) fn all() -> [Self; 4] {
+        // Native tolerance preferences are shared across all four commands,
         // including answers accepted by a subsequently cancelled getter.
         let options = std::sync::Arc::new(remembered::Remembered::new(Options::default()));
-        [Kind::Union, Kind::Intersection, Kind::Difference].map(|kind| Self {
+        [
+            Kind::Union,
+            Kind::Intersection,
+            Kind::Difference,
+            Kind::Split,
+        ]
+        .map(|kind| Self {
             kind,
             options: options.clone(),
         })

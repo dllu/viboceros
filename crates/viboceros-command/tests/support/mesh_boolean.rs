@@ -8,15 +8,19 @@ use viboceros_geometry::TriangleMesh;
 mod coverage;
 
 pub fn rows() -> Vec<Value> {
-    let mut rows = vec![];
-    for family in [
+    family_rows(&[
         "lifecycle",
         "options",
         "memory",
         "syntax",
         "tolerance",
         "policy",
-    ] {
+    ])
+}
+
+pub fn family_rows(families: &[&str]) -> Vec<Value> {
+    let mut rows = vec![];
+    for family in families {
         let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .ancestors()
             .find(|p| p.join("tools/rhino_oracle/observations").is_dir())
@@ -60,7 +64,7 @@ pub fn sets(
     Vec<viboceros_document::ObjectId>,
 ) {
     let operation = input["operation"].as_str().unwrap();
-    let first = input
+    let mut first = input
         .get("first")
         .or_else(|| input.get("selected"))
         .map(|v| {
@@ -71,12 +75,16 @@ pub fn sets(
                 .collect::<Vec<_>>()
         })
         .unwrap_or_else(|| {
-            if operation == "difference" {
+            if matches!(operation, "difference" | "split") {
                 vec![0]
             } else {
                 (0..scene.ids.len()).collect()
             }
         });
+    // Native preselection is enumerated in document order, unlike later picks.
+    if input["preselect"] == true {
+        first.sort_unstable();
+    }
     let second = input
         .get("second")
         .map(|v| {
@@ -87,7 +95,7 @@ pub fn sets(
                 .collect::<Vec<_>>()
         })
         .unwrap_or_else(|| {
-            if operation == "difference" {
+            if matches!(operation, "difference" | "split") {
                 (1..scene.ids.len()).collect()
             } else {
                 vec![]
@@ -104,6 +112,7 @@ pub fn command(scene: &Scene, input: &Value) -> String {
         "union" => "MeshBooleanUnion",
         "intersection" => "MeshBooleanIntersection",
         "difference" => "MeshBooleanDifference",
+        "split" => "MeshBooleanSplit",
         _ => unreachable!(),
     };
     let mut text = format!(
@@ -233,4 +242,21 @@ pub const COMPATIBILITY_GAPS: [&str; 18] = [
     "boolean_tolerance_gap_1_zero",
     "boolean_tolerance_intersection_document",
     "boolean_tolerance_intersection_zero",
+];
+
+pub const SET_COMPATIBILITY_GAPS: [&str; 14] = [
+    "boolean_sets_difference_nested_targets_post",
+    "boolean_sets_difference_nested_targets_pre",
+    "boolean_sets_difference_overlapping_targets_post",
+    "boolean_sets_difference_overlapping_targets_pre",
+    "boolean_sets_intersection_nested_targets_post",
+    "boolean_sets_intersection_nested_targets_pre",
+    "boolean_sets_intersection_overlapping_targets_post",
+    "boolean_sets_intersection_overlapping_targets_pre",
+    "boolean_split_controls_target_inside",
+    "boolean_split_face_touch_post",
+    "boolean_split_face_touch_pre",
+    "boolean_split_identical_post",
+    "boolean_split_identical_pre",
+    "boolean_split_stages_contained_second",
 ];

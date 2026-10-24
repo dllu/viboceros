@@ -167,6 +167,8 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/mesh_boolean/arguments.rs',
             'crates/viboceros-command/src/mesh_boolean/execute.rs',
             'crates/viboceros-command/src/mesh_boolean/geometry.rs',
+            'crates/viboceros-command/src/mesh_boolean/geometry/components.rs',
+            'crates/viboceros-command/src/mesh_boolean/geometry/split.rs',
             'crates/viboceros-command/src/mesh_outline.rs',
             'crates/viboceros-command/src/mesh_outline/tests.rs',
             'crates/viboceros-command/src/mesh_seams.rs',
@@ -233,5 +235,12 @@ def with_shared_sources(paths):
     if any(p in expanded for p in ['crates/viboceros-command/tests/support/mesh_outline.rs',
                                     'crates/viboceros-command/tests/support/mesh_boolean.rs']):
         expanded.append('crates/viboceros-command/tests/support/frozen_scene.rs')
+    if any(p in expanded for p in ['tools/rhino_oracle/mesh_boolean_command_cases.py',
+                                    'tools/rhino_oracle/generate_mesh_boolean.py']):
+        expanded.extend(['tools/rhino_oracle/mesh_boolean_command_cases.py',
+                         'tools/rhino_oracle/mesh_boolean_option_cases.py',
+                         'tools/rhino_oracle/mesh_boolean_sets_cases.py'])
+    if 'crates/viboceros-command/tests/mesh_boolean_command_native.rs' in expanded:
+        expanded.append('crates/viboceros-command/tests/support/mesh_boolean_replay.rs')
     expanded.append('tools/rhino_oracle/qualification_sources.py')
     return list(dict.fromkeys(expanded))

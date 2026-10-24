@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_disconnected_pre",
+      "case": "boolean_sets_intersection_disconnected_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_disconnected_post",
+      "case": "boolean_sets_intersection_disconnected_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_untouched_peer_pre",
+      "case": "boolean_sets_intersection_untouched_peer_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_untouched_peer_post",
+      "case": "boolean_sets_intersection_untouched_peer_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_all_disjoint_pre",
+      "case": "boolean_sets_intersection_all_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_all_disjoint_post",
+      "case": "boolean_sets_intersection_all_disjoint_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_overlapping_targets_pre",
+      "case": "boolean_sets_intersection_overlapping_targets_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_overlapping_targets_post",
+      "case": "boolean_sets_intersection_overlapping_targets_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_nested_targets_pre",
+      "case": "boolean_sets_intersection_nested_targets_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_nested_targets_post",
+      "case": "boolean_sets_intersection_nested_targets_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_hole_pre",
+      "case": "boolean_sets_intersection_hole_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_hole_post",
+      "case": "boolean_sets_intersection_hole_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_reverse_pre",
+      "case": "boolean_sets_intersection_reverse_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_reverse_post",
+      "case": "boolean_sets_intersection_reverse_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_intersection_two_cutters",
+      "case": "boolean_sets_intersection_two_cutters"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_disconnected_pre",
+      "case": "boolean_sets_difference_disconnected_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_disconnected_post",
+      "case": "boolean_sets_difference_disconnected_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_untouched_peer_pre",
+      "case": "boolean_sets_difference_untouched_peer_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_untouched_peer_post",
+      "case": "boolean_sets_difference_untouched_peer_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_all_disjoint_pre",
+      "case": "boolean_sets_difference_all_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_all_disjoint_post",
+      "case": "boolean_sets_difference_all_disjoint_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_overlapping_targets_pre",
+      "case": "boolean_sets_difference_overlapping_targets_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_overlapping_targets_post",
+      "case": "boolean_sets_difference_overlapping_targets_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_nested_targets_pre",
+      "case": "boolean_sets_difference_nested_targets_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_nested_targets_post",
+      "case": "boolean_sets_difference_nested_targets_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_hole_pre",
+      "case": "boolean_sets_difference_hole_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_hole_post",
+      "case": "boolean_sets_difference_hole_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_reverse_pre",
+      "case": "boolean_sets_difference_reverse_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_reverse_post",
+      "case": "boolean_sets_difference_reverse_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_two_cutters",
+      "case": "boolean_sets_difference_two_cutters"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_keep",
+      "case": "boolean_sets_difference_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_sets_difference_after_keep",
+      "case": "boolean_sets_difference_after_keep"
+    }
+  ]
+}

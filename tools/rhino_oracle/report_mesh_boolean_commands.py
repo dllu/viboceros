@@ -51,9 +51,10 @@ SOURCES = with_shared_sources([
     'client.py', 'rhino_worker.py', 'structural_sdk.py', 'join_probe.py', 'merge_edges_probe.py']])
 
 
-def native():
-    rows, exploratory, versions, paths = {}, {}, set(), set(SOURCES)
-    for family, cases in FAMILIES.items():
+def native(families=None, counts=(85, 49), sources=None):
+    rows, exploratory, versions, paths = {}, {}, set(), set(SOURCES if sources is None else sources)
+    for family in (families or ['commands', 'lifecycle', 'options', 'memory', 'syntax', 'tolerance', 'policy']):
+        cases = FAMILIES[family]
         name = 'mesh_boolean_'+family
         query, capture = [HERE/d/(name+'.json') for d in ['fixtures', 'observations']]
         paths.update(str(p.relative_to(ROOT)) for p in [query, capture])
@@ -80,10 +81,10 @@ def native():
             paths.add(str(scene.relative_to(ROOT)))
             if family == 'commands' or 'Unknown command:' in value['history']:
                 exploratory[identifier] = ('discovery with incomplete sets or rejected option placement'
-                                          if family == 'commands' else 'native rejected exploratory tolerance syntax')
+                                          if family == 'commands' else 'native rejected exploratory option syntax')
             else:
                 rows[identifier] = value
-    if len(versions) != 1 or len(rows) != 85 or len(exploratory) != 49:
+    if len(versions) != 1 or (len(rows), len(exploratory)) != counts:
         raise ValueError('mesh Boolean command capture domain differs')
     return versions.pop(), rows, exploratory, paths
 

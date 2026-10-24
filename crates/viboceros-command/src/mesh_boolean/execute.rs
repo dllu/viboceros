@@ -85,11 +85,10 @@ impl MeshBooleanCommand {
         let removed = first
             .iter()
             .skip(1)
-            .chain(
-                second
-                    .iter()
-                    .filter(|_| self.kind != Kind::Difference || arguments.options.delete_cutters),
-            )
+            .chain(second.iter().filter(|_| {
+                self.kind != Kind::Split
+                    && (self.kind != Kind::Difference || arguments.options.delete_cutters)
+            }))
             .copied()
             .collect::<Vec<_>>();
         doc.delete_objects(removed)?;
