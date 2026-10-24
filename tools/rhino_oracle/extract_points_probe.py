@@ -2,7 +2,7 @@
 from copy import deepcopy
 try:
     from .extract_points_cases import ALL_CASES, validate
-except (ImportError, ValueError):
+except (ImportError, ValueError, SystemError):
     from extract_points_cases import ALL_CASES, validate
 
 
@@ -146,6 +146,22 @@ def run(operation, host, iterations, tolerance):
         history = R.RhinoApp.CommandHistoryWindowText
         receipt = []
         def execute():
+            if case.get('ranges'):
+                doc.Objects.UnselectAll()
+                script='_-ExtractPt '+' '.join(options)+' '
+                script+=' '.join('_SelID '+str(ids[i]) for i in case['whole'])
+                parameters, points = [], []
+                for index,start,end in case['ranges']:
+                    curve=doc.Objects.FindId(ids[index]).Geometry
+                    interval=[curve.Domain.ParameterAt(f) for f in [start,end]]
+                    endpoints=[host['_xyz'](curve.PointAt(t)) for t in interval]
+                    parameters.append([index]+interval)
+                    points.append([index]+endpoints)
+                    tokens=[','.join(repr(float(x)) for x in p) for p in endpoints]
+                    script+=' _SubCrv _SelID '+str(ids[index])+' '+tokens[0]+' '+tokens[1]
+                script+=(' _SelPt' if case.get('range_grips') else '')+' _Enter _Cancel _Cancel'
+                receipt.append(dict(parameters=parameters, points=points, script=script))
+                return R.RhinoApp.RunScript(script, True)
             if case.get('component_getter'):
                 from extract_points_getter import run as drive_getter
                 success, trace = drive_getter(doc,ids,case,host,macro,operation['id'])

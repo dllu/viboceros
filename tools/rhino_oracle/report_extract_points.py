@@ -51,7 +51,7 @@ def validate_component_getter(value, identifier):
         raise ValueError('ExtractPt component getter receipt is incomplete')
 
 
-def native(families=None, components=False):
+def native(families=None, components=False, qualified=None):
     families = FAMILIES if families is None else families
     rows, paths, versions = {}, set(SOURCES), set()
     for family, cases in families.items():
@@ -88,11 +88,14 @@ def native(families=None, components=False):
             if family in ['verified','metadata']:
                 if value['getter'] is None or value['getter']['visible_grips'] != sum(len(s['grips']) for s in value['input']['sources']):
                     raise ValueError('ExtractPt native getter coverage changed')
-            if ((components and family in COMPONENT_QUALIFIED) or
-                (not components and (family in ['verified','metadata'] or (family == 'grips' and value['input']['output'] == 'Points')))):
+            if ((qualified is not None and family in qualified) or
+                (qualified is None and components and family in COMPONENT_QUALIFIED) or
+                (qualified is None and not components and (family in ['verified','metadata'] or (family == 'grips' and value['input']['output'] == 'Points')))):
                 value['_path'] = ('picked' if value['input'].get('component_getter') else 'preselected') if components else ('preselected' if family == 'grips' else 'picked')
                 rows[identifier] = value
-    wanted = sum(len(cases) for family,cases in families.items() if family in COMPONENT_QUALIFIED) if components else 63
+    wanted = (sum(len(cases) for family,cases in families.items() if family in qualified)
+              if qualified is not None else
+              sum(len(cases) for family,cases in families.items() if family in COMPONENT_QUALIFIED) if components else 63)
     if len(versions) != 1 or len(rows) != wanted:
         raise ValueError('ExtractPt capture domain changed')
     return versions.pop(), rows, paths

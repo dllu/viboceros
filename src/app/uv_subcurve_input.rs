@@ -19,6 +19,7 @@ pub(super) struct SubcurveInputs {
 #[derive(Clone, Debug, Default)]
 pub(super) struct PendingSubcurve {
     pub(super) object: Option<ObjectId>,
+    pub(super) source: Option<viboceros_document::GeometrySnapshot>,
     pub(super) start: Option<f64>,
     pub(super) length: Option<f64>,
     pub(super) hover_parameter: Option<f64>,
@@ -210,6 +211,13 @@ impl VibocerosApp {
             .collect::<Vec<_>>();
         if let [id] = ids.as_slice() {
             pending.object = Some(*id);
+            pending.source = Some(
+                self.document
+                    .object(*id)
+                    .unwrap()
+                    .geometry_snapshot()
+                    .clone(),
+            );
             self.active_command = Some(InteractiveCommand::SubCrv {
                 start: None,
                 copy: true,
@@ -228,6 +236,15 @@ impl VibocerosApp {
         let pending = prompt.uv_subcurves.pending.as_ref()?.clone();
         let object = pending.object?;
         let result = (|| -> Result<(), viboceros_command::CommandError> {
+            if !self.document.is_object_selectable(object)
+                || pending.source.as_ref().is_some_and(|source| {
+                    self.document
+                        .object(object)
+                        .is_none_or(|o| o.geometry_snapshot() != source)
+                })
+            {
+                return Err(viboceros_command::CommandError::SubcurveInputStale);
+            }
             let curve = self
                 .document
                 .object(object)

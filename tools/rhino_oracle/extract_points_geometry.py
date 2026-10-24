@@ -2,6 +2,8 @@
 def create(kind, host):
     from grip_navigation_probe import create_source
     G = host["Rhino"].Geometry
+    if kind == 'line':
+        return G.LineCurve(G.Point3d(0.,0.,0.), G.Point3d(8.,4.,2.))
     if kind == 'brep_periodic_joined':
         first = create('brep_periodic_u', host)
         second = first.DuplicateBrep()

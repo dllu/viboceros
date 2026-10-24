@@ -1,0 +1,16 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "range_whole_owner_points",
+      "case": "range_whole_owner_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_whole_owner_pointcloud",
+      "case": "range_whole_owner_pointcloud"
+    }
+  ]
+}

@@ -45,7 +45,7 @@ fn control_polygon_temporary_ranges_replay_native_getters_and_history() {
                 app.intersection_prompt
                     .as_ref()
                     .unwrap()
-                    .control_polygon
+                    .curve_extraction
                     .is_some()
             );
             app.select_intersection_prompt_objects([sources[0]], SelectionMode::Add);

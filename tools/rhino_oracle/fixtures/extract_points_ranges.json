@@ -1,0 +1,106 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "range_line_points",
+      "case": "range_line_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_line_pointcloud",
+      "case": "range_line_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_rational_points",
+      "case": "range_rational_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_rational_pointcloud",
+      "case": "range_rational_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_polyline_points",
+      "case": "range_polyline_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_polyline_pointcloud",
+      "case": "range_polyline_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_circle_points",
+      "case": "range_circle_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_circle_pointcloud",
+      "case": "range_circle_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_polycurve_points",
+      "case": "range_polycurve_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_polycurve_pointcloud",
+      "case": "range_polycurve_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_periodic_points",
+      "case": "range_periodic_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_periodic_pointcloud",
+      "case": "range_periodic_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_circle_wrap_points",
+      "case": "range_circle_wrap_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_other_layer_points",
+      "case": "range_other_layer_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_with_whole_points",
+      "case": "range_with_whole_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_twice_points",
+      "case": "range_twice_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_circle_wrap_pointcloud",
+      "case": "range_circle_wrap_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_other_layer_pointcloud",
+      "case": "range_other_layer_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_with_whole_pointcloud",
+      "case": "range_with_whole_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_twice_pointcloud",
+      "case": "range_twice_pointcloud"
+    }
+  ]
+}

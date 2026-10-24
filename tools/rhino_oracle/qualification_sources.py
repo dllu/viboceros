@@ -52,10 +52,11 @@ APPLICATION_MODULES = [
     'src/app/transform_sources.rs',
     'src/app/extract_points.rs',
     'src/app/extract_points/tests.rs',
+    'src/app/extract_points/ranges_tests.rs',
     'src/viewport/polygon_edges.rs',
     'src/viewport/polygon_edges/tests.rs',
     'src/app/control_polygon.rs',
-    'src/app/control_polygon/subcurve.rs',
+    'src/app/curve_extraction_subcurve.rs',
     'src/app/control_polygon/tests.rs',
     'crates/viboceros-command/tests/support/control_polygon.rs',
     'src/app/intersect_two_sets.rs',
@@ -168,6 +169,7 @@ MESH_MODULES = [
 def with_shared_sources(paths):
     moved = {'src/app/object_selection/quadrangulate_mesh.rs':
              'src/app/object_selection/mesh_conversion.rs',
+             'src/app/control_polygon/subcurve.rs': 'src/app/curve_extraction_subcurve.rs',
              'crates/viboceros-command/src/mesh_split/appearance.rs':
              'crates/viboceros-command/src/mesh_partition/appearance.rs'}
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
@@ -195,6 +197,7 @@ def with_shared_sources(paths):
                          'tools/rhino_oracle/extract_points_geometry.py',
                          'tools/rhino_oracle/extract_points_component_cases.py',
                          'tools/rhino_oracle/extract_points_brep_cases.py',
+                         'tools/rhino_oracle/extract_points_range_cases.py',
                          'tools/rhino_oracle/extract_points_component_input.py'])
     if 'tools/rhino_oracle/mesh_split_cases.py' in expanded:
         expanded.extend(['tools/rhino_oracle/mesh_split_channel_cases.py',
@@ -251,8 +254,10 @@ def with_shared_sources(paths):
             'crates/viboceros-geometry/src/subd/edges/curves.rs',
             'crates/viboceros-command/src/extract_points/inputs.rs',
             'crates/viboceros-command/src/extract_points/options.rs',
+            'crates/viboceros-command/src/extract_points/ranges.rs',
             'crates/viboceros-command/src/extract_points/tests.rs',
             'crates/viboceros-command/tests/extract_points_native.rs',
+            'crates/viboceros-command/tests/extract_point_ranges_native.rs',
             'crates/viboceros-command/tests/support/extract_points.rs',
             'crates/viboceros-command/src/mesh_split.rs',
             'crates/viboceros-command/src/mesh_split/arguments.rs',

@@ -4,11 +4,12 @@ use super::*;
 mod components;
 mod inputs;
 mod options;
+mod ranges;
 use options::{ExtractPointOptions, ExtractPointOutput, ExtractPointOutputLayer};
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud] [Component=uuid,Vertex|Edge|Face,index] [SubDLocation=Surface|ControlNet]";
+const USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud] [Component=uuid,Vertex|Edge|Face,index] [SubDLocation=Surface|ControlNet] [SubCrv=uuid,start,end]";
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 
 pub(super) struct ExtractPtCommand;
@@ -30,7 +31,7 @@ impl Command for ExtractPtCommand {
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         let options = options::parse_extract_point_arguments(arguments)?;
-        Ok(options.components.is_empty().then(|| options.prompt()))
+        Ok((options.components.is_empty() && options.ranges.is_empty()).then(|| options.prompt()))
     }
 
     fn cancel_empty_object_selection(&self) -> bool {
@@ -72,6 +73,8 @@ struct Extraction {
     released: Vec<ObjectId>,
     release_grips: bool,
     clear_component_grips: bool,
+    release_results: bool,
+    range_displays: Vec<ObjectId>,
 }
 
 impl Extraction {
@@ -87,44 +90,53 @@ impl Extraction {
         let mut selected = 0;
         let mut contributors = 0;
         let mut count = 0usize;
-        let owners = inputs::visit(document, &options, postselected, |source, points| {
-            selected += 1;
-            if points.is_empty() {
-                return Ok(());
-            }
-            count = count
-                .checked_add(points.len())
-                .filter(|&n| n <= MAX_EXTRACTED_POINTS)
-                .ok_or(CommandError::TooManyExtractedPoints {
-                    maximum: MAX_EXTRACTED_POINTS,
-                })?;
-            contributors += 1;
-            match &mut output {
-                Output::Points(batches) => batches.push(PointBatch {
-                    points,
-                    source: (options.output_layer == ExtractPointOutputLayer::Input)
-                        .then_some(source),
-                }),
-                Output::PointCloud(all, origin) => {
-                    // Only a contributing first source supplies cloud attributes;
-                    // otherwise retain the fresh current-layer fallback.
-                    if selected == 1 && options.output_layer == ExtractPointOutputLayer::Input {
-                        *origin = Some(source);
-                    }
-                    if all.is_empty() {
-                        *all = points;
-                    } else {
-                        all.try_reserve(points.len()).map_err(|_| {
-                            CommandError::TooManyExtractedPoints {
-                                maximum: MAX_EXTRACTED_POINTS,
-                            }
-                        })?;
-                        all.extend(points);
+        let owners = inputs::visit(
+            document,
+            &options,
+            postselected,
+            |source, points, temporary| {
+                selected += 1;
+                if points.is_empty() {
+                    return Ok(());
+                }
+                count = count
+                    .checked_add(points.len())
+                    .filter(|&n| n <= MAX_EXTRACTED_POINTS)
+                    .ok_or(CommandError::TooManyExtractedPoints {
+                        maximum: MAX_EXTRACTED_POINTS,
+                    })?;
+                contributors += 1;
+                match &mut output {
+                    Output::Points(batches) => batches.push(PointBatch {
+                        points,
+                        source: (options.output_layer == ExtractPointOutputLayer::Input
+                            && !temporary)
+                            .then_some(source),
+                    }),
+                    Output::PointCloud(all, origin) => {
+                        // Only a contributing first source supplies cloud attributes;
+                        // otherwise retain the fresh current-layer fallback.
+                        if selected == 1
+                            && options.output_layer == ExtractPointOutputLayer::Input
+                            && !temporary
+                        {
+                            *origin = Some(source);
+                        }
+                        if all.is_empty() {
+                            *all = points;
+                        } else {
+                            all.try_reserve(points.len()).map_err(|_| {
+                                CommandError::TooManyExtractedPoints {
+                                    maximum: MAX_EXTRACTED_POINTS,
+                                }
+                            })?;
+                            all.extend(points);
+                        }
                     }
                 }
-            }
-            Ok(())
-        })?;
+                Ok(())
+            },
+        )?;
         if let Output::PointCloud(_, source) = &mut output
             && options.output_layer == ExtractPointOutputLayer::Input
             && let Some((grip, _)) = document.selected_control_points().next()
@@ -138,6 +150,8 @@ impl Extraction {
             return Err(CommandError::NoExtractablePoints);
         }
         Ok(Self {
+            release_results: !options.ranges.is_empty(),
+            range_displays: options.ranges.iter().map(|r| r.object).collect(),
             clear_component_grips: postselected && !options.components.is_empty(),
             release_grips: postselected,
             output,
@@ -157,6 +171,7 @@ impl Extraction {
 
     fn apply(self, document: &mut Document) -> Result<String, CommandError> {
         let cloud = matches!(&self.output, Output::PointCloud(..));
+        document.release_control_point_display_on_history_replay(self.range_displays)?;
         document.release_command_selection_on_history_replay(
             self.released
                 .into_iter()
@@ -205,6 +220,9 @@ impl Extraction {
                     ids.push(document.add_geometry(Geometry::PointCloud(cloud))?);
                 }
             }
+        }
+        if self.release_results {
+            document.release_command_selection_on_history_replay(ids.iter().copied())?;
         }
         document.select_command_results(self.retained.into_iter().chain(ids))?;
         Ok(format!(

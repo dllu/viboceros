@@ -637,6 +637,9 @@ pub enum CommandError {
     #[error("control polygon input changed; select the source again")]
     ControlPolygonStale,
 
+    #[error("temporary curve input changed; select the source again")]
+    SubcurveInputStale,
+
     #[error("ExtractSrf supports selected NURBS surfaces and B-reps only")]
     UnsupportedExtractSurfaceGeometry,
     #[error(

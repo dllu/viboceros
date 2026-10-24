@@ -58,8 +58,8 @@ both output options before selection.
 
 [Component extraction](extract-point-components.md) supports B-rep faces and
 edges, and mesh/SubD faces, edges and topology vertices, including smooth SubD
-edge control points. Smooth SubD whole-object limit locations and `SubCrv`
-remain unimplemented.
+edge control points. [Temporary curve portions](extract-point-ranges.md) use
+`SubCrv`. Smooth SubD whole-object limit locations remain unimplemented.
 
 `OutputLayer=TargetObject` remains unavailable. The installed Rhino
 8.32.26160.13001 rejects that value, despite its inclusion in the command

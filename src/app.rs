@@ -132,6 +132,7 @@ mod component_selection;
 mod control_polygon;
 mod copy_options;
 mod crease;
+mod curve_extraction_subcurve;
 mod extract_points;
 mod extract_surface;
 mod insert_point;

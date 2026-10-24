@@ -1,4 +1,5 @@
 //! Native grip locations, exact attributes, source storage, and history.
+#![allow(dead_code)] // Shared by command and application test binaries.
 use serde_json::Value;
 use std::path::Path;
 use viboceros_document::{ControlPointId, Document, Geometry, ObjectId, SelectionMode};
@@ -254,6 +255,37 @@ pub fn component_rows() -> Vec<Value> {
 }
 pub fn edge_form_rows() -> Vec<Value> {
     component_rows_for(&["component_edge_holdouts"])
+}
+
+pub fn range_rows() -> Vec<Value> {
+    component_rows_for(&["ranges", "ranges_grips", "ranges_owners"])
+        .into_iter()
+        .map(|mut row| {
+            row["path"] = "picked".into();
+            row
+        })
+        .collect()
+}
+pub fn range_command(row: &Value, ids: &[ObjectId]) -> String {
+    let mut result = command(row);
+    for range in row["value"]["getter"]["parameters"].as_array().unwrap() {
+        result.push_str(&format!(
+            " SubCrv={},{},{}",
+            ids[range[0].as_u64().unwrap() as usize],
+            range[1],
+            range[2]
+        ));
+    }
+    result
+}
+pub fn select_range_grips(doc: &mut Document, row: &Value) {
+    if row["value"]["input"]["range_grips"] == true {
+        viboceros_command::point_selection::PointSelectionAction::from_input("SelPt")
+            .unwrap()
+            .unwrap()
+            .apply(doc, |_| true)
+            .unwrap();
+    }
 }
 fn component_rows_for(families: &[&str]) -> Vec<Value> {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))

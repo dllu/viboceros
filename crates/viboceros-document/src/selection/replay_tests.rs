@@ -1,6 +1,66 @@
 use super::*;
 
 #[test]
+fn temporary_grip_display_cleanup_is_deferred_scoped_and_rollback_safe() {
+    let mut doc = Document::default();
+    let ids = [0., 1.].map(|y| {
+        doc.add_geometry(Geometry::Line(
+            viboceros_geometry::LineSegment::try_new(
+                Point3::try_new(0., y, 0.).unwrap(),
+                Point3::try_new(10., y, 0.).unwrap(),
+                doc.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap()
+    });
+    doc.enable_control_points(ids).unwrap();
+    let original = doc.object(ids[0]).unwrap().geometry_snapshot().clone();
+    assert!(matches!(
+        doc.release_control_point_display_on_history_replay(ids),
+        Err(DocumentError::NoActiveTransaction)
+    ));
+    doc.begin_transaction("Rollback").unwrap();
+    assert!(
+        doc.release_control_point_display_on_history_replay([ObjectId::new()])
+            .is_err()
+    );
+    doc.release_control_point_display_on_history_replay([ids[0], ids[0]])
+        .unwrap();
+    doc.add_geometry(Geometry::Point(Point3::try_new(5., 5., 0.).unwrap()))
+        .unwrap();
+    doc.rollback_transaction().unwrap();
+    assert_eq!(doc.objects().len(), 2);
+    assert!(
+        ids.into_iter()
+            .all(|id| doc.control_point_locations(id).is_some())
+    );
+    doc.begin_transaction("Temporary inputs").unwrap();
+    doc.release_control_point_display_on_history_replay([ids[0]])
+        .unwrap();
+    doc.add_geometry(Geometry::Point(Point3::try_new(5., 5., 0.).unwrap()))
+        .unwrap();
+    doc.commit_transaction().unwrap();
+    assert!(
+        ids.into_iter()
+            .all(|id| doc.control_point_locations(id).is_some())
+    );
+    doc.undo().unwrap();
+    assert!(doc.control_point_locations(ids[0]).is_none());
+    assert!(doc.control_point_locations(ids[1]).is_some());
+    doc.enable_control_points([ids[0]]).unwrap();
+    doc.redo().unwrap();
+    assert!(doc.control_point_locations(ids[0]).is_none());
+    assert!(doc.control_point_locations(ids[1]).is_some());
+    assert!(
+        doc.object(ids[0])
+            .unwrap()
+            .geometry_snapshot()
+            .shares_storage_with(&original)
+    );
+}
+
+#[test]
 fn no_output_pick_replay_metadata_preserves_history_and_redo_without_an_entry() {
     let mut doc = Document::default();
     let point = |x| Geometry::Point(Point3::try_new(x, 0., 0.).unwrap());

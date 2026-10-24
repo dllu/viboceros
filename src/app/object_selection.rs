@@ -338,8 +338,8 @@ impl PendingObjectCommand {
 }
 
 impl VibocerosApp {
-    fn try_select_prompt_points(&mut self, input: &str) -> bool {
-        let Some(pending) = self.object_prompt.as_ref().filter(|p| {
+    pub(super) fn try_select_prompt_points(&mut self, input: &str) -> bool {
+        let pending = self.object_prompt.as_ref().filter(|p| {
             p.phase == ObjectPromptPhase::Selecting
                 && (matches!(
                     p.description.command,
@@ -359,7 +359,16 @@ impl VibocerosApp {
                 ) || (p.description.workflow
                     == ObjectSelectionWorkflow::PointInputAfterSelection
                     && super::transform_sources::allows_grips(p.description.command)))
-        }) else {
+        });
+        let (filter, excluded) = if let Some(pending) = pending {
+            (pending.description.filter, pending.excluded_object)
+        } else if self.intersection_prompt.as_ref().is_some_and(|p| {
+            p.curve_extraction.is_some()
+                && p.name() == "ExtractPt"
+                && p.uv_subcurves.pending.is_none()
+        }) {
+            (ObjectSelectionFilter::ExtractPoints, None)
+        } else {
             return false;
         };
         let action =
@@ -372,8 +381,6 @@ impl VibocerosApp {
                     return true;
                 }
             };
-        let filter = pending.description.filter;
-        let excluded = pending.excluded_object;
         match action.apply(&mut self.document, |o| {
             Some(o.id()) != excluded && filter.accepts_object(o)
         }) {
@@ -1042,7 +1049,7 @@ impl VibocerosApp {
         if self.continue_mesh_patch_prompt(input) {
             return true;
         }
-        if self.promote_control_polygon_subcurve(input) {
+        if self.promote_curve_extraction_subcurve(input) {
             return true;
         }
         if self.promote_curve_deviation_subcurve(input) {

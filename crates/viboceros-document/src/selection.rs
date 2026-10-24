@@ -56,7 +56,11 @@ impl Document {
         if !ids.is_empty() {
             self.record_edit(
                 "Release command picks",
-                Edit::SelectionReleasedOnReplay { ids, grips: vec![] },
+                Edit::SelectionReleasedOnReplay {
+                    ids,
+                    grips: vec![],
+                    grip_displays: vec![],
+                },
             );
         }
         Ok(())
@@ -86,6 +90,35 @@ impl Document {
                 Edit::SelectionReleasedOnReplay {
                     ids: vec![],
                     grips: grips.into_iter().collect(),
+                    grip_displays: vec![],
+                },
+            );
+        }
+        Ok(())
+    }
+
+    /// Keep an accepted temporary input's grip display until history replay.
+    /// Undo and Redo then release only these displays; rollback restores them.
+    pub fn release_control_point_display_on_history_replay(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<(), DocumentError> {
+        if self.history.active.is_none() {
+            return Err(DocumentError::NoActiveTransaction);
+        }
+        let indices = self.resolve_object_indices(ids)?;
+        let grip_displays = indices
+            .into_iter()
+            .map(|i| self.objects[i].id)
+            .filter(|id| self.control_points.contains_key(id))
+            .collect::<Vec<_>>();
+        if !grip_displays.is_empty() {
+            self.record_edit(
+                "Release temporary grip displays",
+                Edit::SelectionReleasedOnReplay {
+                    ids: vec![],
+                    grips: vec![],
+                    grip_displays,
                 },
             );
         }

@@ -95,9 +95,14 @@ impl Document {
         if group.can_undo() {
             for edit in &mut self.history.undo.last_mut().unwrap().edits {
                 match edit {
-                    Edit::SelectionReleasedOnReplay { ids, grips } => {
+                    Edit::SelectionReleasedOnReplay {
+                        ids,
+                        grips,
+                        grip_displays,
+                    } => {
                         ids.clear();
                         grips.clear();
+                        grip_displays.clear();
                     }
                     Edit::TransformSelectionReleasedOnReplay { ids, reselected } => {
                         ids.clear();

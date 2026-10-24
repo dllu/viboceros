@@ -18,9 +18,13 @@ impl VibocerosApp {
     pub(super) fn picking_extract_points(&self) -> bool {
         self.object_prompt.as_ref().is_some_and(|p| {
             p.description.command == "ExtractPt" && p.phase == ObjectPromptPhase::Selecting
+        }) || self.intersection_prompt.as_ref().is_some_and(|p| {
+            p.curve_extraction.is_some()
+                && p.name() == "ExtractPt"
+                && p.uv_subcurves.pending.is_none()
         })
     }
-    fn extract_point_component_arguments(&self) -> Result<String, &'static str> {
+    pub(super) fn extract_point_component_arguments(&self) -> Result<String, &'static str> {
         let picks = self.component_selection.checked_picks(&self.document)?;
         let mut regions = std::collections::BTreeMap::new();
         for pick in picks
@@ -140,8 +144,9 @@ impl VibocerosApp {
 }
 
 #[cfg(test)]
-#[allow(dead_code)]
 #[path = "../../crates/viboceros-command/tests/support/extract_points.rs"]
 pub(super) mod native;
+#[cfg(test)]
+mod ranges_tests;
 #[cfg(test)]
 mod tests;

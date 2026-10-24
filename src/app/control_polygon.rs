@@ -4,8 +4,7 @@ use super::*;
 #[cfg(test)]
 #[path = "../../crates/viboceros-command/tests/support/control_polygon.rs"]
 pub(super) mod native;
-mod subcurve;
-use viboceros_command::extract_control_polygon::{self, Selection, Target};
+use viboceros_command::extract_control_polygon::{self, Target};
 
 impl VibocerosApp {
     pub(super) fn replaying_control_polygon_selection(&self, input: &str) -> bool {
@@ -23,12 +22,13 @@ impl VibocerosApp {
         self.object_prompt.as_ref().is_some_and(|p| {
             p.description.command == "ExtractControlPolygon"
                 && p.phase == ObjectPromptPhase::Selecting
-        }) || self
-            .intersection_prompt
-            .as_ref()
-            .is_some_and(|p| p.control_polygon.is_some() && p.uv_subcurves.pending.is_none())
+        }) || self.intersection_prompt.as_ref().is_some_and(|p| {
+            p.curve_extraction.is_some()
+                && p.name() == "ExtractControlPolygon"
+                && p.uv_subcurves.pending.is_none()
+        })
     }
-    fn control_polygon_targets(&self) -> Vec<Target> {
+    pub(super) fn control_polygon_targets(&self) -> Vec<Target> {
         self.document
             .selected_objects()
             .map(|o| Target::Whole(o.id()))

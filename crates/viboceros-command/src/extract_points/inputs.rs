@@ -5,7 +5,7 @@ pub(super) fn visit(
     document: &Document,
     options: &ExtractPointOptions,
     postselected: bool,
-    mut emit: impl FnMut(ObjectId, Vec<Point3>) -> Result<(), CommandError>,
+    mut emit: impl FnMut(ObjectId, Vec<Point3>, bool) -> Result<(), CommandError>,
 ) -> Result<BTreeSet<ObjectId>, CommandError> {
     let mut owners = document
         .selected_control_points()
@@ -21,8 +21,13 @@ pub(super) fn visit(
             Geometry::Brep(brep) => components::whole_brep_points(brep)?,
             geometry => geometry.extract_point_locations()?,
         };
-        emit(object.id(), points)?;
+        emit(object.id(), points, false)?;
     }
+    // Temporary curve references precede selected grips, just like whole
+    // curve inputs, while keeping their own fresh output attributes.
+    ranges::visit(document, &options.ranges, |source, points| {
+        emit(source, points, true)
+    })?;
     // Document grip iteration follows object table order and then grip index,
     // independently of the order in which the user selected those grips.
     let mut selected = document.selected_control_points().peekable();
@@ -39,18 +44,18 @@ pub(super) fn visit(
             }
             points.push(selected.next().unwrap().1);
         }
-        emit(grip.object, points)?;
+        emit(grip.object, points, false)?;
     }
     if postselected {
         for target in &options.components {
             if let Some(points) = component_points.remove(&target.object) {
-                emit(target.object, points)?;
+                emit(target.object, points, false)?;
             }
         }
     } else {
         for object in document.objects() {
             if let Some(points) = component_points.remove(&object.id()) {
-                emit(object.id(), points)?;
+                emit(object.id(), points, false)?;
             }
         }
     }

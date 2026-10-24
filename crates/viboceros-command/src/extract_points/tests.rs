@@ -284,3 +284,36 @@ fn seam_controls_do_not_consume_the_output_point_budget() {
     registry.execute(&mut doc, "Redo").unwrap();
     assert_eq!(doc.objects().len(), 2);
 }
+
+#[test]
+fn invalid_temporary_ranges_leave_model_selection_and_redo_unchanged() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry.execute(&mut doc, "Line 0,0,0 10,0,0").unwrap();
+    let id = doc.objects().next().unwrap().id();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    doc.clear_history().unwrap();
+    doc.add_geometry(Geometry::Point(point(3., 3., 3.)))
+        .unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    for value in [
+        format!("{id},2,2"),
+        format!("{id},-1,4"),
+        format!("{id},2,NaN"),
+        format!("{id},2,inf"),
+        format!("{id},2"),
+        "missing,2,8".into(),
+    ] {
+        assert!(
+            registry
+                .execute(
+                    &mut doc,
+                    &format!("ExtractPt SubCrv={id},2,8 SubCrv={value}")
+                )
+                .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+        assert!(doc.can_redo());
+    }
+}

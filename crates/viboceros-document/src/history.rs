@@ -86,6 +86,7 @@ pub(super) enum Edit {
     SelectionReleasedOnReplay {
         ids: Vec<ObjectId>,
         grips: Vec<super::ControlPointId>,
+        grip_displays: Vec<ObjectId>,
     },
     /// A replacement clears its replay selection unless the user selects it
     /// again after Undo. Explicit picking may repeat an already selected set.
@@ -203,11 +204,18 @@ impl Edit {
             Self::ControlPointsDeleted { id, stored, mesh } => {
                 exchange_deleted_control_points(document, *id, stored, true, *mesh)
             }
-            Self::SelectionReleasedOnReplay { ids, grips } => {
+            Self::SelectionReleasedOnReplay {
+                ids,
+                grips,
+                grip_displays,
+            } => {
                 for id in ids {
                     document.selection.remove(id);
                 }
                 release_grips(document, grips);
+                for id in grip_displays {
+                    document.control_points.remove(id);
+                }
             }
             Self::TransformSelectionReleasedOnReplay { ids, reselected } => {
                 *reselected = None;
@@ -349,11 +357,18 @@ impl Edit {
             Self::ControlPointsDeleted { id, stored, mesh } => {
                 exchange_deleted_control_points(document, *id, stored, false, *mesh)
             }
-            Self::SelectionReleasedOnReplay { ids, grips } => {
+            Self::SelectionReleasedOnReplay {
+                ids,
+                grips,
+                grip_displays,
+            } => {
                 for id in ids {
                     document.selection.remove(id);
                 }
                 release_grips(document, grips);
+                for id in grip_displays {
+                    document.control_points.remove(id);
+                }
             }
             Self::TransformSelectionReleasedOnReplay { ids, reselected } => {
                 for id in ids {

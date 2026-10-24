@@ -13,12 +13,13 @@ pub(super) enum ExtractPointOutput {
     PointCloud,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq)]
 pub(super) struct ExtractPointOptions {
     pub(super) output_layer: ExtractPointOutputLayer,
     pub(super) output: ExtractPointOutput,
     pub(super) components: Vec<components::Target>,
     pub(super) control_net: bool,
+    pub(super) ranges: Vec<ranges::Target>,
 }
 
 pub(super) fn parse_extract_point_arguments(
@@ -27,6 +28,7 @@ pub(super) fn parse_extract_point_arguments(
     let mut output_layer = ExtractPointOutputLayer::Input;
     let mut output = ExtractPointOutput::Points;
     let mut components = Vec::new();
+    let mut ranges = Vec::new();
     let mut control_net = false;
     let mut location_seen = false;
     let mut output_layer_seen = false;
@@ -67,6 +69,13 @@ pub(super) fn parse_extract_point_arguments(
                 });
             }
             components.push(super::components::parse(value)?);
+        } else if name.eq_ignore_ascii_case("SubCrv") {
+            if ranges.len() >= MAX_EXTRACTED_POINTS {
+                return Err(CommandError::TooManyExtractedPoints {
+                    maximum: MAX_EXTRACTED_POINTS,
+                });
+            }
+            ranges.push(super::ranges::parse(value)?);
         } else if name.eq_ignore_ascii_case("SubDLocation") && !location_seen {
             control_net = if value.eq_ignore_ascii_case("ControlNet") {
                 true
@@ -86,6 +95,7 @@ pub(super) fn parse_extract_point_arguments(
         output,
         components,
         control_net,
+        ranges,
     })
 }
 

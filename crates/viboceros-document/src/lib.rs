@@ -595,15 +595,23 @@ impl Document {
             if let Some(entry) = self.history.undo.last_mut() {
                 for edit in transaction.edits {
                     if let (
-                        Some(Edit::SelectionReleasedOnReplay { ids, grips }),
+                        Some(Edit::SelectionReleasedOnReplay {
+                            ids,
+                            grips,
+                            grip_displays,
+                        }),
                         Edit::SelectionReleasedOnReplay {
                             ids: next,
                             grips: next_grips,
+                            grip_displays: next_displays,
                         },
                     ) = (entry.edits.last_mut(), &edit)
                     {
                         ids.extend(next);
                         grips.extend(next_grips);
+                        grip_displays.extend(next_displays);
+                        grip_displays.sort_unstable();
+                        grip_displays.dedup();
                         grips.sort_unstable();
                         grips.dedup();
                         ids.sort_unstable();
