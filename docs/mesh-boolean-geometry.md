@@ -6,7 +6,7 @@ working copies into usd-brep/SMLib, reuses its polygon Boolean and triangulation
 code, and returns an optional triangle mesh. Empty results return `None`.
 Disconnected regions share one returned mesh. Source geometry and stored channels
 remain unchanged; output texture/color correspondence is not implemented.
-This is a backend API; mesh Boolean commands and their getters are still pending.
+The application exposes this API through the [mesh Boolean commands](mesh-boolean-commands.md).
 
 Input quads use the existing public OpenNURBS spatial diagonal conversion.
 Exactly coincident input vertices share working topology, including unwelded
@@ -30,8 +30,8 @@ semantics rather than rules tied to particular reference scenes. Analytic tests
 also check coincident volumes, empty results, through holes, attributes on source
 vertices and repeated native ownership.
 
-Command selection, object attributes, history, curved-surface tessellation and
-extreme numerical scales remain unqualified.
+Command selection, object attributes and history have a separate qualification.
+Curved-surface tessellation and extreme numerical scales remain unqualified.
 
 ```sh
 cargo test -p viboceros-smlib --features native --test mesh_boolean -- --nocapture --test-threads=1 > /tmp/mesh-boolean.log 2>&1

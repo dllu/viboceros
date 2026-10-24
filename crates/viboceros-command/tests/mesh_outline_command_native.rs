@@ -1,3 +1,9 @@
+#[allow(dead_code)]
+#[path = "support/frozen_scene.rs"]
+mod frozen_scene;
+#[allow(dead_code)]
+#[path = "../../viboceros-geometry/tests/support/mesh_outline.rs"]
+mod mesh_reference;
 #[path = "support/mesh_outline.rs"]
 #[allow(dead_code)]
 mod native;

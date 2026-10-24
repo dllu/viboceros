@@ -6,6 +6,12 @@ use viboceros_document::{Geometry, ObjectId, SelectionMode};
 #[cfg(test)]
 mod control_polygon_tests;
 mod divide;
+#[cfg(test)]
+#[allow(dead_code)]
+#[path = "../../crates/viboceros-command/tests/support/frozen_scene.rs"]
+mod frozen_scene;
+#[cfg(test)]
+mod mesh_boolean_tests;
 mod mesh_conversion;
 mod mesh_from_lines;
 #[cfg(test)]
@@ -13,6 +19,10 @@ mod mesh_outline_tests;
 mod mesh_patch;
 #[cfg(test)]
 mod mesh_polyline_tests;
+#[cfg(test)]
+#[allow(dead_code)]
+#[path = "../../crates/viboceros-geometry/tests/support/mesh_outline.rs"]
+mod mesh_reference;
 mod modify_radius;
 #[cfg(test)]
 mod planar_mesh_tests;
@@ -168,6 +178,9 @@ impl PendingObjectCommand {
         }
         if self.description.command == "BooleanUnion" {
             return "Select at least two surfaces or polysurfaces, or type options; Enter unions, Esc cancels";
+        }
+        if self.description.command == "MeshBooleanUnion" {
+            return "Select at least two meshes, surfaces or polysurfaces; Enter unions, Esc cancels";
         }
         if self.description.command == "Smooth" {
             return match self.phase {
@@ -761,9 +774,8 @@ impl VibocerosApp {
             | "SubDSphere FitPoints"
             | "PlaneThroughPt"
             | "Sphere FitPoints" => 3,
-            "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" | "LineThroughPt" | "CrvDeviation" => {
-                2
-            }
+            "BooleanUnion" | "MeshBooleanUnion" | "PlanarUnion" | "TweenSurfaces"
+            | "LineThroughPt" | "CrvDeviation" => 2,
             _ => 1,
         };
         let graph_allowed = self.curvature_graph_selection_ids(description.command);
@@ -1166,17 +1178,21 @@ impl VibocerosApp {
                 return true;
             }
             if pending.phase == ObjectPromptPhase::Selecting {
-                if pending.description.command == "BooleanUnion"
-                    && self
-                        .document
-                        .selected_objects()
-                        .filter(|o| pending.description.filter.accepts_object(o))
-                        .count()
-                        == 1
+                if matches!(
+                    pending.description.command,
+                    "BooleanUnion" | "MeshBooleanUnion"
+                ) && self
+                    .document
+                    .selected_objects()
+                    .filter(|o| pending.description.filter.accepts_object(o))
+                    .count()
+                    == 1
                 {
-                    self.push_log(
-                        "Select at least two surfaces or polysurfaces; Esc cancels".into(),
-                    );
+                    self.push_log(if pending.description.command == "MeshBooleanUnion" {
+                        "Select at least two meshes, surfaces or polysurfaces; Esc cancels".into()
+                    } else {
+                        "Select at least two surfaces or polysurfaces; Esc cancels".into()
+                    });
                     return true;
                 }
                 let graph_allowed = self.curvature_graph_selection_ids(pending.description.command);
@@ -1380,12 +1396,14 @@ impl VibocerosApp {
                     self.start_edge_zoom_options(&command);
                 }
                 Err(error) => {
-                    if pending.description.command == "BooleanUnion"
-                        || (pending.description.command == "PlanarMesh"
-                            && matches!(
-                                error,
-                                viboceros_command::CommandError::NoPlanarSurfaceBoundaries
-                            ))
+                    if matches!(
+                        pending.description.command,
+                        "BooleanUnion" | "MeshBooleanUnion"
+                    ) || (pending.description.command == "PlanarMesh"
+                        && matches!(
+                            error,
+                            viboceros_command::CommandError::NoPlanarSurfaceBoundaries
+                        ))
                     {
                         self.object_prompt = None;
                     }

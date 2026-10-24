@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_union_numeric_equals",
+      "case": "boolean_syntax_union_numeric_equals"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_intersection_after_union",
+      "case": "boolean_syntax_intersection_after_union"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_difference_after_union",
+      "case": "boolean_syntax_difference_after_union"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_union_numeric_split",
+      "case": "boolean_syntax_union_numeric_split"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_union_auto",
+      "case": "boolean_syntax_union_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_difference_numeric",
+      "case": "boolean_syntax_difference_numeric"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_intersection_after_difference",
+      "case": "boolean_syntax_intersection_after_difference"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_union_after_difference",
+      "case": "boolean_syntax_union_after_difference"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_union_cancel_numeric",
+      "case": "boolean_syntax_union_cancel_numeric"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_syntax_difference_after_cancel",
+      "case": "boolean_syntax_difference_after_cancel"
+    }
+  ]
+}

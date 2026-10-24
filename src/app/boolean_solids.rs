@@ -1,7 +1,6 @@
 //! Two-phase BooleanIntersection, BooleanDifference and BooleanSplit picking.
 use super::intersect_two_sets::{BooleanOptions, BooleanPromptKind, TwoSetsPrompt};
 use super::*;
-use viboceros_command::ObjectSelectionFilter;
 use viboceros_document::{ObjectId, SelectionMode};
 
 impl VibocerosApp {
@@ -17,6 +16,10 @@ impl VibocerosApp {
             BooleanPromptKind::Difference
         } else if name.eq_ignore_ascii_case("BooleanSplit") {
             BooleanPromptKind::Split
+        } else if name.eq_ignore_ascii_case("MeshBooleanIntersection") {
+            BooleanPromptKind::MeshIntersection("Auto")
+        } else if name.eq_ignore_ascii_case("MeshBooleanDifference") {
+            BooleanPromptKind::MeshDifference("Auto")
         } else {
             return false;
         };
@@ -35,7 +38,7 @@ impl VibocerosApp {
             Ok(Some(p)) => p,
             _ => return false,
         };
-        if kind != BooleanPromptKind::Intersection
+        if (!kind.is_intersection() || kind.mesh_tolerance().is_some())
             && let Err(error) = self.commands.accept_object_selection_input(input)
         {
             self.push_log(format!("Error: {error}"));
@@ -44,10 +47,7 @@ impl VibocerosApp {
         let first = self
             .document
             .objects()
-            .filter(|o| {
-                self.document.is_selected(o.id())
-                    && ObjectSelectionFilter::SurfaceComponents.accepts_object(o)
-            })
+            .filter(|o| self.document.is_selected(o.id()) && kind.filter().accepts_object(o))
             .map(|o| o.id())
             .collect::<Vec<_>>();
         self.cancel_interactive_command(false);
@@ -65,13 +65,23 @@ impl VibocerosApp {
             output_layer: "Current",
             original_selection: vec![],
             boolean: Some(BooleanOptions {
-                kind,
+                kind: kind.with_mesh_tolerance(
+                    description
+                        .choices
+                        .iter()
+                        .find(|o| o.name == "Tolerance")
+                        .map_or("Auto", |o| o.value),
+                ),
                 delete_cutters: description
                     .options
                     .iter()
                     .find(|o| o.name == "DeleteCutters")
                     .is_none_or(|o| o.value),
-                delete_input: description.options[0].value,
+                delete_input: description
+                    .options
+                    .iter()
+                    .find(|o| o.name == "DeleteInput")
+                    .is_none_or(|o| o.value),
                 preselected_first,
             }),
         });
@@ -98,7 +108,15 @@ impl VibocerosApp {
             let picked = self
                 .document
                 .selected_objects()
-                .filter(|o| ObjectSelectionFilter::SurfaceComponents.accepts_object(o))
+                .filter(|o| {
+                    prompt
+                        .boolean
+                        .as_ref()
+                        .unwrap()
+                        .kind
+                        .filter()
+                        .accepts_object(o)
+                })
                 .map(|o| o.id())
                 .filter(|id| {
                     prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Split
@@ -111,7 +129,14 @@ impl VibocerosApp {
             if let Some(first) = &prompt.first {
                 if picked.is_empty()
                     && (first.len() < 2
-                        || prompt.boolean.as_ref().unwrap().kind != BooleanPromptKind::Intersection)
+                        || !prompt.boolean.as_ref().unwrap().kind.is_intersection()
+                        || prompt
+                            .boolean
+                            .as_ref()
+                            .unwrap()
+                            .kind
+                            .mesh_tolerance()
+                            .is_some())
                 {
                     self.push_log(
                         "Select at least one object in the second set; Esc cancels".into(),
@@ -148,7 +173,7 @@ impl VibocerosApp {
                     Err(error) => self.push_log(format!("Error: {error}")),
                 }
             } else if picked.is_empty() {
-                self.push_log("Select at least one surface or polysurface; Esc cancels".into());
+                self.push_log("Select at least one eligible object; Esc cancels".into());
             } else {
                 prompt.first = Some(picked);
                 if prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Split {
@@ -161,7 +186,66 @@ impl VibocerosApp {
             return true;
         }
         let option = normalized.split(['=', ' ']).next().unwrap_or("");
+        if prompt
+            .boolean
+            .as_ref()
+            .unwrap()
+            .kind
+            .mesh_tolerance()
+            .is_some()
+            && (option.eq_ignore_ascii_case("Tolerance")
+                || option.eq_ignore_ascii_case("Auto")
+                || option.eq_ignore_ascii_case("Document")
+                || option.eq_ignore_ascii_case("Zero"))
+        {
+            let value = normalized
+                .split_once('=')
+                .map(|(_, v)| v)
+                .or_else(|| input.split_whitespace().nth(1))
+                .unwrap_or(option)
+                .trim_start_matches('_');
+            let value = if value.eq_ignore_ascii_case("Auto") {
+                Some("Auto")
+            } else if value.eq_ignore_ascii_case("Document") {
+                Some("Document")
+            } else if value.eq_ignore_ascii_case("Zero") {
+                Some("Zero")
+            } else {
+                None
+            };
+            let Some(value) = value else {
+                self.push_log("Tolerance: Auto, Document or Zero".into());
+                self.command_input.clear();
+                return true;
+            };
+            let options = prompt.boolean.as_mut().unwrap();
+            options.kind = options.kind.with_mesh_tolerance(value);
+            if let Err(error) = self
+                .commands
+                .accept_object_selection_input(&options.command_line(true))
+            {
+                self.push_log(format!("Error: {error}"));
+            }
+            self.intersection_prompt = Some(prompt);
+            self.command_input.clear();
+            self.log_intersection_prompt();
+            return true;
+        }
         let cutters = option.eq_ignore_ascii_case("DeleteCutters");
+        if option.eq_ignore_ascii_case("DeleteInput")
+            && prompt
+                .boolean
+                .as_ref()
+                .unwrap()
+                .kind
+                .mesh_tolerance()
+                .is_some()
+            && (!prompt.boolean.as_ref().unwrap().kind.is_difference() || prompt.first.is_none())
+        {
+            self.push_log("DeleteInput is available while selecting difference cutters".into());
+            self.command_input.clear();
+            return true;
+        }
         if option.eq_ignore_ascii_case("DeleteInput")
             || (cutters && prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Difference)
         {
@@ -192,7 +276,7 @@ impl VibocerosApp {
             } else {
                 options.delete_input = value;
             }
-            if options.kind != BooleanPromptKind::Intersection
+            if !options.kind.is_intersection()
                 && let Err(error) = self
                     .commands
                     .accept_object_selection_input(&options.command_line(true))
@@ -261,7 +345,15 @@ impl VibocerosApp {
         let eligible = self
             .document
             .selectable_objects()
-            .filter(|o| ObjectSelectionFilter::SurfaceComponents.accepts_object(o))
+            .filter(|o| {
+                prompt
+                    .boolean
+                    .as_ref()
+                    .unwrap()
+                    .kind
+                    .filter()
+                    .accepts_object(o)
+            })
             .map(|o| o.id())
             .collect::<std::collections::BTreeSet<_>>();
         let mode = if mode == SelectionMode::Replace {

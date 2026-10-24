@@ -709,8 +709,8 @@
     "This SDK record does not qualify command workflows; the separate command record covers scripted numeric options and staged application input. Restricted objects, grips, degenerate-input repair, split method zero/default, coordinates near numeric limits and comparative performance remain unqualified. The binding limits source input to four million vertices and one million faces."
   ],
   "sha256": {
-    "Cargo.lock": "4a4b5de09374005646d1790217675069b8e25e153037bce71fb05bd8c0623252",
-    "crates/viboceros-command/src/lib.rs": "55a266ce7dc71f22ae0c24cae90d99d1e533c615bde459fd41140e728be0c4a9",
+    "Cargo.lock": "4a1ca22689ca4d0419facefe4053471b1a7340f077070450ae13d3f4c95adae7",
+    "crates/viboceros-command/src/lib.rs": "c624706a0d0567882a61e241f40e1d0a3ed53b915278898bb38bf518ad380bd7",
     "crates/viboceros-command/src/triangulate_nonplanar_quads.rs": "65583d5fa9638e713d06fe0f992b1bfc34243d2554a4a32fa6e2c160bf3de2b7",
     "crates/viboceros-command/tests/nonplanar_quad_native.rs": "b664de1aa854bab839dab4f9cd3a2951a9ee48edde3adde5f961b0d65fccea29",
     "crates/viboceros-command/tests/support/mesh_conversion.rs": "59ba61dbaf543aa86ad88524db80b633c17275d5e24239ef99cc5cabe8da14e1",
@@ -730,10 +730,10 @@
     "tools/rhino_oracle/mesh_channel_capture.py": "d9b8ef0ad8ccb9dc63fb91cbf495a59182e4165b1d65f1d611d4070aac0ce41c",
     "tools/rhino_oracle/report_nonplanar_quads.py": "34e5987798eb7a444bb00055490c63a90391424ee7e92088e9ae7fdd5cb5d7fd",
     "tools/rhino_oracle/test_nonplanar_quads.py": "8df3e0b4a69e77b3348da99520e222ab6b1bbc0dc864dadae1155279a2fa6392",
-    "tools/rhino_oracle/qualification_sources.py": "b697ef3b5e95442bd0ca21a5e8f2c64b923048d811841ab3a5b9202bbf5019f1",
-    "tools/rhino_oracle/client.py": "cda2aaeb84f5e2df817e020148104cd8cd457b6a2e5cc10c6287adf7489f680a",
-    "tools/rhino_oracle/rhino_worker.py": "57f5d779a93fe0ca2319b8491af05b16c8d84a8f101a2c3dd47962b999128344",
-    "tools/rhino_oracle/structural_sdk.py": "09009ad7972bedb34a6aa63c74e5198d4f4154bf8a413e575f4912441f733ebc",
+    "tools/rhino_oracle/qualification_sources.py": "b145461f4e9e36814a437bbf79dc9aec752c0d0fa0c8cda0fde15094904bebc9",
+    "tools/rhino_oracle/client.py": "f98c6bd863d9638633cadf15d6e8bedff378aa16a06bb80491c251c3cd37bec5",
+    "tools/rhino_oracle/rhino_worker.py": "1d17f1a48c80b0f8eb01a5e275fe72e6f95323f6c5c83118e15bc55e980baca4",
+    "tools/rhino_oracle/structural_sdk.py": "1ae51578cc46911d759c6d99daaf147acf990eb9d3d209ec4038c2e4f8f1ee14",
     "tools/rhino_oracle/fixtures/nonplanar_quad_conversion.json": "b8abc6e296cf9bb95e61420ea1ecbb8b820a33a2d662fef24cf2d6ccbe0fd95a",
     "tools/rhino_oracle/observations/nonplanar_quad_import_failure.json": "abe11eb7bc32072a839a1660fbcc33d1bddfa284c3c5a6aa4e686b830d3db262",
     "tools/rhino_oracle/observations/nonplanar_quad_import_failure.log": "01635ece842540dbb54f3bd06ce9d9920581567c323b1fe7d4ca5ec2b51cda1f",
@@ -827,6 +827,10 @@
     "crates/viboceros-command/src/mesh_outline.rs": "57832c88465933f091011cb9ed47e0530d7cbb7a48646d1909a1de4cc40cd6a6",
     "crates/viboceros-command/src/mesh_outline/tests.rs": "96897767125df29f62c863ae2716a78c2ecd42651dec20a989ea1652d1dc2489",
     "crates/viboceros-geometry/tests/support/mesh_outline.rs": "a06977e91539f6731a2acc2b2b4cf078e369f2ea7ab99de9e18799ef8f9902f1",
-    "crates/viboceros-command/src/mesh_edit/edge_curves.rs": "b7a59bcb2305a2065b2ef1c1dda3343389b3bd939ec2e39148b5371100379c84"
+    "crates/viboceros-command/src/mesh_edit/edge_curves.rs": "b7a59bcb2305a2065b2ef1c1dda3343389b3bd939ec2e39148b5371100379c84",
+    "crates/viboceros-command/src/mesh_boolean.rs": "ef46438688c2b958b7f429a384e9ed7cd46d0980a1e7c4c1ab1b9fa1a9cb4dd6",
+    "crates/viboceros-command/src/mesh_boolean/arguments.rs": "71adf6e0b116303cb05596bb9ea175fd82b75506c76d54665c2d0b002d3e10bd",
+    "crates/viboceros-command/src/mesh_boolean/execute.rs": "c674acb8932487a70d76d8304380cd60877ec302beee26f3be5c9eca08b9914a",
+    "crates/viboceros-command/src/mesh_boolean/geometry.rs": "e8fa7b0cf43a7309859cec83b60ba877aae6ff506f713e4fd5ed1b2b0e89a708"
   }
 }

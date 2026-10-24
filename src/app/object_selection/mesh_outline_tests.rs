@@ -1,4 +1,5 @@
 use super::*;
+use super::{frozen_scene, mesh_reference};
 use crate::app::tests::test_app;
 #[allow(dead_code)]
 #[path = "../../../crates/viboceros-command/tests/support/mesh_outline.rs"]

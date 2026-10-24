@@ -104,12 +104,12 @@ def summarize(text):
         rows[name] = dict(row, geometry_matches=matched, maximum_sampled_boundary_deviation=distance)
     if set(rows) != set(expected) or gaps != GAPS:
         raise ValueError('mesh Boolean measurement coverage or gap set differs')
-    return dict(scope='native polygon Boolean backend; command/getter lifecycle pending',
+    return dict(scope='native polygon Boolean backend; command/getter evidence is qualified separately',
                 native_version=version, epsilon=EPSILON, replayed=len(rows),
                 matched=len(rows)-len(gaps), compatibility_gaps=sorted(gaps),
                 maximum_qualified_sampled_deviation=maximum,
                 comparison='area, oriented volume and bidirectional surface samples at triangle vertices, edge midpoints and centroids; face tessellation may differ',
-                pending=['command selection, attributes and history', 'coincident and face-contact native parity',
+                pending=['coincident and face-contact native parity',
                          'curved surface meshing, extreme scales and broader native mesh coverage'],
                 geometry=[rows[name] for name in sorted(rows)],
                 sha256={p: hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in sorted(paths)})

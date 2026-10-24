@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_memory_union_literal",
+      "case": "boolean_memory_union_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_memory_intersection_after_union",
+      "case": "boolean_memory_intersection_after_union"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_memory_difference_after_union",
+      "case": "boolean_memory_difference_after_union"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_memory_difference_cancel_keep",
+      "case": "boolean_memory_difference_cancel_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_memory_intersection_auto",
+      "case": "boolean_memory_intersection_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_memory_union_after_intersection",
+      "case": "boolean_memory_union_after_intersection"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_memory_union_cancel_literal",
+      "case": "boolean_memory_union_cancel_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_memory_difference_after_cancel",
+      "case": "boolean_memory_difference_after_cancel"
+    }
+  ]
+}

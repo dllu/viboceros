@@ -1,5 +1,6 @@
 // Polygon Boolean adapter. Inputs are copied into owned SMLib topology.
 #include <SmApiPolygons.h>
+#include <SmAttribute.h>
 #include <array>
 #include <map>
 
@@ -42,6 +43,24 @@ public:
     ~OwnedMerge() override {
         delete m_vPI.GetBrep();
         delete m_vPI.GetOther();
+    }
+    bool has_interaction() const {
+        SmTArray<SmPolyEdge *> first_edges, second_edges;
+        m_vPI.GetCommonEdges(first_edges, second_edges);
+        if (first_edges.GetSize()) return true;
+        SmTArray<SmPolyVertex *> first_vertices, second_vertices;
+        m_vPI.GetCommonVertices(first_vertices, second_vertices);
+        if (first_vertices.GetSize()) return true;
+        // A contained shell has no intersection edges. Classification marks
+        // the faces that union would remove, without deleting either operand.
+        for (auto *mesh : {m_vPI.GetBrep(), m_vPI.GetOther()}) {
+            require(mesh, "Missing classified polygon Boolean operand");
+            SmTArray<SmPolyFace *> faces;
+            mesh->GetPolyFaces(faces);
+            for (ULONG i = 0; i < faces.GetSize(); ++i)
+                if (faces[i]->FindAttribute(SM_AI_BOOLEAN_DELETE)) return true;
+        }
+        return false;
     }
 };
 
@@ -99,5 +118,25 @@ extern "C" int vb_mesh_boolean(const double *first, size_t first_count,
         check(owner.ManifoldBoolean(kind, result), "polygon Boolean");
         require(result, "Missing polygon Boolean result");
         *out = vb_mesh_boolean_detail::export_mesh(*result).release();
+    });
+}
+
+extern "C" int vb_mesh_boolean_interaction(const double *first, size_t first_count,
+    const uint32_t *first_faces, size_t first_face_count, const double *second,
+    size_t second_count, const uint32_t *second_faces, size_t second_face_count,
+    double tolerance, int *interacts, char *error, size_t capacity) {
+    if (interacts) *interacts = 0;
+    return guarded(error, capacity, [&] {
+        require(interacts && std::isfinite(tolerance) && tolerance > 0.,
+            "Invalid polygon Boolean interaction tolerance");
+        auto a = vb_mesh_boolean_detail::import_mesh(first, first_count, first_faces, first_face_count, tolerance);
+        auto b = vb_mesh_boolean_detail::import_mesh(second, second_count, second_faces, second_face_count, tolerance);
+        vb_mesh_boolean_detail::OwnedMerge owner(a.get(), b.get(), tolerance);
+        a.release();
+        b.release();
+        owner.SetImprintAndClassify(TRUE);
+        SmPolyBrep *result = nullptr;
+        check(owner.ManifoldBoolean(SM_PBO_UNION, result), "classify polygon Boolean interaction");
+        *interacts = owner.has_interaction() ? 1 : 0;
     });
 }

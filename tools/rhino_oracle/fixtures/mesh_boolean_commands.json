@@ -1,0 +1,176 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_overlap_pre",
+      "case": "union_overlap_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_disjoint_pre",
+      "case": "union_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_contained_pre",
+      "case": "union_contained_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_identical_pre",
+      "case": "union_identical_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_face_touch_pre",
+      "case": "union_face_touch_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_overlap_post",
+      "case": "union_overlap_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_keep",
+      "case": "union_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_reset",
+      "case": "union_reset"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_cancel",
+      "case": "union_cancel"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_overlap_pre",
+      "case": "intersection_overlap_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_disjoint_pre",
+      "case": "intersection_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_contained_pre",
+      "case": "intersection_contained_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_identical_pre",
+      "case": "intersection_identical_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_face_touch_pre",
+      "case": "intersection_face_touch_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_overlap_post",
+      "case": "intersection_overlap_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_keep",
+      "case": "intersection_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_reset",
+      "case": "intersection_reset"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "intersection_cancel",
+      "case": "intersection_cancel"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_overlap_pre",
+      "case": "difference_overlap_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_disjoint_pre",
+      "case": "difference_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_contained_pre",
+      "case": "difference_contained_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_identical_pre",
+      "case": "difference_identical_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_face_touch_pre",
+      "case": "difference_face_touch_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_overlap_post",
+      "case": "difference_overlap_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_keep",
+      "case": "difference_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_reset",
+      "case": "difference_reset"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_cancel",
+      "case": "difference_cancel"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_three",
+      "case": "union_three"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_mixed_point",
+      "case": "union_mixed_point"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_brep_boxes",
+      "case": "union_brep_boxes"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_one",
+      "case": "union_one"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "union_identical_normals",
+      "case": "union_identical_normals"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "difference_two_cutters",
+      "case": "difference_two_cutters"
+    }
+  ]
+}

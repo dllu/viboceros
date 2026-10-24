@@ -227,8 +227,8 @@
     "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/structural_sdk.py": "09009ad7972bedb34a6aa63c74e5198d4f4154bf8a413e575f4912441f733ebc",
-    "tools/rhino_oracle/rhino_worker.py": "57f5d779a93fe0ca2319b8491af05b16c8d84a8f101a2c3dd47962b999128344",
+    "tools/rhino_oracle/structural_sdk.py": "1ae51578cc46911d759c6d99daaf147acf990eb9d3d209ec4038c2e4f8f1ee14",
+    "tools/rhino_oracle/rhino_worker.py": "1d17f1a48c80b0f8eb01a5e275fe72e6f95323f6c5c83118e15bc55e980baca4",
     "tools/rhino_oracle/report_extrusions.py": "5c5a1296894ca353b0f7e900769dd65aaff9d1cfe2b1aecc80d8cae336b444be",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
     "tools/rhino_oracle/fixtures/tosubd_extrusions.json": "00f7b598aea12033c12945d2a9b1566e661e68e2bbd757c2c35bba49b64d16fd",
@@ -247,7 +247,7 @@
     "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_circle_shear_00.3dm": "9c9c956827aa77b5f9b62a56ff4ed2556c7eef40b4da59144ac023be4fd7a84f",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_000.3dm": "de42c2eee5bd5370ce9693bc05060dc325ef754346e9dd7461ee7c706d39c355",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_100.3dm": "0361293bbb2dc587f5e61d31f68d15732a52e584d23360b44a9964b13a52527a",
-    "tools/rhino_oracle/qualification_sources.py": "b697ef3b5e95442bd0ca21a5e8f2c64b923048d811841ab3a5b9202bbf5019f1",
+    "tools/rhino_oracle/qualification_sources.py": "b145461f4e9e36814a437bbf79dc9aec752c0d0fa0c8cda0fde15094904bebc9",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5",
     "crates/viboceros-io/src/three_dm/mesh_ngon.rs": "a8b04d6c4a5b62ee1c2caa3accc7cdec72a30eeaffd1ce6d31f4fb4aceb22a2a"
   }

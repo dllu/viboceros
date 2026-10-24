@@ -1,5 +1,8 @@
 # Third-party code
 
+- Mesh Boolean component lookup uses the Cargo dependency `rstar` 0.13.0 under
+  MIT OR Apache-2.0; see the [upstream project](https://github.com/georust/rstar).
+
 - Mesh outline coverage uses the Cargo dependency `i_overlay` 9.1.0 under
   MIT OR Apache-2.0. Its polygon arrangement handles projected overlaps and
   holes; see the [upstream project](https://github.com/iShape-Rust/iOverlay).

@@ -10,7 +10,7 @@ use viboceros_geometry::{
 };
 mod brep;
 mod mesh_boolean;
-pub use mesh_boolean::mesh_boolean;
+pub use mesh_boolean::{mesh_boolean, mesh_boolean_interaction};
 mod construction;
 mod edge_blends;
 mod shell;

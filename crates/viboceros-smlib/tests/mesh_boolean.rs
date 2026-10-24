@@ -3,6 +3,56 @@ use serde_json::{Value, json};
 use viboceros_geometry::{MeshFace, Point3, Tolerance, TriangleMesh};
 use viboceros_smlib::{BooleanOperation, mesh_boolean};
 
+#[test]
+fn interaction_classification_includes_contacts_and_containment() {
+    let capture: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/mesh_boolean_sdk.json"
+    ))
+    .unwrap();
+    for row in capture["results"].as_array().unwrap() {
+        if row["value"]["input"]["operation"] != "union" {
+            continue;
+        }
+        let input = &row["value"]["input"]["meshes"];
+        let a = reference::mesh(&input[0]);
+        let b = reference::mesh(&input[1]);
+        let before = (a.clone(), b.clone());
+        let actual = viboceros_smlib::mesh_boolean_interaction(&a, &b, Tolerance::DEFAULT).unwrap();
+        assert_eq!(actual, row["id"] != "disjoint_union", "{}", row["id"]);
+        assert_eq!((&a, &b), (&before.0, &before.1));
+    }
+}
+
+#[test]
+fn interaction_rejects_disjoint_solids_with_overlapping_axis_bounds() {
+    let strip = |offset: f64| {
+        let source = box_mesh([0., 0., 0.]);
+        let vertices = source
+            .vertices()
+            .iter()
+            .map(|p| {
+                let [u, y, z] = p.to_array();
+                let v = y / 15. + offset;
+                Point3::try_new(
+                    (u - v) / std::f64::consts::SQRT_2,
+                    (u + v) / std::f64::consts::SQRT_2,
+                    z / 2.,
+                )
+                .unwrap()
+            })
+            .collect();
+        TriangleMesh::try_from_face_records(vertices, source.faces().to_vec()).unwrap()
+    };
+    let a = strip(0.);
+    let b = strip(0.5);
+    let a_min = a.bounds().min().to_array();
+    let a_max = a.bounds().max().to_array();
+    let b_min = b.bounds().min().to_array();
+    let b_max = b.bounds().max().to_array();
+    assert!((0..3).all(|i| a_min[i] < b_max[i] && b_min[i] < a_max[i]));
+    assert!(!viboceros_smlib::mesh_boolean_interaction(&a, &b, Tolerance::DEFAULT).unwrap());
+}
+
 #[allow(dead_code)]
 #[path = "../../viboceros-geometry/tests/support/mesh_outline.rs"]
 mod reference;

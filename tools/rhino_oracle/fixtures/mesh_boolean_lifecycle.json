@@ -1,0 +1,216 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_overlap_pre",
+      "case": "boolean_lifecycle_union_overlap_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_disjoint_pre",
+      "case": "boolean_lifecycle_union_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_contained_pre",
+      "case": "boolean_lifecycle_union_contained_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_identical_pre",
+      "case": "boolean_lifecycle_union_identical_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_face_touch_pre",
+      "case": "boolean_lifecycle_union_face_touch_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_overlap_post",
+      "case": "boolean_lifecycle_union_overlap_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_cancel",
+      "case": "boolean_lifecycle_union_cancel"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_three",
+      "case": "boolean_lifecycle_union_three"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_mixed_point",
+      "case": "boolean_lifecycle_union_mixed_point"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_brep_boxes",
+      "case": "boolean_lifecycle_union_brep_boxes"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_one",
+      "case": "boolean_lifecycle_union_one"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_identical_normals",
+      "case": "boolean_lifecycle_union_identical_normals"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_intersection_overlap_pre",
+      "case": "boolean_lifecycle_intersection_overlap_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_intersection_disjoint_pre",
+      "case": "boolean_lifecycle_intersection_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_intersection_contained_pre",
+      "case": "boolean_lifecycle_intersection_contained_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_intersection_identical_pre",
+      "case": "boolean_lifecycle_intersection_identical_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_intersection_face_touch_pre",
+      "case": "boolean_lifecycle_intersection_face_touch_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_intersection_overlap_post",
+      "case": "boolean_lifecycle_intersection_overlap_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_overlap_pre",
+      "case": "boolean_lifecycle_difference_overlap_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_disjoint_pre",
+      "case": "boolean_lifecycle_difference_disjoint_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_contained_pre",
+      "case": "boolean_lifecycle_difference_contained_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_identical_pre",
+      "case": "boolean_lifecycle_difference_identical_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_face_touch_pre",
+      "case": "boolean_lifecycle_difference_face_touch_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_overlap_post",
+      "case": "boolean_lifecycle_difference_overlap_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_reverse_post",
+      "case": "boolean_lifecycle_union_reverse_post"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_reverse_pre",
+      "case": "boolean_lifecycle_union_reverse_pre"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_partial_components",
+      "case": "boolean_lifecycle_union_partial_components"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_disjoint_first",
+      "case": "boolean_lifecycle_union_disjoint_first"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_tolerance_literal",
+      "case": "boolean_lifecycle_union_tolerance_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_union_tolerance_auto",
+      "case": "boolean_lifecycle_union_tolerance_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_two_cutters",
+      "case": "boolean_lifecycle_difference_two_cutters"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_keep",
+      "case": "boolean_lifecycle_difference_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_after_keep",
+      "case": "boolean_lifecycle_difference_after_keep"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_reset",
+      "case": "boolean_lifecycle_difference_reset"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_after_reset",
+      "case": "boolean_lifecycle_difference_after_reset"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_cancel_second",
+      "case": "boolean_lifecycle_difference_cancel_second"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_after_cancel",
+      "case": "boolean_lifecycle_difference_after_cancel"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_target_inside_cutter",
+      "case": "boolean_lifecycle_difference_target_inside_cutter"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_difference_through_hole",
+      "case": "boolean_lifecycle_difference_through_hole"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_intersection_cancel_second",
+      "case": "boolean_lifecycle_intersection_cancel_second"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_lifecycle_intersection_first_many",
+      "case": "boolean_lifecycle_intersection_first_many"
+    }
+  ]
+}

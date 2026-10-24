@@ -26,6 +26,7 @@ pub mod edge_analysis;
 pub mod face_create;
 pub mod flow;
 mod iplane;
+mod mesh_boolean;
 mod mesh_component_unweld;
 mod mesh_component_weld;
 pub mod mesh_from_lines;
@@ -1381,6 +1382,9 @@ impl CommandRegistry {
         registry
             .register(mesh_outline::MeshOutlineCommand)
             .expect("unique built-in command");
+        for command in mesh_boolean::MeshBooleanCommand::all() {
+            registry.register(command).expect("unique built-in command");
+        }
         registry
             .register(select_uv_rows::SelectUVCommand::default())
             .unwrap();
@@ -13179,6 +13183,12 @@ pub enum CommandError {
     FlowTargetSurfaceNotSurface,
     #[error("Silhouette requires the native kernel; build with --features native-smlib")]
     SilhouetteRequiresNativeKernel,
+    #[error("Mesh Boolean commands require the native kernel; build with --features native-smlib")]
+    MeshBooleanRequiresNativeKernel,
+    #[error("Mesh Boolean commands require meshes, surfaces or polysurfaces in the requested sets")]
+    MeshBooleanRequiresObjects,
+    #[error("Mesh Boolean operation produced no result")]
+    MeshBooleanNoResult,
     #[error("ExtrudeCrvTapered requires the native kernel; build with --features native-smlib")]
     TaperedExtrusionRequiresNativeKernel,
     #[error("ExtrudeSrf requires the native kernel; build with --features native-smlib")]

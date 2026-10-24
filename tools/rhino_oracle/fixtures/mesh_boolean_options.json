@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_0_auto",
+      "case": "boolean_options_gap_0_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_0_literal",
+      "case": "boolean_options_gap_0_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_1_auto",
+      "case": "boolean_options_gap_1_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_1_literal",
+      "case": "boolean_options_gap_1_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_2_auto",
+      "case": "boolean_options_gap_2_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_2_literal",
+      "case": "boolean_options_gap_2_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_3_auto",
+      "case": "boolean_options_gap_3_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_3_literal",
+      "case": "boolean_options_gap_3_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_4_auto",
+      "case": "boolean_options_gap_4_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_gap_4_literal",
+      "case": "boolean_options_gap_4_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_intersection_auto",
+      "case": "boolean_options_intersection_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_intersection_literal",
+      "case": "boolean_options_intersection_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_difference_auto",
+      "case": "boolean_options_difference_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_difference_literal",
+      "case": "boolean_options_difference_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_document_0_auto",
+      "case": "boolean_options_document_0_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_document_0_literal",
+      "case": "boolean_options_document_0_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_document_1_auto",
+      "case": "boolean_options_document_1_auto"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_document_1_literal",
+      "case": "boolean_options_document_1_literal"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_difference_disjoint_cutter",
+      "case": "boolean_options_difference_disjoint_cutter"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_intersection_disconnected",
+      "case": "boolean_options_intersection_disconnected"
+    },
+    {
+      "op": "mesh_boolean_command",
+      "id": "boolean_options_difference_sever",
+      "case": "boolean_options_difference_sever"
+    }
+  ]
+}

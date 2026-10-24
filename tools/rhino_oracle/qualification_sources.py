@@ -3,6 +3,8 @@
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
+    'src/app/object_selection/mesh_boolean_tests.rs',
+    'crates/viboceros-command/tests/support/mesh_boolean.rs',
     'src/app/object_selection/mesh_outline_tests.rs',
     'crates/viboceros-command/tests/support/mesh_outline.rs',
     'src/viewport/scene.rs',
@@ -161,6 +163,10 @@ def with_shared_sources(paths):
                          'src/viewport/insert_point.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
+            'crates/viboceros-command/src/mesh_boolean.rs',
+            'crates/viboceros-command/src/mesh_boolean/arguments.rs',
+            'crates/viboceros-command/src/mesh_boolean/execute.rs',
+            'crates/viboceros-command/src/mesh_boolean/geometry.rs',
             'crates/viboceros-command/src/mesh_outline.rs',
             'crates/viboceros-command/src/mesh_outline/tests.rs',
             'crates/viboceros-command/src/mesh_seams.rs',
@@ -224,5 +230,8 @@ def with_shared_sources(paths):
         ])
     if 'crates/viboceros-command/tests/support/insert_point.rs' in expanded:
         expanded.append('crates/viboceros-command/tests/support/insert_point/mesh.rs')
+    if any(p in expanded for p in ['crates/viboceros-command/tests/support/mesh_outline.rs',
+                                    'crates/viboceros-command/tests/support/mesh_boolean.rs']):
+        expanded.append('crates/viboceros-command/tests/support/frozen_scene.rs')
     expanded.append('tools/rhino_oracle/qualification_sources.py')
     return list(dict.fromkeys(expanded))
