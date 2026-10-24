@@ -9,6 +9,17 @@ extern "C" {
 typedef struct VbSolid VbSolid;
 typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
+typedef struct VbMeshSplit VbMeshSplit;
+typedef struct VbMeshSplitCutter {
+    const double *points; size_t point_count;
+    const uint32_t *faces; size_t face_count;
+} VbMeshSplitCutter;
+int vb_mesh_split(const double *first,size_t first_count,const uint32_t *first_faces,size_t first_face_count,
+    const VbMeshSplitCutter *cutters,size_t cutter_count,const double *lines,size_t line_count,
+    double tolerance,VbMeshSplit **out,char *error,size_t capacity);
+size_t vb_mesh_split_count(const VbMeshSplit *p);
+int vb_mesh_split_take(VbMeshSplit *p,size_t index,VbMesh **out);
+void vb_mesh_split_free(VbMeshSplit *p);
 typedef struct VbMeshIntersections VbMeshIntersections;
 int vb_mesh_self_intersections(const double *points, size_t point_count,
     const uint32_t *triangles, size_t face_count, double tolerance,

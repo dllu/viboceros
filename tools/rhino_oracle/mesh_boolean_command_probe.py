@@ -26,6 +26,8 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
     def make(data):
         if data['kind'] == 'point':
             return G.Point(G.Point3d(*data['point']))
+        if data['kind'] == 'polyline':
+            return G.PolylineCurve([G.Point3d(*p) for p in data['points']])
         if data['kind'] == 'brep_box':
             points = [G.Point3d(*p) for p in data['vertices']]
             return G.Brep.CreateFromBox(G.BoundingBox(points))
@@ -50,7 +52,12 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
                        color=[int(a.ObjectColor.R), int(a.ObjectColor.G), int(a.ObjectColor.B)],
                        color_source=int(a.ColorSource), crc=int(g.DataCRC(0)))
             if isinstance(g, G.Mesh):
-                row.update(mesh=host['_polygon_mesh_value'](g), vertex_normals=int(g.Normals.Count),
+                if case.get('capture_mesh_split_sdk'):
+                    from mesh_split_sdk import mesh_value
+                    mesh_data = mesh_value(g,host)
+                else:
+                    mesh_data = host['_polygon_mesh_value'](g)
+                row.update(mesh=mesh_data, vertex_normals=int(g.Normals.Count),
                            face_normals=int(g.FaceNormals.Count), closed=bool(g.IsClosed))
             elif isinstance(g, G.Point):
                 row['point'] = xyz(g.Location)
@@ -131,6 +138,10 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
             from mesh_intersect_sdk import capture
             intersection_sdk = capture(geometry,host,doc.ModelAbsoluteTolerance*float(
                 G.Intersect.Intersection.MeshIntersectionsTolerancesCoefficient))
+        split_sdk = None
+        if case.get('capture_mesh_split_sdk'):
+            from mesh_split_sdk import capture
+            split_sdk = capture(geometry,case,host)
         macro = '_-'+name+' '+case.get('arguments', '')
         if case.get('cancel'):
             macro += ' _Cancel'
@@ -165,6 +176,7 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
                     tolerance_policy=dict(zero=float(R.RhinoMath.ZeroTolerance),
                         coefficient=float(G.Intersect.Intersection.MeshIntersectionsTolerancesCoefficient)))
         if intersection_sdk is not None:result['intersection_sdk']=intersection_sdk
+        if split_sdk is not None:result['split_sdk']=split_sdk
         return result, 0
     finally:
         doc.ModelAbsoluteTolerance = old_tolerance

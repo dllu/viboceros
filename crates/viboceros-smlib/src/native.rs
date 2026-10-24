@@ -11,6 +11,8 @@ use viboceros_geometry::{
 mod brep;
 mod mesh_boolean;
 pub use mesh_boolean::{mesh_boolean, mesh_boolean_interaction};
+mod mesh_split;
+pub use mesh_split::mesh_split;
 mod mesh_intersections;
 pub use mesh_intersections::{MeshIntersections, mesh_intersections, mesh_self_intersections};
 mod construction;

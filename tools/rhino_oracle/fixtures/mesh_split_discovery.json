@@ -1,0 +1,136 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_box_plane_post",
+      "case": "mesh_split_box_plane_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_box_plane_pre",
+      "case": "mesh_split_box_plane_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_open_sheets_post",
+      "case": "mesh_split_open_sheets_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_open_sheets_pre",
+      "case": "mesh_split_open_sheets_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_disjoint_post",
+      "case": "mesh_split_disjoint_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_disjoint_pre",
+      "case": "mesh_split_disjoint_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_closed_cutter_post",
+      "case": "mesh_split_closed_cutter_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_closed_cutter_pre",
+      "case": "mesh_split_closed_cutter_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_coplanar_post",
+      "case": "mesh_split_coplanar_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_coplanar_pre",
+      "case": "mesh_split_coplanar_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_identical_sheet_post",
+      "case": "mesh_split_identical_sheet_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_identical_sheet_pre",
+      "case": "mesh_split_identical_sheet_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_face_contact_post",
+      "case": "mesh_split_face_contact_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_face_contact_pre",
+      "case": "mesh_split_face_contact_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_partial_cut_post",
+      "case": "mesh_split_partial_cut_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_partial_cut_pre",
+      "case": "mesh_split_partial_cut_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_brep_cutter_post",
+      "case": "mesh_split_brep_cutter_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_brep_cutter_pre",
+      "case": "mesh_split_brep_cutter_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_curve_cutter_post",
+      "case": "mesh_split_curve_cutter_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_curve_cutter_pre",
+      "case": "mesh_split_curve_cutter_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_two_cutters",
+      "case": "mesh_split_two_cutters"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_two_targets",
+      "case": "mesh_split_two_targets"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_disconnected",
+      "case": "mesh_split_disconnected"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_cancel_first",
+      "case": "mesh_split_cancel_first"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_cancel_second",
+      "case": "mesh_split_cancel_second"
+    }
+  ]
+}

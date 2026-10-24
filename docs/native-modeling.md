@@ -7,6 +7,7 @@ These pages record integration details and qualification limits. Start with
 [USD BRep integration](usd-brep.md) and [current limitations](usd-brep-limitations.md).
 
 - [native B-rep modeling](smlib-import.md)
+- [Open mesh partitions and native comparison evidence](mesh-split-kernel.md)
 - [paired native isocurves](native-isocurve-pairs.md)
 - [original parent UV charts](fillet-parent-charts.md)
 - [Automatic surface domains](automatic-surface-domains.md)

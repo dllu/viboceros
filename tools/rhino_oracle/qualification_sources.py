@@ -175,7 +175,9 @@ def with_shared_sources(paths):
                          'crates/viboceros-smlib/src/native/mesh_intersections/coplanar.rs',
                          'crates/viboceros-smlib/src/native/mesh_intersections/coplanar/contacts.rs',
                          'crates/viboceros-smlib/src/native/mesh_intersections/coplanar/self_intersection.rs',
-                         'crates/viboceros-smlib/native/mesh_intersections.h'])
+                         'crates/viboceros-smlib/native/mesh_intersections.h',
+                         'crates/viboceros-smlib/native/mesh_split.h',
+                         'crates/viboceros-smlib/src/native/mesh_split.rs'])
         expanded.append('crates/viboceros-smlib/native/mesh_intersection_origins.h')
     if 'crates/viboceros-document/src/lib.rs' in expanded:
         expanded.extend(['crates/viboceros-document/src/object_geometry.rs',
