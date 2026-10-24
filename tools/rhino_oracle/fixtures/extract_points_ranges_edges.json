@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_box_0_forward_points",
+      "case": "range_edge_brep_box_0_forward_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_box_0_forward_pointcloud",
+      "case": "range_edge_brep_box_0_forward_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_surface_0_forward_points",
+      "case": "range_edge_brep_surface_0_forward_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_surface_0_forward_pointcloud",
+      "case": "range_edge_brep_surface_0_forward_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_surface_2_wrap_points",
+      "case": "range_edge_brep_surface_2_wrap_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_surface_2_wrap_pointcloud",
+      "case": "range_edge_brep_surface_2_wrap_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_trimmed_0_forward_points",
+      "case": "range_edge_brep_trimmed_0_forward_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_trimmed_0_forward_pointcloud",
+      "case": "range_edge_brep_trimmed_0_forward_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_trimmed_2_forward_points",
+      "case": "range_edge_brep_trimmed_2_forward_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_trimmed_2_forward_pointcloud",
+      "case": "range_edge_brep_trimmed_2_forward_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_cylinder_0_forward_points",
+      "case": "range_edge_brep_cylinder_0_forward_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_cylinder_0_forward_pointcloud",
+      "case": "range_edge_brep_cylinder_0_forward_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_cylinder_0_wrap_points",
+      "case": "range_edge_brep_cylinder_0_wrap_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_cylinder_0_wrap_pointcloud",
+      "case": "range_edge_brep_cylinder_0_wrap_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_periodic_joined_0_forward_points",
+      "case": "range_edge_brep_periodic_joined_0_forward_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_edge_brep_periodic_joined_0_forward_pointcloud",
+      "case": "range_edge_brep_periodic_joined_0_forward_pointcloud"
+    }
+  ]
+}

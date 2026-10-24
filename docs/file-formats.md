@@ -136,10 +136,13 @@ evaluation and endpoint-editing behavior; they are not silently converted to NUR
 The bridge shares a versioned, validated binary codec
 for B-reps and polycurves, checks payload sizes before allocation, and rejects
 malformed or trailing data. The private typed polycurve payload is version 3 and
-the B-rep payload is version 2. Both retain explicit rational storage for 3D NURBS
+the B-rep payload is version 3. Both retain explicit rational storage for 3D NURBS
 with unit weights. Readers accept earlier payloads, inferring storage from weights
 when the flag is absent. These are bridge versions, independent of the 3dm archive
-version. See [nested rational storage](nested-rational-3dm.md) for independent
+version. B-rep version 3 also retains analytic arc edge
+provenance for native parameterization and temporary curve controls; the exact
+NURBS edge data remains available to the geometry kernel. See [temporary curve
+portions](commands/extract-point-ranges.md) and [nested rational storage](nested-rational-3dm.md) for independent
 Rhino source and readback evidence. The bridge does not fit curves or average endpoints.
 Free NURBS curves with internal full-order knots are decomposed into valid native
 pieces before export. Connected pieces become PolyCurves; positional gaps produce

@@ -2,12 +2,25 @@
 from copy import deepcopy
 import json
 import unittest
+from unittest.mock import patch
 from .report_extract_point_ranges import ROOT,native_ranges,summarize
 
 class ExtractPointRangeTests(unittest.TestCase):
+    def test_edge_witness_rejects_construction_plane_input_and_wrong_endpoints(self):
+        version,rows,paths=native_ranges()
+        identifier='range_form_brep_cylinder_forward_points'
+        for field in ['world_coordinates','endpoint','curve_type']:
+            changed=deepcopy(rows)
+            trace=changed[identifier]['getter']
+            if field=='world_coordinates':trace[field]=False
+            elif field=='endpoint':trace['points'][0][1][0]+=1.
+            else:trace[field]='NurbsCurve'
+            with self.subTest(field=field),patch('tools.rhino_oracle.report_extract_point_ranges.native',return_value=(version,changed,paths)),self.assertRaises(ValueError):
+                native_ranges()
+
     def test_native_range_receipts_source_archives_and_parameter_inputs(self):
         _,rows,_=native_ranges()
-        self.assertEqual(len(rows),26)
+        self.assertEqual(len(rows),54)
         for row in rows.values():
             self.assertTrue(row['success'])
             self.assertFalse(any(o['selected'] for o in row['redo'] if o['source'] is None))

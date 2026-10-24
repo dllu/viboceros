@@ -106,11 +106,12 @@ impl VibocerosApp {
                 return true;
             }
             let result = (|| -> Result<_, String> {
-                if prompt.uv_subcurves.ranges.iter().any(|r| {
-                    self.document
-                        .object(r.object)
-                        .is_none_or(|o| o.geometry_snapshot() != &r.source)
-                }) {
+                if prompt
+                    .uv_subcurves
+                    .ranges
+                    .iter()
+                    .any(|r| !r.current(&self.document))
+                {
                     return Err(if prompt.name() == "ExtractPt" {
                         viboceros_command::CommandError::SubcurveInputStale
                     } else {

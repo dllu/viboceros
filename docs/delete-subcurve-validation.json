@@ -50,7 +50,6 @@
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "eb910b4590809896a03af2e1dd5f682575aaccf4c8e5282ae777690629f3c75e",
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "60963b67791f3385ac7df323152caf4c93ddbd5d117beb421b359af0954fcb0e",
     "src/app.rs": "3d617544b90f1f509d73d9c51ffa9804b4f87daa911f351780c6186fda84a997",
-    "src/app/subcurve_prompt.rs": "5648a36ab92293f77c07e89e4f8b57dba6380809e76234a92683b54f719c9695",
     "src/app/tests/delete_subcurve.rs": "0fe51af014efbfbc236e53996a24a474a5fb64b99bc9d65818a131c120d0c807",
     "src/app/uv_subcurve_input.rs": "8f0cd39322368f751f2e9878ba4de6efa669c21a95447f5d7a8356cbcbac1dea",
     "tools/rhino_oracle/delete_subcurve_probe.py": "7781bb903e5b2ed3a124dcbc76615afd6ff3c96c8d93e90fd5593c6b98bf1661",
@@ -172,5 +171,8 @@
       "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "source_scope": "final source"
     }
-  ]
+  ],
+  "source_git_sha256": {
+    "6b7d4ea5422a7c3a8e8f565f133ea0d22fd97c6a:src/app/subcurve_prompt.rs": "5648a36ab92293f77c07e89e4f8b57dba6380809e76234a92683b54f719c9695"
+  }
 }

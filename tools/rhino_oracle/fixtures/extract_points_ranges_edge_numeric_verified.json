@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "range_numeric_verified_brep_cylinder_points",
+      "case": "range_numeric_verified_brep_cylinder_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_numeric_verified_brep_cylinder_pointcloud",
+      "case": "range_numeric_verified_brep_cylinder_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_numeric_verified_brep_nurbs_cylinder_points",
+      "case": "range_numeric_verified_brep_nurbs_cylinder_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_numeric_verified_brep_nurbs_cylinder_pointcloud",
+      "case": "range_numeric_verified_brep_nurbs_cylinder_pointcloud"
+    }
+  ]
+}

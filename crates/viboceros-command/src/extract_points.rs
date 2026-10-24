@@ -9,7 +9,7 @@ use options::{ExtractPointOptions, ExtractPointOutput, ExtractPointOutputLayer};
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud] [Component=uuid,Vertex|Edge|Face,index] [SubDLocation=Surface|ControlNet] [SubCrv=uuid,start,end]";
+const USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud] [Component=uuid,Vertex|Edge|Face,index] [SubDLocation=Surface|ControlNet] [SubCrv=uuid,start,end|uuid,Edge|EdgeWrap,index,start,end]";
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 
 pub(super) struct ExtractPtCommand;

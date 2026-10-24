@@ -55,10 +55,11 @@ fn brep() -> Brep {
 }
 fn brep_flags(bytes: &[u8]) -> Vec<usize> {
     let mut position = 36 + count(bytes, 12) * 32;
+    let version = u32::from_le_bytes(bytes[8..12].try_into().unwrap());
     (0..count(bytes, 20))
         .map(|_| {
             let flag = flag_after_curve(bytes, position + 24);
-            position = flag + 1;
+            position = flag + if version >= 3 { 2 } else { 1 };
             flag
         })
         .collect()
@@ -78,7 +79,17 @@ fn old_polycurve_versions_and_brep_v1_remain_readable_on_both_sides() {
         assert_eq!(native(OBJECT_POLYCURVE, bytes), (1, 1));
     }
     let b = brep();
-    let mut v1 = three_dm_geometry::encode_brep(&b).unwrap();
+    let mut v2 = three_dm_geometry::encode_brep(&b).unwrap();
+    for flag in brep_flags(&v2).into_iter().rev() {
+        assert_eq!(v2.remove(flag + 1), 0); // v3 analytic-arc provenance.
+    }
+    v2[8..12].copy_from_slice(&2u32.to_le_bytes());
+    assert_eq!(
+        three_dm_geometry::decode_brep(&v2, Tolerance::DEFAULT).unwrap(),
+        b
+    );
+    assert_eq!(native(OBJECT_BREP, &v2), (1, 1));
+    let mut v1 = v2;
     for flag in brep_flags(&v1).into_iter().rev() {
         assert_eq!(v1.remove(flag), 0);
     }
@@ -169,6 +180,13 @@ fn brep_edge_flags_are_independent_of_uv_and_surface_payloads() {
     for flag in brep_flags(&bytes) {
         let mut bad = bytes.clone();
         bad[flag] = 255;
+        assert!(three_dm_geometry::decode_brep(&bad, Tolerance::DEFAULT).is_err());
+        assert_eq!(native(OBJECT_BREP, &bad), (0, -1));
+        bad = bytes.clone();
+        bad[flag + 1] = 255;
+        assert!(three_dm_geometry::decode_brep(&bad, Tolerance::DEFAULT).is_err());
+        assert_eq!(native(OBJECT_BREP, &bad), (0, -1));
+        bad[flag + 1] = 1; // A line cannot claim analytic arc provenance.
         assert!(three_dm_geometry::decode_brep(&bad, Tolerance::DEFAULT).is_err());
         assert_eq!(native(OBJECT_BREP, &bad), (0, -1));
     }

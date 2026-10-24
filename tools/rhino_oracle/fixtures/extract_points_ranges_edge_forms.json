@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "range_form_brep_cylinder_forward_points",
+      "case": "range_form_brep_cylinder_forward_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_form_brep_cylinder_forward_pointcloud",
+      "case": "range_form_brep_cylinder_forward_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_form_brep_cylinder_wrap_points",
+      "case": "range_form_brep_cylinder_wrap_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_form_brep_cylinder_wrap_pointcloud",
+      "case": "range_form_brep_cylinder_wrap_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_form_brep_nurbs_cylinder_forward_points",
+      "case": "range_form_brep_nurbs_cylinder_forward_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_form_brep_nurbs_cylinder_forward_pointcloud",
+      "case": "range_form_brep_nurbs_cylinder_forward_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_form_brep_nurbs_cylinder_wrap_points",
+      "case": "range_form_brep_nurbs_cylinder_wrap_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_form_brep_nurbs_cylinder_wrap_pointcloud",
+      "case": "range_form_brep_nurbs_cylinder_wrap_pointcloud"
+    }
+  ]
+}

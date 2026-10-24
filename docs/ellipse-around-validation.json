@@ -447,7 +447,6 @@
     "policy": "Historical non-SHA outcomes are unchanged; changed source bytes are archived against the full baseline commit."
   },
   "sha256": {
-    "crates/viboceros-command/src/curve_reference.rs": "47d7e8fadb36a2d50517c32b23eef15dfec8b777e06967068e44b09f52e9159d",
     "crates/viboceros-command/src/rectangle_input.rs": "90d01f5f04b1bb38bd3088a32b3766486420f3dc5b31cc992c6731762678660e",
     "crates/viboceros-drafting/src/point_input.rs": "b53d3b5f3c863f89ee27441244d570e1205f45b98ef3ebfc90a2b934c2b8b3ef",
     "crates/viboceros-drafting/src/point_input/length_quantity_tests.rs": "dcb0ebbe0727d151af8283f5449d85069d126156de0c82b2547753c2dd7abd4a",
@@ -488,6 +487,7 @@
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/catenary-snap-validation.json": "e7d6fc94fb87884e90f1f864ce25afbe3578ea7b65e94efcedd6f4c668fc2284",
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:tools/rhino_oracle/curve_source_bounds.py": "defa47b86b1e9cf2f0e053d574644c9e06f82ba15ec8b5158cda987292b94cdf",
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/spiral-around-validation.json": "1850b6cb920b601a1256f94ba59bff3ab3cabf944f6d72dfc2f81b2145568479",
-    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:docs/conic-getters-validation.json": "d60c1a4cf26d320b820b530200e1c2fbcd731e6cbdab8ace7aad2fada3dd48b5"
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:docs/conic-getters-validation.json": "d60c1a4cf26d320b820b530200e1c2fbcd731e6cbdab8ace7aad2fada3dd48b5",
+    "6b7d4ea5422a7c3a8e8f565f133ea0d22fd97c6a:crates/viboceros-command/src/curve_reference.rs": "47d7e8fadb36a2d50517c32b23eef15dfec8b777e06967068e44b09f52e9159d"
   }
 }

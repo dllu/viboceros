@@ -509,7 +509,7 @@ class OracleClient:
             if self.settings_scheme is None or request.get('iterations',1) != 1 or any(op.get('op') != 'extract_points_command' for op in request['operations']):
                 raise OracleProtocolError('ExtractPt inputs require a dedicated private one-iteration request')
             for op in request['operations']:validate(op)
-            if any(ALL_CASES[op['case']].get('component_getter') for op in request['operations']):
+            if any(ALL_CASES[op['case']].get('component_getter') or ALL_CASES[op['case']].get('edge_ranges') for op in request['operations']):
                 from .component_picking import ComponentPicker
                 interaction = ComponentPicker()
         if any(op.get('op')=='nonplanar_quad_sample'for op in request.get('operations',[])):

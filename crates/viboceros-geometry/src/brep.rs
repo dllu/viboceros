@@ -36,6 +36,7 @@ mod cap;
 mod combine;
 mod components;
 mod curved_boundaries;
+mod edge_representation;
 mod wire_cage;
 pub use wire_cage::BrepWireCage;
 mod edge_split;
@@ -175,6 +176,8 @@ pub struct BrepEdge {
     vertices: [usize; 2],
     curve: NurbsCurve,
     tolerance: Real,
+    // Native ArcCurve provenance affects command parameterization and controls.
+    arc_representation: bool,
 }
 
 impl BrepEdge {
@@ -188,6 +191,7 @@ impl BrepEdge {
             vertices,
             curve,
             tolerance,
+            arc_representation: false,
         })
     }
 
@@ -204,6 +208,11 @@ impl BrepEdge {
     #[inline]
     pub const fn tolerance(&self) -> Real {
         self.tolerance
+    }
+
+    /// Whether this edge came from an analytic arc rather than a NURBS curve.
+    pub const fn has_arc_representation(&self) -> bool {
+        self.arc_representation
     }
 }
 
@@ -3571,11 +3580,16 @@ impl Brep {
             .edges
             .iter()
             .map(|edge| {
-                BrepEdge::try_new(
+                let mut mapped = BrepEdge::try_new(
                     edge.vertices,
                     edge.curve.transformed(transform)?,
                     scaled_tolerance(edge.tolerance, scale)?,
-                )
+                )?;
+                mapped.arc_representation = edge.arc_representation;
+                if mapped.arc_representation && mapped.analytic_arc()?.is_none() {
+                    mapped.arc_representation = false;
+                }
+                Ok(mapped)
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let faces = self

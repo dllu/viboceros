@@ -267,9 +267,14 @@ fn extraction_failure_with_mixed_selection_is_atomic() {
         .unwrap();
     document.select_object(point, SelectionMode::Add).unwrap();
     let history = document.undo_label().map(str::to_owned);
+    // Unsupported whole peers are filtered. A late invalid portion must still
+    // reject every staged output before touching the model or selection.
     assert!(
         CommandRegistry::with_builtins()
-            .execute(&mut document, "ExtractControlPolygon")
+            .execute(
+                &mut document,
+                &format!("ExtractControlPolygon SubCrv={source},0.1,0.9 SubCrv={source},0.5,0.5")
+            )
             .is_err()
     );
     assert_eq!(document.objects().count(), 2);

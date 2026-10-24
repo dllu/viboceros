@@ -7,7 +7,9 @@ decoder always allocated rational storage. This could lose a rational flag on
 import or rationalize a polynomial curve on export without changing its shape.
 
 The bridge now carries a strict boolean after each 3D NURBS knot vector.
-Polycurve payload version 3 and B-rep version 2 include it. The readers still
+Polycurve payload version 3 and B-rep versions 2/3 include it. B-rep version 3
+also records analytic arc edge provenance alongside the unchanged NURBS data.
+The readers still
 accept polycurve versions 1/2 and B-rep version 1, using weight inference for
 those older payloads. Invalid booleans, missing flags, trailing bytes, and
 polynomial flags paired with nonunit weights are rejected. The arc payload

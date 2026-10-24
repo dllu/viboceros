@@ -4,6 +4,53 @@ mod native;
 use viboceros_command::CommandRegistry;
 
 #[test]
+fn circular_edge_storage_and_native_parameterization_survive_3dm_round_trips() {
+    for kind in ["brep_cylinder", "brep_nurbs_cylinder"] {
+        let row = native::range_rows()
+            .into_iter()
+            .find(|r| r["id"] == format!("range_form_{kind}_forward_points"))
+            .unwrap();
+        let (doc, ids) = native::setup(&row);
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("edges.3dm");
+        viboceros_command::save_3dm_with_named_views(&doc, path.to_str().unwrap(), &[]).unwrap();
+        let reopened = viboceros_command::open_3dm_with_views(path.to_str().unwrap())
+            .unwrap()
+            .0;
+        let source = doc.object(ids[0]).unwrap().geometry();
+        let restored = reopened.objects().next().unwrap().geometry();
+        let (viboceros_document::Geometry::Brep(a), viboceros_document::Geometry::Brep(b)) =
+            (source, restored)
+        else {
+            panic!()
+        };
+        assert_eq!(a.edges().len(), b.edges().len());
+        for (a, b) in a.edges().iter().zip(b.edges()) {
+            assert_eq!(a.has_arc_representation(), b.has_arc_representation());
+            assert_eq!(a.curve().degree(), b.curve().degree());
+            assert_eq!(a.curve().knots(), b.curve().knots());
+            assert_eq!(
+                a.curve().control_points().len(),
+                b.curve().control_points().len()
+            );
+            for (a, b) in a
+                .curve()
+                .control_points()
+                .iter()
+                .zip(b.curve().control_points())
+            {
+                assert!(a.point().distance_to(b.point()).unwrap() < 1e-12);
+                assert!((a.weight() - b.weight()).abs() < 1e-12);
+            }
+        }
+        assert_eq!(
+            a.edges()[0].has_arc_representation(),
+            kind == "brep_cylinder"
+        );
+    }
+}
+
+#[test]
 fn extract_point_ranges_replay_native_controls_attributes_and_history() {
     let registry = CommandRegistry::with_builtins();
     for row in native::range_rows() {

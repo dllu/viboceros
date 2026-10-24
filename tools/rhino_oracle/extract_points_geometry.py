@@ -18,6 +18,12 @@ def create(kind, host):
             second.Dispose()
     if kind == 'brep_cylinder':
         return G.Cylinder(G.Circle(G.Plane.WorldXY, 2.), 3.).ToBrep(True, True)
+    if kind == 'brep_nurbs_cylinder':
+        surface = G.Cylinder(G.Circle(G.Plane.WorldXY, 2.), 3.).ToNurbsSurface()
+        try:
+            return surface.ToBrep()
+        finally:
+            surface.Dispose()
     if kind in ['brep_closed', 'brep_periodic_u', 'brep_periodic_v']:
         surface = create_source(dict(brep_closed='surface_closed',
             brep_periodic_u='surface_periodic_u', brep_periodic_v='surface_periodic_v')[kind], host)

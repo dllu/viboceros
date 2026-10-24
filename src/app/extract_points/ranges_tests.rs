@@ -60,11 +60,40 @@ fn extract_point_temporary_range_getters_replay_native_geometry_and_history() {
                 if index > 0 {
                     enter(&mut app, "SubCrv");
                 }
-                app.select_intersection_prompt_objects(
-                    [ids[range[0].as_u64().unwrap() as usize]],
-                    SelectionMode::Add,
-                );
-                for p in [&range[1], &range[2]] {
+                let object = ids[range[0].as_u64().unwrap() as usize];
+                if let Some(edge) = row["value"]["getter"]["edges"][index].as_u64() {
+                    use crate::viewport::{ComponentClick, ComponentPick};
+                    assert!(app.picking_subcurve_edge());
+                    app.accept_component_click(ComponentClick {
+                        picks: vec![ComponentPick {
+                            object,
+                            kind: viboceros_command::ComponentSelectionKind::BrepEdge,
+                            index: edge as usize,
+                        }],
+                        preselection: false,
+                        modifiers: Default::default(),
+                    });
+                    assert!(
+                        !app.picking_subcurve_edge(),
+                        "{} {:?}",
+                        row["id"],
+                        app.command_log
+                    );
+                } else {
+                    app.select_intersection_prompt_objects([object], SelectionMode::Add);
+                }
+                let numeric = row["value"]["getter"]["numeric_length"].as_f64();
+                let inputs = if numeric.is_some() {
+                    &row["value"]["getter"]["input_points"][index]
+                } else {
+                    range
+                };
+                for (pick, p) in [&inputs[1], &inputs[2]].into_iter().enumerate() {
+                    if pick == 1
+                        && let Some(length) = numeric
+                    {
+                        enter(&mut app, &format!("{length}"));
+                    }
                     let values = p.as_array().unwrap();
                     assert_eq!(
                         app.accept_uv_subcurve_point(point(

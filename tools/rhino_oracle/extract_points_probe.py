@@ -146,6 +146,11 @@ def run(operation, host, iterations, tolerance):
         history = R.RhinoApp.CommandHistoryWindowText
         receipt = []
         def execute():
+            if case.get('edge_ranges'):
+                from extract_points_edge_range_input import run as edge_range
+                returned,trace=edge_range(doc,ids,case,host,options,operation['id'])
+                receipt.append(trace)
+                return returned
             if case.get('ranges'):
                 doc.Objects.UnselectAll()
                 script='_-ExtractPt '+' '.join(options)+' '

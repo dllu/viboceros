@@ -6680,7 +6680,7 @@
     "crates/viboceros-smlib/tests/mesh_split.rs": "06ee2b0006c73be2a8bff86dc9f82afba1161d8cf26918c47c1df3e8779b93b0",
     "crates/viboceros-smlib/tests/support/mesh_boolean.rs": "2c1a618f032b8b0118e5c1e208efacf014d3e4e3e4fd9208e8402d7e40862ab5",
     "docs/mesh-split-kernel.md": "c3608b3694d43b769f24f8ddfd2ff57457ee70f6b9d0f06bff802d6303be1184",
-    "tools/rhino_oracle/client.py": "8b6eb4ae2c37fc7db2dffd7169c0b47559ad630d141e354c44592c40b095a7c6",
+    "tools/rhino_oracle/client.py": "67ad9491745d1f565550cc5522a5aefc9a0aad021321dc5bcbd8a350c1a504b9",
     "tools/rhino_oracle/fixtures/mesh_split_controls.json": "9c447a2e8f019ac78ee93599b7eac63be8cc6b14cb19c85c3d8ee2e0485ade4b",
     "tools/rhino_oracle/fixtures/mesh_split_controls/mesh_split_controls_box_ngons_no.3dm": "8b131ba8f77b6538c0a49fca6490f701e9c106b4c80109a5069349b52ab15fe9",
     "tools/rhino_oracle/fixtures/mesh_split_controls/mesh_split_controls_box_ngons_yes.3dm": "5a9aecd3cee8b17fb5ccc5389cead89c7bf79255c9610ac55708c242997c6f07",
@@ -6759,10 +6759,10 @@
     "tools/rhino_oracle/observations/source_snapshots/ee44b4d175598cbba8f2981c7470961a311ac0daed3622192a5b27930e323e90.gz": "f6614ac9da76bce4e7aacb866e710221d8506dc1ff008e38452f077b6c01c711",
     "tools/rhino_oracle/observations/source_snapshots/f6ac17e1d4ec17a503c2c9255bd517a844cfb4170f6c66168921211ebd3b9952.gz": "35d37c0d57660da82ed90b6e0bfb68bac686fdb70eb7c5df32396156f633b047",
     "tools/rhino_oracle/observations/source_snapshots/f98c6bd863d9638633cadf15d6e8bedff378aa16a06bb80491c251c3cd37bec5.gz": "a12d46a5476486aea5efd2eeebe4dcdb7e64e88a9db526d1e00d2b0f87940864",
-    "tools/rhino_oracle/qualification_sources.py": "b19497c14860b49e709a16d5812510fd381d53883b443b1c4cfea4e9d008a3a7",
+    "tools/rhino_oracle/qualification_sources.py": "47ad6da03819b27db00f90a85140869aa6749edf03cdef8b6292b9140883f418",
     "tools/rhino_oracle/report_mesh_split_kernel.py": "d2acf61f9ededee3fa1108ba9ff724fbe934149d9ef970aefb63451b6382a596",
     "tools/rhino_oracle/rhino_worker.py": "6423e0381f254bb896a0204de8cc4f7d223797ac48f2be8e896ffd27e7682067",
-    "tools/rhino_oracle/structural_sdk.py": "da39048fed584f04cbb6e5a004fd707e29bf382db789862ab9abb0fb26964f8a",
+    "tools/rhino_oracle/structural_sdk.py": "403254ef8787b3825c9adeae47866524ade65229ea4b11d8b01ad04e80221541",
     "tools/rhino_oracle/test_mesh_split_kernel.py": "411e13e1bf2e301cf4c0d653980575e1be369c9be6953437c0fdde46fee663c8"
   }
 }

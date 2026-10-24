@@ -144,6 +144,8 @@ impl VibocerosApp {
 }
 
 #[cfg(test)]
+mod edge_ranges_tests;
+#[cfg(test)]
 #[path = "../../crates/viboceros-command/tests/support/extract_points.rs"]
 pub(super) mod native;
 #[cfg(test)]

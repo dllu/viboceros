@@ -212,7 +212,7 @@ bool finite_coordinates(const double* values, size_t count) {
 }
 
 constexpr uint8_t kBrepMagic[8] = {'V', 'I', 'B', 'O', 'B', 'R', 'P', 0};
-constexpr uint32_t kBrepVersion = 2;
+constexpr uint32_t kBrepVersion = 3;
 constexpr uint8_t kPolyCurveMagic[8] = {'V', 'I', 'B', 'O', 'P', 'L', 'Y', 0};
 constexpr uint32_t kPolyCurveVersion = 3;
 constexpr uint8_t kNgonMagic[8] = {'V', 'I', 'B', 'O', 'N', 'G', 'O', 'N'};
@@ -718,6 +718,8 @@ bool append_brep(const ON_Brep& source, BridgeObject& output, std::string* failu
     if (!write_nurbs_curve(edge, 3, writer)) {
       return false;
     }
+    // Borrow the native leaf type; circular NURBS retain their own controls.
+    writer.U8(ON_ArcCurve::Cast(edge.ProxyCurve()) != nullptr ? 1 : 0);
   }
   for (int face_index = 0; face_index < brep.m_F.Count(); ++face_index) {
     const ON_BrepFace& face = brep.m_F[face_index];
@@ -1166,7 +1168,53 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error,
     if (!curve) {
       return nullptr;
     }
-    const int curve_index = brep->AddEdgeCurve(curve.release());
+    bool analytic_arc = false;
+    if (version >= 3 && !reader.Bool(analytic_arc)) {
+      error = "B-rep edge representation is malformed";
+      return nullptr;
+    }
+    std::unique_ptr<ON_Curve> edge_curve;
+    if (analytic_arc) {
+      ON_Arc arc;
+      ON_3dPoint origin;
+      if (!curve->GetCV(0, origin)) { error = "B-rep arc control is invalid"; return nullptr; }
+      double scale = std::numeric_limits<double>::min();
+      double coordinates = scale;
+      for (int cv = 0; cv < curve->CVCount(); ++cv) {
+        ON_3dPoint p;
+        if (!curve->GetCV(cv, p)) { error = "B-rep arc control is invalid"; return nullptr; }
+        for (int d = 0; d < 3; ++d) {
+          scale = std::max(scale, std::abs(p[d]-origin[d]));
+          coordinates = std::max(coordinates, std::abs(p[d]));
+        }
+      }
+      ON_NurbsCurve local(*curve);
+      for (int cv = 0; cv < local.CVCount(); ++cv) {
+        ON_3dPoint p; ON_4dPoint h;
+        if (!curve->GetCV(cv,p) || !curve->GetCV(cv,h) ||
+            !local.SetCV(cv,ON_4dPoint((p.x-origin.x)/scale*h.w,
+                (p.y-origin.y)/scale*h.w,(p.z-origin.z)/scale*h.w,h.w))) {
+          error = "B-rep arc normalization failed"; return nullptr;
+        }
+      }
+      const double roundoff = std::max(1.,coordinates/scale) *
+          (256. * std::numeric_limits<double>::epsilon());
+      if (!local.IsArc(nullptr, &arc, roundoff) ||
+          !arc.Transform(ON_Xform::ScaleTransformation(ON_3dPoint::Origin,scale)) ||
+          !arc.Transform(ON_Xform::TranslationTransformation(origin.x,origin.y,origin.z))) {
+        error = "B-rep analytic edge is not circular";
+        return nullptr;
+      }
+      auto native_arc = std::make_unique<ON_ArcCurve>(arc);
+      if (!native_arc->SetDomain(curve->Domain()[0], curve->Domain()[1])) {
+        error = "B-rep arc edge has an invalid domain";
+        return nullptr;
+      }
+      edge_curve = std::move(native_arc);
+    } else {
+      edge_curve = std::move(curve);
+    }
+    const int curve_index = brep->AddEdgeCurve(edge_curve.release());
     if (curve_index < 0) {
       error = "OpenNURBS rejected a B-rep edge curve";
       return nullptr;

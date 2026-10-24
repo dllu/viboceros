@@ -3,7 +3,7 @@ use super::*;
 use std::sync::Arc;
 use viboceros_command::subcurve_input;
 use viboceros_document::GeometrySnapshot;
-use viboceros_geometry::{CurveRef, NurbsCurve, Tolerance};
+use viboceros_geometry::{Curve3, CurveRef, NurbsCurve, Tolerance};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct Parameters {
@@ -38,7 +38,7 @@ struct HoverLookup {
 
 #[derive(Clone, Debug, Default)]
 pub(super) struct Cache {
-    surface_edge: Option<(GeometrySnapshot, usize, Tolerance, Option<NurbsCurve>)>,
+    surface_edge: Option<(GeometrySnapshot, usize, Tolerance, Option<Curve3>)>,
     key: Option<(GeometrySnapshot, Parameters, Tolerance)>,
     geometry: Option<Arc<PreviewGeometry>>,
     hover: Option<HoverLookup>,
@@ -104,7 +104,14 @@ impl Cache {
         edge: Option<usize>,
         tolerance: Tolerance,
     ) -> Option<CurveRef<'a>> {
-        if let (Geometry::NurbsSurface(_), Some(index)) = (&**source, edge) {
+        if let Some(index) = edge.filter(|&index| match &**source {
+            Geometry::NurbsSurface(_) => true,
+            Geometry::Brep(brep) => brep
+                .edges()
+                .get(index)
+                .is_some_and(|e| e.has_arc_representation()),
+            _ => false,
+        }) {
             if self
                 .surface_edge
                 .as_ref()
@@ -115,7 +122,7 @@ impl Cache {
                 })
             {
                 let curve = viboceros_command::curve_reference::resolve(source, edge, tolerance)
-                    .and_then(|c| c.curve().to_nurbs().ok());
+                    .map(|c| c.curve().to_owned());
                 self.surface_edge = Some((source.clone(), index, tolerance, curve));
             }
             return self
@@ -123,7 +130,7 @@ impl Cache {
                 .as_ref()?
                 .3
                 .as_ref()
-                .map(CurveRef::NurbsCurve);
+                .map(|curve| curve.as_ref());
         }
         self.surface_edge = None;
         match edge {
@@ -227,11 +234,11 @@ fn resolve(
         else {
             return Ok(None);
         };
-        Some(viboceros_command::prepare_directed_subcurve(
-            &curve.to_owned(),
-            start,
-            end,
-        )?)
+        Some(if p.edge.is_some() && !p.retain_orientation {
+            viboceros_command::curve_reference::edge_subcurve(curve, start, end)?
+        } else {
+            viboceros_command::prepare_directed_subcurve(&curve.to_owned(), start, end)?
+        })
     };
     let Some(piece) = piece else { return Ok(None) };
     let curve = piece.as_ref();
@@ -345,6 +352,9 @@ impl VibocerosApp {
             .uv_subcurves
             .pending
             .as_mut()?;
+        if !p.current(&self.document) {
+            return None;
+        }
         let source = p
             .object
             .filter(|id| self.document.is_object_selectable(*id))
@@ -354,7 +364,7 @@ impl VibocerosApp {
             .start
             .zip(p.hover_parameter)
             .map(|(start, hover)| Parameters {
-                edge: None,
+                edge: p.edge(),
                 start,
                 hover,
                 length: p.length,
@@ -447,30 +457,18 @@ mod tests {
         let start = cache
             .parameter(Some(&source), Some(0), a, Tolerance::DEFAULT)
             .unwrap();
-        let storage = cache
-            .surface_edge
-            .as_ref()
-            .unwrap()
-            .3
-            .as_ref()
-            .unwrap()
-            .control_points()
-            .as_ptr();
+        let cached_storage = |cache: &Cache| {
+            let Some(Curve3::NurbsCurve(curve)) = cache.surface_edge.as_ref().unwrap().3.as_ref()
+            else {
+                panic!()
+            };
+            curve.control_points().as_ptr()
+        };
+        let storage = cached_storage(&cache);
         let hover = cache
             .parameter(Some(&source), Some(0), b, Tolerance::DEFAULT)
             .unwrap();
-        assert_eq!(
-            storage,
-            cache
-                .surface_edge
-                .as_ref()
-                .unwrap()
-                .3
-                .as_ref()
-                .unwrap()
-                .control_points()
-                .as_ptr()
-        );
+        assert_eq!(storage, cached_storage(&cache));
         let p = Parameters {
             edge: Some(0),
             start,
@@ -485,18 +483,7 @@ mod tests {
             .unwrap();
         assert!(preview.endpoints[0].distance_to(a).unwrap() < 1e-9);
         assert!(preview.endpoints[1].distance_to(b).unwrap() < 1e-9);
-        assert_eq!(
-            storage,
-            cache
-                .surface_edge
-                .as_ref()
-                .unwrap()
-                .3
-                .as_ref()
-                .unwrap()
-                .control_points()
-                .as_ptr()
-        );
+        assert_eq!(storage, cached_storage(&cache));
         assert!(
             cache
                 .parameter(Some(&source), Some(999), b, Tolerance::DEFAULT)

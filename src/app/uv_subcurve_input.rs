@@ -1,6 +1,8 @@
 //! Nested, nonmutating SubCrv input for curve-mapping source getters.
 use super::*;
+use viboceros_command::curve_reference::CapturedCurve;
 use viboceros_document::ObjectId;
+mod edges;
 mod length_confirmation;
 
 #[derive(Clone, Debug)]
@@ -8,6 +10,22 @@ pub(super) struct CurveRange {
     pub(super) object: ObjectId,
     pub(super) parameters: [f64; 2],
     pub(super) source: viboceros_document::GeometrySnapshot,
+    pub(super) edge_reference: Option<CapturedCurve>,
+    pub(super) edge_wrap: bool,
+}
+
+impl CurveRange {
+    pub(super) fn current(&self, document: &Document) -> bool {
+        self.edge_reference.as_ref().map_or_else(
+            || {
+                document.is_object_selectable(self.object)
+                    && document
+                        .object(self.object)
+                        .is_some_and(|o| o.geometry_snapshot().shares_storage_with(&self.source))
+            },
+            |reference| reference.current(document),
+        )
+    }
 }
 
 #[derive(Clone, Debug, Default)]
@@ -20,6 +38,7 @@ pub(super) struct SubcurveInputs {
 pub(super) struct PendingSubcurve {
     pub(super) object: Option<ObjectId>,
     pub(super) source: Option<viboceros_document::GeometrySnapshot>,
+    pub(super) edge_reference: Option<CapturedCurve>,
     pub(super) start: Option<f64>,
     pub(super) length: Option<f64>,
     pub(super) hover_parameter: Option<f64>,
@@ -27,11 +46,50 @@ pub(super) struct PendingSubcurve {
     pub(super) preview: super::subcurve_preview::Cache,
 }
 
+impl PendingSubcurve {
+    pub(super) fn edge(&self) -> Option<usize> {
+        self.edge_reference.as_ref().and_then(|r| r.source().1)
+    }
+    fn curve<'a>(&'a self, document: &'a Document) -> Option<viboceros_geometry::CurveRef<'a>> {
+        self.edge_reference
+            .as_ref()
+            .map(|r| r.curve_ref())
+            .or_else(|| {
+                document
+                    .object(self.object?)
+                    .and_then(|o| o.geometry().curve_ref())
+            })
+    }
+    pub(super) fn current(&self, document: &Document) -> bool {
+        if let Some(reference) = &self.edge_reference {
+            return reference.current(document);
+        }
+        self.object.is_some_and(|id| {
+            document.is_object_selectable(id)
+                && document.object(id).is_some_and(|o| {
+                    self.source
+                        .as_ref()
+                        .is_some_and(|s| s.shares_storage_with(o.geometry_snapshot()))
+                })
+        })
+    }
+}
+
 impl SubcurveInputs {
     pub(super) fn arguments(&self) -> String {
         self.ranges
             .iter()
             .map(|r| {
+                if let Some(edge) = r.edge_reference.as_ref().and_then(|r| r.source().1) {
+                    return format!(
+                        " SubCrv={},{},{},{},{}",
+                        r.object,
+                        if r.edge_wrap { "EdgeWrap" } else { "Edge" },
+                        edge,
+                        r.parameters[0],
+                        r.parameters[1]
+                    );
+                }
                 format!(
                     " SubCrv={},{},{}",
                     r.object, r.parameters[0], r.parameters[1]
@@ -67,6 +125,13 @@ impl VibocerosApp {
                 self.finish_empty_uv_subcurve();
                 return true;
             }
+            if pending.object.is_some() && !pending.current(&self.document) {
+                self.push_log(format!(
+                    "Error: {}",
+                    viboceros_command::CommandError::SubcurveInputStale
+                ));
+                return true;
+            }
             if pending.start.is_some()
                 && let Some(quantity) = viboceros_drafting::PointInput::parse_length_with_units(
                     input,
@@ -76,10 +141,7 @@ impl VibocerosApp {
                 match quantity {
                     Ok(0.) => self.finish_empty_uv_subcurve(),
                     Ok(length) => {
-                        let curve = self
-                            .document
-                            .object(pending.object.unwrap())
-                            .and_then(|o| o.geometry().curve_ref());
+                        let curve = pending.curve(&self.document);
                         match curve.map(|c| c.length(self.document.tolerance())) {
                             Some(Ok(total)) if length.abs() <= total => {
                                 self.intersection_prompt
@@ -108,14 +170,7 @@ impl VibocerosApp {
                                     }
                                 }
                                 if pending.locked_forward.is_some() {
-                                    let point = self
-                                        .document
-                                        .object(pending.object.unwrap())
-                                        .unwrap()
-                                        .geometry()
-                                        .curve_ref()
-                                        .unwrap()
-                                        .evaluate(pending.start.unwrap());
+                                    let point = curve.unwrap().evaluate(pending.start.unwrap());
                                     match point {
                                         Ok(point) => {
                                             self.accept_uv_subcurve_point(point);
@@ -141,6 +196,16 @@ impl VibocerosApp {
                     || self.try_continue_point_filter(input)
                     || self.try_continue_point_input(input))
             {
+                return true;
+            }
+            if pending.object.is_none()
+                && self.picking_uv_subcurve_edge()
+                && let Some((name, value)) = input.split_once('=')
+                && name.trim_start_matches('_').eq_ignore_ascii_case("Edge")
+                && let Some((object, edge)) = viboceros_command::curve_reference::parse_edge(value)
+            {
+                self.pick_uv_subcurve_edge(crate::viewport::EdgePick { object, edge });
+                self.command_input.clear();
                 return true;
             }
             if pending.object.is_none()
@@ -236,22 +301,15 @@ impl VibocerosApp {
         let pending = prompt.uv_subcurves.pending.as_ref()?.clone();
         let object = pending.object?;
         let result = (|| -> Result<(), viboceros_command::CommandError> {
-            if !self.document.is_object_selectable(object)
-                || pending.source.as_ref().is_some_and(|source| {
-                    self.document
-                        .object(object)
-                        .is_none_or(|o| o.geometry_snapshot() != source)
-                })
-            {
+            if !pending.current(&self.document) {
                 return Err(viboceros_command::CommandError::SubcurveInputStale);
             }
-            let curve = self
-                .document
-                .object(object)
-                .and_then(|o| o.geometry().curve_ref())
-                .ok_or(viboceros_command::CommandError::Usage(
-                    "Select an existing curve",
-                ))?;
+            let curve =
+                pending
+                    .curve(&self.document)
+                    .ok_or(viboceros_command::CommandError::Usage(
+                        "Select an existing curve",
+                    ))?;
             let parameter = curve.closest_parameter(point, self.document.tolerance())?;
             if let Some(start) = pending.start {
                 if pending.length.is_none()
@@ -304,6 +362,8 @@ impl VibocerosApp {
                         .unwrap()
                         .geometry_snapshot()
                         .clone(),
+                    edge_reference: pending.edge_reference.clone(),
+                    edge_wrap: pending.length.is_some(),
                 });
                 prompt.uv_subcurves.pending = None;
                 self.active_command = None;

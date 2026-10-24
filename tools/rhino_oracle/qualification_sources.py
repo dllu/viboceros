@@ -53,6 +53,7 @@ APPLICATION_MODULES = [
     'src/app/extract_points.rs',
     'src/app/extract_points/tests.rs',
     'src/app/extract_points/ranges_tests.rs',
+    'src/app/extract_points/edge_ranges_tests.rs',
     'src/viewport/polygon_edges.rs',
     'src/viewport/polygon_edges/tests.rs',
     'src/app/control_polygon.rs',
@@ -61,6 +62,7 @@ APPLICATION_MODULES = [
     'crates/viboceros-command/tests/support/control_polygon.rs',
     'src/app/intersect_two_sets.rs',
     'src/app/uv_subcurve_input.rs',
+    'src/app/uv_subcurve_input/edges.rs',
     'src/app/apply_curves.rs',
     'src/app/boolean_solids.rs',
     *BOOLEAN_PROMPT_MODULES,
@@ -176,6 +178,8 @@ def with_shared_sources(paths):
                                       'src/component_seams/arguments.rs') for p in paths]
     if 'Cargo.toml' in expanded:
         expanded.append('.cargo/config.toml')
+    if 'crates/viboceros-geometry/src/brep.rs' in expanded:
+        expanded.append('crates/viboceros-geometry/src/brep/edge_representation.rs')
     if 'crates/viboceros-geometry/tests/extrusion.rs' in expanded:
         expanded.append('crates/viboceros-geometry/tests/extrusion/rational_caps.rs')
     if 'crates/viboceros-io/tests/extrusion.rs' in expanded:
@@ -198,6 +202,8 @@ def with_shared_sources(paths):
                          'tools/rhino_oracle/extract_points_component_cases.py',
                          'tools/rhino_oracle/extract_points_brep_cases.py',
                          'tools/rhino_oracle/extract_points_range_cases.py',
+                         'tools/rhino_oracle/extract_points_edge_range_input.py',
+                         'tools/rhino_oracle/owned_brep_command.py',
                          'tools/rhino_oracle/extract_points_component_input.py'])
     if 'tools/rhino_oracle/mesh_split_cases.py' in expanded:
         expanded.extend(['tools/rhino_oracle/mesh_split_channel_cases.py',

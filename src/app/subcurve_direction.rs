@@ -27,7 +27,7 @@ impl VibocerosApp {
                     .uv_subcurves
                     .pending
                     .as_ref()?;
-                Some((p.object?, None, p.start?, p.hover_parameter))
+                Some((p.object?, p.edge(), p.start?, p.hover_parameter))
             });
         let Some((source, edge, start, hover)) = reference else {
             return false;
@@ -125,9 +125,10 @@ impl VibocerosApp {
             .as_mut()
             .and_then(|p| p.uv_subcurves.pending.as_mut())
         {
+            let edge = p.edge();
             p.hover_parameter =
                 p.preview
-                    .parameter(snapshot, None, point, self.document.tolerance());
+                    .parameter(snapshot, edge, point, self.document.tolerance());
         }
     }
 }

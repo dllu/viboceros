@@ -148,3 +148,110 @@ fn malformed_or_trailing_payload_is_rejected() {
         Err(GeometryCodecError::Malformed)
     ));
 }
+
+#[test]
+fn arc_edge_provenance_preserves_nurbs_data_and_legacy_brep_payloads() {
+    for scale in [1e-9_f64, 1., 1e9] {
+        let tolerance = Tolerance::try_new((scale * 1e-9).min(1e-3), 1e-12, 1e-10).unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let source = Brep::try_cylinder(frame, 2. * scale, 0., 3. * scale, tolerance).unwrap();
+        let edges = source
+            .edges()
+            .iter()
+            .map(|e| {
+                e.clone()
+                    .with_arc_representation(e.curve().control_points().len() > 2)
+                    .unwrap()
+            })
+            .collect();
+        let marked = Brep::try_new(
+            source.vertices().to_vec(),
+            edges,
+            source.faces().to_vec(),
+            tolerance,
+        )
+        .unwrap();
+        let moved = marked
+            .transformed(
+                crate::AffineTransform3::from_translation(
+                    Vector3::try_new(scale, -2. * scale, 3. * scale).unwrap(),
+                ),
+                tolerance,
+            )
+            .unwrap();
+        assert_eq!(
+            moved
+                .edges()
+                .iter()
+                .filter(|e| e.has_arc_representation())
+                .count(),
+            2
+        );
+        let stretched = marked
+            .transformed(
+                crate::AffineTransform3::try_nonuniform_scale(frame.origin(), [2., 1., 1.])
+                    .unwrap(),
+                tolerance,
+            )
+            .unwrap();
+        assert!(
+            stretched
+                .edges()
+                .iter()
+                .all(|e| !e.has_arc_representation())
+        );
+        let bytes = encode_brep(&marked).unwrap();
+        let decoded = decode_brep(&bytes, tolerance).unwrap();
+        assert_eq!(decoded, marked);
+        assert_eq!(
+            decoded
+                .edges()
+                .iter()
+                .filter(|e| e.has_arc_representation())
+                .count(),
+            2
+        );
+        for (a, b) in source.edges().iter().zip(decoded.edges()) {
+            assert_eq!(a.curve(), b.curve());
+        }
+
+        // Version 2 had the same exact C3 records, without the per-edge marker.
+        let mut reader = Reader {
+            bytes: &bytes,
+            position: 12,
+            curve3_flags: true,
+        };
+        let nv = reader.len().unwrap();
+        let ne = reader.len().unwrap();
+        reader.len().unwrap();
+        for _ in 0..nv {
+            reader.point3().unwrap();
+            reader.f64().unwrap();
+        }
+        let mut positions = Vec::new();
+        for _ in 0..ne {
+            reader.index().unwrap();
+            reader.index().unwrap();
+            reader.f64().unwrap();
+            reader.curve3().unwrap();
+            positions.push(reader.position);
+            reader.boolean().unwrap();
+        }
+        let mut legacy = bytes
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| !positions.contains(i))
+            .map(|(_, b)| *b)
+            .collect::<Vec<_>>();
+        legacy[8..12].copy_from_slice(&2u32.to_le_bytes());
+        assert_eq!(decode_brep(&legacy, tolerance).unwrap(), source);
+        let mut invalid = bytes;
+        invalid[positions[0]] = 2;
+        assert!(decode_brep(&invalid, tolerance).is_err());
+    }
+}

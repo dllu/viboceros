@@ -258,17 +258,44 @@ pub fn edge_form_rows() -> Vec<Value> {
 }
 
 pub fn range_rows() -> Vec<Value> {
-    component_rows_for(&["ranges", "ranges_grips", "ranges_owners"])
-        .into_iter()
-        .map(|mut row| {
-            row["path"] = "picked".into();
-            row
-        })
-        .collect()
+    component_rows_for(&[
+        "ranges",
+        "ranges_grips",
+        "ranges_owners",
+        "ranges_edges",
+        "ranges_edge_forms",
+        "ranges_edge_numeric_verified",
+    ])
+    .into_iter()
+    .map(|mut row| {
+        row["path"] = "picked".into();
+        row
+    })
+    .collect()
 }
 pub fn range_command(row: &Value, ids: &[ObjectId]) -> String {
     let mut result = command(row);
-    for range in row["value"]["getter"]["parameters"].as_array().unwrap() {
+    for (index, range) in row["value"]["getter"]["parameters"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+    {
+        if let Some(edge) = row["value"]["getter"]["edges"][index].as_u64() {
+            result.push_str(&format!(
+                " SubCrv={},{},{},{},{}",
+                ids[range[0].as_u64().unwrap() as usize],
+                if row["value"]["getter"]["numeric_length"].is_number() {
+                    "EdgeWrap"
+                } else {
+                    "Edge"
+                },
+                edge,
+                range[1],
+                range[2]
+            ));
+            continue;
+        }
         result.push_str(&format!(
             " SubCrv={},{},{}",
             ids[range[0].as_u64().unwrap() as usize],

@@ -303,6 +303,11 @@ fn invalid_temporary_ranges_leave_model_selection_and_redo_unchanged() {
         format!("{id},2,NaN"),
         format!("{id},2,inf"),
         format!("{id},2"),
+        format!("{id},Edge,0,2,8"), // A curve has no surface-edge ordinal.
+        format!("{id},Edge,-1,2,8"),
+        format!("{id},Face,0,2,8"),
+        format!("{id},Edge,0,2,NaN"),
+        format!("{id},Edge,0,2,8,9"),
         "missing,2,8".into(),
     ] {
         assert!(

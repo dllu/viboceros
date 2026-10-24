@@ -9,7 +9,7 @@ use crate::{
 const MAGIC: &[u8; 8] = b"VIBOBRP\0";
 const POLYCURVE_MAGIC: &[u8; 8] = b"VIBOPLY\0";
 const ARC_VERSION: u32 = 1;
-const BREP_VERSION: u32 = 2;
+const BREP_VERSION: u32 = 3;
 const POLYCURVE_VERSION: u32 = 3;
 const NO_EDGE: u64 = u64::MAX;
 
@@ -141,6 +141,7 @@ pub fn encode_brep(brep: &Brep) -> Result<Vec<u8>, GeometryCodecError> {
         writer.index(edge.vertices()[1])?;
         writer.f64(edge.tolerance());
         writer.curve3(edge.curve())?;
+        writer.boolean(edge.has_arc_representation());
     }
     for face in brep.faces() {
         writer.boolean(face.is_reversed());
@@ -215,7 +216,10 @@ pub fn decode_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, GeometryC
         let vertices = [reader.index()?, reader.index()?];
         let edge_tolerance = reader.f64()?;
         let curve = reader.curve3()?;
-        edges.push(BrepEdge::try_new(vertices, curve, edge_tolerance)?);
+        let arc = version >= 3 && reader.boolean()?;
+        edges.push(
+            BrepEdge::try_new(vertices, curve, edge_tolerance)?.with_arc_representation(arc)?,
+        );
     }
     for _ in 0..face_count {
         let reversed = reader.boolean()?;

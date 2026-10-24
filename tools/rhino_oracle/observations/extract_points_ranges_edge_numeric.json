@@ -1,0 +1,1912 @@
+{
+  "results": [
+    {
+      "id": "range_numeric_brep_cylinder_points",
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1436071272,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "864090f7-c09f-479f-9113-83a3607423c0"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                0.6180339887498945,
+                -1.9021130325903073,
+                0.0
+              ]
+            ],
+            "id": "5455f2ce-6eb4-43a1-97cf-e5ba73de6d6c"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.9999999999999996,
+                -1.4530850560107222,
+                0.0
+              ]
+            ],
+            "id": "f6138188-0ae5-404b-b9bc-f6dcdacba0c1"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "id": "7f31db4c-d86a-4b45-bacd-48c54f8465fe"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.9999999999999998,
+                1.4530850560107216,
+                0.0
+              ]
+            ],
+            "id": "b1a86992-5eac-45cb-8b1e-869521ee5907"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                0.6180339887498949,
+                1.902113032590307,
+                0.0
+              ]
+            ],
+            "id": "83faaa3f-b0e7-4a6e-a6df-0467ef472e5c"
+          }
+        ],
+        "component_records": null,
+        "history": "Creating meshes... Press Esc to cancel\nCommand: _-ExtractPt\nSelect objects for point extraction ( OutputLayer=Current  Output=Points ): _OutputLayer=_Input\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _Output=_Points\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _SubCrv\nSelect curve to temporarily shorten: _Pause\nSelect curve to temporarily shorten\nStart of curve: w0.61803398874989446,-1.9021130325903073,0.0\nCurrent length is 12.5664. Select end point location or enter curve length ( Direction=Free ): 5.0265482457436690\nSelect curve: w0.6180339887498949,1.9021130325903071,0.0\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=Points ): _Enter\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=Points )\nCreated 5 point objects.\nCommand: _Cancel\nCommand: _Cancel\n",
+        "undo": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1436071272,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "864090f7-c09f-479f-9113-83a3607423c0"
+          }
+        ],
+        "macro": "_-ExtractPt _OutputLayer=_Input _Output=_Points _Enter",
+        "redo": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1436071272,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "864090f7-c09f-479f-9113-83a3607423c0"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                0.6180339887498945,
+                -1.9021130325903073,
+                0.0
+              ]
+            ],
+            "id": "5455f2ce-6eb4-43a1-97cf-e5ba73de6d6c"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.9999999999999996,
+                -1.4530850560107222,
+                0.0
+              ]
+            ],
+            "id": "f6138188-0ae5-404b-b9bc-f6dcdacba0c1"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "id": "7f31db4c-d86a-4b45-bacd-48c54f8465fe"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.9999999999999998,
+                1.4530850560107216,
+                0.0
+              ]
+            ],
+            "id": "b1a86992-5eac-45cb-8b1e-869521ee5907"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                0.6180339887498949,
+                1.902113032590307,
+                0.0
+              ]
+            ],
+            "id": "83faaa3f-b0e7-4a6e-a6df-0467ef472e5c"
+          }
+        ],
+        "curve_profile": null,
+        "before": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1436071272,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "864090f7-c09f-479f-9113-83a3607423c0"
+          }
+        ],
+        "success": true,
+        "source_3dm": "M0QgR2VvbWV0cnkgRmlsZSBGb3JtYXQgICAgICAgODABAAAAfgAAAAAAAAAgUnVudGltZTogT046OlJ1bnRpbWVFbnZpcm9ubWVudDo6V2luZG93cyAzRE0gSS9PIHByb2Nlc3NvcjogT3Blbk5VUkJTIHRvb2xraXQgdmVyc2lvbiAyNDI0MzQ2NTIxIChjb21waWxlZCBvbiBKdW4gIDkgMjAyNikKGgAUAAAQiQAAAAAAAAAmAACgmZeAkAAAAAAhgAAgZQAAAAAAAAAQBQAAAGQAbABsAHUAAAAwAAAABAAAABcAAAAYAAAACQAAAH4AAAAGAAAAKAEAAAUAAABkAGwAbAB1AAAAMAAAAAQAAAAXAAAAGAAAAAkAAAB+AAAABgAAACgBAAABAAAAKYg+f/////8AAAAAAAAAABUAABDlBQAAAAAAADGAACA4AAAAAAAAAGYAAAACAAAAldYm6AsuET45nVKiRt+RP3sUrkfheoQ/AAAAAAMAAAD8qfHSTWJQPwAAAAAttK6/MoAAIJYAAAAAAAAAFQAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAtQxzr4jYaPwAAAAAAAAAAAAAAAAAAGEAAAAAAAAAAAIdE50oYV9Y/AAAAAAAA8D+HROdKGFfWP4dE50oYV7Y/AAAAAAIAAAAAAAAAAAAAAAAAAQCAAEAWAAAAAAAAAAEAAAADAAAABAAAAAIAAAAAAAZdC7DXEQBhM4AAIJYAAAAAAAAAFQEAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAtQxzr4jYaPwAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAIdE50oYV9Y/AAAAAAAA8D+HROdKGFfWP4dE50oYV7Y/AAAAAAEAAAAAmpmZmZmZ6T8AAQCAAEAWAAAAAAAAAAEAAAADAAAABAAAAAIAAAAAAAZdC7Cy2r7ZNIAAIIIAAAAAAAAAFAAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAADwPwEAAAAAAADwPwEBAQAAAAAAAAAAAAAAAAAAAAAAdIuPKjWAACAIAAAAAAAAAAAAAAAc30QhNoAAIAgAAAAAAAAAAAAAABzfRCE3gAAgCAAAAAAAAAAAAAAAHN9EITgAAKAAAAAAAAAAADmAACAMAAAAAAAAAP////8AAAAA/////zqAACAMAAAAAAAAAAAAAAAAAAAAad8iZTwAAKABAAAAAAAAAD2AACCZAAAAAAAAAACAAECJAAAAAAAAAAEAAAADAAAAACADAABYAgAAAAAAAAAAUkAIAAAAAAAAAAAAAAD///8AoKCgAAAAAAAAAAABAAAAAAAAAAEAAAABAAAA6AMAAOgDAAAAAAAAAADoPwAAAAAAAAAAAABZQAAAAAAAAFBAmpmZmZmZuT8KAAAAAAAAAAAAAAAAAAAAAAAAAACMuoc7AAAAAD+AACApAAAAAAAAABAAAAAAAADwPwAAAAAAAPA/RgAAAAUAAAABAAAAAQAAAAEAAACE6criMgEAoAAAAAAAAAAAMwEAoAAAAAAAAAAANIEAIEECAAAAAAAAFwAAAAAAAPA//////wAAAAD/////AAAAAACAAEBAAAAAAAAAAAEAAAAAAAAAZgAAAAIAAAD8qfHSTWJQPzmdUqJG35E/exSuR+F6hD8AAAAAAwAAAPyp8dJNYlA/AAAAAEQaUgcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAQJQAAAAAAAAAAQAAAAIAAADSHTOevfjl/9IdM569+OX/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAieCmqQAAgABAEQAAAAAAAAABAAAAAAAAAAABAAAAYvheahUAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAALUMc6+I2Gj8AAAAAAAAAAAAAAAAAABhAAAAAAAAAAACHROdKGFfWPwAAAAAAAPA/h0TnShhX1j+HROdKGFe2PwAAAAACAAAAAAAAAAAAAAAAAAEAgABAFgAAAAAAAAABAAAAAwAAAAQAAAACAAAAAAAGXQuwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAeAgAAAAAAAFCAACD9AAAAAAAAAPp/AgDtAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CALUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAKFB4AAAAAAAAAAAAAAAAAAAAAAAAAPA/EAAAAEUAeAB0AHIAYQBjAHQAIABpAG4AcAB1AHQAIAAwAAAAAf//////////AAAAAAAAAAAA+hHF0vHoUUKidMXKAOJBvQAAAAAAAAAAAAAAAAAAAAABAIAAQBAAAAAAAAAAAQAAAAAAAAAAAAAAAIpw4AAAAAAAAAAAAAAAAAAAAAAAnshTBv9/AoAAAAAAAAAAAAAAAABQgAAg/QAAAAAAAAD6fwIA7QAAAAAAAAD7/wIAFAAAAAAAAAATmICVhenTEb/lABCDASLwO0cHHfz/AgC1AAAAAAAAAB8AAAAAAQAAAP//////////AAAAABQoPAAAAAAAAAAAAAAAAAAAAAAAAADwPxAAAABFAHgAdAByAGEAYwB0ACAAYwB1AHIAcgBlAG4AdAAAAAH//////////wAAAAAAAAAAAI9fKhHA1uxJjTJBMTm3MYwAAAAAAAAAAAAAAAAAAAAAAQCAAEAQAAAAAAAAAAEAAAAAAAAAAAAAAACKcOAAAAAAAAAAAAAAAAAAAAAAAF1EfYv/fwKAAAAAAAAAAAAAAAAA/////wAAAAAAAAAAGAAAEAwAAAAAAAAA/////wAAAAAAAAAAGQAAEAwAAAAAAAAA/////wAAAAAAAAAAIAAAEAwAAAAAAAAA/////wAAAAAAAAAAEgAAEAwAAAAAAAAA/////wAAAAAAAAAAIgAAEAwAAAAAAAAA/////wAAAAAAAAAAIQAAEAwAAAAAAAAA/////wAAAAAAAAAAEwAAEHsUAAAAAAAAcIAAIGMUAAAAAAAAcQAAghAAAAAAAAAA+n8CAPkTAAAAAAAA+/8CABQAAAAAAAAAQ8Jv8CqjCEad2KfSxM4qNij+rDr8/wIAwRMAAAAAAAAzAIAAQM0GAAAAAAAAEAYAAAABAAAA+n8CAL4AAAAAAAAA+/8CABQAAAAAAAAAGRGvXlEL1BG//gAQgwEi8EoaeRf8/wIAhgAAAAAAAAARAgAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAGC1EVPshKUACAAAAAAAAAAAAAAAAAAAAAAAAABgtRFT7ISlAAAAAAAAAAAAAwtjFv/9/AoAAAAAAAAAAAAEAAAD6fwIAvgAAAAAAAAD7/wIAFAAAAAAAAAAZEa9eUQvUEb/+ABCDASLwShp5F/z/AgCGAAAAAAAAABECAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIQAIAAAAYLURU+yEpQAAAAAAAAAAAGC1EVPshKUAAAAAAAAAIQADsI0Rg/38CgAAAAAAAAAAAAQAAAPp/AgC+AAAAAAAAAPv/AgAUAAAAAAAAABkRr15RC9QRv/4AEIMBIvBKGnkX/P8CAIYAAAAAAAAAEQIAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAABgtRFT7ISlAAgAAABgtRFT7ISlAAAAAAAAACEAAAAAAAAAAAAAAAAAAAAhAABau1hz/fwKAAAAAAAAAAAABAAAA+n8CAL4AAAAAAAAA+/8CABQAAAAAAAAAGRGvXlEL1BG//gAQgwEi8EoaeRf8/wIAhgAAAAAAAAARAgAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAACEACAAAAAAAAAAAAAAAAAAAAAAAIQAAAAAAAAAAAAAAAAAAAAAAAOFVXw/9/AoAAAAAAAAAAAAEAAAD6fwIAtgEAAAAAAAD7/wIAFAAAAAAAAAAZEa9eUQvUEb/+ABCDASLwShp5F/z/AgB+AQAAAAAAABECAAAAAQAAAAMAAAAJAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAABgtRFT7Ifk/GC1EVPsh+T8YLURU+yEJQBgtRFT7IQlA0iEzf3zZEkDSITN/fNkSQBgtRFT7IRlAGC1EVPshGUAJAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAPA/zDt/Zp6g9j/MO39mnqD2P8w7f2aeoOY/AAAAAAAAAAAAAAAAAAAAQAAAAAAAAPA/zDt/Zp6g9r/MO39mnqD2P8w7f2aeoOY/AAAAAAAAAMAAAAAAAAAAAAAAAAAAAPA/zDt/Zp6g9r/MO39mnqD2v8w7f2aeoOY/AAAAAAAAAAAAAAAAAAAAwAAAAAAAAPA/zDt/Zp6g9j/MO39mnqD2v8w7f2aeoOY/AAAAAAAAAEAAAAAAAAAAAAAAAAAAAPA/ALpmQCf/fwKAAAAAAAAAAAABAAAA+n8CALYBAAAAAAAA+/8CABQAAAAAAAAAGRGvXlEL1BG//gAQgwEi8EoaeRf8/wIAfgEAAAAAAAARAgAAAAEAAAADAAAACQAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAYLURU+yH5PxgtRFT7Ifk/GC1EVPshCUAYLURU+yEJQNIhM3982RJA0iEzf3zZEkAYLURU+yEZQBgtRFT7IRlACQAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAADwP8w7f2aeoPY/zDt/Zp6g9j/MO39mnqDmPwAAAAAAAAAAAAAAAAAAAEAAAAAAAADwP8w7f2aeoPa/zDt/Zp6g9j/MO39mnqDmPwAAAAAAAADAAAAAAAAAAAAAAAAAAADwP8w7f2aeoPa/zDt/Zp6g9r/MO39mnqDmPwAAAAAAAAAAAAAAAAAAAMAAAAAAAADwP8w7f2aeoPY/zDt/Zp6g9r/MO39mnqDmPwAAAAAAAABAAAAAAAAAAAAAAAAAAADwPwC6ZkAn/38CgAAAAAAAAAAACaK5LQCAAEAcAwAAAAAAABADAAAAAQAAAPp/AgAxAQAAAAAAAPv/AgAUAAAAAAAAACq+M8+0CdQRv/sAEIMBIvCWHM6B/P8CAPkAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAACAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAHXBQzJqahPAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAwAdcFDMmprE8AAAAAAAAAAAAAAAAAAAAABgtRFT7IRlAAAAAAAAAAAAYLURU+yEpQAMAAADXS9s7/38CgAAAAAAAAAAAAQAAAPp/AgCBAAAAAAAAAPv/AgAUAAAAAAAAANvU105H6dMRv+UAEIMBIvD0m+kj/P8CAEkAAAAAAAAAEAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAIQAAAAAAAAAAAAAAAAAAACEADAAAAYVWvVv9/AoAAAAAAAAAAAAEAAAD6fwIAMQEAAAAAAAD7/wIAFAAAAAAAAAAqvjPPtAnUEb/7ABCDASLwlhzOgfz/AgD5AAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAPC/AAAAAAAAAIAAAAAAAAAAgAAAAAAAAACAAAAAAAAA8L8AAAAAAAAAgAAAAAAAAACAAAAAAAAA8L8AAAAAAAAIQAAAAAAAAABAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAhAB1wUMyamoTwAAAAAAAAAwAAAAAAAAAhAAAAAAAAAAMAHXBQzJqaxvAAAAAAAAAhAGC1EVPshGcAAAAAAAAAAgBgtRFT7ISnAAAAAAAAAAIADAAAAs1SM7P9/AoAAAAAAAAAAAKb3xRgAgABAugMAAAAAAAAQAwAAAAEAAAD6fwIATwEAAAAAAAD7/wIAFAAAAAAAAAC2AYQKNE2ZS4YVG05yPcTl1gEt3Pz/AgAXAQAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAABgtRFT7IRlAAAAAAAAAAAAYLURU+yEpQAAAAAAAAADAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAAAAAIQAAAAAAB+n8CAIEAAAAAAAAA+/8CABQAAAAAAAAA29TXTkfp0xG/5QAQgwEi8PSb6SP8/wIASQAAAAAAAAAQAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAhAAAAAAAAAAAAAAAAAAAAIQAMAAABhVa9W/38CgAAAAAAAAAAArCk3Jf9/AoAAAAAAAAAAAAEAAAD6fwIAGQEAAAAAAAD7/wIAFAAAAAAAAAAXyGBH4wvUEb/+ABCDASLwqyiOvvz/AgDhAAAAAAAAABADAAAAAAAAAAIAAAACAAAAAgAAAAIAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAwAAAAAAAAABAAgAAAAAAAAAAAADAAAAAAAAAAEAEAAAAAAAAAAAAAMAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAwAAAAAAAAAAAq9oW+v9/AoAAAAAAAAAAAAEAAAD6fwIAGQEAAAAAAAD7/wIAFAAAAAAAAAAXyGBH4wvUEb/+ABCDASLwqyiOvvz/AgDhAAAAAAAAABADAAAAAAAAAAIAAAACAAAAAgAAAAIAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAwAAAAAAAAABAAgAAAAAAAAAAAADAAAAAAAAAAEAEAAAAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAhAAAAAAAAAAMAAAAAAAAAAQAAAAAAAAAhAAAAAAAAAAEAAAAAAAAAAwAAAAAAAAAhAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAhADYaNPf9/AoAAAAAAAAAAAKb3xRgAgABAcQAAAAAAAAAQAgAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAEAHXBQzJqbBvAAAAAAAAAhAAwAAAAEAAAACAAAAAgAAAAAAAAAAAAAAxLab0wCAAEDhAAAAAAAAABADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYLURU+yEpQAAAAAAAAAAAAgAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAABgtRFT7ISlAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAIQAAAAAABAAAAAgAAAAEAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAgAAAAIAAAAAAAAAGC1EVPshKcAAAAAAAAAAgAEAAAABAAAAAgAAAAIAAAAFAAAAAAAAAAAAAAAYLURU+yEpwAAAAAAAAACA9TKGngCAAEAhAwAAAAAAABAGAAAAAAAAAAAAAAAAAAAAAAAAABgtRFT7ISlAAAAAAAAAAAAAAAAAAAAAAAIAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgtRFT7ISlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAhAAQAAAAAAAAABAAAAAAAAAAMAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAABgtRFT7ISlAAgAAAAEAAAABAAAAAAAAAAIAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgtRFT7ISlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAMAAAAAAAAAAAAAAAAAAAAAAAhAAQAAAAEAAAAAAAAAAQAAAAMAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAAABgtRFT7IRlAAAAAAAAAAAAAAAAAAQAAAAIAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgtRFT7IRlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAAUAAAAAAAAAAAAAABgtRFT7IRlAAgAAAAEAAAABAAAAAQAAAAIAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgtRFT7IRlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+/5dQgCAAEBRAAAAAAAAABADAAAAAAAAAAQAAAAAAAAAAQAAAAIAAAADAAAAAQAAAAAAAAABAAAAAQAAAAQAAAABAAAAAQAAAAIAAAABAAAABQAAAAEAAAACAAAAXVt70gCAAECCAAAAAAAAABIDAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAEAAAABAAAAAQAAAAAAAAAAAAAAAgAAAAEAAAACAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/jWcMAAAAAAAAAwAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAACEAAgABABwAAAAAAAAAAAAAS2UH/AIAAQAcAAAAAAAAAAAAAEtlB/wEAAAAAgABADQAAAAAAAAABAAAAAQAAAABdKRLMfeuwgv9/AoAAAAAAAAAAAHKAAAI2AAAAAAAAAC33kECGn8CfR5ETg6NgdCPAAAAAAAEIAAAASQBuAHAAdQB0ACAAMAAAAAYRK1sADQEApz98gn8AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAGsxAAAAAAAA",
+        "getter": {
+          "numeric_length": 5.026548245743669,
+          "parameters": [
+            [
+              0,
+              10.053096491487338,
+              5.026548245743669
+            ]
+          ],
+          "script": "_-ExtractPt _OutputLayer=_Input _Output=_Points  _SubCrv _Pause w0.61803398874989446,-1.9021130325903073,0.0 5.0265482457436690 w0.6180339887498949,1.9021130325903071,0.0 _Enter _Cancel _Cancel",
+          "frustum_verified": true,
+          "acknowledged": true,
+          "confirmation": [
+            0.6180339887498949,
+            1.902113032590307,
+            0.0
+          ],
+          "curve_type": "ArcCurve",
+          "marker": "@component-click:range_numeric_brep_cylinder_points:0:sub",
+          "edges": [
+            0
+          ],
+          "world_coordinates": true,
+          "points": [
+            [
+              0,
+              [
+                0.6180339887498945,
+                -1.9021130325903073,
+                0.0
+              ],
+              [
+                -1.6180339887498947,
+                1.1755705045849465,
+                0.0
+              ]
+            ]
+          ],
+          "menu": false
+        },
+        "input": {
+          "output": "Points",
+          "range_whole_first": true,
+          "edge_length": 0.4,
+          "order": [
+            0
+          ],
+          "layer": "Input",
+          "sources": [
+            {
+              "kind": "brep_cylinder",
+              "mode": null,
+              "grips": []
+            }
+          ],
+          "whole": [],
+          "edge_ranges": [
+            [
+              0,
+              0,
+              0.8,
+              0.2
+            ]
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtractPt",
+            "objects": [
+              {
+                "layer": "Extract input 0",
+                "name": "Input 0",
+                "selected": false,
+                "crc": 1436071272,
+                "groups": [
+                  "Extract assembly"
+                ],
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "cloud": false,
+                "color_source": 1,
+                "grips_on": false,
+                "grips": [],
+                "source": 0,
+                "points": null,
+                "id": "864090f7-c09f-479f-9113-83a3607423c0"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    0.6180339887498945,
+                    -1.9021130325903073,
+                    0.0
+                  ]
+                ],
+                "id": "5455f2ce-6eb4-43a1-97cf-e5ba73de6d6c"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    1.9999999999999996,
+                    -1.4530850560107222,
+                    0.0
+                  ]
+                ],
+                "id": "f6138188-0ae5-404b-b9bc-f6dcdacba0c1"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "id": "7f31db4c-d86a-4b45-bacd-48c54f8465fe"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    1.9999999999999998,
+                    1.4530850560107216,
+                    0.0
+                  ]
+                ],
+                "id": "b1a86992-5eac-45cb-8b1e-869521ee5907"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    0.6180339887498949,
+                    1.902113032590307,
+                    0.0
+                  ]
+                ],
+                "id": "83faaa3f-b0e7-4a6e-a6df-0467ef472e5c"
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range_numeric_brep_cylinder_pointcloud",
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1436071272,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "5f4100f9-869d-43fc-8093-40511da71e1f"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": true,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.6180339887498947,
+                -1.1755705045849467,
+                0.0
+              ],
+              [
+                1.9999999999999998,
+                -0.649839392465813,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999999998,
+                1.4530850560107216,
+                0.0
+              ],
+              [
+                0.6180339887498949,
+                1.902113032590307,
+                0.0
+              ]
+            ],
+            "id": "4471cae8-ee98-498a-a0b0-c3295e5035e7"
+          }
+        ],
+        "component_records": null,
+        "history": "Creating meshes... Press Esc to cancel\nCommand: _-ExtractPt\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _OutputLayer=_Current\nSelect objects for point extraction ( OutputLayer=Current  Output=Points ): _Output=_PointCloud\nSelect objects for point extraction ( OutputLayer=Current  Output=PointCloud ): _SubCrv\nSelect curve to temporarily shorten: _Pause\nSelect curve to temporarily shorten\nStart of curve: w0.6180339887498949,1.9021130325903071,0.0\nCurrent length is 12.5664. Select end point location or enter curve length ( Direction=Free ): 3.7699111843077517\nSelect curve: w-0.61803398874989512,-1.9021130325903071,0.0\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Current  Output=PointCloud ): _Enter\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Current  Output=PointCloud )\nCreated one point cloud of 5 points.\nCommand: _Cancel\nCommand: _Cancel\n",
+        "undo": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1436071272,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "5f4100f9-869d-43fc-8093-40511da71e1f"
+          }
+        ],
+        "macro": "_-ExtractPt _OutputLayer=_Current _Output=_PointCloud _Enter",
+        "redo": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1436071272,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "5f4100f9-869d-43fc-8093-40511da71e1f"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": true,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.6180339887498947,
+                -1.1755705045849467,
+                0.0
+              ],
+              [
+                1.9999999999999998,
+                -0.649839392465813,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999999998,
+                1.4530850560107216,
+                0.0
+              ],
+              [
+                0.6180339887498949,
+                1.902113032590307,
+                0.0
+              ]
+            ],
+            "id": "4471cae8-ee98-498a-a0b0-c3295e5035e7"
+          }
+        ],
+        "curve_profile": null,
+        "before": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1436071272,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "5f4100f9-869d-43fc-8093-40511da71e1f"
+          }
+        ],
+        "success": true,
+        "source_3dm": "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CTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAGsxAAAAAAAA",
+        "getter": {
+          "numeric_length": 3.7699111843077517,
+          "parameters": [
+            [
+              0,
+              2.5132741228718345,
+              6.283185307179586
+            ]
+          ],
+          "script": "_-ExtractPt _OutputLayer=_Current _Output=_PointCloud  _SubCrv _Pause w0.6180339887498949,1.9021130325903071,0.0 3.7699111843077517 w-0.61803398874989512,-1.9021130325903071,0.0 _Enter _Cancel _Cancel",
+          "frustum_verified": true,
+          "acknowledged": true,
+          "confirmation": [
+            -0.6180339887498951,
+            -1.902113032590307,
+            0.0
+          ],
+          "curve_type": "ArcCurve",
+          "marker": "@component-click:range_numeric_brep_cylinder_pointcloud:0:sub",
+          "edges": [
+            0
+          ],
+          "world_coordinates": true,
+          "points": [
+            [
+              0,
+              [
+                0.6180339887498949,
+                1.902113032590307,
+                0.0
+              ],
+              [
+                -2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "menu": false
+        },
+        "input": {
+          "output": "PointCloud",
+          "range_whole_first": true,
+          "edge_length": 0.3,
+          "order": [
+            0
+          ],
+          "layer": "Current",
+          "sources": [
+            {
+              "kind": "brep_cylinder",
+              "mode": null,
+              "grips": []
+            }
+          ],
+          "whole": [],
+          "edge_ranges": [
+            [
+              0,
+              0,
+              0.2,
+              0.7
+            ]
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtractPt",
+            "objects": [
+              {
+                "layer": "Extract input 0",
+                "name": "Input 0",
+                "selected": false,
+                "crc": 1436071272,
+                "groups": [
+                  "Extract assembly"
+                ],
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "cloud": false,
+                "color_source": 1,
+                "grips_on": false,
+                "grips": [],
+                "source": 0,
+                "points": null,
+                "id": "5f4100f9-869d-43fc-8093-40511da71e1f"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": true,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    1.6180339887498947,
+                    -1.1755705045849467,
+                    0.0
+                  ],
+                  [
+                    1.9999999999999998,
+                    -0.649839392465813,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    1.9999999999999998,
+                    1.4530850560107216,
+                    0.0
+                  ],
+                  [
+                    0.6180339887498949,
+                    1.902113032590307,
+                    0.0
+                  ]
+                ],
+                "id": "4471cae8-ee98-498a-a0b0-c3295e5035e7"
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range_numeric_brep_nurbs_cylinder_points",
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1941073166,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "350cfb3d-769d-4fb4-99bf-a2ff8db7cf3e"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                0.5876238754231755,
+                -1.9117264922139483,
+                0.0
+              ]
+            ],
+            "id": "a434956a-b258-4511-85c4-a4d255626b95"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.9999999999999998,
+                -1.4775922500725172,
+                0.0
+              ]
+            ],
+            "id": "2049f1a1-1be9-4f42-8e8c-005eecbee22f"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "id": "28fd3884-cd2d-453d-96dc-ecc42d90741f"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                2.0,
+                1.428860213603752,
+                0.0
+              ]
+            ],
+            "id": "ce558003-d65c-411b-b8c8-f6183ae30f7d"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                0.6482868891616294,
+                1.8920158850657511,
+                0.0
+              ]
+            ],
+            "id": "a859ec1b-4f15-4f07-b5f7-0b3a2a44547d"
+          }
+        ],
+        "component_records": null,
+        "history": "Creating meshes... Press Esc to cancel\nCommand: _-ExtractPt\nSelect objects for point extraction ( OutputLayer=Current  Output=PointCloud ): _OutputLayer=_Input\nSelect objects for point extraction ( OutputLayer=Input  Output=PointCloud ): _Output=_Points\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _SubCrv\nSelect curve to temporarily shorten: _Pause\nSelect curve to temporarily shorten\nStart of curve: w0.58762387542317573,-1.9117264922139485,0.0\nCurrent length is 12.5664. Select end point location or enter curve length ( Direction=Free ): 5.0265482573020392\nSelect curve: w0.58762387542317573,1.9117264922139485,0.0\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=Points ): _Enter\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=Points )\nCreated 5 point objects.\nCommand: _Cancel\nCommand: _Cancel\n",
+        "undo": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1941073166,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "350cfb3d-769d-4fb4-99bf-a2ff8db7cf3e"
+          }
+        ],
+        "macro": "_-ExtractPt _OutputLayer=_Input _Output=_Points _Enter",
+        "redo": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1941073166,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "350cfb3d-769d-4fb4-99bf-a2ff8db7cf3e"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                0.5876238754231755,
+                -1.9117264922139483,
+                0.0
+              ]
+            ],
+            "id": "a434956a-b258-4511-85c4-a4d255626b95"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.9999999999999998,
+                -1.4775922500725172,
+                0.0
+              ]
+            ],
+            "id": "2049f1a1-1be9-4f42-8e8c-005eecbee22f"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "id": "28fd3884-cd2d-453d-96dc-ecc42d90741f"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                2.0,
+                1.428860213603752,
+                0.0
+              ]
+            ],
+            "id": "ce558003-d65c-411b-b8c8-f6183ae30f7d"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": false,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                0.6482868891616294,
+                1.8920158850657511,
+                0.0
+              ]
+            ],
+            "id": "a859ec1b-4f15-4f07-b5f7-0b3a2a44547d"
+          }
+        ],
+        "curve_profile": null,
+        "before": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1941073166,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "350cfb3d-769d-4fb4-99bf-a2ff8db7cf3e"
+          }
+        ],
+        "success": true,
+        "source_3dm": "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YXVsdC1jb250ZW50LXNlY3Rpb24vPg0KCQk8c2V0dGluZ3M+DQoJCQk8bmFtZWQtdmlld3M+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtdmlld3M+DQoJCQk8bmFtZWQtY3BsYW5lcz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1jcGxhbmVzPg0KCQkJPG5hbWVkLXBvc2l0aW9ucz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1wb3NpdGlvbnM+DQoJCQk8bmFtZWQtc25hcHNob3RzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXNuYXBzaG90cz4NCgkJCTxtaXNjZWxsYW5lb3VzPg0KCQkJCTxjdXN0b20taW1hZ2Utc2l6ZS1pcy1wcmVzZXQgdHlwZT0iYm9vbCI+ZmFsc2U8L2N1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldD4NCgkJCQk8c21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQkJCTxpbXBvcnQgdHlwZT0iYm9vbCI+ZmFsc2U8L2ltcG9ydD4NCgkJCQkJPHBhc3RlIHR5cGU9ImJvb2wiPmZhbHNlPC9wYXN0ZT4NCgkJCQk8L3NtYXJ0LW1lcmdlLW5hbWUtY29sbGlzaW9uLXN1cHByZXNzPg0KCQkJPC9taXNjZWxsYW5lb3VzPg0KCQkJPGV4Y2x1ZGVkLXJlbmRlci1lbmdpbmVzPg0KCQkJCTx1dWlkcyB0eXBlPSJzdHJpbmciLz4NCgkJCTwvZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQk8ZmlsdGVycz4NCgkJCQk8bmFtZS1maWx0ZXIgdHlwZT0ic3RyaW5nIi8+DQoJCQkJPG5hbWUtZmlsdGVyLWludmVydCB0eXBlPSJib29sIj5mYWxzZTwvbmFtZS1maWx0ZXItaW52ZXJ0Pg0KCQkJCTxzaG93LXVuYXNzaWduZWQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctdjQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdjQtbWF0ZXJpYWxzPg0KCQkJCTxzaG93LWhpZGRlbi1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctaGlkZGVuLW1hdGVyaWFscz4NCgkJCQk8c2hvdy1yZWZlcmVuY2UtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPmZhbHNlPC9zaG93LXJlZmVyZW5jZS1tYXRlcmlhbHM+DQoJCQk8L2ZpbHRlcnM+DQoJCQk8cG9zdC1lZmZlY3RzLW5ldz4NCgkJCQk8ZWFybHkvPg0KCQkJCTx0b25lLW1hcHBpbmcvPg0KCQkJCTxsYXRlLz4NCgkJCTwvcG9zdC1lZmZlY3RzLW5ldz4NCgkJCTxyZW5kZXJpbmc+DQoJCQkJPHJlbmRlci1jaGFubmVscz4NCgkJCQkJPGxpc3QgdHlwZT0ic3RyaW5nIj40NTNBOUExQy05MzA3LTQ5NzYtQjI4Mi00RUFENEQ1Mzk4Nzk7Qjc1MkNFMEItQzIxOS00QkRELUIxMzQtMjY0MjVFMUM0MzMxPC9saXN0Pg0KCQkJCQk8bW9kZSB0eXBlPSJzdHJpbmciPmF1dG9tYXRpYzwvbW9kZT4NCgkJCQk8L3JlbmRlci1jaGFubmVscz4NCgkJCQk8ZW1iZWQtc3VwcG9ydC1maWxlcy1vbiB0eXBlPSJib29sIj50cnVlPC9lbWJlZC1zdXBwb3J0LWZpbGVzLW9uPg0KCQkJCTx1c2UtZGl0aGVyaW5nIHR5cGU9ImJvb2wiPmZhbHNlPC91c2UtZGl0aGVyaW5nPg0KCQkJCTxkaXRoZXJpbmcgdHlwZT0ic3RyaW5nIj5mbG95ZC1zdGVpbmJlcmc8L2RpdGhlcmluZz4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmciB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L2N1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnI+DQoJCQkJPGN1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnItb24gdHlwZT0iYm9vbCI+dHJ1ZTwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbj4NCgkJCQk8dXNlLXBvc3QtcHJvY2Vzcy1nYW1tYSB0eXBlPSJib29sIj50cnVlPC91c2UtcG9zdC1wcm9jZXNzLWdhbW1hPg0KCQkJCTxnYW1tYSB0eXBlPSJmbG9hdCI+Mi4yMDAwMDAwNDc2ODM3MjwvZ2FtbWE+DQoJCQkJPHVzZS1saW5lYXItd29ya2Zsb3cgdHlwZT0iYm9vbCI+dHJ1ZTwvdXNlLWxpbmVhci13b3JrZmxvdz4NCgkJCTwvcmVuZGVyaW5nPg0KCQkJPHN1bj4NCgkJCQk8ZW5hYmxlLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvZW5hYmxlLWFsbG93ZWQ+DQoJCQkJPGVuYWJsZS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZW5hYmxlLW9uPg0KCQkJCTxtYW51YWwtY29udHJvbC1hbGxvd2VkIHR5cGU9ImJvb2wiPnRydWU8L21hbnVhbC1jb250cm9sLWFsbG93ZWQ+DQoJCQkJPG1hbnVhbC1jb250cm9sLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9tYW51YWwtY29udHJvbC1vbj4NCgkJCQk8aW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvaW50ZW5zaXR5Pg0KCQkJCTxzaGFkb3ctaW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvc2hhZG93LWludGVuc2l0eT4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9kYXlsaWdodC1zYXZpbmctb24+DQoJCQkJPGRheWxpZ2h0LXNhdmluZy1taW51dGVzIHR5cGU9ImludCI+NjA8L2RheWxpZ2h0LXNhdmluZy1taW51dGVzPg0KCQkJCTx5ZWFyIHR5cGU9ImludCI+MjAyNjwveWVhcj4NCgkJCQk8bW9udGggdHlwZT0iaW50Ij4zPC9tb250aD4NCgkJCQk8ZGF5IHR5cGU9ImludCI+MjE8L2RheT4NCgkJCQk8dGltZSB0eXBlPSJkb3VibGUiPjEyLjAwMDAwMDAxPC90aW1lPg0KCQkJCTxzdW4tYXppbXV0aCB0eXBlPSJkb3VibGUiPjE2OC4yNjkzODg1ODYxMDg8L3N1bi1hemltdXRoPg0KCQkJCTxzdW4tYWx0aXR1ZGUgdHlwZT0iZG91YmxlIj44OS42MDE4MzIwMzY3Mzc8L3N1bi1hbHRpdHVkZT4NCgkJCQk8c2t5bGlnaHQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtb24+DQoJCQkJPHNreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9za3lsaWdodC1zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtY3VzdG9tLWVudmlyb25tZW50LW9uPg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQgdHlwZT0idXVpZCI+MDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQ+DQoJCQkJPG9ic2VydmVyLXRpbWV6b25lIHR5cGU9ImRvdWJsZSI+MDwvb2JzZXJ2ZXItdGltZXpvbmU+DQoJCQk8L3N1bj4NCgkJCTxzYWZlLWZyYW1lPg0KCQkJCTxvbiB0eXBlPSJib29sIj5mYWxzZTwvb24+DQoJCQkJPHBlcnNwZWN0aXZlLW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvcGVyc3BlY3RpdmUtb25seT4NCgkJCQk8ZmllbGQtZGlzcGxheS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZmllbGQtZGlzcGxheS1vbj4NCgkJCQk8bGl2ZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTwvbGl2ZS1mcmFtZT4NCgkJCQk8YWN0aW9uLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJCTx4LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC94LXNjYWxlPg0KCQkJCQk8eS1zY2FsZSB0eXBlPSJkb3VibGUiPjAuOTwveS1zY2FsZT4NCgkJCQkJPGxpbmsgdHlwZT0iYm9vbCI+dHJ1ZTwvbGluaz4NCgkJCQk8L2FjdGlvbi1mcmFtZT4NCgkJCQk8dGl0bGUtZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC44PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvdGl0bGUtZnJhbWU+DQoJCQk8L3NhZmUtZnJhbWU+DQoJCQk8Z3JvdW5kLXBsYW5lPg0KCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQk8c2hvdy11bmRlcnNpZGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctdW5kZXJzaWRlPg0KCQkJCTxhbHRpdHVkZSB0eXBlPSJkb3VibGUiPjA8L2FsdGl0dWRlPg0KCQkJCTxhdXRvLWFsdGl0dWRlIHR5cGU9ImJvb2wiPnRydWU8L2F1dG8tYWx0aXR1ZGU+DQoJCQkJPHNoYWRvdy1vbmx5IHR5cGU9ImJvb2wiPnRydWU8L3NoYWRvdy1vbmx5Pg0KCQkJCTxtYXRlcmlhbCB0eXBlPSJzdHJpbmciLz4NCgkJCQk8dGV4dHVyZS1zaXplIHR5cGU9InZlY3RvcjJkIj4xLDE8L3RleHR1cmUtc2l6ZT4NCgkJCQk8dGV4dHVyZS1vZmZzZXQgdHlwZT0idmVjdG9yMmQiPjAsMDwvdGV4dHVyZS1vZmZzZXQ+DQoJCQkJPHRleHR1cmUtcm90YXRpb24gdHlwZT0iZG91YmxlIj4wPC90ZXh0dXJlLXJvdGF0aW9uPg0KCQkJCTxvZmZzZXQtbG9jayB0eXBlPSJib29sIj5mYWxzZTwvb2Zmc2V0LWxvY2s+DQoJCQkJPHJlcGVhdC1sb2NrIHR5cGU9ImJvb2wiPnRydWU8L3JlcGVhdC1sb2NrPg0KCQkJPC9ncm91bmQtcGxhbmU+DQoJCTwvc2V0dGluZ3M+DQoJCTxtYXRlcmlhbC1zZWN0aW9uLz4NCgkJPGVudmlyb25tZW50LXNlY3Rpb24vPg0KCQk8dGV4dHVyZS1zZWN0aW9uLz4NCgk8L3JlbmRlci1jb250ZW50LW1hbmFnZXItZG9jdW1lbnQ+DQo8L3htbD4NCgAAAAD/////AAAAAAAAAAD/fwAACAAAAAAAAADiLQAAAAAAAA==",
+        "getter": {
+          "numeric_length": 5.026548257302039,
+          "parameters": [
+            [
+              0,
+              5.026548245743669,
+              2.490219246538053
+            ]
+          ],
+          "script": "_-ExtractPt _OutputLayer=_Input _Output=_Points  _SubCrv _Pause w0.58762387542317573,-1.9117264922139485,0.0 5.0265482573020392 w0.58762387542317573,1.9117264922139485,0.0 _Enter _Cancel _Cancel",
+          "frustum_verified": true,
+          "acknowledged": true,
+          "confirmation": [
+            0.5876238754231757,
+            1.9117264922139485,
+            0.0
+          ],
+          "curve_type": "NurbsCurve",
+          "marker": "@component-click:range_numeric_brep_nurbs_cylinder_points:0:sub",
+          "edges": [
+            0
+          ],
+          "world_coordinates": true,
+          "points": [
+            [
+              0,
+              [
+                0.5876238754231757,
+                -1.9117264922139485,
+                0.0
+              ],
+              [
+                -1.5990823438009025,
+                1.2012225679465949,
+                0.0
+              ]
+            ]
+          ],
+          "menu": false
+        },
+        "input": {
+          "output": "Points",
+          "range_whole_first": true,
+          "edge_length": 0.4,
+          "order": [
+            0
+          ],
+          "layer": "Input",
+          "sources": [
+            {
+              "kind": "brep_nurbs_cylinder",
+              "mode": null,
+              "grips": []
+            }
+          ],
+          "whole": [],
+          "edge_ranges": [
+            [
+              0,
+              0,
+              0.8,
+              0.2
+            ]
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtractPt",
+            "objects": [
+              {
+                "layer": "Extract input 0",
+                "name": "Input 0",
+                "selected": false,
+                "crc": 1941073166,
+                "groups": [
+                  "Extract assembly"
+                ],
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "cloud": false,
+                "color_source": 1,
+                "grips_on": false,
+                "grips": [],
+                "source": 0,
+                "points": null,
+                "id": "350cfb3d-769d-4fb4-99bf-a2ff8db7cf3e"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    0.5876238754231755,
+                    -1.9117264922139483,
+                    0.0
+                  ]
+                ],
+                "id": "a434956a-b258-4511-85c4-a4d255626b95"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    1.9999999999999998,
+                    -1.4775922500725172,
+                    0.0
+                  ]
+                ],
+                "id": "2049f1a1-1be9-4f42-8e8c-005eecbee22f"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ]
+                ],
+                "id": "28fd3884-cd2d-453d-96dc-ecc42d90741f"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    2.0,
+                    1.428860213603752,
+                    0.0
+                  ]
+                ],
+                "id": "ce558003-d65c-411b-b8c8-f6183ae30f7d"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": false,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    0.6482868891616294,
+                    1.8920158850657511,
+                    0.0
+                  ]
+                ],
+                "id": "a859ec1b-4f15-4f07-b5f7-0b3a2a44547d"
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range_numeric_brep_nurbs_cylinder_pointcloud",
+      "elapsed_ns": 0,
+      "value": {
+        "after": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1941073166,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "49572b38-d4e5-412e-a0b3-0be7ff5dd8a8"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": true,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": true,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.636574175153123,
+                -1.1496194888839848,
+                0.0
+              ],
+              [
+                2.0,
+                -0.6322541125319291,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999999998,
+                1.4775922500725172,
+                0.0
+              ],
+              [
+                0.5876238754231755,
+                1.9117264922139483,
+                0.0
+              ]
+            ],
+            "id": "a83e295e-21f9-4489-bbb9-3294d440b457"
+          }
+        ],
+        "component_records": null,
+        "history": "Creating meshes... Press Esc to cancel\nCommand: _-ExtractPt\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _OutputLayer=_Current\nSelect objects for point extraction ( OutputLayer=Current  Output=Points ): _Output=_PointCloud\nSelect objects for point extraction ( OutputLayer=Current  Output=PointCloud ): _SubCrv\nSelect curve to temporarily shorten: _Pause\nSelect curve to temporarily shorten\nStart of curve: w0.58762387542317573,1.9117264922139485,0.0\nCurrent length is 12.5664. Select end point location or enter curve length ( Direction=Free ): 3.7699111929765285\nSelect curve: w-0.58762387542317573,-1.9117264922139485,0.0\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Current  Output=PointCloud ): _Enter\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Current  Output=PointCloud )\nCreated one point cloud of 5 points.\nCommand: _Cancel\nCommand: _Cancel\n",
+        "undo": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1941073166,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "49572b38-d4e5-412e-a0b3-0be7ff5dd8a8"
+          }
+        ],
+        "macro": "_-ExtractPt _OutputLayer=_Current _Output=_PointCloud _Enter",
+        "redo": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1941073166,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "49572b38-d4e5-412e-a0b3-0be7ff5dd8a8"
+          },
+          {
+            "layer": "Extract current",
+            "name": null,
+            "selected": false,
+            "crc": 0,
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "cloud": true,
+            "color_source": 0,
+            "grips_on": false,
+            "grips": [],
+            "source": null,
+            "points": [
+              [
+                1.636574175153123,
+                -1.1496194888839848,
+                0.0
+              ],
+              [
+                2.0,
+                -0.6322541125319291,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999999998,
+                1.4775922500725172,
+                0.0
+              ],
+              [
+                0.5876238754231755,
+                1.9117264922139483,
+                0.0
+              ]
+            ],
+            "id": "a83e295e-21f9-4489-bbb9-3294d440b457"
+          }
+        ],
+        "curve_profile": null,
+        "before": [
+          {
+            "layer": "Extract input 0",
+            "name": "Input 0",
+            "selected": false,
+            "crc": 1941073166,
+            "groups": [
+              "Extract assembly"
+            ],
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "cloud": false,
+            "color_source": 1,
+            "grips_on": false,
+            "grips": [],
+            "source": 0,
+            "points": null,
+            "id": "49572b38-d4e5-412e-a0b3-0be7ff5dd8a8"
+          }
+        ],
+        "success": true,
+        "source_3dm": "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YXVsdC1jb250ZW50LXNlY3Rpb24vPg0KCQk8c2V0dGluZ3M+DQoJCQk8bmFtZWQtdmlld3M+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtdmlld3M+DQoJCQk8bmFtZWQtY3BsYW5lcz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1jcGxhbmVzPg0KCQkJPG5hbWVkLXBvc2l0aW9ucz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC1wb3NpdGlvbnM+DQoJCQk8bmFtZWQtc25hcHNob3RzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXNuYXBzaG90cz4NCgkJCTxtaXNjZWxsYW5lb3VzPg0KCQkJCTxjdXN0b20taW1hZ2Utc2l6ZS1pcy1wcmVzZXQgdHlwZT0iYm9vbCI+ZmFsc2U8L2N1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldD4NCgkJCQk8c21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQkJCTxpbXBvcnQgdHlwZT0iYm9vbCI+ZmFsc2U8L2ltcG9ydD4NCgkJCQkJPHBhc3RlIHR5cGU9ImJvb2wiPmZhbHNlPC9wYXN0ZT4NCgkJCQk8L3NtYXJ0LW1lcmdlLW5hbWUtY29sbGlzaW9uLXN1cHByZXNzPg0KCQkJPC9taXNjZWxsYW5lb3VzPg0KCQkJPGV4Y2x1ZGVkLXJlbmRlci1lbmdpbmVzPg0KCQkJCTx1dWlkcyB0eXBlPSJzdHJpbmciLz4NCgkJCTwvZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQk8ZmlsdGVycz4NCgkJCQk8bmFtZS1maWx0ZXIgdHlwZT0ic3RyaW5nIi8+DQoJCQkJPG5hbWUtZmlsdGVyLWludmVydCB0eXBlPSJib29sIj5mYWxzZTwvbmFtZS1maWx0ZXItaW52ZXJ0Pg0KCQkJCTxzaG93LXVuYXNzaWduZWQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctdjQtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPnRydWU8L3Nob3ctdjQtbWF0ZXJpYWxzPg0KCQkJCTxzaG93LWhpZGRlbi1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctaGlkZGVuLW1hdGVyaWFscz4NCgkJCQk8c2hvdy1yZWZlcmVuY2UtbWF0ZXJpYWxzIHR5cGU9ImJvb2wiPmZhbHNlPC9zaG93LXJlZmVyZW5jZS1tYXRlcmlhbHM+DQoJCQk8L2ZpbHRlcnM+DQoJCQk8cG9zdC1lZmZlY3RzLW5ldz4NCgkJCQk8ZWFybHkvPg0KCQkJCTx0b25lLW1hcHBpbmcvPg0KCQkJCTxsYXRlLz4NCgkJCTwvcG9zdC1lZmZlY3RzLW5ldz4NCgkJCTxyZW5kZXJpbmc+DQoJCQkJPHJlbmRlci1jaGFubmVscz4NCgkJCQkJPGxpc3QgdHlwZT0ic3RyaW5nIj40NTNBOUExQy05MzA3LTQ5NzYtQjI4Mi00RUFENEQ1Mzk4Nzk7Qjc1MkNFMEItQzIxOS00QkRELUIxMzQtMjY0MjVFMUM0MzMxPC9saXN0Pg0KCQkJCQk8bW9kZSB0eXBlPSJzdHJpbmciPmF1dG9tYXRpYzwvbW9kZT4NCgkJCQk8L3JlbmRlci1jaGFubmVscz4NCgkJCQk8ZW1iZWQtc3VwcG9ydC1maWxlcy1vbiB0eXBlPSJib29sIj50cnVlPC9lbWJlZC1zdXBwb3J0LWZpbGVzLW9uPg0KCQkJCTx1c2UtZGl0aGVyaW5nIHR5cGU9ImJvb2wiPmZhbHNlPC91c2UtZGl0aGVyaW5nPg0KCQkJCTxkaXRoZXJpbmcgdHlwZT0ic3RyaW5nIj5mbG95ZC1zdGVpbmJlcmc8L2RpdGhlcmluZz4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmciB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L2N1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnI+DQoJCQkJPGN1c3RvbS1lbnYtZm9yLXJlZmwtYW5kLXJlZnItb24gdHlwZT0iYm9vbCI+dHJ1ZTwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbj4NCgkJCQk8dXNlLXBvc3QtcHJvY2Vzcy1nYW1tYSB0eXBlPSJib29sIj50cnVlPC91c2UtcG9zdC1wcm9jZXNzLWdhbW1hPg0KCQkJCTxnYW1tYSB0eXBlPSJmbG9hdCI+Mi4yMDAwMDAwNDc2ODM3MjwvZ2FtbWE+DQoJCQkJPHVzZS1saW5lYXItd29ya2Zsb3cgdHlwZT0iYm9vbCI+dHJ1ZTwvdXNlLWxpbmVhci13b3JrZmxvdz4NCgkJCTwvcmVuZGVyaW5nPg0KCQkJPHN1bj4NCgkJCQk8ZW5hYmxlLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvZW5hYmxlLWFsbG93ZWQ+DQoJCQkJPGVuYWJsZS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZW5hYmxlLW9uPg0KCQkJCTxtYW51YWwtY29udHJvbC1hbGxvd2VkIHR5cGU9ImJvb2wiPnRydWU8L21hbnVhbC1jb250cm9sLWFsbG93ZWQ+DQoJCQkJPG1hbnVhbC1jb250cm9sLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9tYW51YWwtY29udHJvbC1vbj4NCgkJCQk8aW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvaW50ZW5zaXR5Pg0KCQkJCTxzaGFkb3ctaW50ZW5zaXR5IHR5cGU9ImRvdWJsZSI+MTwvc2hhZG93LWludGVuc2l0eT4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9kYXlsaWdodC1zYXZpbmctb24+DQoJCQkJPGRheWxpZ2h0LXNhdmluZy1taW51dGVzIHR5cGU9ImludCI+NjA8L2RheWxpZ2h0LXNhdmluZy1taW51dGVzPg0KCQkJCTx5ZWFyIHR5cGU9ImludCI+MjAyNjwveWVhcj4NCgkJCQk8bW9udGggdHlwZT0iaW50Ij4zPC9tb250aD4NCgkJCQk8ZGF5IHR5cGU9ImludCI+MjE8L2RheT4NCgkJCQk8dGltZSB0eXBlPSJkb3VibGUiPjEyLjAwMDAwMDAxPC90aW1lPg0KCQkJCTxzdW4tYXppbXV0aCB0eXBlPSJkb3VibGUiPjE2OC4yNjkzODg1ODYxMDg8L3N1bi1hemltdXRoPg0KCQkJCTxzdW4tYWx0aXR1ZGUgdHlwZT0iZG91YmxlIj44OS42MDE4MzIwMzY3Mzc8L3N1bi1hbHRpdHVkZT4NCgkJCQk8c2t5bGlnaHQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtb24+DQoJCQkJPHNreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9za3lsaWdodC1zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24gdHlwZT0iYm9vbCI+dHJ1ZTwvc2t5bGlnaHQtY3VzdG9tLWVudmlyb25tZW50LW9uPg0KCQkJCTxza3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQgdHlwZT0idXVpZCI+MDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQ+DQoJCQkJPG9ic2VydmVyLXRpbWV6b25lIHR5cGU9ImRvdWJsZSI+MDwvb2JzZXJ2ZXItdGltZXpvbmU+DQoJCQk8L3N1bj4NCgkJCTxzYWZlLWZyYW1lPg0KCQkJCTxvbiB0eXBlPSJib29sIj5mYWxzZTwvb24+DQoJCQkJPHBlcnNwZWN0aXZlLW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvcGVyc3BlY3RpdmUtb25seT4NCgkJCQk8ZmllbGQtZGlzcGxheS1vbiB0eXBlPSJib29sIj5mYWxzZTwvZmllbGQtZGlzcGxheS1vbj4NCgkJCQk8bGl2ZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTwvbGl2ZS1mcmFtZT4NCgkJCQk8YWN0aW9uLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJCTx4LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC94LXNjYWxlPg0KCQkJCQk8eS1zY2FsZSB0eXBlPSJkb3VibGUiPjAuOTwveS1zY2FsZT4NCgkJCQkJPGxpbmsgdHlwZT0iYm9vbCI+dHJ1ZTwvbGluaz4NCgkJCQk8L2FjdGlvbi1mcmFtZT4NCgkJCQk8dGl0bGUtZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC44PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvdGl0bGUtZnJhbWU+DQoJCQk8L3NhZmUtZnJhbWU+DQoJCQk8Z3JvdW5kLXBsYW5lPg0KCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQk8c2hvdy11bmRlcnNpZGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctdW5kZXJzaWRlPg0KCQkJCTxhbHRpdHVkZSB0eXBlPSJkb3VibGUiPjA8L2FsdGl0dWRlPg0KCQkJCTxhdXRvLWFsdGl0dWRlIHR5cGU9ImJvb2wiPnRydWU8L2F1dG8tYWx0aXR1ZGU+DQoJCQkJPHNoYWRvdy1vbmx5IHR5cGU9ImJvb2wiPnRydWU8L3NoYWRvdy1vbmx5Pg0KCQkJCTxtYXRlcmlhbCB0eXBlPSJzdHJpbmciLz4NCgkJCQk8dGV4dHVyZS1zaXplIHR5cGU9InZlY3RvcjJkIj4xLDE8L3RleHR1cmUtc2l6ZT4NCgkJCQk8dGV4dHVyZS1vZmZzZXQgdHlwZT0idmVjdG9yMmQiPjAsMDwvdGV4dHVyZS1vZmZzZXQ+DQoJCQkJPHRleHR1cmUtcm90YXRpb24gdHlwZT0iZG91YmxlIj4wPC90ZXh0dXJlLXJvdGF0aW9uPg0KCQkJCTxvZmZzZXQtbG9jayB0eXBlPSJib29sIj5mYWxzZTwvb2Zmc2V0LWxvY2s+DQoJCQkJPHJlcGVhdC1sb2NrIHR5cGU9ImJvb2wiPnRydWU8L3JlcGVhdC1sb2NrPg0KCQkJPC9ncm91bmQtcGxhbmU+DQoJCTwvc2V0dGluZ3M+DQoJCTxtYXRlcmlhbC1zZWN0aW9uLz4NCgkJPGVudmlyb25tZW50LXNlY3Rpb24vPg0KCQk8dGV4dHVyZS1zZWN0aW9uLz4NCgk8L3JlbmRlci1jb250ZW50LW1hbmFnZXItZG9jdW1lbnQ+DQo8L3htbD4NCgAAAAD/////AAAAAAAAAAD/fwAACAAAAAAAAADiLQAAAAAAAA==",
+        "getter": {
+          "numeric_length": 3.7699111929765285,
+          "parameters": [
+            [
+              0,
+              1.2566370614359172,
+              3.1592472287277484
+            ]
+          ],
+          "script": "_-ExtractPt _OutputLayer=_Current _Output=_PointCloud  _SubCrv _Pause w0.58762387542317573,1.9117264922139485,0.0 3.7699111929765285 w-0.58762387542317573,-1.9117264922139485,0.0 _Enter _Cancel _Cancel",
+          "frustum_verified": true,
+          "acknowledged": true,
+          "confirmation": [
+            -0.5876238754231757,
+            -1.9117264922139485,
+            0.0
+          ],
+          "curve_type": "NurbsCurve",
+          "marker": "@component-click:range_numeric_brep_nurbs_cylinder_pointcloud:0:sub",
+          "edges": [
+            0
+          ],
+          "world_coordinates": true,
+          "points": [
+            [
+              0,
+              [
+                0.5876238754231757,
+                1.9117264922139485,
+                0.0
+              ],
+              [
+                -1.999745703023175,
+                -0.031892369625768496,
+                0.0
+              ]
+            ]
+          ],
+          "menu": false
+        },
+        "input": {
+          "output": "PointCloud",
+          "range_whole_first": true,
+          "edge_length": 0.3,
+          "order": [
+            0
+          ],
+          "layer": "Current",
+          "sources": [
+            {
+              "kind": "brep_nurbs_cylinder",
+              "mode": null,
+              "grips": []
+            }
+          ],
+          "whole": [],
+          "edge_ranges": [
+            [
+              0,
+              0,
+              0.2,
+              0.7
+            ]
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtractPt",
+            "objects": [
+              {
+                "layer": "Extract input 0",
+                "name": "Input 0",
+                "selected": false,
+                "crc": 1941073166,
+                "groups": [
+                  "Extract assembly"
+                ],
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "cloud": false,
+                "color_source": 1,
+                "grips_on": false,
+                "grips": [],
+                "source": 0,
+                "points": null,
+                "id": "49572b38-d4e5-412e-a0b3-0be7ff5dd8a8"
+              },
+              {
+                "layer": "Extract current",
+                "name": null,
+                "selected": true,
+                "crc": 0,
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "cloud": true,
+                "color_source": 0,
+                "grips_on": false,
+                "grips": [],
+                "source": null,
+                "points": [
+                  [
+                    1.636574175153123,
+                    -1.1496194888839848,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    -0.6322541125319291,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    1.9999999999999998,
+                    1.4775922500725172,
+                    0.0
+                  ],
+                  [
+                    0.5876238754231755,
+                    1.9117264922139483,
+                    0.0
+                  ]
+                ],
+                "id": "a83e295e-21f9-4489-bbb9-3294d440b457"
+              }
+            ],
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ]
+      }
+    }
+  ],
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "provenance": {
+    "request_sha256": "ab1178435b32b2d7f6f533191b1b8bbdca1f08f8be84d40c23ae7f25fd06b5cd",
+    "sources": {
+      "extract_points_target_cases.py": "a556767f83cb5dd821cb0f3d55741575decf3f09bddb32a1cb2c2ec21b0657b0",
+      "client.py": "67ad9491745d1f565550cc5522a5aefc9a0aad021321dc5bcbd8a350c1a504b9",
+      "component_picking.py": "e4e91e99f7a6645cb39a2bab4e879320755eca894d4e96a72ea83f53c3682bed",
+      "hole_picking.py": "69d5d692cc86a7d628e741c9116b65449713fa5e23cf9ad8ee9f8dd5487f8116",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "managed_component_input.py": "26d804dfc2ef47ca4c5509274fb2b52d4eb2f3b32599ecfe50871f6ff7db1ad0",
+      "extract_points_getter.py": "e2eb34d4b4116416d6bccbac49c957bff3252ede5b952c86a9d2b38094f03077",
+      "extract_points_cases.py": "d3cc678422d55624f234c3a7de7784dbcb9a93a694e440bc173a6356989f42d4",
+      "extract_points_probe.py": "7bb93bc810eccbef2ca63e1f511af8ba5b0f5107ea34f4f544612798a6cdbbd7",
+      "generate_extract_points.py": "9df65e23098fbed47610d94343b905f49cadb87362bce8631932b1cdedb6d067",
+      "extract_points_geometry.py": "47b3cbc30fed9458931787a5ed7f7e45aea202b11ca658888dc741ae0e8f7865",
+      "extract_points_component_cases.py": "f54b2c3fe82fc3d204067cc33698fa441d84c264c9e523e92425d24411c0cc51",
+      "extract_points_brep_cases.py": "fc026de798511f760cdf732316624b4d70a08cefb83c64ae4526670f2d138a23",
+      "extract_points_range_cases.py": "c9342cc33459516da47a5b302684e8a6a68392c5094be6f51e5e6ca9b232e583",
+      "extract_points_edge_range_input.py": "e4aad65ee559f71e956a1a001e40644bf6085274fc821377aaf993252cbb7d64",
+      "owned_brep_command.py": "d4f80d5be8a04368c9810453134acbd2fa6d762deb0dd2ccae2efd343947169e",
+      "extract_points_component_input.py": "d33310736cc66e7123026a250b617035651f40084de8fd1fa21d6d23e8033934",
+      "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+      "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "403254ef8787b3825c9adeae47866524ade65229ea4b11d8b01ad04e80221541",
+      "rhino_worker.py": "6423e0381f254bb896a0204de8cc4f7d223797ac48f2be8e896ffd27e7682067"
+    }
+  }
+}
