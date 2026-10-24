@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_sheet_left_post",
+      "case": "mesh_trim_controls_sheet_left_post"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_sheet_left_pre",
+      "case": "mesh_trim_controls_sheet_left_pre"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_box_left_pre",
+      "case": "mesh_trim_controls_box_left_pre"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_disjoint",
+      "case": "mesh_trim_controls_disjoint"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_partial",
+      "case": "mesh_trim_controls_partial"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_closed_cutter",
+      "case": "mesh_trim_controls_closed_cutter"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_curve",
+      "case": "mesh_trim_controls_curve"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_plane",
+      "case": "mesh_trim_controls_plane"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_two_cutters",
+      "case": "mesh_trim_controls_two_cutters"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_channels",
+      "case": "mesh_trim_controls_channels"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_cancel_after",
+      "case": "mesh_trim_controls_cancel_after"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_both_sides",
+      "case": "mesh_trim_controls_both_sides"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_controls_shared_cutters",
+      "case": "mesh_trim_controls_shared_cutters"
+    }
+  ]
+}

@@ -1,8 +1,6 @@
 //! Mesh partitions with source attributes and shared mesh intersection options.
 use crate::*;
 use std::sync::Arc;
-#[cfg(feature = "native-smlib")]
-mod appearance;
 mod arguments;
 mod execute;
 #[cfg(feature = "native-smlib")]

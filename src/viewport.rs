@@ -331,6 +331,7 @@ pub enum LassoSelectionInput<'a> {
 pub enum FacePickMode {
     Any,
     Mesh,
+    MeshAny,
     MeshAndBrepAny,
     MeshAndBrep,
     SurfaceAndBrepAny,

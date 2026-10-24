@@ -10,6 +10,9 @@ impl VibocerosApp {
         face: usize,
         point: Option<Point3>,
     ) {
+        if self.pick_mesh_trim_region(object, point) {
+            return;
+        }
         if self.pick_face_append(Some(object)) {
             return;
         }

@@ -54,6 +54,15 @@ impl VibocerosApp {
         announce: bool,
     ) {
         let name = options.kind.name();
+        if options.kind.is_mesh_trim() {
+            // Every region pick is already accepted into the command's history
+            // group. Escape finishes that group and clears transient cutters.
+            self.document.clear_selection();
+            if announce {
+                self.push_log("Finished MeshTrim".into());
+            }
+            return;
+        }
         if options.kind.mesh_tolerance().is_some()
             && let Some(first) = &first
         {

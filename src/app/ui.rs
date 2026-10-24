@@ -229,7 +229,9 @@ impl eframe::App for VibocerosApp {
         } else {
             self.zoom_target
         };
-        let object_filter = if self.selecting_insert_source() {
+        let object_filter = if self.picking_mesh_trim_target() {
+            None
+        } else if self.selecting_insert_source() {
             Some(viboceros_command::ObjectSelectionFilter::MeshAndSubD)
         } else if self.insert_prompt().is_some() {
             None
@@ -375,7 +377,9 @@ impl eframe::App for VibocerosApp {
             .plane_prompt
             .as_ref()
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
-        let face_pick = if self.merge_face_prompt.is_some() {
+        let face_pick = if self.picking_mesh_trim_target() {
+            Some(FacePickMode::MeshAny)
+        } else if self.merge_face_prompt.is_some() {
             Some(FacePickMode::MeshAndBrepAny)
         } else if self.picking_fillet_surface()
             || self.picking_surface_interpolation_face()

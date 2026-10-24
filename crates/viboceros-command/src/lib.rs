@@ -296,7 +296,10 @@ mod intersect_self;
 mod intersect_two_sets;
 mod mesh_intersect;
 mod mesh_outline;
+#[cfg(feature = "native-smlib")]
+mod mesh_partition;
 mod mesh_split;
+mod mesh_trim;
 mod object_name;
 mod offset_mesh;
 mod offset_surface;
@@ -1387,6 +1390,9 @@ impl CommandRegistry {
         let (booleans, intersections, mesh_split) = mesh_boolean::MeshBooleanCommand::all();
         registry
             .register(mesh_split)
+            .expect("unique built-in command");
+        registry
+            .register(mesh_trim::MeshTrimCommand)
             .expect("unique built-in command");
         for command in booleans {
             registry.register(command).expect("unique built-in command");
@@ -13203,6 +13209,8 @@ pub enum CommandError {
     MeshSelfIntersectRequiresNativeKernel,
     #[error("MeshSplit requires the native kernel; build with --features native-smlib")]
     MeshSplitRequiresNativeKernel,
+    #[error("MeshTrim requires the native kernel; build with --features native-smlib")]
+    MeshTrimRequiresNativeKernel,
     #[error("Mesh Boolean commands require meshes, surfaces or polysurfaces in the requested sets")]
     MeshBooleanRequiresObjects,
     #[error("Mesh Boolean operation produced no result")]

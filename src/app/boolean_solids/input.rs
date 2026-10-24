@@ -9,6 +9,9 @@ impl VibocerosApp {
     ) -> bool {
         let kind = prompt.boolean.as_ref().unwrap().kind;
         let normalized = input.trim_start_matches(['_', '-']);
+        if kind.is_mesh_trim() {
+            return self.continue_mesh_trim(prompt, input);
+        }
         if normalized.eq_ignore_ascii_case("Cancel") {
             self.cancel_intersection_prompt(true);
             return true;

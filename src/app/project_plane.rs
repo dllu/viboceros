@@ -138,9 +138,23 @@ impl VibocerosApp {
             partition.plane_getter = None;
             self.clear_project_plane_state();
             self.command_input.clear();
-            self.push_log(
-                "Added infinite plane cutter; Enter splits or select another cutter".into(),
-            );
+            let action = if self
+                .intersection_prompt
+                .as_ref()
+                .unwrap()
+                .boolean
+                .as_ref()
+                .unwrap()
+                .kind
+                .is_mesh_trim()
+            {
+                "continues to region picking"
+            } else {
+                "splits"
+            };
+            self.push_log(format!(
+                "Added infinite plane cutter; Enter {action} or select another cutter"
+            ));
             self.log_intersection_prompt();
             return;
         }
@@ -190,7 +204,11 @@ impl VibocerosApp {
     pub(super) fn continue_project_plane(&mut self, prompt: &TwoSetsPrompt, input: &str) -> bool {
         let input = input.trim();
         let word = input.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        if prompt.first.is_some()
+        if (prompt.first.is_some()
+            || prompt
+                .boolean
+                .as_ref()
+                .is_some_and(|b| b.kind.is_mesh_trim()))
             && !self.picking_project_direction()
             && matches!(word.as_str(), "ip" | "iplane" | "infiniteplane")
         {

@@ -6,7 +6,7 @@ use crate::app::tests::test_app;
 use serde_json::json;
 #[path = "../../../crates/viboceros-command/tests/support/mesh_split.rs"]
 #[allow(dead_code)]
-mod native;
+pub(super) mod native;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();

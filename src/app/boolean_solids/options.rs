@@ -10,6 +10,7 @@ pub(in crate::app) enum BooleanPromptKind {
     MeshDifference(&'static str),
     MeshSplit(&'static str),
     MeshPartition(&'static str),
+    MeshTrim,
 }
 impl BooleanPromptKind {
     pub(in crate::app) fn from_name(name: &str) -> Option<Self> {
@@ -21,6 +22,7 @@ impl BooleanPromptKind {
             Self::MeshDifference("Auto"),
             Self::MeshSplit("Auto"),
             Self::MeshPartition("Auto"),
+            Self::MeshTrim,
         ]
         .into_iter()
         .find(|kind| kind.name().eq_ignore_ascii_case(name))
@@ -34,12 +36,23 @@ impl BooleanPromptKind {
             Self::MeshDifference(_) => "MeshBooleanDifference",
             Self::MeshSplit(_) => "MeshBooleanSplit",
             Self::MeshPartition(_) => "MeshSplit",
+            Self::MeshTrim => "MeshTrim",
         }
     }
     pub(in crate::app) fn is_mesh_partition(self) -> bool {
         matches!(self, Self::MeshPartition(_))
     }
+    pub(in crate::app) fn is_mesh_trim(self) -> bool {
+        self == Self::MeshTrim
+    }
     pub(in crate::app) fn filter_for(self, second: bool) -> ObjectSelectionFilter {
+        if self.is_mesh_trim() {
+            return if second {
+                ObjectSelectionFilter::Mesh
+            } else {
+                ObjectSelectionFilter::MeshSplitCutters
+            };
+        }
         if self.is_mesh_partition() && second {
             ObjectSelectionFilter::MeshSplitCutters
         } else {
@@ -60,6 +73,10 @@ impl BooleanPromptKind {
     }
     pub(in crate::app) fn hint(self, second: bool) -> &'static str {
         match (self, second) {
+            (Self::MeshTrim, false) => "Select cutting objects or IP; Enter continues, Esc cancels",
+            (Self::MeshTrim, true) => {
+                "Pick a mesh region to remove; Enter finishes, Undo reverses a pick"
+            }
             (Self::Split, true) => "Select cutters; Enter splits, Esc cancels",
             (Self::Split, false) => "Select targets; Enter continues, Esc cancels",
             (Self::MeshPartition(_), true) => {
@@ -86,7 +103,9 @@ impl BooleanPromptKind {
         }
     }
     pub(in crate::app) fn filter(self) -> ObjectSelectionFilter {
-        if self.mesh_tolerance().is_some() {
+        if self.is_mesh_trim() {
+            ObjectSelectionFilter::MeshSplitCutters
+        } else if self.mesh_tolerance().is_some() {
             ObjectSelectionFilter::EdgeAnalysis
         } else {
             ObjectSelectionFilter::SurfaceComponents
@@ -134,6 +153,18 @@ impl BooleanOptions {
         }
     }
     pub(in crate::app) fn command_line(&self, include_hidden: bool) -> String {
+        if self.kind.is_mesh_trim() {
+            return format!(
+                "MeshTrim{}",
+                self.partition
+                    .as_ref()
+                    .unwrap()
+                    .planes
+                    .iter()
+                    .map(|p| format!(" InfinitePlane={p}"))
+                    .collect::<String>()
+            );
+        }
         if let Some(tolerance) = self.kind.mesh_tolerance() {
             let mut command = format!("{} Tolerance={tolerance}", self.kind.name());
             if let Some(partition) = &self.partition {

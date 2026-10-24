@@ -2,13 +2,13 @@
 use super::*;
 use viboceros_geometry::{MeshChannelSource, MeshFace};
 
-pub(super) struct Appearance<'a> {
+pub(crate) struct Appearance<'a> {
     source: &'a TriangleMesh,
     channels: MeshChannelSource<'a>,
     original_ngons: Vec<Option<usize>>,
 }
 impl<'a> Appearance<'a> {
-    pub(super) fn new(source: &'a TriangleMesh) -> Result<Self, CommandError> {
+    pub(crate) fn new(source: &'a TriangleMesh) -> Result<Self, CommandError> {
         let mut original_ngons = vec![None; source.faces().len()];
         for (i, ngon) in source.ngons().iter().enumerate() {
             for &face in ngon.faces() {
@@ -21,7 +21,7 @@ impl<'a> Appearance<'a> {
             original_ngons,
         })
     }
-    pub(super) fn restore(
+    pub(crate) fn restore(
         &self,
         part: TriangleMesh,
         parents: Vec<usize>,

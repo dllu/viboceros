@@ -5,7 +5,7 @@ else:
     from mesh_boolean_command_cases import ALL_CASES, validate
 
 
-def run(operation, host, iterations, tolerance, case_table=None, command_name=None):
+def run(operation, host, iterations, tolerance, case_table=None, command_name=None, script_driver=None):
     if case_table is None:
         validate(operation)
         case_table = ALL_CASES
@@ -172,8 +172,15 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
             macro += ' _Enter _Cancel'
         marker = 'Owned mesh Boolean '+str(S.Guid.NewGuid())
         R.RhinoApp.WriteLine(marker)
+        extra = {}
+        def execute():
+            if script_driver is None:
+                return R.RhinoApp.RunScript(macro, True)
+            status, values = script_driver(case, ids, host, snapshot)
+            extra.update(values)
+            return status
         success, after, events = observe_command(R.Commands.Command, name,
-            lambda: R.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)
+            execute, snapshot, lambda: [], True)
         history = R.RhinoApp.CommandHistoryWindowText.split(marker, 1)[1].strip()
         after_script = snapshot()
         empty_storage = None
@@ -191,6 +198,7 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
                         coefficient=float(G.Intersect.Intersection.MeshIntersectionsTolerancesCoefficient)))
         if intersection_sdk is not None:result['intersection_sdk']=intersection_sdk
         if split_sdk is not None:result['split_sdk']=split_sdk
+        result.update(extra)
         return result, 0
     finally:
         if old_cplane is not None:doc.Views.ActiveView.ActiveViewport.SetConstructionPlane(old_cplane)

@@ -70,7 +70,6 @@
     "src/app/untrim_holes.rs": "ba350a8291e8438a1a8caf630af5fcad258954f4058c312f56b63027a96da89a",
     "src/viewport/polygon_edges.rs": "7791ce80ee462d8cad5c3d81be8f71a5a570305fed5ecce6ea465f40462e2d9f",
     "src/viewport/polygon_edges/tests.rs": "f5a0e3eb1ac3f1eebd291b5ee8273c8f30ee068ca13a63f3790461dab3ea585f",
-    "src/viewport/picking.rs": "fd48cd2225ebcaf70604dea8478a25d7bf212b9cdfa5b29b571ca20aad2c473f",
     "src/viewport/screen.rs": "24112e93cf5355328a75e2783f121e9bd11b9997fc2b240523c31cebbebcfabb",
     "tools/rhino_oracle/fixtures/crease_main_v3.json": "018da02fe5760d5e73db12d5488b0c9ace38bcab67f15ab28d634650077f3071",
     "tools/rhino_oracle/observations/crease_main_v3.json": "2386f33fff8d84f3852cfc89b2c41bbc0c5264262bf372e5582b5ded6e778e30",
@@ -252,6 +251,7 @@
     "ef01d06d59850ddc046398db2df33f6498846e9b:crates/viboceros-command/tests/support/subd.rs": "7f7c4925df44e773b944cea7b4bcb7cbe548f59c0a0ad0d49e05a3527ce97eb4",
     "91e2b7c9b0ed7f3920396dc7264c6c1b853d9e8d:crates/viboceros-document/src/object_geometry.rs": "c1c77eba480c5bced476fb4ac59eefcfba52255667e9a40d4024c72b6ade2378",
     "9baaa6650735462f1a070558b13eb172b332a2f1:src/viewport/component_picking.rs": "b42497d498ae6fb87ca1657dd23e9f345478b5304c00455af718590cd495832a",
-    "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:src/viewport/selection.rs": "97a0c529b7e43b496a55c38bfe3be56e78dcd30535ef8480902db6bab0acc1b6"
+    "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:src/viewport/selection.rs": "97a0c529b7e43b496a55c38bfe3be56e78dcd30535ef8480902db6bab0acc1b6",
+    "b8cb7ad59fb7b1a22a9c78f589496410298ef63a:src/viewport/picking.rs": "fd48cd2225ebcaf70604dea8478a25d7bf212b9cdfa5b29b571ca20aad2c473f"
   }
 }

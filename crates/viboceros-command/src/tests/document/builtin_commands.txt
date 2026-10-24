@@ -204,6 +204,7 @@ MeshSphere
 MeshSplit
 MeshToNURB
 MeshTorus
+MeshTrim
 MeshTruncatedCone
 Mirror
 ModifyRadius

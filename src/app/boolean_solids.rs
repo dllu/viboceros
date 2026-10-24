@@ -5,6 +5,7 @@ use viboceros_document::{ObjectId, SelectionMode};
 
 mod input;
 mod mesh_partition;
+mod mesh_trim;
 pub(super) use mesh_partition::PartitionOptions;
 mod options;
 mod selection;
@@ -26,7 +27,9 @@ impl VibocerosApp {
                 .split('=')
                 .next()
                 .is_some_and(|n| {
-                    n.eq_ignore_ascii_case("FirstSet") || n.eq_ignore_ascii_case("SecondSet")
+                    n.eq_ignore_ascii_case("FirstSet")
+                        || n.eq_ignore_ascii_case("SecondSet")
+                        || n.eq_ignore_ascii_case("Target")
                 })
         }) {
             return false;
@@ -79,12 +82,15 @@ impl VibocerosApp {
                     .iter()
                     .find(|o| o.name == "DeleteInput")
                     .is_none_or(|o| o.value),
-                partition: kind
-                    .is_mesh_partition()
+                partition: (kind.is_mesh_partition() || kind.is_mesh_trim())
                     .then(|| PartitionOptions::from_prompt(&description)),
                 preselected_first,
             }),
         });
+        if kind.is_mesh_trim() && preselected_first {
+            self.document.clear_selection();
+            self.begin_mesh_trim_history();
+        }
         if kind.shares_sets() && preselected_first {
             self.document.clear_selection();
         }

@@ -48,7 +48,6 @@
   "source_hash_note": "Current qualification source hashes were refreshed after the full application regressions. Existing numeric and performance measurements were retained unchanged; this follow-up made no fresh Rhino captures or performance measurements. The earlier creator integration receipt retains its original source bytes through Git references. The validated app.rs bytes are now retained through the recorded Git reference; subsequent Crease viewport changes have a separate validation record.",
   "sha256": {
     "src/app/curve_prompt.rs": "c8726107140783628be77b4badac4c3fe84205da5d4c8d61297d5a78ec800344",
-    "src/app/mesh_face_prompt.rs": "df8247446ae4cca8690dad27b2e3f2c616e59f8f3d05d17b2f2710d1918ba2f5",
     "src/app/tests/curve_completion.rs": "6bd33a67a48c402992a67fa440c6cc06c4a0a30b8ce7e9fe40d11d39343da9d8",
     "src/app/tests/insert_control_point.rs": "1bf0b9d55cd36513274d57432d6d751e715cfc6bf67756ad15c42c116a9867e9",
     "src/app/tests/point_input.rs": "8650cc337af7e9e73ba8e452e41cc86c757d6269cb075f8bbf90a42bb0564e40",
@@ -64,5 +63,8 @@
   },
   "validation_git_sha256": {
     "225a7d7a965e9cbfc6eea534f864c76eddd216b1:src/app.rs": "67ecc587529028d48971c5d946964c4d5e83434ac601b45e484a9ee294c26828"
+  },
+  "git_sha256": {
+    "b8cb7ad59fb7b1a22a9c78f589496410298ef63a:src/app/mesh_face_prompt.rs": "df8247446ae4cca8690dad27b2e3f2c616e59f8f3d05d17b2f2710d1918ba2f5"
   }
 }

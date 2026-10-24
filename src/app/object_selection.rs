@@ -29,6 +29,8 @@ mod mesh_reference;
 mod mesh_self_intersect_tests;
 #[cfg(test)]
 mod mesh_split_tests;
+#[cfg(test)]
+mod mesh_trim_tests;
 mod modify_radius;
 #[cfg(test)]
 mod planar_mesh_tests;

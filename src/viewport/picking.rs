@@ -254,7 +254,10 @@ impl Viewport {
         let mut nearest: Option<(PickHit, ObjectId, usize, Option<Point3>)> = None;
         let candidates: Box<dyn Iterator<Item = &viboceros_document::Object> + '_> = if matches!(
             mode,
-            FacePickMode::Any | FacePickMode::MeshAndBrepAny | FacePickMode::SurfaceAndBrepAny
+            FacePickMode::Any
+                | FacePickMode::MeshAny
+                | FacePickMode::MeshAndBrepAny
+                | FacePickMode::SurfaceAndBrepAny
         ) {
             Box::new(document.selectable_objects())
         } else {
@@ -300,7 +303,9 @@ impl Viewport {
                 {
                     (mesh, None, false)
                 }
-                Geometry::Brep(_) if mode != FacePickMode::Mesh => {
+                Geometry::Brep(_)
+                    if !matches!(mode, FacePickMode::Mesh | FacePickMode::MeshAny) =>
+                {
                     let Some(display) = display.as_ref() else {
                         continue;
                     };
@@ -614,6 +619,14 @@ mod tests {
         );
         document.clear_selection();
         assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAny),
+            Some((mesh_id, 0))
+        );
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::Mesh),
+            None
+        );
+        assert_eq!(
             view.pick_selected_face(pointer, rect, &document, FacePickMode::SurfaceAndBrepAny),
             Some((surface_id, 0))
         );
@@ -829,70 +842,74 @@ mod tests {
 
     #[test]
     fn viewport_click_emits_face_hit_instead_of_a_drafting_point() {
-        let mut viewport = Viewport::new(ViewKind::Top);
-        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
-        let mut document = Document::default();
-        let mesh = TriangleMesh::try_new_faces(
-            vec![
-                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
-                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
-                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
-            ],
-            vec![MeshFace::Triangle([0, 1, 2])],
-            document.tolerance(),
-        )
-        .unwrap();
-        let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
-        document
-            .select_objects_direct([id], SelectionMode::Replace)
+        for mode in [FacePickMode::Mesh, FacePickMode::MeshAny] {
+            let mut viewport = Viewport::new(ViewKind::Top);
+            let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+            let mut document = Document::default();
+            let mesh = TriangleMesh::try_new_faces(
+                vec![
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+                ],
+                vec![MeshFace::Triangle([0, 1, 2])],
+                document.tolerance(),
+            )
             .unwrap();
-        let pointer = viewport
-            .project(Point3::try_new(0.2, 0.2, 0.0).unwrap(), rect)
-            .unwrap();
-        let context = egui::Context::default();
-        let mut frame = |events| {
-            let mut output = ViewportOutput::default();
-            context
-                .run_ui(
-                    egui::RawInput {
-                        screen_rect: Some(rect),
-                        events,
-                        ..Default::default()
-                    },
-                    |ui| {
-                        output = viewport.show(
-                            ui,
-                            &document,
-                            ViewportInput {
-                                face_pick: Some(FacePickMode::Mesh),
-                                object_filter: None,
-                                drafting: DraftingInput {
-                                    active: true,
+            let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+            if mode == FacePickMode::Mesh {
+                document
+                    .select_objects_direct([id], SelectionMode::Replace)
+                    .unwrap();
+            }
+            let pointer = viewport
+                .project(Point3::try_new(0.2, 0.2, 0.0).unwrap(), rect)
+                .unwrap();
+            let context = egui::Context::default();
+            let mut frame = |events| {
+                let mut output = ViewportOutput::default();
+                context
+                    .run_ui(
+                        egui::RawInput {
+                            screen_rect: Some(rect),
+                            events,
+                            ..Default::default()
+                        },
+                        |ui| {
+                            output = viewport.show(
+                                ui,
+                                &document,
+                                ViewportInput {
+                                    face_pick: Some(mode),
+                                    object_filter: None,
+                                    drafting: DraftingInput {
+                                        active: true,
+                                        ..Default::default()
+                                    },
                                     ..Default::default()
                                 },
-                                ..Default::default()
-                            },
-                            &[],
-                            0,
-                            true,
-                        );
-                    },
-                )
-                .drop_without_applying_deltas();
-            output
-        };
-        let event = |pressed| egui::Event::PointerButton {
-            pos: pointer,
-            pressed,
-            button: PointerButton::Primary,
-            modifiers: egui::Modifiers::NONE,
-        };
-        frame(vec![]);
-        frame(vec![egui::Event::PointerMoved(pointer), event(true)]);
-        let output = frame(vec![event(false)]);
-        assert_eq!(output.face_click, Some((id, 0)));
-        assert!(output.picked_point.is_none());
-        assert!(output.selection_click.is_none());
+                                &[],
+                                0,
+                                true,
+                            );
+                        },
+                    )
+                    .drop_without_applying_deltas();
+                output
+            };
+            let event = |pressed| egui::Event::PointerButton {
+                pos: pointer,
+                pressed,
+                button: PointerButton::Primary,
+                modifiers: egui::Modifiers::NONE,
+            };
+            frame(vec![]);
+            frame(vec![egui::Event::PointerMoved(pointer), event(true)]);
+            let output = frame(vec![event(false)]);
+            assert_eq!(output.face_click, Some((id, 0)));
+            assert!(output.picked_point.is_none());
+            assert!(output.selection_click.is_none());
+        }
     }
 
     #[test]

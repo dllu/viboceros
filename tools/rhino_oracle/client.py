@@ -1290,6 +1290,16 @@ class OracleClient:
                 from .component_picking import ComponentPicker
                 interaction = ComponentPicker()
 
+        if any(op.get('op') == 'mesh_trim_command' for op in request.get('operations', [])):
+            from .mesh_trim_cases import ALL_CASES, validate
+            if self.settings_scheme is None or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('MeshTrim inputs require one iteration in a private scheme')
+            for operation in request['operations']:
+                validate(operation)
+            if any('trim_picks' in ALL_CASES[op['case']] for op in request['operations']):
+                from .mesh_trim_picking import MeshTrimPicker
+                interaction = MeshTrimPicker()
+
         if any(op.get("op") == "copy_options_command" for op in request.get("operations", [])):
             from .copy_options_probe import validate
             if self.settings_scheme is None:

@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_box_id_post",
+      "case": "mesh_trim_box_id_post"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_box_id_pre",
+      "case": "mesh_trim_box_id_pre"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_sheet_id_post",
+      "case": "mesh_trim_sheet_id_post"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_sheet_point_post",
+      "case": "mesh_trim_sheet_point_post"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_cancel_first",
+      "case": "mesh_trim_cancel_first"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_cancel_second",
+      "case": "mesh_trim_cancel_second"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_tolerance_menu",
+      "case": "mesh_trim_tolerance_menu"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_plane_menu",
+      "case": "mesh_trim_plane_menu"
+    }
+  ]
+}

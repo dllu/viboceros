@@ -1,6 +1,7 @@
 """Shared source inventory for extracted application and geometry modules."""
 
 BOOLEAN_PROMPT_MODULES = [
+    'src/app/boolean_solids/mesh_trim.rs',
     'src/app/boolean_solids/mesh_partition.rs',
     'src/app/boolean_solids/input.rs',
     'src/app/boolean_solids/options.rs',
@@ -10,6 +11,8 @@ BOOLEAN_PROMPT_MODULES = [
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
+    'src/app/object_selection/mesh_trim_tests.rs',
+    'crates/viboceros-command/tests/support/mesh_trim.rs',
     'src/app/object_selection/mesh_intersect_tests.rs',
     'src/app/object_selection/mesh_self_intersect_tests.rs',
     'src/app/object_selection/mesh_split_tests.rs',
@@ -157,7 +160,9 @@ MESH_MODULES = [
 
 def with_shared_sources(paths):
     moved = {'src/app/object_selection/quadrangulate_mesh.rs':
-             'src/app/object_selection/mesh_conversion.rs'}
+             'src/app/object_selection/mesh_conversion.rs',
+             'crates/viboceros-command/src/mesh_split/appearance.rs':
+             'crates/viboceros-command/src/mesh_partition/appearance.rs'}
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
                                       'src/component_seams/arguments.rs') for p in paths]
     if 'Cargo.toml' in expanded:
@@ -207,7 +212,12 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/mesh_split/arguments.rs',
             'crates/viboceros-command/src/mesh_split/execute.rs',
             'crates/viboceros-command/src/mesh_split/geometry.rs',
-            'crates/viboceros-command/src/mesh_split/appearance.rs',
+            'crates/viboceros-command/src/mesh_partition.rs',
+            'crates/viboceros-command/src/mesh_partition/appearance.rs',
+            'crates/viboceros-command/src/mesh_trim.rs',
+            'crates/viboceros-command/src/mesh_trim/arguments.rs',
+            'crates/viboceros-command/src/mesh_trim/execute.rs',
+            'crates/viboceros-command/src/mesh_trim/geometry.rs',
             'crates/viboceros-command/src/bounding_box.rs',
             'crates/viboceros-geometry/src/lib.rs',
             'crates/viboceros-geometry/src/mesh/channel_transfer.rs',
