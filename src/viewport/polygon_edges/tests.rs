@@ -349,3 +349,89 @@ fn a_subd_vertex_does_not_suppress_an_unrelated_crossing_mesh_edge() {
         }));
     }
 }
+
+#[test]
+fn mesh_topology_vertices_pick_in_all_views_without_changing_crease_filters() {
+    let s = source();
+    let mesh = TriangleMesh::try_from_face_records(
+        s.control_points().to_vec(),
+        s.faces()
+            .iter()
+            .map(|f| MeshFace::Quad(f.clone().try_into().unwrap()))
+            .collect(),
+    )
+    .unwrap();
+    let mut doc = Document::default();
+    let id = doc.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Front,
+        ViewKind::Right,
+        ViewKind::Perspective,
+    ] {
+        for mode in [
+            DisplayMode::Wireframe,
+            DisplayMode::Shaded,
+            DisplayMode::Ghosted,
+        ] {
+            let mut view = Viewport::new(kind);
+            view.display_mode = mode;
+            view.last_rect = Some(rect());
+            view.zoom_extents(&doc, ZoomExtentsBorders::default())
+                .unwrap();
+            let target = ComponentPick {
+                object: id,
+                kind: ComponentSelectionKind::MeshVertex,
+                index: 0,
+            };
+            let pointer = view
+                .project(mesh.topology_vertex_points()[0], rect())
+                .unwrap();
+            assert!(
+                view.pick_components(pointer, rect(), &doc, ComponentPickFilter::Any)
+                    .contains(&target)
+            );
+            assert!(
+                !view
+                    .pick_components(pointer, rect(), &doc, ComponentPickFilter::Crease)
+                    .iter()
+                    .any(|p| p.kind == ComponentSelectionKind::MeshVertex)
+            );
+            assert!(
+                view.components_in_rectangle(
+                    rect(),
+                    rect(),
+                    &doc,
+                    ComponentPickFilter::Any,
+                    false,
+                    false
+                )
+                .contains(&target)
+            );
+            assert!(
+                !view
+                    .components_in_rectangle(
+                        rect(),
+                        rect(),
+                        &doc,
+                        ComponentPickFilter::Crease,
+                        false,
+                        false
+                    )
+                    .iter()
+                    .any(|p| p.kind == ComponentSelectionKind::MeshVertex)
+            );
+            let display = view
+                .display_cache
+                .borrow_mut()
+                .get(doc.object(id).unwrap(), doc.tolerance());
+            let points = display.polygon_vertex_points(&doc, doc.object(id).unwrap());
+            assert_eq!(
+                points.as_ptr(),
+                display
+                    .polygon_vertex_points(&doc, doc.object(id).unwrap())
+                    .as_ptr()
+            );
+        }
+    }
+}

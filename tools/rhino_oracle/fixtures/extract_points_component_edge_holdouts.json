@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "component_edges_subd_irregular",
+      "case": "component_edges_subd_irregular"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_edges_subd_grid",
+      "case": "component_edges_subd_grid"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_edges_subd_strip",
+      "case": "component_edges_subd_strip"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_edges_subd_triangles",
+      "case": "component_edges_subd_triangles"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_edges_subd_creased",
+      "case": "component_edges_subd_creased"
+    }
+  ]
+}

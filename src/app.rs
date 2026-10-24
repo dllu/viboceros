@@ -132,6 +132,7 @@ mod component_selection;
 mod control_polygon;
 mod copy_options;
 mod crease;
+mod extract_points;
 mod extract_surface;
 mod insert_point;
 mod merge_coplanar_face;
@@ -936,6 +937,7 @@ impl VibocerosApp {
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)
             || self.try_start_remember_copy_options(&input)
+            || self.try_start_extract_point_components(&input)
             || self.try_start_control_polygon_components(&input)
             || self.try_start_to_subd(&input)
             || self.try_start_soft_crease(&input)
@@ -1067,7 +1069,8 @@ impl VibocerosApp {
             self.cancel_interactive_command(false);
         }
         self.push_log(format!("> {command_input}"));
-        let release_control_polygon_components = self.replaying_control_polygon_selection(input);
+        let release_control_polygon_components = self.replaying_control_polygon_selection(input)
+            || self.replaying_extracted_point_components(input);
         let previous_unit_scale = self.document.units().meters_per_unit();
         let result = self.try_run_3dm_command(&command_input).unwrap_or_else(|| {
             let context = viboceros_command::CommandContext { construction_plane };

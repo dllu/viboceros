@@ -1,0 +1,241 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_face",
+      "case": "postselected_checked_component_mesh_strip_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_faces",
+      "case": "postselected_checked_component_mesh_strip_faces"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_faces_reverse",
+      "case": "postselected_checked_component_mesh_strip_faces_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_edge",
+      "case": "postselected_checked_component_mesh_strip_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_edges",
+      "case": "postselected_checked_component_mesh_strip_edges"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_vertex",
+      "case": "postselected_checked_component_mesh_strip_vertex"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_vertices",
+      "case": "postselected_checked_component_mesh_strip_vertices"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_mixed",
+      "case": "postselected_checked_component_mesh_strip_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_unwelded_face",
+      "case": "postselected_checked_component_mesh_unwelded_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_unwelded_faces",
+      "case": "postselected_checked_component_mesh_unwelded_faces"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_unwelded_faces_reverse",
+      "case": "postselected_checked_component_mesh_unwelded_faces_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_unwelded_edge",
+      "case": "postselected_checked_component_mesh_unwelded_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_unwelded_edges",
+      "case": "postselected_checked_component_mesh_unwelded_edges"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_unwelded_vertex",
+      "case": "postselected_checked_component_mesh_unwelded_vertex"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_unwelded_vertices",
+      "case": "postselected_checked_component_mesh_unwelded_vertices"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_unwelded_mixed",
+      "case": "postselected_checked_component_mesh_unwelded_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_face",
+      "case": "postselected_checked_component_subd_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_face_flat",
+      "case": "postselected_checked_component_subd_face_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_faces",
+      "case": "postselected_checked_component_subd_faces"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_faces_flat",
+      "case": "postselected_checked_component_subd_faces_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_faces_reverse",
+      "case": "postselected_checked_component_subd_faces_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_faces_reverse_flat",
+      "case": "postselected_checked_component_subd_faces_reverse_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_edge",
+      "case": "postselected_checked_component_subd_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_edge_flat",
+      "case": "postselected_checked_component_subd_edge_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_edges",
+      "case": "postselected_checked_component_subd_edges"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_edges_flat",
+      "case": "postselected_checked_component_subd_edges_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_vertex",
+      "case": "postselected_checked_component_subd_vertex"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_vertex_flat",
+      "case": "postselected_checked_component_subd_vertex_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_vertices",
+      "case": "postselected_checked_component_subd_vertices"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_vertices_flat",
+      "case": "postselected_checked_component_subd_vertices_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_mixed",
+      "case": "postselected_checked_component_subd_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_mixed_flat",
+      "case": "postselected_checked_component_subd_mixed_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mesh_strip_cloud",
+      "case": "postselected_checked_component_mesh_strip_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_subd_cloud",
+      "case": "postselected_checked_component_subd_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_component_edges_subd_irregular",
+      "case": "postselected_component_edges_subd_irregular"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_component_edges_subd_grid",
+      "case": "postselected_component_edges_subd_grid"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_component_edges_subd_strip",
+      "case": "postselected_component_edges_subd_strip"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_component_edges_subd_triangles",
+      "case": "postselected_component_edges_subd_triangles"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_component_edges_subd_creased",
+      "case": "postselected_component_edges_subd_creased"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mixed_Points",
+      "case": "postselected_checked_component_mixed_Points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mixed_Points_reverse",
+      "case": "postselected_checked_component_mixed_Points_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_two_owners_Points",
+      "case": "postselected_checked_component_two_owners_Points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_with_grips_Points",
+      "case": "postselected_checked_component_with_grips_Points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mixed_PointCloud",
+      "case": "postselected_checked_component_mixed_PointCloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_mixed_PointCloud_reverse",
+      "case": "postselected_checked_component_mixed_PointCloud_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_two_owners_PointCloud",
+      "case": "postselected_checked_component_two_owners_PointCloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "postselected_checked_component_with_grips_PointCloud",
+      "case": "postselected_checked_component_with_grips_PointCloud"
+    }
+  ]
+}

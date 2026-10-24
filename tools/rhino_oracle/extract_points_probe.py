@@ -8,7 +8,7 @@ except (ImportError, ValueError):
 
 def run(operation, host, iterations, tolerance):
     validate(operation)
-    from grip_navigation_probe import create_source
+    from extract_points_geometry import create
     from join_probe import observe_command
     R, S = host['Rhino'], host['System']
     G, doc = R.Geometry, R.RhinoDoc.ActiveDoc
@@ -17,23 +17,7 @@ def run(operation, host, iterations, tolerance):
     case = deepcopy(ALL_CASES[operation['case']])
     ids, layers, groups = [], [], []
     old_layer = doc.Layers.CurrentLayerIndex
-
-    def geometry(kind):
-        if kind != 'subd':
-            return create_source(kind, host)
-        mesh = G.Mesh()
-        try:
-            for p in [[0.,0.,0.],[4.,0.,0.],[4.,3.,0.],[0.,3.,0.],
-                      [0.,0.,2.],[4.,0.,2.],[4.,3.,2.],[0.,3.,2.]]:
-                mesh.Vertices.Add(G.Point3d(*p))
-            for f in [[0,3,2,1],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7],[4,5,6,7]]:
-                mesh.Faces.AddFace(*f)
-            result = G.SubD.CreateFromMesh(mesh)
-            if result is None:
-                raise ValueError('cannot construct ExtractPt SubD source')
-            return result
-        finally:
-            mesh.Dispose()
+    old_appearance = doc.SubDAppearance
 
     def snapshot():
         rows = []
@@ -50,6 +34,9 @@ def run(operation, host, iterations, tolerance):
                 grips=[dict(index=int(p.Index), point=host['_xyz'](p.CurrentLocation),
                             selected=bool(p.IsSelected(False)), hidden=bool(p.IsHidden))
                        for p in (obj.GetGrips() or [])]))
+            if case.get('component_capture'):
+                from extract_points_component_input import selected
+                rows[-1]['components'] = selected(obj,host) if obj.Id in ids else []
         return rows
 
     def archive():
@@ -73,7 +60,7 @@ def run(operation, host, iterations, tolerance):
             for index, recipe in enumerate(case['sources']):
                 layer = doc.Layers.Add('Extract input '+str(index), S.Drawing.Color.FromArgb(40,80,120))
                 layers.append(layer)
-                g = geometry(recipe['kind'])
+                g = create(recipe['kind'], host)
                 try:
                     g.Transform(G.Transform.Translation(20.*index, 0., 0.))
                     a = R.DocObjects.ObjectAttributes()
@@ -91,23 +78,32 @@ def run(operation, host, iterations, tolerance):
         if any(key == S.Guid.Empty for key in ids) or min(layers+groups) < 0:
             raise ValueError('invalid owned ExtractPt source tables')
         source_3dm = archive()
+        if case.get('component_getter'):host['_record_progress']('ExtractPt getter: source archive ready')
         for key, recipe in zip(ids, case['sources']):
             if recipe['mode'] == 'edit':
                 doc.Objects.Select(key, True)
                 if not R.RhinoApp.RunScript('_EditPtOn', False):
                     raise ValueError('could not enable owned edit grips')
                 doc.Objects.UnselectAll()
-            else:
+            elif recipe['mode'] == 'control':
                 doc.Objects.FindId(key).GripsOn = True
-        if case.get('getter'):
+        if case.get('component_getter'):host['_record_progress']('ExtractPt getter: prepare visible grips')
+        if case.get('getter') or case.get('component_getter'):
+            hidden_candidates = 0
             for key, recipe in zip(ids, case['sources']):
                 for grip in (doc.Objects.FindId(key).GetGrips() or []):
-                    grip.Select(int(grip.Index) not in recipe['grips'])
-            if not R.RhinoApp.RunScript('_HidePt', False):
+                    hide = int(grip.Index) not in recipe['grips']
+                    grip.Select(hide)
+                    hidden_candidates += int(hide)
+            if hidden_candidates and not R.RhinoApp.RunScript('_HidePt', False):
                 raise ValueError('could not hide unrelated getter grips')
             doc.Objects.UnselectAll()
         doc.ClearUndoRecords(True)
         doc.ClearRedoRecords()
+        if case.get('component_capture'):
+            from extract_points_component_input import select
+            doc.SubDAppearance = G.SubDComponentLocation.ControlNet if case['flat'] else G.SubDComponentLocation.Surface
+            select(doc,ids,case,host)
         for index in case['whole']:
             doc.Objects.Select(ids[index], True)
         for index in case['order']:
@@ -119,13 +115,42 @@ def run(operation, host, iterations, tolerance):
                 if not grips[pick].IsSelected(False):
                     raise ValueError('owned ExtractPt grip selection failed')
         before = snapshot()
+        if case.get('component_getter'):host['_record_progress']('ExtractPt getter: before snapshot ready')
+        component_records = None
+        if case.get('component_records'):
+            component_records = [[dict(kind=str(c.ComponentIndexType), index=int(c.Index)) for c in (doc.Objects.FindId(key).GetSelectedSubObjects() or [])] for key in ids]
+        profile = None
+        if case.get('curve_profile'):
+            g = doc.Objects.FindId(ids[0]).Geometry
+            g.UpdateSurfaceMeshCache(False)
+            profiles = []
+            edges = list(g.Edges) if case.get('all_edge_profiles') else [list(g.Edges)[0]]
+            for edge in edges:
+                curve = edge.ToNurbsCurve(True)
+                if curve is None:
+                    raise ValueError('native SubD edge curve unavailable')
+                try:
+                    profiles.append(dict(degree=int(curve.Degree), knots=[float(k) for k in curve.Knots],
+                        controls=[host['_xyz'](p.Location) for p in curve.Points],
+                        greville=[host['_xyz'](curve.GrevillePoint(i)) for i in range(curve.Points.Count)],
+                        samples=[host['_xyz'](curve.PointAt(curve.Domain.ParameterAt(i/16.))) for i in range(17)]))
+                finally:
+                    curve.Dispose()
+            profile = profiles if case.get('all_edge_profiles') else profiles[0]
         options = ['_OutputLayer=_'+case['layer'], '_Output=_'+case['output']]
         if case.get('output_first'):
             options.reverse()
-        macro = '_-ExtractPt '+' '.join(options)+('' if case.get('getter') else ' _Enter')
+        if case.get('component_capture') and not case.get('component_getter'):
+            options = options[:1]
+        macro = '_-ExtractPt '+' '.join(options)+('' if case.get('getter') or case.get('component_getter') else ' _Enter')
         history = R.RhinoApp.CommandHistoryWindowText
         receipt = []
         def execute():
+            if case.get('component_getter'):
+                from extract_points_getter import run as drive_getter
+                success, trace = drive_getter(doc,ids,case,host,macro,operation['id'])
+                receipt.append(trace)
+                return success
             if not case.get('getter'):
                 return R.RhinoApp.RunScript(macro, False)
             doc.Objects.UnselectAll()
@@ -135,12 +160,19 @@ def run(operation, host, iterations, tolerance):
             selection = ' '.join('_SelID '+str(ids[i]) for i in case['whole'])
             receipt.append(dict(selection=selection, visible_grips=sum(len(s['grips']) for s in case['sources'])))
             return R.RhinoApp.RunScript(macro+' '+selection+' _SelPt _Enter', False)
-        success, after, events = observe_command(R.Commands.Command, 'ExtractPt',
-            execute, snapshot, lambda: [], True)
+        if case.get('component_getter'):
+            execute()
+            success = receipt[-1]['command_success']
+            after = snapshot()
+            events = [dict(name='ExtractPt',result='Success' if success else 'Failure',
+                capture='Managed EndCommand receipt; document snapshot after the bounded selection macro')]
+        else:
+            success, after, events = observe_command(R.Commands.Command, 'ExtractPt',
+                execute, snapshot, lambda: [], True)
         text = R.RhinoApp.CommandHistoryWindowText
         history = text[len(history):] if text.startswith(history) else text[-3000:]
         if not success:
-            raise ValueError('owned ExtractPt did not succeed')
+            raise ValueError('owned ExtractPt did not succeed: '+str(receipt)+'; history: '+history[-1500:])
         if not R.RhinoApp.RunScript('_Undo', False):
             raise ValueError('owned ExtractPt Undo failed')
         undo = snapshot()
@@ -149,7 +181,7 @@ def run(operation, host, iterations, tolerance):
         redo = snapshot()
         return dict(input=case, source_3dm=source_3dm, before=before, after=after,
                     undo=undo, redo=redo, success=success, events=events, macro=macro,
-                    history=history, getter=receipt[0] if receipt else None), 0
+                    history=history, getter=receipt[0] if receipt else None, curve_profile=profile, component_records=component_records), 0
     finally:
         for obj in list(doc.Objects):
             if obj.GripsOn:
@@ -158,5 +190,6 @@ def run(operation, host, iterations, tolerance):
         for group in reversed(groups):
             doc.Groups.Delete(group)
         doc.Layers.SetCurrentLayerIndex(old_layer, True)
+        doc.SubDAppearance = old_appearance
         for layer in reversed(layers):
             doc.Layers.Delete(layer, True)

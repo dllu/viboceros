@@ -55,21 +55,17 @@
     "crates/viboceros-opennurbs/native/subd_edges.h": "49e4529894e72b6a0817323ceb0f802451316a39b0af837a3674db1110f09d93",
     "crates/viboceros-opennurbs/src/subd/crease.rs": "58bf7eaa6b1a6edc850d4bcd78eb0d1e7f24cca9ad4ef5447901bf7ba31272d1",
     "crates/viboceros-opennurbs/src/subd/edges.rs": "964405af7e7efed5091a7f416b8ed852843ea66dfd24699ca21e371933386778",
-    "crates/viboceros-geometry/src/subd/edges.rs": "b45a57b11ebd445ef1f26cdce266dea50922a67cdd3b15700653c40bd690af4f",
     "crates/viboceros-geometry/tests/subd_edges.rs": "ddb85c3c11699b036031c42c40a66e2a7bdf140189e10a07d3af1171d9aa03fd",
     "crates/viboceros-command/src/crease.rs": "dc858497580204417b208457493ef053ce6b09bbe931a2c4a5bf2d7d649d40e4",
     "crates/viboceros-command/src/crease/arguments.rs": "2a9257eae35d24c7f2a4b4da89fab2621d942cde9cedb6de92eda148d1a79813",
     "crates/viboceros-command/tests/crease_native.rs": "3308a327dfe0634e53ae9adf20515b6853019f359feef4dd530fdaec6aee7e35",
     "crates/viboceros-command/tests/crease_staging.rs": "4b8be389108fb13249d2cdfea4a2c012612c237ea3ef64df8cb2b49df19c155a",
-    "crates/viboceros-command/src/component_selection.rs": "1b9d1cfd2f2f3c87febad0a1c158ce83907ed8abfc7fcaf4b249657496faaa61",
     "crates/viboceros-command/tests/support/subd_facets.rs": "ad0be23c4f68083f9b43a85266d0c9e8dcb8d82f00c90c88affa4849472781ff",
     "crates/viboceros-geometry/tests/support/subdivision_native.rs": "34bca1d5a0b7a9f1b6d7a7c5ab2686ab0e079a2b9590a545460c552fd66fb0e1",
     "tools/rhino_oracle/crease_cases.py": "a916a7d1c3aeab0d89585d8c4ff95d7b02d043ca2fcf79ff2a053e1b1fc91d32",
     "tools/rhino_oracle/generate_crease.py": "4af359530ca4b67ac8dd624c8287d93f068dbd659eb418576f53e82aeda56c40",
     "tools/rhino_oracle/test_crease.py": "6aa8d28fbc90c8b461e55b228b7cd5fae59eb3e42dfe68e7f61edf1aa15b8ec9",
     "src/app/untrim_holes.rs": "ba350a8291e8438a1a8caf630af5fcad258954f4058c312f56b63027a96da89a",
-    "src/viewport/polygon_edges.rs": "7791ce80ee462d8cad5c3d81be8f71a5a570305fed5ecce6ea465f40462e2d9f",
-    "src/viewport/polygon_edges/tests.rs": "f5a0e3eb1ac3f1eebd291b5ee8273c8f30ee068ca13a63f3790461dab3ea585f",
     "src/viewport/screen.rs": "24112e93cf5355328a75e2783f121e9bd11b9997fc2b240523c31cebbebcfabb",
     "tools/rhino_oracle/fixtures/crease_main_v3.json": "018da02fe5760d5e73db12d5488b0c9ace38bcab67f15ab28d634650077f3071",
     "tools/rhino_oracle/observations/crease_main_v3.json": "2386f33fff8d84f3852cfc89b2c41bbc0c5264262bf372e5582b5ded6e778e30",
@@ -252,6 +248,10 @@
     "91e2b7c9b0ed7f3920396dc7264c6c1b853d9e8d:crates/viboceros-document/src/object_geometry.rs": "c1c77eba480c5bced476fb4ac59eefcfba52255667e9a40d4024c72b6ade2378",
     "9baaa6650735462f1a070558b13eb172b332a2f1:src/viewport/component_picking.rs": "b42497d498ae6fb87ca1657dd23e9f345478b5304c00455af718590cd495832a",
     "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:src/viewport/selection.rs": "97a0c529b7e43b496a55c38bfe3be56e78dcd30535ef8480902db6bab0acc1b6",
-    "b8cb7ad59fb7b1a22a9c78f589496410298ef63a:src/viewport/picking.rs": "fd48cd2225ebcaf70604dea8478a25d7bf212b9cdfa5b29b571ca20aad2c473f"
+    "b8cb7ad59fb7b1a22a9c78f589496410298ef63a:src/viewport/picking.rs": "fd48cd2225ebcaf70604dea8478a25d7bf212b9cdfa5b29b571ca20aad2c473f",
+    "0175885b7211511efdc267cbbd091c7e181084b6:crates/viboceros-geometry/src/subd/edges.rs": "b45a57b11ebd445ef1f26cdce266dea50922a67cdd3b15700653c40bd690af4f",
+    "0175885b7211511efdc267cbbd091c7e181084b6:crates/viboceros-command/src/component_selection.rs": "1b9d1cfd2f2f3c87febad0a1c158ce83907ed8abfc7fcaf4b249657496faaa61",
+    "0175885b7211511efdc267cbbd091c7e181084b6:src/viewport/polygon_edges.rs": "7791ce80ee462d8cad5c3d81be8f71a5a570305fed5ecce6ea465f40462e2d9f",
+    "0175885b7211511efdc267cbbd091c7e181084b6:src/viewport/polygon_edges/tests.rs": "f5a0e3eb1ac3f1eebd291b5ee8273c8f30ee068ca13a63f3790461dab3ea585f"
   }
 }

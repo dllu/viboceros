@@ -1170,6 +1170,9 @@ impl VibocerosApp {
             return self.continue_cloud_removal(input, pending);
         }
         if input.is_empty() {
+            if self.finish_extract_point_components() {
+                return true;
+            }
             if self.finish_to_subd() {
                 return true;
             }
@@ -1805,6 +1808,7 @@ impl VibocerosApp {
                     | "SubDivide"
                     | "ToSubD"
                     | "ExtractControlPolygon"
+                    | "ExtractPt"
             ) {
                 self.component_selection.clear();
             }

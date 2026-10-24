@@ -1,5 +1,6 @@
 //! Limit-edge samples retain original component ordinals through refinement.
 use super::*;
+mod curves;
 impl SubD {
     /// Sample every active control edge on the limit surface. Polyline order
     /// matches `edges()` and endpoints match `surface_points()` in edge order.

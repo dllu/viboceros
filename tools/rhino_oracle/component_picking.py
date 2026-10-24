@@ -16,7 +16,8 @@ class ComponentPicker(HolePicker):
             time.sleep(0.75)
             return result
         if name.startswith('@component-menu:'):
-            if re.fullmatch(r'@component-menu:[A-Za-z0-9_.-]{1,100}:First', name) is None:
+            choice = re.fullmatch(r'@component-menu:[A-Za-z0-9_.-]{1,100}:(First|Second)', name)
+            if choice is None:
                 raise ValueError('invalid owned selection menu choice')
             owner = subprocess.run(['xdotool','getwindowpid',window],check=True,capture_output=True,text=True,timeout=10).stdout.strip()
             found = subprocess.run(['xdotool','search','--onlyvisible','--name','^Selection Menu$'],capture_output=True,text=True,timeout=10)
@@ -24,15 +25,17 @@ class ComponentPicker(HolePicker):
             for candidate in found.stdout.split():
                 pid = subprocess.run(['xdotool','getwindowpid',candidate],check=True,capture_output=True,text=True,timeout=10).stdout.strip()
                 if pid == owner: menus.append(candidate)
-            if not menus: return False
+            if not menus: return choice[1] == 'Second'
             if len(menus) != 1: raise ValueError('ambiguous owned selection menu window')
             menu = menus[0]
             output = subprocess.run(['xdotool','getwindowgeometry','--shell',menu],check=True,capture_output=True,text=True,timeout=10).stdout
             geometry = dict((key,int(value)) for key,value in re.findall(r'^(X|Y|WIDTH|HEIGHT)=(-?\d+)$',output,re.MULTILINE))
             if set(geometry) != {'X','Y','WIDTH','HEIGHT'} or not 15 <= geometry['HEIGHT'] <= 1000 or not 50 <= geometry['WIDTH'] <= 1000:
                 raise ValueError('invalid owned selection menu rectangle')
-            # Native popup rows in a fresh settings scheme are 24 pixels high.
-            subprocess.run(['xdotool','windowactivate','--sync',menu,'mousemove',str(geometry['X']+geometry['WIDTH']//2),str(geometry['Y']+12),'click','1'],check=True,timeout=10)
+            # Keep coordinates relative to the owned client window; desktop
+            # frame decorations are outside its native candidate rows.
+            row=12+(24 if choice[1]=='Second' else 0)
+            subprocess.run(['xdotool','windowactivate','--sync',menu,'mousemove','--window',menu,str(geometry['WIDTH']//2),str(row),'click','1'],check=True,timeout=10)
             return True
         if name.startswith('@component-finish:'):
             match = re.fullmatch(r'@component-finish:[A-Za-z0-9_.-]{1,100}:(Enter|Cancel)', name)
@@ -48,7 +51,7 @@ class ComponentPicker(HolePicker):
         if not name.startswith('@component-'):
             return super().send_input(name, x, y, window)
         if name.startswith('@component-key:'):
-            match = re.fullmatch(r'@component-key:[A-Za-z0-9_.-]{1,100}:\d{1,2}:(None|Undo|Copy=Yes|Copy=No|OutputLayer=Current|OutputLayer=Input)', name)
+            match = re.fullmatch(r'@component-key:[A-Za-z0-9_.-]{1,100}:\d{1,2}:(None|Undo|SelPt|Copy=Yes|Copy=No|OutputLayer=Current|OutputLayer=Input)', name)
             if match is None: raise ValueError('invalid owned component key')
             subprocess.run(['xdotool', 'windowactivate', '--sync', window, 'type', '--clearmodifiers', match[1]], check=True, timeout=10)
             subprocess.run(['xdotool', 'windowactivate', '--sync', window, 'key', '--clearmodifiers', 'Return'], check=True, timeout=10)

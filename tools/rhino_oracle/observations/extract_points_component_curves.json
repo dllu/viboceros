@@ -1,0 +1,1351 @@
+{
+  "protocol_version": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "id": "component_subd_curve_profile",
+      "elapsed_ns": 0,
+      "value": {
+        "curve_profile": {
+          "degree": 3,
+          "controls": [
+            [
+              1.0,
+              0.75,
+              0.49999999999999994
+            ],
+            [
+              1.029770141513331,
+              0.7385168307424064,
+              0.4923445538282709
+            ],
+            [
+              1.15111356474574,
+              0.6967729853662502,
+              0.46451532357749975
+            ],
+            [
+              1.399764999516228,
+              0.6376523906639636,
+              0.4251015937759758
+            ],
+            [
+              1.6898784175524064,
+              0.5963057112193891,
+              0.3975371408129262
+            ],
+            [
+              1.9999999999999982,
+              0.580334624153867,
+              0.3868897494359114
+            ],
+            [
+              2.3101215824475925,
+              0.5963057112193886,
+              0.39753714081292557
+            ],
+            [
+              2.6002350004837727,
+              0.6376523906639632,
+              0.4251015937759755
+            ],
+            [
+              2.848886435254257,
+              0.6967729853662498,
+              0.4645153235774997
+            ],
+            [
+              2.970229858486669,
+              0.7385168307424067,
+              0.49234455382827114
+            ],
+            [
+              2.9999999999999996,
+              0.75,
+              0.49999999999999994
+            ]
+          ],
+          "samples": [
+            [
+              1.0,
+              0.75,
+              0.49999999999999994
+            ],
+            [
+              1.0653569498326647,
+              0.7269800913312641,
+              0.4846533942208425
+            ],
+            [
+              1.162219614732719,
+              0.6973555142599082,
+              0.46490367617327183
+            ],
+            [
+              1.2776913296973917,
+              0.6676557940280164,
+              0.4451038626853442
+            ],
+            [
+              1.4066753300605097,
+              0.6406147098735823,
+              0.42707647324905484
+            ],
+            [
+              1.5461023366109234,
+              0.6178779990174422,
+              0.4119186660116282
+            ],
+            [
+              1.6932131116209752,
+              0.6005349766158978,
+              0.4003566510772653
+            ],
+            [
+              1.8453560455347733,
+              0.589514287822255,
+              0.39300952521483673
+            ],
+            [
+              1.9999999999999987,
+              0.5856583198423743,
+              0.3904388798949162
+            ],
+            [
+              2.1546439544652243,
+              0.5895142878222547,
+              0.39300952521483645
+            ],
+            [
+              2.3067868883790235,
+              0.6005349766158974,
+              0.4003566510772648
+            ],
+            [
+              2.4538976633890757,
+              0.6178779990174419,
+              0.4119186660116278
+            ],
+            [
+              2.5933246699394896,
+              0.6406147098735818,
+              0.4270764732490545
+            ],
+            [
+              2.722308670302607,
+              0.667655794028016,
+              0.445103862685344
+            ],
+            [
+              2.837780385267279,
+              0.6973555142599078,
+              0.46490367617327183
+            ],
+            [
+              2.934643050167334,
+              0.7269800913312641,
+              0.4846533942208427
+            ],
+            [
+              2.9999999999999996,
+              0.75,
+              0.49999999999999994
+            ]
+          ],
+          "greville": [
+            [
+              1.0,
+              0.75,
+              0.49999999999999994
+            ],
+            [
+              1.039337497469256,
+              0.7357565530183244,
+              0.4905043686788828
+            ],
+            [
+              1.162219614732719,
+              0.6973555142599082,
+              0.46490367617327183
+            ],
+            [
+              1.4066753300605097,
+              0.6406147098735823,
+              0.42707647324905484
+            ],
+            [
+              1.6932131116209752,
+              0.6005349766158978,
+              0.4003566510772653
+            ],
+            [
+              1.9999999999999987,
+              0.5856583198423743,
+              0.3904388798949162
+            ],
+            [
+              2.3067868883790235,
+              0.6005349766158974,
+              0.4003566510772648
+            ],
+            [
+              2.5933246699394896,
+              0.6406147098735818,
+              0.4270764732490545
+            ],
+            [
+              2.837780385267279,
+              0.6973555142599078,
+              0.46490367617327183
+            ],
+            [
+              2.9606625025307443,
+              0.7357565530183244,
+              0.4905043686788829
+            ],
+            [
+              2.9999999999999996,
+              0.75,
+              0.49999999999999994
+            ]
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            8.0,
+            8.0
+          ]
+        },
+        "events": [
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "ExtractPt",
+            "objects": [
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 598156785,
+                "components": [
+                  [
+                    "edge",
+                    0
+                  ]
+                ],
+                "points": null,
+                "cloud": false,
+                "selected": false,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "fdbbc2cf-136b-4131-943c-36a4146b48d3",
+                "grips_on": false,
+                "source": 0
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    1.0,
+                    0.75,
+                    0.49999999999999994
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "130f3766-eb58-4242-9653-9cd20a968d80",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    1.029770141513331,
+                    0.7385168307424064,
+                    0.4923445538282709
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "4a6bfd59-dadb-45bc-8f3b-6ceaefd0d473",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    1.15111356474574,
+                    0.6967729853662502,
+                    0.46451532357749975
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "307f804b-4085-4db9-99b6-5aef5cfea827",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    1.399764999516228,
+                    0.6376523906639636,
+                    0.4251015937759758
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "0a546e74-cbd0-4603-8cc4-38ba3b3d31ff",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    1.6898784175524064,
+                    0.5963057112193891,
+                    0.3975371408129262
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "65d701fa-230f-4fe9-ac14-2b2dbd6023c1",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    1.9999999999999982,
+                    0.580334624153867,
+                    0.3868897494359114
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "8725511a-946c-4f8b-b8ce-e4897737c3f7",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    2.3101215824475925,
+                    0.5963057112193886,
+                    0.39753714081292557
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "77e7ec98-8b71-48cf-9c0c-df9627fb0916",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    2.6002350004837727,
+                    0.6376523906639632,
+                    0.4251015937759755
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "16c2e36f-f3c6-4e84-96e9-308a3f573250",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    2.848886435254257,
+                    0.6967729853662498,
+                    0.4645153235774997
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "4cb31e2e-073e-4cd1-987b-8aec0315073b",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    2.970229858486669,
+                    0.7385168307424067,
+                    0.49234455382827114
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "51717f0a-e90d-49a6-b4de-b41bf8d13d2d",
+                "grips_on": false,
+                "source": null
+              },
+              {
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "crc": 0,
+                "components": [],
+                "points": [
+                  [
+                    2.9999999999999996,
+                    0.75,
+                    0.49999999999999994
+                  ]
+                ],
+                "cloud": false,
+                "selected": true,
+                "name": "Input 0",
+                "color_source": 1,
+                "grips": [],
+                "id": "a6eb1cde-8140-4327-822f-7c2755bab7d5",
+                "grips_on": false,
+                "source": null
+              }
+            ]
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Enter"
+          }
+        ],
+        "undo": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 598156785,
+            "components": [],
+            "points": null,
+            "cloud": false,
+            "selected": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "fdbbc2cf-136b-4131-943c-36a4146b48d3",
+            "grips_on": false,
+            "source": 0
+          }
+        ],
+        "before": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 598156785,
+            "components": [
+              [
+                "edge",
+                0
+              ]
+            ],
+            "points": null,
+            "cloud": false,
+            "selected": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "fdbbc2cf-136b-4131-943c-36a4146b48d3",
+            "grips_on": false,
+            "source": 0
+          }
+        ],
+        "success": true,
+        "getter": null,
+        "after": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 598156785,
+            "components": [
+              [
+                "edge",
+                0
+              ]
+            ],
+            "points": null,
+            "cloud": false,
+            "selected": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "fdbbc2cf-136b-4131-943c-36a4146b48d3",
+            "grips_on": false,
+            "source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.0,
+                0.75,
+                0.49999999999999994
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "130f3766-eb58-4242-9653-9cd20a968d80",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.029770141513331,
+                0.7385168307424064,
+                0.4923445538282709
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "4a6bfd59-dadb-45bc-8f3b-6ceaefd0d473",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.15111356474574,
+                0.6967729853662502,
+                0.46451532357749975
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "307f804b-4085-4db9-99b6-5aef5cfea827",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.399764999516228,
+                0.6376523906639636,
+                0.4251015937759758
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "0a546e74-cbd0-4603-8cc4-38ba3b3d31ff",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.6898784175524064,
+                0.5963057112193891,
+                0.3975371408129262
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "65d701fa-230f-4fe9-ac14-2b2dbd6023c1",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.9999999999999982,
+                0.580334624153867,
+                0.3868897494359114
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "8725511a-946c-4f8b-b8ce-e4897737c3f7",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.3101215824475925,
+                0.5963057112193886,
+                0.39753714081292557
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "77e7ec98-8b71-48cf-9c0c-df9627fb0916",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.6002350004837727,
+                0.6376523906639632,
+                0.4251015937759755
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "16c2e36f-f3c6-4e84-96e9-308a3f573250",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.848886435254257,
+                0.6967729853662498,
+                0.4645153235774997
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "4cb31e2e-073e-4cd1-987b-8aec0315073b",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.970229858486669,
+                0.7385168307424067,
+                0.49234455382827114
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "51717f0a-e90d-49a6-b4de-b41bf8d13d2d",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.9999999999999996,
+                0.75,
+                0.49999999999999994
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "a6eb1cde-8140-4327-822f-7c2755bab7d5",
+            "grips_on": false,
+            "source": null
+          }
+        ],
+        "redo": [
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 598156785,
+            "components": [],
+            "points": null,
+            "cloud": false,
+            "selected": false,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "fdbbc2cf-136b-4131-943c-36a4146b48d3",
+            "grips_on": false,
+            "source": 0
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.0,
+                0.75,
+                0.49999999999999994
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "130f3766-eb58-4242-9653-9cd20a968d80",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.029770141513331,
+                0.7385168307424064,
+                0.4923445538282709
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "4a6bfd59-dadb-45bc-8f3b-6ceaefd0d473",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.15111356474574,
+                0.6967729853662502,
+                0.46451532357749975
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "307f804b-4085-4db9-99b6-5aef5cfea827",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.399764999516228,
+                0.6376523906639636,
+                0.4251015937759758
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "0a546e74-cbd0-4603-8cc4-38ba3b3d31ff",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.6898784175524064,
+                0.5963057112193891,
+                0.3975371408129262
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "65d701fa-230f-4fe9-ac14-2b2dbd6023c1",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                1.9999999999999982,
+                0.580334624153867,
+                0.3868897494359114
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "8725511a-946c-4f8b-b8ce-e4897737c3f7",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.3101215824475925,
+                0.5963057112193886,
+                0.39753714081292557
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "77e7ec98-8b71-48cf-9c0c-df9627fb0916",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.6002350004837727,
+                0.6376523906639632,
+                0.4251015937759755
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "16c2e36f-f3c6-4e84-96e9-308a3f573250",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.848886435254257,
+                0.6967729853662498,
+                0.4645153235774997
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "4cb31e2e-073e-4cd1-987b-8aec0315073b",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.970229858486669,
+                0.7385168307424067,
+                0.49234455382827114
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "51717f0a-e90d-49a6-b4de-b41bf8d13d2d",
+            "grips_on": false,
+            "source": null
+          },
+          {
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "crc": 0,
+            "components": [],
+            "points": [
+              [
+                2.9999999999999996,
+                0.75,
+                0.49999999999999994
+              ]
+            ],
+            "cloud": false,
+            "selected": true,
+            "name": "Input 0",
+            "color_source": 1,
+            "grips": [],
+            "id": "a6eb1cde-8140-4327-822f-7c2755bab7d5",
+            "grips_on": false,
+            "source": null
+          }
+        ],
+        "macro": "_-ExtractPt _OutputLayer=_Input _Enter",
+        "history": "",
+        "input": {
+          "flat": false,
+          "curve_profile": true,
+          "sources": [
+            {
+              "kind": "subd",
+              "grips": [],
+              "mode": null
+            }
+          ],
+          "layer": "Input",
+          "component_capture": true,
+          "components": [
+            [
+              0,
+              "edge",
+              0
+            ]
+          ],
+          "output": "Points",
+          "order": [
+            0
+          ],
+          "whole": []
+        },
+        "source_3dm": "M0QgR2VvbWV0cnkgRmlsZSBGb3JtYXQgICAgICAgODABAAAAfgAAAAAAAAAgUnVudGltZTogT046OlJ1bnRpbWVFbnZpcm9ubWVudDo6V2luZG93cyAzRE0gSS9PIHByb2Nlc3NvcjogT3Blbk5VUkJTIHRvb2xraXQgdmVyc2lvbiAyNDI0MzQ2NTIxIChjb21waWxlZCBvbiBKdW4gIDkgMjAyNikKGgAUAAAQiQAAAAAAAAAmAACgmZeAkAAAAAAhgAAgZQAAAAAAAAAQBQAAAGQAbABsAHUAAAAYAAAAFAAAABAAAAAYAAAACQAAAH4AAAAGAAAAKAEAAAUAAABkAGwAbAB1AAAAGAAAABQAAAAQAAAAGAAAAAkAAAB+AAAABgAAACgBAAABAAAARNA5sf////8AAAAAAAAAABUAABDlBQAAAAAAADGAACA4AAAAAAAAAGYAAAACAAAAldYm6AsuET45nVKiRt+RP3sUrkfheoQ/AAAAAAMAAAD8qfHSTWJQPwAAAAAttK6/MoAAIJYAAAAAAAAAFQAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAtQxzr4jYaPwAAAAAAAAAAAAAAAAAAGEAAAAAAAAAAAIdE50oYV9Y/AAAAAAAA8D+HROdKGFfWP4dE50oYV7Y/AAAAAAIAAAAAAAAAAAAAAAAAAQCAAEAWAAAAAAAAAAEAAAADAAAABAAAAAIAAAAAAAZdC7DXEQBhM4AAIJYAAAAAAAAAFQEAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAtQxzr4jYaPwAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAIdE50oYV9Y/AAAAAAAA8D+HROdKGFfWP4dE50oYV7Y/AAAAAAEAAAAAmpmZmZmZ6T8AAQCAAEAWAAAAAAAAAAEAAAADAAAABAAAAAIAAAAAAAZdC7Cy2r7ZNIAAIIIAAAAAAAAAFAAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAADwPwEAAAAAAADwPwEBAQAAAAAAAAAAAAAAAAAAAAAAdIuPKjWAACAIAAAAAAAAAAAAAAAc30QhNoAAIAgAAAAAAAAAAAAAABzfRCE3gAAgCAAAAAAAAAAAAAAAHN9EITgAAKAAAAAAAAAAADmAACAMAAAAAAAAAP////8AAAAA/////zqAACAMAAAAAAAAAAAAAAAAAAAAad8iZTwAAKABAAAAAAAAAD2AACCZAAAAAAAAAACAAECJAAAAAAAAAAEAAAADAAAAACADAABYAgAAAAAAAAAAUkAIAAAAAAAAAAAAAAD///8AoKCgAAAAAAAAAAABAAAAAAAAAAEAAAABAAAA6AMAAOgDAAAAAAAAAADoPwAAAAAAAAAAAABZQAAAAAAAAFBAmpmZmZmZuT8KAAAAAAAAAAAAAAAAAAAAAAAAAACMuoc7AAAAAD+AACApAAAAAAAAABAAAAAAAADwPwAAAAAAAPA/RgAAAAUAAAABAAAAAQAAAAEAAACE6criMgEAoAAAAAAAAAAAMwEAoAAAAAAAAAAANIEAIEECAAAAAAAAFwAAAAAAAPA//////wAAAAD/////AAAAAACAAEBAAAAAAAAAAAEAAAAAAAAAZgAAAAIAAAD8qfHSTWJQPzmdUqJG35E/exSuR+F6hD8AAAAAAwAAAPyp8dJNYlA/AAAAAEQaUgcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAQJQAAAAAAAAAAQAAAAIAAADSHTOevfjl/9IdM569+OX/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAieCmqQAAgABAEQAAAAAAAAABAAAAAAAAAAABAAAAYvheahUAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAALUMc6+I2Gj8AAAAAAAAAAAAAAAAAABhAAAAAAAAAAACHROdKGFfWPwAAAAAAAPA/h0TnShhX1j+HROdKGFe2PwAAAAACAAAAAAAAAAAAAAAAAAEAgABAFgAAAAAAAAABAAAAAwAAAAQAAAACAAAAAAAGXQuwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAeAgAAAAAAAFCAACD9AAAAAAAAAPp/AgDtAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CALUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAKFB4AAAAAAAAAAAAAAAAAAAAAAAAAPA/EAAAAEUAeAB0AHIAYQBjAHQAIABpAG4AcAB1AHQAIAAwAAAAAf//////////AAAAAAAAAAAAkzJfnABAGUCBlzdZe9vQAwAAAAAAAAAAAAAAAAAAAAABAIAAQBAAAAAAAAAAAQAAAAAAAAAAAAAAAIpw4AAAAAAAAAAAAAAAAAAAAAAAmol86/9/AoAAAAAAAAAAAAAAAABQgAAg/QAAAAAAAAD6fwIA7QAAAAAAAAD7/wIAFAAAAAAAAAATmICVhenTEb/lABCDASLwO0cHHfz/AgC1AAAAAAAAAB8AAAAAAQAAAP//////////AAAAABQoPAAAAAAAAAAAAAAAAAAAAAAAAADwPxAAAABFAHgAdAByAGEAYwB0ACAAYwB1AHIAcgBlAG4AdAAAAAH//////////wAAAAAAAAAAAI7s3te8uMhNuYxcN/sF7VkAAAAAAAAAAAAAAAAAAAAAAQCAAEAQAAAAAAAAAAEAAAAAAAAAAAAAAACKcOAAAAAAAAAAAAAAAAAAAAAAAEMZ8u3/fwKAAAAAAAAAAAAAAAAA/////wAAAAAAAAAAGAAAEAwAAAAAAAAA/////wAAAAAAAAAAGQAAEAwAAAAAAAAA/////wAAAAAAAAAAIAAAEAwAAAAAAAAA/////wAAAAAAAAAAEgAAEAwAAAAAAAAA/////wAAAAAAAAAAIgAAEAwAAAAAAAAA/////wAAAAAAAAAAIQAAEAwAAAAAAAAA/////wAAAAAAAAAAEwAAEBsLAAAAAAAAcIAAIAMLAAAAAAAAcQAAggAABAAAAAAA+n8CAJkKAAAAAAAA+/8CABQAAAAAAAAA2aSb8FtFw0K6O+bMrO+FO6ndcYP8/wIAYQoAAAAAAAABAIAAQFAKAAAAAAAAAQAAAAQAAAABAAAACAAAAAwAAAAGAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAAAAAAAAAAAAAAAAAIAAQGoIAAAAAAAAAQAAAAEAAAAAAAQEBAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAAAAAAAAAAAAAAAAAEAAAAJAAAAFQAAABsAAAABAAAAAQAAAAAAAAAA/wEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAMAAAMACQAAAAAKAAAAAQsAAAABAwAVAAAAABYAAAAAGQAAAAD/AgAAAAIAAAAAAAAAAP8BAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAwADAAADAAkAAAABDAAAAAENAAAAAQMAFQAAAAAWAAAAABcAAAAA/wMAAAADAAAAAAAAAAD/AQAAAAAAABBAAAAAAAAACEAAAAAAAAAAAAMAAwAAAwAMAAAAAA4AAAAADwAAAAADABUAAAAAFwAAAAAYAAAAAP8EAAAABAAAAAAAAAAA/wEAAAAAAAAAAAAAAAAAAAhAAAAAAAAAAAADAAMAAAMACgAAAAAOAAAAARAAAAAAAwAVAAAAABgAAAAAGQAAAAD/BQAAAAUAAAAAAAAAAP8BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAwADAAADAAsAAAAAEQAAAAESAAAAAQMAFgAAAAAZAAAAABoAAAAA/wYAAAAGAAAAAAAAAAD/AQAAAAAAABBAAAAAAAAAAAAAAAAAAAAAQAMAAwAAAwANAAAAABEAAAAAEwAAAAADABYAAAAAFwAAAAAaAAAAAP8HAAAABwAAAAAAAAAA/wEAAAAAAAAQQAAAAAAAAAhAAAAAAAAAAEADAAMAAAMADwAAAAETAAAAARQAAAAAAwAXAAAAABgAAAAAGgAAAAD/CAAAAAgAAAAAAAAAAP8BAAAAAAAAAAAAAAAAAAAIQAAAAAAAAABAAwADAAADABAAAAABEgAAAAAUAAAAAQMAGAAAAAAZAAAAABoAAAAA/wkAAAABAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABAAAAAAIAAAAAAgAVAAAAARYAAAAACAAAAAAAAAAA/woAAAACAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAEAAAAAAEAAAAAAgAVAAAAARkAAAAACAAAAAAAAAAA/wsAAAADAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAFAAAAAAEAAAAAAgAWAAAAABkAAAABCAAAAAAAAAAA/wwAAAAEAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgADAAAAAAIAAAAAAgAVAAAAABcAAAABCAAAAAAAAAAA/w0AAAAFAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGAAAAAAIAAAAAAgAWAAAAARcAAAAACAAAAAAAAAAA/w4AAAAGAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgADAAAAAAQAAAAAAgAVAAAAARgAAAAACAAAAAAAAAAA/w8AAAAHAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgADAAAAAAcAAAAAAgAXAAAAABgAAAABCAAAAAAAAAAA/xAAAAAIAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAEAAAAAAgAAAAAAgAYAAAAABkAAAABCAAAAAAAAAAA/xEAAAAJAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGAAAAAAUAAAAAAgAWAAAAABoAAAABCAAAAAAAAAAA/xIAAAAKAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAIAAAAAAUAAAAAAgAZAAAAARoAAAAACAAAAAAAAAAA/xMAAAALAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAGAAAAAAcAAAAAAgAXAAAAARoAAAAACAAAAAAAAAAA/xQAAAAMAAAAAAAAAAD/AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAHAAAAAAgAAAAAAgAYAAAAARoAAAAACAAAAAAAAAAA/xUAAAABAAAAAAAAAAD/AAAAAAAAAAAEAAQACgAAAAEOAAAAAQwAAAAACQAAAAEiAgBVVVVVVVXVP1VVVVVVVdU/V1VVVVU91T9VVVVVVT3VPwAABAEAAAAA/xYAAAACAAAAAAAAAAD/AAAAAAAAAAAEAAQACQAAAAANAAAAAREAAAAACwAAAAAiAgBVVVVVVVXVPwAAAAAAAAAAV1VVVVU91T9VVVVVVT3VPwAABAIAAAAA/xcAAAADAAAAAAAAAAD/AAAAAAAAAAAEAAQADAAAAAEPAAAAABMAAAABDQAAAAAiAgBWVVVVVVXlP1VVVVVVVdU/VFVVVVU91T9VVVVVVT3VPwAABAMAAAAA/xgAAAAEAAAAAAAAAAD/AAAAAAAAAAAEAAQADgAAAAAQAAAAABQAAAABDwAAAAEiAgBWVVVVVVXlPwAAAAAAAAAAVFVVVVU91T9VVVVVVT3VPwAABAQAAAAA/xkAAAAFAAAAAAAAAAD/AAAAAAAAAAAEAAQACgAAAAALAAAAARIAAAABEAAAAAEiAgAAAAAAAAAAAFVVVVVVVdU/VVVVVVU91T9VVVVVVT3VPwAABAUAAAAA/xoAAAAGAAAAAAAAAAD/AAAAAAAAAAAEAAQAEQAAAAETAAAAABQAAAAAEgAAAAAiAgAAAAAAAAAAAAAAAAAAAAAAVVVVVVU91T9VVVVVVT3VPwAABAYAAAAA/wB3UZhiAgCAAECkAAAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAABpPJijAIAAQA0AAAAAAAAAAQAAAAQAAAAALabyBAMAAAAAAAAAAFTd2MPI+FVEuw4qL0mI7IEBAIAAQJ4AAAAAAAAAAQAAAAEAAAAAAQgAAAAAgABAIAAAAAAAAAABAAAAAAAAAOsZb5iPT0J9MYyiW2hnHPOkUQASMCndtAwAAAAAgABAIAAAAAAAAAABAAAAAAAAAMXDtCVvk2tdGj9Be5pIhRfzCI2Pa0mSzwYAAAAAgABAIAAAAAAAAAABAAAAAAAAALpJ0vdpDf930B8gM/ZFmMS22ZFy/YiEYimGDfmuCpUeG98Fpf9/AoAAAAAAAAAAAHKAAAI2AAAAAAAAAC3Pwrv9axMxQZQ8NqQUa0jTAAAAAAEIAAAASQBuAHAAdQB0ACAAMAAAAAYRK1sADQEA+baFDn8AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAAsoAAAAAAAA"
+      }
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "provenance": {
+    "request_sha256": "773030f243fd6f0dfe3529e73b5585c212728c172abdc0b3c7b1d014a5e46c86",
+    "sources": {
+      "extract_points_cases.py": "6fe3e9116d28696ba8d0f19b74ff867150382e442016512cb204f4d48139f08f",
+      "extract_points_probe.py": "de2460f82c47a0afcf1aefbc0d6615dd0d479952b6580d1c28816ca3b055ddef",
+      "generate_extract_points.py": "a08f5833b78d3989d1be0a79dad09328cf1aaf0c96d412c7422c0feb9d5f1c2c",
+      "extract_points_geometry.py": "a4621fa74a226a4d4eaa7155ae0ddd1862c4b31338348f3bf4463526faf000fb",
+      "extract_points_component_cases.py": "bcf75adb1b2f76a4e9ea5f62499685562e402ba7219db78aaf403254f74d79b5",
+      "extract_points_component_input.py": "f44c944f67de412156984f22a924e343ac1741ced9e684f43986720505d9b45b",
+      "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+      "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "4c5c9ebd1b426ab4799c13afda609644e2f7b17fea42632e4f4307c782a288e8",
+      "rhino_worker.py": "6423e0381f254bb896a0204de8cc4f7d223797ac48f2be8e896ffd27e7682067"
+    }
+  }
+}

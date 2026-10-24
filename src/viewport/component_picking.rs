@@ -70,6 +70,9 @@ impl Viewport {
             ComponentPickFilter::Any | ComponentPickFilter::Crease
         ) {
             let mut vertices = self.pick_polygon_vertices(pointer, rect, document);
+            if filter == ComponentPickFilter::Crease {
+                vertices.retain(|p| p.kind == ComponentSelectionKind::SubDVertex);
+            }
             let mut edges = self.pick_component_edges(
                 pointer,
                 rect,
@@ -90,7 +93,48 @@ impl Viewport {
                         _ => None,
                     })
                     .collect::<std::collections::BTreeMap<_, _>>();
+                let mut mesh_points = std::collections::BTreeSet::new();
+                for pick in vertices
+                    .iter()
+                    .filter(|p| p.kind == ComponentSelectionKind::MeshVertex)
+                {
+                    let object = document.object(pick.object).unwrap();
+                    let display = self
+                        .display_cache
+                        .borrow_mut()
+                        .get(object, document.tolerance());
+                    if let Some(point) = display
+                        .polygon_vertex_points(document, object)
+                        .get(pick.index)
+                    {
+                        mesh_points.insert((
+                            pick.object,
+                            point
+                                .to_array()
+                                .map(|x| if x == 0. { 0 } else { x.to_bits() }),
+                        ));
+                    }
+                }
                 edges.retain(|p| {
+                    if p.kind == ComponentSelectionKind::MeshEdge {
+                        let Some(object) = document.object(p.object) else {
+                            return false;
+                        };
+                        let display = self
+                            .display_cache
+                            .borrow_mut()
+                            .get(object, document.tolerance());
+                        return display.edges().get(p.index).is_some_and(|segments| {
+                            segments.iter().flatten().all(|point| {
+                                !mesh_points.contains(&(
+                                    p.object,
+                                    point
+                                        .to_array()
+                                        .map(|x| if x == 0. { 0 } else { x.to_bits() }),
+                                ))
+                            })
+                        });
+                    }
                     if p.kind != ComponentSelectionKind::SubDEdge {
                         return true;
                     }
@@ -195,9 +239,16 @@ impl Viewport {
                     filter,
                     ComponentPickFilter::Any | ComponentPickFilter::Crease
                 ) {
-                    result.extend(self.polygon_edges_in_rectangle(
-                        viewport, selection, document, object, crossing, inverted,
-                    ));
+                    result.extend(
+                        self.polygon_edges_in_rectangle(
+                            viewport, selection, document, object, crossing, inverted,
+                        )
+                        .into_iter()
+                        .filter(|p| {
+                            filter == ComponentPickFilter::Any
+                                || p.kind != ComponentSelectionKind::MeshVertex
+                        }),
+                    );
                 }
                 if matches!(
                     filter,
@@ -332,9 +383,14 @@ impl Viewport {
                         self.paint_polygon_edge(painter, rect, document, object, pick.index);
                     }
                 }
-                ComponentSelectionKind::SubDVertex => {
-                    if let Some(point) =
-                        super::polygon_edges::vertex_points(document, object).get(pick.index)
+                ComponentSelectionKind::MeshVertex | ComponentSelectionKind::SubDVertex => {
+                    let display = self
+                        .display_cache
+                        .borrow_mut()
+                        .get(object, document.tolerance());
+                    if let Some(point) = display
+                        .polygon_vertex_points(document, object)
+                        .get(pick.index)
                         && document.is_control_point_hidden(viboceros_document::ControlPointId {
                             object: pick.object,
                             index: pick.index,

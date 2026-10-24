@@ -151,6 +151,7 @@ pub(super) struct DisplayGeometry {
     normals: OnceCell<Vec<[NaVector3<Real>; 3]>>,
     edges: OnceCell<Vec<Vec<[Point3; 2]>>>,
     block_members: OnceCell<Vec<Rc<DisplayGeometry>>>,
+    pub(super) topology_vertices: OnceCell<Vec<Point3>>,
     pub(super) component_regions: OnceCell<super::polygon_components::FaceRegions>,
 }
 
@@ -188,6 +189,7 @@ impl DisplayGeometry {
             edges: OnceCell::new(),
             block_members: OnceCell::new(),
             component_regions: OnceCell::new(),
+            topology_vertices: OnceCell::new(),
         }
     }
 

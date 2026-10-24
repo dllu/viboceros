@@ -1,7 +1,6 @@
 use super::polyline_closure_reference as native;
 use super::*;
-#[path = "../../../crates/viboceros-command/tests/support/extract_points.rs"]
-mod grip_native;
+use crate::app::extract_points::native as grip_native;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();

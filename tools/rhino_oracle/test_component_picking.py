@@ -25,8 +25,19 @@ class ComponentPickingTests(unittest.TestCase):
                     with self.assertRaises(ValueError):ComponentPicker().send_input('@component-menu:owned:First','1','1','123')
                 else:
                     self.assertEqual(ComponentPicker().send_input('@component-menu:owned:First','1','1','123'),mode=='owned')
-            gestures=[call for call in calls if 'click' in call]
-            self.assertEqual(gestures,[['xdotool','windowactivate','--sync','456','mousemove','193','212','click','1']] if mode=='owned' else [])
+            gestures=[call for call in calls if call[1]=='windowactivate']
+            self.assertEqual(gestures,[['xdotool','windowactivate','--sync','456','mousemove','--window','456','93','12','click','1']] if mode=='owned' else [])
+
+    def test_optional_second_menu_choice_uses_the_component_row(self):
+        def run(command,**kwargs):
+            text='456' if command[1]=='search' else '111' if command[1]=='getwindowpid' else 'X=100\nY=200\nWIDTH=187\nHEIGHT=71\n' if command[1]=='getwindowgeometry' else ''
+            return subprocess.CompletedProcess(command,0,stdout=text)
+        with patch('tools.rhino_oracle.component_picking.subprocess.run',side_effect=run) as shell:
+            self.assertTrue(ComponentPicker().send_input('@component-menu:owned:Second','1','1','123'))
+            self.assertEqual(shell.call_args.args[0],['xdotool','windowactivate','--sync','456','mousemove','--window','456','93','36','click','1'])
+        with patch('tools.rhino_oracle.component_picking.subprocess.run',return_value=subprocess.CompletedProcess([],0,stdout='')) as shell:
+            self.assertTrue(ComponentPicker().send_input('@component-menu:owned:Second','1','1','123'))
+            self.assertFalse(any('click' in call.args[0] for call in shell.call_args_list))
 
     def test_component_finish_keys_are_scoped_and_released_on_failure(self):
         for value,key in [('Enter','Return'),('Cancel','Escape')]:
@@ -92,7 +103,7 @@ class ComponentPickingTests(unittest.TestCase):
 
     def test_prompt_keys_are_whitelisted_and_scoped(self):
         with patch('tools.rhino_oracle.component_picking.subprocess.run') as run:
-            for key in ('None','Undo','Copy=Yes','Copy=No','OutputLayer=Current','OutputLayer=Input'):
+            for key in ('None','Undo','SelPt','Copy=Yes','Copy=No','OutputLayer=Current','OutputLayer=Input'):
                 ComponentPicker().send_input('@component-key:owned:0:'+key,'1','1','123')
                 self.assertEqual(run.call_args_list[-2].args[0],['xdotool','windowactivate','--sync','123','type','--clearmodifiers',key])
                 self.assertEqual(run.call_args_list[-1].args[0],['xdotool','windowactivate','--sync','123','key','--clearmodifiers','Return'])

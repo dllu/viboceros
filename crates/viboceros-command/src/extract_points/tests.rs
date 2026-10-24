@@ -119,7 +119,7 @@ fn extract_points_prompt_uses_the_typed_parser_and_filters_non_sources() {
     prompt.update_options("Output=PointCloud").unwrap();
     assert_eq!(
         prompt.command_line(),
-        "ExtractPt OutputLayer=Current Output=PointCloud"
+        "ExtractPt OutputLayer=Current Output=PointCloud SubDLocation=Surface"
     );
     let mut doc = Document::default();
     let point = doc
@@ -141,4 +141,52 @@ fn extract_points_prompt_uses_the_typed_parser_and_filters_non_sources() {
         assert!(registry.execute(&mut doc, input).is_err());
         assert_eq!(format!("{doc:?}"), before);
     }
+}
+
+#[test]
+fn component_validation_is_atomic_and_whole_owner_is_overridden() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let mesh = viboceros_geometry::TriangleMesh::try_from_face_records(
+        vec![point(0., 0., 0.), point(2., 0., 0.), point(0., 2., 0.)],
+        vec![viboceros_geometry::MeshFace::Triangle([0, 1, 2])],
+    )
+    .unwrap();
+    let id = doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    doc.clear_history().unwrap();
+    doc.add_geometry(Geometry::Point(point(9., 9., 9.)))
+        .unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    for suffix in [
+        format!("Component={id},Face,3"),
+        format!("Component={id},Vertex,99"),
+        format!("Component={id},Edge,99"),
+        format!("Component={id},Bogus,0"),
+        "Component=not-a-uuid,Vertex,0".into(),
+    ] {
+        assert!(
+            registry
+                .execute(
+                    &mut doc,
+                    &format!("ExtractPt Component={id},Face,0 {suffix}")
+                )
+                .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+        assert!(doc.can_redo());
+    }
+    registry
+        .execute(
+            &mut doc,
+            &format!("ExtractPt Component={id},Vertex,0 Component={id},Vertex,0"),
+        )
+        .unwrap();
+    assert_eq!(doc.objects().len(), 2);
+    assert_eq!(doc.selected_object_count(), 2);
+    assert_eq!(
+        doc.objects().last().unwrap().geometry(),
+        &Geometry::Point(point(0., 0., 0.))
+    );
 }

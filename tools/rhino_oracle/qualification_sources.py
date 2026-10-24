@@ -50,6 +50,10 @@ APPLICATION_MODULES = [
     'crates/viboceros-command/tests/support/mesh_conversion.rs',
     'src/app/object_selection/quadrangulate_mesh/tests.rs',
     'src/app/transform_sources.rs',
+    'src/app/extract_points.rs',
+    'src/app/extract_points/tests.rs',
+    'src/viewport/polygon_edges.rs',
+    'src/viewport/polygon_edges/tests.rs',
     'src/app/control_polygon.rs',
     'src/app/control_polygon/subcurve.rs',
     'src/app/control_polygon/tests.rs',
@@ -180,6 +184,12 @@ def with_shared_sources(paths):
                          'tools/rhino_oracle/mesh_trim_split_control.py',
                          'tools/rhino_oracle/mesh_trim_pick_trace.py',
                          'tools/rhino_oracle/managed_mouse_callback.py'])
+    if 'tools/rhino_oracle/extract_points_cases.py' in expanded:
+        expanded.extend(['tools/rhino_oracle/extract_points_getter.py',
+                         'tools/rhino_oracle/managed_component_input.py',
+                         'tools/rhino_oracle/extract_points_geometry.py',
+                         'tools/rhino_oracle/extract_points_component_cases.py',
+                         'tools/rhino_oracle/extract_points_component_input.py'])
     if 'tools/rhino_oracle/mesh_split_cases.py' in expanded:
         expanded.extend(['tools/rhino_oracle/mesh_split_channel_cases.py',
                          'tools/rhino_oracle/mesh_split_ngon_policy_cases.py',
@@ -226,7 +236,12 @@ def with_shared_sources(paths):
                          'src/viewport/insert_point.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
+            'crates/viboceros-command/src/error.rs',
             'crates/viboceros-command/src/extract_points.rs',
+            'crates/viboceros-command/src/extract_points/components.rs',
+            'crates/viboceros-command/src/component_selection.rs',
+            'crates/viboceros-geometry/src/subd/edges.rs',
+            'crates/viboceros-geometry/src/subd/edges/curves.rs',
             'crates/viboceros-command/src/extract_points/inputs.rs',
             'crates/viboceros-command/src/extract_points/options.rs',
             'crates/viboceros-command/src/extract_points/tests.rs',

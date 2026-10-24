@@ -38,7 +38,10 @@ impl ComponentSelection {
             .map(|(g, _, _)| g.object)
             .collect::<std::collections::BTreeSet<_>>();
         self.picks.retain(|p, _| {
-            p.kind != ComponentSelectionKind::SubDVertex || !owners.contains(&p.object)
+            !matches!(
+                p.kind,
+                ComponentSelectionKind::SubDVertex | ComponentSelectionKind::MeshVertex
+            ) || !owners.contains(&p.object)
         });
         self.order.retain(|p| self.picks.contains_key(p));
     }
@@ -208,6 +211,9 @@ fn stage_sources(
         } else {
             let count = match (pick.kind, object.geometry()) {
                 (ComponentSelectionKind::MeshFace, Geometry::Mesh(m)) => m.face_count(),
+                (ComponentSelectionKind::MeshVertex, Geometry::Mesh(m)) => {
+                    m.topology_vertex_points().len()
+                }
                 (ComponentSelectionKind::MeshEdge, Geometry::Mesh(m)) => {
                     m.topology_edge_points().len()
                 }
@@ -260,6 +266,7 @@ impl VibocerosApp {
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
             && (self.object_prompt.is_none()
+                || self.picking_extract_points()
                 || self.picking_to_subd()
                 || self.picking_subdivide()
                 || self.shrink_prompt_mode()
@@ -292,6 +299,7 @@ impl VibocerosApp {
             && self.edge_fillet_prompt.is_none()
             && self.crease_prompt.is_none()
             && self.soft_crease_prompt.is_none()
+            && !self.picking_extract_points()
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
             && !self.picking_orient_curve()
@@ -392,7 +400,12 @@ impl VibocerosApp {
         } else {
             click.picks
         };
-        let picks = if self.picking_to_subd() {
+        let picks = if self.picking_extract_points() {
+            picks
+                .into_iter()
+                .filter(|p| super::extract_points::component_kind(p.kind).is_some())
+                .collect()
+        } else if self.picking_to_subd() {
             picks
                 .into_iter()
                 .filter(|p| p.kind == ComponentSelectionKind::BrepFace)
@@ -433,6 +446,7 @@ impl VibocerosApp {
                             ComponentSelectionKind::MeshFace => "mesh face",
                             ComponentSelectionKind::SubDFace => "SubD face",
                             ComponentSelectionKind::MeshEdge => "mesh edge",
+                            ComponentSelectionKind::MeshVertex => "mesh vertex",
                             ComponentSelectionKind::SubDEdge => "SubD edge",
                             ComponentSelectionKind::SubDVertex => "SubD vertex",
                         };
@@ -612,6 +626,11 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
+        if self.picking_extract_points() {
+            window
+                .picks
+                .retain(|p| super::extract_points::component_kind(p.kind).is_some());
+        }
         if self.picking_to_subd() {
             window
                 .picks
@@ -637,7 +656,10 @@ impl VibocerosApp {
             if self.component_preselection_available() {
                 self.select_components(window.picks, ComponentAction::Add);
             }
-        } else if self.crease_prompt.is_some() || self.picking_soft_crease_edges() {
+        } else if self.crease_prompt.is_some()
+            || self.picking_soft_crease_edges()
+            || self.picking_extract_points()
+        {
             let action =
                 if (window.modifiers.ctrl || window.modifiers.command) && !window.modifiers.shift {
                     ComponentAction::Remove

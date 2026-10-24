@@ -1,0 +1,176 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_face",
+      "case": "component_mesh_strip_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_faces",
+      "case": "component_mesh_strip_faces"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_faces_reverse",
+      "case": "component_mesh_strip_faces_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_edge",
+      "case": "component_mesh_strip_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_edges",
+      "case": "component_mesh_strip_edges"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_vertex",
+      "case": "component_mesh_strip_vertex"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_vertices",
+      "case": "component_mesh_strip_vertices"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_mixed",
+      "case": "component_mesh_strip_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_unwelded_face",
+      "case": "component_mesh_unwelded_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_unwelded_faces",
+      "case": "component_mesh_unwelded_faces"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_unwelded_faces_reverse",
+      "case": "component_mesh_unwelded_faces_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_unwelded_edge",
+      "case": "component_mesh_unwelded_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_unwelded_edges",
+      "case": "component_mesh_unwelded_edges"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_unwelded_vertex",
+      "case": "component_mesh_unwelded_vertex"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_unwelded_vertices",
+      "case": "component_mesh_unwelded_vertices"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_unwelded_mixed",
+      "case": "component_mesh_unwelded_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_face",
+      "case": "component_subd_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_face_flat",
+      "case": "component_subd_face_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_faces",
+      "case": "component_subd_faces"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_faces_flat",
+      "case": "component_subd_faces_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_faces_reverse",
+      "case": "component_subd_faces_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_faces_reverse_flat",
+      "case": "component_subd_faces_reverse_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_edge",
+      "case": "component_subd_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_edge_flat",
+      "case": "component_subd_edge_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_edges",
+      "case": "component_subd_edges"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_edges_flat",
+      "case": "component_subd_edges_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_vertex",
+      "case": "component_subd_vertex"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_vertex_flat",
+      "case": "component_subd_vertex_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_vertices",
+      "case": "component_subd_vertices"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_vertices_flat",
+      "case": "component_subd_vertices_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_mixed",
+      "case": "component_subd_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_mixed_flat",
+      "case": "component_subd_mixed_flat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mesh_strip_cloud",
+      "case": "component_mesh_strip_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_cloud",
+      "case": "component_subd_cloud"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ pub enum ComponentSelectionKind {
     MeshFace,
     SubDFace,
     MeshEdge,
+    MeshVertex,
     SubDEdge,
     SubDVertex,
 }

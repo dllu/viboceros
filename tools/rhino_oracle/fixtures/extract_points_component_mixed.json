@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "component_mixed_Points",
+      "case": "component_mixed_Points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mixed_Points_reverse",
+      "case": "component_mixed_Points_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_two_owners_Points",
+      "case": "component_two_owners_Points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_with_grips_Points",
+      "case": "component_with_grips_Points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mixed_PointCloud",
+      "case": "component_mixed_PointCloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_mixed_PointCloud_reverse",
+      "case": "component_mixed_PointCloud_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_two_owners_PointCloud",
+      "case": "component_two_owners_PointCloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_with_grips_PointCloud",
+      "case": "component_with_grips_PointCloud"
+    }
+  ]
+}

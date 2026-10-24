@@ -31,10 +31,12 @@ input-layer attributes come from the first selected source when it contributes
 locations, otherwise the cloud uses fresh current-layer attributes. When grips
 contribute, the first grip owner's attributes and groups take precedence.
 Results are selected without expanding their groups. Sources remain unchanged.
-Point output clears grip selection; cloud output retains it until Undo/Redo.
+Point output clears grip selection. Cloud output from whole objects or grips
+retains it; command-first Undo/Redo releases those grips, while preselected cloud
+history retains them. Component input releases command-first grip picks immediately.
 An owner selected before starting remains selected when extracting its grip
 points. Command-first history releases that owner; cloud history releases
-both owner and grip picks.
+both owner and grip picks for command-first extraction.
 Creation is one Undo step,
 and Redo restores the same results. Unsupported typed sources, invalid options,
 and the cumulative one-million-point limit reject the command atomically.
@@ -52,8 +54,12 @@ replays 63 native scenes through the backend and their corresponding interactive
 selection paths (126 workflows), comparing geometry, attributes, ordered groups, grip
 visibility/selection, source storage and Undo/Redo at `1e-7`. Thirteen additional
 captures retain native macro-option discovery; command-first captures apply
-both output options before selection. Mesh/SubD components, trimmed face controls, smooth SubD whole-object limit
-locations, `SubCrv` and `OutputLayer=TargetObject` remain unimplemented.
+both output options before selection.
+
+[Mesh/SubD component extraction](extract-point-components.md) supports faces,
+edges and topology vertices, including smooth SubD edge control points.
+Trimmed face controls, smooth SubD whole-object limit locations, `SubCrv` and
+`OutputLayer=TargetObject` remain unimplemented.
 
 See [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extractpt.htm)
 and [point-cloud commands](point-cloud.md).

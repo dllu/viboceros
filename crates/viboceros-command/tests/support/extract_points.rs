@@ -61,7 +61,7 @@ pub fn setup(row: &Value) -> (Document, Vec<ObjectId>) {
     for (i, &id) in ids.iter().enumerate() {
         if row["value"]["input"]["sources"][i]["mode"] == "edit" {
             doc.enable_edit_points([id]).unwrap();
-        } else {
+        } else if row["value"]["input"]["sources"][i]["mode"] == "control" {
             doc.enable_control_points([id]).unwrap();
         }
         let hidden = before[i]["grips"]
@@ -237,4 +237,65 @@ pub fn snapshot(doc: &Document, ids: &[ObjectId]) -> Value {
             "selected":doc.is_selected(object.id()),"points":points,"cloud":cloud,
             "grips_on":doc.grip_mode(object.id()).is_some(),"grips":grips})
     }).collect())
+}
+
+/// Original component source files and fixed whole/grip/component recipes.
+pub fn component_rows() -> Vec<Value> {
+    component_rows_for(&[
+        "component_selection",
+        "component_edge_holdouts",
+        "component_mixed_verified",
+        "component_picked",
+    ])
+}
+pub fn edge_form_rows() -> Vec<Value> {
+    component_rows_for(&["component_edge_holdouts"])
+}
+fn component_rows_for(families: &[&str]) -> Vec<Value> {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .ancestors()
+        .find(|p| p.join("tools/rhino_oracle").is_dir())
+        .unwrap();
+    families
+        .iter()
+        .copied()
+        .flat_map(|family| {
+            let path = root.join(format!(
+                "tools/rhino_oracle/observations/extract_points_{family}.json"
+            ));
+            let data: Value =
+                serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+            data["results"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .cloned()
+                .map(move |mut row| {
+                    row["family"] = family.into();
+                    row["path"] = if row["value"]["input"]["component_getter"] == true {
+                        "picked"
+                    } else {
+                        "preselected"
+                    }
+                    .into();
+                    row
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}
+pub fn component_command(row: &Value, ids: &[ObjectId]) -> String {
+    let mut command = command(row);
+    if row["value"]["input"]["flat"] == true {
+        command.push_str(" SubDLocation=ControlNet");
+    }
+    for pick in row["value"]["input"]["components"].as_array().unwrap() {
+        command.push_str(&format!(
+            " Component={},{},{}",
+            ids[pick[0].as_u64().unwrap() as usize],
+            pick[1].as_str().unwrap(),
+            pick[2].as_u64().unwrap()
+        ));
+    }
+    command
 }

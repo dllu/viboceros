@@ -1,0 +1,11 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "component_subd_curve_profile",
+      "case": "component_subd_curve_profile"
+    }
+  ]
+}

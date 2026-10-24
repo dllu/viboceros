@@ -3,12 +3,28 @@ use super::*;
 use viboceros_command::ComponentSelectionKind;
 use viboceros_document::Object;
 
-pub(super) fn vertex_points<'a>(document: &'a Document, object: &'a Object) -> &'a [Point3] {
+impl super::display_cache::DisplayGeometry {
+    pub(super) fn polygon_vertex_points<'a>(
+        &'a self,
+        document: &'a Document,
+        object: &'a Object,
+    ) -> &'a [Point3] {
+        match &*self.geometry {
+            Geometry::Mesh(mesh) => self
+                .topology_vertices
+                .get_or_init(|| mesh.topology_vertex_points()),
+            Geometry::SubD(subd) => document
+                .control_point_locations(object.id())
+                .unwrap_or_else(|| subd.surface_points()),
+            _ => &[],
+        }
+    }
+}
+fn vertex_kind(object: &Object) -> Option<ComponentSelectionKind> {
     match object.geometry() {
-        Geometry::SubD(subd) => document
-            .control_point_locations(object.id())
-            .unwrap_or_else(|| subd.surface_points()),
-        _ => &[],
+        Geometry::Mesh(_) => Some(ComponentSelectionKind::MeshVertex),
+        Geometry::SubD(_) => Some(ComponentSelectionKind::SubDVertex),
+        _ => None,
     }
 }
 fn kind(object: &Object) -> Option<ComponentSelectionKind> {
@@ -86,12 +102,30 @@ impl Viewport {
     ) -> Vec<ComponentPick> {
         let mut hits = Vec::new();
         for object in document.selectable_objects() {
+            let Some(kind) = vertex_kind(object) else {
+                continue;
+            };
+            // Mesh grips use raw vertex ordinals, while component vertices use
+            // welded topology ordinals. The existing grip picker owns that mode.
+            if kind == ComponentSelectionKind::MeshVertex
+                && document.grip_mode(object.id()).is_some()
+            {
+                continue;
+            }
+            let display = self
+                .display_cache
+                .borrow_mut()
+                .get(object, document.tolerance());
             let hidden = document
                 .hidden_control_point_indices(object.id())
                 .into_iter()
                 .flatten()
                 .collect::<std::collections::BTreeSet<_>>();
-            for (index, &point) in vertex_points(document, object).iter().enumerate() {
+            for (index, &point) in display
+                .polygon_vertex_points(document, object)
+                .iter()
+                .enumerate()
+            {
                 if hidden.contains(&index) {
                     continue;
                 }
@@ -102,7 +136,7 @@ impl Viewport {
                             distance,
                             ComponentPick {
                                 object: object.id(),
-                                kind: ComponentSelectionKind::SubDVertex,
+                                kind,
                                 index,
                             },
                         ));
@@ -134,7 +168,18 @@ impl Viewport {
             .into_iter()
             .flatten()
             .collect::<std::collections::BTreeSet<_>>();
-        for (index, &point) in vertex_points(document, object).iter().enumerate() {
+        let display = self
+            .display_cache
+            .borrow_mut()
+            .get(object, document.tolerance());
+        let points = if matches!(object.geometry(), Geometry::Mesh(_))
+            && document.grip_mode(object.id()).is_some()
+        {
+            &[][..]
+        } else {
+            display.polygon_vertex_points(document, object)
+        };
+        for (index, &point) in points.iter().enumerate() {
             if hidden.contains(&index) {
                 continue;
             }
@@ -143,7 +188,7 @@ impl Viewport {
             if selected(&p) {
                 result.push(ComponentPick {
                     object: object.id(),
-                    kind: ComponentSelectionKind::SubDVertex,
+                    kind: vertex_kind(object).unwrap(),
                     index,
                 });
             }

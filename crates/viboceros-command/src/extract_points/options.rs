@@ -13,10 +13,12 @@ pub(super) enum ExtractPointOutput {
     PointCloud,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct ExtractPointOptions {
     pub(super) output_layer: ExtractPointOutputLayer,
     pub(super) output: ExtractPointOutput,
+    pub(super) components: Vec<components::Target>,
+    pub(super) control_net: bool,
 }
 
 pub(super) fn parse_extract_point_arguments(
@@ -24,6 +26,9 @@ pub(super) fn parse_extract_point_arguments(
 ) -> Result<ExtractPointOptions, CommandError> {
     let mut output_layer = ExtractPointOutputLayer::Input;
     let mut output = ExtractPointOutput::Points;
+    let mut components = Vec::new();
+    let mut control_net = false;
+    let mut location_seen = false;
     let mut output_layer_seen = false;
     let mut output_seen = false;
     let mut index = 0;
@@ -55,6 +60,22 @@ pub(super) fn parse_extract_point_arguments(
                 return Err(CommandError::Usage(USAGE));
             }
             output_seen = true;
+        } else if name.eq_ignore_ascii_case("Component") {
+            if components.len() >= MAX_EXTRACTED_POINTS {
+                return Err(CommandError::TooManyExtractedPoints {
+                    maximum: MAX_EXTRACTED_POINTS,
+                });
+            }
+            components.push(super::components::parse(value)?);
+        } else if name.eq_ignore_ascii_case("SubDLocation") && !location_seen {
+            control_net = if value.eq_ignore_ascii_case("ControlNet") {
+                true
+            } else if value.eq_ignore_ascii_case("Surface") {
+                false
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            location_seen = true;
         } else {
             return Err(CommandError::Usage(USAGE));
         }
@@ -63,11 +84,13 @@ pub(super) fn parse_extract_point_arguments(
     Ok(ExtractPointOptions {
         output_layer,
         output,
+        components,
+        control_net,
     })
 }
 
 impl ExtractPointOptions {
-    pub(super) fn prompt(self) -> ObjectSelectionPrompt {
+    pub(super) fn prompt(&self) -> ObjectSelectionPrompt {
         ObjectSelectionPrompt {
             command: "ExtractPt",
             filter: ObjectSelectionFilter::ExtractPoints,
@@ -91,6 +114,16 @@ impl ExtractPointOptions {
                         ExtractPointOutput::PointCloud => "PointCloud",
                     },
                     choices: &["Points", "PointCloud"],
+                    toggle: None,
+                },
+                ChoiceSelectionOption {
+                    name: "SubDLocation",
+                    value: if self.control_net {
+                        "ControlNet"
+                    } else {
+                        "Surface"
+                    },
+                    choices: &["Surface", "ControlNet"],
                     toggle: None,
                 },
             ],

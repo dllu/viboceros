@@ -5,6 +5,11 @@
 Implementation notes for this subsystem. Command pages and qualification records
 describe the supported behavior and measured limits.
 
+The command crate keeps shared `CommandError` variants in `src/error.rs`, outside
+the dispatcher. ExtractPt separates option parsing, component resolution and
+atomic output admission; its application controller supplies witnessed component
+picks to the same typed command path.
+
 [`RemapCPlane`](../commands/remap-cplane.md) shares rigid frame mapping and the
 existing object/grip transform path. Its application controller captures the
 source frame and resolves viewport, named CPlane and saved-view targets without

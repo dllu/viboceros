@@ -1,13 +1,14 @@
 //! Defining-point extraction stages owned locations while borrowing input geometry.
 use super::*;
 
+mod components;
 mod inputs;
 mod options;
 use options::{ExtractPointOptions, ExtractPointOutput, ExtractPointOutputLayer};
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud]";
+const USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud] [Component=uuid,Vertex|Edge|Face,index] [SubDLocation=Surface|ControlNet]";
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 
 pub(super) struct ExtractPtCommand;
@@ -28,9 +29,8 @@ impl Command for ExtractPtCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        Ok(Some(
-            options::parse_extract_point_arguments(arguments)?.prompt(),
-        ))
+        let options = options::parse_extract_point_arguments(arguments)?;
+        Ok(options.components.is_empty().then(|| options.prompt()))
     }
 
     fn cancel_empty_object_selection(&self) -> bool {
@@ -70,6 +70,8 @@ struct Extraction {
     count: usize,
     retained: Vec<ObjectId>,
     released: Vec<ObjectId>,
+    release_grips: bool,
+    clear_component_grips: bool,
 }
 
 impl Extraction {
@@ -85,7 +87,7 @@ impl Extraction {
         let mut selected = 0;
         let mut contributors = 0;
         let mut count = 0usize;
-        let owners = inputs::visit(document, |source, points| {
+        let owners = inputs::visit(document, &options, postselected, |source, points| {
             selected += 1;
             if points.is_empty() {
                 return Ok(());
@@ -136,6 +138,8 @@ impl Extraction {
             return Err(CommandError::NoExtractablePoints);
         }
         Ok(Self {
+            clear_component_grips: postselected && !options.components.is_empty(),
+            release_grips: postselected,
             output,
             selected,
             contributors,
@@ -158,12 +162,14 @@ impl Extraction {
                 .into_iter()
                 .chain(self.retained.iter().copied().filter(|_| cloud)),
         )?;
-        if cloud {
+        if cloud && !self.clear_component_grips {
             let grips = document
                 .selected_control_points()
                 .map(|(g, _)| g)
                 .collect::<Vec<_>>();
-            document.release_control_point_selection_on_history_replay(grips)?;
+            if self.release_grips {
+                document.release_control_point_selection_on_history_replay(grips)?;
+            }
         } else {
             document.clear_control_point_selection();
         }

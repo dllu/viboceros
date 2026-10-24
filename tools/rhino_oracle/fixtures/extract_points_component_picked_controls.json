@@ -1,0 +1,16 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "picked_checked_component_two_owners_Points",
+      "case": "picked_checked_component_two_owners_Points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_checked_component_with_grips_PointCloud",
+      "case": "picked_checked_component_with_grips_PointCloud"
+    }
+  ]
+}

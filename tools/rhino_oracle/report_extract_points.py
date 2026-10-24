@@ -6,7 +6,8 @@ import hashlib
 import json
 import math
 from pathlib import Path
-from .extract_points_cases import FAMILIES, request
+from .extract_points_cases import FAMILIES as ALL_FAMILIES, request
+FAMILIES = {name:ALL_FAMILIES[name] for name in ["grips","controls","verified","metadata"]}
 from .qualification_sources import with_shared_sources
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -22,9 +23,26 @@ SOURCES = with_shared_sources([
 ])
 
 
-def native():
+def validate_component_getter(value, identifier):
+    getter = value['getter']
+    count = len(value['input']['components'])
+    markers = ['@component-click:{}:{}:sub'.format(identifier, i) for i in range(count)]
+    if (getter.get('selected') is not True or getter.get('entered') is not True or
+        type(getter.get('command_count')) is not int or getter['command_count'] != 1 or
+        getter.get('command_success') is not True or
+        len(getter.get('component_admitted', [])) != count or
+        any(flag is not True for flag in getter['component_admitted']) or getter.get('markers') != markers or
+        len(getter.get('getter_counts', [])) != count or
+        any(type(n) is not int or n < 1 for n in getter['getter_counts']) or
+        len(getter.get('menus', [])) != count or
+        any(type(menu) is not bool for menu in getter['menus'])):
+        raise ValueError('ExtractPt component getter receipt is incomplete')
+
+
+def native(families=None, components=False):
+    families = FAMILIES if families is None else families
     rows, paths, versions = {}, set(SOURCES), set()
-    for family, cases in FAMILIES.items():
+    for family, cases in families.items():
         name = 'extract_points_'+family
         query, observation = HERE/'fixtures'/(name+'.json'), HERE/'observations'/(name+'.json')
         data = json.loads(observation.read_text())
@@ -53,13 +71,17 @@ def native():
             for stage in ['after','undo','redo']:
                 if sources != {o['source']:(o['id'],o['crc']) for o in value[stage] if o['source'] is not None}:
                     raise ValueError('ExtractPt native source identity or geometry changed')
+            if value['input'].get('component_getter'):
+                validate_component_getter(value, identifier)
             if family in ['verified','metadata']:
                 if value['getter'] is None or value['getter']['visible_grips'] != sum(len(s['grips']) for s in value['input']['sources']):
                     raise ValueError('ExtractPt native getter coverage changed')
-            if family in ['verified','metadata'] or (family == 'grips' and value['input']['output'] == 'Points'):
-                value['_path'] = 'preselected' if family == 'grips' else 'picked'
+            if ((components and family in ['component_selection','component_edge_holdouts','component_mixed_verified','component_picked']) or
+                (not components and (family in ['verified','metadata'] or (family == 'grips' and value['input']['output'] == 'Points')))):
+                value['_path'] = ('picked' if value['input'].get('component_getter') else 'preselected') if components else ('preselected' if family == 'grips' else 'picked')
                 rows[identifier] = value
-    if len(versions) != 1 or len(rows) != 63:
+    wanted = sum(len(cases) for family,cases in families.items() if family in ['component_selection','component_edge_holdouts','component_mixed_verified','component_picked']) if components else 63
+    if len(versions) != 1 or len(rows) != wanted:
         raise ValueError('ExtractPt capture domain changed')
     return versions.pop(), rows, paths
 
