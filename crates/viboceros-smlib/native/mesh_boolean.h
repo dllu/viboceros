@@ -5,6 +5,8 @@
 #include <map>
 
 namespace vb_mesh_boolean_detail {
+// Native topology copies propagate this user attribute through face imprints.
+constexpr ULONG face_source_attribute = SM_AI_USER_1;
 std::unique_ptr<SmPolyBrep> import_mesh(const double *points, size_t count,
     const uint32_t *triangles, size_t face_count, double tolerance,
     std::vector<SmPolyFace *> *face_order = nullptr) {
@@ -66,7 +68,7 @@ public:
     }
 };
 
-std::unique_ptr<VbMesh> export_mesh(SmPolyBrep &mesh) {
+std::unique_ptr<VbMesh> export_mesh(SmPolyBrep &mesh, std::vector<uint32_t> *source_faces = nullptr) {
     SmTArray<SmPolyFace *> faces;
     mesh.GetPolyFaces(faces);
     require(faces.GetSize() <= limit, "Polygon Boolean output work limit");
@@ -90,6 +92,15 @@ std::unique_ptr<VbMesh> export_mesh(SmPolyBrep &mesh) {
         out->points.insert(out->points.end(), {point.x, point.y, point.z});
     }
     for (ULONG i = 0; i < faces.GetSize(); ++i) {
+        if (source_faces) {
+            auto *attribute = faces[i]->FindAttribute(face_source_attribute);
+            require(attribute && attribute->GetNumLongElements() == 1,
+                "Missing polygon source face");
+            const long source = *attribute->GetLongElementsAddress();
+            require(source >= 0 && static_cast<size_t>(source) < limit,
+                "Invalid polygon source face");
+            source_faces->push_back(static_cast<uint32_t>(source));
+        }
         auto *loop = faces[i]->GetOuterPolyLoop();
         require(loop, "Missing polygon Boolean output loop");
         SmTArray<SmPolyEdge *> edges;

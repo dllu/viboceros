@@ -131,8 +131,7 @@ def summarize(log):
     return dict(scope='Open mesh partition kernel; unordered component geometry, no command or UI implementation claim',
         native_version=version,epsilon=EPSILON,captured_workflows=36,replayed=len(rows),matched=len(rows)-len(gaps),
         comparison='Component count, per-component area, oriented area vector, common-origin signed volume and bidirectional vertex/edge-midpoint/triangle-centroid samples; input storage remains unchanged',
-        compatibility_gaps=gaps,pending=['vertex channel transfer; command policies and n-gons have a separate qualification',
-            'mixed coplanar grouping and native surface truncation with three cutters',
+        compatibility_gaps=gaps,pending=['mixed coplanar grouping and native surface truncation with three cutters',
             'native component order, extreme scales, near contacts and comparative performance'],
         measurements=[rows[k]for k in sorted(rows)],
         sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in sorted(paths)})

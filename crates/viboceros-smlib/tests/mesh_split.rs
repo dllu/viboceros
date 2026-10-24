@@ -1,7 +1,60 @@
 #![cfg(feature = "native")]
 use serde_json::{Value, json};
 use viboceros_geometry::{Point3, Tolerance, TriangleMesh};
-use viboceros_smlib::mesh_split;
+use viboceros_smlib::{mesh_split, mesh_split_with_face_sources};
+
+#[test]
+fn face_lineage_survives_multiple_imprints_triangulation_and_component_copies() {
+    let row = rows("discovery")
+        .into_iter()
+        .find(|r| r["id"] == "mesh_split_two_cutters")
+        .unwrap();
+    let inputs = inputs(&row);
+    let source = &inputs[0];
+    let parts = mesh_split_with_face_sources(
+        source,
+        &inputs[1..].iter().collect::<Vec<_>>(),
+        true,
+        Tolerance::try_new(1e-10, 1e-12, 1e-6).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(parts.len(), 4);
+    let mut covered = vec![0.; source.faces().len()];
+    for part in parts {
+        assert_eq!(part.source_faces.len(), part.mesh.faces().len());
+        for (&face, &parent) in part.mesh.faces().iter().zip(&part.source_faces) {
+            let original = source.faces()[parent].indices();
+            let [a, b, c] = [0, 1, 2].map(|i| source.vertices()[original[i] as usize]);
+            let normal = a
+                .vector_to(b)
+                .unwrap()
+                .cross(a.vector_to(c).unwrap())
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap()
+                .as_vector();
+            for &v in face.indices() {
+                let p = part.mesh.vertices()[v as usize];
+                assert!(a.vector_to(p).unwrap().dot(normal).unwrap().abs() < 1e-7);
+            }
+            covered[parent] +=
+                TriangleMesh::try_from_face_records(part.mesh.vertices().to_vec(), vec![face])
+                    .unwrap()
+                    .area()
+                    .unwrap();
+        }
+    }
+    for (i, &area) in covered.iter().enumerate() {
+        let expected = TriangleMesh::try_from_face_records(
+            source.vertices().to_vec(),
+            vec![source.faces()[i]],
+        )
+        .unwrap()
+        .area()
+        .unwrap();
+        assert!((area - expected).abs() < 1e-7, "source face {i}");
+    }
+}
 #[path = "support/mesh_boolean.rs"]
 mod comparison;
 #[allow(dead_code)]

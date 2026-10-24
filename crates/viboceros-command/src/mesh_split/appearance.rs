@@ -1,10 +1,10 @@
 //! Reconstruct stored faces and logical boundaries from original face ownership.
 use super::*;
-use viboceros_geometry::{MeshFace, MeshProjectionIndex};
+use viboceros_geometry::{MeshChannelSource, MeshFace};
 
 pub(super) struct Appearance<'a> {
     source: &'a TriangleMesh,
-    index: MeshProjectionIndex<'a>,
+    channels: MeshChannelSource<'a>,
     original_ngons: Vec<Option<usize>>,
 }
 impl<'a> Appearance<'a> {
@@ -17,37 +17,26 @@ impl<'a> Appearance<'a> {
         }
         Ok(Self {
             source,
-            index: MeshProjectionIndex::new(source)?,
+            channels: MeshChannelSource::new(source)?,
             original_ngons,
         })
     }
     pub(super) fn restore(
         &self,
         part: TriangleMesh,
+        parents: Vec<usize>,
         create_ngons: bool,
     ) -> Result<TriangleMesh, CommandError> {
         let source = self.source;
-        let index = &self.index;
         if &part == source {
-            return Ok(part);
+            return Ok(if create_ngons {
+                part
+            } else {
+                part.try_with_ngons(vec![])?
+            });
         }
         let mut groups = BTreeMap::<usize, Vec<usize>>::new();
-        let mut parents = Vec::with_capacity(part.faces().len());
-        for (i, face) in part.faces().iter().enumerate() {
-            let p = face.indices();
-            let a = part.vertices()[p[0] as usize];
-            let b = part.vertices()[p[1] as usize];
-            let c = part.vertices()[p[2] as usize];
-            let center = Point3::try_from(std::array::from_fn(|axis| {
-                a.to_array()[axis] / 3. + b.to_array()[axis] / 3. + c.to_array()[axis] / 3.
-            }))?;
-            let location = index
-                .closest_location(center)?
-                .ok_or(CommandError::Usage("mesh split source face"))?;
-            let parent = index
-                .triangle_face(location.triangle_index)
-                .ok_or(CommandError::Usage("mesh split source face"))?;
-            parents.push(parent);
+        for (i, &parent) in parents.iter().enumerate() {
             groups.entry(parent).or_default().push(i);
         }
         let mut replacement = BTreeMap::new();
@@ -88,6 +77,7 @@ impl<'a> Appearance<'a> {
             output_parents.push(parents[i]);
         }
         let result = TriangleMesh::try_from_face_records(part.vertices().to_vec(), faces)?;
+        let result = self.channels.transfer(result, &output_parents)?;
         let original_ngons = &self.original_ngons;
         let mut logical = BTreeMap::<(bool, usize), Vec<u32>>::new();
         for (i, &parent) in output_parents.iter().enumerate() {
@@ -95,9 +85,9 @@ impl<'a> Appearance<'a> {
             logical.entry(key).or_default().push(i as u32);
         }
         let ngons = logical
-            .into_iter()
-            .filter_map(|((existing, _), faces)| {
-                ((existing || create_ngons) && faces.len() > 1)
+            .into_values()
+            .filter_map(|faces| {
+                (create_ngons && faces.len() > 1)
                     .then(|| result.ngon_from_faces(faces))
                     .flatten()
             })

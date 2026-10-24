@@ -15,11 +15,25 @@ fn enter(app: &mut VibocerosApp, input: &str) {
 
 #[test]
 fn mesh_split_getters_replay_native_options_cutters_and_history() {
+    let (total, gaps) = replay(native::rows(), "MESH_SPLIT_GETTER");
+    assert_eq!(total, 65);
+    assert_eq!(gaps, native::GAPS);
+}
+#[test]
+fn mesh_split_channel_getters_replay_native_attributes_and_history() {
+    let (total, gaps) = replay(
+        native::rows_for(&["channels", "ngon_policy"]),
+        "MESH_SPLIT_CHANNEL_GETTER",
+    );
+    assert_eq!(total, 21);
+    assert_eq!(gaps, native::CHANNEL_GAPS);
+}
+fn replay(rows: Vec<serde_json::Value>, prefix: &str) -> (usize, Vec<String>) {
     let mut app = test_app();
     let mut family = serde_json::Value::Null;
     let mut gaps = Vec::new();
     let mut total = 0;
-    for row in native::rows() {
+    for row in rows {
         if family != row["family"] {
             app = test_app();
             family = row["family"].clone();
@@ -108,15 +122,27 @@ fn mesh_split_getters_replay_native_options_cutters_and_history() {
             assert_eq!(options.choices[0].value, mode, "{}", row["id"]);
         }
         scene.doc = std::mem::take(&mut app.document);
-        let after = native::check(&scene, value, "after");
+        let check = if input["mesh_channels"] == true {
+            native::check_with_channels
+        } else {
+            native::check
+        };
+        let after = check(&scene, value, "after");
         scene.doc.undo().unwrap();
-        let undo = native::check(&scene, value, "undo");
+        let undo = check(&scene, value, "undo");
         let ownership = boolean::sources_restored(&scene);
         scene.doc.redo().unwrap();
-        let redo = native::check(&scene, value, "redo");
+        let redo = check(&scene, value, "redo");
         let measured = json!({"id":row["id"],"success":success,"error":error,
             "after":after,"undo":undo,"redo":redo,"sources_restored_on_undo":ownership});
-        println!("MESH_SPLIT_GETTER {measured}");
+        println!("{prefix} {measured}");
+        assert_eq!(
+            success,
+            value["success"].as_bool().unwrap(),
+            "{}",
+            row["id"]
+        );
+        assert!(ownership);
         if success != value["success"].as_bool().unwrap()
             || ["after", "undo", "redo"].iter().any(|s| {
                 measured[s]["metadata"] != true
@@ -129,6 +155,5 @@ fn mesh_split_getters_replay_native_options_cutters_and_history() {
         total += 1;
     }
     gaps.sort();
-    assert_eq!(total, 65);
-    assert_eq!(gaps, native::GAPS);
+    (total, gaps)
 }

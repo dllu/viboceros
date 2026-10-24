@@ -21,7 +21,9 @@ explicit `Keep` restores polyline output for subsequent intersections.
 `CreateNgons=Yes|No` and `DiscardUnsplitMeshes=Yes|No` default to `Yes` and persist
 after cancellation. Discard keeps an unsplit target unchanged; disabling it
 admits a fresh intermediate mesh even when only one piece results. The command
-reconstructs source quads and logical n-gons from source-face ownership.
+reconstructs source quads and logical n-gons from explicit SMLib source-face
+ownership. [Vertex-channel transfer](../mesh-split-channels.md) preserves UVs,
+stored normals and colors, including distinct values at coincident seams.
 See [Rhino's reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/meshsplit.htm).
 
 The [qualification](../mesh-split-qualification.json) checks 58 command executions
@@ -32,7 +34,7 @@ checks. Twelve cases retain differences in component order, contact face groupin
 mixed cutters, three-cutter surface truncation or native n-gon boundaries.
 The infinite-plane and CPlane curve cases match surface geometry but differ in
 logical boundaries: some captured native boundaries omit part of their covered
-faces. Vertex-channel interpolation, curved meshing, extreme scales, near contacts
+faces. Curved meshing, extreme scales, near contacts
 and comparative performance remain unqualified.
 
 ```text

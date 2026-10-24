@@ -19,6 +19,7 @@ int vb_mesh_split(const double *first,size_t first_count,const uint32_t *first_f
     double tolerance,VbMeshSplit **out,char *error,size_t capacity);
 size_t vb_mesh_split_count(const VbMeshSplit *p);
 int vb_mesh_split_take(VbMeshSplit *p,size_t index,VbMesh **out);
+int vb_mesh_split_face_sources(const VbMeshSplit *p,size_t index,uint32_t *out,size_t count);
 void vb_mesh_split_free(VbMeshSplit *p);
 typedef struct VbMeshIntersections VbMeshIntersections;
 int vb_mesh_self_intersections(const double *points, size_t point_count,

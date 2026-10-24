@@ -133,7 +133,7 @@ pub(super) fn compute(
             let plane = infinite_plane::resolve(doc, definition, context.construction_plane)?.plane;
             cutters.push(Cow::Owned(plane_mesh(plane, target.bounds(), tolerance)?));
         }
-        let mut parts = viboceros_smlib::mesh_split(
+        let mut parts = viboceros_smlib::mesh_split_with_face_sources(
             target,
             &cutters.iter().map(Cow::as_ref).collect::<Vec<_>>(),
             args.shared.coplanar != "Drop",
@@ -143,26 +143,29 @@ pub(super) fn compute(
             continue;
         }
         parts.sort_by(|a, b| {
-            b.bounds()
+            b.mesh
+                .bounds()
                 .min()
                 .to_array()
-                .partial_cmp(&a.bounds().min().to_array())
+                .partial_cmp(&a.mesh.bounds().min().to_array())
                 .unwrap()
                 .then_with(|| {
-                    a.bounds()
+                    a.mesh
+                        .bounds()
                         .max()
                         .to_array()
-                        .partial_cmp(&b.bounds().max().to_array())
+                        .partial_cmp(&b.mesh.bounds().max().to_array())
                         .unwrap()
                 })
         });
         let appearance = super::appearance::Appearance::new(target)?;
         for part in parts {
-            work += part.vertices().len() + part.faces().len();
+            let mesh = appearance.restore(part.mesh, part.source_faces, args.settings.ngons)?;
+            work += mesh.vertices().len() + mesh.faces().len();
             if work > MAX_SPAN_OUTPUT_OBJECTS {
                 return Err(too_many_span_outputs("mesh split"));
             }
-            output.push((first[i], appearance.restore(part, args.settings.ngons)?));
+            output.push((first[i], mesh));
         }
     }
     Ok(output)

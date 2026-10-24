@@ -134,7 +134,7 @@ SUBD_MODULES = [
 
 MESH_MODULES = [
     'crates/viboceros-geometry/src/mesh/' + name + '.rs'
-    for name in ['vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
+    for name in ['channel_transfer', 'channel_transfer/weights', 'channel_transfer/tests', 'vertex_channels', 'ngon', 'native', 'append', 'face_records', 'components',
                  'rebuild', 'rebuild_mesh', 'normals', 'orientation', 'outline', 'edge_split', 'edge_collapse', 'subdivision', 'extrude',
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
                  'quadrangulate', 'triangulate', 'nonplanar_quads', 'quad_planarity', 'aspect_ratio', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions', 'insert/pairing']
@@ -163,8 +163,12 @@ def with_shared_sources(paths):
     if 'Cargo.toml' in expanded:
         expanded.append('.cargo/config.toml')
     if 'tools/rhino_oracle/mesh_split_cases.py' in expanded:
-        expanded.extend(['tools/rhino_oracle/mesh_split_policy_cases.py',
+        expanded.extend(['tools/rhino_oracle/mesh_split_channel_cases.py',
+                         'tools/rhino_oracle/mesh_split_ngon_policy_cases.py',
+                         'tools/rhino_oracle/mesh_split_policy_cases.py',
                          'tools/rhino_oracle/mesh_split_selection_cases.py'])
+    if 'tools/rhino_oracle/report_mesh_split.py' in expanded:
+        expanded.append('tools/rhino_oracle/mesh_split_evidence.py')
     if 'tools/rhino_oracle/mesh_outline_cases.py' in expanded:
         expanded.append('tools/rhino_oracle/mesh_outline_scale_cases.py')
     if 'tools/rhino_oracle/mesh_intersect_cases.py' in expanded:
@@ -205,6 +209,11 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/mesh_split/geometry.rs',
             'crates/viboceros-command/src/mesh_split/appearance.rs',
             'crates/viboceros-command/src/bounding_box.rs',
+            'crates/viboceros-geometry/src/lib.rs',
+            'crates/viboceros-geometry/src/mesh/channel_transfer.rs',
+            'crates/viboceros-geometry/src/mesh/channel_transfer/weights.rs',
+            'crates/viboceros-geometry/src/mesh/channel_transfer/tests.rs',
+            'crates/viboceros-geometry/src/mesh/vertex_channels.rs',
             'crates/viboceros-geometry/src/mesh/projection.rs',
             'crates/viboceros-geometry/src/mesh/ngon.rs',
             'crates/viboceros-command/src/mesh_intersect.rs',

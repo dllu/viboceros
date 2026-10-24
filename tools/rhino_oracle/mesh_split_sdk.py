@@ -1,10 +1,14 @@
 """Public Mesh.Split controls, using only private duplicate mesh instances."""
 
 
-def mesh_value(mesh,host):
+def mesh_value(mesh,host,channels=False):
     value=host['_polygon_mesh_value'](mesh)
     value['ngons']=[dict(vertices=[int(i)for i in g.BoundaryVertexIndexList()],
                          faces=[int(i)for i in g.FaceIndexList()])for g in mesh.Ngons]
+    if channels:
+        value['uv']=[[float(p.X),float(p.Y)]for p in mesh.TextureCoordinates]or None
+        value['vertex_normals']=[[float(p.X),float(p.Y),float(p.Z)]for p in mesh.Normals]or None
+        value['colors']=[[int(c.R),int(c.G),int(c.B),int(c.A)]for c in mesh.VertexColors]or None
     return value
 
 

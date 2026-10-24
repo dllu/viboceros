@@ -30,6 +30,12 @@ unsafe extern "C" {
     fn vb_mesh_split_count(p: *const NativeSplit) -> usize;
     fn vb_mesh_split_take(p: *mut NativeSplit, index: usize, out: *mut *mut NativeMesh) -> c_int;
     fn vb_mesh_split_free(p: *mut NativeSplit);
+    fn vb_mesh_split_face_sources(
+        p: *const NativeSplit,
+        index: usize,
+        out: *mut u32,
+        count: usize,
+    ) -> c_int;
 }
 struct OwnedSplit(NonNull<NativeSplit>);
 impl Drop for OwnedSplit {
@@ -50,9 +56,39 @@ pub fn mesh_split(
     coplanar: bool,
     tolerance: Tolerance,
 ) -> Result<Vec<TriangleMesh>, Error> {
+    Ok(
+        mesh_split_with_face_sources(target, cutters, coplanar, tolerance)?
+            .into_iter()
+            .map(|part| part.mesh)
+            .collect(),
+    )
+}
+
+/// A connected partition with one original target face index per stored face.
+/// Indices survive native imprints, triangulation, and component copies.
+#[derive(Debug)]
+pub struct MeshSplitPart {
+    pub mesh: TriangleMesh,
+    pub source_faces: Vec<usize>,
+}
+
+/// Partition with explicit source-face lineage, including unchanged copies.
+/// Source face indices refer to the target's original triangle/quad face table.
+pub fn mesh_split_with_face_sources(
+    target: &TriangleMesh,
+    cutters: &[&TriangleMesh],
+    coplanar: bool,
+    tolerance: Tolerance,
+) -> Result<Vec<MeshSplitPart>, Error> {
+    let unchanged = || {
+        vec![MeshSplitPart {
+            mesh: target.clone(),
+            source_faces: (0..target.faces().len()).collect(),
+        }]
+    };
     target.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
     if cutters.is_empty() {
-        return Ok(vec![target.clone()]);
+        return Ok(unchanged());
     }
     let (points, faces) = mesh_boolean::prepare(target)?;
     let mut prepared = Vec::with_capacity(cutters.len());
@@ -82,7 +118,7 @@ pub fn mesh_split(
     }
     lines.retain(|line| line[0] != line[1]);
     if lines.is_empty() {
-        return Ok(vec![target.clone()]);
+        return Ok(unchanged());
     }
     for line in &mut lines {
         if line[0]
@@ -138,17 +174,47 @@ pub fn mesh_split(
         return Err(Error::InvalidOutput);
     }
     let mut parts = Vec::with_capacity(count);
+    // OpenNURBS keeps each face's first triangle in its original slot and
+    // appends the second triangles of quads, in original face order.
+    let triangle_sources = (0..target.faces().len())
+        .chain(
+            target
+                .faces()
+                .iter()
+                .enumerate()
+                .filter_map(|(i, f)| f.is_quad().then_some(i)),
+        )
+        .collect::<Vec<_>>();
+    if triangle_sources.len() != faces.len() / 3 {
+        return Err(Error::InvalidOutput);
+    }
     for i in 0..count {
         let mut mesh = std::ptr::null_mut();
         if unsafe { vb_mesh_split_take(owner.0.as_ptr(), i, &mut mesh) } != 0 {
             return Err(Error::InvalidOutput);
         }
         let mesh = OwnedMesh(NonNull::new(mesh).ok_or(Error::InvalidOutput)?);
-        parts.push(
-            mesh.decode(Tolerance::MESH_VALIDATION)?
-                .combined_identical_vertices()
-                .0,
-        );
+        let mesh = mesh
+            .decode(Tolerance::MESH_VALIDATION)?
+            .combined_identical_vertices()
+            .0;
+        let mut sources = vec![0_u32; mesh.faces().len()];
+        if unsafe {
+            vb_mesh_split_face_sources(owner.0.as_ptr(), i, sources.as_mut_ptr(), sources.len())
+        } != 0
+        {
+            return Err(Error::InvalidOutput);
+        }
+        let source_faces = sources
+            .into_iter()
+            .map(|i| {
+                triangle_sources
+                    .get(i as usize)
+                    .copied()
+                    .ok_or(Error::InvalidOutput)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        parts.push(MeshSplitPart { mesh, source_faces });
     }
     Ok(parts)
 }

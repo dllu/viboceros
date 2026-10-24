@@ -40,6 +40,16 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
             mesh.Faces.AddFace(*face)
         if case.get('normals'):
             mesh.Normals.ComputeNormals()
+        if 'normals' in data:
+            mesh.Normals.ComputeNormals()
+            for i,normal in enumerate(data['normals']):
+                mesh.Normals.SetNormal(i,G.Vector3f(*normal))
+        for uv in data.get('texture_coordinates',[]):
+            mesh.TextureCoordinates.Add(float(uv[0]),float(uv[1]))
+        for color in data.get('colors',[]):
+            mesh.VertexColors.Add(S.Drawing.Color.FromArgb(color[3],color[0],color[1],color[2]))
+        for ngon in data.get('ngons',[]):
+            mesh.Ngons.AddNgon(G.MeshNgon.Create(S.Array[S.UInt32](ngon['vertices']),S.Array[S.UInt32](ngon['faces'])))
         return mesh
 
     def snapshot():
@@ -55,7 +65,7 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
             if isinstance(g, G.Mesh):
                 if case.get('capture_mesh_split_sdk') or case.get('capture_split_topology'):
                     from mesh_split_sdk import mesh_value
-                    mesh_data = mesh_value(g,host)
+                    mesh_data = mesh_value(g,host,bool(case.get('mesh_channels')))
                 else:
                     mesh_data = host['_polygon_mesh_value'](g)
                 row.update(mesh=mesh_data, vertex_normals=int(g.Normals.Count),
@@ -91,7 +101,7 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
                 g = make(data)
                 geometry.append(g)
                 if not g.IsValid:
-                    raise ValueError('invalid mesh Boolean source')
+                    raise ValueError('invalid mesh Boolean source: '+str(g.IsValidWithLog()[1]))
                 a = R.DocObjects.ObjectAttributes()
                 try:
                     a.LayerIndex, a.Name = layers[index], 'Source '+str(index)

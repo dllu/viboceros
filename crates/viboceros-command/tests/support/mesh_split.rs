@@ -8,8 +8,11 @@ fn root() -> &'static std::path::Path {
         .unwrap()
 }
 pub fn rows() -> Vec<Value> {
+    rows_for(&["discovery", "controls", "policy", "selection"])
+}
+pub fn rows_for(families: &[&str]) -> Vec<Value> {
     let mut rows = Vec::new();
-    for family in ["discovery", "controls", "policy", "selection"] {
+    for &family in families {
         let data: Value = serde_json::from_str(
             &std::fs::read_to_string(root().join(format!(
                 "tools/rhino_oracle/observations/mesh_split_{family}.json"
@@ -157,6 +160,31 @@ pub fn check(scene: &frozen_scene::Scene, value: &Value, stage: &str) -> Value {
     result["ngons"] = ngons.into();
     result
 }
+pub fn check_with_channels(scene: &frozen_scene::Scene, value: &Value, stage: &str) -> Value {
+    use serde_json::json;
+    let mut result = check(scene, value, stage);
+    for (row, object) in result["objects"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .zip(scene.doc.objects())
+    {
+        if let viboceros_document::Geometry::Mesh(mesh) = object.geometry() {
+            row["mesh"]["uv"] = json!(mesh.texture_coordinates());
+            row["mesh"]["vertex_normals"] = json!(
+                mesh.vertex_normals()
+                    .map(|ns| ns.iter().map(|n| n.to_array()).collect::<Vec<_>>())
+            );
+            // RhinoCommon uses opacity; the Rust/OpenNURBS channel stores transparency.
+            row["mesh"]["colors"] = json!(mesh.vertex_colors().map(|cs| {
+                cs.iter()
+                    .map(|c| [c[0], c[1], c[2], 255 - c[3]])
+                    .collect::<Vec<_>>()
+            }));
+        }
+    }
+    result
+}
 fn same_ngon(a: &Value, an: &Value, b: &Value, bn: &Value) -> bool {
     use serde_json::json;
     let objects = |mesh: &Value, ngon: &Value| {
@@ -191,4 +219,10 @@ pub const GAPS: [&str; 12] = [
     "mesh_split_selection_cross_both",
     "mesh_split_selection_curve_xz",
     "mesh_split_two_cutters",
+];
+
+pub const CHANNEL_GAPS: [&str; 3] = [
+    "mesh_split_channels_seam_coplanar_post",
+    "mesh_split_channels_seam_coplanar_pre",
+    "mesh_split_channels_seam_folded",
 ];

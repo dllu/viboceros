@@ -66,10 +66,22 @@ else:
     from mesh_split_selection_cases import cases as selection_cases
 POLICY=policy_cases(box,xy,wall,overlap,combine,moved)
 SELECTION=selection_cases(box,xy,wall,overlap)
-FAMILIES=dict(discovery=CASES,controls=CONTROLS,policy=POLICY,selection=SELECTION)
+if __package__:
+    from .mesh_split_channel_cases import cases as channel_cases
+else:
+    from mesh_split_channel_cases import cases as channel_cases
+CHANNELS=channel_cases(box,xy,wall,moved)
+if __package__:
+    from .mesh_split_ngon_policy_cases import cases as ngon_policy_cases
+else:
+    from mesh_split_ngon_policy_cases import cases as ngon_policy_cases
+NGON_POLICY=ngon_policy_cases(CHANNELS)
+FAMILIES=dict(discovery=CASES,controls=CONTROLS,policy=POLICY,selection=SELECTION,channels=CHANNELS,ngon_policy=NGON_POLICY)
 ALL_CASES=dict(CASES,**CONTROLS)
 ALL_CASES.update(POLICY)
 ALL_CASES.update(SELECTION)
+ALL_CASES.update(CHANNELS)
+ALL_CASES.update(NGON_POLICY)
 
 
 def request(family='discovery'):

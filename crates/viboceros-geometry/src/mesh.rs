@@ -9,7 +9,9 @@ pub use join::{MeshJoinComponent, MeshJoinOptions, join_meshes};
 pub use match_edges::{MeshEdgeMatchOptions, MeshEdgeMatchResult, MeshEdgePick, match_mesh_edges};
 #[cfg(test)]
 mod area_tests;
+mod channel_transfer;
 mod compaction;
+pub use channel_transfer::MeshChannelSource;
 #[cfg(test)]
 mod compaction_tests;
 mod components;

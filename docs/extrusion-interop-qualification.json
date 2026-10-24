@@ -199,7 +199,7 @@
     "ToSubD command, option persistence, component selection, UI and creator integration remain in progress; extrusion kernel conversion is qualified separately. These source-file comparisons do not qualify those workflows."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/lib.rs": "646d158f745b6c55f4ee029bfbf54743716dd8241045203886660a1dfc80a358",
+    "crates/viboceros-geometry/src/lib.rs": "3c3f995d0d223434891c01e8ed6c9ecc8c5a162c07bdbb25aa9fe3ee10aa4dee",
     "crates/viboceros-geometry/src/error.rs": "913063c381ae5d7e8526c5a35d37a2e4fe1677fc2d6ee4d86cd554a8853bda4a",
     "crates/viboceros-geometry/src/brep.rs": "0653ec6387088321526ec0438c708c32892a0b7966d48cc8bb6b5d06f44efa50",
     "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",
@@ -227,7 +227,7 @@
     "tools/rhino_oracle/tosubd_extrusion_cases.py": "b62179bcccb431b710d9964c148312e3494cfcfddce1d9fdccb1e1958d49f49c",
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
-    "tools/rhino_oracle/structural_sdk.py": "8a12030dd453122322f3ce3ff1def23d5b5415a7ded298c7d7236691e1df4b72",
+    "tools/rhino_oracle/structural_sdk.py": "ebbbdacb04f5afa5e888b3acd8a263c6d5b3e2f83e9c7ab302fde5eaa862ef18",
     "tools/rhino_oracle/rhino_worker.py": "dfe2a120426b0255d659133f7ef0b7a6caaf932777d5b3b54ebb12e6469f2f0d",
     "tools/rhino_oracle/report_extrusions.py": "5c5a1296894ca353b0f7e900769dd65aaff9d1cfe2b1aecc80d8cae336b444be",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
@@ -247,7 +247,7 @@
     "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_circle_shear_00.3dm": "9c9c956827aa77b5f9b62a56ff4ed2556c7eef40b4da59144ac023be4fd7a84f",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_000.3dm": "de42c2eee5bd5370ce9693bc05060dc325ef754346e9dd7461ee7c706d39c355",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_pipe_100.3dm": "0361293bbb2dc587f5e61d31f68d15732a52e584d23360b44a9964b13a52527a",
-    "tools/rhino_oracle/qualification_sources.py": "ccf4c674cdde4bf48c4af0ee4caf721cb43e37e40b31580ffaa154768793911a",
+    "tools/rhino_oracle/qualification_sources.py": "d1c19773f2cbcdf8caa7a7a643af71982e400154df62f4e31c0f8e20101479f3",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5",
     "crates/viboceros-io/src/three_dm/mesh_ngon.rs": "a8b04d6c4a5b62ee1c2caa3accc7cdec72a30eeaffd1ce6d31f4fb4aceb22a2a"
   }

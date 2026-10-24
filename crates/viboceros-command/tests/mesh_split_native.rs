@@ -10,16 +10,30 @@ mod frozen_scene;
 mod mesh_reference;
 #[path = "support/mesh_split.rs"]
 mod native;
-use serde_json::json;
+use serde_json::{Value, json};
 use viboceros_command::CommandRegistry;
 use viboceros_document::SelectionMode;
 #[test]
 fn mesh_split_commands_replay_native_geometry_metadata_and_history() {
+    let (count, gaps) = replay(native::rows(), "MESH_SPLIT_COMMAND");
+    assert_eq!(count, 58);
+    assert_eq!(gaps, native::GAPS);
+}
+#[test]
+fn mesh_split_channels_replay_native_geometry_attributes_and_history() {
+    let (count, gaps) = replay(
+        native::rows_for(&["channels", "ngon_policy"]),
+        "MESH_SPLIT_CHANNEL_COMMAND",
+    );
+    assert_eq!(count, 21);
+    assert_eq!(gaps, native::CHANNEL_GAPS);
+}
+fn replay(rows: Vec<Value>, prefix: &str) -> (usize, Vec<String>) {
     let mut registry = CommandRegistry::with_builtins();
     let mut family = serde_json::Value::Null;
     let mut gaps = Vec::new();
     let mut count = 0;
-    for row in native::rows() {
+    for row in rows {
         if family != row["family"] {
             registry = CommandRegistry::with_builtins();
             family = row["family"].clone();
@@ -63,14 +77,21 @@ fn mesh_split_commands_replay_native_geometry_metadata_and_history() {
         } else {
             registry.execute_postselected(&mut scene.doc, &command, context)
         };
-        let after = native::check(&scene, value, "after");
+        let check = if input["mesh_channels"] == true {
+            native::check_with_channels
+        } else {
+            native::check
+        };
+        let after = check(&scene, value, "after");
         scene.doc.undo().unwrap();
-        let undo = native::check(&scene, value, "undo");
+        let undo = check(&scene, value, "undo");
         let ownership = boolean::sources_restored(&scene);
         scene.doc.redo().unwrap();
-        let redo = native::check(&scene, value, "redo");
+        let redo = check(&scene, value, "redo");
         let row = json!({"id":name,"success":result.is_ok(),"error":result.err().map(|e|e.to_string()),"after":after,"undo":undo,"redo":redo,"sources_restored_on_undo":ownership});
-        println!("MESH_SPLIT_COMMAND {row}");
+        println!("{prefix} {row}");
+        assert_eq!(row["success"], value["success"], "{name}");
+        assert!(ownership, "{name}");
         if row["success"] != value["success"]
             || ["after", "undo", "redo"].iter().any(|s| {
                 row[s]["metadata"] != true || row[s]["geometry"] != true || row[s]["ngons"] != true
@@ -82,8 +103,7 @@ fn mesh_split_commands_replay_native_geometry_metadata_and_history() {
     }
     eprintln!("MeshSplit commands {count}; gaps {gaps:?}");
     gaps.sort();
-    assert_eq!(count, 58);
-    assert_eq!(gaps, native::GAPS);
+    (count, gaps)
 }
 
 #[test]

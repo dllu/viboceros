@@ -210,6 +210,25 @@ pub(super) struct ChannelBuilder<'a> {
     output: VertexChannels,
 }
 impl<'a> ChannelBuilder<'a> {
+    pub(super) fn pop(&mut self) {
+        self.output.pop();
+    }
+    pub(super) fn last_key(&self) -> [u64; 5] {
+        let mut key = [0; 5];
+        if let Some(uv) = &self.output.uv {
+            key[..2].copy_from_slice(&uv.last().unwrap().map(canonical_coordinate_bits));
+        }
+        if let Some(normals) = &self.output.normals {
+            key[2..].copy_from_slice(
+                &normals
+                    .last()
+                    .unwrap()
+                    .to_array()
+                    .map(canonical_coordinate_bits),
+            );
+        }
+        key
+    }
     pub fn new(source: &'a VertexChannels) -> Self {
         Self::with_normals(source, source.normals.as_deref())
     }

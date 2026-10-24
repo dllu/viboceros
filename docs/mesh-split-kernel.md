@@ -9,7 +9,9 @@ admitting document changes.
 The [MeshSplit command](commands/mesh-split.md) adds selection, attributes, groups,
 history, projected curves, infinite planes and logical face reconstruction.
 `MeshTrim` remains to be implemented. Raw kernel pieces return triangles;
-vertex-channel transfer and native component order remain unqualified.
+`mesh_split_with_face_sources` also returns original target-face indices through
+SMLib's attribute propagation. The command uses them for
+[vertex channels](mesh-split-channels.md). Native component order remains unqualified.
 
 Rhino defaults to `CoplanarFaces=Keep`, `CreateNgons=Yes` and
 `DiscardUnsplitMeshes=Yes`. Successful splits create fresh, unselected objects

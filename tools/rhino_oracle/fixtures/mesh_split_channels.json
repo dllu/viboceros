@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_quad_all_post",
+      "case": "mesh_split_channels_quad_all_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_quad_all_pre",
+      "case": "mesh_split_channels_quad_all_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_triangle_all",
+      "case": "mesh_split_channels_triangle_all"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_quad_uv",
+      "case": "mesh_split_channels_quad_uv"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_quad_normals",
+      "case": "mesh_split_channels_quad_normals"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_quad_colors",
+      "case": "mesh_split_channels_quad_colors"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_quad_implicit",
+      "case": "mesh_split_channels_quad_implicit"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_seam_coplanar_post",
+      "case": "mesh_split_channels_seam_coplanar_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_seam_coplanar_pre",
+      "case": "mesh_split_channels_seam_coplanar_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_seam_folded",
+      "case": "mesh_split_channels_seam_folded"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_welded_box",
+      "case": "mesh_split_channels_welded_box"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_disjoint_discard",
+      "case": "mesh_split_channels_disjoint_discard"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_disjoint_keep",
+      "case": "mesh_split_channels_disjoint_keep"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_partial_keep",
+      "case": "mesh_split_channels_partial_keep"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_existing_ngon",
+      "case": "mesh_split_channels_existing_ngon"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_infinite_plane",
+      "case": "mesh_split_channels_infinite_plane"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_channels_projected_curve",
+      "case": "mesh_split_channels_projected_curve"
+    }
+  ]
+}

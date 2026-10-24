@@ -1,13 +1,10 @@
 """Audit command partitions, logical face boundaries, selection, and history."""
 import argparse
-import base64
-import gzip
 import hashlib
 import json
 import math
 from pathlib import Path
 from . import report_mesh_boolean_commands as baseline
-from .mesh_split_cases import FAMILIES, request
 from .qualification_sources import with_shared_sources
 from .report_mesh_split_kernel import SOURCES as KERNEL_SOURCES, validate_ngons
 
@@ -36,39 +33,8 @@ SOURCES = with_shared_sources(baseline.SOURCES + KERNEL_SOURCES + [
 
 
 def native():
-    rows, versions, paths = {}, set(), set(SOURCES)
-    for family, cases in FAMILIES.items():
-        name = 'mesh_split_' + family
-        query, capture = [HERE / d / (name + '.json') for d in ['fixtures', 'observations']]
-        paths.update(str(p.relative_to(ROOT)) for p in [query, capture])
-        data = json.loads(capture.read_text())
-        if (json.loads(query.read_text()) != request(family) or
-                data['provenance']['request_sha256'] != hashlib.sha256(query.read_bytes()).hexdigest()):
-            raise ValueError('mesh split fixed request differs')
-        for sha in data['provenance']['sources'].values():
-            archive = HERE / 'observations/source_snapshots' / (sha + '.gz')
-            if hashlib.sha256(gzip.decompress(archive.read_bytes())).hexdigest() != sha:
-                raise ValueError('mesh split archived producer differs')
-            paths.add(str(archive.relative_to(ROOT)))
-        if [r['id'] for r in data['results']] != list(cases):
-            raise ValueError('mesh split capture coverage differs')
-        versions.add(data['engine_version'])
-        for row in data['results']:
-            identifier, value = row['id'], row['value']
-            if value['input'] != cases[identifier] or 'Unknown command:' in value['history']:
-                raise ValueError('mesh split native input differs')
-            scene = HERE / 'fixtures' / name / (identifier + '.3dm')
-            if scene.read_bytes() != base64.b64decode(value['source_3dm']):
-                raise ValueError('mesh split source archive differs')
-            paths.add(str(scene.relative_to(ROOT)))
-            for stage in ['before', 'after', 'undo', 'redo']:
-                for obj in value[stage]:
-                    if 'ngons' in obj.get('mesh', {}):
-                        validate_ngons(obj['mesh'])
-            rows[identifier] = value
-    if len(versions) != 1 or len(rows) != 65:
-        raise ValueError('mesh split capture domain differs')
-    return versions.pop(), rows, paths
+    from .mesh_split_evidence import native as captured
+    return captured(['discovery', 'controls', 'policy', 'selection'], SOURCES)
 
 
 def cancelled(value):
@@ -161,7 +127,7 @@ def summarize(command_log, getter_log):
                 pending=['native component order with multiple cutters, B-reps and shared input sets',
                          'mixed coplanar grouping and three-cutter surface truncation',
                          'native n-gon boundaries on infinite planes and projected curves, contact face grouping',
-                         'vertex channel interpolation, curved meshing, extreme scales, near contacts and comparative performance'],
+                         'curved meshing, extreme scales, near contacts and comparative performance; vertex channels have a separate qualification'],
                 commands=commands, getters=getters,
                 sha256={p: hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in sorted(paths)})
 

@@ -2,6 +2,7 @@
 #include <SmGeomUtility.h>
 struct VbMeshSplit {
     std::vector<std::unique_ptr<VbMesh>> parts;
+    std::vector<std::vector<uint32_t>> source_faces;
 };
 
 namespace vb_mesh_split_detail {
@@ -102,7 +103,8 @@ void partitions(SmPolyBrep &mesh, const Edges &blocked, double tolerance, VbMesh
         }
         auto copy = std::unique_ptr<SmPolyBrep>(new (*SmApiGetOrCreateContext()) SmPolyBrep(tolerance));
         check(mesh.CopyFaces(component, copy.get()), "copy mesh split component");
-        auto part = vb_mesh_boolean_detail::export_mesh(*copy);
+        out.source_faces.emplace_back();
+        auto part = vb_mesh_boolean_detail::export_mesh(*copy, &out.source_faces.back());
         require(part != nullptr, "Missing mesh split component");
         points += part->points.size()/3;
         triangles += part->triangles.size()/3;
@@ -121,7 +123,12 @@ extern "C" int vb_mesh_split(const double *first, size_t first_count,
     return guarded(error, capacity, [&] {
         require(out && cutters && cutter_count>0 && cutter_count<=limit &&
             std::isfinite(tolerance) && tolerance>0., "Invalid mesh split options");
-        auto a = vb_mesh_boolean_detail::import_mesh(first, first_count, first_faces, first_face_count, tolerance);
+        std::vector<SmPolyFace *> source_faces;
+        auto a = vb_mesh_boolean_detail::import_mesh(first, first_count, first_faces, first_face_count,
+            tolerance, &source_faces);
+        for (size_t i=0; i<source_faces.size(); ++i)
+            source_faces[i]->AddAttribute(new (*SmApiGetOrCreateContext())
+                SmLongAttribute(vb_mesh_boolean_detail::face_source_attribute, static_cast<long>(i)));
         for (size_t i=0; i<cutter_count; ++i) {
             const auto &c=cutters[i];
             auto b=vb_mesh_boolean_detail::import_mesh(c.points,c.point_count,c.faces,c.face_count,tolerance);
@@ -138,5 +145,10 @@ extern "C" size_t vb_mesh_split_count(const VbMeshSplit *p) { return p ? p->part
 extern "C" int vb_mesh_split_take(VbMeshSplit *p, size_t index, VbMesh **out) {
     if (!p || !out || index>=p->parts.size() || !p->parts[index]) return -1;
     *out = p->parts[index].release(); return 0;
+}
+extern "C" int vb_mesh_split_face_sources(const VbMeshSplit *p, size_t index, uint32_t *out, size_t count) {
+    if (!p || !out || index>=p->source_faces.size() || count!=p->source_faces[index].size()) return -1;
+    std::copy(p->source_faces[index].begin(), p->source_faces[index].end(), out);
+    return 0;
 }
 extern "C" void vb_mesh_split_free(VbMeshSplit *p) { delete p; }

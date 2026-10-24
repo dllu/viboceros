@@ -305,7 +305,7 @@ pub use mesh::{
     match_mesh_edges,
 };
 pub use mesh::{MAX_MESH_PATCH_POINTS, MeshPatchOptions};
-pub use mesh::{MeshClosestLocation, MeshProjectionIndex};
+pub use mesh::{MeshChannelSource, MeshClosestLocation, MeshProjectionIndex};
 pub use morph::{
     CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph, CurveFlowTargetSurface,
     CurvePreviewCage, MAX_MORPH_CURVE_CONTROL_POINTS, MAX_MORPH_SURFACE_AXIS_CONTROLS,
