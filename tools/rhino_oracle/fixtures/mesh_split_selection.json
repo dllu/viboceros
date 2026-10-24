@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_intersect_mesh",
+      "case": "mesh_split_selection_intersect_mesh"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_after_mesh_mode",
+      "case": "mesh_split_selection_after_mesh_mode"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_keep_mode",
+      "case": "mesh_split_selection_keep_mode"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_intersect_after_keep",
+      "case": "mesh_split_selection_intersect_after_keep"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_cross_both",
+      "case": "mesh_split_selection_cross_both"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_cross_first",
+      "case": "mesh_split_selection_cross_first"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_cross_second",
+      "case": "mesh_split_selection_cross_second"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_curve_xz",
+      "case": "mesh_split_selection_curve_xz"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_selection_curve_polyline",
+      "case": "mesh_split_selection_curve_polyline"
+    }
+  ]
+}

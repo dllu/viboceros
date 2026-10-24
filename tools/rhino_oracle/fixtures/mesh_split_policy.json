@@ -1,0 +1,111 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_set_zero",
+      "case": "mesh_split_policy_set_zero"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_after_self_zero",
+      "case": "mesh_split_policy_after_self_zero"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_set_document",
+      "case": "mesh_split_policy_set_document"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_intersect_after_document",
+      "case": "mesh_split_policy_intersect_after_document"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_drop_cancel",
+      "case": "mesh_split_policy_drop_cancel"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_intersect_after_drop",
+      "case": "mesh_split_policy_intersect_after_drop"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_after_drop_cancel",
+      "case": "mesh_split_policy_after_drop_cancel"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_ngons_no",
+      "case": "mesh_split_policy_ngons_no"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_after_ngons_no",
+      "case": "mesh_split_policy_after_ngons_no"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_discard_no_cancel",
+      "case": "mesh_split_policy_discard_no_cancel"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_after_discard_no",
+      "case": "mesh_split_policy_after_discard_no"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_restore",
+      "case": "mesh_split_policy_restore"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_tolerance_menu",
+      "case": "mesh_split_policy_tolerance_menu"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_coplanarfaces_menu",
+      "case": "mesh_split_policy_coplanarfaces_menu"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_brep_target_post",
+      "case": "mesh_split_policy_brep_target_post"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_brep_target_pre",
+      "case": "mesh_split_policy_brep_target_pre"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_cross_inputs",
+      "case": "mesh_split_policy_cross_inputs"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_plane_three_point",
+      "case": "mesh_split_policy_plane_three_point"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_plane_world_yz",
+      "case": "mesh_split_policy_plane_world_yz"
+    },
+    {
+      "op": "mesh_split_command",
+      "id": "mesh_split_policy_plane_through_point",
+      "case": "mesh_split_policy_plane_through_point"
+    }
+  ]
+}

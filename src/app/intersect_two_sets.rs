@@ -21,6 +21,44 @@ pub(super) struct TwoSetsPrompt {
 }
 
 impl TwoSetsPrompt {
+    pub(super) fn plane_getter(&self) -> Option<&super::project_plane::PlaneGetter> {
+        self.projection
+            .as_ref()
+            .and_then(|p| p.plane_getter.as_ref())
+            .or_else(|| {
+                self.boolean
+                    .as_ref()?
+                    .partition
+                    .as_ref()?
+                    .plane_getter
+                    .as_ref()
+            })
+    }
+    pub(super) fn plane_getter_mut(&mut self) -> Option<&mut super::project_plane::PlaneGetter> {
+        if let Some(p) = self.projection.as_mut() {
+            p.plane_getter.as_mut()
+        } else {
+            self.boolean
+                .as_mut()?
+                .partition
+                .as_mut()?
+                .plane_getter
+                .as_mut()
+        }
+    }
+    pub(super) fn set_plane_getter(&mut self, getter: Option<super::project_plane::PlaneGetter>) {
+        if let Some(p) = self.projection.as_mut() {
+            p.plane_getter = getter;
+        } else {
+            self.boolean
+                .as_mut()
+                .unwrap()
+                .partition
+                .as_mut()
+                .unwrap()
+                .plane_getter = getter;
+        }
+    }
     pub(super) fn name(&self) -> &'static str {
         if self.control_polygon.is_some() {
             return "ExtractControlPolygon";
@@ -60,11 +98,7 @@ impl TwoSetsPrompt {
                 ObjectSelectionFilter::DeviationSources
             };
         }
-        if let Some(getter) = self
-            .projection
-            .as_ref()
-            .and_then(|p| p.plane_getter.as_ref())
-        {
+        if let Some(getter) = self.plane_getter() {
             return getter.filter();
         }
         if self.uv_subcurves.pending.is_some() {
@@ -83,7 +117,7 @@ impl TwoSetsPrompt {
         if let Some(kind) = self.uv_mapping {
             kind.filter(self.first.is_some())
         } else if let Some(options) = &self.boolean {
-            options.kind.filter()
+            options.kind.filter_for(self.first.is_some())
         } else {
             ObjectSelectionFilter::Parametric
         }
@@ -102,11 +136,7 @@ impl TwoSetsPrompt {
                 "Select objects to measure; Enter continues, Esc cancels"
             };
         }
-        if let Some(getter) = self
-            .projection
-            .as_ref()
-            .and_then(|p| p.plane_getter.as_ref())
-        {
+        if let Some(getter) = self.plane_getter() {
             return getter.hint();
         }
         if let Some(hint) = self.uv_subcurves.hint() {
@@ -374,6 +404,15 @@ impl VibocerosApp {
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
+        if self
+            .intersection_prompt
+            .as_ref()
+            .is_some_and(|p| p.plane_getter().is_some())
+        {
+            let ids = ids.into_iter().collect::<Vec<_>>();
+            self.pick_project_plane_reference(&ids);
+            return;
+        }
         if self.intersection_prompt.as_ref().is_some_and(|p| {
             (p.curve_deviation.is_some() || p.control_polygon.is_some())
                 && p.uv_subcurves.pending.is_some()
@@ -424,6 +463,7 @@ impl VibocerosApp {
 
     pub(super) fn cancel_intersection_prompt(&mut self, announce: bool) {
         if let Some(prompt) = self.intersection_prompt.take() {
+            self.clear_project_plane_state();
             self.command_input.clear();
             let name = prompt.name();
             if let Some(options) = prompt.boolean {

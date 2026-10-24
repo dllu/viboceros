@@ -16,7 +16,7 @@ impl VibocerosApp {
             .flatten()
             .copied()
             .collect::<std::collections::BTreeSet<_>>();
-        let shared_sets = prompt.boolean.as_ref().unwrap().kind.shares_sets();
+        let shared_sets = prompt.boolean.as_ref().unwrap().shares_sets();
         let eligible = self
             .document
             .selectable_objects()
@@ -26,7 +26,7 @@ impl VibocerosApp {
                     .as_ref()
                     .unwrap()
                     .kind
-                    .filter()
+                    .filter_for(prompt.first.is_some())
                     .accepts_object(o)
             })
             .map(|o| o.id())
@@ -79,7 +79,7 @@ impl VibocerosApp {
         }
         let _ = self
             .document
-            .select_command_results(if options.kind.shares_sets() {
+            .select_command_results(if options.shares_sets() {
                 vec![]
             } else {
                 first.unwrap_or_default()

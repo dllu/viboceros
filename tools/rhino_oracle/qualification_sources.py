@@ -1,6 +1,7 @@
 """Shared source inventory for extracted application and geometry modules."""
 
 BOOLEAN_PROMPT_MODULES = [
+    'src/app/boolean_solids/mesh_partition.rs',
     'src/app/boolean_solids/input.rs',
     'src/app/boolean_solids/options.rs',
     'src/app/boolean_solids/selection.rs',
@@ -11,6 +12,8 @@ BOOLEAN_PROMPT_MODULES = [
 APPLICATION_MODULES = [
     'src/app/object_selection/mesh_intersect_tests.rs',
     'src/app/object_selection/mesh_self_intersect_tests.rs',
+    'src/app/object_selection/mesh_split_tests.rs',
+    'crates/viboceros-command/tests/support/mesh_split.rs',
     'crates/viboceros-command/tests/support/mesh_self_intersect.rs',
     'crates/viboceros-command/tests/support/mesh_intersect.rs',
     'src/app/object_selection/mesh_boolean_tests.rs',
@@ -54,6 +57,7 @@ APPLICATION_MODULES = [
     'src/app/boolean_solids.rs',
     *BOOLEAN_PROMPT_MODULES,
     'src/app/curve_deviation/subcurves.rs',
+    'src/app/project_plane.rs',
     'src/app/iplane.rs',
     'src/app/point_deviation.rs',
     'src/app/project.rs',
@@ -158,6 +162,9 @@ def with_shared_sources(paths):
                                       'src/component_seams/arguments.rs') for p in paths]
     if 'Cargo.toml' in expanded:
         expanded.append('.cargo/config.toml')
+    if 'tools/rhino_oracle/mesh_split_cases.py' in expanded:
+        expanded.extend(['tools/rhino_oracle/mesh_split_policy_cases.py',
+                         'tools/rhino_oracle/mesh_split_selection_cases.py'])
     if 'tools/rhino_oracle/mesh_outline_cases.py' in expanded:
         expanded.append('tools/rhino_oracle/mesh_outline_scale_cases.py')
     if 'tools/rhino_oracle/mesh_intersect_cases.py' in expanded:
@@ -192,6 +199,14 @@ def with_shared_sources(paths):
                          'src/viewport/insert_point.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
+            'crates/viboceros-command/src/mesh_split.rs',
+            'crates/viboceros-command/src/mesh_split/arguments.rs',
+            'crates/viboceros-command/src/mesh_split/execute.rs',
+            'crates/viboceros-command/src/mesh_split/geometry.rs',
+            'crates/viboceros-command/src/mesh_split/appearance.rs',
+            'crates/viboceros-command/src/bounding_box.rs',
+            'crates/viboceros-geometry/src/mesh/projection.rs',
+            'crates/viboceros-geometry/src/mesh/ngon.rs',
             'crates/viboceros-command/src/mesh_intersect.rs',
             'crates/viboceros-command/src/mesh_intersect/geometry.rs',
             'crates/viboceros-command/src/mesh_intersect/geometry/assembly.rs',

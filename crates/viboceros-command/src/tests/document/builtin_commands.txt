@@ -201,6 +201,7 @@ MeshPlane
 MeshPolyline
 MeshSelfIntersect
 MeshSphere
+MeshSplit
 MeshToNURB
 MeshTorus
 MeshTruncatedCone

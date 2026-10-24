@@ -14,7 +14,8 @@ the display mesher. Geometry completes before document edits; failed operations
 preserve source storage, selection, and Redo.
 
 `Tolerance=Auto|Document|Zero` shares preferences with all four mesh Boolean
-commands and [MeshSelfIntersect](mesh-self-intersect.md). `CoplanarFaces=Drop|Mesh|Polylines` persists across cancellation. The
+commands, [MeshSelfIntersect](mesh-self-intersect.md) and [MeshSplit](mesh-split.md).
+`CoplanarFaces=Drop|Mesh|Polylines` persists across cancellation. The
 licensed Rhino 8.32 command accepts singular `Mesh` and rejects `Meshes` and
 `Tolerance=Literal`, despite the spellings in the newer
 [online reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/meshintersect.htm).

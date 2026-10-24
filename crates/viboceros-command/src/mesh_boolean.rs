@@ -30,7 +30,11 @@ pub(super) struct MeshBooleanCommand {
     options: std::sync::Arc<remembered::Remembered<Options>>,
 }
 impl MeshBooleanCommand {
-    pub(super) fn all() -> ([Self; 4], [super::mesh_intersect::MeshIntersectCommand; 2]) {
+    pub(super) fn all() -> (
+        [Self; 4],
+        [super::mesh_intersect::MeshIntersectCommand; 2],
+        super::mesh_split::MeshSplitCommand,
+    ) {
         // Native tolerance preferences are shared with MeshIntersect and all
         // four Booleans, including answers accepted by a cancelled getter.
         let options = std::sync::Arc::new(remembered::Remembered::new(Options::default()));
@@ -47,7 +51,11 @@ impl MeshBooleanCommand {
             kind,
             options: options.clone(),
         });
-        (booleans, intersections)
+        (
+            booleans,
+            intersections,
+            super::mesh_split::MeshSplitCommand::new(options),
+        )
     }
 }
 

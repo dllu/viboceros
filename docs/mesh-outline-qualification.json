@@ -6722,7 +6722,7 @@
     "crates/viboceros-geometry/src/mesh/join.rs": "eb2e74a63d64b25d8280eced61be132033e49b296ec4c94a1d18dfbbffb29f27",
     "crates/viboceros-geometry/src/mesh/match_edges.rs": "2adbad45d20fe820e297ebb6c298a7935bab7aa52f1c46a6ab465d38a97425fc",
     "crates/viboceros-geometry/src/mesh/native.rs": "9e41d34304728c859fc963b2e2ab3ebbfbb35843e4d935cb64806c24d459bc3e",
-    "crates/viboceros-geometry/src/mesh/ngon.rs": "d28b8a2ac5a6de02b955afed5777acce20519c77d6c37d97b59c3a0af2cb1d5c",
+    "crates/viboceros-geometry/src/mesh/ngon.rs": "29e9d3f945b9df6a80beb31dc66109f310ba7489745a053259aa3ac68260e86a",
     "crates/viboceros-geometry/src/mesh/nonplanar_quads.rs": "5f9945267d8831a91497d255a06438b5d6ed89cb429d025a4235a51da60ae690",
     "crates/viboceros-geometry/src/mesh/normals.rs": "b9bffef3769e8e8525c37f21100090cb6cf5b6c416389b3489db060abf3f06ae",
     "crates/viboceros-geometry/src/mesh/normals/tests.rs": "d10885e9cef9ddd7f8b725c0e87e1eee8fced36be67b1cef4fc256199ee2cf05",
@@ -6805,10 +6805,10 @@
     "tools/rhino_oracle/observations/source_snapshots/f155d32d4e5dfa4bcb4181f8bb3e08e7a900d601ab06a82dd3cf3f9fe69ef61d.gz": "b337b43a5225a57fe5db573afee674bfcb694deaff27a41782c65e907f030cfe",
     "tools/rhino_oracle/observations/source_snapshots/f6edf57ebc5e61618b96ccbb0757a0b5b49650c3d1a55bfaf9393d3a9f41caf7.gz": "552627ad220c100e000722fe667cbc84a05a6c5b7e6bd805761e15db755d6906",
     "tools/rhino_oracle/outline_comparison.py": "d21f3b371976e508591e9999edabdfddc80483425508103fdce2529309afacd5",
-    "tools/rhino_oracle/qualification_sources.py": "18410c98b1a1f04f11a0f8fbef52e08a73ebb5d55c7d75aad7d6395fc22b7e3a",
+    "tools/rhino_oracle/qualification_sources.py": "ccf4c674cdde4bf48c4af0ee4caf721cb43e37e40b31580ffaa154768793911a",
     "tools/rhino_oracle/report_mesh_outline.py": "efb6e16f54bbcf8f14314a12da935f78fe59872ddd4eb6e6881812458719d129",
     "tools/rhino_oracle/rhino_worker.py": "dfe2a120426b0255d659133f7ef0b7a6caaf932777d5b3b54ebb12e6469f2f0d",
-    "tools/rhino_oracle/structural_sdk.py": "1597e6d8684236f5bcab3163057d31e348a6c6f8c421b57a702141d057cae5af",
+    "tools/rhino_oracle/structural_sdk.py": "8a12030dd453122322f3ce3ff1def23d5b5415a7ded298c7d7236691e1df4b72",
     "tools/rhino_oracle/test_mesh_outline.py": "fd8f2f0ec1cc07c8f8870b0ac53c75ed3984eb15d1b0e0f324908140a26ce9cd",
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816"
   }

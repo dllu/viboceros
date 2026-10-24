@@ -13,14 +13,27 @@ impl VibocerosApp {
             self.cancel_intersection_prompt(true);
             return true;
         }
+        if kind.is_mesh_partition() {
+            if prompt.plane_getter().is_some()
+                || matches!(
+                    normalized.to_ascii_lowercase().as_str(),
+                    "ip" | "iplane" | "infiniteplane"
+                )
+            {
+                return self.continue_project_plane(&prompt, input);
+            }
+            if !input.is_empty() && self.continue_mesh_partition_option(prompt.clone(), input) {
+                return true;
+            }
+        }
         if input.is_empty() {
             let picked = self
                 .document
                 .selected_objects()
-                .filter(|o| kind.filter().accepts_object(o))
+                .filter(|o| kind.filter_for(prompt.first.is_some()).accepts_object(o))
                 .map(|o| o.id())
                 .filter(|id| {
-                    kind.shares_sets()
+                    prompt.boolean.as_ref().unwrap().shares_sets()
                         || !prompt
                             .first
                             .as_ref()
@@ -28,7 +41,14 @@ impl VibocerosApp {
                 })
                 .collect::<Vec<_>>();
             if let Some(first) = &prompt.first {
-                if picked.is_empty() && (first.len() < 2 || !kind.allows_empty_second()) {
+                if picked.is_empty()
+                    && prompt
+                        .boolean
+                        .as_ref()
+                        .and_then(|o| o.partition.as_ref())
+                        .is_none_or(|p| p.planes.is_empty())
+                    && (first.len() < 2 || !kind.allows_empty_second())
+                {
                     self.push_log(
                         "Select at least one object in the second set; Esc cancels".into(),
                     );
@@ -170,11 +190,13 @@ impl VibocerosApp {
             return true;
         }
         if normalized.eq_ignore_ascii_case("SelNone") {
-            let _ = self.document.select_command_results(if kind.shares_sets() {
-                vec![]
-            } else {
-                prompt.first.clone().unwrap_or_default()
-            });
+            let _ = self.document.select_command_results(
+                if prompt.boolean.as_ref().unwrap().shares_sets() {
+                    vec![]
+                } else {
+                    prompt.first.clone().unwrap_or_default()
+                },
+            );
             self.command_input.clear();
             return true;
         }

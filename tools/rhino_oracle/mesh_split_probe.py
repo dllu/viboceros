@@ -9,4 +9,4 @@ else:
 
 def run(operation,host,iterations,tolerance):
     validate(operation)
-    return observe(operation,host,iterations,tolerance,ALL_CASES,'MeshSplit')
+    return observe(operation,host,iterations,tolerance,ALL_CASES,ALL_CASES[operation['case']].get('command_name','MeshSplit'))

@@ -156,6 +156,10 @@ impl<'a> MeshProjectionIndex<'a> {
             .get(index)
             .map(|t| t.map(|i| self.mesh.vertices()[i as usize]))
     }
+    /// Stored source face owning an indexed triangle, including a split quad.
+    pub fn triangle_face(&self, index: usize) -> Option<usize> {
+        self.triangle_faces.get(index).copied()
+    }
     fn build(&mut self, range: Range<usize>) -> Result<usize, GeometryError> {
         let bounds = self.order[range.clone()]
             .iter()

@@ -406,7 +406,7 @@ fn stage_three_dimensional_bounding_box(
     })
 }
 
-fn bounding_box_corners(bounds: BoundingBox3) -> Result<[Point3; 8], GeometryError> {
+pub(super) fn bounding_box_corners(bounds: BoundingBox3) -> Result<[Point3; 8], GeometryError> {
     let min = bounds.min();
     let max = bounds.max();
     Ok([

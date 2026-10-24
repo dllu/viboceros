@@ -18,6 +18,7 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
     name = command_name or 'MeshBoolean'+case['operation'].capitalize()
     ids, layers, groups, geometry = [], [], [], []
     witness, old_layer = None, doc.Layers.CurrentLayerIndex
+    old_cplane = doc.Views.ActiveView.ActiveViewport.GetConstructionPlane().Plane if 'cplane' in case else None
     old_tolerance = doc.ModelAbsoluteTolerance
 
     def xyz(p):
@@ -52,7 +53,7 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
                        color=[int(a.ObjectColor.R), int(a.ObjectColor.G), int(a.ObjectColor.B)],
                        color_source=int(a.ColorSource), crc=int(g.DataCRC(0)))
             if isinstance(g, G.Mesh):
-                if case.get('capture_mesh_split_sdk'):
+                if case.get('capture_mesh_split_sdk') or case.get('capture_split_topology'):
                     from mesh_split_sdk import mesh_value
                     mesh_data = mesh_value(g,host)
                 else:
@@ -73,6 +74,9 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
         return result
 
     try:
+        if old_cplane is not None:
+            o,x,y=case['cplane']
+            doc.Views.ActiveView.ActiveViewport.SetConstructionPlane(G.Plane(G.Point3d(*o),G.Vector3d(*x),G.Vector3d(*y)))
         if 'document_tolerance' in case:
             doc.ModelAbsoluteTolerance = float(case['document_tolerance'])
         record = doc.BeginUndoRecord('Owned mesh Boolean sources')
@@ -179,6 +183,7 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
         if split_sdk is not None:result['split_sdk']=split_sdk
         return result, 0
     finally:
+        if old_cplane is not None:doc.Views.ActiveView.ActiveViewport.SetConstructionPlane(old_cplane)
         doc.ModelAbsoluteTolerance = old_tolerance
         doc.Layers.SetCurrentLayerIndex(old_layer, True)
         for obj in list(doc.Objects):

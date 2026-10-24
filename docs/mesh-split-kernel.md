@@ -6,11 +6,10 @@ cuts. No interaction returns an unchanged copy; a partial cut can return one
 imprinted piece. A caller applies the `DiscardUnsplitMeshes` policy before
 admitting document changes.
 
-This is kernel groundwork for `MeshSplit` and `MeshTrim`. Their command dispatch,
-getters, attributes, groups, history, projected curves and infinite-plane cutters
-remain to be implemented. The captured command workflows retain those behaviors
-for subsequent integration. Imprinted parts return triangles; vertex channels
-and logical n-gons still need transfer. Native component order remains unqualified.
+The [MeshSplit command](commands/mesh-split.md) adds selection, attributes, groups,
+history, projected curves, infinite planes and logical face reconstruction.
+`MeshTrim` remains to be implemented. Raw kernel pieces return triangles;
+vertex-channel transfer and native component order remain unqualified.
 
 Rhino defaults to `CoplanarFaces=Keep`, `CreateNgons=Yes` and
 `DiscardUnsplitMeshes=Yes`. Successful splits create fresh, unselected objects

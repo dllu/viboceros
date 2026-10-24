@@ -9,7 +9,7 @@ from .client import OracleClient
 from .mesh_split_cases import request
 
 HERE=Path(__file__).resolve().parent
-SOURCES=['mesh_split_sdk.py','generate_mesh_split.py','mesh_split_cases.py','mesh_split_probe.py',
+SOURCES=['mesh_split_selection_cases.py','mesh_split_policy_cases.py','mesh_split_sdk.py','generate_mesh_split.py','mesh_split_cases.py','mesh_split_probe.py',
     'mesh_self_intersect_cases.py','mesh_boolean_command_probe.py',
     'mesh_boolean_command_cases.py','mesh_boolean_option_cases.py','mesh_boolean_sets_cases.py',
     'mesh_empty_capture.py','mesh_boolean_cases.py','join_probe.py','merge_edges_probe.py',
@@ -18,8 +18,12 @@ SOURCES=['mesh_split_sdk.py','generate_mesh_split.py','mesh_split_cases.py','mes
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--controls',action='store_true')
-    suffix='controls'if parser.parse_args().controls else'discovery'
+    flags=parser.add_mutually_exclusive_group()
+    flags.add_argument('--controls',action='store_true')
+    flags.add_argument('--policy',action='store_true')
+    flags.add_argument('--selection',action='store_true')
+    args=parser.parse_args()
+    suffix='selection'if args.selection else'policy'if args.policy else'controls'if args.controls else'discovery'
     family='mesh_split_'+suffix
     output=HERE/'observations'/(family+'.json')
     if output.exists():raise ValueError('observations are immutable; add a family')

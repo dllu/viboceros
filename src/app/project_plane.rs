@@ -83,11 +83,7 @@ impl VibocerosApp {
         let Some(prompt) = self.intersection_prompt.clone() else {
             return false;
         };
-        let Some(getter) = prompt
-            .projection
-            .as_ref()
-            .and_then(|p| p.plane_getter.as_ref())
-        else {
+        let Some(getter) = prompt.plane_getter() else {
             return false;
         };
         if getter.mode == PlaneMode::Named
@@ -119,8 +115,7 @@ impl VibocerosApp {
         if let Some(p) = self
             .intersection_prompt
             .as_ref()
-            .and_then(|p| p.projection.as_ref())
-            .and_then(|p| p.plane_getter.as_ref())
+            .and_then(|p| p.plane_getter())
             && p.points_active()
         {
             let command = self.intersection_prompt.as_ref().unwrap().name();
@@ -133,6 +128,23 @@ impl VibocerosApp {
         }
     }
     fn add_project_plane(&mut self, definition: String) {
+        if let Some(partition) = self
+            .intersection_prompt
+            .as_mut()
+            .and_then(|p| p.boolean.as_mut())
+            .and_then(|o| o.partition.as_mut())
+        {
+            partition.planes.push(definition);
+            partition.plane_getter = None;
+            self.clear_project_plane_state();
+            self.command_input.clear();
+            self.push_log(
+                "Added infinite plane cutter; Enter splits or select another cutter".into(),
+            );
+            self.log_intersection_prompt();
+            return;
+        }
+
         if self
             .intersection_prompt
             .as_ref()
@@ -186,24 +198,17 @@ impl VibocerosApp {
             self.intersection_prompt
                 .as_mut()
                 .unwrap()
-                .projection
-                .as_mut()
-                .unwrap()
-                .plane_getter = Some(PlaneGetter {
-                mode: PlaneMode::Choose,
-                frame: self.viewports[self.active_viewport].construction_plane(),
-                points: Vec::new(),
-                curve: None,
-            });
+                .set_plane_getter(Some(PlaneGetter {
+                    mode: PlaneMode::Choose,
+                    frame: self.viewports[self.active_viewport].construction_plane(),
+                    points: Vec::new(),
+                    curve: None,
+                }));
             self.command_input.clear();
             self.log_intersection_prompt();
             return true;
         }
-        let Some(mut getter) = prompt
-            .projection
-            .as_ref()
-            .and_then(|p| p.plane_getter.clone())
-        else {
+        let Some(mut getter) = prompt.plane_getter().cloned() else {
             return false;
         };
         if word == "cancel" {
@@ -215,10 +220,7 @@ impl VibocerosApp {
             self.intersection_prompt
                 .as_mut()
                 .unwrap()
-                .projection
-                .as_mut()
-                .unwrap()
-                .plane_getter = Some(getter);
+                .set_plane_getter(Some(getter));
             self.update_project_plane_marker();
             self.command_input.clear();
             self.log_intersection_prompt();
@@ -232,16 +234,13 @@ impl VibocerosApp {
                 )
                 .unwrap();
                 self.add_project_plane(plane_value(p));
-            } else if prompt.projection.as_ref().unwrap().is_iplane() {
+            } else if prompt.projection.as_ref().is_some_and(|p| p.is_iplane()) {
                 self.begin_iplane_getter();
             } else {
                 self.intersection_prompt
                     .as_mut()
                     .unwrap()
-                    .projection
-                    .as_mut()
-                    .unwrap()
-                    .plane_getter = None;
+                    .set_plane_getter(None);
                 self.clear_project_plane_state();
                 self.command_input.clear();
                 self.log_intersection_prompt();
@@ -284,10 +283,7 @@ impl VibocerosApp {
             self.intersection_prompt
                 .as_mut()
                 .unwrap()
-                .projection
-                .as_mut()
-                .unwrap()
-                .plane_getter = Some(getter);
+                .set_plane_getter(Some(getter));
             self.update_project_plane_marker();
             self.command_input.clear();
             self.log_intersection_prompt();
@@ -361,8 +357,7 @@ impl VibocerosApp {
         let Some(getter) = self
             .intersection_prompt
             .as_ref()
-            .and_then(|p| p.projection.as_ref())
-            .and_then(|p| p.plane_getter.as_ref())
+            .and_then(|p| p.plane_getter())
         else {
             return false;
         };
@@ -392,11 +387,7 @@ impl VibocerosApp {
             self.intersection_prompt
                 .as_mut()
                 .unwrap()
-                .projection
-                .as_mut()
-                .unwrap()
-                .plane_getter
-                .as_mut()
+                .plane_getter_mut()
                 .unwrap()
                 .curve = Some(*id);
             self.update_project_plane_marker();
@@ -410,8 +401,7 @@ impl VibocerosApp {
         let Some(mut getter) = self
             .intersection_prompt
             .as_ref()
-            .and_then(|p| p.projection.as_ref())
-            .and_then(|p| p.plane_getter.clone())
+            .and_then(|p| p.plane_getter().cloned())
         else {
             return false;
         };
@@ -493,10 +483,7 @@ impl VibocerosApp {
                 self.intersection_prompt
                     .as_mut()
                     .unwrap()
-                    .projection
-                    .as_mut()
-                    .unwrap()
-                    .plane_getter = Some(getter);
+                    .set_plane_getter(Some(getter));
                 self.update_project_plane_marker();
                 self.log_intersection_prompt();
                 true

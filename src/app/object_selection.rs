@@ -27,6 +27,8 @@ mod mesh_polyline_tests;
 mod mesh_reference;
 #[cfg(test)]
 mod mesh_self_intersect_tests;
+#[cfg(test)]
+mod mesh_split_tests;
 mod modify_radius;
 #[cfg(test)]
 mod planar_mesh_tests;

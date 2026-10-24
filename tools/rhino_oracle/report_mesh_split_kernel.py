@@ -67,7 +67,8 @@ def validate_ngons(mesh):
 def native():
     expected,versions,paths={},set(),set(SOURCES)
     captured=0
-    for family,cases in FAMILIES.items():
+    for family in ['discovery','controls']:
+        cases=FAMILIES[family]
         name='mesh_split_'+family
         query,capture=[HERE/f/(name+'.json')for f in ['fixtures','observations']]
         paths.update(str(p.relative_to(ROOT))for p in [query,capture])
@@ -130,8 +131,7 @@ def summarize(log):
     return dict(scope='Open mesh partition kernel; unordered component geometry, no command or UI implementation claim',
         native_version=version,epsilon=EPSILON,captured_workflows=36,replayed=len(rows),matched=len(rows)-len(gaps),
         comparison='Component count, per-component area, oriented area vector, common-origin signed volume and bidirectional vertex/edge-midpoint/triangle-centroid samples; input storage remains unchanged',
-        compatibility_gaps=gaps,pending=['MeshSplit command and UI, attributes, grouping and history',
-            'projected curves and infinite plane cutters','output n-gons and vertex channels',
+        compatibility_gaps=gaps,pending=['vertex channel transfer; command policies and n-gons have a separate qualification',
             'mixed coplanar grouping and native surface truncation with three cutters',
             'native component order, extreme scales, near contacts and comparative performance'],
         measurements=[rows[k]for k in sorted(rows)],

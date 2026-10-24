@@ -4,6 +4,8 @@ use super::*;
 use viboceros_document::{ObjectId, SelectionMode};
 
 mod input;
+mod mesh_partition;
+pub(super) use mesh_partition::PartitionOptions;
 mod options;
 mod selection;
 pub(super) use options::{BooleanOptions, BooleanPromptKind};
@@ -77,6 +79,9 @@ impl VibocerosApp {
                     .iter()
                     .find(|o| o.name == "DeleteInput")
                     .is_none_or(|o| o.value),
+                partition: kind
+                    .is_mesh_partition()
+                    .then(|| PartitionOptions::from_prompt(&description)),
                 preselected_first,
             }),
         });

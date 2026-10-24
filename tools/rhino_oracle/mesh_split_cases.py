@@ -56,8 +56,20 @@ for name,sources,keep,ngons,discard in [
         arguments='_Tolerance=_Auto _CoplanarFaces=_{0} _CreateNgons=_{1} _DiscardUnsplitMeshes=_{2}'.format(
             'Keep'if keep else'Drop','Yes'if ngons else'No','Yes'if discard else'No'),
         capture_mesh_split_sdk=True,split_coplanar=keep,create_ngons=ngons,discard_unsplit=discard)
-FAMILIES=dict(discovery=CASES,controls=CONTROLS)
+if __package__:
+    from .mesh_split_policy_cases import cases as policy_cases
+else:
+    from mesh_split_policy_cases import cases as policy_cases
+if __package__:
+    from .mesh_split_selection_cases import cases as selection_cases
+else:
+    from mesh_split_selection_cases import cases as selection_cases
+POLICY=policy_cases(box,xy,wall,overlap,combine,moved)
+SELECTION=selection_cases(box,xy,wall,overlap)
+FAMILIES=dict(discovery=CASES,controls=CONTROLS,policy=POLICY,selection=SELECTION)
 ALL_CASES=dict(CASES,**CONTROLS)
+ALL_CASES.update(POLICY)
+ALL_CASES.update(SELECTION)
 
 
 def request(family='discovery'):

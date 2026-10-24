@@ -17,7 +17,8 @@ an identical copy. Surface inputs use the display mesher. Computation completes
 before document edits, preserving geometry, selection, and Redo on failure.
 
 `Tolerance=Auto|Document|Zero` shares preferences with `MeshIntersect` and the
-four mesh Boolean commands. `CoplanarFaces=Drop|Mesh|Polylines` shares its choice
+four mesh Boolean commands and [MeshSplit](mesh-split.md).
+`CoplanarFaces=Drop|Mesh|Polylines` shares its choice
 with `MeshIntersect`. Accepted answers
 persist after cancellation. The captured `Drop` and `Mesh` modes suppress
 coplanar sheet boundaries; `Polylines` retains them. Ordinary coplanar edge
