@@ -300,6 +300,7 @@ mod mesh_outline;
 mod mesh_partition;
 mod mesh_split;
 mod mesh_trim;
+pub use mesh_trim::MeshTrimCutters;
 mod object_name;
 mod offset_mesh;
 mod offset_surface;

@@ -1,0 +1,4000 @@
+{
+  "results": [
+    {
+      "value": {
+        "before": [
+          {
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 4,
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 0",
+            "selected": false,
+            "closed": false,
+            "face_normals": 1,
+            "layer": "Boolean source 0",
+            "source": 0,
+            "crc": 2647301299,
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 3"
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 4,
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 1,
+            "layer": "Boolean source 2",
+            "source": 2,
+            "crc": 165822238,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          }
+        ],
+        "undo": [
+          {
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 4,
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 0",
+            "selected": false,
+            "closed": false,
+            "face_normals": 1,
+            "layer": "Boolean source 0",
+            "source": 0,
+            "crc": 2647301299,
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 3"
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 4,
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 1,
+            "layer": "Boolean source 2",
+            "source": 2,
+            "crc": 165822238,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "name": "SelID",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "SelID",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Pause",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Pause",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "objects": [
+              {
+                "color": [
+                  14,
+                  27,
+                  53
+                ],
+                "color_source": 1,
+                "name": "Source 1",
+                "selected": false,
+                "layer": "Boolean source 1",
+                "source": 1,
+                "crc": 1014955529,
+                "groups": [
+                  "Boolean group 1",
+                  "Boolean group 3"
+                ],
+                "polyline": [
+                  [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    4.0,
+                    0.0
+                  ]
+                ],
+                "role": "source"
+              },
+              {
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "color_source": 0,
+                "name": "Undo witness",
+                "selected": false,
+                "point": [
+                  99.0,
+                  98.0,
+                  97.0
+                ],
+                "layer": "Boolean output",
+                "source": null,
+                "crc": 0,
+                "groups": [],
+                "role": "witness"
+              },
+              {
+                "color": [
+                  13,
+                  27,
+                  53
+                ],
+                "color_source": 1,
+                "vertex_normals": 5,
+                "mesh": {
+                  "faces": [
+                    [
+                      1,
+                      3,
+                      0
+                    ],
+                    [
+                      2,
+                      0,
+                      3
+                    ],
+                    [
+                      4,
+                      3,
+                      1
+                    ]
+                  ],
+                  "ngons": [],
+                  "uv": null,
+                  "vertices": [
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      -2.220446049250313e-16,
+                      -6.217248937900877e-15
+                    ],
+                    [
+                      2.0,
+                      1.5,
+                      -4.440892098500626e-16
+                    ],
+                    [
+                      2.0,
+                      3.0,
+                      -8.881784197001252e-16
+                    ]
+                  ],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "colors": null
+                },
+                "name": "Source 0",
+                "selected": false,
+                "closed": false,
+                "face_normals": 0,
+                "layer": "Boolean source 0",
+                "source": null,
+                "crc": 4199946914,
+                "groups": [
+                  "Boolean group 0",
+                  "Boolean group 3"
+                ],
+                "role": "output"
+              },
+              {
+                "color": [
+                  15,
+                  27,
+                  53
+                ],
+                "color_source": 1,
+                "vertex_normals": 17,
+                "mesh": {
+                  "faces": [
+                    [
+                      1,
+                      0,
+                      2
+                    ],
+                    [
+                      3,
+                      0,
+                      4
+                    ],
+                    [
+                      1,
+                      4,
+                      0
+                    ],
+                    [
+                      7,
+                      8,
+                      9
+                    ],
+                    [
+                      6,
+                      8,
+                      7
+                    ],
+                    [
+                      5,
+                      7,
+                      9
+                    ],
+                    [
+                      11,
+                      12,
+                      10
+                    ],
+                    [
+                      15,
+                      13,
+                      14
+                    ],
+                    [
+                      13,
+                      15,
+                      16
+                    ]
+                  ],
+                  "ngons": [],
+                  "uv": null,
+                  "vertices": [
+                    [
+                      0.0,
+                      1.0,
+                      -1.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      -4.440892098500626e-16
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      -0.9999999999999956
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.3333333333333335,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      1.0,
+                      -1.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      -4.440892098500626e-16
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      -0.9999999999999956
+                    ],
+                    [
+                      4.0,
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.3333333333333335,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      1.0000000000000009
+                    ]
+                  ],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ]
+                  ],
+                  "colors": null
+                },
+                "name": "Source 2",
+                "selected": false,
+                "closed": false,
+                "face_normals": 0,
+                "layer": "Boolean source 2",
+                "source": null,
+                "crc": 2101254446,
+                "groups": [
+                  "Boolean group 2",
+                  "Boolean group 3"
+                ],
+                "role": "output"
+              }
+            ],
+            "name": "MeshTrim",
+            "result": "Success"
+          }
+        ],
+        "input_script": "_-MeshTrim  _SelID 46657442-491a-4764-b891-92477eedf085 _SelID c92df68b-433e-4a0e-8b8c-4d515599b267  _Enter _Pause _Pause _Enter",
+        "tolerance_policy": {
+          "coefficient": 0.0001,
+          "zero": 2.3283064365386963e-10
+        },
+        "success": true,
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAAAdyOaBIQVJR4jWm0UwXu8yAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAACTuLqZ/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABDJBwAAAAAAAHCAACBSAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBAAQBAQAAAAAAAAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAACTHr3gAAAAAAAAAAAAAAAAAAAIBAAAAAAAAAAAAAAIBAAABAQAAAAAAAAAAAAABAQAAAAAAwAAAAeLagZwAAAAAAAAAAAAAAgD8AAAAAAAAA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bnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAKAjAAAAAAAA",
+        "empty_storage": null,
+        "history": "Command: _-MeshTrim\nSelect cutting objects: _SelID\nObject ID to select: 46657442-491a-4764-b891-92477eedf085\n1 mesh added to selection.\nSelect cutting objects. Press Enter when done: _SelID\nObject ID to select: c92df68b-433e-4a0e-8b8c-4d515599b267\n1 curve added to selection.\nSelect cutting objects. Press Enter when done: _Enter\nSelect cutting objects. Press Enter when done\nSelect object to trim: _Pause\nSelect object to trim\nSelect object to trim: _Pause\nSelect object to trim\nSelect object to trim: _Enter\nSelect object to trim",
+        "redo": [
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          },
+          {
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 5,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  3,
+                  0
+                ],
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  4,
+                  3,
+                  1
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  -2.220446049250313e-16,
+                  -6.217248937900877e-15
+                ],
+                [
+                  2.0,
+                  1.5,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  3.0,
+                  -8.881784197001252e-16
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 0",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 0",
+            "source": null,
+            "crc": 4199946914,
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 17,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  3,
+                  0,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  0
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  6,
+                  8,
+                  7
+                ],
+                [
+                  5,
+                  7,
+                  9
+                ],
+                [
+                  11,
+                  12,
+                  10
+                ],
+                [
+                  15,
+                  13,
+                  14
+                ],
+                [
+                  13,
+                  15,
+                  16
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  1.0000000000000009
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 2",
+            "source": null,
+            "crc": 2101254446,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          },
+          {
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 5,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  3,
+                  0
+                ],
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  4,
+                  3,
+                  1
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  -2.220446049250313e-16,
+                  -6.217248937900877e-15
+                ],
+                [
+                  2.0,
+                  1.5,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  3.0,
+                  -8.881784197001252e-16
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 0",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 0",
+            "source": null,
+            "crc": 4199946914,
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 17,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  3,
+                  0,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  0
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  6,
+                  8,
+                  7
+                ],
+                [
+                  5,
+                  7,
+                  9
+                ],
+                [
+                  11,
+                  12,
+                  10
+                ],
+                [
+                  15,
+                  13,
+                  14
+                ],
+                [
+                  13,
+                  15,
+                  16
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  1.0000000000000009
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 2",
+            "source": null,
+            "crc": 2101254446,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          }
+        ],
+        "input": {
+          "mesh_channels": true,
+          "trim_picks": [
+            [
+              1.0,
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.5
+            ]
+          ],
+          "preselect": false,
+          "fit_sources": true,
+          "first": [
+            0,
+            1
+          ],
+          "second": [],
+          "camera": {
+            "target": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "location": [
+              -8.0,
+              -10.0,
+              10.0
+            ]
+          },
+          "operation": "split",
+          "trim_targets": [
+            0,
+            2
+          ],
+          "sources": [
+            {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "points": [
+                [
+                  2.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.0,
+                  0.0
+                ]
+              ],
+              "kind": "polyline"
+            },
+            {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh",
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ]
+            }
+          ],
+          "capture_split_topology": true,
+          "capture_id": "mesh_trim_snapshot_policy_replaced_cutter"
+        },
+        "after_script": [
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          },
+          {
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 5,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  3,
+                  0
+                ],
+                [
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  4,
+                  3,
+                  1
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  -2.220446049250313e-16,
+                  -6.217248937900877e-15
+                ],
+                [
+                  2.0,
+                  1.5,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  3.0,
+                  -8.881784197001252e-16
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 0",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 0",
+            "source": null,
+            "crc": 4199946914,
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 17,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  3,
+                  0,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  0
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  6,
+                  8,
+                  7
+                ],
+                [
+                  5,
+                  7,
+                  9
+                ],
+                [
+                  11,
+                  12,
+                  10
+                ],
+                [
+                  15,
+                  13,
+                  14
+                ],
+                [
+                  13,
+                  15,
+                  16
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  1.0000000000000009
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 2",
+            "source": null,
+            "crc": 2101254446,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "mesh_trim_snapshot_policy_replaced_cutter"
+    },
+    {
+      "value": {
+        "before": [
+          {
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 4,
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 0",
+            "selected": false,
+            "closed": false,
+            "face_normals": 1,
+            "layer": "Boolean source 0",
+            "source": 0,
+            "crc": 2647301299,
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 3"
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 4,
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 1,
+            "layer": "Boolean source 2",
+            "source": 2,
+            "crc": 165822238,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          }
+        ],
+        "undo": [
+          {
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 4,
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 0",
+            "selected": false,
+            "closed": false,
+            "face_normals": 1,
+            "layer": "Boolean source 0",
+            "source": 0,
+            "crc": 2647301299,
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 3"
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 4,
+            "mesh": {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 1,
+            "layer": "Boolean source 2",
+            "source": 2,
+            "crc": 165822238,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          }
+        ],
+        "events": [
+          {
+            "selected": [],
+            "name": "SelID",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "SelID",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Pause",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Pause",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "name": "Pause",
+            "result": "Success"
+          },
+          {
+            "selected": [],
+            "objects": [
+              {
+                "color": [
+                  14,
+                  27,
+                  53
+                ],
+                "color_source": 1,
+                "name": "Source 1",
+                "selected": false,
+                "layer": "Boolean source 1",
+                "source": 1,
+                "crc": 1014955529,
+                "groups": [
+                  "Boolean group 1",
+                  "Boolean group 3"
+                ],
+                "polyline": [
+                  [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  [
+                    2.0,
+                    4.0,
+                    0.0
+                  ]
+                ],
+                "role": "source"
+              },
+              {
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "color_source": 0,
+                "name": "Undo witness",
+                "selected": false,
+                "point": [
+                  99.0,
+                  98.0,
+                  97.0
+                ],
+                "layer": "Boolean output",
+                "source": null,
+                "crc": 0,
+                "groups": [],
+                "role": "witness"
+              },
+              {
+                "color": [
+                  15,
+                  27,
+                  53
+                ],
+                "color_source": 1,
+                "vertex_normals": 17,
+                "mesh": {
+                  "faces": [
+                    [
+                      1,
+                      0,
+                      2
+                    ],
+                    [
+                      3,
+                      0,
+                      4
+                    ],
+                    [
+                      1,
+                      4,
+                      0
+                    ],
+                    [
+                      7,
+                      8,
+                      9
+                    ],
+                    [
+                      6,
+                      8,
+                      7
+                    ],
+                    [
+                      5,
+                      7,
+                      9
+                    ],
+                    [
+                      11,
+                      12,
+                      10
+                    ],
+                    [
+                      15,
+                      13,
+                      14
+                    ],
+                    [
+                      13,
+                      15,
+                      16
+                    ]
+                  ],
+                  "ngons": [],
+                  "uv": null,
+                  "vertices": [
+                    [
+                      0.0,
+                      1.0,
+                      -1.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      -4.440892098500626e-16
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      -0.9999999999999956
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.3333333333333335,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      1.0,
+                      -1.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      -4.440892098500626e-16
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      -0.9999999999999956
+                    ],
+                    [
+                      4.0,
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.3333333333333335,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      1.0000000000000009
+                    ]
+                  ],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      -1.0,
+                      0.0
+                    ]
+                  ],
+                  "colors": null
+                },
+                "name": "Source 2",
+                "selected": false,
+                "closed": false,
+                "face_normals": 0,
+                "layer": "Boolean source 2",
+                "source": null,
+                "crc": 2101254446,
+                "groups": [
+                  "Boolean group 2",
+                  "Boolean group 3"
+                ],
+                "role": "output"
+              }
+            ],
+            "name": "MeshTrim",
+            "result": "Success"
+          }
+        ],
+        "input_script": "_-MeshTrim  _SelID ab66cd82-0083-4e11-a11e-5b925e4c0a2d _SelID fbe96cfe-b10f-4001-87f8-9d9300639699  _Enter _Pause _Pause _Pause _Enter",
+        "tolerance_policy": {
+          "coefficient": 0.0001,
+          "zero": 2.3283064365386963e-10
+        },
+        "success": true,
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAACZn/g0L7k2TayYi55tUaK4AAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAAAUii04/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABDJBwAAAAAAAHCAACBSAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBAAQBAQAAAAAAAAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAACTHr3gAAAAAAAAAAAAAAAAAAAIBAAAAAAAAAAAAAAIBAAABAQAAAAAAAAAAAAABAQAAAAAAwAAAAeLagZwAAAAAAAAAAAAAAgD8AAAAAAAAA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bnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAKAjAAAAAAAA",
+        "empty_storage": null,
+        "history": "Command: _-MeshTrim\nSelect cutting objects: _SelID\nObject ID to select: ab66cd82-0083-4e11-a11e-5b925e4c0a2d\n1 mesh added to selection.\nSelect cutting objects. Press Enter when done: _SelID\nObject ID to select: fbe96cfe-b10f-4001-87f8-9d9300639699\n1 curve added to selection.\nSelect cutting objects. Press Enter when done: _Enter\nSelect cutting objects. Press Enter when done\nSelect object to trim: _Pause\nSelect object to trim\nSelect object to trim: _Pause\nSelect object to trim\nSelect object to trim: _Pause\nSelect object to trim\nSelect object to trim: _Enter\nSelect object to trim",
+        "redo": [
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 17,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  3,
+                  0,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  0
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  6,
+                  8,
+                  7
+                ],
+                [
+                  5,
+                  7,
+                  9
+                ],
+                [
+                  11,
+                  12,
+                  10
+                ],
+                [
+                  15,
+                  13,
+                  14
+                ],
+                [
+                  13,
+                  15,
+                  16
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  1.0000000000000009
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 2",
+            "source": null,
+            "crc": 2101254446,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          }
+        ],
+        "document_tolerance": 1e-06,
+        "after": [
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 17,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  3,
+                  0,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  0
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  6,
+                  8,
+                  7
+                ],
+                [
+                  5,
+                  7,
+                  9
+                ],
+                [
+                  11,
+                  12,
+                  10
+                ],
+                [
+                  15,
+                  13,
+                  14
+                ],
+                [
+                  13,
+                  15,
+                  16
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  1.0000000000000009
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 2",
+            "source": null,
+            "crc": 2101254446,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          }
+        ],
+        "input": {
+          "mesh_channels": true,
+          "trim_picks": [
+            [
+              1.0,
+              0.5,
+              0.0
+            ],
+            [
+              3.0,
+              0.5,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.5
+            ]
+          ],
+          "preselect": false,
+          "fit_sources": true,
+          "first": [
+            0,
+            1
+          ],
+          "second": [],
+          "camera": {
+            "target": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "location": [
+              -8.0,
+              -10.0,
+              10.0
+            ]
+          },
+          "operation": "split",
+          "trim_targets": [
+            0,
+            0,
+            2
+          ],
+          "sources": [
+            {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "points": [
+                [
+                  2.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  4.0,
+                  0.0
+                ]
+              ],
+              "kind": "polyline"
+            },
+            {
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh",
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ]
+              ]
+            }
+          ],
+          "capture_split_topology": true,
+          "capture_id": "mesh_trim_snapshot_policy_deleted_cutter"
+        },
+        "after_script": [
+          {
+            "color": [
+              14,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "name": "Source 1",
+            "selected": false,
+            "layer": "Boolean source 1",
+            "source": 1,
+            "crc": 1014955529,
+            "groups": [
+              "Boolean group 1",
+              "Boolean group 3"
+            ],
+            "polyline": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ],
+            "role": "source"
+          },
+          {
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": 0,
+            "name": "Undo witness",
+            "selected": false,
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "source": null,
+            "crc": 0,
+            "groups": [],
+            "role": "witness"
+          },
+          {
+            "color": [
+              15,
+              27,
+              53
+            ],
+            "color_source": 1,
+            "vertex_normals": 17,
+            "mesh": {
+              "faces": [
+                [
+                  1,
+                  0,
+                  2
+                ],
+                [
+                  3,
+                  0,
+                  4
+                ],
+                [
+                  1,
+                  4,
+                  0
+                ],
+                [
+                  7,
+                  8,
+                  9
+                ],
+                [
+                  6,
+                  8,
+                  7
+                ],
+                [
+                  5,
+                  7,
+                  9
+                ],
+                [
+                  11,
+                  12,
+                  10
+                ],
+                [
+                  15,
+                  13,
+                  14
+                ],
+                [
+                  13,
+                  15,
+                  16
+                ]
+              ],
+              "ngons": [],
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  -1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -4.440892098500626e-16
+                ],
+                [
+                  2.0,
+                  1.0,
+                  -0.9999999999999956
+                ],
+                [
+                  4.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.3333333333333335,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  1.0000000000000009
+                ]
+              ],
+              "vertex_normals": [
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              ],
+              "colors": null
+            },
+            "name": "Source 2",
+            "selected": false,
+            "closed": false,
+            "face_normals": 0,
+            "layer": "Boolean source 2",
+            "source": null,
+            "crc": 2101254446,
+            "groups": [
+              "Boolean group 2",
+              "Boolean group 3"
+            ],
+            "role": "output"
+          }
+        ]
+      },
+      "elapsed_ns": 0,
+      "id": "mesh_trim_snapshot_policy_deleted_cutter"
+    }
+  ],
+  "protocol_version": 1,
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "engine": "rhino",
+  "provenance": {
+    "request_sha256": "9bef896bc5f5c46a6654514a01498d5b71e035c5945d5fb0577ca0df0d166c5b",
+    "sources": {
+      "mesh_trim_snapshot_policy_cases.py": "4d8529e29b3eeb010fe81e7e8598eda7636b0cf64ecc02db140aeedb7350f955",
+      "mesh_trim_continuation_cases.py": "46117ff063ce8535c7f529aef7a97ee6064b8afb2087599a08685b1735abeb3e",
+      "mesh_trim_picking.py": "17a9e9ac971cf88efa6dad37a5aca2c22c8fbdb85904d62dfcf1e395cfd33a46",
+      "mesh_trim_control_cases.py": "67c7d13764e09a08faff7af90f95dae1229251907d5b4a17044cbe3d9839eb06",
+      "mesh_trim_input.py": "d2b2e3e76ba522b6d9c4a1f1054f040fcae315b784d84afe6d9796c6c440455a",
+      "component_picking.py": "588fe07276e6ae1bcf0babd81e121b27032d51e74ddde34c11a42cd8a25c96df",
+      "hole_picking.py": "69d5d692cc86a7d628e741c9116b65449713fa5e23cf9ad8ee9f8dd5487f8116",
+      "generate_mesh_trim.py": "1b429d0ccfbc4f157faa604bedc16627afed4d6dfc1fea5cb53cf95383c58ac6",
+      "mesh_trim_cases.py": "594d52a88e0f45f0b5890612c2369db0d92135f4d770def2d7b895656aad1134",
+      "mesh_trim_probe.py": "4b17e48d1625fa27fa19fdee4148bc8fda212ae83886bdf186fd136570eba7c7",
+      "mesh_split_ngon_policy_cases.py": "14c888db0d02ed9a53001ef13ad5ecd922365ecc628033ded0b2f82bbc36bb91",
+      "mesh_split_channel_cases.py": "f2b3c347c9764eff546025ceee913f9203616e4803cf7a45afa3a77cf62f4974",
+      "mesh_split_selection_cases.py": "9f1cfe03ff23770eda08fa9c50be74f52f4dc7487e30f3531bb94b14b9968601",
+      "mesh_split_policy_cases.py": "20808f5f525632075a545078e7fd71c7676e7a497d2dafd4ca2ef30f1c391e9f",
+      "mesh_split_sdk.py": "b01f2524f209e9216bfad678d52c1a3590b6bd71ce688f15c248693f44e4bed6",
+      "generate_mesh_split.py": "d6a9374a8a83da1ff821a9da39228ae5bdcba1a466ac1cfd43e6b9e966ddbc3f",
+      "mesh_split_cases.py": "ed05a7b0a6d0498877cf9b57be0d72a824db30a64870a4027b9e2cb1890007a5",
+      "mesh_split_probe.py": "224e681c2818637ca6401759528e9f006b9e53496f40aba595089bd65ca642d8",
+      "mesh_self_intersect_cases.py": "b97df742f041578966d155894e031dd77242dbd632ce92bbc4086875f1e938bb",
+      "mesh_boolean_command_probe.py": "2072a34ff3f2c603504291f8bfdb82ba40371acf76182bd019bc60f5135bd469",
+      "mesh_boolean_command_cases.py": "5522e21f7fc96e1930aab6a68651fe37e93a5a50e8e62f7473534f07c381dc2f",
+      "mesh_boolean_option_cases.py": "3c7d5170747d015928e6b8469c1b48167a8294f35d32aad67274ce3a9d48da5c",
+      "mesh_boolean_sets_cases.py": "2d5d2d5bc7b152d8a3c656f5b2eff3bce991baeab0f7a24c3a4df0dc07ee7cb8",
+      "mesh_empty_capture.py": "25e034e5240b320cff27142857146774afc72e5c8aac010b389639af9826c48d",
+      "mesh_boolean_cases.py": "83017e2d4d2a9dcc2215a8a02c689718b7fdd565e575d3a9d487b4ecd0c7a7a0",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "317ac8ab1a34cdf0e36826bc1d520df726211d32cba29637b2ac9a9f8261ab16",
+      "rhino_worker.py": "12ab6653c6ae2eaea32c31f57332f80b8f13ffaf8f9377fefbb4220b645d1650",
+      "structural_sdk.py": "74d8d4a0fffa32e34a451aa7809d87a3f5b844706a2a8253a8c3889ccc968631"
+    }
+  }
+}

@@ -11,7 +11,7 @@ pub(in crate::app) struct PartitionOptions {
     pub planes: Vec<String>,
     pub plane_getter: Option<PlaneGetter>,
     pub pending_choice: Option<&'static str>,
-    pub trim_history: Option<std::rc::Rc<std::cell::RefCell<viboceros_document::HistoryGroup>>>,
+    pub trim: Option<std::rc::Rc<std::cell::RefCell<super::mesh_trim::MeshTrimSession>>>,
 }
 impl PartitionOptions {
     pub fn from_prompt(prompt: &viboceros_command::ObjectSelectionPrompt) -> Self {
@@ -35,7 +35,7 @@ impl PartitionOptions {
             planes: vec![],
             plane_getter: None,
             pending_choice: None,
-            trim_history: None,
+            trim: None,
         }
     }
     pub fn suffix(&self, display: bool) -> String {

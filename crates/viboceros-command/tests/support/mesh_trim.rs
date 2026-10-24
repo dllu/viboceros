@@ -11,8 +11,11 @@ fn root() -> &'static std::path::Path {
         .unwrap()
 }
 pub fn rows() -> Vec<Value> {
+    rows_for(&["mouse", "controls"])
+}
+pub fn rows_for(families: &[&str]) -> Vec<Value> {
     let mut rows = vec![];
-    for family in ["mouse", "controls"] {
+    for &family in families {
         let data: Value = serde_json::from_str(
             &std::fs::read_to_string(root().join(format!(
                 "tools/rhino_oracle/observations/mesh_trim_{family}.json"
@@ -58,8 +61,22 @@ pub fn picks(row: &Value) -> Vec<Point3> {
         .collect()
 }
 pub fn target(doc: &viboceros_document::Document, point: Point3) -> ObjectId {
+    target_named(doc, point, "Source 0")
+}
+pub fn target_for_pick(
+    doc: &viboceros_document::Document,
+    row: &Value,
+    index: usize,
+    point: Point3,
+) -> ObjectId {
+    let source = row["value"]["input"]["trim_targets"][index]
+        .as_u64()
+        .unwrap_or(0);
+    target_named(doc, point, &format!("Source {source}"))
+}
+fn target_named(doc: &viboceros_document::Document, point: Point3, name: &str) -> ObjectId {
     doc.objects()
-        .filter(|o| o.attributes().name() == Some("Source 0"))
+        .filter(|o| o.attributes().name() == Some(name))
         .filter_map(|o| {
             let Geometry::Mesh(mesh) = o.geometry() else {
                 return None;
@@ -92,3 +109,7 @@ pub fn command(row: &Value, cutters: &[ObjectId], target: ObjectId, point: Point
     result
 }
 pub const GAPS: &[&str] = &["mesh_trim_controls_plane"];
+pub const SNAPSHOT_GAPS: &[&str] = &[
+    "mesh_trim_snapshot_policy_deleted_cutter",
+    "mesh_trim_snapshot_policy_replaced_cutter",
+];

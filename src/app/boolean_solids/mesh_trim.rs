@@ -1,5 +1,10 @@
 //! Cutter selection followed by incrementally accepted mesh-region picks.
 use super::*;
+#[derive(Debug)]
+pub(in crate::app) struct MeshTrimSession {
+    cutters: viboceros_command::MeshTrimCutters,
+    history: viboceros_document::HistoryGroup,
+}
 impl VibocerosApp {
     pub(in crate::app) fn picking_mesh_trim_target(&self) -> bool {
         self.intersection_prompt.as_ref().is_some_and(|p| {
@@ -8,9 +13,22 @@ impl VibocerosApp {
                 && p.plane_getter().is_none()
         })
     }
-    pub(in crate::app) fn begin_mesh_trim_history(&mut self) {
-        match self.document.begin_history_group("MeshTrim") {
-            Ok(group) => {
+    pub(in crate::app) fn begin_mesh_trim_session(&mut self) {
+        let result = (|| -> Result<MeshTrimSession, viboceros_command::CommandError> {
+            let ids = self
+                .intersection_prompt
+                .as_ref()
+                .unwrap()
+                .first
+                .as_ref()
+                .unwrap();
+            Ok(MeshTrimSession {
+                cutters: viboceros_command::MeshTrimCutters::capture(&self.document, ids)?,
+                history: self.document.begin_history_group("MeshTrim")?,
+            })
+        })();
+        match result {
+            Ok(session) => {
                 self.intersection_prompt
                     .as_mut()
                     .unwrap()
@@ -20,9 +38,13 @@ impl VibocerosApp {
                     .partition
                     .as_mut()
                     .unwrap()
-                    .trim_history = Some(std::rc::Rc::new(std::cell::RefCell::new(group)))
+                    .trim = Some(std::rc::Rc::new(std::cell::RefCell::new(session)))
             }
-            Err(error) => self.push_log(format!("Error: {error}")),
+            Err(error) => {
+                self.intersection_prompt = None;
+                self.document.clear_selection();
+                self.push_log(format!("Error: {error}"));
+            }
         }
     }
     pub(in crate::app) fn continue_mesh_trim(
@@ -54,10 +76,13 @@ impl VibocerosApp {
                 .partition
                 .as_ref()
                 .unwrap()
-                .trim_history
+                .trim
                 .clone()
                 .unwrap();
-            if let Err(error) = self.document.undo_history_group(&mut group.borrow_mut()) {
+            if let Err(error) = self
+                .document
+                .undo_history_group(&mut group.borrow_mut().history)
+            {
                 self.push_log(format!("Error: {error}"));
             }
             self.command_input.clear();
@@ -88,7 +113,7 @@ impl VibocerosApp {
                 prompt.first = Some(cutters);
                 self.document.clear_selection();
                 self.intersection_prompt = Some(prompt);
-                self.begin_mesh_trim_history();
+                self.begin_mesh_trim_session();
                 self.log_intersection_prompt();
             }
         } else if prompt.first.is_none() {
@@ -130,35 +155,16 @@ impl VibocerosApp {
         };
         let prompt = self.intersection_prompt.as_ref().unwrap();
         let options = prompt.boolean.as_ref().unwrap();
-        let first = prompt.first.as_ref().unwrap();
-        let mut command = options.command_line(true);
-        if !first.is_empty() {
-            command.push_str(&format!(
-                " Cutters={}",
-                first
-                    .iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<_>>()
-                    .join(",")
-            ));
-        }
-        command.push_str(&format!(" Target={id} Point={}", format_model_point(point)));
-        let group = options
-            .partition
-            .as_ref()
-            .unwrap()
-            .trim_history
-            .clone()
-            .unwrap();
+        let planes = options.partition.as_ref().unwrap().planes.clone();
+        let group = options.partition.as_ref().unwrap().trim.clone().unwrap();
         let context = viboceros_command::CommandContext {
             construction_plane: self.viewports[self.active_viewport].construction_plane(),
         };
-        let result = self.commands.execute_in_history_group(
-            &mut self.document,
-            &command,
-            context,
-            &mut group.borrow_mut(),
-        );
+        let result = {
+            let mut session = group.borrow_mut();
+            let MeshTrimSession { cutters, history } = &mut *session;
+            cutters.trim(&mut self.document, id, point, &planes, context, history)
+        };
         match result {
             Ok(message) => self.push_log(message),
             Err(error) => self.push_log(format!("Error: {error}")),

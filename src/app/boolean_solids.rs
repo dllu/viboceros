@@ -89,7 +89,7 @@ impl VibocerosApp {
         });
         if kind.is_mesh_trim() && preselected_first {
             self.document.clear_selection();
-            self.begin_mesh_trim_history();
+            self.begin_mesh_trim_session();
         }
         if kind.shares_sets() && preselected_first {
             self.document.clear_selection();

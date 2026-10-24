@@ -10,7 +10,7 @@ from .mesh_trim_cases import request
 from .generate_mesh_split import SOURCES as SPLIT_SOURCES
 
 HERE = Path(__file__).resolve().parent
-SOURCES = ['mesh_trim_picking.py', 'mesh_trim_control_cases.py', 'mesh_trim_input.py', 'component_picking.py', 'hole_picking.py', 'generate_mesh_trim.py', 'mesh_trim_cases.py', 'mesh_trim_probe.py'] + SPLIT_SOURCES
+SOURCES = ['mesh_trim_cutter_policy_cases.py', 'mesh_trim_snapshot_policy_cases.py', 'mesh_trim_continuation_cases.py', 'mesh_trim_picking.py', 'mesh_trim_control_cases.py', 'mesh_trim_input.py', 'component_picking.py', 'hole_picking.py', 'generate_mesh_trim.py', 'mesh_trim_cases.py', 'mesh_trim_probe.py'] + SPLIT_SOURCES
 
 
 def main():
@@ -18,8 +18,11 @@ def main():
     flags = parser.add_mutually_exclusive_group()
     flags.add_argument('--mouse', action='store_true')
     flags.add_argument('--controls', action='store_true')
+    flags.add_argument('--continuation', action='store_true')
+    flags.add_argument('--snapshot-policy', action='store_true')
+    flags.add_argument('--cutter-policy', action='store_true')
     args = parser.parse_args()
-    family = 'controls' if args.controls else 'mouse' if args.mouse else 'discovery'
+    family = 'cutter_policy' if args.cutter_policy else 'snapshot_policy' if args.snapshot_policy else 'continuation' if args.continuation else 'controls' if args.controls else 'mouse' if args.mouse else 'discovery'
     name = 'mesh_trim_' + family
     output = HERE / 'observations' / (name + '.json')
     if output.exists():

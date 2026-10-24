@@ -18,13 +18,14 @@ SOURCES = with_shared_sources(baseline.SOURCES + [
     'docs/commands/mesh-trim.md',
 ] + ['tools/rhino_oracle/' + p for p in [
     'generate_mesh_trim.py', 'mesh_trim_cases.py', 'mesh_trim_control_cases.py',
+    'mesh_trim_continuation_cases.py', 'mesh_trim_snapshot_policy_cases.py', 'mesh_trim_cutter_policy_cases.py',
     'mesh_trim_probe.py', 'mesh_trim_input.py', 'mesh_trim_picking.py',
     'component_picking.py', 'hole_picking.py',
 ]])
 
 
-def native():
-    return evidence.native(list(FAMILIES), SOURCES, case_families=FAMILIES,
+def native(families=('discovery', 'mouse', 'controls')):
+    return evidence.native(families, SOURCES, case_families=FAMILIES,
                            request_factory=request, prefix='mesh_trim_',
                            allow_unknown=['mesh_trim_tolerance_menu'])
 

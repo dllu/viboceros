@@ -8,14 +8,22 @@ def drive(case, ids, host, snapshot):
     view = doc.Views.ActiveView
     viewport = view.ActiveViewport
     host['_record_progress']('trim input: configure projection')
-    if not viewport.SetProjection(R.Display.DefinedViewportProjection.Top, 'Top', False):
+    projection = (R.Display.DefinedViewportProjection.Perspective if 'camera' in case
+                  else R.Display.DefinedViewportProjection.Top)
+    if not viewport.SetProjection(projection, 'Owned MeshTrim input', False):
         raise ValueError('owned trim viewport unavailable')
+    if 'camera' in case:
+        camera = case['camera']
+        viewport.SetCameraLocations(G.Point3d(*camera['target']), G.Point3d(*camera['location']))
     mode = R.Display.DisplayModeDescription.FindByName('Shaded')
     if mode is None:
         raise ValueError('owned shaded mode unavailable')
     host['_record_progress']('trim input: configure display')
     viewport.DisplayMode = mode
     bounds = doc.Objects.FindId(ids[0]).Geometry.GetBoundingBox(True)
+    if case.get('fit_sources'):
+        for identifier in ids[1:]:
+            bounds.Union(doc.Objects.FindId(identifier).Geometry.GetBoundingBox(True))
     bounds.Inflate(1.)
     host['_record_progress']('trim input: fit target')
     viewport.ZoomBoundingBox(bounds)
@@ -39,4 +47,8 @@ def drive(case, ids, host, snapshot):
             stream.flush()
     host['_record_progress']('trim input: run physical selection')
     result = R.RhinoApp.RunScript(script, True)
-    return result, dict(input_script=script)
+    xyz = lambda p: [float(p.X), float(p.Y), float(p.Z)]
+    return result, dict(input_script=script, trim_view=dict(
+        location=xyz(viewport.CameraLocation), direction=xyz(viewport.CameraDirection),
+        up=xyz(viewport.CameraUp), target=xyz(viewport.CameraTarget),
+        perspective=bool(viewport.IsPerspectiveProjection)))

@@ -167,6 +167,10 @@ def with_shared_sources(paths):
                                       'src/component_seams/arguments.rs') for p in paths]
     if 'Cargo.toml' in expanded:
         expanded.append('.cargo/config.toml')
+    if 'tools/rhino_oracle/mesh_trim_cases.py' in expanded:
+        expanded.extend(['tools/rhino_oracle/mesh_trim_continuation_cases.py',
+                         'tools/rhino_oracle/mesh_trim_snapshot_policy_cases.py',
+                         'tools/rhino_oracle/mesh_trim_cutter_policy_cases.py'])
     if 'tools/rhino_oracle/mesh_split_cases.py' in expanded:
         expanded.extend(['tools/rhino_oracle/mesh_split_channel_cases.py',
                          'tools/rhino_oracle/mesh_split_ngon_policy_cases.py',
@@ -216,6 +220,7 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/mesh_partition/appearance.rs',
             'crates/viboceros-command/src/mesh_trim.rs',
             'crates/viboceros-command/src/mesh_trim/arguments.rs',
+            'crates/viboceros-command/src/mesh_trim/cutters.rs',
             'crates/viboceros-command/src/mesh_trim/execute.rs',
             'crates/viboceros-command/src/mesh_trim/geometry.rs',
             'crates/viboceros-command/src/bounding_box.rs',

@@ -35,16 +35,48 @@ fn start(app: &mut VibocerosApp, row: &serde_json::Value, ids: &[ObjectId], pres
 }
 #[test]
 fn mesh_trim_getters_replay_native_physical_picks_cancel_channels_and_history() {
+    let (count, gaps) = replay(native::rows(), "MESH_TRIM_GETTER");
+    assert_eq!(count, 14);
+    assert_eq!(gaps, native::GAPS);
+}
+#[test]
+fn mesh_trim_getters_replay_native_captured_cutter_continuations() {
+    let (count, gaps) = replay(
+        native::rows_for(&["continuation"]),
+        "MESH_TRIM_CONTINUATION_GETTER",
+    );
+    assert_eq!(count, 6);
+    assert!(gaps.is_empty(), "{gaps:?}");
+}
+#[test]
+fn mesh_trim_getters_replay_native_original_cutter_geometry() {
+    let (count, gaps) = replay(
+        native::rows_for(&["cutter_policy"]),
+        "MESH_TRIM_CUTTER_POLICY_GETTER",
+    );
+    assert_eq!(count, 2);
+    assert!(gaps.is_empty(), "{gaps:?}");
+}
+#[test]
+fn mesh_trim_getters_expose_native_perspective_curve_surface_difference() {
+    let (count, gaps) = replay(
+        native::rows_for(&["snapshot_policy"]),
+        "MESH_TRIM_SNAPSHOT_POLICY_GETTER",
+    );
+    assert_eq!(count, 2);
+    assert_eq!(gaps, native::SNAPSHOT_GAPS);
+}
+fn replay(rows: Vec<serde_json::Value>, prefix: &str) -> (usize, Vec<String>) {
     let mut gaps = vec![];
     let mut count = 0;
-    for row in native::rows() {
+    for row in rows {
         let value = &row["value"];
         let mut scene = native::setup(&row);
         let mut app = test_app();
         app.document = std::mem::take(&mut scene.doc);
         start(&mut app, &row, &scene.ids, false);
-        for point in native::picks(&row) {
-            let target = native::target(&app.document, point);
+        for (index, point) in native::picks(&row).into_iter().enumerate() {
+            let target = native::target_for_pick(&app.document, &row, index, point);
             app.accept_component_face_hit(target, 0, Some(point));
             assert!(app.picking_mesh_trim_target());
         }
@@ -70,7 +102,7 @@ fn mesh_trim_getters_replay_native_physical_picks_cancel_channels_and_history() 
         let redo = split::check_with_channels(&scene, value, "redo");
         let measured = json!({"id":row["id"],"success":success,"error":error,
             "after":after,"undo":undo,"redo":redo,"sources_restored_on_undo":ownership});
-        println!("MESH_TRIM_GETTER {measured}");
+        println!("{prefix} {measured}");
         assert!(ownership);
         assert_eq!(success, value["success"].as_bool().unwrap());
         if ["after", "undo", "redo"].iter().any(|s| {
@@ -83,8 +115,7 @@ fn mesh_trim_getters_replay_native_physical_picks_cancel_channels_and_history() 
         count += 1;
     }
     gaps.sort();
-    assert_eq!(count, 14);
-    assert_eq!(gaps, native::GAPS);
+    (count, gaps)
 }
 #[test]
 fn mesh_trim_preselected_cutters_and_local_undo_preserve_one_command_history() {
@@ -121,6 +152,58 @@ fn mesh_trim_preselected_cutters_and_local_undo_preserve_one_command_history() {
     assert!(boolean::sources_restored(&scene));
     assert_eq!(scene.doc.selected_object_count(), 0);
     assert!(scene.doc.object(scene.witness).is_some());
+}
+
+#[test]
+fn mesh_trim_cutter_descendants_survive_failed_pick_and_local_undo() {
+    let row = native::rows_for(&["continuation"])
+        .into_iter()
+        .find(|r| r["id"] == "mesh_trim_continuation_shared_two_cutters")
+        .unwrap();
+    let mut scene = native::setup(&row);
+    let mut app = test_app();
+    app.document = std::mem::take(&mut scene.doc);
+    start(&mut app, &row, &scene.ids, false);
+    let points = native::picks(&row);
+    app.accept_component_face_hit(scene.ids[0], 0, Some(points[0]));
+    let retained = native::target(&app.document, points[1]);
+    let storage = app
+        .document
+        .objects()
+        .map(|o| (o.id(), o.geometry_snapshot().clone()))
+        .collect::<Vec<_>>();
+    // The old target ID is gone. A failed pick must leave the accepted step and
+    // its input snapshots usable, without adding a local Undo checkpoint.
+    app.accept_component_face_hit(scene.ids[0], 0, Some(points[1]));
+    assert_eq!(app.document.objects().len(), storage.len());
+    for (id, geometry) in storage {
+        assert!(
+            app.document
+                .object(id)
+                .unwrap()
+                .geometry_snapshot()
+                .shares_storage_with(&geometry)
+        );
+    }
+    assert_eq!(
+        app.command_log
+            .iter()
+            .filter(|s| s.starts_with("Error: "))
+            .count(),
+        1
+    );
+    app.accept_component_face_hit(retained, 0, Some(points[1]));
+    enter(&mut app, "Undo");
+    assert!(app.document.object(retained).is_some());
+    app.accept_component_face_hit(retained, 0, Some(points[1]));
+    app.cancel_interactive_command(true);
+    scene.doc = std::mem::take(&mut app.document);
+    let check = split::check_with_channels(&scene, &row["value"], "after");
+    assert_eq!(check["geometry"], true);
+    assert_eq!(check["metadata"], true);
+    scene.doc.undo().unwrap();
+    assert!(boolean::sources_restored(&scene));
+    assert_eq!(scene.doc.undo_label(), Some("Undo witness"));
 }
 
 #[test]

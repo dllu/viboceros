@@ -107,15 +107,31 @@ pub(super) fn cutters<'a>(
     context: CommandContext,
     tolerance: Tolerance,
 ) -> Result<Vec<Cow<'a, TriangleMesh>>, CommandError> {
+    let geometries = objects
+        .iter()
+        .map(|&id| {
+            doc.object(id)
+                .map(|object| (id, object.geometry()))
+                .ok_or(DocumentError::ObjectNotFound(id))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    cutters_from_geometries(doc, target, bounds, geometries, planes, context, tolerance)
+}
+
+pub(super) fn cutters_from_geometries<'a>(
+    doc: &Document,
+    target: ObjectId,
+    bounds: BoundingBox3,
+    geometries: impl IntoIterator<Item = (ObjectId, &'a Geometry)>,
+    planes: &[String],
+    context: CommandContext,
+    tolerance: Tolerance,
+) -> Result<Vec<Cow<'a, TriangleMesh>>, CommandError> {
     let mut cutters = Vec::new();
-    for &id in objects {
+    for (id, geometry) in geometries {
         if id == target {
             continue;
         }
-        let geometry = doc
-            .object(id)
-            .ok_or(DocumentError::ObjectNotFound(id))?
-            .geometry();
         cutters.push(if geometry.curve_ref().is_some() {
             Cow::Owned(curve_mesh(
                 geometry,

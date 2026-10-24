@@ -9,6 +9,7 @@ mod frozen_scene;
 #[path = "../../viboceros-geometry/tests/support/mesh_outline.rs"]
 mod mesh_reference;
 #[path = "support/mesh_trim.rs"]
+#[allow(dead_code)]
 mod native;
 #[allow(dead_code)]
 #[path = "support/mesh_split.rs"]
@@ -18,10 +19,45 @@ use viboceros_command::{CommandContext, CommandRegistry};
 
 #[test]
 fn mesh_trim_commands_replay_native_picked_regions_channels_and_history() {
+    let (count, gaps) = replay(native::rows(), "MESH_TRIM_COMMAND", false);
+    assert_eq!(count, 13);
+    assert_eq!(gaps, native::GAPS);
+}
+#[test]
+fn mesh_trim_captured_cutters_replay_native_continuations() {
+    let (count, gaps) = replay(
+        native::rows_for(&["continuation"]),
+        "MESH_TRIM_CONTINUATION_COMMAND",
+        true,
+    );
+    assert_eq!(count, 5);
+    assert!(gaps.is_empty(), "{gaps:?}");
+}
+#[test]
+fn mesh_trim_original_geometry_replays_native_cutter_policy() {
+    let (count, gaps) = replay(
+        native::rows_for(&["cutter_policy"]),
+        "MESH_TRIM_CUTTER_POLICY_COMMAND",
+        true,
+    );
+    assert_eq!(count, 2);
+    assert!(gaps.is_empty(), "{gaps:?}");
+}
+#[test]
+fn mesh_trim_captured_cutters_expose_perspective_curve_surface_difference() {
+    let (count, gaps) = replay(
+        native::rows_for(&["snapshot_policy"]),
+        "MESH_TRIM_SNAPSHOT_POLICY_COMMAND",
+        true,
+    );
+    assert_eq!(count, 2);
+    assert_eq!(gaps, native::SNAPSHOT_GAPS);
+}
+fn replay(rows: Vec<serde_json::Value>, prefix: &str, frozen: bool) -> (usize, Vec<String>) {
     let registry = CommandRegistry::with_builtins();
     let mut gaps = vec![];
     let mut count = 0;
-    for row in native::rows() {
+    for row in rows {
         // The backend performs accepted picks; cancellation is a getter action.
         if row["value"]["input"]["finish"] == "Cancel" {
             continue;
@@ -29,18 +65,33 @@ fn mesh_trim_commands_replay_native_picked_regions_channels_and_history() {
         let value = &row["value"];
         let mut scene = native::setup(&row);
         let cutters = native::cutters(&row, &scene.ids);
+        let mut captured = frozen
+            .then(|| viboceros_command::MeshTrimCutters::capture(&scene.doc, &cutters).unwrap());
         let mut history = scene.doc.begin_history_group("MeshTrim").unwrap();
-        for point in native::picks(&row) {
-            let target = native::target(&scene.doc, point);
+        for (index, point) in native::picks(&row).into_iter().enumerate() {
+            let target = native::target_for_pick(&scene.doc, &row, index, point);
             let command = native::command(&row, &cutters, target, point);
-            registry
-                .execute_in_history_group(
-                    &mut scene.doc,
-                    &command,
-                    CommandContext::default(),
-                    &mut history,
-                )
-                .unwrap();
+            if let Some(captured) = &mut captured {
+                captured
+                    .trim(
+                        &mut scene.doc,
+                        target,
+                        point,
+                        &[],
+                        CommandContext::default(),
+                        &mut history,
+                    )
+                    .unwrap();
+            } else {
+                registry
+                    .execute_in_history_group(
+                        &mut scene.doc,
+                        &command,
+                        CommandContext::default(),
+                        &mut history,
+                    )
+                    .unwrap();
+            }
         }
         let after = split::check_with_channels(&scene, value, "after");
         scene.doc.undo().unwrap();
@@ -49,7 +100,7 @@ fn mesh_trim_commands_replay_native_picked_regions_channels_and_history() {
         scene.doc.redo().unwrap();
         let redo = split::check_with_channels(&scene, value, "redo");
         let measured = json!({"id":row["id"],"success":true,"error":null,"after":after,"undo":undo,"redo":redo,"sources_restored_on_undo":ownership});
-        println!("MESH_TRIM_COMMAND {measured}");
+        println!("{prefix} {measured}");
         assert!(ownership, "{}", row["id"]);
         if ["after", "undo", "redo"].iter().any(|s| {
             ["geometry", "metadata", "ngons"]
@@ -62,8 +113,7 @@ fn mesh_trim_commands_replay_native_picked_regions_channels_and_history() {
     }
     eprintln!("MeshTrim commands {count}; gaps {gaps:?}");
     gaps.sort();
-    assert_eq!(count, 13);
-    assert_eq!(gaps, native::GAPS);
+    (count, gaps)
 }
 
 #[test]

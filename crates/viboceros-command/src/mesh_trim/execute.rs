@@ -15,22 +15,34 @@ impl MeshTrimCommand {
                 .map(|o| o.id())
                 .collect()
         });
-        if (cutters.is_empty() && args.planes.is_empty())
-            || cutters.len().saturating_add(args.planes.len()) > 128
-            || cutters.iter().collect::<BTreeSet<_>>().len() != cutters.len()
+        MeshTrimCutters::capture(doc, &cutters)?
+            .execute(doc, target, point, &args.planes, context)
+            .map(|(message, _)| message)
+    }
+}
+impl MeshTrimCutters {
+    pub(super) fn execute(
+        &self,
+        doc: &mut Document,
+        target: ObjectId,
+        point: Point3,
+        planes: &[String],
+        context: CommandContext,
+    ) -> Result<(String, Vec<ObjectId>), CommandError> {
+        if (self.objects.is_empty() && planes.is_empty())
+            || self.objects.len().saturating_add(planes.len()) > 128
         {
             return Err(CommandError::Usage(USAGE));
         }
-        for &id in cutters.iter().chain(std::iter::once(&target)) {
-            if !doc.is_object_selectable(id) {
-                return Err(CommandError::Usage("selectable MeshTrim objects"));
-            }
+        if !doc.is_object_selectable(target) {
+            return Err(CommandError::Usage("a selectable MeshTrim target"));
         }
-        let output = compute(doc, target, &cutters, &args.planes, point, context)?;
+        let output = compute(doc, target, self, planes, point, context)?;
         let selected = doc
             .selected_object_ids()
-            .chain(cutters.iter().copied())
+            .chain(self.objects.iter().map(|(id, _)| *id))
             .chain([target])
+            .filter(|id| doc.object(*id).is_some())
             .collect::<BTreeSet<_>>();
         doc.release_command_selection_on_history_replay(selected)?;
         doc.clear_selection();
@@ -41,19 +53,20 @@ impl MeshTrimCommand {
         )?;
         doc.delete_objects([target])?;
         let removed = ids.is_empty();
-        doc.select_objects_direct(ids, SelectionMode::Remove)?;
-        Ok(if removed {
+        doc.select_objects_direct(ids.iter().copied(), SelectionMode::Remove)?;
+        let message = if removed {
             "MeshTrim removed the mesh".into()
         } else {
             "MeshTrim removed the picked region".into()
-        })
+        };
+        Ok((message, ids))
     }
 }
 #[cfg(feature = "native-smlib")]
 fn compute(
     doc: &Document,
     target: ObjectId,
-    cutters: &[ObjectId],
+    cutters: &MeshTrimCutters,
     planes: &[String],
     point: Point3,
     context: CommandContext,
@@ -91,7 +104,7 @@ fn compute(
 fn compute(
     _: &Document,
     _: ObjectId,
-    _: &[ObjectId],
+    _: &MeshTrimCutters,
     _: &[String],
     _: Point3,
     _: CommandContext,

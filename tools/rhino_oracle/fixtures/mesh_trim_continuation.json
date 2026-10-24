@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_continuation_shared_both_sides",
+      "case": "mesh_trim_continuation_shared_both_sides"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_continuation_shared_cancel_after_two",
+      "case": "mesh_trim_continuation_shared_cancel_after_two"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_continuation_shared_two_cutters",
+      "case": "mesh_trim_continuation_shared_two_cutters"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_continuation_shared_other_target",
+      "case": "mesh_trim_continuation_shared_other_target"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_continuation_two_targets_control",
+      "case": "mesh_trim_continuation_two_targets_control"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_continuation_shared_curve_other_target",
+      "case": "mesh_trim_continuation_shared_curve_other_target"
+    }
+  ]
+}

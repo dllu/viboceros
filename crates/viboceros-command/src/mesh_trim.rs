@@ -1,10 +1,12 @@
 //! Mesh regions removed by a world-space pick, with cutter-first UI selection.
 use crate::*;
 mod arguments;
+mod cutters;
 mod execute;
 #[cfg(feature = "native-smlib")]
 mod geometry;
 use arguments::Arguments;
+pub use cutters::MeshTrimCutters;
 const USAGE: &str = "MeshTrim [Cutters=ids] [InfinitePlane=definition] Target=id Point=x,y,z";
 pub(super) struct MeshTrimCommand;
 impl Command for MeshTrimCommand {

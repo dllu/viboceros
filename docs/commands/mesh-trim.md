@@ -14,7 +14,9 @@ plane getter. MeshTrim uses document tolerance and has no tolerance or n-gon
 options. Surviving regions form one fresh mesh object, inherit the target's
 attributes, layer and groups, and have no logical n-gons. Cutters and results are
 unselected. A pick on an unsplit mesh deletes it, even for a disjoint cutter.
-Each pick finishes computation before editing the document; an error preserves
+The getter [retains original cutters and descendant identities](../mesh-trim-continuations.md),
+so a cutter that is itself trimmed continues cutting other targets without
+cutting its own surviving pieces. Each pick finishes computation before editing the document; an error preserves
 earlier accepted picks and their history.
 
 Scripts supply an explicit target and world-space point:
@@ -31,6 +33,7 @@ Twelve backend and thirteen interactive workflows match all checks. The remainin
 temporary plane capture leaves Rhino's mesh unchanged while Viboceros trims it.
 Preselected native macros did not deliver productive picks, so they remain
 discovery evidence; application preselection and local Undo have separate tests.
-Repeated picks after trimming a cutter itself, curved meshing, extreme scales,
-near contacts and comparative performance remain unqualified.
+Repeated picks after trimming a cutter itself have a separate continuation
+qualification. Perspective views with curve cutters, curved meshing, extreme
+scales, near contacts and comparative performance remain unqualified.
 See [Rhino's reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/meshtrim.htm).

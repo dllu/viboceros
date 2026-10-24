@@ -3,9 +3,15 @@ from copy import deepcopy
 if __package__:
     from .mesh_split_cases import box, xy, wall, moved, CHANNELS
     from .mesh_trim_control_cases import cases as control_cases
+    from .mesh_trim_continuation_cases import cases as continuation_cases
+    from .mesh_trim_snapshot_policy_cases import cases as snapshot_cases
+    from .mesh_trim_cutter_policy_cases import cases as cutter_policy_cases
 else:
     from mesh_split_cases import box, xy, wall, moved, CHANNELS
     from mesh_trim_control_cases import cases as control_cases
+    from mesh_trim_continuation_cases import cases as continuation_cases
+    from mesh_trim_snapshot_policy_cases import cases as snapshot_cases
+    from mesh_trim_cutter_policy_cases import cases as cutter_policy_cases
 
 DISCOVERY = {}
 for name, shape, pre, extra in [
@@ -35,9 +41,18 @@ for name, shape, pre, point in [
                             capture_split_topology=True, mesh_channels=True)
 CONTROLS=control_cases(box,xy,wall,moved,CHANNELS)
 FAMILIES = dict(discovery=DISCOVERY, mouse=MOUSE, controls=CONTROLS)
+CONTINUATION = continuation_cases(box, xy, wall, moved)
+FAMILIES['continuation'] = CONTINUATION
+SNAPSHOT_POLICY = snapshot_cases(xy)
+FAMILIES['snapshot_policy'] = SNAPSHOT_POLICY
+CUTTER_POLICY = cutter_policy_cases(xy)
+FAMILIES['cutter_policy'] = CUTTER_POLICY
 ALL_CASES = dict(DISCOVERY)
 ALL_CASES.update(MOUSE)
 ALL_CASES.update(CONTROLS)
+ALL_CASES.update(CONTINUATION)
+ALL_CASES.update(SNAPSHOT_POLICY)
+ALL_CASES.update(CUTTER_POLICY)
 
 
 def request(family='discovery'):

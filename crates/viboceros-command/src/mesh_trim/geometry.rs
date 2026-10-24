@@ -4,7 +4,7 @@ use std::borrow::Cow;
 pub(super) fn partition(
     doc: &Document,
     target: ObjectId,
-    cutters: &[ObjectId],
+    cutters: &MeshTrimCutters,
     planes: &[String],
     point: Point3,
     context: CommandContext,
@@ -15,11 +15,13 @@ pub(super) fn partition(
     let Geometry::Mesh(mesh) = object.geometry() else {
         return Err(CommandError::Usage("a mesh to trim"));
     };
-    let cutters = crate::mesh_partition::cutters(
+    let cutters = crate::mesh_partition::cutters_from_geometries(
         doc,
-        target,
+        // A surviving piece still belongs to its original target. Do not let
+        // that target's frozen cutter geometry cut its own descendants.
+        cutters.origins.get(&target).copied().unwrap_or(target),
         mesh.bounds(),
-        cutters,
+        cutters.objects.iter().map(|(id, g)| (*id, &**g)),
         planes,
         context,
         doc.tolerance(),
