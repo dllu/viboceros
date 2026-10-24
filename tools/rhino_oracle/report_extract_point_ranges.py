@@ -8,7 +8,7 @@ from .extract_points_cases import FAMILIES as ALL_FAMILIES
 from .report_extract_points import ROOT, native, canonical, compare
 from .qualification_sources import with_shared_sources
 
-FAMILIES={name:ALL_FAMILIES[name] for name in ['ranges','ranges_grips','ranges_owners','ranges_edges','ranges_edge_forms','ranges_edge_numeric_verified']}
+FAMILIES={name:ALL_FAMILIES[name] for name in ['ranges','ranges_grips','ranges_owners','ranges_edges','ranges_edge_forms','ranges_edge_numeric_verified','ranges_order','ranges_order_grips','ranges_order_edges','ranges_order_displays']}
 SOURCES=with_shared_sources([
     'crates/viboceros-command/src/lib.rs','src/app.rs',
     'tools/rhino_oracle/report_extract_point_ranges.py','tools/rhino_oracle/test_extract_point_ranges.py',
@@ -30,6 +30,21 @@ def native_ranges():
         trace=value['getter']
         edge_ranges=value['input'].get('edge_ranges')
         recipe=edge_ranges or value['input']['ranges']
+        inputs=value['input'].get('input_order')
+        if inputs:
+            if (trace.get('inputs')!=inputs or trace.get('world_coordinates') is not True or
+                sorted(i for kind,i in inputs if kind=='range')!=list(range(len(recipe))) or
+                [i for kind,i in inputs if kind=='whole']!=value['input']['whole'] or
+                any(kind not in ['whole','range'] or type(i) is not int or i<0 for kind,i in inputs)):
+                raise ValueError('ExtractPt native mixed input order differs')
+            position=0
+            for kind,index in inputs:
+                source=index if kind=='whole' else recipe[index][0]
+                marker=(' _SubCrv _Pause' if kind=='range' and edge_ranges else
+                    (' _SubCrv' if kind=='range' else '')+' _SelID '+value['before'][source]['id'])
+                found=trace['script'].find(marker,position)
+                if found<0:raise ValueError('ExtractPt native input macro order differs')
+                position=found+len(marker)
         if (len(trace['parameters'])!=len(recipe) or len(trace['points'])!=len(recipe) or
             trace['script'].count(' _SubCrv ')!=len(recipe) or
             'Unknown command:' in value['history']):
@@ -38,7 +53,7 @@ def native_ranges():
                 trace.get('world_coordinates') is not True or trace.get('acknowledged') is not True or
                 trace.get('frustum_verified') is not True or type(trace.get('menu')) is not bool or
                 trace.get('marker')!='@component-click:{}:0:sub'.format(identifier) or
-                not value['input'].get('range_whole_first') or trace['script'].count(' w')!=2):
+                (not inputs and not value['input'].get('range_whole_first')) or trace['script'].count(' w')!=2):
             raise ValueError('ExtractPt native edge input witness differs')
         if identifier.startswith('range_form_'):
             expected_type='NurbsCurve' if value['input']['sources'][0]['kind']=='brep_nurbs_cylinder' else 'ArcCurve'
@@ -46,12 +61,15 @@ def native_ranges():
                 raise ValueError('ExtractPt native edge curve representation differs')
         if edge_ranges:
             produced=[p for o in value['after'] if o['source'] is None for p in o['points']]
-            # These owned scenes contain zero or one whole LineCurve, before
-            # the temporary edge. Verify the endpoint witness against actual
+            # These owned scenes contain zero or one whole LineCurve and one
+            # temporary edge. Verify the endpoint witness against actual
             # ExtractPt output, beyond the read-only frustum check.
-            offset=2*len(value['input']['whole'])
+            sequence=inputs or ([['whole',i] for i in value['input']['whole']]+[['range',0]])
+            split=sequence.index(['range',0])
+            offset=2*sum(kind=='whole' for kind,_ in sequence[:split])
+            trailing=2*sum(kind=='whole' for kind,_ in sequence[split+1:])
             if len(produced)<=offset or any(math.dist(a,b)>1e-7 for a,b in
-                    zip([produced[offset],produced[-1]],trace['points'][0][1:])):
+                    zip([produced[offset],produced[len(produced)-trailing-1]],trace['points'][0][1:])):
                 raise ValueError('ExtractPt native edge output endpoints differ')
         if value['input'].get('edge_length'):
             if (type(trace.get('numeric_length')) not in (float,int) or trace['numeric_length']<=0 or

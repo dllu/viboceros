@@ -2,6 +2,8 @@
 use super::object_selection::ObjectPromptPhase;
 use super::*;
 use viboceros_command::ComponentSelectionKind;
+mod input_order;
+pub(super) use input_order::InputOrder;
 
 pub(super) fn component_kind(kind: ComponentSelectionKind) -> Option<&'static str> {
     match kind {
@@ -148,6 +150,8 @@ mod edge_ranges_tests;
 #[cfg(test)]
 #[path = "../../crates/viboceros-command/tests/support/extract_points.rs"]
 pub(super) mod native;
+#[cfg(test)]
+mod order_tests;
 #[cfg(test)]
 mod ranges_tests;
 #[cfg(test)]

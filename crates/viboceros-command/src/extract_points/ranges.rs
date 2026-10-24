@@ -31,38 +31,49 @@ pub(super) fn parse(value: &str) -> Result<Target, CommandError> {
     })
 }
 
-pub(super) fn visit(
-    document: &Document,
-    targets: &[Target],
-    mut emit: impl FnMut(ObjectId, Vec<Point3>) -> Result<(), CommandError>,
-) -> Result<(), CommandError> {
-    if targets.is_empty() {
-        return Ok(());
+/// One source lookup and one resolved curve per immutable edge/curve reference.
+pub(super) struct Resolver<'a> {
+    sources: BTreeMap<ObjectId, &'a viboceros_document::Object>,
+    curves: BTreeMap<(ObjectId, Option<usize>), crate::curve_reference::ResolvedCurve<'a>>,
+    tolerance: Tolerance,
+}
+impl<'a> Resolver<'a> {
+    pub(super) fn new(document: &'a Document, ids: impl IntoIterator<Item = ObjectId>) -> Self {
+        let wanted = ids.into_iter().collect::<BTreeSet<_>>();
+        let sources = if wanted.is_empty() {
+            BTreeMap::new()
+        } else {
+            document
+                .selectable_objects()
+                .filter(|o| wanted.contains(&o.id()))
+                .map(|o| (o.id(), o))
+                .collect()
+        };
+        Self {
+            sources,
+            curves: BTreeMap::new(),
+            tolerance: document.tolerance(),
+        }
     }
-    let wanted = targets.iter().map(|t| t.object).collect::<BTreeSet<_>>();
-    // Resolve the table once, including for repeated portions of one curve.
-    let sources = document
-        .selectable_objects()
-        .filter(|o| wanted.contains(&o.id()))
-        .map(|o| (o.id(), o))
-        .collect::<BTreeMap<_, _>>();
-    let mut resolved = BTreeMap::new();
-    for target in targets {
+    pub(super) fn object(
+        &self,
+        id: ObjectId,
+    ) -> Result<&'a viboceros_document::Object, CommandError> {
+        self.sources
+            .get(&id)
+            .copied()
+            .ok_or(CommandError::Usage(USAGE))
+    }
+    pub(super) fn points(&mut self, target: &Target) -> Result<Vec<Point3>, CommandError> {
         let key = (target.object, target.edge);
-        if let std::collections::btree_map::Entry::Vacant(entry) = resolved.entry(key) {
-            let source = sources
-                .get(&target.object)
-                .ok_or(CommandError::Usage(USAGE))?;
+        let object = self.object(target.object)?;
+        if let std::collections::btree_map::Entry::Vacant(entry) = self.curves.entry(key) {
             entry.insert(
-                crate::curve_reference::resolve(
-                    source.geometry(),
-                    target.edge,
-                    document.tolerance(),
-                )
-                .ok_or(CommandError::Usage(USAGE))?,
+                crate::curve_reference::resolve(object.geometry(), target.edge, self.tolerance)
+                    .ok_or(CommandError::Usage(USAGE))?,
             );
         }
-        let source = resolved[&key].curve();
+        let source = self.curves[&key].curve();
         let piece = if target.edge.is_some() && !target.edge_wrap {
             crate::curve_reference::edge_subcurve(
                 source,
@@ -74,10 +85,6 @@ pub(super) fn visit(
                 .to_owned()
                 .try_subcurve(target.parameters[0], target.parameters[1])?
         };
-        emit(
-            target.object,
-            Geometry::from(piece).extract_point_locations()?,
-        )?;
+        Ok(Geometry::from(piece).extract_point_locations()?)
     }
-    Ok(())
 }

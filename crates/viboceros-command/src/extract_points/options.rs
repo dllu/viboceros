@@ -19,7 +19,7 @@ pub(super) struct ExtractPointOptions {
     pub(super) output: ExtractPointOutput,
     pub(super) components: Vec<components::Target>,
     pub(super) control_net: bool,
-    pub(super) ranges: Vec<ranges::Target>,
+    pub(super) inputs: Vec<inputs::Target>,
 }
 
 pub(super) fn parse_extract_point_arguments(
@@ -28,7 +28,7 @@ pub(super) fn parse_extract_point_arguments(
     let mut output_layer = ExtractPointOutputLayer::Input;
     let mut output = ExtractPointOutput::Points;
     let mut components = Vec::new();
-    let mut ranges = Vec::new();
+    let mut inputs = Vec::new();
     let mut control_net = false;
     let mut location_seen = false;
     let mut output_layer_seen = false;
@@ -70,12 +70,21 @@ pub(super) fn parse_extract_point_arguments(
             }
             components.push(super::components::parse(value)?);
         } else if name.eq_ignore_ascii_case("SubCrv") {
-            if ranges.len() >= MAX_EXTRACTED_POINTS {
+            if inputs.len() >= MAX_EXTRACTED_POINTS {
                 return Err(CommandError::TooManyExtractedPoints {
                     maximum: MAX_EXTRACTED_POINTS,
                 });
             }
-            ranges.push(super::ranges::parse(value)?);
+            inputs.push(inputs::Target::Range(super::ranges::parse(value)?));
+        } else if name.eq_ignore_ascii_case("Object") {
+            if inputs.len() >= MAX_EXTRACTED_POINTS {
+                return Err(CommandError::TooManyExtractedPoints {
+                    maximum: MAX_EXTRACTED_POINTS,
+                });
+            }
+            inputs.push(inputs::Target::Object(
+                value.parse().map_err(|_| CommandError::Usage(USAGE))?,
+            ));
         } else if name.eq_ignore_ascii_case("SubDLocation") && !location_seen {
             control_net = if value.eq_ignore_ascii_case("ControlNet") {
                 true
@@ -95,11 +104,18 @@ pub(super) fn parse_extract_point_arguments(
         output,
         components,
         control_net,
-        ranges,
+        inputs,
     })
 }
 
 impl ExtractPointOptions {
+    pub(super) fn ranges(&self) -> impl Iterator<Item = &ranges::Target> {
+        self.inputs.iter().filter_map(|input| match input {
+            inputs::Target::Range(range) => Some(range),
+            _ => None,
+        })
+    }
+
     pub(super) fn prompt(&self) -> ObjectSelectionPrompt {
         ObjectSelectionPrompt {
             command: "ExtractPt",

@@ -7,6 +7,64 @@ fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
 }
+fn pick_range(app: &mut VibocerosApp, row: &serde_json::Value, ids: &[ObjectId], index: usize) {
+    if app
+        .intersection_prompt
+        .as_ref()
+        .unwrap()
+        .uv_subcurves
+        .pending
+        .is_none()
+    {
+        enter(app, "SubCrv");
+    }
+    let range = &row["value"]["getter"]["points"][index];
+    let object = ids[range[0].as_u64().unwrap() as usize];
+    if let Some(edge) = row["value"]["getter"]["edges"][index].as_u64() {
+        use crate::viewport::{ComponentClick, ComponentPick};
+        assert!(app.picking_subcurve_edge());
+        app.accept_component_click(ComponentClick {
+            picks: vec![ComponentPick {
+                object,
+                kind: viboceros_command::ComponentSelectionKind::BrepEdge,
+                index: edge as usize,
+            }],
+            preselection: false,
+            modifiers: Default::default(),
+        });
+        assert!(
+            !app.picking_subcurve_edge(),
+            "{} {:?}",
+            row["id"],
+            app.command_log
+        );
+    } else {
+        app.select_intersection_prompt_objects([object], SelectionMode::Add);
+    }
+    let numeric = row["value"]["getter"]["numeric_length"].as_f64();
+    let inputs = if numeric.is_some() {
+        &row["value"]["getter"]["input_points"][index]
+    } else {
+        range
+    };
+    for (pick, p) in [&inputs[1], &inputs[2]].into_iter().enumerate() {
+        if pick == 1
+            && let Some(length) = numeric
+        {
+            enter(app, &format!("{length}"));
+        }
+        let values = p.as_array().unwrap();
+        assert_eq!(
+            app.accept_uv_subcurve_point(point(
+                values[0].as_f64().unwrap(),
+                values[1].as_f64().unwrap(),
+                values[2].as_f64().unwrap()
+            )),
+            Some(true)
+        );
+    }
+}
+
 #[test]
 fn extract_point_temporary_range_getters_replay_native_geometry_and_history() {
     for row in native::range_rows() {
@@ -29,9 +87,11 @@ fn extract_point_temporary_range_getters_replay_native_geometry_and_history() {
             let base = native::command(&row);
             if inline {
                 enter(&mut app, &format!("{base} SubCrv"));
-                app.document
-                    .select_objects_direct(whole, SelectionMode::Add)
-                    .unwrap();
+                if row["value"]["input"]["input_order"].is_null() {
+                    app.document
+                        .select_objects_direct(whole, SelectionMode::Add)
+                        .unwrap();
+                }
             } else {
                 enter(&mut app, &base);
                 assert!(
@@ -40,9 +100,11 @@ fn extract_point_temporary_range_getters_replay_native_geometry_and_history() {
                     row["id"],
                     app.command_log
                 );
-                app.document
-                    .select_objects_direct(whole, SelectionMode::Add)
-                    .unwrap();
+                if row["value"]["input"]["input_order"].is_null() {
+                    app.document
+                        .select_objects_direct(whole, SelectionMode::Add)
+                        .unwrap();
+                }
                 enter(&mut app, "SubCrv");
             }
             assert!(
@@ -51,58 +113,31 @@ fn extract_point_temporary_range_getters_replay_native_geometry_and_history() {
                 row["id"],
                 app.command_log
             );
-            for (index, range) in row["value"]["getter"]["points"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .enumerate()
-            {
-                if index > 0 {
-                    enter(&mut app, "SubCrv");
-                }
-                let object = ids[range[0].as_u64().unwrap() as usize];
-                if let Some(edge) = row["value"]["getter"]["edges"][index].as_u64() {
-                    use crate::viewport::{ComponentClick, ComponentPick};
-                    assert!(app.picking_subcurve_edge());
-                    app.accept_component_click(ComponentClick {
-                        picks: vec![ComponentPick {
-                            object,
-                            kind: viboceros_command::ComponentSelectionKind::BrepEdge,
-                            index: edge as usize,
-                        }],
-                        preselection: false,
-                        modifiers: Default::default(),
-                    });
-                    assert!(
-                        !app.picking_subcurve_edge(),
-                        "{} {:?}",
-                        row["id"],
-                        app.command_log
-                    );
-                } else {
-                    app.select_intersection_prompt_objects([object], SelectionMode::Add);
-                }
-                let numeric = row["value"]["getter"]["numeric_length"].as_f64();
-                let inputs = if numeric.is_some() {
-                    &row["value"]["getter"]["input_points"][index]
-                } else {
-                    range
-                };
-                for (pick, p) in [&inputs[1], &inputs[2]].into_iter().enumerate() {
-                    if pick == 1
-                        && let Some(length) = numeric
+            if let Some(inputs) = row["value"]["input"]["input_order"].as_array() {
+                for input in inputs {
+                    let index = input[1].as_u64().unwrap() as usize;
+                    if input[0] == "range" {
+                        pick_range(&mut app, &row, &ids, index);
+                    } else if app
+                        .intersection_prompt
+                        .as_ref()
+                        .unwrap()
+                        .uv_subcurves
+                        .pending
+                        .is_some()
                     {
-                        enter(&mut app, &format!("{length}"));
+                        // Prefix whole picks share the inline getter's existing
+                        // preselection path. Later picks use the parent callback.
+                        app.document
+                            .select_objects_direct([ids[index]], SelectionMode::Add)
+                            .unwrap();
+                    } else {
+                        app.select_intersection_prompt_objects([ids[index]], SelectionMode::Add);
                     }
-                    let values = p.as_array().unwrap();
-                    assert_eq!(
-                        app.accept_uv_subcurve_point(point(
-                            values[0].as_f64().unwrap(),
-                            values[1].as_f64().unwrap(),
-                            values[2].as_f64().unwrap()
-                        )),
-                        Some(true)
-                    );
+                }
+            } else {
+                for index in 0..row["value"]["getter"]["points"].as_array().unwrap().len() {
+                    pick_range(&mut app, &row, &ids, index);
                 }
             }
             if row["value"]["input"]["range_grips"] == true {

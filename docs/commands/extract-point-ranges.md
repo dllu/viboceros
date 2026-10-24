@@ -12,6 +12,7 @@ Typed input accepts repeatable ranges in each source curve's parameter domain:
 ExtractPt SubCrv=uuid,start,end Output=Points OutputLayer=Input
 ExtractPt SubCrv=uuid,Edge,index,start,end Output=PointCloud
 ExtractPt SubCrv=uuid,EdgeWrap,index,start,end Output=Points
+ExtractPt SubCrv=uuid,start,end Object=other-uuid Output=PointCloud
 ```
 
 For an edge, parameters use its resolved source representation: imported analytic
@@ -26,25 +27,30 @@ Numeric edge input can wrap through the seam and retains the numeric getter's
 endpoint ordering. `EdgeWrap` represents those intervals in typed input.
 Each portion contributes its own
 defining points; the source curve and its stored controls remain unchanged.
-Whole-object selections contribute first, then temporary portions in pick order,
-then selected grips. A whole curve and portions of that curve both contribute.
-Component inputs retain their usual order after those inputs.
+Whole objects and temporary portions contribute in pick order. Typed input uses
+repeatable `Object=uuid` and `SubCrv=...` arguments to express that order;
+selected whole objects absent from those arguments contribute first.
+A whole curve and portions of that curve both contribute. Selected grips and
+components follow those inputs in their usual order.
 
 Temporary portions produce fresh current-layer attributes and no groups, even
 with `OutputLayer=Input`. Whole objects and grips keep their ordinary attribute
-rules. Input-layer clouds use the first contributing whole input's attributes;
-when grips contribute, the first grip owner's attributes take precedence.
+rules. Input-layer clouds use the first input's attributes, so a temporary first
+input gives the cloud fresh current-layer attributes. When grips contribute,
+the first grip owner's attributes take precedence.
 
 Results are selected immediately. Undo/Redo releases their selection and turns
-off grip display on the temporary portions' owners. Geometry and output creation
+off all displayed control and edit grips, including unrelated owners and
+displays with every grip hidden. Geometry and output creation
 form one Undo step. Changed or unavailable sources and invalid or excessive
 ranges reject the operation before model edits. The output-point limit counts
 points from all whole objects, portions, grips and components together.
 
-The [qualification](../extract-point-ranges-qualification.json) compares 54 native
-scenes through typed commands and 108 shared-getter workflows, at `1e-7`. They
+The [qualification](../extract-point-ranges-qualification.json) compares 76 native
+scenes through typed commands and 152 shared-getter workflows, at `1e-7`. They
 cover lines, rational and periodic NURBS, polylines, polycurves, circular wrapping,
-multiple portions, mixed selections, both output types, attributes and history.
+multiple portions, interleaved whole picks, visible and hidden grip displays,
+both output types, attributes and history.
 Edge scenes cover boxes, trimmed and rational faces, joined periodic surfaces,
 and circular edges stored as either analytic arcs or NURBS, including numeric
 length confirmation across the seam. The original C3

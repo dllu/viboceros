@@ -114,6 +114,9 @@ def run(operation, host, iterations, tolerance):
                 grips[pick].Select(True)
                 if not grips[pick].IsSelected(False):
                     raise ValueError('owned ExtractPt grip selection failed')
+        if case.get('clear_initial_grips'):
+            for key in ids:
+                for grip in (doc.Objects.FindId(key).GetGrips() or []):grip.Select(False)
         before = snapshot()
         if case.get('component_getter'):host['_record_progress']('ExtractPt getter: before snapshot ready')
         component_records = None
@@ -152,21 +155,10 @@ def run(operation, host, iterations, tolerance):
                 receipt.append(trace)
                 return returned
             if case.get('ranges'):
-                doc.Objects.UnselectAll()
-                script='_-ExtractPt '+' '.join(options)+' '
-                script+=' '.join('_SelID '+str(ids[i]) for i in case['whole'])
-                parameters, points = [], []
-                for index,start,end in case['ranges']:
-                    curve=doc.Objects.FindId(ids[index]).Geometry
-                    interval=[curve.Domain.ParameterAt(f) for f in [start,end]]
-                    endpoints=[host['_xyz'](curve.PointAt(t)) for t in interval]
-                    parameters.append([index]+interval)
-                    points.append([index]+endpoints)
-                    tokens=[','.join(repr(float(x)) for x in p) for p in endpoints]
-                    script+=' _SubCrv _SelID '+str(ids[index])+' '+tokens[0]+' '+tokens[1]
-                script+=(' _SelPt' if case.get('range_grips') else '')+' _Enter _Cancel _Cancel'
-                receipt.append(dict(parameters=parameters, points=points, script=script))
-                return R.RhinoApp.RunScript(script, True)
+                from extract_points_curve_range_input import run as curve_ranges
+                returned,trace=curve_ranges(doc,ids,case,host,options)
+                receipt.append(trace)
+                return returned
             if case.get('component_getter'):
                 from extract_points_getter import run as drive_getter
                 success, trace = drive_getter(doc,ids,case,host,macro,operation['id'])

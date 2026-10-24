@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "range_order_portion_first_points",
+      "case": "range_order_portion_first_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_portion_first_pointcloud",
+      "case": "range_order_portion_first_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_sandwich_points",
+      "case": "range_order_sandwich_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_sandwich_pointcloud",
+      "case": "range_order_sandwich_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_portions_first_points",
+      "case": "range_order_portions_first_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_portions_first_pointcloud",
+      "case": "range_order_portions_first_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_whole_owner_last_points",
+      "case": "range_order_whole_owner_last_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_whole_owner_last_pointcloud",
+      "case": "range_order_whole_owner_last_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_reverse_portions_points",
+      "case": "range_order_reverse_portions_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_reverse_portions_pointcloud",
+      "case": "range_order_reverse_portions_pointcloud"
+    }
+  ]
+}

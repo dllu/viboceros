@@ -77,6 +77,8 @@ def run(doc, ids, case, host, options, identifier):
     script+='_SubCrv _Pause '+tokens[0]+' '+(repr(float(numeric))+' ' if numeric is not None else '')+tokens[1]
     if not case.get('range_whole_first'):script+=' '+whole
     script+=' _Enter _Cancel _Cancel'
+    whole_inputs=[['whole',i] for i in case['whole']]
+    inputs=(whole_inputs+[['range',0]] if case.get('range_whole_first') else [['range',0]]+whole_inputs)
     doc.Objects.UnselectAll()
     timer=S.Threading.Timer(callback(action),None,100,100);limit=S.Threading.Timer(callback(timeout),None,500,500)
     try:returned=R.RhinoApp.RunScript(script,True)
@@ -85,4 +87,4 @@ def run(doc, ids, case, host, options, identifier):
     acknowledged=os.path.exists(ack) and json.loads(S.IO.File.ReadAllText(ack))==expected
     if state[0] not in [1,2] or not acknowledged:raise ValueError('owned edge click was not acknowledged')
     return returned,dict(parameters=[[source]+parameters],points=[[source]+points],edges=[index],
-        script=script,marker=marker,menu=(state[0]==2),acknowledged=True,frustum_verified=True,world_coordinates=True,curve_type=curve_type,numeric_length=numeric,confirmation=confirmation,input_points=[[source]+input_points])
+        script=script,marker=marker,menu=(state[0]==2),acknowledged=True,frustum_verified=True,world_coordinates=True,curve_type=curve_type,numeric_length=numeric,confirmation=confirmation,input_points=[[source]+input_points],inputs=inputs)

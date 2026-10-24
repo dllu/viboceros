@@ -70,6 +70,7 @@ impl VibocerosApp {
             uv_subcurves: SubcurveInputs {
                 ranges: vec![],
                 pending: Some(PendingSubcurve::default()),
+                ..Default::default()
             },
             projection: None,
         });

@@ -1,6 +1,27 @@
 //! Whole sources precede visible grips; selected grips override their owner.
 use super::*;
 
+#[derive(Clone, Debug, PartialEq)]
+pub(super) enum Target {
+    Object(ObjectId),
+    Range(ranges::Target),
+}
+impl Target {
+    fn object(&self) -> ObjectId {
+        match self {
+            Self::Object(id) => *id,
+            Self::Range(range) => range.object,
+        }
+    }
+}
+
+fn whole_points(geometry: &Geometry) -> Result<Vec<Point3>, CommandError> {
+    Ok(match geometry {
+        Geometry::Brep(brep) => components::whole_brep_points(brep)?,
+        geometry => geometry.extract_point_locations()?,
+    })
+}
+
 pub(super) fn visit(
     document: &Document,
     options: &ExtractPointOptions,
@@ -13,21 +34,35 @@ pub(super) fn visit(
         .collect::<BTreeSet<_>>();
     let mut component_points = components::resolve(document, options, &owners)?;
     owners.extend(component_points.keys().copied());
+    let explicit = options
+        .inputs
+        .iter()
+        .filter_map(|input| match input {
+            Target::Object(id) => Some(*id),
+            _ => None,
+        })
+        .collect::<BTreeSet<_>>();
     for object in document
         .selected_objects()
-        .filter(|o| !owners.contains(&o.id()))
+        .filter(|o| !owners.contains(&o.id()) && !explicit.contains(&o.id()))
     {
-        let points = match object.geometry() {
-            Geometry::Brep(brep) => components::whole_brep_points(brep)?,
-            geometry => geometry.extract_point_locations()?,
-        };
-        emit(object.id(), points, false)?;
+        emit(object.id(), whole_points(object.geometry())?, false)?;
     }
     // Temporary curve references precede selected grips, just like whole
     // curve inputs, while keeping their own fresh output attributes.
-    ranges::visit(document, &options.ranges, |source, points| {
-        emit(source, points, true)
-    })?;
+    let mut resolver = ranges::Resolver::new(document, options.inputs.iter().map(Target::object));
+    let mut seen = BTreeSet::new();
+    for input in &options.inputs {
+        match input {
+            Target::Object(id) => {
+                let object = resolver.object(*id)?;
+                if !owners.contains(id) && seen.insert(*id) {
+                    emit(*id, whole_points(object.geometry())?, false)?;
+                }
+            }
+            Target::Range(range) => emit(range.object, resolver.points(range)?, true)?,
+        }
+    }
     // Document grip iteration follows object table order and then grip index,
     // independently of the order in which the user selected those grips.
     let mut selected = document.selected_control_points().peekable();

@@ -322,3 +322,33 @@ fn invalid_temporary_ranges_leave_model_selection_and_redo_unchanged() {
         assert!(doc.can_redo());
     }
 }
+
+#[test]
+fn late_invalid_explicit_objects_reject_every_staged_input_without_consuming_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry.execute(&mut doc, "Line 0,0,0 10,0,0").unwrap();
+    let id = doc.objects().next().unwrap().id();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    doc.clear_history().unwrap();
+    doc.add_geometry(Geometry::Point(point(9., 9., 9.)))
+        .unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    for suffix in [
+        "Object=00000000-0000-0000-0000-000000000000",
+        "Object=invalid",
+    ] {
+        assert!(
+            registry
+                .execute(
+                    &mut doc,
+                    &format!("ExtractPt Object={id} SubCrv={id},2,8 {suffix}")
+                )
+                .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+        assert!(doc.can_redo());
+        assert!(!doc.can_undo());
+    }
+}

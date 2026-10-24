@@ -6,6 +6,19 @@ from unittest.mock import patch
 from .report_extract_point_ranges import ROOT,native_ranges,summarize
 
 class ExtractPointRangeTests(unittest.TestCase):
+    def test_mixed_input_receipts_reject_changed_order_and_missing_macro_picks(self):
+        version,rows,paths=native_ranges()
+        identifier=next(k for k,r in rows.items() if r['input'].get('input_order') and
+            len(r['input']['input_order'])>2)
+        for field in ['inputs','script','world_coordinates']:
+            changed=deepcopy(rows)
+            trace=changed[identifier]['getter']
+            if field=='inputs':trace[field]=list(reversed(trace[field]))
+            elif field=='script':trace[field]=trace[field].replace(' _SelID ',' _MissingID ',1)
+            else:trace[field]=False
+            with self.subTest(field=field),patch('tools.rhino_oracle.report_extract_point_ranges.native',return_value=(version,changed,paths)),self.assertRaises(ValueError):
+                native_ranges()
+
     def test_edge_witness_rejects_construction_plane_input_and_wrong_endpoints(self):
         version,rows,paths=native_ranges()
         identifier='range_form_brep_cylinder_forward_points'
@@ -20,7 +33,7 @@ class ExtractPointRangeTests(unittest.TestCase):
 
     def test_native_range_receipts_source_archives_and_parameter_inputs(self):
         _,rows,_=native_ranges()
-        self.assertEqual(len(rows),54)
+        self.assertEqual(len(rows),76)
         for row in rows.values():
             self.assertTrue(row['success'])
             self.assertFalse(any(o['selected'] for o in row['redo'] if o['source'] is None))

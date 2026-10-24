@@ -9,7 +9,7 @@ from .client import OracleClient
 from .extract_points_cases import FAMILIES, request
 
 HERE = Path(__file__).resolve().parent
-SOURCES = ['extract_points_target_cases.py','client.py','component_picking.py','hole_picking.py','group_picking.py','managed_component_input.py','extract_points_getter.py', 'extract_points_cases.py', 'extract_points_probe.py', 'generate_extract_points.py',
+SOURCES = ['extract_points_order_cases.py','extract_points_curve_range_input.py','extract_points_target_cases.py','client.py','component_picking.py','hole_picking.py','group_picking.py','managed_component_input.py','extract_points_getter.py', 'extract_points_cases.py', 'extract_points_probe.py', 'generate_extract_points.py',
            'extract_points_geometry.py', 'extract_points_component_cases.py', 'extract_points_brep_cases.py', 'extract_points_range_cases.py', 'extract_points_edge_range_input.py', 'owned_brep_command.py', 'extract_points_component_input.py',
            'grip_navigation_probe.py', 'grip_transform_probe.py', 'join_probe.py',
            'merge_edges_probe.py', 'structural_sdk.py', 'rhino_worker.py']

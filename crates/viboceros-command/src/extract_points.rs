@@ -9,7 +9,7 @@ use options::{ExtractPointOptions, ExtractPointOutput, ExtractPointOutputLayer};
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud] [Component=uuid,Vertex|Edge|Face,index] [SubDLocation=Surface|ControlNet] [SubCrv=uuid,start,end|uuid,Edge|EdgeWrap,index,start,end]";
+const USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud] [Object=uuid] [Component=uuid,Vertex|Edge|Face,index] [SubDLocation=Surface|ControlNet] [SubCrv=uuid,start,end|uuid,Edge|EdgeWrap,index,start,end]";
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 
 pub(super) struct ExtractPtCommand;
@@ -31,7 +31,7 @@ impl Command for ExtractPtCommand {
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         let options = options::parse_extract_point_arguments(arguments)?;
-        Ok((options.components.is_empty() && options.ranges.is_empty()).then(|| options.prompt()))
+        Ok((options.components.is_empty() && options.inputs.is_empty()).then(|| options.prompt()))
     }
 
     fn cancel_empty_object_selection(&self) -> bool {
@@ -74,7 +74,7 @@ struct Extraction {
     release_grips: bool,
     clear_component_grips: bool,
     release_results: bool,
-    range_displays: Vec<ObjectId>,
+    replay_grip_displays: Vec<ObjectId>,
 }
 
 impl Extraction {
@@ -150,8 +150,15 @@ impl Extraction {
             return Err(CommandError::NoExtractablePoints);
         }
         Ok(Self {
-            release_results: !options.ranges.is_empty(),
-            range_displays: options.ranges.iter().map(|r| r.object).collect(),
+            release_results: options.ranges().next().is_some(),
+            replay_grip_displays: if options.ranges().next().is_some() {
+                document
+                    .control_point_displays()
+                    .map(|(id, _)| id)
+                    .collect()
+            } else {
+                Vec::new()
+            },
             clear_component_grips: postselected && !options.components.is_empty(),
             release_grips: postselected,
             output,
@@ -171,7 +178,7 @@ impl Extraction {
 
     fn apply(self, document: &mut Document) -> Result<String, CommandError> {
         let cloud = matches!(&self.output, Output::PointCloud(..));
-        document.release_control_point_display_on_history_replay(self.range_displays)?;
+        document.release_control_point_display_on_history_replay(self.replay_grip_displays)?;
         document.release_command_selection_on_history_replay(
             self.released
                 .into_iter()

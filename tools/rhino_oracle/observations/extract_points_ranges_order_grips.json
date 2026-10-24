@@ -1,0 +1,2814 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "range_order_grips_points",
+      "value": {
+        "macro": "_-ExtractPt _OutputLayer=_Input _Output=_Points _Enter",
+        "before": [
+          {
+            "name": "Input 0",
+            "color_source": 1,
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "7d2057e8-3970-422d-8b99-8fa55f18b202",
+            "grips_on": false,
+            "crc": 3927073817,
+            "source": 0,
+            "points": null
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "a13650ab-edd0-47bf-afbe-cc1e673d3c20",
+            "grips_on": false,
+            "crc": 3788457110,
+            "source": 1,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [
+              {
+                "point": [
+                  42.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 0,
+                "hidden": false
+              },
+              {
+                "point": [
+                  41.99999999999999,
+                  1.9999999999999996,
+                  0.0
+                ],
+                "selected": false,
+                "index": 1,
+                "hidden": false
+              },
+              {
+                "point": [
+                  40.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 2,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 3,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  2.4492935982947064e-16,
+                  0.0
+                ],
+                "selected": false,
+                "index": 4,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  -1.9999999999999996,
+                  0.0
+                ],
+                "selected": false,
+                "index": 5,
+                "hidden": false
+              },
+              {
+                "point": [
+                  40.0,
+                  -2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 6,
+                "hidden": false
+              },
+              {
+                "point": [
+                  41.99999999999999,
+                  -2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 7,
+                "hidden": false
+              }
+            ],
+            "cloud": false,
+            "id": "1970f6bf-3516-4b66-ae6d-4c9c6a8e4c88",
+            "grips_on": true,
+            "crc": 2825751107,
+            "source": 2,
+            "points": null
+          }
+        ],
+        "curve_profile": null,
+        "component_records": null,
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "SelPt",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtractPt",
+            "selected": [],
+            "result": "Success",
+            "objects": [
+              {
+                "name": "Input 0",
+                "color_source": 1,
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "selected": false,
+                "grips": [],
+                "cloud": false,
+                "id": "7d2057e8-3970-422d-8b99-8fa55f18b202",
+                "grips_on": false,
+                "crc": 3927073817,
+                "source": 0,
+                "points": null
+              },
+              {
+                "name": "Input 1",
+                "color_source": 1,
+                "color": [
+                  18,
+                  44,
+                  92
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 1",
+                "selected": false,
+                "grips": [],
+                "cloud": false,
+                "id": "a13650ab-edd0-47bf-afbe-cc1e673d3c20",
+                "grips_on": false,
+                "crc": 3788457110,
+                "source": 1,
+                "points": null
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": false,
+                "grips": [
+                  {
+                    "point": [
+                      42.0,
+                      0.0,
+                      0.0
+                    ],
+                    "selected": false,
+                    "index": 0,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      41.99999999999999,
+                      1.9999999999999996,
+                      0.0
+                    ],
+                    "selected": false,
+                    "index": 1,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      40.0,
+                      2.0,
+                      0.0
+                    ],
+                    "selected": false,
+                    "index": 2,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      38.0,
+                      2.0,
+                      0.0
+                    ],
+                    "selected": false,
+                    "index": 3,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      38.0,
+                      2.4492935982947064e-16,
+                      0.0
+                    ],
+                    "selected": false,
+                    "index": 4,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      38.0,
+                      -1.9999999999999996,
+                      0.0
+                    ],
+                    "selected": false,
+                    "index": 5,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      40.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "selected": false,
+                    "index": 6,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      41.99999999999999,
+                      -2.0,
+                      0.0
+                    ],
+                    "selected": false,
+                    "index": 7,
+                    "hidden": false
+                  }
+                ],
+                "cloud": false,
+                "id": "1970f6bf-3516-4b66-ae6d-4c9c6a8e4c88",
+                "grips_on": true,
+                "crc": 2825751107,
+                "source": 2,
+                "points": null
+              },
+              {
+                "name": null,
+                "color_source": 0,
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "groups": [],
+                "layer": "Extract current",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "5c48e28e-5f37-486f-86d3-6c8efeccc9cc",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    0.42105263157894735,
+                    1.473684210526316,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": null,
+                "color_source": 0,
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "groups": [],
+                "layer": "Extract current",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "75d5a351-3cb5-490c-9ced-a48ab732b1a7",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    -0.11764705882352945,
+                    1.8823529411764706,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": null,
+                "color_source": 0,
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "groups": [],
+                "layer": "Extract current",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "f5f9bed2-e89e-45f7-bc6d-2d018b09fc4e",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    -0.7368421052632392,
+                    1.2631578947367608,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": null,
+                "color_source": 0,
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "groups": [],
+                "layer": "Extract current",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "79fde5ca-9140-4334-a2e2-34058b3761de",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    -0.7764705882353103,
+                    0.4705882352937925,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 1",
+                "color_source": 1,
+                "color": [
+                  18,
+                  44,
+                  92
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 1",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "38335cc4-74df-4475-9937-54a13e45db7d",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    20.0,
+                    0.0,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 1",
+                "color_source": 1,
+                "color": [
+                  18,
+                  44,
+                  92
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 1",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "622d9c93-8dbe-41d0-84ce-1ae29e9366c0",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    28.0,
+                    4.0,
+                    2.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "52abb767-cda7-4a55-a2ae-995c633092f0",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    42.0,
+                    0.0,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "322c9389-d905-4207-b75b-9a89281119fb",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    41.99999999999999,
+                    1.9999999999999996,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "04596f8c-7b07-4059-8146-5b0aca2bcc2f",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    40.0,
+                    2.0,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "05c5418c-a6d2-4b06-bcff-af19a44da1e0",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    38.0,
+                    2.0,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "d48a827e-d5fa-4aa9-9000-de46dd854fb7",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    38.0,
+                    2.4492935982947064e-16,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "cf02da36-4d8d-4793-8e99-46cf60051895",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    38.0,
+                    -1.9999999999999996,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "c516b422-6185-4044-96b6-76329f14ab3e",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    40.0,
+                    -2.0,
+                    0.0
+                  ]
+                ]
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": false,
+                "id": "f65d4ffb-8af7-4333-ada9-7c571df1217b",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    41.99999999999999,
+                    -2.0,
+                    0.0
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "source_3dm": "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ZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAFgjAAAAAAAA",
+        "history": "Command: _-ExtractPt\nSelect objects for point extraction ( OutputLayer=Current  Output=Points ): _OutputLayer=_Input\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _Output=_Points\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 7d2057e8-3970-422d-8b99-8fa55f18b202\n1 curve added to selection.\nStart of curve: w0.42105263157894735,1.4736842105263159,0.0\nCurrent length is 6.95659. Select end point location or enter curve length ( Direction=Free ): w-0.77647058823529402,0.47058823529411797,0.0\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=Points ): _SelID\nObject ID to select: a13650ab-edd0-47bf-afbe-cc1e673d3c20\n1 curve added to selection.\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=Points ): _SelPt\n8 curve points added to selection.\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=Points ): _Enter\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=Points )\nCreated 14 point objects.\nCommand: _Cancel\nCommand: _Cancel\n",
+        "redo": [
+          {
+            "name": "Input 0",
+            "color_source": 1,
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "7d2057e8-3970-422d-8b99-8fa55f18b202",
+            "grips_on": false,
+            "crc": 3927073817,
+            "source": 0,
+            "points": null
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "a13650ab-edd0-47bf-afbe-cc1e673d3c20",
+            "grips_on": false,
+            "crc": 3788457110,
+            "source": 1,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "1970f6bf-3516-4b66-ae6d-4c9c6a8e4c88",
+            "grips_on": false,
+            "crc": 2825751107,
+            "source": 2,
+            "points": null
+          },
+          {
+            "name": null,
+            "color_source": 0,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "groups": [],
+            "layer": "Extract current",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "5c48e28e-5f37-486f-86d3-6c8efeccc9cc",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                0.42105263157894735,
+                1.473684210526316,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": null,
+            "color_source": 0,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "groups": [],
+            "layer": "Extract current",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "75d5a351-3cb5-490c-9ced-a48ab732b1a7",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                -0.11764705882352945,
+                1.8823529411764706,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": null,
+            "color_source": 0,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "groups": [],
+            "layer": "Extract current",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "f5f9bed2-e89e-45f7-bc6d-2d018b09fc4e",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                -0.7368421052632392,
+                1.2631578947367608,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": null,
+            "color_source": 0,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "groups": [],
+            "layer": "Extract current",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "79fde5ca-9140-4334-a2e2-34058b3761de",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                -0.7764705882353103,
+                0.4705882352937925,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "38335cc4-74df-4475-9937-54a13e45db7d",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                20.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "622d9c93-8dbe-41d0-84ce-1ae29e9366c0",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                28.0,
+                4.0,
+                2.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "52abb767-cda7-4a55-a2ae-995c633092f0",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                42.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "322c9389-d905-4207-b75b-9a89281119fb",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                41.99999999999999,
+                1.9999999999999996,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "04596f8c-7b07-4059-8146-5b0aca2bcc2f",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                40.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "05c5418c-a6d2-4b06-bcff-af19a44da1e0",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                38.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "d48a827e-d5fa-4aa9-9000-de46dd854fb7",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                38.0,
+                2.4492935982947064e-16,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "cf02da36-4d8d-4793-8e99-46cf60051895",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                38.0,
+                -1.9999999999999996,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "c516b422-6185-4044-96b6-76329f14ab3e",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                40.0,
+                -2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "f65d4ffb-8af7-4333-ada9-7c571df1217b",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                41.99999999999999,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "after": [
+          {
+            "name": "Input 0",
+            "color_source": 1,
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "7d2057e8-3970-422d-8b99-8fa55f18b202",
+            "grips_on": false,
+            "crc": 3927073817,
+            "source": 0,
+            "points": null
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "a13650ab-edd0-47bf-afbe-cc1e673d3c20",
+            "grips_on": false,
+            "crc": 3788457110,
+            "source": 1,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [
+              {
+                "point": [
+                  42.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 0,
+                "hidden": false
+              },
+              {
+                "point": [
+                  41.99999999999999,
+                  1.9999999999999996,
+                  0.0
+                ],
+                "selected": false,
+                "index": 1,
+                "hidden": false
+              },
+              {
+                "point": [
+                  40.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 2,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 3,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  2.4492935982947064e-16,
+                  0.0
+                ],
+                "selected": false,
+                "index": 4,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  -1.9999999999999996,
+                  0.0
+                ],
+                "selected": false,
+                "index": 5,
+                "hidden": false
+              },
+              {
+                "point": [
+                  40.0,
+                  -2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 6,
+                "hidden": false
+              },
+              {
+                "point": [
+                  41.99999999999999,
+                  -2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 7,
+                "hidden": false
+              }
+            ],
+            "cloud": false,
+            "id": "1970f6bf-3516-4b66-ae6d-4c9c6a8e4c88",
+            "grips_on": true,
+            "crc": 2825751107,
+            "source": 2,
+            "points": null
+          },
+          {
+            "name": null,
+            "color_source": 0,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "groups": [],
+            "layer": "Extract current",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "5c48e28e-5f37-486f-86d3-6c8efeccc9cc",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                0.42105263157894735,
+                1.473684210526316,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": null,
+            "color_source": 0,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "groups": [],
+            "layer": "Extract current",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "75d5a351-3cb5-490c-9ced-a48ab732b1a7",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                -0.11764705882352945,
+                1.8823529411764706,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": null,
+            "color_source": 0,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "groups": [],
+            "layer": "Extract current",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "f5f9bed2-e89e-45f7-bc6d-2d018b09fc4e",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                -0.7368421052632392,
+                1.2631578947367608,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": null,
+            "color_source": 0,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "groups": [],
+            "layer": "Extract current",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "79fde5ca-9140-4334-a2e2-34058b3761de",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                -0.7764705882353103,
+                0.4705882352937925,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "38335cc4-74df-4475-9937-54a13e45db7d",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                20.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "622d9c93-8dbe-41d0-84ce-1ae29e9366c0",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                28.0,
+                4.0,
+                2.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "52abb767-cda7-4a55-a2ae-995c633092f0",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                42.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "322c9389-d905-4207-b75b-9a89281119fb",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                41.99999999999999,
+                1.9999999999999996,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "04596f8c-7b07-4059-8146-5b0aca2bcc2f",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                40.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "05c5418c-a6d2-4b06-bcff-af19a44da1e0",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                38.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "d48a827e-d5fa-4aa9-9000-de46dd854fb7",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                38.0,
+                2.4492935982947064e-16,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "cf02da36-4d8d-4793-8e99-46cf60051895",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                38.0,
+                -1.9999999999999996,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "c516b422-6185-4044-96b6-76329f14ab3e",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                40.0,
+                -2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "f65d4ffb-8af7-4333-ada9-7c571df1217b",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                41.99999999999999,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "getter": {
+          "inputs": [
+            [
+              "range",
+              0
+            ],
+            [
+              "whole",
+              1
+            ]
+          ],
+          "script": "_-ExtractPt _OutputLayer=_Input _Output=_Points  _SubCrv _SelID 7d2057e8-3970-422d-8b99-8fa55f18b202 w0.42105263157894735,1.4736842105263159,0.0 w-0.77647058823529402,0.47058823529411797,0.0 _SelID a13650ab-edd0-47bf-afbe-cc1e673d3c20 _SelPt _Enter _Cancel _Cancel",
+          "parameters": [
+            [
+              0,
+              0.4,
+              1.4
+            ]
+          ],
+          "world_coordinates": true,
+          "points": [
+            [
+              0,
+              [
+                0.42105263157894735,
+                1.473684210526316,
+                0.0
+              ],
+              [
+                -0.776470588235294,
+                0.470588235294118,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "name": "Input 0",
+            "color_source": 1,
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "7d2057e8-3970-422d-8b99-8fa55f18b202",
+            "grips_on": false,
+            "crc": 3927073817,
+            "source": 0,
+            "points": null
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "a13650ab-edd0-47bf-afbe-cc1e673d3c20",
+            "grips_on": false,
+            "crc": 3788457110,
+            "source": 1,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "1970f6bf-3516-4b66-ae6d-4c9c6a8e4c88",
+            "grips_on": false,
+            "crc": 2825751107,
+            "source": 2,
+            "points": null
+          }
+        ],
+        "input": {
+          "whole": [
+            1
+          ],
+          "order": [
+            0,
+            1,
+            2
+          ],
+          "range_grips": true,
+          "layer": "Input",
+          "input_order": [
+            [
+              "range",
+              0
+            ],
+            [
+              "whole",
+              1
+            ]
+          ],
+          "sources": [
+            {
+              "grips": [],
+              "kind": "rational",
+              "mode": null
+            },
+            {
+              "grips": [],
+              "kind": "line",
+              "mode": null
+            },
+            {
+              "grips": [],
+              "kind": "circle",
+              "mode": "control"
+            }
+          ],
+          "output": "Points",
+          "ranges": [
+            [
+              0,
+              0.2,
+              0.7
+            ]
+          ]
+        },
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "range_order_grips_pointcloud",
+      "value": {
+        "macro": "_-ExtractPt _OutputLayer=_Input _Output=_PointCloud _Enter",
+        "before": [
+          {
+            "name": "Input 0",
+            "color_source": 1,
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "7650c372-015a-47d6-a893-1460c0b4f53f",
+            "grips_on": false,
+            "crc": 3927073817,
+            "source": 0,
+            "points": null
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": true,
+            "grips": [],
+            "cloud": false,
+            "id": "4ef07651-77c6-49e3-beec-8db0463a575a",
+            "grips_on": false,
+            "crc": 3788457110,
+            "source": 1,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [
+              {
+                "point": [
+                  42.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 0,
+                "hidden": false
+              },
+              {
+                "point": [
+                  41.99999999999999,
+                  1.9999999999999996,
+                  0.0
+                ],
+                "selected": false,
+                "index": 1,
+                "hidden": false
+              },
+              {
+                "point": [
+                  40.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 2,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 3,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  2.4492935982947064e-16,
+                  0.0
+                ],
+                "selected": false,
+                "index": 4,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  -1.9999999999999996,
+                  0.0
+                ],
+                "selected": false,
+                "index": 5,
+                "hidden": false
+              },
+              {
+                "point": [
+                  40.0,
+                  -2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 6,
+                "hidden": false
+              },
+              {
+                "point": [
+                  41.99999999999999,
+                  -2.0,
+                  0.0
+                ],
+                "selected": false,
+                "index": 7,
+                "hidden": false
+              }
+            ],
+            "cloud": false,
+            "id": "362e29b3-70c7-4551-bd60-37b51a4ec3f0",
+            "grips_on": true,
+            "crc": 2825751107,
+            "source": 2,
+            "points": null
+          }
+        ],
+        "curve_profile": null,
+        "component_records": null,
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "SelPt",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtractPt",
+            "selected": [],
+            "result": "Success",
+            "objects": [
+              {
+                "name": "Input 0",
+                "color_source": 1,
+                "color": [
+                  17,
+                  43,
+                  91
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 0",
+                "selected": false,
+                "grips": [],
+                "cloud": false,
+                "id": "7650c372-015a-47d6-a893-1460c0b4f53f",
+                "grips_on": false,
+                "crc": 3927073817,
+                "source": 0,
+                "points": null
+              },
+              {
+                "name": "Input 1",
+                "color_source": 1,
+                "color": [
+                  18,
+                  44,
+                  92
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 1",
+                "selected": false,
+                "grips": [],
+                "cloud": false,
+                "id": "4ef07651-77c6-49e3-beec-8db0463a575a",
+                "grips_on": false,
+                "crc": 3788457110,
+                "source": 1,
+                "points": null
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": false,
+                "grips": [
+                  {
+                    "point": [
+                      42.0,
+                      0.0,
+                      0.0
+                    ],
+                    "selected": true,
+                    "index": 0,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      41.99999999999999,
+                      1.9999999999999996,
+                      0.0
+                    ],
+                    "selected": true,
+                    "index": 1,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      40.0,
+                      2.0,
+                      0.0
+                    ],
+                    "selected": true,
+                    "index": 2,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      38.0,
+                      2.0,
+                      0.0
+                    ],
+                    "selected": true,
+                    "index": 3,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      38.0,
+                      2.4492935982947064e-16,
+                      0.0
+                    ],
+                    "selected": true,
+                    "index": 4,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      38.0,
+                      -1.9999999999999996,
+                      0.0
+                    ],
+                    "selected": true,
+                    "index": 5,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      40.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "selected": true,
+                    "index": 6,
+                    "hidden": false
+                  },
+                  {
+                    "point": [
+                      41.99999999999999,
+                      -2.0,
+                      0.0
+                    ],
+                    "selected": true,
+                    "index": 7,
+                    "hidden": false
+                  }
+                ],
+                "cloud": false,
+                "id": "362e29b3-70c7-4551-bd60-37b51a4ec3f0",
+                "grips_on": true,
+                "crc": 2825751107,
+                "source": 2,
+                "points": null
+              },
+              {
+                "name": "Input 2",
+                "color_source": 1,
+                "color": [
+                  19,
+                  45,
+                  93
+                ],
+                "groups": [
+                  "Extract assembly"
+                ],
+                "layer": "Extract input 2",
+                "selected": true,
+                "grips": [],
+                "cloud": true,
+                "id": "e78dda56-b611-45ae-a779-7cd1c04435b0",
+                "grips_on": false,
+                "crc": 0,
+                "source": null,
+                "points": [
+                  [
+                    0.42105263157894735,
+                    1.473684210526316,
+                    0.0
+                  ],
+                  [
+                    -0.11764705882352945,
+                    1.8823529411764706,
+                    0.0
+                  ],
+                  [
+                    -0.7368421052632392,
+                    1.2631578947367608,
+                    0.0
+                  ],
+                  [
+                    -0.7764705882353103,
+                    0.4705882352937925,
+                    0.0
+                  ],
+                  [
+                    20.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    28.0,
+                    4.0,
+                    2.0
+                  ],
+                  [
+                    42.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    41.99999999999999,
+                    1.9999999999999996,
+                    0.0
+                  ],
+                  [
+                    40.0,
+                    2.0,
+                    0.0
+                  ],
+                  [
+                    38.0,
+                    2.0,
+                    0.0
+                  ],
+                  [
+                    38.0,
+                    2.4492935982947064e-16,
+                    0.0
+                  ],
+                  [
+                    38.0,
+                    -1.9999999999999996,
+                    0.0
+                  ],
+                  [
+                    40.0,
+                    -2.0,
+                    0.0
+                  ],
+                  [
+                    41.99999999999999,
+                    -2.0,
+                    0.0
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "source_3dm": "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ZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAFgjAAAAAAAA",
+        "history": "Command: _-ExtractPt\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _OutputLayer=_Input\nSelect objects for point extraction ( OutputLayer=Input  Output=Points ): _Output=_PointCloud\nSelect objects for point extraction ( OutputLayer=Input  Output=PointCloud ): _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 7650c372-015a-47d6-a893-1460c0b4f53f\n1 curve added to selection.\nStart of curve: w0.42105263157894735,1.4736842105263159,0.0\nCurrent length is 6.95659. Select end point location or enter curve length ( Direction=Free ): w-0.77647058823529402,0.47058823529411797,0.0\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=PointCloud ): _SelID\nObject ID to select: 4ef07651-77c6-49e3-beec-8db0463a575a\n1 curve added to selection.\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=PointCloud ): _SelPt\n8 curve points added to selection.\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=PointCloud ): _Enter\nSelect objects for point extraction. Press Enter when done ( OutputLayer=Input  Output=PointCloud )\nCreated one point cloud of 14 points.\nCommand: _Cancel\nCommand: _Cancel\n",
+        "redo": [
+          {
+            "name": "Input 0",
+            "color_source": 1,
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "7650c372-015a-47d6-a893-1460c0b4f53f",
+            "grips_on": false,
+            "crc": 3927073817,
+            "source": 0,
+            "points": null
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "4ef07651-77c6-49e3-beec-8db0463a575a",
+            "grips_on": false,
+            "crc": 3788457110,
+            "source": 1,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "362e29b3-70c7-4551-bd60-37b51a4ec3f0",
+            "grips_on": false,
+            "crc": 2825751107,
+            "source": 2,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": true,
+            "id": "e78dda56-b611-45ae-a779-7cd1c04435b0",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                0.42105263157894735,
+                1.473684210526316,
+                0.0
+              ],
+              [
+                -0.11764705882352945,
+                1.8823529411764706,
+                0.0
+              ],
+              [
+                -0.7368421052632392,
+                1.2631578947367608,
+                0.0
+              ],
+              [
+                -0.7764705882353103,
+                0.4705882352937925,
+                0.0
+              ],
+              [
+                20.0,
+                0.0,
+                0.0
+              ],
+              [
+                28.0,
+                4.0,
+                2.0
+              ],
+              [
+                42.0,
+                0.0,
+                0.0
+              ],
+              [
+                41.99999999999999,
+                1.9999999999999996,
+                0.0
+              ],
+              [
+                40.0,
+                2.0,
+                0.0
+              ],
+              [
+                38.0,
+                2.0,
+                0.0
+              ],
+              [
+                38.0,
+                2.4492935982947064e-16,
+                0.0
+              ],
+              [
+                38.0,
+                -1.9999999999999996,
+                0.0
+              ],
+              [
+                40.0,
+                -2.0,
+                0.0
+              ],
+              [
+                41.99999999999999,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "after": [
+          {
+            "name": "Input 0",
+            "color_source": 1,
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "7650c372-015a-47d6-a893-1460c0b4f53f",
+            "grips_on": false,
+            "crc": 3927073817,
+            "source": 0,
+            "points": null
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "4ef07651-77c6-49e3-beec-8db0463a575a",
+            "grips_on": false,
+            "crc": 3788457110,
+            "source": 1,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [
+              {
+                "point": [
+                  42.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "index": 0,
+                "hidden": false
+              },
+              {
+                "point": [
+                  41.99999999999999,
+                  1.9999999999999996,
+                  0.0
+                ],
+                "selected": true,
+                "index": 1,
+                "hidden": false
+              },
+              {
+                "point": [
+                  40.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": true,
+                "index": 2,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": true,
+                "index": 3,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  2.4492935982947064e-16,
+                  0.0
+                ],
+                "selected": true,
+                "index": 4,
+                "hidden": false
+              },
+              {
+                "point": [
+                  38.0,
+                  -1.9999999999999996,
+                  0.0
+                ],
+                "selected": true,
+                "index": 5,
+                "hidden": false
+              },
+              {
+                "point": [
+                  40.0,
+                  -2.0,
+                  0.0
+                ],
+                "selected": true,
+                "index": 6,
+                "hidden": false
+              },
+              {
+                "point": [
+                  41.99999999999999,
+                  -2.0,
+                  0.0
+                ],
+                "selected": true,
+                "index": 7,
+                "hidden": false
+              }
+            ],
+            "cloud": false,
+            "id": "362e29b3-70c7-4551-bd60-37b51a4ec3f0",
+            "grips_on": true,
+            "crc": 2825751107,
+            "source": 2,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": true,
+            "grips": [],
+            "cloud": true,
+            "id": "e78dda56-b611-45ae-a779-7cd1c04435b0",
+            "grips_on": false,
+            "crc": 0,
+            "source": null,
+            "points": [
+              [
+                0.42105263157894735,
+                1.473684210526316,
+                0.0
+              ],
+              [
+                -0.11764705882352945,
+                1.8823529411764706,
+                0.0
+              ],
+              [
+                -0.7368421052632392,
+                1.2631578947367608,
+                0.0
+              ],
+              [
+                -0.7764705882353103,
+                0.4705882352937925,
+                0.0
+              ],
+              [
+                20.0,
+                0.0,
+                0.0
+              ],
+              [
+                28.0,
+                4.0,
+                2.0
+              ],
+              [
+                42.0,
+                0.0,
+                0.0
+              ],
+              [
+                41.99999999999999,
+                1.9999999999999996,
+                0.0
+              ],
+              [
+                40.0,
+                2.0,
+                0.0
+              ],
+              [
+                38.0,
+                2.0,
+                0.0
+              ],
+              [
+                38.0,
+                2.4492935982947064e-16,
+                0.0
+              ],
+              [
+                38.0,
+                -1.9999999999999996,
+                0.0
+              ],
+              [
+                40.0,
+                -2.0,
+                0.0
+              ],
+              [
+                41.99999999999999,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "getter": {
+          "inputs": [
+            [
+              "range",
+              0
+            ],
+            [
+              "whole",
+              1
+            ]
+          ],
+          "script": "_-ExtractPt _OutputLayer=_Input _Output=_PointCloud  _SubCrv _SelID 7650c372-015a-47d6-a893-1460c0b4f53f w0.42105263157894735,1.4736842105263159,0.0 w-0.77647058823529402,0.47058823529411797,0.0 _SelID 4ef07651-77c6-49e3-beec-8db0463a575a _SelPt _Enter _Cancel _Cancel",
+          "parameters": [
+            [
+              0,
+              0.4,
+              1.4
+            ]
+          ],
+          "world_coordinates": true,
+          "points": [
+            [
+              0,
+              [
+                0.42105263157894735,
+                1.473684210526316,
+                0.0
+              ],
+              [
+                -0.776470588235294,
+                0.470588235294118,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "undo": [
+          {
+            "name": "Input 0",
+            "color_source": 1,
+            "color": [
+              17,
+              43,
+              91
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 0",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "7650c372-015a-47d6-a893-1460c0b4f53f",
+            "grips_on": false,
+            "crc": 3927073817,
+            "source": 0,
+            "points": null
+          },
+          {
+            "name": "Input 1",
+            "color_source": 1,
+            "color": [
+              18,
+              44,
+              92
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 1",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "4ef07651-77c6-49e3-beec-8db0463a575a",
+            "grips_on": false,
+            "crc": 3788457110,
+            "source": 1,
+            "points": null
+          },
+          {
+            "name": "Input 2",
+            "color_source": 1,
+            "color": [
+              19,
+              45,
+              93
+            ],
+            "groups": [
+              "Extract assembly"
+            ],
+            "layer": "Extract input 2",
+            "selected": false,
+            "grips": [],
+            "cloud": false,
+            "id": "362e29b3-70c7-4551-bd60-37b51a4ec3f0",
+            "grips_on": false,
+            "crc": 2825751107,
+            "source": 2,
+            "points": null
+          }
+        ],
+        "input": {
+          "whole": [
+            1
+          ],
+          "order": [
+            0,
+            1,
+            2
+          ],
+          "range_grips": true,
+          "layer": "Input",
+          "input_order": [
+            [
+              "range",
+              0
+            ],
+            [
+              "whole",
+              1
+            ]
+          ],
+          "sources": [
+            {
+              "grips": [],
+              "kind": "rational",
+              "mode": null
+            },
+            {
+              "grips": [],
+              "kind": "line",
+              "mode": null
+            },
+            {
+              "grips": [],
+              "kind": "circle",
+              "mode": "control"
+            }
+          ],
+          "output": "PointCloud",
+          "ranges": [
+            [
+              0,
+              0.2,
+              0.7
+            ]
+          ]
+        },
+        "success": true
+      }
+    }
+  ],
+  "provenance": {
+    "request_sha256": "69f2b3698ae475be55da4590895c757d4425a95724328d26b0260ee2d7ba6861",
+    "sources": {
+      "extract_points_order_cases.py": "de3040d62b170e2f74f56faa1520725014d6717dff58f2ae21b41e746b662805",
+      "extract_points_curve_range_input.py": "1e926e16745b4f3c1e94fdc66a37b13656bc36c2ddee5edd42edcf25cde8144b",
+      "extract_points_target_cases.py": "a556767f83cb5dd821cb0f3d55741575decf3f09bddb32a1cb2c2ec21b0657b0",
+      "client.py": "67ad9491745d1f565550cc5522a5aefc9a0aad021321dc5bcbd8a350c1a504b9",
+      "component_picking.py": "e4e91e99f7a6645cb39a2bab4e879320755eca894d4e96a72ea83f53c3682bed",
+      "hole_picking.py": "69d5d692cc86a7d628e741c9116b65449713fa5e23cf9ad8ee9f8dd5487f8116",
+      "group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+      "managed_component_input.py": "26d804dfc2ef47ca4c5509274fb2b52d4eb2f3b32599ecfe50871f6ff7db1ad0",
+      "extract_points_getter.py": "e2eb34d4b4116416d6bccbac49c957bff3252ede5b952c86a9d2b38094f03077",
+      "extract_points_cases.py": "f7f8891856a9e47de7b1d02b6161ab45f3f9cee10871481d2547542dcc8febc9",
+      "extract_points_probe.py": "2b892bd6463e44bd65d16386d49adca3d9d00bae41d0f57a676c354993169263",
+      "generate_extract_points.py": "09f03ee151fe1fc9286651549a0fa233153ad714d1e0daad5454ef87b09c6651",
+      "extract_points_geometry.py": "47b3cbc30fed9458931787a5ed7f7e45aea202b11ca658888dc741ae0e8f7865",
+      "extract_points_component_cases.py": "f54b2c3fe82fc3d204067cc33698fa441d84c264c9e523e92425d24411c0cc51",
+      "extract_points_brep_cases.py": "fc026de798511f760cdf732316624b4d70a08cefb83c64ae4526670f2d138a23",
+      "extract_points_range_cases.py": "6cee7088c1fc503462efd5d70986976d79d88f7686ab7c628e7aefd325033e63",
+      "extract_points_edge_range_input.py": "516385dc239a5448ad91820494260804b77459baf03394388b872e63bba735b4",
+      "owned_brep_command.py": "d4f80d5be8a04368c9810453134acbd2fa6d762deb0dd2ccae2efd343947169e",
+      "extract_points_component_input.py": "d33310736cc66e7123026a250b617035651f40084de8fd1fa21d6d23e8033934",
+      "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+      "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "structural_sdk.py": "7147ff08858a46eaeb68322c6762dcd6e3c32a04532c48e095558ae2f125e9d0",
+      "rhino_worker.py": "6423e0381f254bb896a0204de8cc4f7d223797ac48f2be8e896ffd27e7682067"
+    }
+  }
+}

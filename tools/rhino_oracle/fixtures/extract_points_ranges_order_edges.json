@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "range_order_brep_box_points",
+      "case": "range_order_brep_box_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_brep_box_pointcloud",
+      "case": "range_order_brep_box_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_brep_surface_points",
+      "case": "range_order_brep_surface_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "range_order_brep_surface_pointcloud",
+      "case": "range_order_brep_surface_pointcloud"
+    }
+  ]
+}

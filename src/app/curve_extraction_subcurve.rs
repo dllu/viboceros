@@ -56,6 +56,18 @@ impl VibocerosApp {
     }
     fn begin_curve_extraction_subcurve(&mut self, base: String) {
         let original_selection = self.document.selected_object_ids().collect();
+        let extraction_order = base
+            .split_whitespace()
+            .next()
+            .filter(|n| {
+                n.trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("ExtractPt")
+            })
+            .map(|_| {
+                let mut order = super::extract_points::InputOrder::default();
+                order.sync(self.document.selected_object_ids());
+                order
+            });
         let components = std::mem::take(&mut self.component_selection);
         self.cancel_interactive_command(false);
         self.component_selection = components;
@@ -72,6 +84,7 @@ impl VibocerosApp {
             uv_subcurves: SubcurveInputs {
                 ranges: vec![],
                 pending: Some(PendingSubcurve::default()),
+                extraction_order,
             },
             projection: None,
         });
@@ -83,7 +96,12 @@ impl VibocerosApp {
         mut prompt: TwoSetsPrompt,
         input: &str,
     ) -> bool {
+        self.sync_extract_point_input_order();
+        if let Some(current) = self.intersection_prompt.as_ref() {
+            prompt.uv_subcurves.extraction_order = current.uv_subcurves.extraction_order.clone();
+        }
         if self.try_select_prompt_points(input) {
+            self.sync_extract_point_input_order();
             return true;
         }
         if self.try_continue_uv_subcurve(&prompt, input) {
@@ -123,10 +141,16 @@ impl VibocerosApp {
                     let args = self
                         .extract_point_component_arguments()
                         .map_err(str::to_owned)?;
+                    let ordered = if let Some(order) = prompt.uv_subcurves.extraction_order.as_ref()
+                    {
+                        order.arguments(&prompt.uv_subcurves.ranges)?
+                    } else {
+                        prompt.uv_subcurves.arguments()
+                    };
                     let input = format!(
                         "{}{}{}",
                         prompt.curve_extraction.as_ref().unwrap(),
-                        prompt.uv_subcurves.arguments(),
+                        ordered,
                         args
                     );
                     let context = viboceros_command::CommandContext {
@@ -170,6 +194,9 @@ impl VibocerosApp {
             self.document.clear_selection();
             self.component_selection.clear();
             prompt.uv_subcurves.ranges.clear();
+            if let Some(order) = prompt.uv_subcurves.extraction_order.as_mut() {
+                *order = Default::default();
+            }
             self.intersection_prompt = Some(prompt);
         } else if input.trim_start_matches('_').eq_ignore_ascii_case("SelAll") {
             let ids = self

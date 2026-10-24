@@ -471,7 +471,10 @@ impl VibocerosApp {
             mode
         };
         match self.document.select_objects_direct(ids, mode) {
-            Ok(count) => self.push_log(format!("Selected {count} object(s); Enter continues")),
+            Ok(count) => {
+                self.sync_extract_point_input_order();
+                self.push_log(format!("Selected {count} object(s); Enter continues"));
+            }
             Err(error) => self.push_log(format!("Error: {error}")),
         }
     }

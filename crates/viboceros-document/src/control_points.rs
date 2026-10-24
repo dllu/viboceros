@@ -279,6 +279,17 @@ impl Document {
         Some(self.control_points[&id].mode)
     }
 
+    /// Active, selectable grip displays in object order, including displays
+    /// whose individual grips are all hidden. Resolves each owner once.
+    pub fn control_point_displays(&self) -> impl Iterator<Item = (ObjectId, GripMode)> + '_ {
+        self.objects.iter().filter_map(|object| {
+            let state = self.control_points.get(&object.id)?;
+            (self.object_is_selectable(object)
+                && state.geometry.shares_storage_with(&object.geometry))
+            .then_some((object.id, state.mode))
+        })
+    }
+
     /// Change displayed grip positions without replacing owner geometry or
     /// recording history. Subsequent geometry edits use the owner's source layout;
     /// history replay restores their display. All picks and maps are staged.

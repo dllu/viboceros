@@ -265,6 +265,10 @@ pub fn range_rows() -> Vec<Value> {
         "ranges_edges",
         "ranges_edge_forms",
         "ranges_edge_numeric_verified",
+        "ranges_order",
+        "ranges_order_grips",
+        "ranges_order_edges",
+        "ranges_order_displays",
     ])
     .into_iter()
     .map(|mut row| {
@@ -275,35 +279,48 @@ pub fn range_rows() -> Vec<Value> {
 }
 pub fn range_command(row: &Value, ids: &[ObjectId]) -> String {
     let mut result = command(row);
-    for (index, range) in row["value"]["getter"]["parameters"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .enumerate()
-    {
-        if let Some(edge) = row["value"]["getter"]["edges"][index].as_u64() {
-            result.push_str(&format!(
-                " SubCrv={},{},{},{},{}",
-                ids[range[0].as_u64().unwrap() as usize],
-                if row["value"]["getter"]["numeric_length"].is_number() {
-                    "EdgeWrap"
-                } else {
-                    "Edge"
-                },
-                edge,
-                range[1],
-                range[2]
-            ));
-            continue;
+    if let Some(inputs) = row["value"]["input"]["input_order"].as_array() {
+        for input in inputs {
+            let index = input[1].as_u64().unwrap() as usize;
+            if input[0] == "whole" {
+                result.push_str(&format!(" Object={}", ids[index]));
+            } else {
+                result.push_str(&range_argument(row, ids, index));
+            }
         }
-        result.push_str(&format!(
-            " SubCrv={},{},{}",
-            ids[range[0].as_u64().unwrap() as usize],
-            range[1],
-            range[2]
-        ));
+    } else {
+        for index in 0..row["value"]["getter"]["parameters"]
+            .as_array()
+            .unwrap()
+            .len()
+        {
+            result.push_str(&range_argument(row, ids, index));
+        }
     }
     result
+}
+fn range_argument(row: &Value, ids: &[ObjectId], index: usize) -> String {
+    let range = &row["value"]["getter"]["parameters"][index];
+    if let Some(edge) = row["value"]["getter"]["edges"][index].as_u64() {
+        return format!(
+            " SubCrv={},{},{},{},{}",
+            ids[range[0].as_u64().unwrap() as usize],
+            if row["value"]["getter"]["numeric_length"].is_number() {
+                "EdgeWrap"
+            } else {
+                "Edge"
+            },
+            edge,
+            range[1],
+            range[2]
+        );
+    }
+    format!(
+        " SubCrv={},{},{}",
+        ids[range[0].as_u64().unwrap() as usize],
+        range[1],
+        range[2]
+    )
 }
 pub fn select_range_grips(doc: &mut Document, row: &Value) {
     if row["value"]["input"]["range_grips"] == true {
