@@ -8,9 +8,10 @@ pub(super) fn assemble(
     contacts: Vec<[Point3; 2]>,
     mut contours: Vec<Polyline3>,
     tolerance: Tolerance,
+    preserve_line_order: bool,
 ) -> Result<Vec<Polyline3>, CommandError> {
     segments.extend(coverage::subtract(contacts, &contours, tolerance)?);
-    let lines = joined_lines(segments, tolerance)?;
+    let lines = joined_lines(segments, tolerance, preserve_line_order)?;
     let bounds = |p: &Polyline3| [p.bounds().max().to_array(), p.bounds().min().to_array()];
     if lines.is_empty() {
         contours.sort_by(|a, b| {
@@ -26,6 +27,7 @@ pub(super) fn assemble(
 fn joined_lines(
     mut segments: Vec<[Point3; 2]>,
     tolerance: Tolerance,
+    preserve_line_order: bool,
 ) -> Result<Vec<Polyline3>, CommandError> {
     let compare = |a: Point3, b: Point3| {
         a.to_array()
@@ -37,8 +39,15 @@ fn joined_lines(
             segment.swap(0, 1);
         }
     }
-    segments.sort_by(|a, b| compare(a[0], b[0]).then_with(|| compare(a[1], b[1])));
-    segments.dedup();
+    if preserve_line_order {
+        let mut seen = std::collections::BTreeSet::new();
+        segments.retain(|s| {
+            seen.insert(s.map(|p| p.to_array().map(|v| if v == 0. { 0 } else { v.to_bits() })))
+        });
+    } else {
+        segments.sort_by(|a, b| compare(a[0], b[0]).then_with(|| compare(a[1], b[1])));
+        segments.dedup();
+    }
     let curves = segments
         .into_iter()
         .filter(|p| p[0] != p[1])

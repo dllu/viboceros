@@ -9,6 +9,8 @@ use i_overlay::{
 use std::collections::VecDeque;
 use viboceros_geometry::{Frame3, Polyline3};
 mod contacts;
+mod self_intersection;
+pub(super) use self_intersection::append as append_self;
 
 type Path = Vec<[f64; 2]>;
 

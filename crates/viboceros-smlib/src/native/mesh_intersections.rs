@@ -7,6 +7,16 @@ struct NativeIntersections {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vb_mesh_self_intersections(
+        points: *const f64,
+        point_count: usize,
+        triangles: *const u32,
+        face_count: usize,
+        tolerance: f64,
+        out: *mut *mut NativeIntersections,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_mesh_intersections(
         first: *const f64,
         first_count: usize,
@@ -101,6 +111,75 @@ pub fn mesh_intersections(
             capacity,
         )
     })?;
+    decode(
+        pointer,
+        (first.vertices(), &af),
+        (second.vertices(), &bf),
+        tolerance,
+        false,
+    )
+}
+
+/// Self-intersections of one mesh, excluding ordinary shared-edge adjacency.
+/// Each original triangle pair is queried once; overlap coverage excludes
+/// single-face coverage and does not add coincident internal triangulation seams.
+/// Working imprints never alter the caller's mesh or vertex channels.
+pub fn mesh_self_intersections(
+    mesh: &TriangleMesh,
+    tolerance: Tolerance,
+) -> Result<MeshIntersections, Error> {
+    mesh.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
+    let (points, prepared_faces) = mesh_boolean::prepare(mesh)?;
+    // OpenNURBS retains the first triangle in the original face slot and
+    // appends second triangles. Keep each stored face's triangles together
+    // so self-intersection traversal follows source faces rather than the
+    // incidental order of the appended triangles.
+    let expected = mesh.faces().len() + mesh.faces().iter().filter(|f| f.is_quad()).count();
+    let faces = if prepared_faces.len() / 3 == expected {
+        let mut faces = Vec::with_capacity(prepared_faces.len());
+        let mut appended = mesh.faces().len();
+        for (i, face) in mesh.faces().iter().enumerate() {
+            faces.extend_from_slice(&prepared_faces[3 * i..3 * i + 3]);
+            if face.is_quad() {
+                faces.extend_from_slice(&prepared_faces[3 * appended..3 * appended + 3]);
+                appended += 1;
+            }
+        }
+        faces
+    } else {
+        // Conversion may discard degenerate corners. Geometry remains usable
+        // even when it cannot retain the ordinary two-triangles-per-quad order.
+        prepared_faces
+    };
+    let mut pointer = std::ptr::null_mut();
+    call(|error, capacity| unsafe {
+        vb_mesh_self_intersections(
+            points.as_ptr(),
+            points.len() / 3,
+            faces.as_ptr(),
+            faces.len() / 3,
+            tolerance.absolute(),
+            &mut pointer,
+            error,
+            capacity,
+        )
+    })?;
+    decode(
+        pointer,
+        (mesh.vertices(), &faces),
+        (mesh.vertices(), &faces),
+        tolerance,
+        true,
+    )
+}
+
+fn decode(
+    pointer: *mut NativeIntersections,
+    first: (&[Point3], &[u32]),
+    second: (&[Point3], &[u32]),
+    tolerance: Tolerance,
+    self_intersections: bool,
+) -> Result<MeshIntersections, Error> {
     let owned = OwnedIntersections(NonNull::new(pointer).ok_or(Error::InvalidOutput)?);
     let (mut na, mut nt, mut nb) = (0, 0, 0);
     if unsafe { vb_mesh_intersections_sizes(owned.0.as_ptr(), &mut na, &mut nt, &mut nb) } != 0
@@ -142,14 +221,18 @@ pub fn mesh_intersections(
         tangential: decode(contacts)?,
         coplanar: Vec::new(),
     };
-    coplanar::append(
-        first.vertices(),
-        &af,
-        second.vertices(),
-        &bf,
-        &pairs,
-        tolerance,
-        &mut result,
-    )?;
+    if self_intersections {
+        coplanar::append_self(first.0, first.1, &pairs, &mut result)?;
+    } else {
+        coplanar::append(
+            first.0,
+            first.1,
+            second.0,
+            second.1,
+            &pairs,
+            tolerance,
+            &mut result,
+        )?;
+    }
     Ok(result)
 }

@@ -10,6 +10,8 @@ BOOLEAN_PROMPT_MODULES = [
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
     'src/app/object_selection/mesh_intersect_tests.rs',
+    'src/app/object_selection/mesh_self_intersect_tests.rs',
+    'crates/viboceros-command/tests/support/mesh_self_intersect.rs',
     'crates/viboceros-command/tests/support/mesh_intersect.rs',
     'src/app/object_selection/mesh_boolean_tests.rs',
     'crates/viboceros-command/tests/support/mesh_boolean.rs',
@@ -172,6 +174,7 @@ def with_shared_sources(paths):
                          'crates/viboceros-smlib/src/native/mesh_intersections.rs',
                          'crates/viboceros-smlib/src/native/mesh_intersections/coplanar.rs',
                          'crates/viboceros-smlib/src/native/mesh_intersections/coplanar/contacts.rs',
+                         'crates/viboceros-smlib/src/native/mesh_intersections/coplanar/self_intersection.rs',
                          'crates/viboceros-smlib/native/mesh_intersections.h'])
         expanded.append('crates/viboceros-smlib/native/mesh_intersection_origins.h')
     if 'crates/viboceros-document/src/lib.rs' in expanded:

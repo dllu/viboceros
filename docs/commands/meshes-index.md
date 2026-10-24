@@ -33,6 +33,7 @@
 - [Polygon meshes](meshes.md)
 - [MeshOutline: view-dependent outlines from meshes and surface display meshes](mesh-outline.md)
 - [MeshIntersect: transverse and coplanar intersection curves](mesh-intersect.md)
+- [MeshSelfIntersect: intersections within individual meshes](mesh-self-intersect.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 
 - [Mesh curve pulling and qualifications](pull-mesh.md)

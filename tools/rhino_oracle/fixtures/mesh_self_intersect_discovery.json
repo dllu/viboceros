@@ -1,0 +1,141 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_flat_post",
+      "case": "mesh_self_intersect_flat_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_flat_pre",
+      "case": "mesh_self_intersect_flat_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_box_post",
+      "case": "mesh_self_intersect_box_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_box_pre",
+      "case": "mesh_self_intersect_box_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_adjacent_post",
+      "case": "mesh_self_intersect_adjacent_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_adjacent_pre",
+      "case": "mesh_self_intersect_adjacent_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_crossing_post",
+      "case": "mesh_self_intersect_crossing_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_crossing_pre",
+      "case": "mesh_self_intersect_crossing_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_coplanar_post",
+      "case": "mesh_self_intersect_coplanar_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_coplanar_pre",
+      "case": "mesh_self_intersect_coplanar_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_identical_faces_post",
+      "case": "mesh_self_intersect_identical_faces_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_identical_faces_pre",
+      "case": "mesh_self_intersect_identical_faces_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_folded_post",
+      "case": "mesh_self_intersect_folded_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_folded_pre",
+      "case": "mesh_self_intersect_folded_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_shared_vertex_post",
+      "case": "mesh_self_intersect_shared_vertex_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_shared_vertex_pre",
+      "case": "mesh_self_intersect_shared_vertex_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_separate_objects_post",
+      "case": "mesh_self_intersect_separate_objects_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_separate_objects_pre",
+      "case": "mesh_self_intersect_separate_objects_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_two_self_meshes_post",
+      "case": "mesh_self_intersect_two_self_meshes_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_two_self_meshes_pre",
+      "case": "mesh_self_intersect_two_self_meshes_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_mixed_point_post",
+      "case": "mesh_self_intersect_mixed_point_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_mixed_point_pre",
+      "case": "mesh_self_intersect_mixed_point_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_brep_post",
+      "case": "mesh_self_intersect_brep_post"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_brep_pre",
+      "case": "mesh_self_intersect_brep_pre"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_cancel",
+      "case": "mesh_self_intersect_cancel"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_tolerance_option",
+      "case": "mesh_self_intersect_tolerance_option"
+    }
+  ]
+}

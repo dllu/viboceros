@@ -25,6 +25,8 @@ mod mesh_polyline_tests;
 #[allow(dead_code)]
 #[path = "../../crates/viboceros-geometry/tests/support/mesh_outline.rs"]
 mod mesh_reference;
+#[cfg(test)]
+mod mesh_self_intersect_tests;
 mod modify_radius;
 #[cfg(test)]
 mod planar_mesh_tests;
@@ -180,6 +182,9 @@ impl PendingObjectCommand {
         }
         if self.description.command == "BooleanUnion" {
             return "Select at least two surfaces or polysurfaces, or type options; Enter unions, Esc cancels";
+        }
+        if self.description.command == "MeshSelfIntersect" {
+            return "Select meshes, surfaces or polysurfaces; Enter finds self-intersections, Esc cancels";
         }
         if self.description.command == "MeshIntersect" {
             return "Select at least two meshes, surfaces or polysurfaces; Enter intersects, Esc cancels";
@@ -1409,7 +1414,7 @@ impl VibocerosApp {
                 Err(error) => {
                     if matches!(
                         pending.description.command,
-                        "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect"
+                        "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect" | "MeshSelfIntersect"
                     ) || (pending.description.command == "PlanarMesh"
                         && matches!(
                             error,

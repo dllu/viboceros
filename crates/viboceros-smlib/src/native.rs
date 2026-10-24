@@ -12,7 +12,7 @@ mod brep;
 mod mesh_boolean;
 pub use mesh_boolean::{mesh_boolean, mesh_boolean_interaction};
 mod mesh_intersections;
-pub use mesh_intersections::{MeshIntersections, mesh_intersections};
+pub use mesh_intersections::{MeshIntersections, mesh_intersections, mesh_self_intersections};
 mod construction;
 mod edge_blends;
 mod shell;

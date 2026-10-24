@@ -1387,9 +1387,9 @@ impl CommandRegistry {
         for command in booleans {
             registry.register(command).expect("unique built-in command");
         }
-        registry
-            .register(intersections)
-            .expect("unique built-in command");
+        for command in intersections {
+            registry.register(command).expect("unique built-in command");
+        }
         registry
             .register(select_uv_rows::SelectUVCommand::default())
             .unwrap();
@@ -13195,6 +13195,8 @@ pub enum CommandError {
     MeshBooleanRequiresNativeKernel,
     #[error("MeshIntersect requires the native kernel; build with --features native-smlib")]
     MeshIntersectRequiresNativeKernel,
+    #[error("MeshSelfIntersect requires the native kernel; build with --features native-smlib")]
+    MeshSelfIntersectRequiresNativeKernel,
     #[error("Mesh Boolean commands require meshes, surfaces or polysurfaces in the requested sets")]
     MeshBooleanRequiresObjects,
     #[error("Mesh Boolean operation produced no result")]

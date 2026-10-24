@@ -73,7 +73,8 @@ void compute_pairs(SmPolyBrep &a, const std::vector<SmPolyFace *> &af,
     const std::vector<SmPolyFace *> &bf, double tolerance,
     const vb_mesh_intersection_origins::Boundaries &ab,
     const vb_mesh_intersection_origins::Boundaries &bb,
-    const std::vector<uint32_t> &am, const std::vector<uint32_t> &bm, VbMeshIntersections &out) {
+    const std::vector<uint32_t> &am, const std::vector<uint32_t> &bm, VbMeshIntersections &out,
+    bool self_intersections = false) {
     SmExtent3d bounds;
     check(a.CalculateBoundingBox(bounds), "bound intersection mesh");
     auto tree = std::unique_ptr<SmTree>(new (*SmApiGetOrCreateContext()) SmTree(bounds));
@@ -91,14 +92,40 @@ void compute_pairs(SmPolyBrep &a, const std::vector<SmPolyFace *> &af,
         box.ExpandAbsolute(tolerance);
         SmTArray<SmObjectList *> candidates;
         check(tree->GetObjectListInBox(box, candidates), "query intersection triangles");
-        for (ULONG k = 0; k < candidates.GetSize(); ++k) {
+        std::vector<SmPolyFace *> ordered;
+        ordered.reserve(candidates.GetSize());
+        for (ULONG k = 0; k < candidates.GetSize(); ++k)
+            ordered.push_back(static_cast<SmPolyFace *>(candidates[k]->m_pObject));
+        if (self_intersections) std::sort(ordered.begin(), ordered.end(),
+            [&](SmPolyFace *first, SmPolyFace *second) { return indices.at(first) < indices.at(second); });
+        for (auto *face : ordered) {
             require(++work <= 10 * limit, "Mesh intersection candidate work limit");
-            auto *face = static_cast<SmPolyFace *>(candidates[k]->m_pObject);
+            const auto i = indices.at(face);
+            if (self_intersections && i >= j) continue;
             if (coincident(*face, *bf[j], tolerance)) {
                 require(out.coplanar_pairs.size() / 4 < limit, "Coplanar triangle pair limit");
-                const auto i = indices.at(face);
                 out.coplanar_pairs.insert(out.coplanar_pairs.end(), {i, static_cast<uint32_t>(j), am[i], bm[j]});
-            } else intersect_pair(*face, *bf[j], tolerance, ab, bb, out);
+            } else {
+                // Two noncoplanar triangles sharing an entire edge meet only
+                // along that ordinary adjacency, including unwelded vertices.
+                bool adjacent = false;
+                if (self_intersections) {
+                    SmTArray<SmPolyEdge *> ae, be;
+                    face->GetPolyEdges(ae); bf[j]->GetPolyEdges(be);
+                    const auto equal = [](const SmPoint3d &p, const SmPoint3d &q) {
+                        return p.x==q.x && p.y==q.y && p.z==q.z;
+                    };
+                    for (ULONG u = 0; u < ae.GetSize(); ++u) {
+                        for (ULONG v = 0; v < be.GetSize(); ++v) {
+                            adjacent |= (equal(ae[u]->GetStartPoint(), be[v]->GetStartPoint()) &&
+                                equal(ae[u]->GetEndPoint(), be[v]->GetEndPoint())) ||
+                                (equal(ae[u]->GetStartPoint(), be[v]->GetEndPoint()) &&
+                                equal(ae[u]->GetEndPoint(), be[v]->GetStartPoint()));
+                        }
+                    }
+                }
+                if (!adjacent) intersect_pair(*face, *bf[j], tolerance, ab, bb, out);
+            }
         }
     }
 }
@@ -121,6 +148,23 @@ extern "C" int vb_mesh_intersections(const double *first, size_t first_count,
         const auto am = vb_mesh_intersection_origins::masks(af, first, first_faces, ab);
         const auto bm = vb_mesh_intersection_origins::masks(bf, second, second_faces, bb);
         vb_mesh_intersections_detail::compute_pairs(*a, af, bf, tolerance, ab, bb, am, bm, *result);
+        *out = result.release();
+    });
+}
+
+extern "C" int vb_mesh_self_intersections(const double *points, size_t point_count,
+    const uint32_t *triangles, size_t face_count, double tolerance,
+    VbMeshIntersections **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(out && std::isfinite(tolerance) && tolerance > 0., "Invalid mesh self intersection tolerance");
+        std::vector<SmPolyFace *> faces;
+        auto mesh = vb_mesh_boolean_detail::import_mesh(points, point_count, triangles, face_count, tolerance, &faces);
+        auto result = std::make_unique<VbMeshIntersections>();
+        const auto boundaries = vb_mesh_intersection_origins::collect(*mesh, tolerance);
+        const auto masks = vb_mesh_intersection_origins::masks(faces, points, triangles, boundaries);
+        vb_mesh_intersections_detail::compute_pairs(*mesh, faces, faces, tolerance,
+            boundaries, boundaries, masks, masks, *result, true);
         *out = result.release();
     });
 }

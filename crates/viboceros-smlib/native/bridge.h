@@ -10,6 +10,9 @@ typedef struct VbSolid VbSolid;
 typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
 typedef struct VbMeshIntersections VbMeshIntersections;
+int vb_mesh_self_intersections(const double *points, size_t point_count,
+    const uint32_t *triangles, size_t face_count, double tolerance,
+    VbMeshIntersections **out, char *error, size_t capacity);
 int vb_mesh_intersections(const double *first, size_t first_count,
     const uint32_t *first_faces, size_t first_face_count, const double *second,
     size_t second_count, const uint32_t *second_faces, size_t second_face_count,

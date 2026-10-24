@@ -1,4 +1,4 @@
-//! Non-destructive mesh intersection curves with shared tolerance preferences.
+//! Source-preserving mesh intersections with shared tolerance preferences.
 use super::mesh_boolean::Options;
 use super::*;
 use std::{borrow::Cow, sync::Arc};
@@ -8,30 +8,44 @@ const USAGE: &str = "MeshIntersect [Tolerance=Auto|Document|Zero] [CoplanarFaces
 
 pub(super) struct MeshIntersectCommand {
     options: Arc<remembered::Remembered<Options>>,
+    self_intersections: bool,
 }
 impl MeshIntersectCommand {
-    pub(super) fn new(options: Arc<remembered::Remembered<Options>>) -> Self {
-        Self { options }
+    pub(super) fn new(
+        options: Arc<remembered::Remembered<Options>>,
+        self_intersections: bool,
+    ) -> Self {
+        Self {
+            options,
+            self_intersections,
+        }
+    }
+    fn usage(&self) -> &'static str {
+        if self.self_intersections {
+            "MeshSelfIntersect [Tolerance=Auto|Document|Zero] [CoplanarFaces=Drop|Mesh|Polylines]; select meshes, surfaces or polysurfaces"
+        } else {
+            USAGE
+        }
     }
     fn parse(&self, args: &[&str]) -> Result<Options, CommandError> {
         let mut result = self.options.get();
         let (mut tolerance, mut coplanar, mut i) = (false, false, 0);
         while i < args.len() {
-            let (name, value, consumed) = orient_option(args, i, USAGE)?;
+            let (name, value, consumed) = orient_option(args, i, self.usage())?;
             if option_name_eq(name, "Tolerance") && !tolerance {
                 result.tolerance = ["Auto", "Document", "Zero"]
                     .into_iter()
                     .find(|v| option_name_eq(value, v))
-                    .ok_or(CommandError::Usage(USAGE))?;
+                    .ok_or(CommandError::Usage(self.usage()))?;
                 tolerance = true;
             } else if option_name_eq(name, "CoplanarFaces") && !coplanar {
                 result.coplanar = ["Drop", "Mesh", "Polylines"]
                     .into_iter()
                     .find(|v| option_name_eq(value, v))
-                    .ok_or(CommandError::Usage(USAGE))?;
+                    .ok_or(CommandError::Usage(self.usage()))?;
                 coplanar = true;
             } else {
-                return Err(CommandError::Usage(USAGE));
+                return Err(CommandError::Usage(self.usage()));
             }
             i += consumed;
         }
@@ -66,13 +80,14 @@ impl MeshIntersectCommand {
                 })
             })
             .collect::<Result<Vec<_>, _>>()?;
-        if meshes.len() < 2 || meshes.len() > 128 {
-            return Err(CommandError::Usage(USAGE));
+        if meshes.len() < if self.self_intersections { 1 } else { 2 } || meshes.len() > 128 {
+            return Err(CommandError::Usage(self.usage()));
         }
         let curves = compute(
             &meshes.iter().map(Cow::as_ref).collect::<Vec<_>>(),
             options,
             doc.tolerance(),
+            self.self_intersections,
         )?;
         drop(meshes);
         doc.release_command_selection_on_history_replay(selected)?;
@@ -88,7 +103,11 @@ impl MeshIntersectCommand {
 }
 impl Command for MeshIntersectCommand {
     fn name(&self) -> &'static str {
-        "MeshIntersect"
+        if self.self_intersections {
+            "MeshSelfIntersect"
+        } else {
+            "MeshIntersect"
+        }
     }
     fn object_selection_prompt(
         &self,
@@ -141,14 +160,20 @@ fn compute(
     _: &[&TriangleMesh],
     _: Options,
     _: Tolerance,
+    self_intersections: bool,
 ) -> Result<Vec<viboceros_geometry::Polyline3>, CommandError> {
-    Err(CommandError::MeshIntersectRequiresNativeKernel)
+    Err(if self_intersections {
+        CommandError::MeshSelfIntersectRequiresNativeKernel
+    } else {
+        CommandError::MeshIntersectRequiresNativeKernel
+    })
 }
 #[cfg(feature = "native-smlib")]
 fn compute(
     meshes: &[&TriangleMesh],
     options: Options,
     tolerance: Tolerance,
+    self_intersections: bool,
 ) -> Result<Vec<viboceros_geometry::Polyline3>, CommandError> {
-    geometry::compute(meshes, options, tolerance)
+    geometry::compute(meshes, options, tolerance, self_intersections)
 }

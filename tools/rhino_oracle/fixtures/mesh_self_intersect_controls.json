@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_set_zero",
+      "case": "mesh_self_intersect_controls_set_zero"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_intersect_after_zero",
+      "case": "mesh_self_intersect_controls_intersect_after_zero"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_boolean_document",
+      "case": "mesh_self_intersect_controls_boolean_document"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_after_boolean_document",
+      "case": "mesh_self_intersect_controls_after_boolean_document"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_drop_cancel",
+      "case": "mesh_self_intersect_controls_drop_cancel"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_after_drop_cancel",
+      "case": "mesh_self_intersect_controls_after_drop_cancel"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_mesh_mode",
+      "case": "mesh_self_intersect_controls_mesh_mode"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_polylines_mode",
+      "case": "mesh_self_intersect_controls_polylines_mode"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_menu",
+      "case": "mesh_self_intersect_controls_menu"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_flat_chain",
+      "case": "mesh_self_intersect_controls_flat_chain"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_edge_contact",
+      "case": "mesh_self_intersect_controls_edge_contact"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_three_sheets",
+      "case": "mesh_self_intersect_controls_three_sheets"
+    },
+    {
+      "op": "mesh_self_intersect_command",
+      "id": "mesh_self_intersect_controls_identical_boxes",
+      "case": "mesh_self_intersect_controls_identical_boxes"
+    }
+  ]
+}
