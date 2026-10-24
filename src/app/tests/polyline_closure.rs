@@ -1,8 +1,7 @@
+use super::polyline_closure_reference as reference;
 use super::*;
 use std::collections::BTreeSet;
 use viboceros_document::{GripMode, SelectionMode};
-#[path = "../../../crates/viboceros-geometry/tests/support/polyline_closure.rs"]
-mod reference;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();

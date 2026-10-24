@@ -15,6 +15,7 @@ pub mod component_seams;
 pub mod contour;
 pub mod crease;
 pub mod extract_control_polygon;
+mod extract_points;
 pub mod vertex_seams;
 use extract_control_polygon::ExtractControlPolygonCommand;
 mod create_unique_block;
@@ -541,7 +542,6 @@ use viboceros_io::{read_3dm_file, read_step_file};
 mod unit_import_tests;
 #[cfg(test)]
 use viboceros_geometry::Ellipse3;
-const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 const MAX_ARRAY_OBJECTS: usize = 1_000_000;
 const MAX_SPAN_OUTPUT_OBJECTS: usize = 1_000_000;
 const MAX_CURVE_TRIM_INTERSECTIONS: usize = 1_000_000;
@@ -1603,7 +1603,7 @@ impl CommandRegistry {
             .register(CrvEndCommand)
             .expect("unique built-in command");
         registry
-            .register(ExtractPtCommand)
+            .register(extract_points::ExtractPtCommand)
             .expect("unique built-in command");
         registry
             .register(ExtractControlPolygonCommand)
@@ -8027,170 +8027,6 @@ fn mark_selected_curve_endpoints(
         CurveEndpoint::End => "ends",
     };
     Ok(format!("Added {} point(s) at curve {location}", ids.len()))
-}
-
-const EXTRACT_PT_USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud]";
-
-struct ExtractPtCommand;
-
-impl Command for ExtractPtCommand {
-    fn name(&self) -> &'static str {
-        "ExtractPt"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_extract_point_arguments(arguments)?;
-        let selected = document
-            .selected_objects()
-            .map(|object| (object.geometry().clone(), object.attributes().clone()))
-            .collect::<Vec<_>>();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-
-        let current_layer = document.current_layer_id();
-        let mut output = Vec::new();
-        let mut source_with_points = 0;
-        let mut first_source_has_points = false;
-        for (source_index, (geometry, attributes)) in selected.iter().enumerate() {
-            let points = geometry.extract_point_locations()?;
-            if source_index == 0 {
-                first_source_has_points = !points.is_empty();
-            }
-            if points.is_empty() {
-                continue;
-            }
-            source_with_points += 1;
-            let output_count = output.len().checked_add(points.len()).ok_or(
-                CommandError::TooManyExtractedPoints {
-                    maximum: MAX_EXTRACTED_POINTS,
-                },
-            )?;
-            if output_count > MAX_EXTRACTED_POINTS {
-                return Err(CommandError::TooManyExtractedPoints {
-                    maximum: MAX_EXTRACTED_POINTS,
-                });
-            }
-            output
-                .try_reserve(points.len())
-                .map_err(|_| CommandError::TooManyExtractedPoints {
-                    maximum: MAX_EXTRACTED_POINTS,
-                })?;
-            let attributes = match options.output_layer {
-                ExtractPointOutputLayer::Input => attributes.clone(),
-                ExtractPointOutputLayer::Current => ObjectAttributes::on_layer(current_layer),
-            };
-            output.extend(points.into_iter().map(|point| (point, attributes.clone())));
-        }
-        if output.is_empty() {
-            return Err(CommandError::NoExtractablePoints);
-        }
-
-        let point_count = output.len();
-        let mut ids = Vec::with_capacity(match options.output {
-            ExtractPointOutput::Points => point_count,
-            ExtractPointOutput::PointCloud => 1,
-        });
-        match options.output {
-            ExtractPointOutput::Points => {
-                for (point, attributes) in output {
-                    ids.push(
-                        document
-                            .add_geometry_with_attributes(Geometry::Point(point), attributes)?,
-                    );
-                }
-            }
-            ExtractPointOutput::PointCloud => {
-                let attributes = match options.output_layer {
-                    ExtractPointOutputLayer::Input => selected
-                        .first()
-                        .filter(|_| first_source_has_points)
-                        .map_or_else(
-                            || ObjectAttributes::on_layer(current_layer),
-                            |(_, attributes)| attributes.clone(),
-                        ),
-                    ExtractPointOutputLayer::Current => ObjectAttributes::on_layer(current_layer),
-                };
-                let cloud =
-                    PointCloud3::try_new(output.into_iter().map(|(point, _)| point).collect())?;
-                ids.push(
-                    document
-                        .add_geometry_with_attributes(Geometry::PointCloud(cloud), attributes)?,
-                );
-            }
-        }
-        replace_selection(document, ids.iter().copied())?;
-        Ok(format!(
-            "Extracted {} point(s) from {source_with_points} of {} selected object(s)",
-            point_count,
-            selected.len()
-        ))
-    }
-}
-
-#[derive(Clone, Copy)]
-enum ExtractPointOutputLayer {
-    Input,
-    Current,
-}
-
-#[derive(Clone, Copy)]
-enum ExtractPointOutput {
-    Points,
-    PointCloud,
-}
-
-#[derive(Clone, Copy)]
-struct ExtractPointOptions {
-    output_layer: ExtractPointOutputLayer,
-    output: ExtractPointOutput,
-}
-
-fn parse_extract_point_arguments(arguments: &[&str]) -> Result<ExtractPointOptions, CommandError> {
-    let mut output_layer = ExtractPointOutputLayer::Input;
-    let mut output = ExtractPointOutput::Points;
-    let mut output_layer_seen = false;
-    let mut output_seen = false;
-    let mut index = 0;
-    while index < arguments.len() {
-        let argument = arguments[index];
-        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
-            (name, value, 1)
-        } else {
-            let value = arguments
-                .get(index + 1)
-                .ok_or(CommandError::Usage(EXTRACT_PT_USAGE))?;
-            (argument, *value, 2)
-        };
-        let name = name.trim_start_matches('_');
-        let value = value.trim_start_matches('_');
-        if name.eq_ignore_ascii_case("OutputLayer") && !output_layer_seen {
-            output_layer = if value.eq_ignore_ascii_case("Input") {
-                ExtractPointOutputLayer::Input
-            } else if value.eq_ignore_ascii_case("Current") {
-                ExtractPointOutputLayer::Current
-            } else {
-                return Err(CommandError::Usage(EXTRACT_PT_USAGE));
-            };
-            output_layer_seen = true;
-        } else if name.eq_ignore_ascii_case("Output") && !output_seen {
-            if value.eq_ignore_ascii_case("PointCloud") {
-                output = ExtractPointOutput::PointCloud;
-            } else if value.eq_ignore_ascii_case("Points") {
-                output = ExtractPointOutput::Points;
-            } else {
-                return Err(CommandError::Usage(EXTRACT_PT_USAGE));
-            }
-            output_seen = true;
-        } else {
-            return Err(CommandError::Usage(EXTRACT_PT_USAGE));
-        }
-        index += consumed;
-    }
-    Ok(ExtractPointOptions {
-        output_layer,
-        output,
-    })
 }
 
 const EXTRACT_SURFACE_USAGE: &str = "ExtractSrf (point|Faces=All|Faces=0,2,...|Face=index [Object=selected-uuid]) [Copy=Yes|No] [OutputLayer=Input|Current]";

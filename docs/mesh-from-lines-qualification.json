@@ -1872,9 +1872,9 @@
     "crates/viboceros-geometry/src/point_projection/fit/normalized.rs": "e94962bae969e4480a3032f02edf9ff5c7ec97a4da64e335f352d2447094e9f7",
     "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
     "crates/viboceros-geometry/src/line.rs": "a11a1c64fa364f5ee69b58e4b449bd1ab8441ff9bacaf96a7ebf8de54ca433d4",
-    "crates/viboceros-command/src/lib.rs": "5f0a6a9fa73eaf436f21fb04066558343b5e6f3ba40457fd76653bda55793702",
+    "crates/viboceros-command/src/lib.rs": "f74f712bdceea3539c5dac20131c34d84f55e01c8f6fa330ee1ded45d874b4d5",
     "crates/viboceros-command/src/mesh_from_lines.rs": "6101119d5a6a23aac935906dd066d66f2fee56b2c592465e6d377f8d320fca8b",
-    "crates/viboceros-command/src/object_selection.rs": "11f178b8ce7d3198bc562214cfc44670074a67b2c3d772d9f1c35840d7a30a58",
+    "crates/viboceros-command/src/object_selection.rs": "e2b78d2f66fe90a5276afe6bad89f05bbedd12059793578c1236290ce398ea6e",
     "crates/viboceros-command/tests/mesh_from_lines_native.rs": "1dc81f8ac57b022f5842eee91a05e958bc70f77e532fa9f7af0e5e6ee04288c3",
     "crates/viboceros-command/tests/support/mesh_from_lines.rs": "7ae115ac5bba7a5131ba304a8027046bc735ef945e9220ae3fab201515ff8a7d",
     "src/app.rs": "d004640e42228b2665f1775ee50c70fa343245e5068fa82176967aee9604a0ca",
@@ -1913,7 +1913,7 @@
     "src/app/tests/face_edge_input.rs": "5a3073701e8da3181f8e3306badcc2fcc2f6b175740891dc1d612b0c204e4abc",
     "src/app/tests/mesh_edit_input.rs": "a4fd1266f4f6fa9b6dabd24745f9ec11375fd2e3e299c0f422475d488b378105",
     "src/app/tests/mesh_primitive_input.rs": "31ed51730b62b47d6dc9c3b9528a3855f898029f76883d050ff5e07a63ed58b5",
-    "src/app/tests/mod.rs": "6cf3d1983bc0417f2dd98cf3c3564f57c4211ec36db82a4d92c07baf574ae23e",
+    "src/app/tests/mod.rs": "081e84c041403e754af08786b6dd31239a8941dad6cf4df047f35a399cbc16c9",
     "src/app/tests/primitive_input.rs": "cb745190ea55cfbca6bbc77c7da7ed8c1e845590cf114318949718179e055652",
     "src/app/tests/round_primitive_input.rs": "5d700393bc1a19f4fdc67402ba38a6058cff1cc9cd5220453d9569b95e8d6b64",
     "src/app/tests/selection_sidebar.rs": "91e05888ec0c505b8992aeb987f09e8f712d30a269d1af34bac66ae6687f85ea",
@@ -1921,7 +1921,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "d135bb752f98fa28a7dd0443f3ae7d2e0771e1ea73a2bcf0d398d96aec187535",
     "src/app/viewport_input.rs": "3df7f0793ba9ad712e0b16b5dbd3d64390c3391eba0c884075df96d9266e48b7",
-    "tools/rhino_oracle/qualification_sources.py": "6fe83938aaf0d0ed5fb6af3dd29beafae8bf1b0a4ae3bd5870a14eb6dcb556d0",
+    "tools/rhino_oracle/qualification_sources.py": "4759e4d2d1b5ae0a04d33ebe538faacaa6d56f869c8cb783226ddf9581ec09fc",
     "crates/viboceros-command/src/soft_crease.rs": "eec4487501312fc3090d932560599f5e18e4038017d7f7412ac268b5507e007b",
     "crates/viboceros-command/src/soft_crease/profile.rs": "018d7bed89c5fc71e98265f9b578345809f7b5e6937145d2046cb3a472cc6f0f",
     "crates/viboceros-command/src/soft_crease/arguments.rs": "7d38e43f5032110cda07782c1a4988a1bed1a7f2248b16ac94f8406c455034b6",
@@ -2104,6 +2104,12 @@
     "src/app/object_selection/mesh_trim_tests.rs": "982736aaccc857cd813f4b70568b2eda660c7474c377969f1726473c232bd4de",
     "crates/viboceros-command/tests/support/mesh_trim.rs": "c542629eb772f9f8d9be50dd201d1b99a1b81c003c0806af9f12bd7b03d25f05",
     "src/app/boolean_solids/mesh_trim.rs": "328983e73ee890f9dbb5b7fcd5b6a79699af9a9a3976fd0bfbd9419323bd7f90",
-    "crates/viboceros-command/src/mesh_trim/cutters.rs": "040fd24470e793d424289c4e4199724c1813671c9951dc12e908955164064f69"
+    "crates/viboceros-command/src/mesh_trim/cutters.rs": "040fd24470e793d424289c4e4199724c1813671c9951dc12e908955164064f69",
+    "crates/viboceros-command/src/extract_points.rs": "836a56a79b1ea224b1ff1504ae873aff6ca8cda68765fa7f6fb9b89520c9b10e",
+    "crates/viboceros-command/src/extract_points/options.rs": "3bdb04d709d40df69d77a32edfd0f2fb1d7f2ffae3bc4a6d451270af1a533b72",
+    "crates/viboceros-command/src/extract_points/tests.rs": "2b4191b537c287298fcabb1f27991006bf47259b2586e665ddd65e5c5580b5de",
+    "src/app/tests/extract_points.rs": "5dfd40938a03c463277bb1a31adbe2b2a10e72ef6e6f8e505a83d7f0225e4fa1",
+    "src/app/tests/polyline_closure.rs": "f215e64f86f7ac2628d272145108dc7661ac269e8000ba54c2ca316749309fd5",
+    "crates/viboceros-geometry/tests/support/polyline_closure.rs": "43c664f83cfbba75c4e781e22a80859d333a610d1b96a7dedb3da641415a3e39"
   }
 }

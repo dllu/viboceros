@@ -63,6 +63,7 @@ mod ellipse_deform;
 mod evaluate_point;
 mod evaluate_uv;
 mod extract_curvature_graph;
+mod extract_points;
 mod extract_surface;
 mod extrude_surface;
 mod extrude_surface_apex;
@@ -124,6 +125,8 @@ mod point_input;
 mod point_selection;
 mod points;
 mod polyline_closure;
+#[path = "../../../crates/viboceros-geometry/tests/support/polyline_closure.rs"]
+mod polyline_closure_reference;
 mod polyline_on_mesh;
 mod primitive_input;
 mod round_primitive_input;

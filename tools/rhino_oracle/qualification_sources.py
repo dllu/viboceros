@@ -91,6 +91,9 @@ APPLICATION_MODULES = [
     'src/app/tests/command_focus.rs',
     'src/app/tests/curve_input.rs',
     'src/app/tests/extrusion_input.rs',
+    'src/app/tests/extract_points.rs',
+    'src/app/tests/polyline_closure.rs',
+    'crates/viboceros-geometry/tests/support/polyline_closure.rs',
     'src/app/tests/face_edge_input.rs',
     'src/app/tests/mesh_edit_input.rs',
     'src/app/tests/mesh_primitive_input.rs',
@@ -218,6 +221,9 @@ def with_shared_sources(paths):
                          'src/viewport/insert_point.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
+            'crates/viboceros-command/src/extract_points.rs',
+            'crates/viboceros-command/src/extract_points/options.rs',
+            'crates/viboceros-command/src/extract_points/tests.rs',
             'crates/viboceros-command/src/mesh_split.rs',
             'crates/viboceros-command/src/mesh_split/arguments.rs',
             'crates/viboceros-command/src/mesh_split/execute.rs',

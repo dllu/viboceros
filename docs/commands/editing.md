@@ -206,11 +206,7 @@ documents the rational/native parameter bridge, projected edits, and validation.
 
 ## Extracting points
 
-`ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
-vertex (including unused and coincident vertices). Closed seams and periodic
-NURBS control rings follow Rhino ordering. Point results default to each input
-layer; `OutputLayer=Current` puts them on the active layer with fresh
-attributes. `Output=PointCloud` merges the locations into one cloud in selection
-order, and selects the result while deselecting the sources. Input-layer output
-copies the first selected source's attributes when that source contributes
-locations; otherwise it uses fresh current-layer attributes.
+[`ExtractPt`](extract-points.md) duplicates defining locations as individual
+points or one point cloud. Start with preselected sources or pick them after
+starting the command; Output and OutputLayer choices are available during
+selection. The command guide records location ordering, attributes and limits.
