@@ -1,0 +1,16 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "target_layer_echo_preselected",
+      "case": "target_layer_echo_preselected"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "target_layer_echo_picked",
+      "case": "target_layer_echo_picked"
+    }
+  ]
+}

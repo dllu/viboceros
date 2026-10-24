@@ -17,6 +17,10 @@ def run(doc, ids, case, host, macro, identifier):
         obj=doc.Objects.FindId(ids[source]);g=obj.Geometry
         component=indexes(g,kind,host)[index]
         aliases=[component]
+        # Rhino's getter promotes single-face subobjects to their owning
+        # surface. The managed receipt distinguishes that from a component.
+        if isinstance(g,G.Brep) and g.Faces.Count==1:
+            aliases.append(G.ComponentIndex(G.ComponentIndexType.InvalidType,-1))
         if isinstance(g,G.Mesh) and kind=='vertex':aliases.extend(G.ComponentIndex(G.ComponentIndexType.MeshVertex,i) for i in g.TopologyVertices.MeshVertexIndices(index))
         targets.append((obj,aliases))
         bounds=g.GetBoundingBox(True)
@@ -29,6 +33,23 @@ def run(doc, ids, case, host, macro, identifier):
                 normal=G.Vector3d.CrossProduct(polygon[1]-polygon[0],polygon[2]-polygon[0])
             elif kind=='vertex':point=G.Point3d(g.TopologyVertices[index])
             else:point=g.TopologyEdges.EdgeLine(index).PointAt(.5)
+        elif isinstance(g,G.Brep):
+            if kind=='face':
+                face=g.Faces[index]
+                u,v=face.Domain(0).Mid,face.Domain(1).Mid
+                point=face.PointAt(u,v)
+                normal=face.NormalAt(u,v)
+                if face.OrientationIsReversed:normal.Reverse()
+            else:
+                edge=g.Edges[index]
+                point=edge.PointAt(edge.Domain.Mid)
+                normals=[]
+                for face_index in edge.AdjacentFaces():
+                    face=g.Faces[face_index]
+                    n=face.NormalAt(face.Domain(0).Mid,face.Domain(1).Mid)
+                    if face.OrientationIsReversed:n.Reverse()
+                    normals.append(n)
+                normal=G.Vector3d(*[sum(getattr(n,k) for n in normals) for k in ['X','Y','Z']])
         else:
             if kind=='face':
                 face=list(g.Faces)[index]

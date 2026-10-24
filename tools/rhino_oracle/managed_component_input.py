@@ -31,12 +31,13 @@ def drive(host, script, identifier, views, select_grips=False):
     reference=method(R.Input.Custom.GetObject,'Object',[S.Int32])
     for i,(screen,obj,aliases) in enumerate(views):
         marker='@component-click:%s:%d:sub'%(identifier,i);markers.append(marker)
-        menu='@component-menu:%s-%d:%s'%(identifier,i,'First' if isinstance(obj.Geometry,R.Geometry.SubD) else 'Second')
+        first=isinstance(obj.Geometry,R.Geometry.SubD) or (isinstance(obj.Geometry,R.Geometry.Brep) and aliases[0].ComponentIndexType==R.Geometry.ComponentIndexType.BrepFace)
+        menu='@component-menu:%s-%d:%s'%(identifier,i,'First' if first else 'Second')
         emit=block([E.Assign(item(sent,i),integer(1)),E.Assign(item(last,0),now),log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))])
         expected=E.Condition(E.Equal(item(sent,i),integer(1)),E.Constant(json.dumps(marker)),E.Constant(json.dumps(menu)))
         acknowledged=E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),expected))
         receipt=E.Condition(E.NotEqual(getter,E.Constant(None,clr.GetClrType(R.Input.Custom.GetObject))),E.Property(getter,'ObjectCount'),integer(-1))
-        selected=E.Constant(False)
+        selected=E.Constant(False);promoted=E.Constant(False)
         for j in reversed(range(32)):
             ref=call(getter,reference,[integer(j)])
             owner=E.Equal(E.Property(ref,'ObjectId'),E.Constant(obj.Id,clr.GetClrType(S.Guid)))
@@ -47,8 +48,11 @@ def drive(host, script, identifier, views, select_grips=False):
                 matches=E.OrElse(matches,same)
             found=E.AndAlso(E.LessThan(integer(j),E.Property(getter,'ObjectCount')),E.AndAlso(owner,matches))
             selected=E.OrElse(found,selected)
+            if any(c.ComponentIndexType==R.Geometry.ComponentIndexType.InvalidType for c in aliases):
+                whole=E.AndAlso(E.Equal(E.Property(ci,'ComponentIndexType'),E.Constant(R.Geometry.ComponentIndexType.InvalidType,clr.GetClrType(R.Geometry.ComponentIndexType))),E.Equal(E.Property(ci,'Index'),integer(-1)))
+                promoted=E.OrElse(E.AndAlso(found,whole),promoted)
         selected=E.AndAlso(E.NotEqual(getter,E.Constant(None,clr.GetClrType(R.Input.Custom.GetObject))),selected)
-        admitted=block([E.Assign(item(flags,i),integer(1)),E.Assign(item(counts,i),receipt),log('ACK %d component admitted\n'%i),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)])
+        admitted=block([E.Assign(item(flags,i),E.Condition(promoted,integer(2),integer(1))),E.Assign(item(counts,i),receipt),log('ACK %d expected reference admitted\n'%i),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)])
         request_menu=block([E.Assign(item(sent,i),integer(2)),E.Assign(item(last,0),now),log('\nPICK %s 1 1\n'%menu)])
         diagnostics=[E.Assign(item(counts,i),receipt)]
         fmt=method(S.String,'Format',[S.String,S.Object,S.Object,S.Object])
@@ -90,4 +94,4 @@ def drive(host, script, identifier, views, select_grips=False):
     finally:
         state[1]=0;timer.Dispose();timeout.Dispose();event.RemoveEventHandler(None,handler)
     if state[4]!=1 or state[2] or not state[3] or state[0]!=len(views) or any(not flag for flag in flags):raise ValueError('incomplete owned ExtractPt picks: stage=%s counts=%s timeout=%s; history=%s'%(state[0],list(counts),state[2],R.RhinoApp.CommandHistoryWindowText[-1400:]+'; trace='+S.IO.File.ReadAllText(progress)[-2200:]))
-    return returned,dict(selected=True,entered=True,command_count=int(state[4]),command_success=(state[5]==1),input='owned physical Ctrl+Shift clicks acknowledged by the host',getter_counts=list(counts),component_admitted=[bool(flag) for flag in flags],menus=[sent[i]==2 for i in range(len(views))],markers=markers,script=script)
+    return returned,dict(selected=True,entered=True,command_count=int(state[4]),command_success=(state[5]==1),input='owned physical Ctrl+Shift clicks acknowledged by the host',getter_counts=list(counts),component_admitted=[flag==1 for flag in flags],owner_promoted=[flag==2 for flag in flags],menus=[sent[i]==2 for i in range(len(views))],markers=markers,script=script)

@@ -151,6 +151,15 @@ def run(operation, host, iterations, tolerance):
                 success, trace = drive_getter(doc,ids,case,host,macro,operation['id'])
                 receipt.append(trace)
                 return success
+            if case.get('layer_target') is not None:
+                # Option discovery only: rejected tokens can leave the command
+                # and trailing selections outside the observed ExtractPt event.
+                if case.get('target_getter'):doc.Objects.UnselectAll()
+                script='_-ExtractPt '+('_OutputLayer _TargetObject' if case.get('target_split') else '_OutputLayer=_TargetObject')+' _SelID '+str(ids[case['layer_target']])+' _Enter'
+                if case.get('target_getter'):
+                    script+=' '+' '.join('_SelID '+str(ids[i]) for i in case['whole'])+' _Enter'
+                receipt.append(dict(script=script))
+                return R.RhinoApp.RunScript(script,bool(case.get('target_echo')))
             if not case.get('getter'):
                 return R.RhinoApp.RunScript(macro, False)
             doc.Objects.UnselectAll()

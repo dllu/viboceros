@@ -189,7 +189,8 @@ def with_shared_sources(paths):
                          'tools/rhino_oracle/mesh_trim_pick_trace.py',
                          'tools/rhino_oracle/managed_mouse_callback.py'])
     if 'tools/rhino_oracle/extract_points_cases.py' in expanded:
-        expanded.extend(['tools/rhino_oracle/extract_points_getter.py',
+        expanded.extend(['tools/rhino_oracle/extract_points_target_cases.py',
+                         'tools/rhino_oracle/extract_points_getter.py',
                          'tools/rhino_oracle/managed_component_input.py',
                          'tools/rhino_oracle/extract_points_geometry.py',
                          'tools/rhino_oracle/extract_points_component_cases.py',
@@ -243,6 +244,7 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/error.rs',
             'crates/viboceros-command/src/extract_points.rs',
             'crates/viboceros-command/src/extract_points/components.rs',
+            'crates/viboceros-command/src/extract_points/components/brep.rs',
             'crates/viboceros-command/src/component_selection.rs',
             'crates/viboceros-geometry/src/subd/edges.rs',
             'crates/viboceros-geometry/src/subd/edges/curves.rs',

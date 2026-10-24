@@ -190,3 +190,48 @@ fn component_validation_is_atomic_and_whole_owner_is_overridden() {
         &Geometry::Point(point(0., 0., 0.))
     );
 }
+
+#[test]
+fn invalid_brep_components_preserve_sources_selection_and_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let brep = Brep::try_box(
+        Frame3::try_from_normal(
+            point(0., 0., 0.),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            doc.tolerance(),
+        )
+        .unwrap(),
+        [[0., 4.], [0., 3.], [0., 2.]],
+        doc.tolerance(),
+    )
+    .unwrap();
+    let surface = brep.faces()[0].surface().clone();
+    let ids = [
+        doc.add_geometry(Geometry::Brep(brep)).unwrap(),
+        doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap(),
+    ];
+    doc.select_object(ids[0], SelectionMode::Replace).unwrap();
+    doc.clear_history().unwrap();
+    doc.add_geometry(Geometry::Point(point(9., 9., 9.)))
+        .unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    for id in ids {
+        for (kind, index) in [("Vertex", 0), ("Face", 99), ("Edge", 99)] {
+            assert!(
+                registry
+                    .execute(
+                        &mut doc,
+                        &format!(
+                            "ExtractPt Component={},Face,0 Component={id},{kind},{index}",
+                            ids[0]
+                        )
+                    )
+                    .is_err()
+            );
+            assert_eq!(format!("{doc:?}"), before);
+            assert!(doc.can_redo());
+        }
+    }
+}

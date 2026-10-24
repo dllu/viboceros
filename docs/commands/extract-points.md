@@ -12,7 +12,7 @@ ExtractPt Output=PointCloud OutputLayer=Current
 ```
 
 Sources contribute curve defining points, NURBS surface control nets, B-rep
-vertices, raw mesh vertices, SubD control vertices, or point-cloud locations.
+face support controls, raw mesh vertices, SubD control vertices, or point-cloud locations.
 Raw mesh locations include unused and coincident vertices. Closed curve seams
 and periodic control rings retain their existing Rhino ordering. Source order
 follows selection actions. Point objects and empty meshes contribute nothing;
@@ -56,10 +56,15 @@ visibility/selection, source storage and Undo/Redo at `1e-7`. Thirteen additiona
 captures retain native macro-option discovery; command-first captures apply
 both output options before selection.
 
-[Mesh/SubD component extraction](extract-point-components.md) supports faces,
-edges and topology vertices, including smooth SubD edge control points.
-Trimmed face controls, smooth SubD whole-object limit locations, `SubCrv` and
-`OutputLayer=TargetObject` remain unimplemented.
+[Component extraction](extract-point-components.md) supports B-rep faces and
+edges, and mesh/SubD faces, edges and topology vertices, including smooth SubD
+edge control points. Smooth SubD whole-object limit locations and `SubCrv`
+remain unimplemented.
+
+`OutputLayer=TargetObject` remains unavailable. The installed Rhino
+8.32.26160.13001 rejects that value, despite its inclusion in the command
+reference; the [native menu capture](../../tools/rhino_oracle/observations/extract_points_target_menu.json)
+retains the command history. These diagnostic captures do not qualify target-layer output.
 
 See [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extractpt.htm)
 and [point-cloud commands](point-cloud.md).

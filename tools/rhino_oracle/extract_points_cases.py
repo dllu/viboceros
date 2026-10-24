@@ -1,9 +1,14 @@
 """Fixed grip extraction scenes; requests cannot supply executable input."""
 from copy import deepcopy
 try:
-    from .extract_points_component_cases import CASES as COMPONENTS, CURVES as COMPONENT_CURVES, EDGE_HOLDOUTS, SELECTION as COMPONENT_SELECTION, MIXED as COMPONENT_MIXED, MIXED_VERIFIED, PICKED_CONTROLS, PICKED
+    from .extract_points_component_cases import CASES as COMPONENTS, CURVES as COMPONENT_CURVES, EDGE_HOLDOUTS, SELECTION as COMPONENT_SELECTION, MIXED as COMPONENT_MIXED, MIXED_VERIFIED, PICKED_CONTROLS, PICKED, BREP, BREP_PICKED
 except (ImportError, ValueError):
-    from extract_points_component_cases import CASES as COMPONENTS, CURVES as COMPONENT_CURVES, EDGE_HOLDOUTS, SELECTION as COMPONENT_SELECTION, MIXED as COMPONENT_MIXED, MIXED_VERIFIED, PICKED_CONTROLS, PICKED
+    from extract_points_component_cases import CASES as COMPONENTS, CURVES as COMPONENT_CURVES, EDGE_HOLDOUTS, SELECTION as COMPONENT_SELECTION, MIXED as COMPONENT_MIXED, MIXED_VERIFIED, PICKED_CONTROLS, PICKED, BREP, BREP_PICKED
+
+try:
+    from .extract_points_target_cases import DISCOVERY as TARGET_DISCOVERY, ECHO as TARGET_ECHO, MENU as TARGET_MENU
+except (ImportError, ValueError, SystemError):
+    from extract_points_target_cases import DISCOVERY as TARGET_DISCOVERY, ECHO as TARGET_ECHO, MENU as TARGET_MENU
 
 
 def source(kind='rational', mode='control', grips=None):
@@ -59,7 +64,9 @@ METADATA = {
 for case in METADATA.values():
     case.update(output='PointCloud', layer='Input', getter=True)
 FAMILIES = dict(grips=CASES, controls=CONTROLS, verified=VERIFIED, metadata=METADATA,
-                components=COMPONENTS, component_curves=COMPONENT_CURVES, component_edge_holdouts=EDGE_HOLDOUTS, component_selection=COMPONENT_SELECTION, component_mixed=COMPONENT_MIXED, component_mixed_verified=MIXED_VERIFIED, component_picked_controls=PICKED_CONTROLS, component_picked=PICKED)
+                components=COMPONENTS, component_curves=COMPONENT_CURVES, component_edge_holdouts=EDGE_HOLDOUTS, component_selection=COMPONENT_SELECTION, component_mixed=COMPONENT_MIXED, component_mixed_verified=MIXED_VERIFIED, component_picked_controls=PICKED_CONTROLS, component_picked=PICKED,
+                component_brep=BREP, component_brep_picked=BREP_PICKED,
+                target_discovery=TARGET_DISCOVERY, target_echo=TARGET_ECHO, target_menu=TARGET_MENU)
 ALL_CASES = {name:case for cases in FAMILIES.values() for name, case in cases.items()}
 
 

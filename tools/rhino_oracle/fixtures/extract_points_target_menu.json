@@ -1,0 +1,11 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "target_layer_menu",
+      "case": "target_layer_menu"
+    }
+  ]
+}

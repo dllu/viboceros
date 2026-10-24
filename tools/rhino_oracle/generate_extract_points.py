@@ -9,7 +9,7 @@ from .client import OracleClient
 from .extract_points_cases import FAMILIES, request
 
 HERE = Path(__file__).resolve().parent
-SOURCES = ['client.py','component_picking.py','hole_picking.py','group_picking.py','managed_component_input.py','extract_points_getter.py', 'extract_points_cases.py', 'extract_points_probe.py', 'generate_extract_points.py',
+SOURCES = ['extract_points_target_cases.py','client.py','component_picking.py','hole_picking.py','group_picking.py','managed_component_input.py','extract_points_getter.py', 'extract_points_cases.py', 'extract_points_probe.py', 'generate_extract_points.py',
            'extract_points_geometry.py', 'extract_points_component_cases.py', 'extract_points_component_input.py',
            'grip_navigation_probe.py', 'grip_transform_probe.py', 'join_probe.py',
            'merge_edges_probe.py', 'structural_sdk.py', 'rhino_worker.py']
@@ -32,7 +32,7 @@ def main():
         if not archive.exists():
             archive.write_bytes(gzip.compress((HERE/source_name).read_bytes(), mtime=0))
     print('Capturing {} ExtractPt scenes'.format(len(request(family)['operations'])), flush=True)
-    data = OracleClient(settings_scheme='VibocerosOracleExtractPtGrips20261024'+family.capitalize()).run_rhino(request(family), timeout=600 if family=='component_picked' else 240)
+    data = OracleClient(settings_scheme='VibocerosOracleExtractPtGrips20261024'+family.capitalize()).run_rhino(request(family), timeout=600 if family.endswith('picked') else 240)
     if sources != {name:digest(HERE/name) for name in SOURCES}:
         raise ValueError('native ExtractPt producer changed during capture')
     if any('error' in row for row in data['results']) or len(data['results']) != len(request(family)['operations']):

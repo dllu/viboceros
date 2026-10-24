@@ -1,10 +1,10 @@
 # ExtractPt components
 
-[ExtractPt](extract-points.md) accepts mesh and SubD faces, edges and topology
-vertices. Use Ctrl+Shift to pick components before starting or while the command
-is selecting. Window selection is also supported. Components override whole
-extraction for the same owner. Other selected whole objects still contribute. Selected grips override
-components on the same owner.
+[ExtractPt](extract-points.md) accepts B-rep faces and edges, and mesh and SubD
+faces, edges and topology vertices. Use Ctrl+Shift to pick components before
+starting or while the command is selecting. Window selection is also supported.
+Explicit components override whole extraction for the same owner. Other selected
+whole objects still contribute. Selected grips override components on the same owner.
 
 Typed input accepts repeatable, zero-based component ordinals:
 
@@ -13,10 +13,21 @@ ExtractPt Component=uuid,Face,0 Component=uuid,Edge,2
 ExtractPt Component=uuid,Vertex,0 Output=PointCloud OutputLayer=Current
 ```
 
-Each UUID identifies a selectable mesh or SubD; invalid or unavailable sources
-reject the complete invocation before edits. Duplicate component arguments are
+Each UUID identifies a selectable B-rep, NURBS surface, mesh or SubD. Invalid or
+unavailable sources reject the complete invocation before edits. Duplicate component arguments are
 processed once. Typed face indices refer to stored faces; mesh edge and vertex
 indices refer to exact-location-welded topology, including unwelded meshes.
+
+B-rep faces contribute the full, untrimmed support control net, with the first
+surface direction changing fastest. Edges on a polysurface contribute their
+bounded 3D curve controls. On a single-face B-rep, each selected edge contributes
+the face's support controls instead, matching Rhino. Distinct components retain
+shared locations; edges precede faces, each in ordinal order. Whole B-reps
+contribute each face's controls in face order, rather than just topology vertices.
+Selecting a whole owner before starting replaces its component selections.
+Rhino's command-first getter promotes picks on single-face B-reps to their
+owning surface; the native receipts record this separately from component
+admission. Viboceros accepts the corresponding face or edge pick directly.
 
 Mesh component locations are combined, deduplicated exactly and sorted by
 coordinates. SubD components contribute in vertex, edge, face order and then
@@ -45,9 +56,10 @@ one-million-output-point limit and native sampling budgets apply; fitting a
 SubD edge currently refines the source globally within those budgets.
 
 The [component qualification](../extract-point-components-qualification.json)
-compares 94 native cases through typed commands and their corresponding
-interactive selection paths (94 getter workflows), including welded/unwelded meshes, combined
-components, point clouds, surface/control-net locations, attributes and history.
+compares 118 native cases through typed commands and their corresponding
+interactive selection paths (118 getter workflows), including trimmed and rational
+B-rep faces, polysurface edges, welded/unwelded meshes, combined components, point
+clouds, surface/control-net locations, attributes and history.
 Another 67 edge forms from irregular, regular, open-boundary, triangular and
 creased SubDs compare degree, knots, controls and 17 evaluations. These checks
 use an epsilon of `1e-7` against Rhino output, independently of the approximation

@@ -2164,7 +2164,7 @@
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
     "tools/rhino_oracle/report_tosubd.py": "be6492ec8f8f42fa86a9af048d69b40f6b38793a0490d2f9bc8f151cde42b3ed",
     "tools/rhino_oracle/test_tosubd.py": "15b3bafb3be9484adb15f4e39a1bd53a78836923468dae2af7d4826bb43ecc81",
-    "tools/rhino_oracle/structural_sdk.py": "93d9ed90ec4bd07e293c04383cb44fde5cce00886e53b1b521741f03505c772a",
+    "tools/rhino_oracle/structural_sdk.py": "2909874d29e959447defe5252b6d80c2c9dd780d0cf1d01540d51ce45c28ae68",
     "tools/rhino_oracle/rhino_worker.py": "6423e0381f254bb896a0204de8cc4f7d223797ac48f2be8e896ffd27e7682067",
     "tools/rhino_oracle/fixtures/tosubd.json": "66190d99951ccd541a3965cb925a022030bbee8d65e43798eac49104500dacea",
     "tools/rhino_oracle/observations/tosubd.json": "86bff64fda484376441ed5771510e778befa9777e219823d9cb6423d3da60d83",
@@ -2256,6 +2256,6 @@
     "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "c20619d7a3861b87af0225a5df25582d52613291d6c42db0f61a075be57f364c",
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
-    "tools/rhino_oracle/qualification_sources.py": "a15b93457b57ebd914e3cebdb6b23fb7e05582cfe7ad065a38f7df6816cce0cc"
+    "tools/rhino_oracle/qualification_sources.py": "c93637efcc1a568b967592e823fd568b9198b49de84620dbf816aabc50c27265"
   }
 }

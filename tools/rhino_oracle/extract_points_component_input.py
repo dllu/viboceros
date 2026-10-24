@@ -3,6 +3,10 @@
 
 def indexes(geometry, kind, host):
     G = host['Rhino'].Geometry
+    if isinstance(geometry, G.Brep):
+        member, count = {'face':('BrepFace',geometry.Faces.Count),
+                         'edge':('BrepEdge',geometry.Edges.Count)}[kind]
+        return [G.ComponentIndex(getattr(G.ComponentIndexType, member), i) for i in range(count)]
     if isinstance(geometry, G.SubD):
         if kind == 'face':
             return [f.ComponentIndex() for f in geometry.Faces]
@@ -21,9 +25,10 @@ def indexes(geometry, kind, host):
 
 def selected(obj, host):
     G = host['Rhino'].Geometry
-    if not isinstance(obj.Geometry, (G.Mesh, G.SubD)):
+    if not isinstance(obj.Geometry, (G.Mesh, G.SubD, G.Brep)):
         return []
-    groups = {kind:indexes(obj.Geometry,kind,host) for kind in ['face','edge','vertex']}
+    groups = {kind:indexes(obj.Geometry,kind,host) for kind in
+              (['face','edge'] if isinstance(obj.Geometry,G.Brep) else ['face','edge','vertex'])}
     values = []
     for component in (obj.GetSelectedSubObjects() or []):
         G = host['Rhino'].Geometry

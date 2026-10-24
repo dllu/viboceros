@@ -246,6 +246,8 @@ pub fn component_rows() -> Vec<Value> {
         "component_edge_holdouts",
         "component_mixed_verified",
         "component_picked",
+        "component_brep",
+        "component_brep_picked",
     ])
 }
 pub fn edge_form_rows() -> Vec<Value> {
@@ -289,7 +291,7 @@ pub fn component_command(row: &Value, ids: &[ObjectId]) -> String {
     if row["value"]["input"]["flat"] == true {
         command.push_str(" SubDLocation=ControlNet");
     }
-    for pick in row["value"]["input"]["components"].as_array().unwrap() {
+    for pick in component_picks(row) {
         command.push_str(&format!(
             " Component={},{},{}",
             ids[pick[0].as_u64().unwrap() as usize],
@@ -298,4 +300,36 @@ pub fn component_command(row: &Value, ids: &[ObjectId]) -> String {
         ));
     }
     command
+}
+
+/// Whole-object preselection can replace the earlier subobject selections.
+pub fn component_picks(row: &Value) -> Vec<Value> {
+    if row["path"] == "picked" {
+        return row["value"]["input"]["components"]
+            .as_array()
+            .unwrap()
+            .clone();
+    }
+    row["value"]["before"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(|o| {
+            o["source"]
+                .as_u64()
+                .map(|source| (source, &o["components"]))
+        })
+        .flat_map(|(source, picks)| {
+            picks
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(move |p| (source, p[0].as_str().unwrap(), p[1].as_u64().unwrap()))
+        })
+        // Unwelded mesh vertex aliases may report the same topology pick
+        // multiple times. A second UI click would toggle that pick off.
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .map(|(source, kind, index)| serde_json::json!([source, kind, index]))
+        .collect()
 }

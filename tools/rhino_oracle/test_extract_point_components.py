@@ -9,7 +9,7 @@ from .report_extract_points import native, validate_component_getter
 class ExtractPointComponentTests(unittest.TestCase):
     def test_native_requests_archives_and_component_states(self):
         _,rows,_=native(FAMILIES,components=True)
-        self.assertEqual(len(rows),94)
+        self.assertEqual(len(rows),118)
         from .extract_points_cases import ALL_CASES, FAMILIES as all_families
         self.assertEqual(len(ALL_CASES),sum(len(cases) for cases in all_families.values()))
         for label,row in rows.items():
@@ -28,6 +28,20 @@ class ExtractPointComponentTests(unittest.TestCase):
             forged['getter'][key] = value
             with self.subTest(key=key), self.assertRaises(ValueError):
                 validate_component_getter(forged, row['id'])
+
+    def test_single_face_owner_promotion_is_explicit_and_bounded(self):
+        data=json.loads((ROOT/'tools/rhino_oracle/observations/extract_points_component_brep_picked.json').read_text())
+        row=next(r for r in data['results'] if r['id']=='postselected_component_brep_surface_edge')
+        self.assertEqual(row['value']['getter']['component_admitted'],[False])
+        self.assertEqual(row['value']['getter']['owner_promoted'],[True])
+        validate_component_getter(row['value'],row['id'])
+        for field,value in [('owner_promoted',[False]),('component_admitted',[True]),
+                            ('owner_promoted',[]),('owner_promoted',[1])]:
+            forged=deepcopy(row['value']);forged['getter'][field]=value
+            with self.subTest(field=field,value=value),self.assertRaises(ValueError):
+                validate_component_getter(forged,row['id'])
+        forged=deepcopy(row['value']);forged['input']['sources'][0]['kind']='brep_box'
+        with self.assertRaises(ValueError):validate_component_getter(forged,row['id'])
 
     def test_report_rebuild_and_rejection_of_missing_or_forged_measurements(self):
         record=json.loads((ROOT/'docs/extract-point-components-qualification.json').read_text())

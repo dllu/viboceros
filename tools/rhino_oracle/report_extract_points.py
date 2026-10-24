@@ -12,6 +12,9 @@ from .qualification_sources import with_shared_sources
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
+COMPONENT_QUALIFIED = ['component_selection','component_edge_holdouts',
+                       'component_mixed_verified','component_picked',
+                       'component_brep','component_brep_picked']
 SOURCES = with_shared_sources([
     'crates/viboceros-command/src/lib.rs', 'crates/viboceros-command/src/object_selection.rs',
     'crates/viboceros-document/src/lib.rs', 'src/app.rs',
@@ -27,11 +30,19 @@ def validate_component_getter(value, identifier):
     getter = value['getter']
     count = len(value['input']['components'])
     markers = ['@component-click:{}:{}:sub'.format(identifier, i) for i in range(count)]
+    admitted=getter.get('component_admitted',[])
+    promoted=getter.get('owner_promoted',[False]*count)
+    if len(admitted)!=count or len(promoted)!=count:
+        raise ValueError('ExtractPt component admission count differs')
+    for pick,component,owner in zip(value['input']['components'],admitted,promoted):
+        source=value['input']['sources'][pick[0]]
+        if (type(component) is not bool or type(owner) is not bool or component==owner or
+            (owner and source['kind'] not in ['brep_surface','brep_trimmed'])):
+            raise ValueError('ExtractPt component admission identity differs')
     if (getter.get('selected') is not True or getter.get('entered') is not True or
         type(getter.get('command_count')) is not int or getter['command_count'] != 1 or
         getter.get('command_success') is not True or
-        len(getter.get('component_admitted', [])) != count or
-        any(flag is not True for flag in getter['component_admitted']) or getter.get('markers') != markers or
+        getter.get('markers') != markers or
         len(getter.get('getter_counts', [])) != count or
         any(type(n) is not int or n < 1 for n in getter['getter_counts']) or
         len(getter.get('menus', [])) != count or
@@ -76,11 +87,11 @@ def native(families=None, components=False):
             if family in ['verified','metadata']:
                 if value['getter'] is None or value['getter']['visible_grips'] != sum(len(s['grips']) for s in value['input']['sources']):
                     raise ValueError('ExtractPt native getter coverage changed')
-            if ((components and family in ['component_selection','component_edge_holdouts','component_mixed_verified','component_picked']) or
+            if ((components and family in COMPONENT_QUALIFIED) or
                 (not components and (family in ['verified','metadata'] or (family == 'grips' and value['input']['output'] == 'Points')))):
                 value['_path'] = ('picked' if value['input'].get('component_getter') else 'preselected') if components else ('preselected' if family == 'grips' else 'picked')
                 rows[identifier] = value
-    wanted = sum(len(cases) for family,cases in families.items() if family in ['component_selection','component_edge_holdouts','component_mixed_verified','component_picked']) if components else 63
+    wanted = sum(len(cases) for family,cases in families.items() if family in COMPONENT_QUALIFIED) if components else 63
     if len(versions) != 1 or len(rows) != wanted:
         raise ValueError('ExtractPt capture domain changed')
     return versions.pop(), rows, paths

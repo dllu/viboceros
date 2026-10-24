@@ -60,7 +60,7 @@ def summarize(command_log, getter_log, edge_log):
     for row in edges:
         wanted = {k:v for k,v in profiles[row['id'],row['edge']].items() if k != 'greville'}
         row['maximum_deviation'] = compare({k:v for k,v in row.items() if k not in ['id','edge']},wanted)
-    return dict(scope='Mesh/SubD components, explicit surface/control-net locations, attributes, transient selection and history; flat rendering is outside this scope',
+    return dict(scope='B-rep/Mesh/SubD components, explicit surface/control-net locations, attributes, transient selection and history; flat rendering is outside this scope',
         native_version=version,epsilon=1e-7,captured=sum(len(c) for c in FAMILIES.values()),
         command_replayed=len(commands),getter_replayed=len(getters),edge_forms_replayed=len(edges),
         maximum_deviation=max(r['maximum_deviation'] for r in commands+getters+edges),

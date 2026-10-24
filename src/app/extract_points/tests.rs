@@ -57,23 +57,24 @@ fn extract_point_component_getters_replay_native_history_and_attributes() {
                         .clone()
                 })
                 .collect::<Vec<_>>();
-            let picks = row["value"]["input"]["components"]
-                .as_array()
-                .unwrap()
+            let picks = native::component_picks(&row)
                 .iter()
                 .map(|p| {
                     let object = ids[p[0].as_u64().unwrap() as usize];
-                    let subd = matches!(
-                        app.document.object(object).unwrap().geometry(),
-                        Geometry::SubD(_)
-                    );
-                    let kind = match (p[1].as_str().unwrap(), subd) {
-                        ("vertex", false) => ComponentSelectionKind::MeshVertex,
-                        ("edge", false) => ComponentSelectionKind::MeshEdge,
-                        ("face", false) => ComponentSelectionKind::MeshFace,
-                        ("vertex", true) => ComponentSelectionKind::SubDVertex,
-                        ("edge", true) => ComponentSelectionKind::SubDEdge,
-                        ("face", true) => ComponentSelectionKind::SubDFace,
+                    let geometry = app.document.object(object).unwrap().geometry();
+                    let kind = match (p[1].as_str().unwrap(), geometry) {
+                        ("vertex", Geometry::Mesh(_)) => ComponentSelectionKind::MeshVertex,
+                        ("edge", Geometry::Mesh(_)) => ComponentSelectionKind::MeshEdge,
+                        ("face", Geometry::Mesh(_)) => ComponentSelectionKind::MeshFace,
+                        ("vertex", Geometry::SubD(_)) => ComponentSelectionKind::SubDVertex,
+                        ("edge", Geometry::SubD(_)) => ComponentSelectionKind::SubDEdge,
+                        ("face", Geometry::SubD(_)) => ComponentSelectionKind::SubDFace,
+                        ("edge", Geometry::Brep(_) | Geometry::NurbsSurface(_)) => {
+                            ComponentSelectionKind::BrepEdge
+                        }
+                        ("face", Geometry::Brep(_) | Geometry::NurbsSurface(_)) => {
+                            ComponentSelectionKind::BrepFace
+                        }
                         _ => panic!(),
                     };
                     ComponentPick {

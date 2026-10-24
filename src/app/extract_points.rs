@@ -1,14 +1,17 @@
-//! Mesh/SubD component picks feed the same atomic ExtractPt command as scripts.
+//! Component picks feed the same atomic ExtractPt command as scripts.
 use super::object_selection::ObjectPromptPhase;
 use super::*;
 use viboceros_command::ComponentSelectionKind;
 
 pub(super) fn component_kind(kind: ComponentSelectionKind) -> Option<&'static str> {
     match kind {
-        ComponentSelectionKind::MeshFace | ComponentSelectionKind::SubDFace => Some("Face"),
-        ComponentSelectionKind::MeshEdge | ComponentSelectionKind::SubDEdge => Some("Edge"),
+        ComponentSelectionKind::BrepFace
+        | ComponentSelectionKind::MeshFace
+        | ComponentSelectionKind::SubDFace => Some("Face"),
+        ComponentSelectionKind::BrepEdge
+        | ComponentSelectionKind::MeshEdge
+        | ComponentSelectionKind::SubDEdge => Some("Edge"),
         ComponentSelectionKind::MeshVertex | ComponentSelectionKind::SubDVertex => Some("Vertex"),
-        _ => None,
     }
 }
 impl VibocerosApp {

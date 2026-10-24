@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_box_face",
+      "case": "component_brep_box_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_box_edge",
+      "case": "component_brep_box_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_box_edges_reverse",
+      "case": "component_brep_box_edges_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_box_mixed",
+      "case": "component_brep_box_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_box_repeat",
+      "case": "component_brep_box_repeat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_surface_face",
+      "case": "component_brep_surface_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_surface_edge",
+      "case": "component_brep_surface_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_surface_edges_reverse",
+      "case": "component_brep_surface_edges_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_surface_mixed",
+      "case": "component_brep_surface_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_surface_repeat",
+      "case": "component_brep_surface_repeat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_trimmed_face",
+      "case": "component_brep_trimmed_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_trimmed_edge",
+      "case": "component_brep_trimmed_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_trimmed_edges_reverse",
+      "case": "component_brep_trimmed_edges_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_trimmed_mixed",
+      "case": "component_brep_trimmed_mixed"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_trimmed_repeat",
+      "case": "component_brep_trimmed_repeat"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_box_faces_reverse",
+      "case": "component_brep_box_faces_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_box_whole_owner",
+      "case": "component_brep_box_whole_owner"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_brep_two_owners",
+      "case": "component_brep_two_owners"
+    }
+  ]
+}

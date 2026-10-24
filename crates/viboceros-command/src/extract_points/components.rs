@@ -1,5 +1,7 @@
-//! Validate typed components and resolve borrowed mesh/SubD topology once per owner.
+//! Validate typed components and resolve borrowed topology once per owner.
 use super::*;
+
+mod brep;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) enum Kind {
@@ -60,6 +62,35 @@ pub(super) fn resolve(
             .ok_or(CommandError::ExtractPointComponentUnavailable)?;
         let mut points = Vec::new();
         match object.geometry() {
+            Geometry::Brep(brep) => {
+                if grip_owners.contains(&id) {
+                    brep::check_picks(brep, &picks)?;
+                    continue;
+                }
+                points = brep::resolve(brep, &picks)?;
+            }
+            Geometry::NurbsSurface(surface) => {
+                // Existing surface component picking uses the natural B-rep
+                // boundary ordinals. Construct that topology only for edges.
+                if picks.iter().all(|p| *p == (Kind::Face, 0)) {
+                    if grip_owners.contains(&id) {
+                        continue;
+                    }
+                    if surface.control_points().len() > MAX_EXTRACTED_POINTS {
+                        return Err(CommandError::TooManyExtractedPoints {
+                            maximum: MAX_EXTRACTED_POINTS,
+                        });
+                    }
+                    brep::append_surface(&mut points, surface);
+                } else {
+                    let brep = Brep::try_surface_face(surface.clone(), document.tolerance())?;
+                    if grip_owners.contains(&id) {
+                        brep::check_picks(&brep, &picks)?;
+                        continue;
+                    }
+                    points = brep::resolve(&brep, &picks)?;
+                }
+            }
             Geometry::Mesh(mesh) => {
                 let vertices = picks
                     .iter()
@@ -175,4 +206,11 @@ pub(super) fn resolve(
         }
     }
     Ok(resolved)
+}
+
+pub(super) fn whole_brep_points(brep: &Brep) -> Result<Vec<Point3>, CommandError> {
+    let picks = (0..brep.faces().len())
+        .map(|i| (Kind::Face, i))
+        .collect::<Vec<_>>();
+    brep::resolve(brep, &picks)
 }

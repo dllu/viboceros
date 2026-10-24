@@ -17,7 +17,11 @@ pub(super) fn visit(
         .selected_objects()
         .filter(|o| !owners.contains(&o.id()))
     {
-        emit(object.id(), object.geometry().extract_point_locations()?)?;
+        let points = match object.geometry() {
+            Geometry::Brep(brep) => components::whole_brep_points(brep)?,
+            geometry => geometry.extract_point_locations()?,
+        };
+        emit(object.id(), points)?;
     }
     // Document grip iteration follows object table order and then grip index,
     // independently of the order in which the user selected those grips.

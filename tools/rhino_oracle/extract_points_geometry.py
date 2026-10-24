@@ -2,6 +2,21 @@
 def create(kind, host):
     from grip_navigation_probe import create_source
     G = host["Rhino"].Geometry
+    if kind == 'brep_box':
+        return G.Brep.CreateFromBox(G.BoundingBox(G.Point3d(0.,0.,0.), G.Point3d(4.,3.,2.)))
+    if kind == 'brep_surface':
+        surface = create_source('surface', host)
+        try:
+            return surface.ToBrep()
+        finally:
+            surface.Dispose()
+    if kind == 'brep_trimmed':
+        boundary = G.PolylineCurve([G.Point3d(0.,0.,0.), G.Point3d(4.,0.,0.),
+                                   G.Point3d(1.,3.,0.), G.Point3d(0.,0.,0.)])
+        try:
+            return G.Brep.CreateTrimmedPlane(G.Plane.WorldXY, boundary)
+        finally:
+            boundary.Dispose()
     if kind in ['mesh_strip', 'mesh_unwelded']:
         mesh = G.Mesh()
         mesh.Vertices.UseDoublePrecisionVertices = True
