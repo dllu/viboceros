@@ -90,7 +90,7 @@ fn extrusion_conversion_matches_native_profiles_caps_transposition_tags_and_face
                     .unwrap()["subd"];
                 let checked = check(&converted, expected);
                 println!(
-                    "TOSUBD_EXTRUSION_KERNEL {}",
+                    "\nTOSUBD_EXTRUSION_KERNEL {}",
                     serde_json::json!({"id":row["id"],"check":checked,"source_unchanged":true})
                 );
             });
@@ -156,7 +156,7 @@ fn public_surface_sdk_distinguishes_linear_and_quadratic_kink_creases() {
             assert_eq!(source, before);
             let checked = check(&subd, &sdk["subd"]);
             println!(
-                "TOSUBD_SURFACE_SDK_KERNEL {}",
+                "\nTOSUBD_SURFACE_SDK_KERNEL {}",
                 serde_json::json!({"id":row["id"],"check":checked,"source_unchanged":true})
             );
             count += 1;

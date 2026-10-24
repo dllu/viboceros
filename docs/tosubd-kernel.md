@@ -31,6 +31,8 @@ one-ended caps, complete-profile joining, and linear/quadratic crease behavior.
 Closed complete profiles receive caps when both ends are capped; one-ended
 inputs retain their walls, matching the recorded native behavior. Multiple
 profiles follow the native joined-profile interpretation, which can be open.
+Cap loops use the converted control mesh's path UVs to retain boundary identity
+through rational coordinate rounding.
 
 Continuous surface error, arbitrary topology and comparative speed remain
 unqualified.

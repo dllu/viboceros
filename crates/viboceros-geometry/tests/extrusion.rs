@@ -258,3 +258,95 @@ fn large_tilted_cylinder_caps_bound_roundoff_without_changing_geometry() {
         }
     }
 }
+
+#[test]
+fn rational_extrusion_control_net_caps_survive_weight_scaling_shear_and_close_path_ends() {
+    use viboceros_geometry::{Circle3, SubD, SubDFromSurfaceMethod, WeightedPoint3};
+    let construction_tolerance = Tolerance::try_new(1e-12, 1e-12, 1e-6).unwrap();
+    let profile = Circle3::try_new(
+        point([0., 0., 0.]),
+        2.,
+        Vector3::try_new(0., 0., 1.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        construction_tolerance,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let shear = AffineTransform3::try_new(
+        [[1., 0.3, 0.2], [0., 1., 0.4], [0., 0., 1.]],
+        Vector3::try_new(7., -4., 3.).unwrap(),
+    )
+    .unwrap();
+    for (height, transform) in [
+        (2., None),
+        (-2., None),
+        (1e-8, None),
+        (2., Some(shear)),
+        (-2., Some(shear)),
+    ] {
+        let mut reference: Option<SubD> = None;
+        for scale in [1., 0.3] {
+            let controls = profile
+                .control_points()
+                .iter()
+                .map(|p| WeightedPoint3::try_new(p.point(), p.weight() * scale).unwrap())
+                .collect();
+            let scaled =
+                NurbsCurve::try_new_rational(profile.degree(), controls, profile.knots().to_vec())
+                    .unwrap();
+            let source = Brep::try_planar_profile_extrusion(
+                &scaled,
+                frame(),
+                height,
+                true,
+                construction_tolerance,
+            )
+            .unwrap_or_else(|e| panic!("construct height={height}, scale={scale}: {e}"));
+            let source = if let Some(transform) = transform {
+                source
+                    .transformed(transform, construction_tolerance)
+                    .unwrap()
+            } else {
+                source
+            };
+            let original = source.clone();
+            // The thin case has ends closer than this tolerance. Cap
+            // membership must still retain the two distinct boundaries.
+            let subd = SubD::try_from_extrusion(
+                source.extrusion().unwrap(),
+                SubDFromSurfaceMethod::ControlPoints,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .unwrap_or_else(|e| {
+                panic!("height={height}, transform={transform:?}, scale={scale}: {e}")
+            });
+            assert_eq!(source, original);
+            assert_eq!(subd.control_points().len(), 16);
+            assert_eq!(subd.edges().len(), 24);
+            assert_eq!(subd.faces().len(), 10);
+            assert_eq!(subd.faces().iter().filter(|f| f.len() == 8).count(), 2);
+            let mut incidence = std::collections::BTreeMap::<[u32; 2], usize>::new();
+            for face in subd.faces() {
+                for i in 0..face.len() {
+                    let (a, b) = (face[i], face[(i + 1) % face.len()]);
+                    *incidence.entry([a.min(b), a.max(b)]).or_default() += 1;
+                }
+            }
+            assert!(incidence.values().all(|&n| n == 2));
+            if let Some(reference) = &reference {
+                assert_eq!(subd.faces(), reference.faces());
+                for (actual, expected) in
+                    subd.control_points().iter().zip(reference.control_points())
+                {
+                    assert!(actual.distance_to(*expected).unwrap() < 1e-12);
+                }
+            } else {
+                reference = Some(subd);
+            }
+        }
+    }
+}

@@ -22,7 +22,7 @@ impl SubD {
         corners: bool,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        convert_with_net(surface, method, corners, tolerance).map(|(subd, _)| subd)
+        convert_with_mesh(surface, method, corners, tolerance).map(|(subd, _)| subd)
     }
 
     /// Converts Euclidean surface controls, retaining closed seams and singular
@@ -33,39 +33,47 @@ impl SubD {
         corners: bool,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        let mesh = surface
-            .control_polygon_mesh(tolerance)?
-            .ok_or(GeometryError::EmptyMesh)?;
-        // A cleaned mesh must still contain each source pole. Otherwise a
-        // collapsed first band would silently discard part of the surface.
-        let singular = singular_sides(surface);
+        convert_control_net(surface, corners, tolerance).map(|(subd, _)| subd)
+    }
+}
+
+fn convert_control_net(
+    surface: &NurbsSurface,
+    corners: bool,
+    tolerance: Tolerance,
+) -> Result<(SubD, TriangleMesh), GeometryError> {
+    let mesh = surface
+        .control_polygon_mesh(tolerance)?
+        .ok_or(GeometryError::EmptyMesh)?;
+    // A cleaned mesh must still contain each source pole. Otherwise a
+    // collapsed first band would silently discard part of the surface.
+    let singular = singular_sides(surface);
+    let u = surface.control_point_count_u();
+    let v = surface.control_point_count_v();
+    for (side, index) in [0, u - 1, (v - 1) * u, 0].into_iter().enumerate() {
+        if singular[side]
+            && !mesh
+                .vertices()
+                .contains(&surface.control_points()[index].point())
+        {
+            return Err(GeometryError::EmptyMesh);
+        }
+    }
+    let mut converted = SubD::try_from_mesh(&mesh, SubDFromMeshOptions::default(), tolerance)?;
+    if corners && !surface.is_closed_u()? && !surface.is_closed_v()? {
         let u = surface.control_point_count_u();
         let v = surface.control_point_count_v();
-        for (side, index) in [0, u - 1, (v - 1) * u, 0].into_iter().enumerate() {
-            if singular[side]
-                && !mesh
-                    .vertices()
-                    .contains(&surface.control_points()[index].point())
-            {
-                return Err(GeometryError::EmptyMesh);
-            }
-        }
-        let mut converted = Self::try_from_mesh(&mesh, SubDFromMeshOptions::default(), tolerance)?;
-        if corners && !surface.is_closed_u()? && !surface.is_closed_v()? {
-            let u = surface.control_point_count_u();
-            let v = surface.control_point_count_v();
-            let wanted =
-                [0, u - 1, (v - 1) * u, u * v - 1].map(|i| surface.control_points()[i].point());
-            let tags = converted
-                .control_points()
-                .iter()
-                .enumerate()
-                .filter_map(|(i, p)| wanted.contains(p).then_some((i, 3)))
-                .collect::<Vec<_>>();
-            converted = converted.try_with_vertex_tags(&tags)?;
-        }
-        Ok(converted)
+        let wanted =
+            [0, u - 1, (v - 1) * u, u * v - 1].map(|i| surface.control_points()[i].point());
+        let tags = converted
+            .control_points()
+            .iter()
+            .enumerate()
+            .filter_map(|(i, p)| wanted.contains(p).then_some((i, 3)))
+            .collect::<Vec<_>>();
+        converted = converted.try_with_vertex_tags(&tags)?;
     }
+    Ok((converted, mesh))
 }
 
 fn singular_sides(surface: &NurbsSurface) -> [bool; 4] {
@@ -89,13 +97,13 @@ fn singular_sides(surface: &NurbsSurface) -> [bool; 4] {
     )
 }
 
-/// Keep the exact conversion net available for extrusion cap boundary matching.
-pub(super) fn convert_with_net<'a>(
-    surface: &'a NurbsSurface,
+/// Retain the actual converted mesh and its parameter-space end labels for caps.
+pub(super) fn convert_with_mesh(
+    surface: &NurbsSurface,
     method: SubDFromSurfaceMethod,
     corners: bool,
     tolerance: Tolerance,
-) -> Result<(SubD, std::borrow::Cow<'a, NurbsSurface>), GeometryError> {
+) -> Result<(SubD, TriangleMesh), GeometryError> {
     use std::borrow::Cow;
     let (net, creases) = match method {
         SubDFromSurfaceMethod::ControlPoints => (Cow::Borrowed(surface), Vec::new()),
@@ -104,6 +112,6 @@ pub(super) fn convert_with_net<'a>(
             (Cow::Owned(fitted.surface), fitted.creases)
         }
     };
-    let converted = SubD::try_from_surface_control_net(&net, corners, tolerance)?;
-    Ok((features::apply_creases(converted, &creases)?, net))
+    let (converted, mesh) = convert_control_net(&net, corners, tolerance)?;
+    Ok((features::apply_creases(converted, &creases)?, mesh))
 }

@@ -1,6 +1,6 @@
 //! Whole extrusion conversion uses its native profile surface and solid caps.
 use super::*;
-use crate::{ExtrusionRepresentation, NurbsSurface, SubDFromSurfaceMethod, Tolerance};
+use crate::{ExtrusionRepresentation, SubDFromSurfaceMethod, Tolerance};
 use std::collections::{BTreeMap, BTreeSet};
 
 impl SubD {
@@ -14,13 +14,17 @@ impl SubD {
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         let form = extrusion.nurbs_form()?;
-        let (converted, net) =
-            super::surface_conversion::convert_with_net(&form.surface, method, corners, tolerance)?;
-        let closed = [net.is_closed_u()?, net.is_closed_v()?];
+        let (converted, mesh) = super::surface_conversion::convert_with_mesh(
+            &form.surface,
+            method,
+            corners,
+            tolerance,
+        )?;
+        let closed = [form.surface.is_closed_u()?, form.surface.is_closed_v()?];
         if !form.caps.into_iter().all(|c| c) || !closed[1 - form.path_axis] {
             return Ok(converted);
         }
-        add_caps(&converted, &net, form.path_axis)
+        add_caps(&converted, &mesh, form.path_axis)
     }
 }
 fn key(p: Point3) -> [u64; 3] {
@@ -29,7 +33,7 @@ fn key(p: Point3) -> [u64; 3] {
 fn ordered_edge(a: u32, b: u32) -> [u32; 2] {
     [a.min(b), a.max(b)]
 }
-fn add_caps(subd: &SubD, net: &NurbsSurface, path_axis: usize) -> Result<SubD, GeometryError> {
+fn add_caps(subd: &SubD, mesh: &TriangleMesh, path_axis: usize) -> Result<SubD, GeometryError> {
     let mut incidences = BTreeMap::<[u32; 2], (usize, [u32; 2])>::new();
     for face in subd.faces() {
         for i in 0..face.len() {
@@ -44,17 +48,17 @@ fn add_caps(subd: &SubD, net: &NurbsSurface, path_axis: usize) -> Result<SubD, G
             return Err(GeometryError::SubDInterpolationFailed);
         }
     }
-    let counts = [net.control_point_count_u(), net.control_point_count_v()];
+    // Use coordinates from the mesh that actually became the SubD. Rebuilding
+    // rational surface controls can round their Euclidean locations differently.
+    // Native control-net UVs label the path ends exactly, even after transposition.
+    let uv = mesh
+        .texture_coordinates()
+        .ok_or(GeometryError::SubDInterpolationFailed)?;
     let ends: [BTreeSet<_>; 2] = std::array::from_fn(|end| {
-        (0..counts[1 - path_axis])
-            .map(|i| {
-                let index = if path_axis == 1 {
-                    end * (counts[1] - 1) * counts[0] + i
-                } else {
-                    i * counts[0] + end * (counts[0] - 1)
-                };
-                key(net.control_points()[index].point())
-            })
+        mesh.vertices()
+            .iter()
+            .zip(uv)
+            .filter_map(|(&point, uv)| (uv[path_axis] == end as f64).then_some(key(point)))
             .collect()
     });
     let mut faces = subd.faces().to_vec();

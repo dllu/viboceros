@@ -49,7 +49,7 @@ fn mesh_conversion_matches_native_controls_tags_limit_stations_and_facets() {
             let mut check = native::compare(&converted, &control);
             native::facets::certify_common_triangulation(&converted, &output["subd"], &mut check);
             println!(
-                "TOSUBD_MESH_KERNEL {}",
+                "\nTOSUBD_MESH_KERNEL {}",
                 serde_json::json!({"id":row["id"],"source":source,"source_unchanged":true,"check":check})
             );
             comparisons += 1;
@@ -174,7 +174,7 @@ fn check_surfaces(method: viboceros_geometry::SubDFromSurfaceMethod, expected_co
                     {
                         assert!(converted.is_err(), "native rejected the control net");
                         println!(
-                            "{prefix} {}",
+                            "\n{prefix} {}",
                             serde_json::json!({"id":row["id"],"source":i,"source_unchanged":true,"rejected":true})
                         );
                         return;
@@ -193,7 +193,7 @@ fn check_surfaces(method: viboceros_geometry::SubDFromSurfaceMethod, expected_co
                     let mut check = native::compare(&converted, &controls);
                     native::facets::certify_common_triangulation(&converted, expected, &mut check);
                     println!(
-                        "{prefix} {}",
+                        "\n{prefix} {}",
                         serde_json::json!({"id":row["id"],"source":i,"source_unchanged":true,"check":check})
                     );
                 });

@@ -209,7 +209,7 @@
     "crates/viboceros-geometry/src/brep/join_edges/automatic/rebuild.rs": "e6ac91825fecbb8e6d3b55768271f16bcfa6169c9505432af681986486c1222b",
     "crates/viboceros-geometry/src/interop/mod.rs": "ebb25f8fca784c926e57767a2fd60bb7cb4a31e6627cd8964cae482c6981d680",
     "crates/viboceros-geometry/src/interop/tests.rs": "45d675f09f418a79053757ea0fd76e776f344d20fafa6b4f4845df1e839fe7c6",
-    "crates/viboceros-geometry/tests/extrusion.rs": "8efdd6722651c8755dcd8d9dfc42195d00cae35c69dc632d2c7b123381aa40ce",
+    "crates/viboceros-geometry/tests/extrusion.rs": "b5378c9e51f7bacd3c4edad65873a257ae97e95045387e65bc9ee4a89c8d7b68",
     "crates/viboceros-io/src/three_dm.rs": "3e8044fcbe0a0c6fb489eb068c2d17d52b7b773de0ec2142d25c18f4013ebe33",
     "crates/viboceros-io/src/three_dm_curves.rs": "95166b2a4e6fd703e17e9632225c5d5fb2375a661b2f8756e7a11b179a768666",
     "crates/viboceros-io/src/three_dm_geometry.rs": "3f0d385e22d0aa88f71d5c342e0df42ea0da91995e8a351e79b792ff229ef7b2",
