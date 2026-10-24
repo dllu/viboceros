@@ -4,7 +4,8 @@ mod arguments;
 mod execute;
 #[cfg(feature = "native-smlib")]
 mod geometry;
-use arguments::{Arguments, Options};
+use arguments::Arguments;
+pub(super) use arguments::Options;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {
@@ -29,11 +30,12 @@ pub(super) struct MeshBooleanCommand {
     options: std::sync::Arc<remembered::Remembered<Options>>,
 }
 impl MeshBooleanCommand {
-    pub(super) fn all() -> [Self; 4] {
-        // Native tolerance preferences are shared across all four commands,
-        // including answers accepted by a subsequently cancelled getter.
+    pub(super) fn all() -> ([Self; 4], super::mesh_intersect::MeshIntersectCommand) {
+        // Native tolerance preferences are shared with MeshIntersect and all
+        // four Booleans, including answers accepted by a cancelled getter.
         let options = std::sync::Arc::new(remembered::Remembered::new(Options::default()));
-        [
+        let intersections = super::mesh_intersect::MeshIntersectCommand::new(options.clone());
+        let booleans = [
             Kind::Union,
             Kind::Intersection,
             Kind::Difference,
@@ -42,7 +44,8 @@ impl MeshBooleanCommand {
         .map(|kind| Self {
             kind,
             options: options.clone(),
-        })
+        });
+        (booleans, intersections)
     }
 }
 

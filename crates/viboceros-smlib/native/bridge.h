@@ -9,6 +9,14 @@ extern "C" {
 typedef struct VbSolid VbSolid;
 typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
+typedef struct VbMeshIntersections VbMeshIntersections;
+int vb_mesh_intersections(const double *first, size_t first_count,
+    const uint32_t *first_faces, size_t first_face_count, const double *second,
+    size_t second_count, const uint32_t *second_faces, size_t second_face_count,
+    double tolerance, VbMeshIntersections **out, char *error, size_t capacity);
+int vb_mesh_intersections_sizes(const VbMeshIntersections *p,size_t *first,size_t *second);
+int vb_mesh_intersections_copy(const VbMeshIntersections *p,double *first,size_t first_count,uint32_t *coplanar_pairs,size_t pair_count);
+void vb_mesh_intersections_free(VbMeshIntersections *p);
 int vb_mesh_boolean_interaction(const double *first, size_t first_count,
     const uint32_t *first_faces, size_t first_face_count, const double *second,
     size_t second_count, const uint32_t *second_faces, size_t second_face_count,

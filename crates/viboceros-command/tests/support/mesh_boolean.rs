@@ -155,6 +155,7 @@ pub fn snapshot(scene: &Scene) -> Value {
             Geometry::Mesh(m)=>row["mesh"]=json!({"vertices":m.vertices().iter().map(|p|p.to_array()).collect::<Vec<_>>(),"faces":m.faces().iter().map(|f|f.indices()).collect::<Vec<_>>()}),
             Geometry::EmptyMesh=>row["mesh"]=json!({"vertices":[],"faces":[]}),
             Geometry::Point(p)=>row["point"]=json!(p.to_array()),
+            Geometry::Polyline(p)=>row["polyline"]=json!(p.vertices().iter().map(|p|p.to_array()).collect::<Vec<_>>()),
             Geometry::Brep(_)=>row["kind"]=json!("Brep"),
             _=>row["kind"]=json!("other"),
         }
@@ -164,6 +165,9 @@ pub fn snapshot(scene: &Scene) -> Value {
 pub fn check(scene: &Scene, value: &Value, stage: &str) -> Value {
     let actual = snapshot(scene);
     let expected = &value[stage];
+    check_snapshot(actual, expected)
+}
+pub fn check_snapshot(actual: Value, expected: &Value) -> Value {
     let a = actual.as_array().unwrap();
     let n = expected.as_array().unwrap();
     let fields = [
@@ -201,10 +205,14 @@ pub fn check(scene: &Scene, value: &Value, stage: &str) -> Value {
                 geometry &= (a.area().unwrap() - n.area().unwrap()).abs() <= 1e-7;
                 geometry &= (a.signed_volume().unwrap() - n.signed_volume().unwrap()).abs() <= 1e-7;
                 coverage::sampled_distance(&[a], &[n])
+            } else if a.get("polyline").is_some() && n.get("polyline").is_some() {
+                polyline_error(&a["polyline"], &n["polyline"])
             } else if a["point"] == n["point"]
                 && a["kind"] == n["kind"]
                 && a.get("mesh").is_none()
                 && n.get("mesh").is_none()
+                && a.get("polyline").is_none()
+                && n.get("polyline").is_none()
             {
                 Some(0.)
             } else {
@@ -217,6 +225,49 @@ pub fn check(scene: &Scene, value: &Value, stage: &str) -> Value {
         maximum = None;
     }
     json!({"objects":actual,"metadata":metadata,"geometry":geometry,"maximum_sampled_boundary_deviation":maximum})
+}
+fn polyline_error(a: &Value, n: &Value) -> Option<f64> {
+    use viboceros_geometry::{LineSegment, Point3, Tolerance};
+    let points = |v: &Value| {
+        v.as_array()
+            .unwrap()
+            .iter()
+            .map(reference::point)
+            .collect::<Vec<_>>()
+    };
+    let (a, n) = (points(a), points(n));
+    if a.len() < 2 || n.len() < 2 {
+        return None;
+    }
+    let length = |p: &[Point3]| {
+        p.windows(2)
+            .map(|p| p[0].distance_to(p[1]).unwrap())
+            .sum::<f64>()
+    };
+    if (length(&a) - length(&n)).abs() > 1e-7 {
+        return None;
+    }
+    let directed = |source: &[Point3], target: &[Point3]| {
+        source
+            .windows(2)
+            .flat_map(|p| [p[0], p[1], p[0].midpoint(p[1]).unwrap()])
+            .map(|p| {
+                target
+                    .windows(2)
+                    .map(|edge| {
+                        let line =
+                            LineSegment::try_new(edge[0], edge[1], Tolerance::MESH_VALIDATION)
+                                .unwrap();
+                        line.closest_point(p, Tolerance::MESH_VALIDATION)
+                            .unwrap()
+                            .distance_to(p)
+                            .unwrap()
+                    })
+                    .fold(f64::INFINITY, f64::min)
+            })
+            .fold(0., f64::max)
+    };
+    Some(directed(&a, &n).max(directed(&n, &a)))
 }
 pub fn sources_restored(scene: &Scene) -> bool {
     scene.ids.iter().zip(&scene.sources).all(|(id, source)| {

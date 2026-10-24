@@ -5,15 +5,17 @@ else:
     from mesh_boolean_command_cases import ALL_CASES, validate
 
 
-def run(operation, host, iterations, tolerance):
-    validate(operation)
+def run(operation, host, iterations, tolerance, case_table=None, command_name=None):
+    if case_table is None:
+        validate(operation)
+        case_table = ALL_CASES
     from join_probe import observe_command
     R, S = host['Rhino'], host['System']
     G, doc = R.Geometry, R.RhinoDoc.ActiveDoc
     if iterations != 1 or list(doc.Objects) or doc.UndoRecordingIsActive:
         raise ValueError('owned empty idle document required')
-    case = ALL_CASES[operation['case']]
-    name = 'MeshBoolean'+case['operation'].capitalize()
+    case = case_table[operation['case']]
+    name = command_name or 'MeshBoolean'+case['operation'].capitalize()
     ids, layers, groups, geometry = [], [], [], []
     witness, old_layer = None, doc.Layers.CurrentLayerIndex
     old_tolerance = doc.ModelAbsoluteTolerance
@@ -52,6 +54,12 @@ def run(operation, host, iterations, tolerance):
                            face_normals=int(g.FaceNormals.Count), closed=bool(g.IsClosed))
             elif isinstance(g, G.Point):
                 row['point'] = xyz(g.Location)
+            elif isinstance(g, G.Curve):
+                ok, polyline = g.TryGetPolyline()
+                if ok:
+                    row['polyline'] = [xyz(p) for p in polyline]
+                else:
+                    row['kind'] = str(g.GetType().Name)
             else:
                 row['kind'] = str(g.GetType().Name)
             result.append(row)

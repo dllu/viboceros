@@ -1,0 +1,166 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_overlap_post",
+      "case": "mesh_intersect_overlap_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_overlap_pre",
+      "case": "mesh_intersect_overlap_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_disjoint_post",
+      "case": "mesh_intersect_disjoint_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_disjoint_pre",
+      "case": "mesh_intersect_disjoint_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_contained_post",
+      "case": "mesh_intersect_contained_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_contained_pre",
+      "case": "mesh_intersect_contained_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_identical_post",
+      "case": "mesh_intersect_identical_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_identical_pre",
+      "case": "mesh_intersect_identical_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_face_touch_post",
+      "case": "mesh_intersect_face_touch_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_face_touch_pre",
+      "case": "mesh_intersect_face_touch_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_edge_touch_post",
+      "case": "mesh_intersect_edge_touch_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_edge_touch_pre",
+      "case": "mesh_intersect_edge_touch_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_point_touch_post",
+      "case": "mesh_intersect_point_touch_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_point_touch_pre",
+      "case": "mesh_intersect_point_touch_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_rotated_post",
+      "case": "mesh_intersect_rotated_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_rotated_pre",
+      "case": "mesh_intersect_rotated_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_unwelded_post",
+      "case": "mesh_intersect_unwelded_post"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_unwelded_pre",
+      "case": "mesh_intersect_unwelded_pre"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_crossed_drop",
+      "case": "mesh_intersect_crossed_drop"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coplanar_drop",
+      "case": "mesh_intersect_coplanar_drop"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_crossed_polylines",
+      "case": "mesh_intersect_crossed_polylines"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coplanar_polylines",
+      "case": "mesh_intersect_coplanar_polylines"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_crossed_meshes",
+      "case": "mesh_intersect_crossed_meshes"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coplanar_meshes",
+      "case": "mesh_intersect_coplanar_meshes"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_tolerance_auto",
+      "case": "mesh_intersect_tolerance_auto"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_tolerance_literal",
+      "case": "mesh_intersect_tolerance_literal"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_tolerance_document",
+      "case": "mesh_intersect_tolerance_document"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_tolerance_zero",
+      "case": "mesh_intersect_tolerance_zero"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_three_sheets",
+      "case": "mesh_intersect_three_sheets"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_point",
+      "case": "mesh_intersect_mixed_point"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_cancel",
+      "case": "mesh_intersect_cancel"
+    }
+  ]
+}

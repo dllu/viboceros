@@ -3863,6 +3863,7 @@ name = "viboceros-smlib"
 version = "0.1.0"
 dependencies = [
  "cmake",
+ "i_overlay",
  "serde_json",
  "tempfile",
  "thiserror 2.0.20",

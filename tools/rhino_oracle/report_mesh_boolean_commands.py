@@ -9,6 +9,7 @@ from functools import lru_cache
 from pathlib import Path
 from .mesh_boolean_command_cases import FAMILIES, request
 from .mesh_boolean_comparison import measures, sampled_boundary_distance, triangles
+from .outline_comparison import sampled_boundary_distance as polyline_distance
 from .qualification_sources import with_shared_sources
 
 HERE = Path(__file__).resolve().parent
@@ -117,7 +118,15 @@ def check_stage(actual, expected):
     for a, n in zip(actual, expected):
         if 'mesh' in a and 'mesh' in n:
             error, matched = compare_meshes(mesh_key(a['mesh']), mesh_key(n['mesh']))
-        elif 'mesh' not in a and 'mesh' not in n and a.get('point') == n.get('point') and a.get('kind') == n.get('kind'):
+        elif 'polyline' in a and 'polyline' in n:
+            paths=[a['polyline'],n['polyline']]
+            if any(not isinstance(p,list) or len(p)<2 or any(
+                    not isinstance(v,list) or len(v)!=3 or any(type(x) not in (int,float) or not math.isfinite(x) for x in v) for v in p) for p in paths):
+                raise ValueError('finite intersection polylines required')
+            length=lambda p:sum(math.dist(x,y) for x,y in zip(p,p[1:]))
+            error=polyline_distance([paths[0]],[paths[1]])
+            matched=abs(length(paths[0])-length(paths[1]))<=EPSILON
+        elif not any(k in a or k in n for k in ['mesh','polyline']) and a.get('point') == n.get('point') and a.get('kind') == n.get('kind'):
             error, matched = 0., True
         else:
             error, matched = None, False

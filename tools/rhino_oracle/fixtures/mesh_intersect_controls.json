@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_controls_menu",
+      "case": "mesh_intersect_controls_menu"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_controls_singular_mesh",
+      "case": "mesh_intersect_controls_singular_mesh"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_controls_set_zero",
+      "case": "mesh_intersect_controls_set_zero"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_controls_boolean_after_zero",
+      "case": "mesh_intersect_controls_boolean_after_zero"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_controls_boolean_document",
+      "case": "mesh_intersect_controls_boolean_document"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_controls_after_boolean_document",
+      "case": "mesh_intersect_controls_after_boolean_document"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_controls_drop_cancel",
+      "case": "mesh_intersect_controls_drop_cancel"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_controls_after_drop_cancel",
+      "case": "mesh_intersect_controls_after_drop_cancel"
+    }
+  ]
+}

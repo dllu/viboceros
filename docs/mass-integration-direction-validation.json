@@ -958,7 +958,6 @@
     "crates/viboceros-geometry/src/brep/mass_properties.rs": "239a7a35c1ea35100f35667e6fd77a5e44d56c6dc4cc590ed898802d73f09a54",
     "crates/viboceros-geometry/src/brep/mass_properties/centroid.rs": "06f15e7b67435655134d8a458726ee4fcacf641eca6ef1d3e49041b68b972bf3",
     "crates/viboceros-geometry/src/brep/mass_properties/volume_centroid.rs": "13a23843540e64d9e65451b8373ea64dfd375d05b367288132560e2f8b80158e",
-    "crates/viboceros-smlib/Cargo.toml": "4035f83731c394bf57bb69aa0788a92099d2a32d90c65806da1c15829feaea19",
     "crates/viboceros-smlib/examples/surface_fillets.rs": "524c5b40623d99104a3d786f3f06656c6b4b1fec1ae24fbf293b1c171f3f2c2a",
     "crates/viboceros-smlib/tests/surface_fillets.rs": "7edcfe717b9dbf50702da2d98a9b029760d11d14b712e05c80a22d5caa012ef9",
     "crates/viboceros-smlib/tests/data/fitted-fillet-sheet.3dm": "732eff2490abeed18f928a4fdbe0dd6066f8e48024914cebccfc392c3f905db8"
@@ -1027,6 +1026,7 @@
   "source_git_sha256": {
     "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-oracle/src/surface_fillet.rs": "db32e4b55afbfe24c0956764e48e9817f1a6cfd8f915d7a6702ccef42d9a5410",
     "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
-    "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c"
+    "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c",
+    "47cf0ac6ab8e8821bbf06581d95a57edd8675b4d:crates/viboceros-smlib/Cargo.toml": "4035f83731c394bf57bb69aa0788a92099d2a32d90c65806da1c15829feaea19"
   }
 }

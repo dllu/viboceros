@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_mesh_identical",
+      "case": "mesh_intersect_modes_mesh_identical"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_mesh_face_touch",
+      "case": "mesh_intersect_modes_mesh_face_touch"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_mesh_edge_touch",
+      "case": "mesh_intersect_modes_mesh_edge_touch"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_mesh_overlap",
+      "case": "mesh_intersect_modes_mesh_overlap"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_mesh_contained",
+      "case": "mesh_intersect_modes_mesh_contained"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_sheet_mesh",
+      "case": "mesh_intersect_modes_sheet_mesh"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_sheet_drop",
+      "case": "mesh_intersect_modes_sheet_drop"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_sheet_polylines",
+      "case": "mesh_intersect_modes_sheet_polylines"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_modes_brep_boxes",
+      "case": "mesh_intersect_modes_brep_boxes"
+    }
+  ]
+}

@@ -15,6 +15,8 @@ mod mesh_boolean_tests;
 mod mesh_conversion;
 mod mesh_from_lines;
 #[cfg(test)]
+mod mesh_intersect_tests;
+#[cfg(test)]
 mod mesh_outline_tests;
 mod mesh_patch;
 #[cfg(test)]
@@ -178,6 +180,9 @@ impl PendingObjectCommand {
         }
         if self.description.command == "BooleanUnion" {
             return "Select at least two surfaces or polysurfaces, or type options; Enter unions, Esc cancels";
+        }
+        if self.description.command == "MeshIntersect" {
+            return "Select at least two meshes, surfaces or polysurfaces; Enter intersects, Esc cancels";
         }
         if self.description.command == "MeshBooleanUnion" {
             return "Select at least two meshes, surfaces or polysurfaces; Enter unions, Esc cancels";
@@ -774,8 +779,8 @@ impl VibocerosApp {
             | "SubDSphere FitPoints"
             | "PlaneThroughPt"
             | "Sphere FitPoints" => 3,
-            "BooleanUnion" | "MeshBooleanUnion" | "PlanarUnion" | "TweenSurfaces"
-            | "LineThroughPt" | "CrvDeviation" => 2,
+            "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect" | "PlanarUnion"
+            | "TweenSurfaces" | "LineThroughPt" | "CrvDeviation" => 2,
             _ => 1,
         };
         let graph_allowed = self.curvature_graph_selection_ids(description.command);
@@ -1180,7 +1185,7 @@ impl VibocerosApp {
             if pending.phase == ObjectPromptPhase::Selecting {
                 if matches!(
                     pending.description.command,
-                    "BooleanUnion" | "MeshBooleanUnion"
+                    "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect"
                 ) && self
                     .document
                     .selected_objects()
@@ -1188,11 +1193,17 @@ impl VibocerosApp {
                     .count()
                     == 1
                 {
-                    self.push_log(if pending.description.command == "MeshBooleanUnion" {
-                        "Select at least two meshes, surfaces or polysurfaces; Esc cancels".into()
-                    } else {
-                        "Select at least two surfaces or polysurfaces; Esc cancels".into()
-                    });
+                    self.push_log(
+                        if matches!(
+                            pending.description.command,
+                            "MeshBooleanUnion" | "MeshIntersect"
+                        ) {
+                            "Select at least two meshes, surfaces or polysurfaces; Esc cancels"
+                                .into()
+                        } else {
+                            "Select at least two surfaces or polysurfaces; Esc cancels".into()
+                        },
+                    );
                     return true;
                 }
                 let graph_allowed = self.curvature_graph_selection_ids(pending.description.command);
@@ -1398,7 +1409,7 @@ impl VibocerosApp {
                 Err(error) => {
                     if matches!(
                         pending.description.command,
-                        "BooleanUnion" | "MeshBooleanUnion"
+                        "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect"
                     ) || (pending.description.command == "PlanarMesh"
                         && matches!(
                             error,

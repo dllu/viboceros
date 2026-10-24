@@ -298,19 +298,15 @@
     "No C++ or FFI implementation changed, and no new ASan or general performance qualification is claimed."
   ],
   "source_sha256": {
-    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
-    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
     "crates/viboceros-command/src/fillet_surface/options.rs": "a048ff709f986f6982ba0608b4a5f528a8fdcaf38463a3ba9e7c7382ff5fac34",
     "crates/viboceros-command/src/fillet_surface/prepare.rs": "5584a4d40428b0007adebd1528e34c4921ed8ece9d0663775f9df92076636ae9",
     "crates/viboceros-command/src/fillet_surface/recorded.rs": "e39f15fa09a8aa363e098685626e636db5194e103886d4b8cf0c8e718445d8da",
     "crates/viboceros-command/src/fillet_surface/tests.rs": "b2bbac202517ade01d5a364e1996549ced98d2a12817bf8c09f8d25d5ad7e478",
-    "crates/viboceros-geometry/src/brep.rs": "4cfe368d864c64eeddc39732ce1d4096e477245ae0321b1e12261dd18e7f755b",
     "crates/viboceros-geometry/src/brep/reparameterize.rs": "3211c14cbf16c583b0110d3597c3031f00168363cf74211dd94cb14785c0fb8b",
     "crates/viboceros-geometry/src/brep/reparameterize/tests.rs": "3982fdc154f1405007aa4fc30e9e5a531eae3754634bf41bfb2921350db2b9a2",
     "crates/viboceros-oracle/src/surface_fillet.rs": "a59eb63eefbd471723d031adc2fd3e7307fe9a798c0b531f151b81323246c212",
     "crates/viboceros-oracle/src/surface_fillet_conditioning.rs": "d246b478b11d2554f741a96a82d7ee72fd79babf109e87e13e29709f3629868a",
     "crates/viboceros-oracle/src/surface_fillet_parent_tests.rs": "46ecc70c86b58e53ba294c985569a54b5196e1a58d3ac4b7479ed815903f3c32",
-    "crates/viboceros-smlib/Cargo.toml": "4035f83731c394bf57bb69aa0788a92099d2a32d90c65806da1c15829feaea19",
     "crates/viboceros-smlib/native/surface_fillet.cpp": "86e1727253f401172817b4a431b6d0887b501f8f922def207d4b3981b95948a7",
     "crates/viboceros-smlib/src/native/surface_fillet.rs": "d9ac59864446f3e862a97852c1e9fb62a5b3fc15f3fc31ae786e71fab814315d",
     "crates/viboceros-smlib/tests/surface_fillet_picks.rs": "a6d544f0abc1d4dc00e312d1320d77a5a60e56cbff4a2e3e55216f045d1b3120",
@@ -379,6 +375,10 @@
   "source_git_sha256": {
     "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:README.md": "14aa437da2097bc6841dee4536b763634ac58c8918810849f57ea0c364bf9973",
     "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/fillet-srf-validation.json": "a780b5a487b7238e138007abde31eb7642a1afe08c72b1c5f5fd7e8b114ce15d",
-    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/native-surface-fillet-parents-validation.json": "f38038266557e4904710c23bb1671153e56b18669ccb377b73e3f0b7809940fe"
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/native-surface-fillet-parents-validation.json": "f38038266557e4904710c23bb1671153e56b18669ccb377b73e3f0b7809940fe",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:crates/viboceros-geometry/src/brep.rs": "4cfe368d864c64eeddc39732ce1d4096e477245ae0321b1e12261dd18e7f755b",
+    "47cf0ac6ab8e8821bbf06581d95a57edd8675b4d:crates/viboceros-smlib/Cargo.toml": "4035f83731c394bf57bb69aa0788a92099d2a32d90c65806da1c15829feaea19"
   }
 }

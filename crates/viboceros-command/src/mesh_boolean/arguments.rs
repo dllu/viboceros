@@ -2,15 +2,17 @@ use super::*;
 
 const USAGE: &str = "MeshBooleanUnion [Tolerance=Auto|Document|Zero]; MeshBooleanIntersection|MeshBooleanDifference|MeshBooleanSplit [Tolerance=Auto|Document|Zero] [DeleteInput=Yes|No] FirstSet=ids SecondSet=ids";
 #[derive(Clone, Copy)]
-pub(super) struct Options {
+pub(crate) struct Options {
     pub tolerance: &'static str,
     pub delete_cutters: bool,
+    pub coplanar: &'static str,
 }
 impl Default for Options {
     fn default() -> Self {
         Self {
             tolerance: "Auto",
             delete_cutters: true,
+            coplanar: "Polylines",
         }
     }
 }

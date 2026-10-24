@@ -4,7 +4,7 @@ use super::{frozen_scene, mesh_reference};
 use crate::app::tests::test_app;
 #[allow(dead_code)]
 #[path = "../../../crates/viboceros-command/tests/support/mesh_boolean.rs"]
-mod native;
+pub(super) mod native;
 use serde_json::json;
 
 fn enter(app: &mut VibocerosApp, input: &str) {

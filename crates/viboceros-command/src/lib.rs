@@ -294,6 +294,7 @@ mod geometry_selection;
 pub mod infinite_plane;
 mod intersect_self;
 mod intersect_two_sets;
+mod mesh_intersect;
 mod mesh_outline;
 mod object_name;
 mod offset_mesh;
@@ -1382,9 +1383,13 @@ impl CommandRegistry {
         registry
             .register(mesh_outline::MeshOutlineCommand)
             .expect("unique built-in command");
-        for command in mesh_boolean::MeshBooleanCommand::all() {
+        let (booleans, intersections) = mesh_boolean::MeshBooleanCommand::all();
+        for command in booleans {
             registry.register(command).expect("unique built-in command");
         }
+        registry
+            .register(intersections)
+            .expect("unique built-in command");
         registry
             .register(select_uv_rows::SelectUVCommand::default())
             .unwrap();
@@ -13188,6 +13193,8 @@ pub enum CommandError {
     SilhouetteRequiresNativeKernel,
     #[error("Mesh Boolean commands require the native kernel; build with --features native-smlib")]
     MeshBooleanRequiresNativeKernel,
+    #[error("MeshIntersect requires the native kernel; build with --features native-smlib")]
+    MeshIntersectRequiresNativeKernel,
     #[error("Mesh Boolean commands require meshes, surfaces or polysurfaces in the requested sets")]
     MeshBooleanRequiresObjects,
     #[error("Mesh Boolean operation produced no result")]

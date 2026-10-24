@@ -6,7 +6,8 @@
 
 namespace vb_mesh_boolean_detail {
 std::unique_ptr<SmPolyBrep> import_mesh(const double *points, size_t count,
-    const uint32_t *triangles, size_t face_count, double tolerance) {
+    const uint32_t *triangles, size_t face_count, double tolerance,
+    std::vector<SmPolyFace *> *face_order = nullptr) {
     require(points && triangles && count > 0 && count <= limit &&
         face_count > 0 && face_count <= limit, "Invalid polygon Boolean mesh sizes");
     const auto *context = SmApiGetOrCreateContext();
@@ -30,6 +31,7 @@ std::unique_ptr<SmPolyBrep> import_mesh(const double *points, size_t count,
         SmPolyFace *face = nullptr;
         check(mesh->CreatePolyFace(nullptr, nullptr, corners, face), "import polygon Boolean face");
         require(face, "Missing polygon Boolean face");
+        if (face_order) face_order->push_back(face);
     }
     return mesh;
 }

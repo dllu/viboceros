@@ -2718,3 +2718,4 @@ extern "C" int vb_curve_distance_extrema(const VbCurve *first, const VbCurve *se
 }
 
 #include "mesh_boolean.h"
+#include "mesh_intersections.h"

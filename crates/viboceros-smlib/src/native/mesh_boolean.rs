@@ -33,8 +33,14 @@ unsafe extern "C" {
     ) -> c_int;
 }
 
-fn prepare(mesh: &TriangleMesh) -> Result<(Vec<f64>, Vec<u32>), Error> {
-    let (mesh, _) = mesh.triangulate_quads(Tolerance::MESH_VALIDATION)?;
+pub(super) fn prepare(mesh: &TriangleMesh) -> Result<(Vec<f64>, Vec<u32>), Error> {
+    let triangulated = mesh
+        .faces()
+        .iter()
+        .any(|face| face.is_quad())
+        .then(|| mesh.triangulate_quads(Tolerance::MESH_VALIDATION))
+        .transpose()?;
+    let mesh = triangulated.as_ref().map_or(mesh, |(mesh, _)| mesh);
     Ok((
         mesh.vertices().iter().flat_map(|p| p.to_array()).collect(),
         mesh.triangles().iter().flatten().copied().collect(),

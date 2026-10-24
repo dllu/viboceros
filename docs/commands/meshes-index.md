@@ -32,6 +32,7 @@
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
 - [Polygon meshes](meshes.md)
 - [MeshOutline: view-dependent outlines from meshes and surface display meshes](mesh-outline.md)
+- [MeshIntersect: transverse and coplanar intersection curves](mesh-intersect.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 
 - [Mesh curve pulling and qualifications](pull-mesh.md)

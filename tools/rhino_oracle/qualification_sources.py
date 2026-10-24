@@ -9,6 +9,8 @@ BOOLEAN_PROMPT_MODULES = [
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
+    'src/app/object_selection/mesh_intersect_tests.rs',
+    'crates/viboceros-command/tests/support/mesh_intersect.rs',
     'src/app/object_selection/mesh_boolean_tests.rs',
     'crates/viboceros-command/tests/support/mesh_boolean.rs',
     'src/app/object_selection/mesh_outline_tests.rs',
@@ -152,13 +154,21 @@ def with_shared_sources(paths):
              'src/app/object_selection/mesh_conversion.rs'}
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
                                       'src/component_seams/arguments.rs') for p in paths]
+    if 'Cargo.toml' in expanded:
+        expanded.append('.cargo/config.toml')
     if 'tools/rhino_oracle/mesh_outline_cases.py' in expanded:
         expanded.append('tools/rhino_oracle/mesh_outline_scale_cases.py')
     if 'tools/rhino_oracle/report_mesh_outline.py' in expanded:
         expanded.append('tools/rhino_oracle/outline_comparison.py')
     if 'crates/viboceros-smlib/src/native.rs' in expanded:
         expanded.extend(['crates/viboceros-smlib/src/native/mesh_boolean.rs',
-                         'crates/viboceros-smlib/native/mesh_boolean.h'])
+                         'crates/viboceros-smlib/native/mesh_boolean.h',
+                         'crates/viboceros-smlib/src/lib.rs',
+                         'crates/viboceros-smlib/Cargo.toml',
+                         'crates/viboceros-smlib/src/native/mesh_intersections.rs',
+                         'crates/viboceros-smlib/src/native/mesh_intersections/coplanar.rs',
+                         'crates/viboceros-smlib/src/native/mesh_intersections/coplanar/contacts.rs',
+                         'crates/viboceros-smlib/native/mesh_intersections.h'])
     if 'crates/viboceros-document/src/lib.rs' in expanded:
         expanded.extend(['crates/viboceros-document/src/object_geometry.rs',
                          'crates/viboceros-document/src/geometry.rs',
@@ -172,6 +182,8 @@ def with_shared_sources(paths):
                          'src/viewport/insert_point.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
+            'crates/viboceros-command/src/mesh_intersect.rs',
+            'crates/viboceros-command/src/mesh_intersect/geometry.rs',
             'crates/viboceros-command/src/mesh_boolean.rs',
             'crates/viboceros-command/src/mesh_boolean/arguments.rs',
             'crates/viboceros-command/src/mesh_boolean/execute.rs',
@@ -254,5 +266,7 @@ def with_shared_sources(paths):
                          'tools/rhino_oracle/mesh_empty_capture.py'])
     if 'crates/viboceros-command/tests/mesh_boolean_command_native.rs' in expanded:
         expanded.append('crates/viboceros-command/tests/support/mesh_boolean_replay.rs')
+    if 'tools/rhino_oracle/report_mesh_boolean_commands.py' in expanded:
+        expanded.append('tools/rhino_oracle/outline_comparison.py')
     expanded.append('tools/rhino_oracle/qualification_sources.py')
     return list(dict.fromkeys(expanded))
