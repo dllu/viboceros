@@ -248,6 +248,8 @@ pub fn component_rows() -> Vec<Value> {
         "component_picked",
         "component_brep",
         "component_brep_picked",
+        "component_brep_holdouts",
+        "component_brep_periodic_edges",
     ])
 }
 pub fn edge_form_rows() -> Vec<Value> {

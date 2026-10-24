@@ -55,31 +55,3 @@ PICKED = {}
 for cases in [SELECTION,EDGE_HOLDOUTS,MIXED_VERIFIED]:
     for name,case in cases.items():
         PICKED['postselected_'+name] = dict(case,component_getter=True,curve_profile=False)
-
-# B-rep controls include a rational face and a triangular trim whose support
-# surface has control points outside the face. Repeated picks test identity,
-# rather than coordinate-based merging across distinct components.
-BREP = {}
-for kind in ['brep_box', 'brep_surface', 'brep_trimmed']:
-    for label, picks in [
-        ('face', [('face', 0)]), ('edge', [('edge', 0)]),
-        ('edges_reverse', [('edge', 2), ('edge', 0)]),
-        ('mixed', [('face', 0), ('edge', 0)]),
-        ('repeat', [('face', 0), ('face', 0)]),
-    ]:
-        BREP['component_'+kind+'_'+label] = dict(
-            sources=[dict(kind=kind, mode=None, grips=[])], whole=[], order=[0],
-            output='Points', layer='Input', flat=False,
-            components=[[0, k, i] for k, i in picks],
-            component_capture=True, component_records=True)
-BREP['component_brep_box_faces_reverse'] = dict(BREP['component_brep_box_face'],
-    components=[[0, 'face', 5], [0, 'face', 0]])
-BREP['component_brep_box_whole_owner'] = dict(BREP['component_brep_box_face'], whole=[0])
-BREP['component_brep_two_owners'] = dict(BREP['component_brep_box_face'],
-    sources=[dict(kind='brep_box', mode=None, grips=[]), dict(kind='brep_surface', mode=None, grips=[])],
-    order=[0, 1], components=[[1, 'face', 0], [0, 'edge', 0]])
-BREP_PICKED = {}
-for kind in ['brep_box', 'brep_surface', 'brep_trimmed']:
-    for label in ['face', 'edge']:
-        name = 'component_'+kind+'_'+label
-        BREP_PICKED['postselected_'+name] = dict(BREP[name], component_getter=True)

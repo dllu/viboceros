@@ -384,7 +384,6 @@
     "crates/viboceros-command/src/lib.rs": "35fcdc1a8346b2cb7865b94f7a91d73416b2ee776004060cb4fff4f2b5845cae",
     "crates/viboceros-command/tests/support/insert_kink.rs": "73ef8be7b99f8d2f5145b5e1f0f14d4a958f4846be1e406e5f3feb7543f88fe8",
     "crates/viboceros-geometry/src/lib.rs": "1088df706116e58a442240d5d455694f7256ecbb3a6f344857ef45ea908fdb05",
-    "crates/viboceros-geometry/src/nurbs.rs": "ecc06179517238415be8c72e7ddb7a9e293fdf86dad441c546f146a50882c500",
     "crates/viboceros-geometry/src/nurbs/edit_point_insertion.rs": "5cc9fbed941f08d707aa029e4385cd91017d6939ca6670ac6f5119590cf7fbfd",
     "src/app.rs": "f711151c1f22defc3c969ac303353f7c757cdf213f1c6cc8cb9736409be91afd",
     "src/app/refinement.rs": "aada9103eb50075631cad9ce54d4d5517c286ec6a8e23957b460c5d609365845",
@@ -428,5 +427,8 @@
     "No performance speedup claim",
     "SubCrv, arbitrary B-rep edge input, large nets and extreme coordinate ranges remain unqualified",
     "Native default integration differs slightly from precise mathematics; full command comparisons retain an explicit 5e-8 epsilon"
-  ]
+  ],
+  "source_git_sha256": {
+    "7f814e5ca42c07520ed8e31bb9fa074f4f5fb2f8:crates/viboceros-geometry/src/nurbs.rs": "ecc06179517238415be8c72e7ddb7a9e293fdf86dad441c546f146a50882c500"
+  }
 }

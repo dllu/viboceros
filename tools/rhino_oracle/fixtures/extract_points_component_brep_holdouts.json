@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_closed_face",
+      "case": "component_seams_brep_closed_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_closed_edge",
+      "case": "component_seams_brep_closed_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_closed_whole",
+      "case": "component_seams_brep_closed_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_closed_cloud",
+      "case": "component_seams_brep_closed_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_periodic_u_face",
+      "case": "component_seams_brep_periodic_u_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_periodic_u_edge",
+      "case": "component_seams_brep_periodic_u_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_periodic_u_whole",
+      "case": "component_seams_brep_periodic_u_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_periodic_u_cloud",
+      "case": "component_seams_brep_periodic_u_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_periodic_v_face",
+      "case": "component_seams_brep_periodic_v_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_periodic_v_edge",
+      "case": "component_seams_brep_periodic_v_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_periodic_v_whole",
+      "case": "component_seams_brep_periodic_v_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_periodic_v_cloud",
+      "case": "component_seams_brep_periodic_v_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_cylinder_face",
+      "case": "component_seams_brep_cylinder_face"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_cylinder_edge",
+      "case": "component_seams_brep_cylinder_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_cylinder_whole",
+      "case": "component_seams_brep_cylinder_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_cylinder_cloud",
+      "case": "component_seams_brep_cylinder_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_brep_cylinder_edges",
+      "case": "component_seams_brep_cylinder_edges"
+    }
+  ]
+}

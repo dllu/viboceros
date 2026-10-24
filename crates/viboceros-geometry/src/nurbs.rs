@@ -1311,13 +1311,8 @@ impl NurbsCurve {
     /// polyline. Unlike `ExtractPt`, this can therefore rotate the first
     /// output point away from raw control index zero.
     pub fn control_polygon(&self, tolerance: Tolerance) -> Result<Polyline3, GeometryError> {
-        let (start, end) = control_polygon_range(
-            self.degree,
-            self.control_points.len(),
-            &self.knots,
-            self.is_periodic(),
-        );
-        let mut points = self.control_points[start..end]
+        let range = self.control_polygon_range();
+        let mut points = self.control_points[range]
             .iter()
             .map(|control| control.point())
             .collect::<Vec<_>>();
@@ -1328,6 +1323,18 @@ impl NurbsCurve {
                 .expect("a periodic control window is nonempty") = first;
         }
         Polyline3::try_new(points, tolerance)
+    }
+
+    /// Raw control indices for the domain-aligned control polygon. Periodic
+    /// curves retain one closing control; other curves retain their full net.
+    pub fn control_polygon_range(&self) -> std::ops::Range<usize> {
+        let (start, end) = control_polygon_range(
+            self.degree,
+            self.control_points.len(),
+            &self.knots,
+            self.is_periodic(),
+        );
+        start..end
     }
 
     pub fn control_point_bounds(&self) -> BoundingBox3 {

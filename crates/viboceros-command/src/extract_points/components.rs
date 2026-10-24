@@ -76,7 +76,9 @@ pub(super) fn resolve(
                     if grip_owners.contains(&id) {
                         continue;
                     }
-                    if surface.control_points().len() > MAX_EXTRACTED_POINTS {
+                    if surface.grip_dimensions().into_iter().product::<usize>()
+                        > MAX_EXTRACTED_POINTS
+                    {
                         return Err(CommandError::TooManyExtractedPoints {
                             maximum: MAX_EXTRACTED_POINTS,
                         });

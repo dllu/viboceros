@@ -18,12 +18,15 @@ unavailable sources reject the complete invocation before edits. Duplicate compo
 processed once. Typed face indices refer to stored faces; mesh edge and vertex
 indices refer to exact-location-welded topology, including unwelded meshes.
 
-B-rep faces contribute the full, untrimmed support control net, with the first
-surface direction changing fastest. Edges on a polysurface contribute their
+B-rep faces contribute untrimmed support controls, with the first surface
+direction changing fastest. Closed directions omit the repeated seam control;
+periodic directions use the domain-aligned control window, omitting its closing
+control. Edges on a polysurface contribute their
 bounded 3D curve controls. On a single-face B-rep, each selected edge contributes
 the face's support controls instead, matching Rhino. Distinct components retain
 shared locations; edges precede faces, each in ordinal order. Whole B-reps
 contribute each face's controls in face order, rather than just topology vertices.
+Closed and periodic edge curves likewise omit their repeated closing controls.
 Selecting a whole owner before starting replaces its component selections.
 Rhino's command-first getter promotes picks on single-face B-reps to their
 owning surface; the native receipts record this separately from component
@@ -56,10 +59,10 @@ one-million-output-point limit and native sampling budgets apply; fitting a
 SubD edge currently refines the source globally within those budgets.
 
 The [component qualification](../extract-point-components-qualification.json)
-compares 118 native cases through typed commands and their corresponding
-interactive selection paths (118 getter workflows), including trimmed and rational
-B-rep faces, polysurface edges, welded/unwelded meshes, combined components, point
-clouds, surface/control-net locations, attributes and history.
+compares 138 native cases through typed commands and their corresponding
+interactive selection paths (138 getter workflows), including trimmed, closed,
+periodic and rational B-rep faces, polysurface edges, welded/unwelded meshes,
+combined components, point clouds, surface/control-net locations, attributes and history.
 Another 67 edge forms from irregular, regular, open-boundary, triangular and
 creased SubDs compare degree, knots, controls and 17 evaluations. These checks
 use an epsilon of `1e-7` against Rhino output, independently of the approximation

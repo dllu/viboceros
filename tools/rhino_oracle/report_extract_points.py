@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 COMPONENT_QUALIFIED = ['component_selection','component_edge_holdouts',
                        'component_mixed_verified','component_picked',
-                       'component_brep','component_brep_picked']
+                       'component_brep','component_brep_picked','component_brep_holdouts',
+                       'component_brep_periodic_edges']
 SOURCES = with_shared_sources([
     'crates/viboceros-command/src/lib.rs', 'crates/viboceros-command/src/object_selection.rs',
     'crates/viboceros-document/src/lib.rs', 'src/app.rs',

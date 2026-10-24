@@ -194,6 +194,7 @@ def with_shared_sources(paths):
                          'tools/rhino_oracle/managed_component_input.py',
                          'tools/rhino_oracle/extract_points_geometry.py',
                          'tools/rhino_oracle/extract_points_component_cases.py',
+                         'tools/rhino_oracle/extract_points_brep_cases.py',
                          'tools/rhino_oracle/extract_points_component_input.py'])
     if 'tools/rhino_oracle/mesh_split_cases.py' in expanded:
         expanded.extend(['tools/rhino_oracle/mesh_split_channel_cases.py',

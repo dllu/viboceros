@@ -235,3 +235,52 @@ fn invalid_brep_components_preserve_sources_selection_and_redo() {
         }
     }
 }
+
+#[test]
+fn seam_controls_do_not_consume_the_output_point_budget() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let count_v = MAX_EXTRACTED_POINTS / 4 + 1;
+    let controls = (0..count_v)
+        .flat_map(|v| [[0., 0.], [1., 0.], [0., 1.], [0., 0.]].map(|[x, y]| point(x, y, v as f64)))
+        .collect();
+    let mut knots_v = vec![0.];
+    knots_v.extend((0..count_v).map(|v| v as f64));
+    knots_v.push((count_v - 1) as f64);
+    let surface = NurbsSurface::try_new(
+        2,
+        1,
+        4,
+        count_v,
+        controls,
+        vec![0., 0., 0., 1., 2., 2., 2.],
+        knots_v,
+    )
+    .unwrap();
+    assert!(surface.control_points().len() > MAX_EXTRACTED_POINTS);
+    let expected = 3 * count_v;
+    let id = doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap();
+    let storage = doc.object(id).unwrap().geometry_snapshot().clone();
+    doc.clear_history().unwrap();
+    registry
+        .execute(
+            &mut doc,
+            &format!("ExtractPt Component={id},Face,0 Output=PointCloud"),
+        )
+        .unwrap();
+    let result = doc.selected_objects().next().unwrap();
+    let Geometry::PointCloud(cloud) = result.geometry() else {
+        panic!("expected point cloud")
+    };
+    assert_eq!(cloud.points().len(), expected);
+    assert!(
+        doc.object(id)
+            .unwrap()
+            .geometry_snapshot()
+            .shares_storage_with(&storage)
+    );
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.objects().len(), 1);
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(doc.objects().len(), 2);
+}

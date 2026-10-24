@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_joined_periodic_edge",
+      "case": "component_seams_joined_periodic_edge"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_joined_periodic_edges",
+      "case": "component_seams_joined_periodic_edges"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "component_seams_joined_periodic_faces",
+      "case": "component_seams_joined_periodic_faces"
+    }
+  ]
+}

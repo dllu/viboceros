@@ -2,6 +2,27 @@
 def create(kind, host):
     from grip_navigation_probe import create_source
     G = host["Rhino"].Geometry
+    if kind == 'brep_periodic_joined':
+        first = create('brep_periodic_u', host)
+        second = first.DuplicateBrep()
+        try:
+            second.Transform(G.Transform.Translation(0.,0.,2.))
+            joined = G.Brep.JoinBreps([first, second], 1.e-6)
+            if joined is None or len(joined)!=1:
+                raise ValueError('owned periodic B-rep join failed')
+            return joined[0]
+        finally:
+            first.Dispose()
+            second.Dispose()
+    if kind == 'brep_cylinder':
+        return G.Cylinder(G.Circle(G.Plane.WorldXY, 2.), 3.).ToBrep(True, True)
+    if kind in ['brep_closed', 'brep_periodic_u', 'brep_periodic_v']:
+        surface = create_source(dict(brep_closed='surface_closed',
+            brep_periodic_u='surface_periodic_u', brep_periodic_v='surface_periodic_v')[kind], host)
+        try:
+            return surface.ToBrep()
+        finally:
+            surface.Dispose()
     if kind == 'brep_box':
         return G.Brep.CreateFromBox(G.BoundingBox(G.Point3d(0.,0.,0.), G.Point3d(4.,3.,2.)))
     if kind == 'brep_surface':

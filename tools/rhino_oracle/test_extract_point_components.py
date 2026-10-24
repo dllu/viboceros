@@ -9,7 +9,7 @@ from .report_extract_points import native, validate_component_getter
 class ExtractPointComponentTests(unittest.TestCase):
     def test_native_requests_archives_and_component_states(self):
         _,rows,_=native(FAMILIES,components=True)
-        self.assertEqual(len(rows),118)
+        self.assertEqual(len(rows),138)
         from .extract_points_cases import ALL_CASES, FAMILIES as all_families
         self.assertEqual(len(ALL_CASES),sum(len(cases) for cases in all_families.values()))
         for label,row in rows.items():

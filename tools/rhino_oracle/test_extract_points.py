@@ -42,7 +42,7 @@ class ExtractPointsTests(unittest.TestCase):
             self.assertEqual({p.name for p in Path(directory).iterdir()}, {'extract_points_probe.py',
                 'extract_points_cases.py','grip_navigation_probe.py','grip_transform_probe.py',
                 'join_probe.py','merge_edges_probe.py','extract_points_geometry.py','extract_points_getter.py','managed_component_input.py',
-                'extract_points_component_input.py','extract_points_component_cases.py','extract_points_target_cases.py'})
+                'extract_points_component_input.py','extract_points_component_cases.py','extract_points_brep_cases.py','extract_points_target_cases.py'})
 
     def test_measured_geometry_metadata_selection_and_grips_are_compared(self):
         _, rows, _=native()
