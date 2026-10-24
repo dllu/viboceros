@@ -170,7 +170,13 @@ def with_shared_sources(paths):
     if 'tools/rhino_oracle/mesh_trim_cases.py' in expanded:
         expanded.extend(['tools/rhino_oracle/mesh_trim_continuation_cases.py',
                          'tools/rhino_oracle/mesh_trim_snapshot_policy_cases.py',
-                         'tools/rhino_oracle/mesh_trim_cutter_policy_cases.py'])
+                         'tools/rhino_oracle/mesh_trim_cutter_policy_cases.py',
+                         'tools/rhino_oracle/mesh_trim_curve_control_cases.py',
+                         'tools/rhino_oracle/mesh_trim_pick_control_cases.py',
+                         'tools/rhino_oracle/mesh_trim_getter_control_cases.py',
+                         'tools/rhino_oracle/mesh_trim_split_control.py',
+                         'tools/rhino_oracle/mesh_trim_pick_trace.py',
+                         'tools/rhino_oracle/managed_mouse_callback.py'])
     if 'tools/rhino_oracle/mesh_split_cases.py' in expanded:
         expanded.extend(['tools/rhino_oracle/mesh_split_channel_cases.py',
                          'tools/rhino_oracle/mesh_split_ngon_policy_cases.py',

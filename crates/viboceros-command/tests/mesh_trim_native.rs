@@ -44,6 +44,36 @@ fn mesh_trim_original_geometry_replays_native_cutter_policy() {
     assert!(gaps.is_empty(), "{gaps:?}");
 }
 #[test]
+fn mesh_trim_replays_native_preselection_and_sdk_partition_controls() {
+    let (count, gaps) = replay(
+        native::all_rows_for(&["getter_controls"]),
+        "MESH_TRIM_GETTER_CONTROLS_COMMAND",
+        true,
+    );
+    assert_eq!(count, 5);
+    assert_eq!(gaps, native::GETTER_CONTROL_GAPS);
+}
+#[test]
+fn mesh_trim_default_physical_getters_replay_native_preselection() {
+    let (count, gaps) = replay(
+        native::all_rows_for(&["verified_getters"]),
+        "MESH_TRIM_VERIFIED_GETTERS_COMMAND",
+        true,
+    );
+    assert_eq!(count, 2);
+    assert!(gaps.is_empty(), "{gaps:?}");
+}
+#[test]
+fn mesh_trim_direct_plane_getters_retain_native_compatibility_differences() {
+    let (count, gaps) = replay(
+        native::all_rows_for(&["plane_getters"]),
+        "MESH_TRIM_PLANE_GETTERS_COMMAND",
+        true,
+    );
+    assert_eq!(count, 2);
+    assert_eq!(gaps, native::PLANE_GETTER_GAPS);
+}
+#[test]
 fn mesh_trim_captured_cutters_expose_perspective_curve_surface_difference() {
     let (count, gaps) = replay(
         native::rows_for(&["snapshot_policy"]),
@@ -68,6 +98,11 @@ fn replay(rows: Vec<serde_json::Value>, prefix: &str, frozen: bool) -> (usize, V
         let mut captured = frozen
             .then(|| viboceros_command::MeshTrimCutters::capture(&scene.doc, &cutters).unwrap());
         let mut history = scene.doc.begin_history_group("MeshTrim").unwrap();
+        let planes = value["input"]["infinite_plane"]
+            .as_str()
+            .map(str::to_owned)
+            .into_iter()
+            .collect::<Vec<_>>();
         for (index, point) in native::picks(&row).into_iter().enumerate() {
             let target = native::target_for_pick(&scene.doc, &row, index, point);
             let command = native::command(&row, &cutters, target, point);
@@ -77,7 +112,7 @@ fn replay(rows: Vec<serde_json::Value>, prefix: &str, frozen: bool) -> (usize, V
                         &mut scene.doc,
                         target,
                         point,
-                        &[],
+                        &planes,
                         CommandContext::default(),
                         &mut history,
                     )

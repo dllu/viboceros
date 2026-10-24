@@ -25,7 +25,11 @@ fn start(app: &mut VibocerosApp, row: &serde_json::Value, ids: &[ObjectId], pres
     if !preselect {
         app.select_intersection_prompt_objects(cutters, SelectionMode::Add);
         if row["value"]["input"]["infinite_plane"].is_string() {
-            for word in ["IP", "3Point", "2,0,0", "2,1,0", "2,0,1"] {
+            for word in row["value"]["input"]["cutting_arguments"]
+                .as_str()
+                .unwrap()
+                .split_whitespace()
+            {
                 enter(app, word);
             }
         }
@@ -58,6 +62,33 @@ fn mesh_trim_getters_replay_native_original_cutter_geometry() {
     assert!(gaps.is_empty(), "{gaps:?}");
 }
 #[test]
+fn mesh_trim_getters_replay_native_preselection_and_sdk_controls() {
+    let (count, gaps) = replay(
+        native::all_rows_for(&["getter_controls"]),
+        "MESH_TRIM_GETTER_CONTROLS_GETTER",
+    );
+    assert_eq!(count, 5);
+    assert_eq!(gaps, native::GETTER_CONTROL_GAPS);
+}
+#[test]
+fn mesh_trim_getters_replay_default_native_preselection() {
+    let (count, gaps) = replay(
+        native::all_rows_for(&["verified_getters"]),
+        "MESH_TRIM_VERIFIED_GETTERS_GETTER",
+    );
+    assert_eq!(count, 2);
+    assert!(gaps.is_empty(), "{gaps:?}");
+}
+#[test]
+fn mesh_trim_getters_replay_native_direct_plane_differences() {
+    let (count, gaps) = replay(
+        native::all_rows_for(&["plane_getters"]),
+        "MESH_TRIM_PLANE_GETTERS_GETTER",
+    );
+    assert_eq!(count, 2);
+    assert_eq!(gaps, native::PLANE_GETTER_GAPS);
+}
+#[test]
 fn mesh_trim_getters_expose_native_perspective_curve_surface_difference() {
     let (count, gaps) = replay(
         native::rows_for(&["snapshot_policy"]),
@@ -74,7 +105,12 @@ fn replay(rows: Vec<serde_json::Value>, prefix: &str) -> (usize, Vec<String>) {
         let mut scene = native::setup(&row);
         let mut app = test_app();
         app.document = std::mem::take(&mut scene.doc);
-        start(&mut app, &row, &scene.ids, false);
+        start(
+            &mut app,
+            &row,
+            &scene.ids,
+            value["input"]["preselect"] == true,
+        );
         for (index, point) in native::picks(&row).into_iter().enumerate() {
             let target = native::target_for_pick(&app.document, &row, index, point);
             app.accept_component_face_hit(target, 0, Some(point));

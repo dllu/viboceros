@@ -6,12 +6,20 @@ if __package__:
     from .mesh_trim_continuation_cases import cases as continuation_cases
     from .mesh_trim_snapshot_policy_cases import cases as snapshot_cases
     from .mesh_trim_cutter_policy_cases import cases as cutter_policy_cases
+    from .mesh_trim_curve_control_cases import cases as curve_control_cases
+    from .mesh_trim_pick_control_cases import cases as pick_control_cases
+    from .mesh_trim_getter_control_cases import cases as getter_control_cases
+    from .mesh_trim_getter_control_cases import plane_cases
 else:
     from mesh_split_cases import box, xy, wall, moved, CHANNELS
     from mesh_trim_control_cases import cases as control_cases
     from mesh_trim_continuation_cases import cases as continuation_cases
     from mesh_trim_snapshot_policy_cases import cases as snapshot_cases
     from mesh_trim_cutter_policy_cases import cases as cutter_policy_cases
+    from mesh_trim_curve_control_cases import cases as curve_control_cases
+    from mesh_trim_pick_control_cases import cases as pick_control_cases
+    from mesh_trim_getter_control_cases import cases as getter_control_cases
+    from mesh_trim_getter_control_cases import plane_cases
 
 DISCOVERY = {}
 for name, shape, pre, extra in [
@@ -47,12 +55,41 @@ SNAPSHOT_POLICY = snapshot_cases(xy)
 FAMILIES['snapshot_policy'] = SNAPSHOT_POLICY
 CUTTER_POLICY = cutter_policy_cases(xy)
 FAMILIES['cutter_policy'] = CUTTER_POLICY
-ALL_CASES = dict(DISCOVERY)
-ALL_CASES.update(MOUSE)
-ALL_CASES.update(CONTROLS)
-ALL_CASES.update(CONTINUATION)
-ALL_CASES.update(SNAPSHOT_POLICY)
-ALL_CASES.update(CUTTER_POLICY)
+CURVE_CONTROLS = curve_control_cases(xy, wall)
+FAMILIES['curve_controls'] = CURVE_CONTROLS
+PICK_CONTROLS = pick_control_cases(CURVE_CONTROLS)
+FAMILIES['pick_controls'] = PICK_CONTROLS
+SETTLED_PICKS = {}
+for name, value in PICK_CONTROLS.items():
+    identifier = name.replace('mesh_trim_pick_controls_', 'mesh_trim_settled_picks_')
+    value = deepcopy(value)
+    value.update(capture_id=identifier, trace_objects=False)
+    SETTLED_PICKS[identifier] = value
+FAMILIES['settled_picks'] = SETTLED_PICKS
+DIRECT_GETTER = {}
+for name, value in SETTLED_PICKS.items():
+    if name.endswith('curve_only_quad'):
+        continue
+    identifier = name.replace('mesh_trim_settled_picks_', 'mesh_trim_direct_getter_')
+    value = deepcopy(value)
+    value.update(capture_id=identifier, direct_getter=True)
+    DIRECT_GETTER[identifier] = value
+FAMILIES['direct_getter'] = DIRECT_GETTER
+GETTER_CONTROLS = getter_control_cases(CURVE_CONTROLS, MOUSE, wall)
+FAMILIES['getter_controls'] = GETTER_CONTROLS
+VERIFIED_GETTERS = {}
+for name, value in GETTER_CONTROLS.items():
+    if not value['preselect']:
+        continue
+    identifier = name.replace('mesh_trim_getter_controls_', 'mesh_trim_verified_getters_')
+    value = deepcopy(value)
+    value.pop('direct_getter')
+    value['capture_id'] = identifier
+    VERIFIED_GETTERS[identifier] = value
+FAMILIES['verified_getters'] = VERIFIED_GETTERS
+PLANE_GETTERS = plane_cases(CONTROLS, xy, moved)
+FAMILIES['plane_getters'] = PLANE_GETTERS
+ALL_CASES = {name: case for family in FAMILIES.values() for name, case in family.items()}
 
 
 def request(family='discovery'):

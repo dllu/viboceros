@@ -14,6 +14,12 @@ pub fn rows() -> Vec<Value> {
     rows_for(&["mouse", "controls"])
 }
 pub fn rows_for(families: &[&str]) -> Vec<Value> {
+    load(families, false)
+}
+pub fn all_rows_for(families: &[&str]) -> Vec<Value> {
+    load(families, true)
+}
+fn load(families: &[&str], include_preselection: bool) -> Vec<Value> {
     let mut rows = vec![];
     for &family in families {
         let data: Value = serde_json::from_str(
@@ -24,7 +30,7 @@ pub fn rows_for(families: &[&str]) -> Vec<Value> {
         )
         .unwrap();
         for mut row in data["results"].as_array().unwrap().iter().cloned() {
-            if row["value"]["input"]["preselect"] == true {
+            if !include_preselection && row["value"]["input"]["preselect"] == true {
                 continue;
             }
             row["family"] = family.into();
@@ -112,4 +118,9 @@ pub const GAPS: &[&str] = &["mesh_trim_controls_plane"];
 pub const SNAPSHOT_GAPS: &[&str] = &[
     "mesh_trim_snapshot_policy_deleted_cutter",
     "mesh_trim_snapshot_policy_replaced_cutter",
+];
+pub const GETTER_CONTROL_GAPS: &[&str] = &["mesh_trim_getter_controls_two_meshes_sdk"];
+pub const PLANE_GETTER_GAPS: &[&str] = &[
+    "mesh_trim_plane_getters_three_point",
+    "mesh_trim_plane_getters_world_yz",
 ];

@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_curve_after_quad",
+      "case": "mesh_trim_curve_controls_curve_after_quad"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_curve_direct_quad",
+      "case": "mesh_trim_curve_controls_curve_direct_quad"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_curve_only_quad",
+      "case": "mesh_trim_curve_controls_curve_only_quad"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_mesh_after_quad",
+      "case": "mesh_trim_curve_controls_mesh_after_quad"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_mesh_only_quad",
+      "case": "mesh_trim_curve_controls_mesh_only_quad"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_horizontal_only_quad",
+      "case": "mesh_trim_curve_controls_horizontal_only_quad"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_curve_after_triangles",
+      "case": "mesh_trim_curve_controls_curve_after_triangles"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_curve_direct_triangles",
+      "case": "mesh_trim_curve_controls_curve_direct_triangles"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_curve_controls_curve_after_reverse",
+      "case": "mesh_trim_curve_controls_curve_after_reverse"
+    }
+  ]
+}

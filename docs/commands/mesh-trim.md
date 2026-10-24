@@ -31,8 +31,9 @@ captures and replays 13 backend and 14 interactive workflows at `1e-7`, includin
 vertex channels, attributes, groups, selection, source identity and Undo/Redo.
 Twelve backend and thirteen interactive workflows match all checks. The remaining
 temporary plane capture leaves Rhino's mesh unchanged while Viboceros trims it.
-Preselected native macros did not deliver productive picks, so they remain
-discovery evidence; application preselection and local Undo have separate tests.
+Earlier preselected macros did not deliver productive picks and remain discovery
+evidence. [Direct native getter checks](../mesh-trim-getters.md) now qualify
+productive preselection for sheets and boxes, alongside local Undo regressions.
 Repeated picks after trimming a cutter itself have a separate continuation
 qualification. Perspective views with curve cutters, curved meshing, extreme
 scales, near contacts and comparative performance remain unqualified.

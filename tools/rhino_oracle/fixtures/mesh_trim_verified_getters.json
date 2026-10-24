@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_verified_getters_sheet_pre",
+      "case": "mesh_trim_verified_getters_sheet_pre"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_verified_getters_box_pre",
+      "case": "mesh_trim_verified_getters_box_pre"
+    }
+  ]
+}

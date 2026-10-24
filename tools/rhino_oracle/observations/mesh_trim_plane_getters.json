@@ -1,0 +1,1534 @@
+{
+  "protocol_version": 1,
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "mesh_trim_plane_getters_three_point",
+      "value": {
+        "document_tolerance": 1e-06,
+        "trim_view": {
+          "location": [
+            1.9999999999999998,
+            1.5,
+            102.9338282685904
+          ],
+          "perspective": false,
+          "target": [
+            1.9999999999999998,
+            1.5,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "cplane": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ]
+        },
+        "success": true,
+        "input_script": "_-MeshTrim   _IP _3Point 2,0,0 2,1,0 2,0,1 _Enter",
+        "source_3dm": "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAAAh9GwEenBMQZ/8PzdJz95gAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAACRtAbU/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABBqAwAAAAAAAHCAACBSAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBAAQBAQAAAAAAAAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAACTHr3gAAAAAAAAAAAAAAAAAAAIBAAAAAAAAAAAAAAIBAAABAQAAAAAAAAAAAAABAQAAAAAAwAAAAeLagZwAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABApAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAaTyYowAAAAABAIAAQHkAAAAAAAAAAQAAAAAAAAAEAAAAYAAAACrqMuoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAAAAAAAAIQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIQAAAAAAAAAAAo/7E/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBAAAAAAAAACEAAAAAAAAAAAOSYHdP/fwKAAAAAAAAAAABygAACOAAAAAAAAAAtwI+WgSYkm0KCJYrbYtTLHAAAAAABCQAAAFMAbwB1AHIAYwBlACAAMAAAAAYNGzUADQEAGhnb+38AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAEEfAAAAAAAA",
+        "events": [
+          {
+            "objects": [
+              {
+                "groups": [
+                  "Boolean group 0",
+                  "Boolean group 1"
+                ],
+                "closed": false,
+                "color": [
+                  13,
+                  27,
+                  53
+                ],
+                "layer": "Boolean source 0",
+                "selected": false,
+                "crc": 2647301299,
+                "color_source": 1,
+                "name": "Source 0",
+                "source": 0,
+                "mesh": {
+                  "uv": null,
+                  "vertices": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0
+                    ]
+                  ],
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "colors": null,
+                  "ngons": [],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "vertex_normals": 4,
+                "role": "source",
+                "face_normals": 1
+              },
+              {
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "point": [
+                  99.0,
+                  98.0,
+                  97.0
+                ],
+                "layer": "Boolean output",
+                "selected": false,
+                "crc": 0,
+                "color_source": 0,
+                "name": "Undo witness",
+                "source": null,
+                "role": "witness"
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "MeshTrim"
+          }
+        ],
+        "after_script": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2647301299,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          },
+          {
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "selected": false,
+            "crc": 0,
+            "color_source": 0,
+            "name": "Undo witness",
+            "source": null,
+            "role": "witness"
+          }
+        ],
+        "trim_pick_trace": {
+          "expected": [
+            {
+              "point": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "viewport": "f1b3f94a-bd93-46ea-bc21-2379d5ceba6f",
+              "hits": [],
+              "pixel": [
+                282,
+                231
+              ],
+              "ray": [
+                [
+                  0.9872122762148334,
+                  1.000639386189258,
+                  -4.850000049173829
+                ],
+                [
+                  0.9872122762148334,
+                  1.000639386189258,
+                  101.85081026151077
+                ]
+              ]
+            }
+          ],
+          "actual": [
+            {
+              "prior_motion": [
+                282,
+                231
+              ],
+              "pixel": [
+                282,
+                231
+              ],
+              "viewport": "f1b3f94a-bd93-46ea-bc21-2379d5ceba6f",
+              "prompt": "Select object to trim"
+            }
+          ]
+        },
+        "redo": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2647301299,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          },
+          {
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "selected": false,
+            "crc": 0,
+            "color_source": 0,
+            "name": "Undo witness",
+            "source": null,
+            "role": "witness"
+          }
+        ],
+        "history": "Command: _-MeshTrim\nSelect cutting objects: _IP\nSelect planar object to use as a temporary pseudo-infinite plane ( 3Point  Vertical  ThroughPoint  AroundCurve  NamedCPlane  CPlaneXY  CPlaneYZ  CPlaneZX  WorldXY  WorldYZ  WorldZX ): _3Point\nFirst point of plane ( EdgeMidpoint ): 2,0,0\nSecond point of plane: 2,1,0\nThird point of plane: 2,0,1\nSelect cutting objects. Press Enter when done: _Enter\nSelect cutting objects. Press Enter when done\nSelect object to trim\nSelect object to trim",
+        "tolerance_policy": {
+          "coefficient": 0.0001,
+          "zero": 2.3283064365386963e-10
+        },
+        "after": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2647301299,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          },
+          {
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "selected": false,
+            "crc": 0,
+            "color_source": 0,
+            "name": "Undo witness",
+            "source": null,
+            "role": "witness"
+          }
+        ],
+        "empty_storage": null,
+        "input": {
+          "first": [],
+          "second": [],
+          "capture_id": "mesh_trim_plane_getters_three_point",
+          "infinite_plane": "2,0,0,1,0,0",
+          "mesh_channels": true,
+          "cutting_arguments": "_IP _3Point 2,0,0 2,1,0 2,0,1",
+          "sequence": true,
+          "trim_picks": [
+            [
+              1.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "trace_objects": false,
+          "sources": [
+            {
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh"
+            }
+          ],
+          "capture_split_topology": true,
+          "preselect": false,
+          "trace_picks": true,
+          "operation": "split"
+        },
+        "before": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2647301299,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          },
+          {
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "selected": false,
+            "crc": 0,
+            "color_source": 0,
+            "name": "Undo witness",
+            "source": null,
+            "role": "witness"
+          }
+        ],
+        "undo": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2647301299,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "mesh_trim_plane_getters_world_yz",
+      "value": {
+        "document_tolerance": 1e-06,
+        "trim_view": {
+          "location": [
+            2.220446049250313e-16,
+            1.5,
+            102.9338282685904
+          ],
+          "perspective": false,
+          "target": [
+            0.0,
+            1.5,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "cplane": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ]
+        },
+        "success": true,
+        "input_script": "_-MeshTrim   _IP _WorldYZ _Enter",
+        "source_3dm": "M0QgR2VvbWV0cnkgRmlsZSBGb3JtYXQgICAgICAgODABAAAAfgAAAAAAAAAgUnVudGltZTogT046OlJ1bnRpbWVFbnZpcm9ubWVudDo6V2luZG93cyAzRE0gSS9PIHByb2Nlc3NvcjogT3Blbk5VUkJTIHRvb2xraXQgdmVyc2lvbiAyNDI0MzQ2NTIxIChjb21waWxlZCBvbiBKdW4gIDkgMjAyNikKGgAUAAAQiQAAAAAAAAAmAACgmZeAkAAAAAAhgAAgZQAAAAAAAAAQBQAAAGQAbABsAHUAAAAAAAAAHAAAAA4AAAAYAAAACQAAAH4AAAAGAAAAKAEAAAUAAABkAGwAbAB1AAAAAAAAABwAAAAOAAAAGAAAAAkAAAB+AAAABgAAACgBAAABAAAAs+gdS/////8AAAAAAAAAABUAABDlBQAAAAAAADGAACA4AAAAAAAAAGYAAAACAAAAje21oPfGsD45nVKiRt+RP3sUrkfheoQ/AAAAAAMAAAD8qfHSTWJQPwAAAADnm0PJMoAAIJYAAAAAAAAAFQAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAtQxzr4jYaPwAAAAAAAAAAAAAAAAAAGEAAAAAAAAAAAIdE50oYV9Y/AAAAAAAA8D+HROdKGFfWP4dE50oYV7Y/AAAAAAIAAAAAAAAAAAAAAAAAAQCAAEAWAAAAAAAAAAEAAAADAAAABAAAAAIAAAAAAAZdC7DXEQBhM4AAIJYAAAAAAAAAFQEAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAtQxzr4jYaPwAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAIdE50oYV9Y/AAAAAAAA8D+HROdKGFfWP4dE50oYV7Y/AAAAAAEAAAAAmpmZmZmZ6T8AAQCAAEAWAAAAAAAAAAEAAAADAAAABAAAAAIAAAAAAAZdC7Cy2r7ZNIAAIIIAAAAAAAAAFAAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAADwPwEAAAAAAADwPwEBAQAAAAAAAAAAAAAAAAAAAAAAdIuPKjWAACAIAAAAAAAAAAAAAAAc30QhNoAAIAgAAAAAAAAAAAAAABzfRCE3gAAgCAAAAAAAAAAAAAAAHN9EITgAAKAAAAAAAAAAADmAACAMAAAAAAAAAP////8AAAAA/////zqAACAMAAAAAAAAAAAAAAAAAAAAad8iZTwAAKABAAAAAAAAAD2AACCZAAAAAAAAAACAAECJAAAAAAAAAAEAAAADAAAAACADAABYAgAAAAAAAAAAUkAIAAAAAAAAAAAAAAD///8AoKCgAAAAAAAAAAABAAAAAAAAAAEAAAABAAAA6AMAAOgDAAAAAAAAAADoPwAAAAAAAAAAAABZQAAAAAAAAFBAmpmZmZmZuT8KAAAAAAAAAAAAAAAAAAAAAAAAAACMuoc7AAAAAD+AACApAAAAAAAAABAAAAAAAADwPwAAAAAAAPA/RgAAAAUAAAABAAAAAQAAAAEAAACE6criMgEAoAAAAAAAAAAAMwEAoAAAAAAAAAAANIEAIEECAAAAAAAAFwAAAAAAAPA//////wAAAAD/////AAAAAACAAEBAAAAAAAAAAAEAAAAAAAAAZgAAAAIAAAD8qfHSTWJQPzmdUqJG35E/exSuR+F6hD8AAAAAAwAAAPyp8dJNYlA/AAAAAEQaUgcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAQJQAAAAAAAAAAQAAAAIAAADSHTOevfjl/9IdM569+OX/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAieCmqQAAgABAEQAAAAAAAAABAAAAAAAAAAABAAAAYvheahUAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAALUMc6+I2Gj8AAAAAAAAAAAAAAAAAABhAAAAAAAAAAACHROdKGFfWPwAAAAAAAPA/h0TnShhX1j+HROdKGFe2PwAAAAACAAAAAAAAAAAAAAAAAAEAgABAFgAAAAAAAAABAAAAAwAAAAQAAAACAAAAAAAGXQuwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7Uesjf////8AAAAAAAAAABYAABAMAAAAAAAAAP////8AAAAAAAAAACUAABAMAAAAAAAAAP////8AAAAAAAAAABAAABAMAAAAAAAAAP////8AAAAAAAAAACMAABAMAAAAAAAAAP////8AAAAAAAAAABEAABAFAQAAAAAAAFCAACDtAAAAAAAAAPp/AgDdAAAAAAAAAPv/AgAUAAAAAAAAABOYgJWF6dMRv+UAEIMBIvA7Rwcd/P8CAKUAAAAAAAAAHwAAAAAAAAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/CAAAAEQAZQBmAGEAdQBsAHQAAAAB//////////8AAAAAAAAAAACyA2UzxOkPRrAzJw9xGzWwAAAAAAAAAAAAAAAAAAAAAAEAgABAEAAAAAAAAAABAAAAAAAAAAAAAAAAinDgAAAAAAAAAAAAAAAAAAAAAACbQZ9V/38CgAAAAAAAAAAAAAAAAP////8AAAAAAAAAABgAABAMAAAAAAAAAP////8AAAAAAAAAABkAABAMAAAAAAAAAP////8AAAAAAAAAACAAABAMAAAAAAAAAP////8AAAAAAAAAABIAABAMAAAAAAAAAP////8AAAAAAAAAACIAABAMAAAAAAAAAP////8AAAAAAAAAACEAABAMAAAAAAAAAP////8AAAAAAAAAABMAABBqAwAAAAAAAHCAACBSAwAAAAAAAHEAAIIgAAAAAAAAAPp/AgDmAgAAAAAAAPv/AgAUAAAAAAAAAOTU105H6dMRv+UAEIMBIvAtuRtc/P8CAK4CAAAAAAAAOAQAAAABAAAA0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/9IdM569+OX/0h0znr345f/SHTOevfjl/wAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAABAAQBAQAAAAAAAAIA/AACAPwAAgD8AAIC/AACAvwAAgL8AAIA/AACAPwAAgL8AAIC//////wAAAAAAAQAAAAABAgMwAAAA3ikmLQAAAADAAAAAAAAAAAAAAABAAAAAAAAAAAAAAABAAABAQAAAAAAAAADAAABAQAAAAAAwAAAAeLagZwAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgABApAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8D8AAAAAaTyYowAAAAABAIAAQHkAAAAAAAAAAQAAAAAAAAAEAAAAYAAAAJTdBf4AAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAIQAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAIQAAAAAAAAAAAe8xxoAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAACEAAAAAAAAAAAJ94LYn/fwKAAAAAAAAAAABygAACOAAAAAAAAAAtaPQv0ZTpGE2V+TfK8hbZRAAAAAABCQAAAFMAbwB1AHIAYwBlACAAMAAAAAYNGzUADQEAw30iJX8AAIIAAAAAAAAAAAAAAAD/////AAAAAAAAAAAmAAAQDAAAAAAAAAD/////AAAAAAAAAAAXAAAQYhIAAAAAAACAgAAgNQAAAAAAAABYLVkWL0odQL9eO4d0HBsbgoAAIBUAAAAAAAAAAQAAAAAAAAABUAAAAJmXgJAv1oz/L7NwL4EAACAJEgAAAAAAAAQAAAD9EQAAPHhtbD4NCgk8cmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCgkJPGNvbnRlbnQ+DQoJCQk8ZW52aXJvbm1lbnQvPg0KCQk8L2NvbnRlbnQ+DQoJCTxkZWZhdWx0LWNvbnRlbnQtc2VjdGlvbi8+DQoJCTxzZXR0aW5ncz4NCgkJCTxuYW1lZC12aWV3cz4NCgkJCQk8c29ydC1tb2RlIHR5cGU9InN0cmluZyIvPg0KCQkJPC9uYW1lZC12aWV3cz4NCgkJCTxuYW1lZC1jcGxhbmVzPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLWNwbGFuZXM+DQoJCQk8bmFtZWQtcG9zaXRpb25zPg0KCQkJCTxzb3J0LW1vZGUgdHlwZT0ic3RyaW5nIi8+DQoJCQk8L25hbWVkLXBvc2l0aW9ucz4NCgkJCTxuYW1lZC1zbmFwc2hvdHM+DQoJCQkJPHNvcnQtbW9kZSB0eXBlPSJzdHJpbmciLz4NCgkJCTwvbmFtZWQtc25hcHNob3RzPg0KCQkJPG1pc2NlbGxhbmVvdXM+DQoJCQkJPGN1c3RvbS1pbWFnZS1zaXplLWlzLXByZXNldCB0eXBlPSJib29sIj5mYWxzZTwvY3VzdG9tLWltYWdlLXNpemUtaXMtcHJlc2V0Pg0KCQkJCTxzbWFydC1tZXJnZS1uYW1lLWNvbGxpc2lvbi1zdXBwcmVzcz4NCgkJCQkJPGltcG9ydCB0eXBlPSJib29sIj5mYWxzZTwvaW1wb3J0Pg0KCQkJCQk8cGFzdGUgdHlwZT0iYm9vbCI+ZmFsc2U8L3Bhc3RlPg0KCQkJCTwvc21hcnQtbWVyZ2UtbmFtZS1jb2xsaXNpb24tc3VwcHJlc3M+DQoJCQk8L21pc2NlbGxhbmVvdXM+DQoJCQk8ZXhjbHVkZWQtcmVuZGVyLWVuZ2luZXM+DQoJCQkJPHV1aWRzIHR5cGU9InN0cmluZyIvPg0KCQkJPC9leGNsdWRlZC1yZW5kZXItZW5naW5lcz4NCgkJCTxmaWx0ZXJzPg0KCQkJCTxuYW1lLWZpbHRlciB0eXBlPSJzdHJpbmciLz4NCgkJCQk8bmFtZS1maWx0ZXItaW52ZXJ0IHR5cGU9ImJvb2wiPmZhbHNlPC9uYW1lLWZpbHRlci1pbnZlcnQ+DQoJCQkJPHNob3ctdW5hc3NpZ25lZC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy11bmFzc2lnbmVkLW1hdGVyaWFscz4NCgkJCQk8c2hvdy12NC1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hvdy12NC1tYXRlcmlhbHM+DQoJCQkJPHNob3ctaGlkZGVuLW1hdGVyaWFscyB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy1oaWRkZW4tbWF0ZXJpYWxzPg0KCQkJCTxzaG93LXJlZmVyZW5jZS1tYXRlcmlhbHMgdHlwZT0iYm9vbCI+ZmFsc2U8L3Nob3ctcmVmZXJlbmNlLW1hdGVyaWFscz4NCgkJCTwvZmlsdGVycz4NCgkJCTxwb3N0LWVmZmVjdHMtbmV3Pg0KCQkJCTxlYXJseS8+DQoJCQkJPHRvbmUtbWFwcGluZy8+DQoJCQkJPGxhdGUvPg0KCQkJPC9wb3N0LWVmZmVjdHMtbmV3Pg0KCQkJPHJlbmRlcmluZz4NCgkJCQk8cmVuZGVyLWNoYW5uZWxzPg0KCQkJCQk8bGlzdCB0eXBlPSJzdHJpbmciPjQ1M0E5QTFDLTkzMDctNDk3Ni1CMjgyLTRFQUQ0RDUzOTg3OTtCNzUyQ0UwQi1DMjE5LTRCREQtQjEzNC0yNjQyNUUxQzQzMzE8L2xpc3Q+DQoJCQkJCTxtb2RlIHR5cGU9InN0cmluZyI+YXV0b21hdGljPC9tb2RlPg0KCQkJCTwvcmVuZGVyLWNoYW5uZWxzPg0KCQkJCTxlbWJlZC1zdXBwb3J0LWZpbGVzLW9uIHR5cGU9ImJvb2wiPnRydWU8L2VtYmVkLXN1cHBvcnQtZmlsZXMtb24+DQoJCQkJPHVzZS1kaXRoZXJpbmcgdHlwZT0iYm9vbCI+ZmFsc2U8L3VzZS1kaXRoZXJpbmc+DQoJCQkJPGRpdGhlcmluZyB0eXBlPSJzdHJpbmciPmZsb3lkLXN0ZWluYmVyZzwvZGl0aGVyaW5nPg0KCQkJCTxjdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyIHR5cGU9InV1aWQiPjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMDwvY3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmcj4NCgkJCQk8Y3VzdG9tLWVudi1mb3ItcmVmbC1hbmQtcmVmci1vbiB0eXBlPSJib29sIj50cnVlPC9jdXN0b20tZW52LWZvci1yZWZsLWFuZC1yZWZyLW9uPg0KCQkJCTx1c2UtcG9zdC1wcm9jZXNzLWdhbW1hIHR5cGU9ImJvb2wiPnRydWU8L3VzZS1wb3N0LXByb2Nlc3MtZ2FtbWE+DQoJCQkJPGdhbW1hIHR5cGU9ImZsb2F0Ij4yLjIwMDAwMDA0NzY4MzcyPC9nYW1tYT4NCgkJCQk8dXNlLWxpbmVhci13b3JrZmxvdyB0eXBlPSJib29sIj50cnVlPC91c2UtbGluZWFyLXdvcmtmbG93Pg0KCQkJPC9yZW5kZXJpbmc+DQoJCQk8c3VuPg0KCQkJCTxlbmFibGUtYWxsb3dlZCB0eXBlPSJib29sIj50cnVlPC9lbmFibGUtYWxsb3dlZD4NCgkJCQk8ZW5hYmxlLW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9lbmFibGUtb24+DQoJCQkJPG1hbnVhbC1jb250cm9sLWFsbG93ZWQgdHlwZT0iYm9vbCI+dHJ1ZTwvbWFudWFsLWNvbnRyb2wtYWxsb3dlZD4NCgkJCQk8bWFudWFsLWNvbnRyb2wtb24gdHlwZT0iYm9vbCI+ZmFsc2U8L21hbnVhbC1jb250cm9sLW9uPg0KCQkJCTxpbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9pbnRlbnNpdHk+DQoJCQkJPHNoYWRvdy1pbnRlbnNpdHkgdHlwZT0iZG91YmxlIj4xPC9zaGFkb3ctaW50ZW5zaXR5Pg0KCQkJCTxkYXlsaWdodC1zYXZpbmctb24gdHlwZT0iYm9vbCI+ZmFsc2U8L2RheWxpZ2h0LXNhdmluZy1vbj4NCgkJCQk8ZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXMgdHlwZT0iaW50Ij42MDwvZGF5bGlnaHQtc2F2aW5nLW1pbnV0ZXM+DQoJCQkJPHllYXIgdHlwZT0iaW50Ij4yMDI2PC95ZWFyPg0KCQkJCTxtb250aCB0eXBlPSJpbnQiPjM8L21vbnRoPg0KCQkJCTxkYXkgdHlwZT0iaW50Ij4yMTwvZGF5Pg0KCQkJCTx0aW1lIHR5cGU9ImRvdWJsZSI+MTIuMDAwMDAwMDE8L3RpbWU+DQoJCQkJPHN1bi1hemltdXRoIHR5cGU9ImRvdWJsZSI+MTY4LjI2OTM4ODU4NjEwODwvc3VuLWF6aW11dGg+DQoJCQkJPHN1bi1hbHRpdHVkZSB0eXBlPSJkb3VibGUiPjg5LjYwMTgzMjAzNjczNzwvc3VuLWFsdGl0dWRlPg0KCQkJCTxza3lsaWdodC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1vbj4NCgkJCQk8c2t5bGlnaHQtc2hhZG93LWludGVuc2l0eSB0eXBlPSJkb3VibGUiPjE8L3NreWxpZ2h0LXNoYWRvdy1pbnRlbnNpdHk+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudC1vbiB0eXBlPSJib29sIj50cnVlPC9za3lsaWdodC1jdXN0b20tZW52aXJvbm1lbnQtb24+DQoJCQkJPHNreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudCB0eXBlPSJ1dWlkIj4wMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA8L3NreWxpZ2h0LWN1c3RvbS1lbnZpcm9ubWVudD4NCgkJCQk8b2JzZXJ2ZXItdGltZXpvbmUgdHlwZT0iZG91YmxlIj4wPC9vYnNlcnZlci10aW1lem9uZT4NCgkJCTwvc3VuPg0KCQkJPHNhZmUtZnJhbWU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPmZhbHNlPC9vbj4NCgkJCQk8cGVyc3BlY3RpdmUtb25seSB0eXBlPSJib29sIj50cnVlPC9wZXJzcGVjdGl2ZS1vbmx5Pg0KCQkJCTxmaWVsZC1kaXNwbGF5LW9uIHR5cGU9ImJvb2wiPmZhbHNlPC9maWVsZC1kaXNwbGF5LW9uPg0KCQkJCTxsaXZlLWZyYW1lPg0KCQkJCQk8b24gdHlwZT0iYm9vbCI+dHJ1ZTwvb24+DQoJCQkJPC9saXZlLWZyYW1lPg0KCQkJCTxhY3Rpb24tZnJhbWU+DQoJCQkJCTxvbiB0eXBlPSJib29sIj50cnVlPC9vbj4NCgkJCQkJPHgtc2NhbGUgdHlwZT0iZG91YmxlIj4wLjk8L3gtc2NhbGU+DQoJCQkJCTx5LXNjYWxlIHR5cGU9ImRvdWJsZSI+MC45PC95LXNjYWxlPg0KCQkJCQk8bGluayB0eXBlPSJib29sIj50cnVlPC9saW5rPg0KCQkJCTwvYWN0aW9uLWZyYW1lPg0KCQkJCTx0aXRsZS1mcmFtZT4NCgkJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCQk8eC1zY2FsZSB0eXBlPSJkb3VibGUiPjAuODwveC1zY2FsZT4NCgkJCQkJPHktc2NhbGUgdHlwZT0iZG91YmxlIj4wLjg8L3ktc2NhbGU+DQoJCQkJCTxsaW5rIHR5cGU9ImJvb2wiPnRydWU8L2xpbms+DQoJCQkJPC90aXRsZS1mcmFtZT4NCgkJCTwvc2FmZS1mcmFtZT4NCgkJCTxncm91bmQtcGxhbmU+DQoJCQkJPG9uIHR5cGU9ImJvb2wiPnRydWU8L29uPg0KCQkJCTxzaG93LXVuZGVyc2lkZSB0eXBlPSJib29sIj5mYWxzZTwvc2hvdy11bmRlcnNpZGU+DQoJCQkJPGFsdGl0dWRlIHR5cGU9ImRvdWJsZSI+MDwvYWx0aXR1ZGU+DQoJCQkJPGF1dG8tYWx0aXR1ZGUgdHlwZT0iYm9vbCI+dHJ1ZTwvYXV0by1hbHRpdHVkZT4NCgkJCQk8c2hhZG93LW9ubHkgdHlwZT0iYm9vbCI+dHJ1ZTwvc2hhZG93LW9ubHk+DQoJCQkJPG1hdGVyaWFsIHR5cGU9InN0cmluZyIvPg0KCQkJCTx0ZXh0dXJlLXNpemUgdHlwZT0idmVjdG9yMmQiPjEsMTwvdGV4dHVyZS1zaXplPg0KCQkJCTx0ZXh0dXJlLW9mZnNldCB0eXBlPSJ2ZWN0b3IyZCI+MCwwPC90ZXh0dXJlLW9mZnNldD4NCgkJCQk8dGV4dHVyZS1yb3RhdGlvbiB0eXBlPSJkb3VibGUiPjA8L3RleHR1cmUtcm90YXRpb24+DQoJCQkJPG9mZnNldC1sb2NrIHR5cGU9ImJvb2wiPmZhbHNlPC9vZmZzZXQtbG9jaz4NCgkJCQk8cmVwZWF0LWxvY2sgdHlwZT0iYm9vbCI+dHJ1ZTwvcmVwZWF0LWxvY2s+DQoJCQk8L2dyb3VuZC1wbGFuZT4NCgkJPC9zZXR0aW5ncz4NCgkJPG1hdGVyaWFsLXNlY3Rpb24vPg0KCQk8ZW52aXJvbm1lbnQtc2VjdGlvbi8+DQoJCTx0ZXh0dXJlLXNlY3Rpb24vPg0KCTwvcmVuZGVyLWNvbnRlbnQtbWFuYWdlci1kb2N1bWVudD4NCjwveG1sPg0KAAAAAP////8AAAAAAAAAAP9/AAAIAAAAAAAAAEEfAAAAAAAA",
+        "events": [
+          {
+            "objects": [
+              {
+                "groups": [
+                  "Boolean group 0",
+                  "Boolean group 1"
+                ],
+                "closed": false,
+                "color": [
+                  13,
+                  27,
+                  53
+                ],
+                "layer": "Boolean source 0",
+                "selected": false,
+                "crc": 2363493670,
+                "color_source": 1,
+                "name": "Source 0",
+                "source": 0,
+                "mesh": {
+                  "uv": null,
+                  "vertices": [
+                    [
+                      -2.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      3.0,
+                      0.0
+                    ],
+                    [
+                      -2.0,
+                      3.0,
+                      0.0
+                    ]
+                  ],
+                  "faces": [
+                    [
+                      0,
+                      1,
+                      2,
+                      3
+                    ]
+                  ],
+                  "colors": null,
+                  "ngons": [],
+                  "vertex_normals": [
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "vertex_normals": 4,
+                "role": "source",
+                "face_normals": 1
+              },
+              {
+                "groups": [],
+                "color": [
+                  0,
+                  0,
+                  0
+                ],
+                "point": [
+                  99.0,
+                  98.0,
+                  97.0
+                ],
+                "layer": "Boolean output",
+                "selected": false,
+                "crc": 0,
+                "color_source": 0,
+                "name": "Undo witness",
+                "source": null,
+                "role": "witness"
+              }
+            ],
+            "selected": [],
+            "result": "Success",
+            "name": "MeshTrim"
+          }
+        ],
+        "after_script": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2363493670,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          },
+          {
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "selected": false,
+            "crc": 0,
+            "color_source": 0,
+            "name": "Undo witness",
+            "source": null,
+            "role": "witness"
+          }
+        ],
+        "trim_pick_trace": {
+          "expected": [
+            {
+              "point": [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              "viewport": "f1b3f94a-bd93-46ea-bc21-2379d5ceba6f",
+              "hits": [],
+              "pixel": [
+                282,
+                231
+              ],
+              "ray": [
+                [
+                  -1.0127877237851661,
+                  1.000639386189258,
+                  -4.850000041490418
+                ],
+                [
+                  -1.0127877237851661,
+                  1.000639386189258,
+                  101.85081025382725
+                ]
+              ]
+            }
+          ],
+          "actual": [
+            {
+              "prior_motion": [
+                -1,
+                -1
+              ],
+              "pixel": [
+                282,
+                231
+              ],
+              "viewport": "f1b3f94a-bd93-46ea-bc21-2379d5ceba6f",
+              "prompt": "Select object to trim"
+            }
+          ]
+        },
+        "redo": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2363493670,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          },
+          {
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "selected": false,
+            "crc": 0,
+            "color_source": 0,
+            "name": "Undo witness",
+            "source": null,
+            "role": "witness"
+          }
+        ],
+        "history": "Command: _-MeshTrim\nSelect cutting objects: _IP\nSelect planar object to use as a temporary pseudo-infinite plane ( 3Point  Vertical  ThroughPoint  AroundCurve  NamedCPlane  CPlaneXY  CPlaneYZ  CPlaneZX  WorldXY  WorldYZ  WorldZX ): _WorldYZ\nSelect cutting objects. Press Enter when done: _Enter\nSelect cutting objects. Press Enter when done\nSelect object to trim\nSelect object to trim",
+        "tolerance_policy": {
+          "coefficient": 0.0001,
+          "zero": 2.3283064365386963e-10
+        },
+        "after": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2363493670,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          },
+          {
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "selected": false,
+            "crc": 0,
+            "color_source": 0,
+            "name": "Undo witness",
+            "source": null,
+            "role": "witness"
+          }
+        ],
+        "empty_storage": null,
+        "input": {
+          "first": [],
+          "second": [],
+          "capture_id": "mesh_trim_plane_getters_world_yz",
+          "infinite_plane": "WorldYZ",
+          "mesh_channels": true,
+          "cutting_arguments": "_IP _WorldYZ",
+          "sequence": true,
+          "trim_picks": [
+            [
+              -1.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "trace_objects": false,
+          "sources": [
+            {
+              "vertices": [
+                [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "kind": "mesh"
+            }
+          ],
+          "capture_split_topology": true,
+          "preselect": false,
+          "trace_picks": true,
+          "operation": "split"
+        },
+        "before": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2363493670,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          },
+          {
+            "groups": [],
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "point": [
+              99.0,
+              98.0,
+              97.0
+            ],
+            "layer": "Boolean output",
+            "selected": false,
+            "crc": 0,
+            "color_source": 0,
+            "name": "Undo witness",
+            "source": null,
+            "role": "witness"
+          }
+        ],
+        "undo": [
+          {
+            "groups": [
+              "Boolean group 0",
+              "Boolean group 1"
+            ],
+            "closed": false,
+            "color": [
+              13,
+              27,
+              53
+            ],
+            "layer": "Boolean source 0",
+            "selected": false,
+            "crc": 2363493670,
+            "color_source": 1,
+            "name": "Source 0",
+            "source": 0,
+            "mesh": {
+              "uv": null,
+              "vertices": [
+                [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                [
+                  -2.0,
+                  3.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "colors": null,
+              "ngons": [],
+              "vertex_normals": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "vertex_normals": 4,
+            "role": "source",
+            "face_normals": 1
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "engine": "rhino",
+  "provenance": {
+    "request_sha256": "a91bc9140998dda9c7f416da0d909ba14a129d300d7d593976b646a71fc8d627",
+    "sources": {
+      "mesh_trim_getter_control_cases.py": "6a98b3c64f1061738fcc92a5ddb62be848123f5db9ec44fbd8e420e53a6d701b",
+      "mesh_trim_split_control.py": "1519bcec306692a62cdb857ff10159bf56319a4f95515af0f3149c2cd8b45edd",
+      "mesh_trim_pick_control_cases.py": "7fc06da3c5f14a50155d125142225e14119e7967b935387256658d3707b0f621",
+      "mesh_trim_pick_trace.py": "01200d54a295db9a396f148d02e1a51fae54a5c6dc2c35e5e118180c8a451f28",
+      "managed_mouse_callback.py": "28d2bba50352f1809217ca29f8a25345c63117381b2b972b133f8af4af21515f",
+      "mesh_trim_curve_control_cases.py": "70a7dd18d55e037f08866b6f357196f141554265e6f901792a2d3cd9bfa0a899",
+      "mesh_trim_cutter_policy_cases.py": "3f7e200a1b4cc0a11723d7e1f759d4d8b0c768de642abb942c825c8876b7ae9a",
+      "mesh_trim_snapshot_policy_cases.py": "4d8529e29b3eeb010fe81e7e8598eda7636b0cf64ecc02db140aeedb7350f955",
+      "mesh_trim_continuation_cases.py": "46117ff063ce8535c7f529aef7a97ee6064b8afb2087599a08685b1735abeb3e",
+      "mesh_trim_picking.py": "040e3bac42ce392a9000d51e8b297f8c50994d45614b22eccd806b189921504d",
+      "mesh_trim_control_cases.py": "67c7d13764e09a08faff7af90f95dae1229251907d5b4a17044cbe3d9839eb06",
+      "mesh_trim_input.py": "fe57f4c9f229126df49e627cac806ca5bafe1d4a2864ebfaa592e70d8872e7d5",
+      "component_picking.py": "588fe07276e6ae1bcf0babd81e121b27032d51e74ddde34c11a42cd8a25c96df",
+      "hole_picking.py": "69d5d692cc86a7d628e741c9116b65449713fa5e23cf9ad8ee9f8dd5487f8116",
+      "generate_mesh_trim.py": "e0f7d5d4c9fd007c73904a187b12f6e6bbb3e06b9b0c13bd90202946fe2b92a1",
+      "mesh_trim_cases.py": "ee481ef3e0c09aa33a39302b6b0b5316a246a23ce6a8710b851853c136910ab6",
+      "mesh_trim_probe.py": "4b17e48d1625fa27fa19fdee4148bc8fda212ae83886bdf186fd136570eba7c7",
+      "mesh_split_ngon_policy_cases.py": "14c888db0d02ed9a53001ef13ad5ecd922365ecc628033ded0b2f82bbc36bb91",
+      "mesh_split_channel_cases.py": "f2b3c347c9764eff546025ceee913f9203616e4803cf7a45afa3a77cf62f4974",
+      "mesh_split_selection_cases.py": "9f1cfe03ff23770eda08fa9c50be74f52f4dc7487e30f3531bb94b14b9968601",
+      "mesh_split_policy_cases.py": "20808f5f525632075a545078e7fd71c7676e7a497d2dafd4ca2ef30f1c391e9f",
+      "mesh_split_sdk.py": "b01f2524f209e9216bfad678d52c1a3590b6bd71ce688f15c248693f44e4bed6",
+      "generate_mesh_split.py": "d6a9374a8a83da1ff821a9da39228ae5bdcba1a466ac1cfd43e6b9e966ddbc3f",
+      "mesh_split_cases.py": "ed05a7b0a6d0498877cf9b57be0d72a824db30a64870a4027b9e2cb1890007a5",
+      "mesh_split_probe.py": "224e681c2818637ca6401759528e9f006b9e53496f40aba595089bd65ca642d8",
+      "mesh_self_intersect_cases.py": "b97df742f041578966d155894e031dd77242dbd632ce92bbc4086875f1e938bb",
+      "mesh_boolean_command_probe.py": "2072a34ff3f2c603504291f8bfdb82ba40371acf76182bd019bc60f5135bd469",
+      "mesh_boolean_command_cases.py": "5522e21f7fc96e1930aab6a68651fe37e93a5a50e8e62f7473534f07c381dc2f",
+      "mesh_boolean_option_cases.py": "3c7d5170747d015928e6b8469c1b48167a8294f35d32aad67274ce3a9d48da5c",
+      "mesh_boolean_sets_cases.py": "2d5d2d5bc7b152d8a3c656f5b2eff3bce991baeab0f7a24c3a4df0dc07ee7cb8",
+      "mesh_empty_capture.py": "25e034e5240b320cff27142857146774afc72e5c8aac010b389639af9826c48d",
+      "mesh_boolean_cases.py": "83017e2d4d2a9dcc2215a8a02c689718b7fdd565e575d3a9d487b4ecd0c7a7a0",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "317ac8ab1a34cdf0e36826bc1d520df726211d32cba29637b2ac9a9f8261ab16",
+      "rhino_worker.py": "12ab6653c6ae2eaea32c31f57332f80b8f13ffaf8f9377fefbb4220b645d1650",
+      "structural_sdk.py": "7658421ad8abf332b384decae39dfe607411fb38211cf30947ee5dc20bde4a32"
+    }
+  }
+}

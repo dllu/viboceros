@@ -6,23 +6,31 @@ import hashlib
 import json
 from pathlib import Path
 from .client import OracleClient
-from .mesh_trim_cases import request
+from .mesh_trim_cases import FAMILIES, request
 from .generate_mesh_split import SOURCES as SPLIT_SOURCES
 
 HERE = Path(__file__).resolve().parent
-SOURCES = ['mesh_trim_cutter_policy_cases.py', 'mesh_trim_snapshot_policy_cases.py', 'mesh_trim_continuation_cases.py', 'mesh_trim_picking.py', 'mesh_trim_control_cases.py', 'mesh_trim_input.py', 'component_picking.py', 'hole_picking.py', 'generate_mesh_trim.py', 'mesh_trim_cases.py', 'mesh_trim_probe.py'] + SPLIT_SOURCES
+SOURCES = [
+    'mesh_trim_getter_control_cases.py', 'mesh_trim_split_control.py',
+    'mesh_trim_pick_control_cases.py', 'mesh_trim_pick_trace.py', 'managed_mouse_callback.py',
+    'mesh_trim_curve_control_cases.py', 'mesh_trim_cutter_policy_cases.py',
+    'mesh_trim_snapshot_policy_cases.py', 'mesh_trim_continuation_cases.py',
+    'mesh_trim_picking.py', 'mesh_trim_control_cases.py', 'mesh_trim_input.py',
+    'component_picking.py', 'hole_picking.py', 'generate_mesh_trim.py',
+    'mesh_trim_cases.py', 'mesh_trim_probe.py',
+] + SPLIT_SOURCES
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     flags = parser.add_mutually_exclusive_group()
-    flags.add_argument('--mouse', action='store_true')
-    flags.add_argument('--controls', action='store_true')
-    flags.add_argument('--continuation', action='store_true')
-    flags.add_argument('--snapshot-policy', action='store_true')
-    flags.add_argument('--cutter-policy', action='store_true')
+    flags.add_argument('--family', choices=list(FAMILIES), default='discovery')
+    for name in FAMILIES:
+        if name != 'discovery':
+            flags.add_argument('--'+name.replace('_', '-'), dest='family',
+                               action='store_const', const=name)
     args = parser.parse_args()
-    family = 'cutter_policy' if args.cutter_policy else 'snapshot_policy' if args.snapshot_policy else 'continuation' if args.continuation else 'controls' if args.controls else 'mouse' if args.mouse else 'discovery'
+    family = args.family
     name = 'mesh_trim_' + family
     output = HERE / 'observations' / (name + '.json')
     if output.exists():

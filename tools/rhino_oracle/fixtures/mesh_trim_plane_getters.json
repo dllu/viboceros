@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_plane_getters_three_point",
+      "case": "mesh_trim_plane_getters_three_point"
+    },
+    {
+      "op": "mesh_trim_command",
+      "id": "mesh_trim_plane_getters_world_yz",
+      "case": "mesh_trim_plane_getters_world_yz"
+    }
+  ]
+}
