@@ -5,11 +5,13 @@ use viboceros_geometry::{CurveCurveIntersectionEvent, LineSegment};
 pub(super) struct Contact {
     pub segment: [Point3; 2],
     pub whole_edge: bool,
+    pub boundary: bool,
 }
 
 pub(super) fn collect(
     a: [Point3; 3],
     b: [Point3; 3],
+    masks: [u32; 2],
     tolerance: Tolerance,
 ) -> Result<Vec<Contact>, Error> {
     let mut out = Vec::new();
@@ -49,6 +51,7 @@ pub(super) fn collect(
                         out.push(Contact {
                             segment,
                             whole_edge,
+                            boundary: masks[0] & (1 << i) != 0 && masks[1] & (1 << j) != 0,
                         });
                     }
                 }

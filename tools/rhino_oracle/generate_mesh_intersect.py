@@ -10,6 +10,8 @@ from .mesh_intersect_cases import request
 
 HERE = Path(__file__).resolve().parent
 SOURCES = ['generate_mesh_intersect.py', 'mesh_intersect_cases.py', 'mesh_intersect_probe.py',
+    'mesh_intersect_coincident_cases.py','mesh_intersect_sdk.py',
+    'mesh_intersect_mixed_cases.py',
     'mesh_boolean_command_probe.py', 'mesh_boolean_command_cases.py', 'mesh_boolean_option_cases.py',
     'mesh_boolean_sets_cases.py', 'mesh_empty_capture.py', 'mesh_boolean_cases.py',
     'join_probe.py', 'merge_edges_probe.py', 'client.py', 'rhino_worker.py', 'structural_sdk.py']
@@ -18,17 +20,16 @@ SOURCES = ['generate_mesh_intersect.py', 'mesh_intersect_cases.py', 'mesh_inters
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     flags=parser.add_mutually_exclusive_group()
-    flags.add_argument('--controls',action='store_true')
-    flags.add_argument('--mesh-modes',action='store_true')
-    flags.add_argument('--coverage',action='store_true')
-    flags.add_argument('--topology',action='store_true')
+    families={'controls':'controls','mesh-modes':'modes','coverage':'coverage',
+        'topology':'topology','coincident':'coincident','mixed':'mixed'}
+    for flag in families:flags.add_argument('--'+flag,action='store_true')
     args=parser.parse_args()
-    suffix = 'topology' if args.topology else 'coverage' if args.coverage else 'modes' if args.mesh_modes else 'controls' if args.controls else 'discovery'
+    suffix=next((name for flag,name in families.items()if getattr(args,flag.replace('-','_'))),'discovery')
     family='mesh_intersect_'+suffix
     output = HERE/'observations'/(family+'.json')
     if output.exists():
         raise ValueError('observations are immutable; add a family')
-    payload = request(args.controls,args.mesh_modes,args.coverage,args.topology)
+    payload = request(family=suffix)
     query = HERE/'fixtures'/(family+'.json')
     query.write_text(json.dumps(payload, indent=2)+'\n')
     digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()

@@ -90,6 +90,6 @@ fn mesh_intersect_getters_replay_native_preferences_selection_and_history() {
         total += 1;
     }
     gaps.sort();
-    assert_eq!(total, 60);
+    assert_eq!(total, 84);
     assert_eq!(gaps, native::GAPS);
 }

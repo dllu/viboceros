@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_base",
+      "case": "mesh_intersect_coincident_base"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_drop",
+      "case": "mesh_intersect_coincident_drop"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_triangles",
+      "case": "mesh_intersect_coincident_triangles"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_face_order",
+      "case": "mesh_intersect_coincident_face_order"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_vertex_order",
+      "case": "mesh_intersect_coincident_vertex_order"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_winding",
+      "case": "mesh_intersect_coincident_winding"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_one_winding",
+      "case": "mesh_intersect_coincident_one_winding"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_one_face_order",
+      "case": "mesh_intersect_coincident_one_face_order"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_one_vertex_order",
+      "case": "mesh_intersect_coincident_one_vertex_order"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_translated",
+      "case": "mesh_intersect_coincident_translated"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_rotated",
+      "case": "mesh_intersect_coincident_rotated"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_scaled",
+      "case": "mesh_intersect_coincident_scaled"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_open_sheet",
+      "case": "mesh_intersect_coincident_open_sheet"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_partial_area",
+      "case": "mesh_intersect_coincident_partial_area"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_coincident_crossing",
+      "case": "mesh_intersect_coincident_crossing"
+    }
+  ]
+}

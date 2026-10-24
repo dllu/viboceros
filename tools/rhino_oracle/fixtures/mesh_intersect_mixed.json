@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_border",
+      "case": "mesh_intersect_mixed_border"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_corner",
+      "case": "mesh_intersect_mixed_corner"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_through",
+      "case": "mesh_intersect_mixed_through"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_vertex",
+      "case": "mesh_intersect_mixed_vertex"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_outside",
+      "case": "mesh_intersect_mixed_outside"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_two_regions",
+      "case": "mesh_intersect_mixed_two_regions"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_curtain",
+      "case": "mesh_intersect_mixed_curtain"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_face_touch",
+      "case": "mesh_intersect_mixed_face_touch"
+    },
+    {
+      "op": "mesh_intersect_command",
+      "id": "mesh_intersect_mixed_opposite_sheet",
+      "case": "mesh_intersect_mixed_opposite_sheet"
+    }
+  ]
+}

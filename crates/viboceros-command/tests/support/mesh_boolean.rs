@@ -206,7 +206,9 @@ pub fn check_snapshot(actual: Value, expected: &Value) -> Value {
                 geometry &= (a.signed_volume().unwrap() - n.signed_volume().unwrap()).abs() <= 1e-7;
                 coverage::sampled_distance(&[a], &[n])
             } else if a.get("polyline").is_some() && n.get("polyline").is_some() {
-                polyline_error(&a["polyline"], &n["polyline"])
+                let (error, length_matches) = polyline_error(&a["polyline"], &n["polyline"]);
+                geometry &= length_matches;
+                error
             } else if a["point"] == n["point"]
                 && a["kind"] == n["kind"]
                 && a.get("mesh").is_none()
@@ -226,7 +228,7 @@ pub fn check_snapshot(actual: Value, expected: &Value) -> Value {
     }
     json!({"objects":actual,"metadata":metadata,"geometry":geometry,"maximum_sampled_boundary_deviation":maximum})
 }
-fn polyline_error(a: &Value, n: &Value) -> Option<f64> {
+fn polyline_error(a: &Value, n: &Value) -> (Option<f64>, bool) {
     use viboceros_geometry::{LineSegment, Point3, Tolerance};
     let points = |v: &Value| {
         v.as_array()
@@ -237,16 +239,14 @@ fn polyline_error(a: &Value, n: &Value) -> Option<f64> {
     };
     let (a, n) = (points(a), points(n));
     if a.len() < 2 || n.len() < 2 {
-        return None;
+        return (None, false);
     }
     let length = |p: &[Point3]| {
         p.windows(2)
             .map(|p| p[0].distance_to(p[1]).unwrap())
             .sum::<f64>()
     };
-    if (length(&a) - length(&n)).abs() > 1e-7 {
-        return None;
-    }
+    let length_matches = (length(&a) - length(&n)).abs() <= 1e-7;
     let directed = |source: &[Point3], target: &[Point3]| {
         source
             .windows(2)
@@ -267,7 +267,16 @@ fn polyline_error(a: &Value, n: &Value) -> Option<f64> {
             })
             .fold(0., f64::max)
     };
-    Some(directed(&a, &n).max(directed(&n, &a)))
+    (Some(directed(&a, &n).max(directed(&n, &a))), length_matches)
+}
+
+#[test]
+fn polyline_traversal_length_is_checked_independently_of_boundary_distance() {
+    let expected = json!([{"polyline":[[0.,0.,0.],[1.,0.,0.]]}]);
+    let actual = json!([{"polyline":[[0.,0.,0.],[1.,0.,0.],[0.,0.,0.],[1.,0.,0.]]}]);
+    let measured = check_snapshot(actual, &expected);
+    assert_eq!(measured["geometry"], false);
+    assert_eq!(measured["maximum_sampled_boundary_deviation"], 0.);
 }
 pub fn sources_restored(scene: &Scene) -> bool {
     scene.ids.iter().zip(&scene.sources).all(|(id, source)| {

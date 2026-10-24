@@ -7,7 +7,7 @@ use i_overlay::{
     string::clip::ClipRule,
 };
 use std::collections::VecDeque;
-use viboceros_geometry::Frame3;
+use viboceros_geometry::{Frame3, Polyline3};
 mod contacts;
 
 type Path = Vec<[f64; 2]>;
@@ -71,9 +71,12 @@ pub(super) fn append(
     let mut graph = vec![Vec::new(); offset + bf.len() / 3];
     let mut partial = vec![Vec::new(); offset];
     let mut contact_count = result.transverse.len();
-    for pair in pairs.chunks_exact(2) {
+    for pair in pairs.chunks_exact(4) {
         let (a, b) = (pair[0] as usize, pair[1] as usize);
         if a >= offset || b >= bf.len() / 3 {
+            return Err(Error::InvalidOutput);
+        }
+        if pair[2] > 7 || pair[3] > 7 {
             return Err(Error::InvalidOutput);
         }
         graph[a].push(offset + b);
@@ -86,12 +89,14 @@ pub(super) fn append(
             .normalized_nonzero()?;
         let frame = Frame3::try_from_unit_normal(a[0], normal)?;
         if intersection(&[project(a, frame)?], &[project(b, frame)?]).is_empty() {
-            for contact in contacts::collect(a, b, tolerance)? {
+            for contact in contacts::collect(a, b, [pair[2], pair[3]], tolerance)? {
                 contact_count += 1;
                 if contact_count > 1_000_000 {
                     return Err(Error::InvalidOutput);
                 }
-                if contact.whole_edge {
+                if contact.boundary {
+                    result.tangential.push(contact.segment);
+                } else if contact.whole_edge {
                     result.transverse.push(contact.segment);
                 } else {
                     partial[index].push(contact.segment);
@@ -100,6 +105,7 @@ pub(super) fn append(
         }
     }
     let mut visited = vec![false; graph.len()];
+    let mut boundary_count = 0;
     // Connected triangle pairs share one plane. Overlay each component once,
     // preserving holes and removing internal diagonals in area coverage.
     for start in 0..offset {
@@ -162,18 +168,18 @@ pub(super) fn append(
             if path.len() < 3 {
                 continue;
             }
-            let points = path
+            let mut points = path
                 .into_iter()
                 .map(|[x, y]| frame.point_at([x, y, 0.]))
                 .collect::<Result<Vec<_>, _>>()?;
-            for i in 0..points.len() {
-                if result.coplanar.len() >= 1_000_000 {
-                    return Err(Error::InvalidOutput);
-                }
-                result
-                    .coplanar
-                    .push([points[i], points[(i + 1) % points.len()]]);
+            boundary_count += points.len();
+            if boundary_count > 1_000_000 || result.coplanar.len() >= 1_000_000 {
+                return Err(Error::InvalidOutput);
             }
+            points.push(points[0]);
+            result
+                .coplanar
+                .push(Polyline3::try_new(points, Tolerance::MESH_VALIDATION)?);
         }
     }
     Ok(())

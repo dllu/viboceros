@@ -6,12 +6,29 @@ import hashlib
 import json
 from pathlib import Path
 from . import report_mesh_boolean_commands as baseline
-from .mesh_intersect_cases import CASES, CONTROLS, MESH_MODES, COVERAGE, TOPOLOGY, request
+from .mesh_intersect_cases import FAMILIES, request
 from .qualification_sources import with_shared_sources
 
 ROOT,HERE=baseline.ROOT,baseline.HERE
-GAPS=['mesh_intersect_identical_post','mesh_intersect_identical_pre',
-      'mesh_intersect_modes_mesh_identical']
+GAPS = [
+    'mesh_intersect_coincident_base',
+    'mesh_intersect_coincident_drop',
+    'mesh_intersect_coincident_face_order',
+    'mesh_intersect_coincident_one_face_order',
+    'mesh_intersect_coincident_one_vertex_order',
+    'mesh_intersect_coincident_one_winding',
+    'mesh_intersect_coincident_rotated',
+    'mesh_intersect_coincident_scaled',
+    'mesh_intersect_coincident_translated',
+    'mesh_intersect_coincident_triangles',
+    'mesh_intersect_coincident_vertex_order',
+    'mesh_intersect_coincident_winding',
+    'mesh_intersect_identical_post',
+    'mesh_intersect_identical_pre',
+    'mesh_intersect_mixed_corner',
+    'mesh_intersect_mixed_curtain',
+    'mesh_intersect_modes_mesh_identical',
+]
 SOURCES=with_shared_sources(baseline.SOURCES+[
     'crates/viboceros-smlib/native/bridge.cpp',
     'crates/viboceros-smlib/native/CMakeLists.txt',
@@ -28,9 +45,30 @@ SOURCES=with_shared_sources(baseline.SOURCES+[
 ])
 
 
+def check_sdk(value):
+    sdk=value['intersection_sdk']
+    if any('error' in sdk.get(name,{})for name in ['fast','accurate','modern']) or sdk['modern'].get('success')is not True:
+        raise ValueError('public mesh intersection API failed')
+    if sdk['modern'].get('mesh')is not None:
+        raise ValueError('unrequested overlap mesh')
+    fast=sdk['fast']['segments']
+    import math
+    if any(len(line)!=2 or any(len(p)!=3 or any(type(x)not in (int,float)or not math.isfinite(x)for x in p)for p in line)for line in fast):
+        raise ValueError('invalid fast intersection segments')
+    curve=lambda p:dict({key:None for key in baseline.METADATA},polyline=p)
+    expected=[curve(o['polyline'])for o in value['after']if o['role']=='output']
+    for paths in [sdk['modern']['coplanar']+sdk['modern']['polylines'],sdk['accurate']['polylines']]:
+        if not baseline.check_stage([curve(p)for p in paths],expected)['geometry']:
+            raise ValueError('public mesh intersection API differs from command')
+    for path in sdk['modern']['coplanar']:
+        if math.dist(path[0],path[-1])>baseline.EPSILON:
+            raise ValueError('open coplanar boundary')
+
+
 def native():
     expected,exploratory,versions,paths={},{},set(),set(SOURCES)
-    for family,cases,payload in [('discovery',CASES,request()),('controls',CONTROLS,request(True)),('modes',MESH_MODES,request(mesh_modes=True)),('coverage',COVERAGE,request(coverage=True)),('topology',TOPOLOGY,request(topology=True))]:
+    for family,cases in FAMILIES.items():
+        payload=request(family=family)
         name='mesh_intersect_'+family
         query,capture=[HERE/folder/(name+'.json') for folder in ['fixtures','observations']]
         data=json.loads(capture.read_text())
@@ -46,13 +84,16 @@ def native():
         versions.add(data['engine_version'])
         for row in data['results']:
             identifier,value=row['id'],row['value']
+            if bool(cases[identifier].get('capture_intersection_sdk')) != ('intersection_sdk' in value):
+                raise ValueError('public SDK capture coverage differs')
+            if 'intersection_sdk' in value:check_sdk(value)
             if value['input']!=cases[identifier]:raise ValueError('MeshIntersect native input changed')
             path=HERE/'fixtures'/name/(identifier+'.3dm')
             if path.read_bytes()!=base64.b64decode(value['source_3dm']):raise ValueError('MeshIntersect source file changed')
             paths.add(str(path.relative_to(ROOT)))
             if 'Unknown command:' in value['history']:exploratory[identifier]='native rejected option spelling'
             else:expected[identifier]=value
-    if len(versions)!=1 or (len(expected),len(exploratory))!=(60,3):raise ValueError('MeshIntersect capture domain differs')
+    if len(versions)!=1 or (len(expected),len(exploratory))!=(84,3):raise ValueError('MeshIntersect capture domain differs')
     return versions.pop(),expected,exploratory,paths
 
 
@@ -69,8 +110,11 @@ def summarize(command_log,getter_log):
         command_replayed=len(commands),getter_replayed=len(getters),
         command_matched=len(commands)-len(GAPS),getter_matched=len(getters)-len(GAPS),
         command_compatibility_gaps=GAPS,getter_compatibility_gaps=GAPS,
-        exploratory_workflows=exploratory,
-        pending=['coincident triangle-edge traversal, native polyline vertex segmentation and parameter domains',
+        exploratory_workflows=exploratory,sdk_command_workflows=24,
+        sdk_comparison='Modern coplanar boundaries followed by intersections, and the legacy accurate API, match command curves; fast lines are retained as diagnostics',
+        pending=['coincident triangle-edge traversal and winding/face-order dependence',
+                 'native truncation at coplanar/crossing junctions',
+                 'native polyline vertex segmentation and parameter domains',
                  'curved display-mesh agreement, extreme scales, custom intersection coefficients and comparative performance'],
         commands=commands,getters=getters,
         sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest()for p in sorted(paths)})

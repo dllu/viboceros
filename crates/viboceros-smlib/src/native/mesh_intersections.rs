@@ -24,12 +24,15 @@ unsafe extern "C" {
     fn vb_mesh_intersections_sizes(
         p: *const NativeIntersections,
         first: *mut usize,
+        tangential: *mut usize,
         second: *mut usize,
     ) -> c_int;
     fn vb_mesh_intersections_copy(
         p: *const NativeIntersections,
         first: *mut f64,
         first_count: usize,
+        tangential: *mut f64,
+        tangential_count: usize,
         second: *mut u32,
         second_count: usize,
     ) -> c_int;
@@ -46,8 +49,10 @@ impl Drop for OwnedIntersections {
 pub struct MeshIntersections {
     /// Finite lines, including coplanar triangle pairs sharing no area.
     pub transverse: Vec<[Point3; 2]>,
+    /// Contacts along boundaries of both input surfaces.
+    pub tangential: Vec<[Point3; 2]>,
     /// Boundaries of overlapping coplanar coverage, including holes.
-    pub coplanar: Vec<[Point3; 2]>,
+    pub coplanar: Vec<viboceros_geometry::Polyline3>,
 }
 
 /// Imprint both meshes, retaining intersection edges without classifying solids.
@@ -73,6 +78,7 @@ pub fn mesh_intersections(
     }) {
         return Ok(MeshIntersections {
             transverse: Vec::new(),
+            tangential: Vec::new(),
             coplanar: Vec::new(),
         });
     }
@@ -96,19 +102,23 @@ pub fn mesh_intersections(
         )
     })?;
     let owned = OwnedIntersections(NonNull::new(pointer).ok_or(Error::InvalidOutput)?);
-    let (mut na, mut nb) = (0, 0);
-    if unsafe { vb_mesh_intersections_sizes(owned.0.as_ptr(), &mut na, &mut nb) } != 0
+    let (mut na, mut nt, mut nb) = (0, 0, 0);
+    if unsafe { vb_mesh_intersections_sizes(owned.0.as_ptr(), &mut na, &mut nt, &mut nb) } != 0
         || na > 1_000_000
+        || nt > 1_000_000
         || nb > 1_000_000
     {
         return Err(Error::InvalidOutput);
     }
-    let (mut lines, mut pairs) = (vec![0.; 6 * na], vec![0; 2 * nb]);
+    let (mut lines, mut pairs) = (vec![0.; 6 * na], vec![0; 4 * nb]);
+    let mut contacts = vec![0.; 6 * nt];
     if unsafe {
         vb_mesh_intersections_copy(
             owned.0.as_ptr(),
             lines.as_mut_ptr(),
             na,
+            contacts.as_mut_ptr(),
+            nt,
             pairs.as_mut_ptr(),
             nb,
         )
@@ -129,6 +139,7 @@ pub fn mesh_intersections(
     };
     let mut result = MeshIntersections {
         transverse: decode(lines)?,
+        tangential: decode(contacts)?,
         coplanar: Vec::new(),
     };
     coplanar::append(

@@ -1,7 +1,9 @@
-// Intersection lines on owned imprints, with original coplanar triangle pairs.
+// Independent triangle imprints, original boundaries, and coplanar pairs.
 #include <SmTree.h>
 struct VbMeshIntersections {
     std::vector<double> transverse;
+    std::vector<double> tangential;
+    // Four integers per pair: first face, second face, and their boundary masks.
     std::vector<uint32_t> coplanar_pairs;
 };
 
@@ -13,10 +15,65 @@ bool coincident(SmPolyFace &a, SmPolyFace &b, double tolerance) {
     return same;
 }
 
+void append_segment(std::vector<double> &out, SmPolyEdge &edge) {
+    const auto &a = edge.GetStartPolyVertex()->GetPoint();
+    const auto &b = edge.GetEndPolyVertex()->GetPoint();
+    require(std::isfinite(a.x) && std::isfinite(a.y) && std::isfinite(a.z) &&
+        std::isfinite(b.x) && std::isfinite(b.y) && std::isfinite(b.z),
+        "Nonfinite polygon intersection segment");
+    require(out.size() / 6 < limit, "Polygon intersection segment limit");
+    out.insert(out.end(), {a.x, a.y, a.z, b.x, b.y, b.z});
+}
+}
+
+#include "mesh_intersection_origins.h"
+
+namespace vb_mesh_intersections_detail {
+std::unique_ptr<SmPolyBrep> copy_face(SmPolyFace &face, double tolerance) {
+    auto mesh = std::unique_ptr<SmPolyBrep>(new (*SmApiGetOrCreateContext()) SmPolyBrep(tolerance));
+    SmTArray<SmPolyFace *> faces;
+    faces.Add(&face);
+    check(face.GetPolyBrep()->CopyFaces(faces, mesh.get()), "copy intersection triangle");
+    return mesh;
+}
+void intersect_pair(SmPolyFace &first, SmPolyFace &second, double tolerance,
+    const vb_mesh_intersection_origins::Boundaries &ab,
+    const vb_mesh_intersection_origins::Boundaries &bb, VbMeshIntersections &result) {
+    auto a = copy_face(first, tolerance), b = copy_face(second, tolerance);
+    SmPolyIntersector query(*SmApiGetOrCreateContext(), a.get(), b.get(), tolerance, 1e-10);
+    check(query.IntersectInsertRelate(), "intersect independent triangle pair");
+    SmTArray<SmPolyEdge *> edges, other_edges;
+        query.GetCommonEdges(edges, other_edges);
+        require(edges.GetSize() <= limit, "Polygon intersection edge limit");
+        size_t work = 0;
+        for (ULONG i = 0; i < edges.GetSize(); ++i) {
+            SmTArray<SmPolyEdge *> ar, br;
+            edges[i]->GetAllRadials(ar);
+            other_edges[i]->GetAllRadials(br);
+            bool transverse = false;
+            for (ULONG j = 0; j < ar.GetSize() && !transverse; ++j) {
+                for (ULONG k = 0; k < br.GetSize() && !transverse; ++k) {
+                    require(++work <= 10 * limit, "Intersection radial work limit");
+                    require(ar[j]->GetPolyFace() && br[k]->GetPolyFace(), "Missing imprinted radial face");
+                    transverse = !vb_mesh_intersections_detail::coincident(
+                        *ar[j]->GetPolyFace(), *br[k]->GetPolyFace(), tolerance);
+                }
+            }
+            if (transverse) {
+                const bool contact = vb_mesh_intersection_origins::contains(first, *edges[i], ab, tolerance) &&
+                    vb_mesh_intersection_origins::contains(second, *edges[i], bb, tolerance);
+                vb_mesh_intersections_detail::append_segment(contact ? result.tangential : result.transverse, *edges[i]);
+            }
+        }
+ }
+
 // Query original triangles before imprinting changes their boundaries. A
 // centroid of a resulting face cannot establish whole-region containment.
-void coplanar_pairs(SmPolyBrep &a, const std::vector<SmPolyFace *> &af,
-    const std::vector<SmPolyFace *> &bf, double tolerance, std::vector<uint32_t> &out) {
+void compute_pairs(SmPolyBrep &a, const std::vector<SmPolyFace *> &af,
+    const std::vector<SmPolyFace *> &bf, double tolerance,
+    const vb_mesh_intersection_origins::Boundaries &ab,
+    const vb_mesh_intersection_origins::Boundaries &bb,
+    const std::vector<uint32_t> &am, const std::vector<uint32_t> &bm, VbMeshIntersections &out) {
     SmExtent3d bounds;
     check(a.CalculateBoundingBox(bounds), "bound intersection mesh");
     auto tree = std::unique_ptr<SmTree>(new (*SmApiGetOrCreateContext()) SmTree(bounds));
@@ -37,22 +94,15 @@ void coplanar_pairs(SmPolyBrep &a, const std::vector<SmPolyFace *> &af,
         for (ULONG k = 0; k < candidates.GetSize(); ++k) {
             require(++work <= 10 * limit, "Mesh intersection candidate work limit");
             auto *face = static_cast<SmPolyFace *>(candidates[k]->m_pObject);
-            if (!coincident(*face, *bf[j], tolerance)) continue;
-            require(out.size() / 2 < limit, "Coplanar triangle pair limit");
-            out.insert(out.end(), {indices.at(face), static_cast<uint32_t>(j)});
+            if (coincident(*face, *bf[j], tolerance)) {
+                require(out.coplanar_pairs.size() / 4 < limit, "Coplanar triangle pair limit");
+                const auto i = indices.at(face);
+                out.coplanar_pairs.insert(out.coplanar_pairs.end(), {i, static_cast<uint32_t>(j), am[i], bm[j]});
+            } else intersect_pair(*face, *bf[j], tolerance, ab, bb, out);
         }
     }
 }
 
-void append_segment(std::vector<double> &out, SmPolyEdge &edge) {
-    const auto &a = edge.GetStartPolyVertex()->GetPoint();
-    const auto &b = edge.GetEndPolyVertex()->GetPoint();
-    require(std::isfinite(a.x) && std::isfinite(a.y) && std::isfinite(a.z) &&
-        std::isfinite(b.x) && std::isfinite(b.y) && std::isfinite(b.z),
-        "Nonfinite polygon intersection segment");
-    require(out.size() / 6 < limit, "Polygon intersection segment limit");
-    out.insert(out.end(), {a.x, a.y, a.z, b.x, b.y, b.z});
-}
 }
 
 extern "C" int vb_mesh_intersections(const double *first, size_t first_count,
@@ -66,38 +116,23 @@ extern "C" int vb_mesh_intersections(const double *first, size_t first_count,
         auto a = vb_mesh_boolean_detail::import_mesh(first, first_count, first_faces, first_face_count, tolerance, &af);
         auto b = vb_mesh_boolean_detail::import_mesh(second, second_count, second_faces, second_face_count, tolerance, &bf);
         auto result = std::make_unique<VbMeshIntersections>();
-        vb_mesh_intersections_detail::coplanar_pairs(*a, af, bf, tolerance, result->coplanar_pairs);
-        SmPolyIntersector query(*SmApiGetOrCreateContext(), a.get(), b.get(), tolerance, 1e-10);
-        check(query.IntersectInsertRelate(), "intersect polygon meshes");
-        SmTArray<SmPolyEdge *> edges, other_edges;
-        query.GetCommonEdges(edges, other_edges);
-        require(edges.GetSize() <= limit, "Polygon intersection edge limit");
-        size_t work = 0;
-        for (ULONG i = 0; i < edges.GetSize(); ++i) {
-            SmTArray<SmPolyEdge *> ar, br;
-            edges[i]->GetAllRadials(ar);
-            other_edges[i]->GetAllRadials(br);
-            bool transverse = false;
-            for (ULONG j = 0; j < ar.GetSize() && !transverse; ++j) {
-                for (ULONG k = 0; k < br.GetSize() && !transverse; ++k) {
-                    require(++work <= 10 * limit, "Intersection radial work limit");
-                    transverse = !vb_mesh_intersections_detail::coincident(
-                        *ar[j]->GetPolyFace(), *br[k]->GetPolyFace(), tolerance);
-                }
-            }
-            if (transverse) vb_mesh_intersections_detail::append_segment(result->transverse, *edges[i]);
-        }
+        const auto ab = vb_mesh_intersection_origins::collect(*a, tolerance);
+        const auto bb = vb_mesh_intersection_origins::collect(*b, tolerance);
+        const auto am = vb_mesh_intersection_origins::masks(af, first, first_faces, ab);
+        const auto bm = vb_mesh_intersection_origins::masks(bf, second, second_faces, bb);
+        vb_mesh_intersections_detail::compute_pairs(*a, af, bf, tolerance, ab, bb, am, bm, *result);
         *out = result.release();
     });
 }
 
-extern "C" int vb_mesh_intersections_sizes(const VbMeshIntersections *p, size_t *a, size_t *b) {
-    if (!p || !a || !b) return -1;
-    *a = p->transverse.size() / 6; *b = p->coplanar_pairs.size() / 2; return 0;
+extern "C" int vb_mesh_intersections_sizes(const VbMeshIntersections *p, size_t *a, size_t *t, size_t *b) {
+    if (!p || !a || !t || !b) return -1;
+    *a = p->transverse.size() / 6; *t = p->tangential.size() / 6; *b = p->coplanar_pairs.size() / 4; return 0;
 }
-extern "C" int vb_mesh_intersections_copy(const VbMeshIntersections *p, double *a, size_t na, uint32_t *b, size_t nb) {
-    if (!p || na != p->transverse.size() / 6 || nb != p->coplanar_pairs.size() / 2 || (!a && na) || (!b && nb)) return -1;
+extern "C" int vb_mesh_intersections_copy(const VbMeshIntersections *p, double *a, size_t na, double *t, size_t nt, uint32_t *b, size_t nb) {
+    if (!p || na != p->transverse.size() / 6 || nt != p->tangential.size() / 6 || nb != p->coplanar_pairs.size() / 4 || (!a && na) || (!t && nt) || (!b && nb)) return -1;
     std::copy(p->transverse.begin(), p->transverse.end(), a);
+    std::copy(p->tangential.begin(), p->tangential.end(), t);
     std::copy(p->coplanar_pairs.begin(), p->coplanar_pairs.end(), b); return 0;
 }
 extern "C" void vb_mesh_intersections_free(VbMeshIntersections *p) { delete p; }

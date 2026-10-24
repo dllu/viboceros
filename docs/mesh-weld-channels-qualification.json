@@ -1165,7 +1165,7 @@
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "b889c387480a91d6ec81cfddd12e6c8c73858292f17de3854c41f4294587dd50",
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
-    "tools/rhino_oracle/qualification_sources.py": "fe1d0d16a4dfe1dfb1349b3714efabf96ca37f8d8a0064a125c910c9368e33fe",
+    "tools/rhino_oracle/qualification_sources.py": "bb8eb8a8e28acb1de66f80a79287e8b3734a2b87c4bec2cd9cebb33a23f9d3bc",
     "tools/rhino_oracle/fixtures/mesh_weld_channels.json": "cfb88cea554267ab57c8f9e819f6986ca28d68df4c31421209603a7a5f794526",
     "tools/rhino_oracle/observations/mesh_weld_channels.json": "282d060c8fa452c4ddadc4193735758dac073bf578bd4f759d91c8dd14f33821",
     "tools/rhino_oracle/observations/source_snapshots/47e3f1ef1910397808673b6d95e47db14f6b763d0444cbfecf179ae904c4293a.gz": "ea5d26a7c2f6bd64d2b2d9be21251d574696fbabe889a26bbee74f6349e1f6dc",
@@ -1269,6 +1269,8 @@
     "crates/viboceros-command/src/mesh_boolean/geometry/components.rs": "29702a9e5ebe0f9708266d2f97f667af76087c40c0fa3ff15dd28abd1d7ff535",
     "crates/viboceros-command/src/mesh_boolean/geometry/split.rs": "3643baa38dd0f408321d5c8c1f0b3b26728610499272fbb827be79cefa699e9f",
     "crates/viboceros-command/src/mesh_intersect.rs": "c074f0ca73a708ed90463a0ebb3caba36f5f19a9ca9493c2eec98fe72b6df0b4",
-    "crates/viboceros-command/src/mesh_intersect/geometry.rs": "ef625f6a0ab4e88fe7d7e099e04297dcb38de4175bce4a0b58a7910299613866"
+    "crates/viboceros-command/src/mesh_intersect/geometry.rs": "97b3bd15522cf89a58c39e1e3c5689c03e3d4aa4ef190f5746c3291fbf84681d",
+    "crates/viboceros-command/src/mesh_intersect/geometry/assembly.rs": "968dc3221e80abed627e6984f51dc4d63edbe3776b74f96b0bd843a1f073d4c0",
+    "crates/viboceros-command/src/mesh_intersect/geometry/assembly/coverage.rs": "1bf62d6b2492087d800e9c6690ab8d70425870e1b9acb554882f9440fd033168"
   }
 }

@@ -38,6 +38,15 @@ fn unique_length(segments: &[[Point3; 2]]) -> f64 {
         .sum()
 }
 
+fn coplanar_segments(result: &viboceros_smlib::MeshIntersections) -> Vec<[Point3; 2]> {
+    result
+        .coplanar
+        .iter()
+        .flat_map(|p| p.vertices().windows(2))
+        .map(|p| [p[0], p[1]])
+        .collect()
+}
+
 #[test]
 fn open_crossings_and_coplanar_boundaries_do_not_require_closed_solids() {
     for (name, crossing, coplanar) in [
@@ -56,7 +65,7 @@ fn open_crossings_and_coplanar_boundaries_do_not_require_closed_solids() {
             "{name}: {actual:?}"
         );
         assert!(
-            (unique_length(&actual.coplanar) - coplanar).abs() < 1e-7,
+            (unique_length(&coplanar_segments(&actual)) - coplanar).abs() < 1e-7,
             "{name}: {actual:?}"
         );
         assert_eq!(meshes, before);
@@ -106,7 +115,7 @@ fn coplanar_region_classification_is_independent_of_coordinate_plane() {
             output.transverse.is_empty(),
             "rotation {rotation}: {output:?}"
         );
-        assert!((unique_length(&output.coplanar) - 8.).abs() < 1e-7);
+        assert!((unique_length(&coplanar_segments(&output)) - 8.).abs() < 1e-7);
     }
 }
 
@@ -128,7 +137,7 @@ fn contained_coplanar_patch_does_not_fill_the_surrounding_faces_hole() {
     let result = mesh_intersections(&outer, &inner, Tolerance::DEFAULT).unwrap();
     assert!(result.transverse.is_empty(), "{result:?}");
     assert!(
-        (unique_length(&result.coplanar) - 2.).abs() < 1e-7,
+        (unique_length(&coplanar_segments(&result)) - 2.).abs() < 1e-7,
         "{result:?}"
     );
 }
@@ -179,10 +188,10 @@ fn coplanar_coverage_preserves_holes_and_ignores_face_winding() {
                 "unwanted internal line: {result:?}"
             );
             assert!(
-                (unique_length(&result.coplanar) - 24.).abs() < 1e-7,
+                (unique_length(&coplanar_segments(&result)) - 24.).abs() < 1e-7,
                 "{result:?}"
             );
-            for segment in result.coplanar {
+            for segment in coplanar_segments(&result) {
                 let [a, b] = segment.map(Point3::to_array);
                 let midpoint = [(a[0] + b[0]) / 2., (a[1] + b[1]) / 2.];
                 let on_outer = midpoint
@@ -213,18 +222,120 @@ fn partial_coplanar_edge_contacts_survive_without_shared_area() {
     for (a, b) in [(&outer, &adjacent), (&adjacent, &outer)] {
         let result = mesh_intersections(a, b, Tolerance::DEFAULT).unwrap();
         assert!(result.coplanar.is_empty(), "{result:?}");
+        assert!(result.transverse.is_empty(), "{result:?}");
         assert!(
-            (unique_length(&result.transverse) - 1.).abs() < 1e-7,
+            (unique_length(&result.tangential) - 1.).abs() < 1e-7,
             "{result:?}"
         );
     }
     let result = mesh_intersections(&outer, &outer, Tolerance::DEFAULT).unwrap();
     assert!(
-        (unique_length(&result.coplanar) - 14.).abs() < 1e-7,
+        (unique_length(&coplanar_segments(&result)) - 14.).abs() < 1e-7,
         "{result:?}"
     );
     assert!(
         (unique_length(&result.transverse) - 5.).abs() < 1e-7,
         "{result:?}"
     );
+}
+
+#[test]
+fn crossings_and_pure_boundary_contacts_follow_public_sdk_classification() {
+    let capture: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/mesh_intersect_mixed.json"
+    ))
+    .unwrap();
+    for row in capture["results"].as_array().unwrap() {
+        let value = &row["value"];
+        let meshes = value["input"]["sources"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(reference::mesh)
+            .collect::<Vec<_>>();
+        let before = meshes.clone();
+        let actual = mesh_intersections(&meshes[0], &meshes[1], Tolerance::DEFAULT).unwrap();
+        let sdk = &value["intersection_sdk"]["modern"];
+        let length = |paths: &Value| {
+            paths
+                .as_array()
+                .unwrap()
+                .iter()
+                .flat_map(|p| p.as_array().unwrap().windows(2))
+                .map(|p| {
+                    reference::point(&p[0])
+                        .distance_to(reference::point(&p[1]))
+                        .unwrap()
+                })
+                .sum::<f64>()
+        };
+        assert!(sdk["success"] == true, "{sdk:?}");
+        // The public API truncates half a unit at this coplanar/crossing
+        // junction. Independent triangle pairs retain the complete line.
+        let omitted = if matches!(
+            row["id"].as_str().unwrap(),
+            "mesh_intersect_mixed_corner" | "mesh_intersect_mixed_curtain"
+        ) {
+            0.5
+        } else {
+            0.
+        };
+        assert!(
+            (unique_length(&actual.transverse) - length(&sdk["polylines"]) - omitted).abs() < 1e-7,
+            "{}: {actual:?}",
+            row["id"]
+        );
+        assert_eq!(
+            actual.coplanar.len(),
+            sdk["coplanar"].as_array().unwrap().len(),
+            "{}",
+            row["id"]
+        );
+        assert!(
+            (unique_length(&coplanar_segments(&actual)) - length(&sdk["coplanar"])).abs() < 1e-7,
+            "{}: {actual:?}",
+            row["id"]
+        );
+        assert_eq!(meshes, before);
+    }
+    let meshes = input("mesh_intersect_edge_touch_post");
+    let actual = mesh_intersections(&meshes[0], &meshes[1], Tolerance::DEFAULT).unwrap();
+    assert!(actual.transverse.is_empty(), "{actual:?}");
+    assert!(
+        (unique_length(&actual.tangential) - 2.).abs() < 1e-7,
+        "{actual:?}"
+    );
+}
+
+#[test]
+fn crossing_coverage_survives_coplanar_face_order_and_operand_swap() {
+    use viboceros_geometry::TriangleMesh;
+    let data: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/mesh_intersect_mixed.json"
+    ))
+    .unwrap();
+    let value = &data["results"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["id"] == "mesh_intersect_mixed_two_regions")
+        .unwrap()["value"];
+    let a = reference::mesh(&value["input"]["sources"][0]);
+    let b = reference::mesh(&value["input"]["sources"][1]);
+    let mut faces = b.faces().to_vec();
+    faces.reverse();
+    let reordered = TriangleMesh::try_from_face_records(b.vertices().to_vec(), faces).unwrap();
+    for b in [&b, &reordered] {
+        for (a, b) in [(&a, b), (b, &a)] {
+            let result = mesh_intersections(a, b, Tolerance::DEFAULT).unwrap();
+            assert!(
+                (unique_length(&result.transverse) - 4.).abs() < 1e-7,
+                "{result:?}"
+            );
+            assert_eq!(result.coplanar.len(), 2);
+            for point in result.transverse.iter().flatten() {
+                assert!((point.y() - 1.8).abs() < 1e-7 && point.z().abs() < 1e-7);
+            }
+        }
+    }
 }

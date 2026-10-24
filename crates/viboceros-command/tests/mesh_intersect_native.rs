@@ -71,7 +71,7 @@ fn mesh_intersect_commands_match_saved_native_scenes_and_history() {
         total += 1;
     }
     gaps.sort();
-    assert_eq!(total, 57);
+    assert_eq!(total, 81);
     assert_eq!(gaps, native::GAPS);
     println!("MeshIntersect {total} commands; gaps {gaps:?}");
 }

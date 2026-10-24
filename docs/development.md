@@ -17,6 +17,10 @@ compilation to reduce disk use. Generated artifacts still accumulate in `target/
 run `cargo clean` while builds are idle when you need to reclaim that space.
 The next build will regenerate Rust artifacts and native libraries.
 
+For focused unit tests, use `cargo test -p CRATE --lib FILTER`; for integration
+tests, use `--test TARGET`. A name filter alone still builds every test binary
+in the selected package.
+
 ## Focused checks
 
 Choose the relevant [validation guide](development/checks.md): native kernel,

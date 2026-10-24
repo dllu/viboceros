@@ -6,7 +6,7 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
-    'mesh_intersect_command': ('mesh_intersect_probe', ('mesh_intersect_cases', 'mesh_boolean_command_probe', 'mesh_boolean_command_cases', 'mesh_boolean_option_cases', 'mesh_boolean_sets_cases', 'mesh_empty_capture', 'mesh_boolean_cases', 'join_probe', 'merge_edges_probe')),
+    'mesh_intersect_command': ('mesh_intersect_probe', ('mesh_intersect_cases', 'mesh_intersect_coincident_cases', 'mesh_intersect_mixed_cases', 'mesh_intersect_sdk', 'mesh_boolean_command_probe', 'mesh_boolean_command_cases', 'mesh_boolean_option_cases', 'mesh_boolean_sets_cases', 'mesh_empty_capture', 'mesh_boolean_cases', 'join_probe', 'merge_edges_probe')),
     'mesh_boolean_command': ('mesh_boolean_command_probe', ('mesh_boolean_command_cases', 'mesh_boolean_option_cases', 'mesh_boolean_sets_cases', 'mesh_empty_capture', 'mesh_boolean_cases', 'join_probe', 'merge_edges_probe')),
     'mesh_boolean_sdk': ('mesh_boolean_probe', ('mesh_boolean_cases', 'merge_edges_probe')),
     'mesh_outline_command': ('mesh_outline_command_probe', ('mesh_outline_command_cases', 'mesh_outline_cases', 'mesh_outline_scale_cases', 'join_probe', 'merge_edges_probe')),

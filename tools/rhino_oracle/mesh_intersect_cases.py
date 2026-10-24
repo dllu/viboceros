@@ -108,12 +108,27 @@ for name,sources,mode in [
     TOPOLOGY['mesh_intersect_topology_'+name] = dict(operation='intersect',preselect=False,
         sources=deepcopy(sources),arguments='_Tolerance=_Auto _CoplanarFaces=_'+mode)
 ALL_CASES.update(TOPOLOGY)
+if __package__:
+    from .mesh_intersect_coincident_cases import cases as coincident_cases
+    from .mesh_intersect_mixed_cases import cases as mixed_cases
+else:
+    from mesh_intersect_coincident_cases import cases as coincident_cases
+    from mesh_intersect_mixed_cases import cases as mixed_cases
+COINCIDENT = coincident_cases(triangles,xy,coplanar)
+ALL_CASES.update(COINCIDENT)
+MIXED = mixed_cases(sheet,xy,islands)
+ALL_CASES.update(MIXED)
+FAMILIES = dict(discovery=CASES,controls=CONTROLS,modes=MESH_MODES,
+    coverage=COVERAGE,topology=TOPOLOGY,coincident=COINCIDENT,mixed=MIXED)
 
 
-def request(controls=False, mesh_modes=False, coverage=False, topology=False):
+def request(controls=False, mesh_modes=False, coverage=False, topology=False, family=None):
+    if family is None:
+        family='topology'if topology else 'coverage'if coverage else 'modes'if mesh_modes else 'controls'if controls else 'discovery'
+    if family not in FAMILIES:raise ValueError('fixed MeshIntersect family required')
     return dict(protocol_version=1, iterations=1,
         tolerance=dict(absolute=1e-6, relative=1e-12, angular=1e-6),
-        operations=[dict(op='mesh_intersect_command', id=name, case=name) for name in (TOPOLOGY if topology else COVERAGE if coverage else MESH_MODES if mesh_modes else CONTROLS if controls else CASES)])
+        operations=[dict(op='mesh_intersect_command', id=name, case=name) for name in FAMILIES[family]])
 
 
 def validate(operation):

@@ -126,6 +126,11 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
         finally:
             model.Dispose()
         before = snapshot()
+        intersection_sdk = None
+        if case.get('capture_intersection_sdk'):
+            from mesh_intersect_sdk import capture
+            intersection_sdk = capture(geometry,host,doc.ModelAbsoluteTolerance*float(
+                G.Intersect.Intersection.MeshIntersectionsTolerancesCoefficient))
         macro = '_-'+name+' '+case.get('arguments', '')
         if case.get('cancel'):
             macro += ' _Cancel'
@@ -154,11 +159,13 @@ def run(operation, host, iterations, tolerance, case_table=None, command_name=No
         undo = snapshot()
         R.RhinoApp.RunScript('_Redo', False)
         redo = snapshot()
-        return dict(input=case, before=before, after=after, after_script=after_script,
+        result = dict(input=case, before=before, after=after, after_script=after_script,
                     undo=undo, redo=redo, success=success, events=events, history=history,
                     empty_storage=empty_storage, source_3dm=source_3dm, document_tolerance=float(doc.ModelAbsoluteTolerance),
                     tolerance_policy=dict(zero=float(R.RhinoMath.ZeroTolerance),
-                        coefficient=float(G.Intersect.Intersection.MeshIntersectionsTolerancesCoefficient))), 0
+                        coefficient=float(G.Intersect.Intersection.MeshIntersectionsTolerancesCoefficient)))
+        if intersection_sdk is not None:result['intersection_sdk']=intersection_sdk
+        return result, 0
     finally:
         doc.ModelAbsoluteTolerance = old_tolerance
         doc.Layers.SetCurrentLayerIndex(old_layer, True)

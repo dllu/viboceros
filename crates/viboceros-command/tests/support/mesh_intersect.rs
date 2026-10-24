@@ -10,7 +10,15 @@ fn root() -> &'static std::path::Path {
 }
 pub fn rows() -> Vec<Value> {
     let mut rows = Vec::new();
-    for family in ["discovery", "controls", "modes", "coverage", "topology"] {
+    for family in [
+        "discovery",
+        "controls",
+        "modes",
+        "coverage",
+        "topology",
+        "coincident",
+        "mixed",
+    ] {
         let path = root().join(format!(
             "tools/rhino_oracle/observations/mesh_intersect_{family}.json"
         ));
@@ -55,8 +63,22 @@ pub fn command(row: &Value) -> String {
 pub fn menu(row: &Value) -> bool {
     row["id"].as_str().unwrap().ends_with("_menu")
 }
-pub const GAPS: [&str; 3] = [
+pub const GAPS: [&str; 17] = [
+    "mesh_intersect_coincident_base",
+    "mesh_intersect_coincident_drop",
+    "mesh_intersect_coincident_face_order",
+    "mesh_intersect_coincident_one_face_order",
+    "mesh_intersect_coincident_one_vertex_order",
+    "mesh_intersect_coincident_one_winding",
+    "mesh_intersect_coincident_rotated",
+    "mesh_intersect_coincident_scaled",
+    "mesh_intersect_coincident_translated",
+    "mesh_intersect_coincident_triangles",
+    "mesh_intersect_coincident_vertex_order",
+    "mesh_intersect_coincident_winding",
     "mesh_intersect_identical_post",
     "mesh_intersect_identical_pre",
+    "mesh_intersect_mixed_corner",
+    "mesh_intersect_mixed_curtain",
     "mesh_intersect_modes_mesh_identical",
 ];

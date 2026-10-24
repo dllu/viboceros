@@ -158,6 +158,10 @@ def with_shared_sources(paths):
         expanded.append('.cargo/config.toml')
     if 'tools/rhino_oracle/mesh_outline_cases.py' in expanded:
         expanded.append('tools/rhino_oracle/mesh_outline_scale_cases.py')
+    if 'tools/rhino_oracle/mesh_intersect_cases.py' in expanded:
+        expanded.extend(['tools/rhino_oracle/mesh_intersect_coincident_cases.py',
+                         'tools/rhino_oracle/mesh_intersect_mixed_cases.py',
+                         'tools/rhino_oracle/mesh_intersect_sdk.py'])
     if 'tools/rhino_oracle/report_mesh_outline.py' in expanded:
         expanded.append('tools/rhino_oracle/outline_comparison.py')
     if 'crates/viboceros-smlib/src/native.rs' in expanded:
@@ -169,6 +173,7 @@ def with_shared_sources(paths):
                          'crates/viboceros-smlib/src/native/mesh_intersections/coplanar.rs',
                          'crates/viboceros-smlib/src/native/mesh_intersections/coplanar/contacts.rs',
                          'crates/viboceros-smlib/native/mesh_intersections.h'])
+        expanded.append('crates/viboceros-smlib/native/mesh_intersection_origins.h')
     if 'crates/viboceros-document/src/lib.rs' in expanded:
         expanded.extend(['crates/viboceros-document/src/object_geometry.rs',
                          'crates/viboceros-document/src/geometry.rs',
@@ -184,6 +189,8 @@ def with_shared_sources(paths):
         expanded.extend([
             'crates/viboceros-command/src/mesh_intersect.rs',
             'crates/viboceros-command/src/mesh_intersect/geometry.rs',
+            'crates/viboceros-command/src/mesh_intersect/geometry/assembly.rs',
+            'crates/viboceros-command/src/mesh_intersect/geometry/assembly/coverage.rs',
             'crates/viboceros-command/src/mesh_boolean.rs',
             'crates/viboceros-command/src/mesh_boolean/arguments.rs',
             'crates/viboceros-command/src/mesh_boolean/execute.rs',
