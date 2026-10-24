@@ -109,7 +109,8 @@ const TRACK_CAPTURE_PIXELS: f32 = 8.0;
 const PICK_CAPTURE_PIXELS: f32 = 8.0;
 const CURVE_SAMPLES_PER_SPAN: usize = 16;
 const CIRCLE_SAMPLES: usize = 64;
-const SURFACE_SAMPLES_PER_SPAN: usize = 8;
+const SURFACE_SAMPLES_PER_SPAN: usize =
+    viboceros_command::interface::SURFACE_DISPLAY_SAMPLES_PER_SPAN;
 const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
 const PICK_PREVIEW_COLOR: Color32 = Color32::from_rgb(40, 165, 235);
 const LOCKED_COLOR: Color32 = Color32::from_gray(145);

@@ -1,5 +1,5 @@
 {
-  "scope": "mesh outline geometry; command and application integration pending",
+  "scope": "mesh outline geometry; command lifecycle qualified separately",
   "native_version": "8.32.26160.13001",
   "epsilon": 1e-07,
   "native_workflows": 96,
@@ -44,9 +44,7 @@
   "max_absolute_error": 1.4450787763517853e-08,
   "contour_comparison": "oriented cyclic vertices after removal of redundant collinear points; output order and start point may differ",
   "pending": [
-    "MeshOutline command lifecycle and object selection",
-    "surface render meshes",
-    "application viewport integration",
+    "curved surface render tessellation parity",
     "native eye-plane crossing and numerical range qualification"
   ],
   "geometry": [
@@ -2565,19 +2563,20 @@
     "crates/viboceros-geometry/src/polyline.rs": "20e2fe82681377f1cc39c58b3974fdbb2ed316ab2d66f512a86396a01faf429d",
     "crates/viboceros-geometry/src/transform/orientation.rs": "b524fe65c3f2c612da78de80f9e2ba18a31671a3151f71c36afeddbce0a51ecb",
     "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
-    "crates/viboceros-geometry/tests/mesh_outline.rs": "77f1d4062ea582281cb1454226e5d7fc4512cb7095c2d8b64163031868a54abc",
+    "crates/viboceros-geometry/tests/mesh_outline.rs": "8a6b26953908bbedf1083d237e41da453530ceb5da2fac1806fd4fdc2edafc98",
     "crates/viboceros-geometry/tests/support/mesh_channels.rs": "edf4dd46061cdc16b651b9196a83a7906a596da7f8b2f39f5018d2699bd91aaa",
     "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
+    "crates/viboceros-geometry/tests/support/mesh_outline.rs": "a06977e91539f6731a2acc2b2b4cf078e369f2ea7ab99de9e18799ef8f9902f1",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "50da8b4782440543b5bc1209c4988b0bf5ac44ace55ff040b587e54c3020ee67",
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "c20619d7a3861b87af0225a5df25582d52613291d6c42db0f61a075be57f364c",
     "crates/viboceros-opennurbs/src/mesh.rs": "5f7c67743b623a375b12872e45c8b8d641089637ce47f444f493b93778e409b2",
-    "docs/mesh-outline-geometry.md": "30fb0e2ffa3c6dee44fe01b524214322aba9e28b809c17d393db53503ff6fff7",
+    "docs/mesh-outline-geometry.md": "41be987313d547ceeec9d430db62833758c57ea5395f9831a78f3ef48f20280a",
     "third_party/README.md": "1ee9c8a6b7af78bc93af50012487ccfe59b3285229639cd5e9aa021761f28239",
-    "tools/rhino_oracle/client.py": "3264025344162243d19d92c4785b1ce917c8813bfea13e2e0bd1ce6897597c20",
+    "tools/rhino_oracle/client.py": "9523ff97f32b39549ac3838686a0597af22668d812520613831b189de20cb180",
     "tools/rhino_oracle/fixtures/mesh_outline_projections.json": "e9237aeb0e6eb102fbb859f658eaf0be859cd5cf57dee5dc7c0d656c4028e071",
     "tools/rhino_oracle/fixtures/mesh_outline_sdk.json": "8b891c2a9156b5acc6fbd276169c9e9b6b53c5cf11dc8dc673fc5060741a2294",
-    "tools/rhino_oracle/generate_mesh_outline.py": "10db8036bc536defdcd48b74d138e498a8b6df25b46f0596b384890e00fd5130",
+    "tools/rhino_oracle/generate_mesh_outline.py": "016ec637e4d5f4d429e0163ade3cabc594126d8918b9c60b14f39c32e90379e7",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/mesh_outline_cases.py": "e1990b4592cdb772db03ce9575b179efe47783044f9f1329181ca1500f0edfb3",
     "tools/rhino_oracle/mesh_outline_probe.py": "45ff02c9e1b0d5a585c52a7be544d783b33cd8af5b0112b3dde510ae314790e9",
@@ -2593,10 +2592,10 @@
     "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
     "tools/rhino_oracle/observations/source_snapshots/e1990b4592cdb772db03ce9575b179efe47783044f9f1329181ca1500f0edfb3.gz": "0cbee5c846094e86a30bdd92c3cb7bcec2921ada872da9617f0d2d17b1296fbe",
     "tools/rhino_oracle/observations/source_snapshots/f155d32d4e5dfa4bcb4181f8bb3e08e7a900d601ab06a82dd3cf3f9fe69ef61d.gz": "b337b43a5225a57fe5db573afee674bfcb694deaff27a41782c65e907f030cfe",
-    "tools/rhino_oracle/qualification_sources.py": "1aa44d50aa9eadcc966bcad908de78a496b066f4b6d753d69228d2d13688bd5c",
-    "tools/rhino_oracle/report_mesh_outline.py": "f88895805ca9dedd00627e3fa36d5deafe07e5bfcc280709c720a4e020beb823",
-    "tools/rhino_oracle/rhino_worker.py": "b07f293cf100628f640e3345f4a59c1c6ec814a443a60a0ffb9f7d2f0ef56d18",
-    "tools/rhino_oracle/structural_sdk.py": "889ab3fa32da902a36b429165794661f826cf6e46bff9a8ebcffa8e21f5eee33",
+    "tools/rhino_oracle/qualification_sources.py": "8cb498b9a1f55f26835a30c66ee45787e5ec36856a6e2b79a36769984febfff3",
+    "tools/rhino_oracle/report_mesh_outline.py": "bda2d27e4bdda7bf4a5619f0957b03392381ec1528df2ee57753a75af57873ab",
+    "tools/rhino_oracle/rhino_worker.py": "96fc6a0684d3c54e66b20abd9959828849b1177d35603cbf57a23871e1d595eb",
+    "tools/rhino_oracle/structural_sdk.py": "9c3ff147c3f72544fc4cd72d0cfaab21c8dc258344def4ab4eb5e550160b426a",
     "tools/rhino_oracle/test_mesh_outline.py": "c069df20fcc234b8421868ca385999ac1a9beb69537bb9cf653e1c74e13f387d"
   }
 }

@@ -293,6 +293,7 @@ mod geometry_selection;
 pub mod infinite_plane;
 mod intersect_self;
 mod intersect_two_sets;
+mod mesh_outline;
 mod object_name;
 mod offset_mesh;
 mod offset_surface;
@@ -1376,6 +1377,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(silhouette::SilhouetteCommand)
+            .expect("unique built-in command");
+        registry
+            .register(mesh_outline::MeshOutlineCommand)
             .expect("unique built-in command");
         registry
             .register(select_uv_rows::SelectUVCommand::default())

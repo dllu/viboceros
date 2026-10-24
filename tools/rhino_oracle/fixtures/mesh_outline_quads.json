@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_quads_pre",
+      "case": "outline_quads_pre"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_quads_post",
+      "case": "outline_quads_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_quads_top",
+      "case": "outline_quads_top"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_quads_oblique",
+      "case": "outline_quads_oblique"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_quads_reversed",
+      "case": "outline_quads_reversed"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_quads_flat",
+      "case": "outline_quads_flat"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_quads_ac",
+      "case": "outline_quads_ac"
+    }
+  ]
+}

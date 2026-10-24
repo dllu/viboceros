@@ -120,14 +120,13 @@ def summarize(text):
         rows[name] = dict(row, max_error=measured)
     if set(rows) != required:
         raise ValueError('measured outline case coverage differs')
-    return dict(scope='mesh outline geometry; command and application integration pending',
+    return dict(scope='mesh outline geometry; command lifecycle qualified separately',
                 native_version=version, epsilon=EPSILON, native_workflows=len(references),
                 qualified_geometry_workflows=len(rows),
                 exploratory_viewport_workflows_without_recorded_frustum=sorted(set(references) - required),
                 max_absolute_error=max(row['max_error'] for row in rows.values()),
                 contour_comparison='oriented cyclic vertices after removal of redundant collinear points; output order and start point may differ',
-                pending=['MeshOutline command lifecycle and object selection', 'surface render meshes',
-                         'application viewport integration', 'native eye-plane crossing and numerical range qualification'],
+                pending=['curved surface render tessellation parity', 'native eye-plane crossing and numerical range qualification'],
                 geometry=[rows[name] for name in sorted(rows)],
                 sha256={name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in sorted(paths)})
 

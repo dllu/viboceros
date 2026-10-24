@@ -5,6 +5,9 @@
 
 use crate::construction_plane::WorldPlane;
 
+/// Shared sampling policy for surface display meshes and commands that use them.
+pub const SURFACE_DISPLAY_SAMPLES_PER_SPAN: usize = 8;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DisplayMode {
     Wireframe,

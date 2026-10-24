@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_quad_pre",
+      "case": "outline_command_quad_pre"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_quad_post",
+      "case": "outline_command_quad_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_box_pre",
+      "case": "outline_command_box_pre"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_box_post",
+      "case": "outline_command_box_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_frame_pre",
+      "case": "outline_command_frame_pre"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_frame_post",
+      "case": "outline_command_frame_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_overlap_pre",
+      "case": "outline_command_overlap_pre"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_overlap_post",
+      "case": "outline_command_overlap_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_disconnected_pre",
+      "case": "outline_command_disconnected_pre"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_disconnected_post",
+      "case": "outline_command_disconnected_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_edge_on_pre",
+      "case": "outline_command_edge_on_pre"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_edge_on_post",
+      "case": "outline_command_edge_on_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_warped_pre",
+      "case": "outline_command_warped_pre"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_warped_post",
+      "case": "outline_command_warped_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_box_front",
+      "case": "outline_command_box_front"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_warped_front",
+      "case": "outline_command_warped_front"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_box_oblique",
+      "case": "outline_command_box_oblique"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_warped_oblique",
+      "case": "outline_command_warped_oblique"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_box_perspective",
+      "case": "outline_command_box_perspective"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_warped_perspective",
+      "case": "outline_command_warped_perspective"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_offset",
+      "case": "outline_command_offset"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_two_objects",
+      "case": "outline_command_two_objects"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_two_post",
+      "case": "outline_command_two_post"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_mixed_point",
+      "case": "outline_command_mixed_point"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_point_only",
+      "case": "outline_command_point_only"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_cancel",
+      "case": "outline_command_cancel"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_cancel_empty",
+      "case": "outline_command_cancel_empty"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_plane",
+      "case": "outline_command_plane"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_brep_box",
+      "case": "outline_command_brep_box"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_sphere",
+      "case": "outline_command_sphere"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_box_brep_oblique",
+      "case": "outline_command_box_brep_oblique"
+    },
+    {
+      "op": "mesh_outline_command",
+      "id": "outline_command_surface_and_mesh",
+      "case": "outline_command_surface_and_mesh"
+    }
+  ]
+}

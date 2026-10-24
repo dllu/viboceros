@@ -3,6 +3,8 @@
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
+    'src/app/object_selection/mesh_outline_tests.rs',
+    'crates/viboceros-command/tests/support/mesh_outline.rs',
     'src/viewport/scene.rs',
     'src/viewport/display_cache.rs',
     'src/viewport/mesh_normals.rs',
@@ -120,6 +122,7 @@ MESH_MODULES = [
                  'offset', 'patch_single_face', 'join', 'match_edges', 'alignment', 'weld', 'weld/merge', 'weld/attributes', 'unweld', 'edge_unweld', 'edge_weld', 'vertex_weld', 'vertex_unweld', 'radial', 'compaction', 'union_find',
                  'quadrangulate', 'triangulate', 'nonplanar_quads', 'quad_planarity', 'aspect_ratio', 'planar_cap', 'coplanar_merge', 'insert', 'insert/ngons', 'insert/regions', 'insert/pairing']
 ] + [
+    'crates/viboceros-geometry/tests/support/mesh_outline.rs',
     'crates/viboceros-geometry/src/edge_insertion.rs',
     'crates/viboceros-geometry/src/edge_insertion/crossings.rs',
     'crates/viboceros-geometry/src/edge_insertion/polygons.rs',
@@ -151,6 +154,8 @@ def with_shared_sources(paths):
                          'src/viewport/insert_point.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
+            'crates/viboceros-command/src/mesh_outline.rs',
+            'crates/viboceros-command/src/mesh_outline/tests.rs',
             'crates/viboceros-command/src/mesh_seams.rs',
             'crates/viboceros-command/src/mesh_edit/triangulate.rs',
             'crates/viboceros-command/src/mesh_edit/mod.rs',

@@ -8,6 +8,8 @@ mod control_polygon_tests;
 mod divide;
 mod mesh_conversion;
 mod mesh_from_lines;
+#[cfg(test)]
+mod mesh_outline_tests;
 mod mesh_patch;
 #[cfg(test)]
 mod mesh_polyline_tests;

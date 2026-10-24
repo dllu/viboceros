@@ -31,7 +31,7 @@
 - [QuadrangulateMesh: selection and triangle conversion](quadrangulate-mesh.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
 - [Polygon meshes](meshes.md)
-- [Mesh outline geometry](../mesh-outline-geometry.md) (command integration pending)
+- [MeshOutline: view-dependent outlines from meshes and surface display meshes](mesh-outline.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 
 - [Mesh curve pulling and qualifications](pull-mesh.md)

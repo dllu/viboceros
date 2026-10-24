@@ -1,6 +1,8 @@
-//! Camera context for view-dependent getters, separate from model edits.
+//! Camera context for view-dependent getters and modeling commands.
 use crate::CommandError;
-use viboceros_geometry::{Frame3, NurbsCurve, Point3, Tolerance, WeightedPoint3};
+use viboceros_geometry::{
+    Frame3, MeshOutlineProjection, NurbsCurve, Point3, Tolerance, WeightedPoint3,
+};
 use viboceros_io::{ThreeDmNamedView, ThreeDmProjection};
 
 #[derive(Clone, Copy, Debug)]
@@ -9,6 +11,7 @@ pub struct Projection {
     scale: [f64; 2],
     offset: [f64; 2],
     perspective: bool,
+    clipping: [f64; 2],
 }
 impl Projection {
     pub fn from_view(view: &ThreeDmNamedView) -> Result<Self, CommandError> {
@@ -18,7 +21,7 @@ impl Projection {
         let up = right.cross(direction)?;
         let frame =
             Frame3::try_from_directions(view.camera_location, right, up, Tolerance::DEFAULT)?;
-        let [left, right, bottom, top, near, _] = view.frustum;
+        let [left, right, bottom, top, near, far] = view.frustum;
         let width =
             (i64::from(view.screen_port[1]) - i64::from(view.screen_port[0])).unsigned_abs() as f64;
         let height =
@@ -46,6 +49,52 @@ impl Projection {
             scale,
             offset,
             perspective,
+            clipping: [near, far],
+        })
+    }
+
+    /// Mesh outlines lie on the supplied CPlane when it is parallel to a
+    /// parallel view. Otherwise use normalized clipping depth zero. Central
+    /// projection maps that depth to the harmonic mean of near/far distances.
+    pub fn mesh_outline_projection(
+        self,
+        construction_plane: Frame3,
+    ) -> Result<MeshOutlineProjection, CommandError> {
+        if !self.perspective
+            && self
+                .frame
+                .z_axis()
+                .as_vector()
+                .cross(construction_plane.z_axis().as_vector())?
+                .length()?
+                <= 1e-12
+        {
+            return Ok(MeshOutlineProjection::Parallel(construction_plane));
+        }
+        let [near, far] = self.clipping;
+        if !near.is_finite() || !far.is_finite() || (self.perspective && near <= 0.) || far <= near
+        {
+            return Err(CommandError::Usage(
+                "MeshOutline requires a valid view frustum",
+            ));
+        }
+        let depth = if self.perspective {
+            near * (2. / (1. + near / far))
+        } else {
+            near.midpoint(far)
+        };
+        let plane = self.frame.with_origin(
+            self.frame
+                .origin()
+                .translated(self.frame.z_axis().as_vector().scaled(-depth)?)?,
+        );
+        Ok(if self.perspective {
+            MeshOutlineProjection::Perspective {
+                plane,
+                eye: self.frame.origin(),
+            }
+        } else {
+            MeshOutlineProjection::Parallel(plane)
         })
     }
     fn homogeneous(self, point: Point3) -> Result<[f64; 3], CommandError> {

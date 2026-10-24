@@ -6,9 +6,9 @@ and unwelded seams do not cancel coverage. Queries preserve source geometry and
 channels. Quad splitting reuses public OpenNURBS triangulation; the projected
 union uses the MIT/Apache-2.0 `i_overlay` dependency with its i64 engine.
 
-The `MeshOutline` command, surface render mesh inputs, selection/history behavior,
-and application viewport integration are still pending. This geometry API does
-not register a command or claim complete Rhino compatibility.
+The [MeshOutline command](commands/mesh-outline.md) uses this geometry with the
+active viewport, object selection and history. Curved surface render mesh parity
+and numerical boundary cases remain incomplete; see the command qualification.
 
 ## Native evidence
 
@@ -32,7 +32,7 @@ The overlay uses an adaptive integer grid, not exact rational intersections.
 Coordinates outside its documented binary64 range are rejected before calling
 the adapter. A perspective triangle crossing the eye plane has an unbounded
 image and is rejected. Native behavior at the eye plane and extreme numerical
-ranges needs further qualification before command integration.
+ranges remains unqualified.
 
 ## Reproduce
 
