@@ -12,6 +12,11 @@ cargo fmt --all -- --check
 python3 -m unittest discover -s tools/rhino_oracle -t .
 ```
 
+Development and test builds use limited debug symbols and disable incremental
+compilation to reduce disk use. Generated artifacts still accumulate in `target/`;
+run `cargo clean` while builds are idle when you need to reclaim that space.
+The next build will regenerate Rust artifacts and native libraries.
+
 ## Focused checks
 
 Choose the relevant [validation guide](development/checks.md): native kernel,

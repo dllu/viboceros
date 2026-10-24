@@ -1,0 +1,4 @@
+# Keep repeated development and test builds from exhausting local disk.
+[profile.dev]
+debug = 1
+incremental = false
