@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "getter_curve_control",
+      "case": "getter_curve_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_rational_control",
+      "case": "getter_rational_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_closed_control",
+      "case": "getter_closed_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_periodic_control",
+      "case": "getter_periodic_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_polyline_control",
+      "case": "getter_polyline_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_circle_control",
+      "case": "getter_circle_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_arc_control",
+      "case": "getter_arc_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_surface_control",
+      "case": "getter_surface_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_surface_closed_control",
+      "case": "getter_surface_closed_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_surface_periodic_u_control",
+      "case": "getter_surface_periodic_u_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_surface_periodic_v_control",
+      "case": "getter_surface_periodic_v_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_mesh_control",
+      "case": "getter_mesh_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_polycurve_control",
+      "case": "getter_polycurve_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_subd_control",
+      "case": "getter_subd_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_rational_edit",
+      "case": "getter_rational_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_closed_edit",
+      "case": "getter_closed_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_periodic_edit",
+      "case": "getter_periodic_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_circle_edit",
+      "case": "getter_circle_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_polycurve_edit",
+      "case": "getter_polycurve_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_subd_edit",
+      "case": "getter_subd_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_options_points_input",
+      "case": "getter_options_points_input"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_options_points_current",
+      "case": "getter_options_points_current"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_options_pointcloud_input",
+      "case": "getter_options_pointcloud_input"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_options_pointcloud_current",
+      "case": "getter_options_pointcloud_current"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_mixed_grips",
+      "case": "getter_mixed_grips"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_mixed_grips_reverse",
+      "case": "getter_mixed_grips_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_mixed_grips_cloud",
+      "case": "getter_mixed_grips_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_mixed_grips_cloud_reverse",
+      "case": "getter_mixed_grips_cloud_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_whole_and_grips",
+      "case": "getter_whole_and_grips"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_whole_and_grips_cloud",
+      "case": "getter_whole_and_grips_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_owner_and_grips",
+      "case": "getter_owner_and_grips"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_owner_and_grips_cloud",
+      "case": "getter_owner_and_grips_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "getter_whole_displayed_owner",
+      "case": "getter_whole_displayed_owner"
+    }
+  ]
+}

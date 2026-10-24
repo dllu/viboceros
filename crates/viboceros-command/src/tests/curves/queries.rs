@@ -290,7 +290,7 @@ fn extracts_defining_points_in_rhino_order_with_layers_and_undo() {
             .unwrap()
             .members()
             .collect::<BTreeSet<_>>(),
-        source_ids.iter().copied().collect()
+        document.objects().map(|o| o.id()).collect()
     );
 
     registry.execute(&mut document, "Undo").unwrap();

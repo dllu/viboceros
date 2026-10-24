@@ -354,6 +354,7 @@ impl VibocerosApp {
                         | "Sphere FitPoints"
                         | "Smooth"
                         | "HidePt"
+                        | "ExtractPt"
                         | "Weight"
                 ) || (p.description.workflow
                     == ObjectSelectionWorkflow::PointInputAfterSelection
@@ -817,6 +818,7 @@ impl VibocerosApp {
                 | "Sphere FitPoints"
                 | "Smooth"
                 | "HidePt"
+                | "ExtractPt"
                 | "Weight"
         ) {
             self.document
@@ -1236,6 +1238,7 @@ impl VibocerosApp {
                             | "Sphere FitPoints"
                             | "Smooth"
                             | "HidePt"
+                            | "ExtractPt"
                             | "Weight"
                     ) && self.document.selected_control_points().any(|(g, _)| {
                         pending.description.command != "HidePt"
@@ -1511,6 +1514,7 @@ impl VibocerosApp {
                         | "LineThroughPt"
                         | "Sphere FitPoints"
                         | "HidePt"
+                        | "ExtractPt"
                         | "Weight"
                 ) {
                     self.document.select_all_control_points();

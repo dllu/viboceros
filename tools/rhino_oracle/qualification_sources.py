@@ -209,7 +209,12 @@ def with_shared_sources(paths):
                          'crates/viboceros-smlib/src/native/mesh_split.rs'])
         expanded.append('crates/viboceros-smlib/native/mesh_intersection_origins.h')
     if 'crates/viboceros-document/src/lib.rs' in expanded:
-        expanded.extend(['crates/viboceros-document/src/object_geometry.rs',
+        expanded.extend(['crates/viboceros-document/src/history.rs',
+                         'crates/viboceros-document/src/history_group.rs',
+                         'crates/viboceros-document/src/selection.rs',
+                         'crates/viboceros-document/src/selection/replay_tests.rs',
+                         'crates/viboceros-document/src/control_points.rs',
+                         'crates/viboceros-document/src/object_geometry.rs',
                          'crates/viboceros-document/src/geometry.rs',
                          'crates/viboceros-document/src/block_instances.rs'])
     if 'crates/viboceros-document/src/control_points.rs' in expanded:
@@ -222,8 +227,11 @@ def with_shared_sources(paths):
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
             'crates/viboceros-command/src/extract_points.rs',
+            'crates/viboceros-command/src/extract_points/inputs.rs',
             'crates/viboceros-command/src/extract_points/options.rs',
             'crates/viboceros-command/src/extract_points/tests.rs',
+            'crates/viboceros-command/tests/extract_points_native.rs',
+            'crates/viboceros-command/tests/support/extract_points.rs',
             'crates/viboceros-command/src/mesh_split.rs',
             'crates/viboceros-command/src/mesh_split/arguments.rs',
             'crates/viboceros-command/src/mesh_split/execute.rs',

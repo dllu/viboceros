@@ -109,6 +109,7 @@ impl VibocerosApp {
                         | "Sphere FitPoints"
                         | "Smooth"
                         | "HidePt"
+                        | "ExtractPt"
                         | "Weight"
                 ) || (prompt.description.workflow
                     == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
@@ -325,6 +326,7 @@ impl VibocerosApp {
                             | "Sphere FitPoints"
                             | "Smooth"
                             | "HidePt"
+                            | "ExtractPt"
                             | "Weight"
                     ) || (prompt.description.workflow
                         == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection

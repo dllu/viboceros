@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "metadata_whole_first",
+      "case": "metadata_whole_first"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "metadata_unselected_first",
+      "case": "metadata_unselected_first"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "metadata_whole_first_two_grips",
+      "case": "metadata_whole_first_two_grips"
+    }
+  ]
+}

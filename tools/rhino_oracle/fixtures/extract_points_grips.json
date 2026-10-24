@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "curve_control",
+      "case": "curve_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "rational_control",
+      "case": "rational_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "closed_control",
+      "case": "closed_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "periodic_control",
+      "case": "periodic_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "polyline_control",
+      "case": "polyline_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "circle_control",
+      "case": "circle_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "arc_control",
+      "case": "arc_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "surface_control",
+      "case": "surface_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "surface_closed_control",
+      "case": "surface_closed_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "surface_periodic_u_control",
+      "case": "surface_periodic_u_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "surface_periodic_v_control",
+      "case": "surface_periodic_v_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "mesh_control",
+      "case": "mesh_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "polycurve_control",
+      "case": "polycurve_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "subd_control",
+      "case": "subd_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "rational_edit",
+      "case": "rational_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "closed_edit",
+      "case": "closed_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "periodic_edit",
+      "case": "periodic_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "circle_edit",
+      "case": "circle_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "polycurve_edit",
+      "case": "polycurve_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "subd_edit",
+      "case": "subd_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "options_points_input",
+      "case": "options_points_input"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "options_points_current",
+      "case": "options_points_current"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "options_pointcloud_input",
+      "case": "options_pointcloud_input"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "options_pointcloud_current",
+      "case": "options_pointcloud_current"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "mixed_grips",
+      "case": "mixed_grips"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "mixed_grips_reverse",
+      "case": "mixed_grips_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "mixed_grips_cloud",
+      "case": "mixed_grips_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "mixed_grips_cloud_reverse",
+      "case": "mixed_grips_cloud_reverse"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "whole_and_grips",
+      "case": "whole_and_grips"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "whole_and_grips_cloud",
+      "case": "whole_and_grips_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "owner_and_grips",
+      "case": "owner_and_grips"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "owner_and_grips_cloud",
+      "case": "owner_and_grips_cloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "whole_displayed_owner",
+      "case": "whole_displayed_owner"
+    }
+  ]
+}

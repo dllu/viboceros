@@ -146,3 +146,61 @@ fn preselected_transform_replay_accepts_explicit_reselection_after_undo() {
     doc.redo().unwrap();
     assert_eq!(doc.selected_object_count(), 0);
 }
+
+#[test]
+fn grip_replay_release_is_atomic_transient_and_does_not_replace_owner_geometry() {
+    let mut doc = Document::default();
+    let p = |x| Point3::try_new(x, 0., 0.).unwrap();
+    let owner = doc
+        .add_geometry(Geometry::NurbsCurve(
+            viboceros_geometry::NurbsCurve::try_clamped_uniform(2, vec![p(0.), p(1.), p(2.)])
+                .unwrap(),
+        ))
+        .unwrap();
+    doc.enable_control_points([owner]).unwrap();
+    let grip = ControlPointId {
+        object: owner,
+        index: 1,
+    };
+    doc.select_control_points([grip], SelectionMode::Add)
+        .unwrap();
+    let original = doc.object(owner).unwrap().geometry_snapshot().clone();
+    doc.clear_history().unwrap();
+    assert!(matches!(
+        doc.release_control_point_selection_on_history_replay([grip]),
+        Err(DocumentError::NoActiveTransaction)
+    ));
+    doc.begin_transaction("Copies").unwrap();
+    assert!(
+        doc.release_control_point_selection_on_history_replay([
+            grip,
+            ControlPointId { index: 99, ..grip }
+        ])
+        .is_err()
+    );
+    doc.release_control_point_selection_on_history_replay([grip, grip])
+        .unwrap();
+    doc.add_geometry(Geometry::Point(p(5.))).unwrap();
+    doc.commit_transaction().unwrap();
+    assert_eq!(doc.selected_control_points().count(), 1);
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().len(), 1);
+    assert_eq!(doc.selected_control_points().count(), 0);
+    doc.redo().unwrap();
+    assert_eq!(doc.selected_control_points().count(), 0);
+    assert!(
+        doc.object(owner)
+            .unwrap()
+            .geometry_snapshot()
+            .shares_storage_with(&original)
+    );
+    doc.undo().unwrap();
+    doc.select_control_points([grip], SelectionMode::Add)
+        .unwrap();
+    let redo = doc.redo_label().map(str::to_owned);
+    doc.begin_transaction("No output").unwrap();
+    doc.release_control_point_selection_on_history_replay([grip])
+        .unwrap();
+    assert!(!doc.commit_transaction().unwrap());
+    assert_eq!(doc.redo_label(), redo.as_deref());
+}

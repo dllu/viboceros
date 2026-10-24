@@ -85,6 +85,7 @@ pub(super) enum Edit {
     /// Command-first picks are transient even for unchanged peers.
     SelectionReleasedOnReplay {
         ids: Vec<ObjectId>,
+        grips: Vec<super::ControlPointId>,
     },
     /// A replacement clears its replay selection unless the user selects it
     /// again after Undo. Explicit picking may repeat an already selected set.
@@ -202,10 +203,11 @@ impl Edit {
             Self::ControlPointsDeleted { id, stored, mesh } => {
                 exchange_deleted_control_points(document, *id, stored, true, *mesh)
             }
-            Self::SelectionReleasedOnReplay { ids } => {
+            Self::SelectionReleasedOnReplay { ids, grips } => {
                 for id in ids {
                     document.selection.remove(id);
                 }
+                release_grips(document, grips);
             }
             Self::TransformSelectionReleasedOnReplay { ids, reselected } => {
                 *reselected = None;
@@ -347,10 +349,11 @@ impl Edit {
             Self::ControlPointsDeleted { id, stored, mesh } => {
                 exchange_deleted_control_points(document, *id, stored, false, *mesh)
             }
-            Self::SelectionReleasedOnReplay { ids } => {
+            Self::SelectionReleasedOnReplay { ids, grips } => {
                 for id in ids {
                     document.selection.remove(id);
                 }
+                release_grips(document, grips);
             }
             Self::TransformSelectionReleasedOnReplay { ids, reselected } => {
                 for id in ids {
@@ -665,4 +668,12 @@ fn insert_at<T>(values: &mut Vec<T>, index: usize, value: T) -> Result<(), Docum
     }
     values.insert(index, value);
     Ok(())
+}
+
+fn release_grips(document: &mut Document, grips: &[super::ControlPointId]) {
+    for grip in grips {
+        if let Some(state) = document.control_points.get_mut(&grip.object) {
+            state.deselect(grip.index);
+        }
+    }
 }

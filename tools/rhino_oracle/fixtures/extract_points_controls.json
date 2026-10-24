@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "whole_points_input",
+      "case": "whole_points_input"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "whole_points_current",
+      "case": "whole_points_current"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "whole_pointcloud_input",
+      "case": "whole_pointcloud_input"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "whole_pointcloud_current",
+      "case": "whole_pointcloud_current"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "grips_output_first_input",
+      "case": "grips_output_first_input"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "grips_output_first_current",
+      "case": "grips_output_first_current"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "mixed_whole_cloud",
+      "case": "mixed_whole_cloud"
+    }
+  ]
+}

@@ -58,10 +58,7 @@
   "performance_scope": "Save uses one member scan and the source chooser avoids repeated model-table searches and formats visible rows. No native timing or GPU speedup was measured.",
   "comparison_limits": "Sixteen owned recipes and 82 closed-model states at absolute 1e-9 plus relative 1e-12. Points, grouped sources, nested references and one uniformly reflected circle; finite sampled curve witnesses do not certify all curved geometry. Native temporary-object metadata, selection/history, broader panel behavior and stress/numeric boundary parity remain open.",
   "sha256": {
-    "crates/viboceros-document/src/groups.rs": "0af1d7b83513cc1889d85d880ef453e03ddd9a26020103013f0585590b9bdbfe",
     "crates/viboceros-document/src/object_deletion.rs": "83089b9e990b5b0e3e642c3cf14fd29826b39c50a1ab2f7b063c7a06733e1b47",
-    "crates/viboceros-document/src/object_geometry.rs": "54671f8277b93a4d8074fdc898d320b58155c8aef345de217a910706fcdb8226",
-    "crates/viboceros-document/src/selection.rs": "851f5fd8c35600601df18fb74097468aede04965bbdab3b5a4ef0171f96f519f",
     "tools/rhino_oracle/fixtures/block_edit_controls.json": "ed63fcc2cf571fbc287425aab510b315e700ebd8455a120fee30cc1259a7dbc9",
     "tools/rhino_oracle/observations/block_edit_controls.json": "c1c498e95a4088a1288c02d0adf754b2b42bd116414c0aaa4c19103d4a38861e",
     "docs/block-edit-controls-capture-source/tools/rhino_oracle/block_edit_controls_probe.py": "eb29a1f16da1285494ce89214cc85e27a83e53d3a752bff34f2121bab0ca06d6",
@@ -121,5 +118,10 @@
     "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-edit-nested-prior-source/crates/viboceros-oracle/tests/block_workflow.rs",
     "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-edit-nested-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
     "tools/rhino_oracle/test_block_edit_controls_input.py": "docs/block-edit-nested-prior-source/tools/rhino_oracle/test_block_edit_controls_input.py"
+  },
+  "git_sha256": {
+    "480037c4d73dd017aed831e0d417501c2b6bfe3c:crates/viboceros-document/src/selection.rs": "851f5fd8c35600601df18fb74097468aede04965bbdab3b5a4ef0171f96f519f",
+    "a71ee68ba90d9b6b2f6090881986f84aa67e66e3:crates/viboceros-document/src/groups.rs": "0af1d7b83513cc1889d85d880ef453e03ddd9a26020103013f0585590b9bdbfe",
+    "a71ee68ba90d9b6b2f6090881986f84aa67e66e3:crates/viboceros-document/src/object_geometry.rs": "54671f8277b93a4d8074fdc898d320b58155c8aef345de217a910706fcdb8226"
   }
 }

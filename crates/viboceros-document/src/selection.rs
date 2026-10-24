@@ -56,7 +56,37 @@ impl Document {
         if !ids.is_empty() {
             self.record_edit(
                 "Release command picks",
-                Edit::SelectionReleasedOnReplay { ids },
+                Edit::SelectionReleasedOnReplay { ids, grips: vec![] },
+            );
+        }
+        Ok(())
+    }
+
+    /// Release accepted grip picks only when this command's history is replayed.
+    /// Live selections and grip displays remain unchanged until Undo or Redo.
+    pub fn release_control_point_selection_on_history_replay(
+        &mut self,
+        grips: impl IntoIterator<Item = ControlPointId>,
+    ) -> Result<(), DocumentError> {
+        if self.history.active.is_none() {
+            return Err(DocumentError::NoActiveTransaction);
+        }
+        let grips = grips.into_iter().collect::<BTreeSet<_>>();
+        for grip in &grips {
+            if self.is_control_point_hidden(*grip).is_none() {
+                return Err(DocumentError::InvalidControlPointSelection {
+                    object: grip.object,
+                    index: grip.index,
+                });
+            }
+        }
+        if !grips.is_empty() {
+            self.record_edit(
+                "Release command grips",
+                Edit::SelectionReleasedOnReplay {
+                    ids: vec![],
+                    grips: grips.into_iter().collect(),
+                },
             );
         }
         Ok(())

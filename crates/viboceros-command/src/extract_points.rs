@@ -1,6 +1,7 @@
 //! Defining-point extraction stages owned locations while borrowing input geometry.
 use super::*;
 
+mod inputs;
 mod options;
 use options::{ExtractPointOptions, ExtractPointOutput, ExtractPointOutputLayer};
 #[cfg(test)]
@@ -38,18 +39,28 @@ impl Command for ExtractPtCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = options::parse_extract_point_arguments(arguments)?;
-        Extraction::prepare(document, options)?.apply(document)
+        Extraction::prepare(document, options, false)?.apply(document)
+    }
+
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        let options = options::parse_extract_point_arguments(arguments)?;
+        Extraction::prepare(document, options, true)?.apply(document)
     }
 }
 
 struct PointBatch {
     points: Vec<Point3>,
-    attributes: ObjectAttributes,
+    source: Option<ObjectId>,
 }
 
 enum Output {
     Points(Vec<PointBatch>),
-    PointCloud(Vec<Point3>, ObjectAttributes),
+    PointCloud(Vec<Point3>, Option<ObjectId>),
 }
 
 struct Extraction {
@@ -57,23 +68,27 @@ struct Extraction {
     selected: usize,
     contributors: usize,
     count: usize,
+    retained: Vec<ObjectId>,
+    released: Vec<ObjectId>,
 }
 
 impl Extraction {
-    fn prepare(document: &Document, options: ExtractPointOptions) -> Result<Self, CommandError> {
-        let current = || ObjectAttributes::on_layer(document.current_layer_id());
+    fn prepare(
+        document: &Document,
+        options: ExtractPointOptions,
+        postselected: bool,
+    ) -> Result<Self, CommandError> {
         let mut output = match options.output {
             ExtractPointOutput::Points => Output::Points(Vec::new()),
-            ExtractPointOutput::PointCloud => Output::PointCloud(Vec::new(), current()),
+            ExtractPointOutput::PointCloud => Output::PointCloud(Vec::new(), None),
         };
         let mut selected = 0;
         let mut contributors = 0;
         let mut count = 0usize;
-        for object in document.selected_objects() {
+        let owners = inputs::visit(document, |source, points| {
             selected += 1;
-            let points = object.geometry().extract_point_locations()?;
             if points.is_empty() {
-                continue;
+                return Ok(());
             }
             count = count
                 .checked_add(points.len())
@@ -85,16 +100,14 @@ impl Extraction {
             match &mut output {
                 Output::Points(batches) => batches.push(PointBatch {
                     points,
-                    attributes: match options.output_layer {
-                        ExtractPointOutputLayer::Input => object.attributes().clone(),
-                        ExtractPointOutputLayer::Current => current(),
-                    },
+                    source: (options.output_layer == ExtractPointOutputLayer::Input)
+                        .then_some(source),
                 }),
-                Output::PointCloud(all, attributes) => {
+                Output::PointCloud(all, origin) => {
                     // Only a contributing first source supplies cloud attributes;
                     // otherwise retain the fresh current-layer fallback.
                     if selected == 1 && options.output_layer == ExtractPointOutputLayer::Input {
-                        *attributes = object.attributes().clone();
+                        *origin = Some(source);
                     }
                     if all.is_empty() {
                         *all = points;
@@ -108,6 +121,13 @@ impl Extraction {
                     }
                 }
             }
+            Ok(())
+        })?;
+        if let Output::PointCloud(_, source) = &mut output
+            && options.output_layer == ExtractPointOutputLayer::Input
+            && let Some((grip, _)) = document.selected_control_points().next()
+        {
+            *source = Some(grip.object);
         }
         if selected == 0 {
             return Err(CommandError::NoObjectsSelected);
@@ -120,32 +140,67 @@ impl Extraction {
             selected,
             contributors,
             count,
+            retained: document
+                .selected_object_ids()
+                .filter(|id| owners.contains(id))
+                .collect(),
+            released: document
+                .selected_object_ids()
+                .filter(|id| postselected || !owners.contains(id))
+                .collect(),
         })
     }
 
     fn apply(self, document: &mut Document) -> Result<String, CommandError> {
+        let cloud = matches!(&self.output, Output::PointCloud(..));
+        document.release_command_selection_on_history_replay(
+            self.released
+                .into_iter()
+                .chain(self.retained.iter().copied().filter(|_| cloud)),
+        )?;
+        if cloud {
+            let grips = document
+                .selected_control_points()
+                .map(|(g, _)| g)
+                .collect::<Vec<_>>();
+            document.release_control_point_selection_on_history_replay(grips)?;
+        } else {
+            document.clear_control_point_selection();
+        }
         let mut ids = Vec::new();
         match self.output {
             Output::Points(batches) => {
                 ids.reserve(self.count);
                 for batch in batches {
-                    for point in batch.points {
-                        ids.push(document.add_geometry_with_attributes(
-                            Geometry::Point(point),
-                            batch.attributes.clone(),
-                        )?);
+                    if let Some(source) = batch.source {
+                        ids.extend(
+                            document.copy_object_pieces_into_source_groups(
+                                batch
+                                    .points
+                                    .into_iter()
+                                    .map(|p| (source, Geometry::Point(p))),
+                            )?,
+                        );
+                    } else {
+                        for point in batch.points {
+                            ids.push(document.add_geometry(Geometry::Point(point))?);
+                        }
                     }
                 }
             }
-            Output::PointCloud(points, attributes) => {
+            Output::PointCloud(points, source) => {
                 let cloud = PointCloud3::try_new(points)?;
-                ids.push(
-                    document
-                        .add_geometry_with_attributes(Geometry::PointCloud(cloud), attributes)?,
-                );
+                if let Some(source) = source {
+                    ids.extend(document.copy_object_pieces_into_source_groups([(
+                        source,
+                        Geometry::PointCloud(cloud),
+                    )])?);
+                } else {
+                    ids.push(document.add_geometry(Geometry::PointCloud(cloud))?);
+                }
             }
         }
-        replace_selection(document, ids)?;
+        document.select_command_results(self.retained.into_iter().chain(ids))?;
         Ok(format!(
             "Extracted {} point(s) from {} of {} selected object(s)",
             self.count, self.contributors, self.selected

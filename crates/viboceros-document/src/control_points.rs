@@ -43,6 +43,9 @@ pub(super) struct ControlPoints {
 }
 
 impl ControlPoints {
+    pub(super) fn deselect(&mut self, index: usize) {
+        Arc::make_mut(&mut self.selected).remove(&index);
+    }
     pub(super) fn reset_visibility(&mut self) {
         self.hidden = Arc::default();
     }
