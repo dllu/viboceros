@@ -31,7 +31,7 @@ pub use native::{
     interpolate_open_point_grid, interpolate_point_grid, interpolate_surface_blend,
     join_curve_natural_extension, join_curve_smooth_extension, join_curve_to_boundaries,
     loft_surface, make_curve_non_periodic, make_curve_periodic, make_surface_non_periodic,
-    make_surface_periodic, match_curve_end, modeling_surface_intersection_events,
+    make_surface_periodic, match_curve_end, mesh_boolean, modeling_surface_intersection_events,
     morph_interpolation, morph_preview_operations, offset_curve_parts, offset_curve_through_point,
     point_grid_brep, prepare_loft_sections, prepare_morph_preview_curve, prepared_gordon_surface,
     projected_curve_intervals, pull_curve_to_surface, rail_revolved_brep, rail_revolved_surface,

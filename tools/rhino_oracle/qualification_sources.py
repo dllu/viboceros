@@ -147,6 +147,9 @@ def with_shared_sources(paths):
         expanded.append('tools/rhino_oracle/mesh_outline_scale_cases.py')
     if 'tools/rhino_oracle/report_mesh_outline.py' in expanded:
         expanded.append('tools/rhino_oracle/outline_comparison.py')
+    if 'crates/viboceros-smlib/src/native.rs' in expanded:
+        expanded.extend(['crates/viboceros-smlib/src/native/mesh_boolean.rs',
+                         'crates/viboceros-smlib/native/mesh_boolean.h'])
     if 'crates/viboceros-document/src/lib.rs' in expanded:
         expanded.append('crates/viboceros-document/src/object_geometry.rs')
     if 'crates/viboceros-document/src/control_points.rs' in expanded:

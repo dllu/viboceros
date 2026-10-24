@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_0_union",
+      "case": "coincident_repeat_0_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_0_intersection",
+      "case": "coincident_repeat_0_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_0_difference",
+      "case": "coincident_repeat_0_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_1_union",
+      "case": "coincident_repeat_1_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_1_intersection",
+      "case": "coincident_repeat_1_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_1_difference",
+      "case": "coincident_repeat_1_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_2_union",
+      "case": "coincident_repeat_2_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_2_intersection",
+      "case": "coincident_repeat_2_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_repeat_2_difference",
+      "case": "coincident_repeat_2_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_triangles_union",
+      "case": "coincident_triangles_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_triangles_intersection",
+      "case": "coincident_triangles_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_triangles_difference",
+      "case": "coincident_triangles_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_cycled_union",
+      "case": "coincident_cycled_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_cycled_intersection",
+      "case": "coincident_cycled_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_cycled_difference",
+      "case": "coincident_cycled_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_face_touch_union",
+      "case": "coincident_face_touch_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_face_touch_intersection",
+      "case": "coincident_face_touch_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "coincident_face_touch_difference",
+      "case": "coincident_face_touch_difference"
+    }
+  ]
+}

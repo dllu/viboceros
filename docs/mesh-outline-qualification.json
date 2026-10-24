@@ -6761,7 +6761,7 @@
     "crates/viboceros-opennurbs/src/mesh.rs": "5f7c67743b623a375b12872e45c8b8d641089637ce47f444f493b93778e409b2",
     "docs/mesh-outline-geometry.md": "ea58e051db9fc1e043dee76e332b135743b89eac525bebbeb76b49fc4d42de17",
     "third_party/README.md": "1ee9c8a6b7af78bc93af50012487ccfe59b3285229639cd5e9aa021761f28239",
-    "tools/rhino_oracle/client.py": "9523ff97f32b39549ac3838686a0597af22668d812520613831b189de20cb180",
+    "tools/rhino_oracle/client.py": "cda2aaeb84f5e2df817e020148104cd8cd457b6a2e5cc10c6287adf7489f680a",
     "tools/rhino_oracle/fixtures/mesh_outline_contexts.json": "2e0cfaa36e9b53531dd5ce680feffca0280692734d29c8e9ff1cb50bfa942669",
     "tools/rhino_oracle/fixtures/mesh_outline_facing.json": "f26ff1f42a2f84b48a9fcd3b834cecb12405bbe32d5fb75d260851a28a693c0d",
     "tools/rhino_oracle/fixtures/mesh_outline_projections.json": "e9237aeb0e6eb102fbb859f658eaf0be859cd5cf57dee5dc7c0d656c4028e071",
@@ -6805,10 +6805,10 @@
     "tools/rhino_oracle/observations/source_snapshots/f155d32d4e5dfa4bcb4181f8bb3e08e7a900d601ab06a82dd3cf3f9fe69ef61d.gz": "b337b43a5225a57fe5db573afee674bfcb694deaff27a41782c65e907f030cfe",
     "tools/rhino_oracle/observations/source_snapshots/f6edf57ebc5e61618b96ccbb0757a0b5b49650c3d1a55bfaf9393d3a9f41caf7.gz": "552627ad220c100e000722fe667cbc84a05a6c5b7e6bd805761e15db755d6906",
     "tools/rhino_oracle/outline_comparison.py": "d21f3b371976e508591e9999edabdfddc80483425508103fdce2529309afacd5",
-    "tools/rhino_oracle/qualification_sources.py": "501471c3ce0de9dc1587ac838d8949ba19f3e8ddfb4053530790c443459245e5",
+    "tools/rhino_oracle/qualification_sources.py": "b697ef3b5e95442bd0ca21a5e8f2c64b923048d811841ab3a5b9202bbf5019f1",
     "tools/rhino_oracle/report_mesh_outline.py": "efb6e16f54bbcf8f14314a12da935f78fe59872ddd4eb6e6881812458719d129",
-    "tools/rhino_oracle/rhino_worker.py": "96fc6a0684d3c54e66b20abd9959828849b1177d35603cbf57a23871e1d595eb",
-    "tools/rhino_oracle/structural_sdk.py": "e6cad089f1c159404cd09cc4e5c798beda393afbf3a4f013c3f3474fb4a8f4da",
+    "tools/rhino_oracle/rhino_worker.py": "57f5d779a93fe0ca2319b8491af05b16c8d84a8f101a2c3dd47962b999128344",
+    "tools/rhino_oracle/structural_sdk.py": "09009ad7972bedb34a6aa63c74e5198d4f4154bf8a413e575f4912441f733ebc",
     "tools/rhino_oracle/test_mesh_outline.py": "fd8f2f0ec1cc07c8f8870b0ac53c75ed3984eb15d1b0e0f324908140a26ce9cd"
   }
 }

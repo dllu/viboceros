@@ -9,6 +9,8 @@ use viboceros_geometry::{
     WeightedPoint3,
 };
 mod brep;
+mod mesh_boolean;
+pub use mesh_boolean::mesh_boolean;
 mod construction;
 mod edge_blends;
 mod shell;
@@ -416,10 +418,15 @@ impl Solid {
                 capacity,
             )
         })?;
-        let mesh = OwnedMesh(NonNull::new(pointer).ok_or(Error::InvalidOutput)?);
+        OwnedMesh(NonNull::new(pointer).ok_or(Error::InvalidOutput)?).decode(tolerance)
+    }
+}
+
+impl OwnedMesh {
+    fn decode(&self, tolerance: Tolerance) -> Result<TriangleMesh, Error> {
         let mut vertex_count = 0;
         let mut triangle_count = 0;
-        if unsafe { vb_mesh_sizes(mesh.0.as_ptr(), &mut vertex_count, &mut triangle_count) } != 0
+        if unsafe { vb_mesh_sizes(self.0.as_ptr(), &mut vertex_count, &mut triangle_count) } != 0
             || vertex_count > 1_000_000
             || triangle_count > 1_000_000
         {
@@ -429,7 +436,7 @@ impl Solid {
         let mut triangles = vec![0; triangle_count * 3];
         if unsafe {
             vb_mesh_copy(
-                mesh.0.as_ptr(),
+                self.0.as_ptr(),
                 points.as_mut_ptr(),
                 vertex_count,
                 triangles.as_mut_ptr(),

@@ -9,6 +9,10 @@ extern "C" {
 typedef struct VbSolid VbSolid;
 typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
+int vb_mesh_boolean(const double *first, size_t first_count,
+    const uint32_t *first_faces, size_t first_face_count, const double *second,
+    size_t second_count, const uint32_t *second_faces, size_t second_face_count,
+    int operation, double tolerance, VbMesh **out, char *error, size_t capacity);
 typedef struct VbParts VbParts;
 typedef struct VbCurveList VbCurveList;
 int vb_surface_fillet(const VbNurbsData *first,const VbNurbsData *second,double radius,

@@ -1,0 +1,161 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "overlap_union",
+      "case": "overlap_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "overlap_intersection",
+      "case": "overlap_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "overlap_difference",
+      "case": "overlap_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "disjoint_union",
+      "case": "disjoint_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "disjoint_intersection",
+      "case": "disjoint_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "disjoint_difference",
+      "case": "disjoint_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "contained_union",
+      "case": "contained_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "contained_intersection",
+      "case": "contained_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "contained_difference",
+      "case": "contained_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "identical_union",
+      "case": "identical_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "identical_intersection",
+      "case": "identical_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "identical_difference",
+      "case": "identical_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "face_touch_union",
+      "case": "face_touch_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "face_touch_intersection",
+      "case": "face_touch_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "face_touch_difference",
+      "case": "face_touch_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "edge_touch_union",
+      "case": "edge_touch_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "edge_touch_intersection",
+      "case": "edge_touch_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "edge_touch_difference",
+      "case": "edge_touch_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "point_touch_union",
+      "case": "point_touch_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "point_touch_intersection",
+      "case": "point_touch_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "point_touch_difference",
+      "case": "point_touch_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "cavity_union",
+      "case": "cavity_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "cavity_intersection",
+      "case": "cavity_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "cavity_difference",
+      "case": "cavity_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "rotated_union",
+      "case": "rotated_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "rotated_intersection",
+      "case": "rotated_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "rotated_difference",
+      "case": "rotated_difference"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "unwelded_union",
+      "case": "unwelded_union"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "unwelded_intersection",
+      "case": "unwelded_intersection"
+    },
+    {
+      "op": "mesh_boolean_sdk",
+      "id": "unwelded_difference",
+      "case": "unwelded_difference"
+    }
+  ]
+}
