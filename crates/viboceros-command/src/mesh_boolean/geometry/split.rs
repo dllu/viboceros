@@ -6,26 +6,33 @@ pub(super) fn split(
     meshes: &[&TriangleMesh],
     first: usize,
     tolerance: Tolerance,
-) -> Result<Vec<TriangleMesh>, CommandError> {
+) -> Result<Vec<Geometry>, CommandError> {
     if !any_interaction(meshes, Some(first), tolerance)? {
         return Ok(vec![]);
     }
     let mut output = Vec::new();
     let mut changed = false;
     for target in &meshes[..first] {
-        let mut regions = vec![(*target).clone()];
+        let mut regions = vec![Geometry::Mesh((*target).clone())];
         let mut retained_stage = false;
         for cutter in &meshes[first..] {
             let mut next = Vec::new();
             let mut productive = false;
             for region in &regions {
-                if mesh_boolean_interaction(region, cutter, tolerance)? {
+                let Geometry::Mesh(mesh) = region else {
+                    next.push(Cow::Borrowed(region));
+                    continue;
+                };
+                if mesh_boolean_interaction(mesh, cutter, tolerance)? {
                     let outside =
-                        mesh_boolean(region, cutter, BooleanOperation::Difference, tolerance)?;
+                        mesh_boolean(mesh, cutter, BooleanOperation::Difference, tolerance)?;
                     let inside =
-                        mesh_boolean(region, cutter, BooleanOperation::Intersection, tolerance)?;
-                    if let (Some(outside), Some(inside)) = (outside, inside) {
-                        next.extend([Cow::Owned(outside), Cow::Owned(inside)]);
+                        mesh_boolean(mesh, cutter, BooleanOperation::Intersection, tolerance)?;
+                    if outside.is_some() || inside.is_some() {
+                        next.extend([
+                            Cow::Owned(outside.map_or(Geometry::EmptyMesh, Geometry::Mesh)),
+                            Cow::Owned(inside.map_or(Geometry::EmptyMesh, Geometry::Mesh)),
+                        ]);
                         productive = true;
                     } else {
                         next.push(Cow::Borrowed(region));

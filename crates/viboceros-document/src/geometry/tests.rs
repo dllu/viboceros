@@ -162,7 +162,7 @@ fn affine_transform_and_nurbs_conversion_retain_composite_geometry() {
     };
     assert_eq!(result.parameters(), source.parameters());
     assert_eq!(result.segments().len(), 2);
-    assert_eq!(transformed.bounds(), result.control_point_bounds());
+    assert_eq!(transformed.bounds(), Some(result.control_point_bounds()));
     let nurbs = geometry.nurbs_curve_representation().unwrap().unwrap();
     for i in 0..=100 {
         let t = source.parameter_at(i as f64 / 100.0).unwrap();

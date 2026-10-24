@@ -51,7 +51,6 @@
     "crates/viboceros-geometry/src/curve_edit_points/tests.rs": "abad8958a1f58128d79dc97a80e9710cd68155625f07c0a1e2b8ceefc977809f",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
     "crates/viboceros-smlib/src/native/curve_edit_point_tests.rs": "64caae4aaaf08ca8bc92b8b76a4e06670c54a3658f295dfb232b28e89c6418af",
-    "crates/viboceros-command/src/project.rs": "6f0bd2510631e6e08ab813098ad794cdb939b539c350f31bb308596f228361b5",
     "crates/viboceros-command/src/pull.rs": "52b4fe46060f36bccfc793b2fd4af8e0ed3b97734395c1808af564129f911005",
     "crates/viboceros-command/src/project_loose.rs": "999c8f84eece244f97a70001609cf8de19de859f3b362a72b68ba1a2128d948a",
     "crates/viboceros-command/src/project_loose/tests.rs": "12c9f755c89a6af5b2ec33a0f437873de870b40f057b9ef0afe4e55795d9eabc",
@@ -85,7 +84,8 @@
     "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/src/native/knot_refinement.rs": "5ab536a60df85ad1e75a4e44ffdeeb351331b628f21ede15d2243820034f1542",
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/project.rs": "e9d06bec5d3422338cdd5dcbe5f52cd3dfbd74f035a722e5959f3903ba702b56",
     "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
-    "462b129706e7be81ccde492c16db1ff7c243e4d5:tools/rhino_oracle/test_worker.py": "864d079e63f944debe3052e94b7cef2dfa84aa0575e52bd5abddf6e3e167141a"
+    "462b129706e7be81ccde492c16db1ff7c243e4d5:tools/rhino_oracle/test_worker.py": "864d079e63f944debe3052e94b7cef2dfa84aa0575e52bd5abddf6e3e167141a",
+    "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:crates/viboceros-command/src/project.rs": "6f0bd2510631e6e08ab813098ad794cdb939b539c350f31bb308596f228361b5"
   },
   "historical_source_note": "Original qualification hashes are retained. Evolving source files use immutable Git revisions; captured artifacts remain local. These maps do not claim a fresh replay of the current implementation."
 }

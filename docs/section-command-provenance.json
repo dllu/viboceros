@@ -55,7 +55,6 @@
   "sha256": {
     "crates/viboceros-command/src/border/assemble.rs": "18499c4f71dca7e11dc5ae088b637a9eb4309f3aa7c6d0379939407509d1ce28",
     "crates/viboceros-command/src/border/mod.rs": "cc229a0ef1c5b01cde3f51df272147691e53e86f832bf2563f60f7d83a2c3455",
-    "crates/viboceros-command/src/section.rs": "e27586227345f289dca55e0a2d8433745bf8d92befa52c96f88e234d0e304468",
     "crates/viboceros-command/src/section/tests.rs": "d60da25b7665239bd1cc86d083a030b82e2b7c92e1b29247ff26a44672e9dded",
     "crates/viboceros-geometry/src/mesh/section.rs": "0a92425924ec2d1408b5642eee5b112c18033f8f8a3bda3b91f92f891d4ed5d8",
     "crates/viboceros-geometry/src/mesh/section/tests.rs": "9fe1311b8a683951d589d708b19bdb607ea2439ff27ef1bd009e0ad1bcab0283",
@@ -85,5 +84,8 @@
     "Extreme-coordinate finite clipping qualification",
     "Native selection/history fidelity and performance/GPU measurement"
   ],
-  "verification_note": "The initial full run failed only at the new diagnostic assertion comparing JSON [0.0,4.0] to [0,4]. Final implementation tests, corrected integration and workspace doctests pass. The raw native replay still retains one coplanar mesh diagnostic."
+  "verification_note": "The initial full run failed only at the new diagnostic assertion comparing JSON [0.0,4.0] to [0,4]. Final implementation tests, corrected integration and workspace doctests pass. The raw native replay still retains one coplanar mesh diagnostic.",
+  "git_sha256": {
+    "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:crates/viboceros-command/src/section.rs": "e27586227345f289dca55e0a2d8433745bf8d92befa52c96f88e234d0e304468"
+  }
 }

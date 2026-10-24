@@ -78,7 +78,7 @@ pub(super) fn stage(
     meshes: &[&TriangleMesh],
     first: usize,
     tolerance: Tolerance,
-) -> Result<Vec<TriangleMesh>, CommandError> {
+) -> Result<Vec<Geometry>, CommandError> {
     for mesh in meshes {
         mesh.validate_face_geometry(Tolerance::MESH_VALIDATION)?;
     }
@@ -98,6 +98,7 @@ pub(super) fn stage(
             .iter()
             .map(|target| {
                 mesh_boolean(target, &cutters, BooleanOperation::Difference, tolerance)
+                    .map(|result| result.map(Geometry::Mesh))
                     .map_err(CommandError::from)
             })
             .filter_map(|result| result.transpose())
@@ -118,7 +119,10 @@ pub(super) fn stage(
         mesh_boolean(&a, &b, BooleanOperation::Intersection, tolerance)?
     };
     match result {
-        Some(mesh) => components(mesh, tolerance),
+        Some(mesh) => Ok(components(mesh, tolerance)?
+            .into_iter()
+            .map(Geometry::Mesh)
+            .collect()),
         None => Ok(vec![]),
     }
 }

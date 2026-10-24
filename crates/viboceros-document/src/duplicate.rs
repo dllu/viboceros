@@ -84,7 +84,7 @@ impl Geometry {
             Self::PolyCurve(_) => DuplicateGeometryFamily::PolyCurve,
             Self::NurbsSurface(_) => DuplicateGeometryFamily::NurbsSurface,
             Self::Brep(_) => DuplicateGeometryFamily::Brep,
-            Self::Mesh(_) => DuplicateGeometryFamily::Mesh,
+            Self::Mesh(_) | Self::EmptyMesh => DuplicateGeometryFamily::Mesh,
             Self::SubD(_) => DuplicateGeometryFamily::SubD,
             Self::BlockInstance(_) => DuplicateGeometryFamily::BlockInstance,
         }
@@ -162,6 +162,10 @@ impl Geometry {
                 knots_v: normalized_parameter_keys(surface.knots_v()),
             },
             Self::Brep(_) => DuplicateGeometryKey::Brep,
+            Self::EmptyMesh => DuplicateGeometryKey::Mesh {
+                vertices: Vec::new(),
+                faces: Vec::new(),
+            },
             Self::Mesh(mesh) => DuplicateGeometryKey::Mesh {
                 vertices: mesh.vertices().iter().copied().map(point_key).collect(),
                 faces: mesh.faces().to_vec(),

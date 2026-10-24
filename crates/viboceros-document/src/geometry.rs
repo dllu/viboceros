@@ -23,6 +23,9 @@ pub enum Geometry {
     NurbsSurface(NurbsSurface),
     Brep(Brep),
     Mesh(TriangleMesh),
+    /// Stored zero-vertex, zero-face mesh; has identity and attributes, no bounds.
+    /// Kernel meshes remain nonempty and independently validated.
+    EmptyMesh,
     SubD(viboceros_geometry::SubD),
     BlockInstance(crate::BlockInstance),
 }
@@ -36,13 +39,14 @@ impl Geometry {
             curve.tight_bounds(tolerance)
         } else {
             match self {
+                Self::EmptyMesh => Err(GeometryError::EmptyMesh),
                 Self::SubD(_) => Err(GeometryError::UnsupportedSubDOperation {
                     operation: "certified tight bounds",
                 }),
                 Self::NurbsSurface(surface) => surface.tight_bounds(tolerance),
                 Self::Brep(brep) => brep.tight_bounds(tolerance),
                 Self::BlockInstance(instance) => instance.tight_bounds(tolerance),
-                _ => Ok(self.bounds()),
+                _ => self.bounds().ok_or(GeometryError::EmptyPointSet),
             }
         }
     }
@@ -60,8 +64,10 @@ impl Geometry {
         }
     }
 
-    pub fn bounds(&self) -> BoundingBox3 {
-        match self {
+    /// Finite display/control bounds, absent for geometry without locations.
+    pub fn bounds(&self) -> Option<BoundingBox3> {
+        Some(match self {
+            Self::EmptyMesh => return None,
             Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
             Self::PointCloud(cloud) => cloud.bounds(),
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
@@ -75,8 +81,8 @@ impl Geometry {
             Self::Brep(brep) => brep.bounds(),
             Self::Mesh(mesh) => mesh.bounds(),
             Self::SubD(subd) => subd.bounds(),
-            Self::BlockInstance(instance) => instance.bounds(),
-        }
+            Self::BlockInstance(instance) => return instance.bounds(),
+        })
     }
 
     /// A volume-boundary view, without asserting that this object is closed or
@@ -162,6 +168,7 @@ impl Geometry {
             Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
             Self::Brep(brep) => Self::Brep(brep.transformed(transform, tolerance)?),
             Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
+            Self::EmptyMesh => Self::EmptyMesh,
             Self::SubD(subd) => Self::SubD(subd.transformed(transform)?),
             Self::BlockInstance(instance) => {
                 Self::BlockInstance(instance.transformed(transform, tolerance)?)
@@ -239,6 +246,7 @@ impl Geometry {
             }
             Self::Brep(brep) => Self::Brep(morph.morph_brep(brep, tolerance)?),
             Self::Mesh(mesh) => Self::Mesh(morph.morph_mesh(mesh, tolerance)?),
+            Self::EmptyMesh => Self::EmptyMesh,
             Self::SubD(subd) => Self::SubD(
                 subd.try_with_control_points(
                     &subd
@@ -256,7 +264,7 @@ impl Geometry {
     /// periodic NURBS controls follow Rhino's unique-grip ordering.
     pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
         Ok(match self {
-            Self::Point(_) => Vec::new(),
+            Self::Point(_) | Self::EmptyMesh => Vec::new(),
             Self::BlockInstance(_) => {
                 return Err(GeometryError::UnsupportedBlockInstanceOperation {
                     operation: "extract defining points",

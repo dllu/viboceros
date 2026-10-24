@@ -15,6 +15,16 @@ use viboceros_command::CommandRegistry;
 mod replay;
 
 #[test]
+fn empty_mesh_split_commands_match_native_storage_and_history() {
+    let (rows, gaps) = replay::replay(
+        native::family_rows(&["empty"]),
+        "MESH_BOOLEAN_EMPTY_COMMAND",
+    );
+    assert_eq!(rows.len(), 2);
+    assert!(gaps.is_empty(), "{gaps:?}");
+}
+
+#[test]
 fn mesh_boolean_commands_replay_native_metadata_geometry_and_history() {
     let (rows, gaps) = replay::replay(native::rows(), "MESH_BOOLEAN_COMMAND");
     assert_eq!(rows.len(), 79);

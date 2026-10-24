@@ -18,16 +18,15 @@ a Split option. Accepted tolerance choices survive cancellation and are shared
 with the other mesh Boolean commands.
 
 The [qualification](mesh-boolean-sets-qualification.json) compares 64 command
-invocations and 67 application workflows with saved native scenes. Fifty command
-invocations and 53 getter workflows match, including geometry, source identity,
+invocations and 67 application workflows with saved native scenes. Fifty-two command
+invocations and 55 getter workflows match, including geometry, source identity,
 output order, selection, memberships, attributes, Undo, and Redo. The two rejected
 `DeleteInput` probes remain separately recorded.
 
-Fourteen cases remain explicit gaps: native facet weighting for overlapping or
-nested targets; coincident and face-contact results; and empty outside meshes
-when a target or working region lies inside its cutter. The geometry model
-currently requires nonempty meshes. A fully enclosed target reports no split;
-a cutter that only encloses existing regions adds no stage.
+Twelve cases remain explicit gaps: native facet weighting for overlapping or
+nested targets, and coincident and face-contact results. Empty outside meshes
+when a target or working region lies inside its cutter are now preserved;
+[empty mesh storage](empty-meshes.md) covers their selection, bounds, and persistence.
 
 Two independent two-cutter captures each contain one completed Split command and
 five result meshes with total oriented volume 48 for a target of volume 24. A

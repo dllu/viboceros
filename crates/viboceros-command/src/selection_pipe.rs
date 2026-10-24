@@ -66,7 +66,9 @@ impl Command for SelVolumePipeCommand {
         let tube = SelectionTube {
             curve,
             path,
-            bounds: source_geometry.bounds(),
+            bounds: source_geometry
+                .bounds()
+                .ok_or(viboceros_geometry::GeometryError::EmptyPointSet)?,
             radius,
             tolerance,
             convex: matches!(source_geometry, Geometry::Line(_)),
@@ -118,10 +120,15 @@ impl SelectionTube<'_> {
     }
 
     fn classify(&self, geometry: &Geometry) -> Result<VolumeRelation, CommandError> {
-        if !matches!(geometry, Geometry::PointCloud(_)) && self.disjoint_bounds(geometry.bounds()) {
+        if !matches!(geometry, Geometry::PointCloud(_))
+            && geometry
+                .bounds()
+                .is_none_or(|bounds| self.disjoint_bounds(bounds))
+        {
             return Ok(VolumeRelation::OUTSIDE);
         }
         match geometry {
+            Geometry::EmptyMesh => Ok(VolumeRelation::OUTSIDE),
             Geometry::BlockInstance(_) => Err(
                 viboceros_geometry::GeometryError::UnsupportedBlockInstanceOperation {
                     operation: "volume classification",

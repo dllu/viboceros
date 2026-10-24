@@ -25,7 +25,7 @@ fn objects(document: &Document) -> Value {
         document
             .objects()
             .map(|object| {
-                let bounds = object.geometry().bounds();
+                let bounds = object.geometry().bounds().unwrap();
                 let kind = match object.geometry() {
                     Geometry::Point(_) => "Point",
                     Geometry::Brep(_) => "Brep",

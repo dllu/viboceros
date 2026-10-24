@@ -20,5 +20,6 @@ pub(super) fn selected_units(document: &Document) -> Vec<Vec<&Object>> {
         });
         result[slot].push(object);
     }
+    result.retain(|unit| unit.iter().any(|o| o.geometry().bounds().is_some()));
     result
 }

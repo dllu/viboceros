@@ -166,6 +166,7 @@ pub enum ThreeDmGeometry {
     NurbsSurface(NurbsSurface),
     Brep(Brep),
     Mesh(TriangleMesh),
+    EmptyMesh,
     SubD(viboceros_geometry::SubD),
 }
 
@@ -1462,6 +1463,15 @@ fn decode_object(
             )?)
         }
         OBJECT_TRIANGLE_MESH
+            if coordinates.is_empty()
+                && indices.is_empty()
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && geometry_data.is_empty() =>
+        {
+            ThreeDmGeometry::EmptyMesh
+        }
+        OBJECT_TRIANGLE_MESH
             if !coordinates.is_empty()
                 && coordinates.len() % 3 == 0
                 && !indices.is_empty()
@@ -1956,6 +1966,18 @@ impl ObjectPayload {
                 knots_v: Vec::new(),
                 indices: Vec::new(),
                 geometry_data: subd.archive().to_vec(),
+            },
+            ThreeDmGeometry::EmptyMesh => Self {
+                object_type: OBJECT_TRIANGLE_MESH,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: Vec::new(),
             },
             ThreeDmGeometry::Mesh(mesh) => Self {
                 object_type: OBJECT_TRIANGLE_MESH,

@@ -205,7 +205,11 @@ pub(super) fn definition_bounds(model: &ThreeDmModel) -> Result<Vec<[f64; 6]>, T
     Ok(cached
         .into_iter()
         .map(|b| {
-            let b = b.unwrap();
+            let Some(b) = b.unwrap() else {
+                // Explicit empty native box; it must never contribute an origin
+                // when a containing definition accumulates member bounds.
+                return [1., 1., 1., -1., -1., -1.];
+            };
             let a = b.min().to_array();
             let z = b.max().to_array();
             [a[0], a[1], a[2], z[0], z[1], z[2]]
@@ -215,8 +219,8 @@ pub(super) fn definition_bounds(model: &ThreeDmModel) -> Result<Vec<[f64; 6]>, T
 fn bounds(
     model: &ThreeDmModel,
     index: usize,
-    cached: &mut [Option<BoundingBox3>],
-) -> Result<BoundingBox3, ThreeDmError> {
+    cached: &mut [Option<Option<BoundingBox3>>],
+) -> Result<Option<BoundingBox3>, ThreeDmError> {
     if let Some(result) = cached[index] {
         return Ok(result);
     }
@@ -227,7 +231,9 @@ fn bounds(
                 definition_index,
                 transform,
             } => {
-                let b = bounds(model, *definition_index, cached)?;
+                let Some(b) = bounds(model, *definition_index, cached)? else {
+                    continue;
+                };
                 let min = b.min().to_array();
                 let max = b.max().to_array();
                 let corners = (0..8)
@@ -252,6 +258,7 @@ fn bounds(
             ThreeDmGeometry::PolyCurve(g) => g.control_point_bounds(),
             ThreeDmGeometry::NurbsSurface(g) => g.control_point_bounds(),
             ThreeDmGeometry::Brep(g) => g.bounds(),
+            ThreeDmGeometry::EmptyMesh => continue,
             ThreeDmGeometry::Mesh(g) => g.bounds(),
             ThreeDmGeometry::SubD(g) => g.bounds(),
         };
@@ -260,7 +267,6 @@ fn bounds(
             None => next,
         });
     }
-    let result = result.unwrap_or(BoundingBox3::from_points([Point3::try_new(0., 0., 0.)?])?);
     cached[index] = Some(result);
     Ok(result)
 }

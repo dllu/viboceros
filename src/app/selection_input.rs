@@ -343,7 +343,8 @@ impl VibocerosApp {
                                 | viboceros_document::Geometry::PolyCurve(_) => "curve",
                                 viboceros_document::Geometry::NurbsSurface(_) => "surface",
                                 viboceros_document::Geometry::Brep(_) => "polysurface",
-                                viboceros_document::Geometry::Mesh(_) => "mesh",
+                                viboceros_document::Geometry::Mesh(_)
+                                | viboceros_document::Geometry::EmptyMesh => "mesh",
                                 viboceros_document::Geometry::SubD(_) => "SubD",
                                 viboceros_document::Geometry::BlockInstance(_) => "block instance",
                             };

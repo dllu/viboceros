@@ -143,7 +143,7 @@ impl DisplayCache {
 
 pub(super) struct DisplayGeometry {
     pub(super) geometry: GeometrySnapshot,
-    bounds: OnceCell<viboceros_geometry::BoundingBox3>,
+    bounds: OnceCell<Option<viboceros_geometry::BoundingBox3>>,
     wire_density: i32,
     tolerance: Tolerance,
     wires: OnceCell<Vec<[Point3; 2]>>,
@@ -171,7 +171,7 @@ impl DisplayGeometry {
         if let Ok(bounds) =
             viboceros_geometry::BoundingBox3::from_points(wires.iter().flatten().copied())
         {
-            let _ = result.bounds.set(bounds);
+            let _ = result.bounds.set(Some(bounds));
         }
         let _ = result.wires.set(wires);
         result
@@ -191,7 +191,7 @@ impl DisplayGeometry {
         }
     }
 
-    pub(super) fn bounds(&self) -> viboceros_geometry::BoundingBox3 {
+    pub(super) fn bounds(&self) -> Option<viboceros_geometry::BoundingBox3> {
         *self.bounds.get_or_init(|| self.geometry.bounds())
     }
 
@@ -217,6 +217,7 @@ impl DisplayGeometry {
             let mut lines = Vec::new();
             let mut visit = |a, b| lines.push([a, b]);
             match &*self.geometry {
+                Geometry::EmptyMesh => {}
                 Geometry::BlockInstance(_) => {
                     for display in self.block_members() {
                         lines.extend_from_slice(display.wires());

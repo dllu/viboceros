@@ -30,7 +30,7 @@ pub(super) fn local_bounds<'a>(
         };
         local.tight_bounds(tolerance)
     };
-    let mut geometries = geometries.into_iter();
+    let mut geometries = geometries.into_iter().filter(|g| g.bounds().is_some());
     let first = geometries.next().ok_or(GeometryError::EmptyPointSet)?;
     geometries.try_fold(query(first)?, |bounds, geometry| {
         bounds.union(query(geometry)?)

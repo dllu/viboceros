@@ -1717,7 +1717,7 @@ impl Document {
     pub fn bounds(&self) -> Option<BoundingBox3> {
         self.objects
             .iter()
-            .map(|object| object.geometry.bounds())
+            .filter_map(|object| object.geometry.bounds())
             .reduce(|left, right| left.union(right).expect("finite object bounds"))
     }
 

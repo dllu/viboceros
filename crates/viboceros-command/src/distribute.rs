@@ -106,7 +106,11 @@ impl Command for DistributeCommand {
                 actual: units.len(),
             });
         }
-        let anchor = units[0][0].geometry().bounds().center()?;
+        let anchor = units[0]
+            .iter()
+            .find_map(|o| o.geometry().bounds())
+            .ok_or(GeometryError::EmptyPointSet)?
+            .center()?;
         let frame = direction_frame(
             options.direction,
             context.construction_plane,

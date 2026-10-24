@@ -452,7 +452,6 @@
   "performance_qualified": false,
   "sha256": {
     "crates/viboceros-command/src/extrude_curve.rs": "c2301b8c76103d1d603c69bdfdb7fe57c2bc999173335a4274549d75a595edfa",
-    "crates/viboceros-document/src/geometry.rs": "6b8a85eec1ead4ac5ce9255941cec005b3cd1b3eeee949892b9492777bae99d9",
     "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",
     "crates/viboceros-opennurbs/src/extrusion.rs": "5e1b07a7bd19d4a9b942cbeab47f0d706a8605bf57fab8ef1e9c809e985dd744",
     "crates/viboceros-oracle/src/curve_native.rs": "d1a67adf4c2d85ea03e05d23b2e9ba70f0153b54c2482f3c2ac1d21fe56d281d",
@@ -464,6 +463,7 @@
   "source_hash_note": "Only the portable fallback gained shared kink splitting after this native-SMLib replay; source hashes refreshed after the 42 creator workflows passed in both build modes.",
   "git_sha256": {
     "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:crates/viboceros-opennurbs/native/extrusion_queries.h": "3b93eeac4569272cba9fe2c30738daf52baba144f0544eab566d4ef7a006bb45",
-    "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c"
+    "80dd8c0e7a4af3fdb8886c4174a800fa7df5ac4d:crates/viboceros-command/src/lib.rs": "7b1d8b41c68874b6c6efb7241d5ad2d2808ed5eff01743915b6871529f4eaa1c",
+    "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:crates/viboceros-document/src/geometry.rs": "6b8a85eec1ead4ac5ce9255941cec005b3cd1b3eeee949892b9492777bae99d9"
   }
 }

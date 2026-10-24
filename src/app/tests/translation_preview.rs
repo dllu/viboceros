@@ -76,7 +76,7 @@ fn display_objects(document: &Document, preview_reference: Option<ObjectId>) -> 
         document
             .objects()
             .map(|object| {
-                let bounds = object.geometry().bounds();
+                let bounds = object.geometry().bounds().unwrap();
                 let (kind, reference) = match object.geometry() {
                     Geometry::Point(_) => ("Point", false),
                     Geometry::Brep(_) => ("Brep", false),

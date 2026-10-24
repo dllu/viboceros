@@ -91,3 +91,13 @@ def split_stages(scene, box):
     rows['contained_second'] = scene('split', preselect=False, first=[0], second=[1, 2])
     rows['contained_second']['sources'].append(dict(kind='mesh', **box((-1., -1., -1.), (8., 8., 8.))))
     return {'boolean_split_stages_'+name: value for name, value in rows.items()}
+
+
+def empty_cases(scene, box):
+    rows = {
+        'inside': deepcopy(split_controls(scene, box)['boolean_split_controls_target_inside']),
+        'later_stage': deepcopy(split_stages(scene, box)['boolean_split_stages_contained_second']),
+    }
+    for row in rows.values():
+        row['capture_empty_storage'] = True
+    return {'boolean_empty_'+name: row for name, row in rows.items()}

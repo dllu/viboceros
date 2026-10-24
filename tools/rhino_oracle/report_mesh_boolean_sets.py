@@ -23,12 +23,10 @@ GAPS = [
     "boolean_sets_intersection_nested_targets_pre",
     "boolean_sets_intersection_overlapping_targets_post",
     "boolean_sets_intersection_overlapping_targets_pre",
-    "boolean_split_controls_target_inside",
     "boolean_split_face_touch_post",
     "boolean_split_face_touch_pre",
     "boolean_split_identical_post",
-    "boolean_split_identical_pre",
-    "boolean_split_stages_contained_second"
+    "boolean_split_identical_pre"
 ]
 
 
@@ -53,7 +51,6 @@ def summarize(command_log, getter_log):
         exploratory_workflows=exploratory,
         pending=['overlapping/nested target native facet weighting',
                  'coincident/face-contact native geometry parity',
-                 'empty native outside mesh storage when a target is inside its cutter',
                  'curved surface meshing, output vertex channels, extreme scales, custom tolerance coefficients and performance'],
         commands=commands, getters=getters,
         sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in sorted(paths)})

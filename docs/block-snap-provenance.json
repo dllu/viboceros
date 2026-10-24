@@ -23,7 +23,6 @@
     "format_and_diff_checks": "passed"
   },
   "sha256": {
-    "crates/viboceros-document/src/block_instances.rs": "20ea096738a499970fc96241a242590c0d61f39808adb7ba709b51ab3128044e",
     "crates/viboceros-document/src/blocks.rs": "e57b434c49790a04f4fc321ad607c79aaf1414dc93396a64c6e85f730cf184bb",
     "crates/viboceros-drafting/src/lib.rs": "53800468d55e0cab6567216dfcc44dbdc1fcd9381e34d79966b5e465f1066a60",
     "crates/viboceros-drafting/src/object_snap.rs": "ee66552b3475190f7c8fa51171f17bb84be40461d80e255c276163642149be20",
@@ -41,5 +40,8 @@
   ],
   "source_snapshot_paths": {
     "crates/viboceros-document/src/lib.rs": "docs/three-dm-structural-prior-source/crates/viboceros-document/src/lib.rs"
+  },
+  "git_sha256": {
+    "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:crates/viboceros-document/src/block_instances.rs": "20ea096738a499970fc96241a242590c0d61f39808adb7ba709b51ab3128044e"
   }
 }

@@ -238,6 +238,9 @@ impl Viewport {
                         } else {
                             cache.get(object, document.tolerance()).bounds()
                         };
+                        let Some(bounds) = bounds else {
+                            return true;
+                        };
                         let lo = bounds.min().to_array();
                         let hi = bounds.max().to_array();
                         (0..8).all(|bits| {

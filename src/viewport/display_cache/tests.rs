@@ -23,6 +23,42 @@ fn fixture() -> Document {
 fn rect() -> Rect {
     Rect::from_min_size(Pos2::ZERO, Vec2::splat(256.))
 }
+#[test]
+fn empty_mesh_has_no_display_primitives_extents_or_clipping_effect() {
+    let mut document = Document::default();
+    let id = document.add_geometry(Geometry::EmptyMesh).unwrap();
+    for mode in [
+        DisplayMode::Wireframe,
+        DisplayMode::Shaded,
+        DisplayMode::Ghosted,
+    ] {
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.display_mode = mode;
+        view.last_rect = Some(rect());
+        let before = view.camera_snapshot();
+        assert!(
+            !view
+                .zoom_extents(&document, ZoomExtentsBorders::default())
+                .unwrap()
+        );
+        assert_eq!(view.camera_snapshot(), before);
+        let scene = view.object_scene(rect(), &document);
+        assert!(scene.triangles.is_empty() && scene.lines.is_empty() && scene.points.is_empty());
+        let cache = view.display_cache.borrow();
+        let display = &cache.entries[&id];
+        assert_eq!(display.bounds(), None);
+        assert!(display.wires().is_empty());
+        assert!(display.mesh().is_none());
+        let projected = view.projected_primitives(
+            document.object(id).unwrap().geometry(),
+            document.object(id).unwrap().attributes(),
+            rect(),
+            document.tolerance(),
+        );
+        assert!(!projected.is_windowed_by(rect()));
+        assert!(!projected.is_crossed_by(rect()));
+    }
+}
 
 fn assert_same_scene(a: &GpuViewportScene, b: &GpuViewportScene) {
     assert_eq!(
@@ -99,7 +135,7 @@ fn clipping_bounds_are_shared_and_refresh_only_for_relevant_changes() {
     assert!(!views[0].refresh_clipping(&document, rect()).unwrap());
     let outer = document
         .objects()
-        .find(|o| o.geometry().bounds().max().x() > 6.)
+        .find(|o| o.geometry().bounds().unwrap().max().x() > 6.)
         .unwrap()
         .id();
     document.set_objects_visibility([outer], false).unwrap();

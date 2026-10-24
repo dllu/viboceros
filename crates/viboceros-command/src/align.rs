@@ -131,7 +131,13 @@ impl Command for AlignCommand {
             context.construction_plane
         };
         // The display CPlane origin must not discard small extents in a distant model.
-        let frame = orientation.with_origin(first[0].geometry().bounds().center()?);
+        let frame = orientation.with_origin(
+            first
+                .iter()
+                .find_map(|o| o.geometry().bounds())
+                .ok_or(viboceros_geometry::GeometryError::EmptyPointSet)?
+                .center()?,
+        );
         let bounds = units
             .iter()
             .map(|unit| {

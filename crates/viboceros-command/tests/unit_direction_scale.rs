@@ -44,7 +44,7 @@ fn primitive_commands_keep_world_directions_at_large_document_tolerances() {
                 .unwrap_or_else(|error| panic!("exponent={exponent} {command}: {error:?}"));
             assert_eq!(document.objects().len(), 1);
             let before = document.objects().cloned().collect::<Vec<_>>();
-            let bounds = before[0].geometry().bounds();
+            let bounds = before[0].geometry().bounds().unwrap();
             let meshed = if let Geometry::Mesh(mesh) = before[0].geometry() {
                 // A finite latitude grid need not include every axis extremum.
                 // Check its actual vertices against the analytic ellipsoid.

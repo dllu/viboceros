@@ -138,13 +138,17 @@ def run(operation, host, iterations, tolerance):
             lambda: R.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)
         history = R.RhinoApp.CommandHistoryWindowText.split(marker, 1)[1].strip()
         after_script = snapshot()
+        empty_storage = None
+        if case.get('capture_empty_storage'):
+            from mesh_empty_capture import capture
+            empty_storage = capture(host, doc, ids, witness)
         R.RhinoApp.RunScript('_Undo', False)
         undo = snapshot()
         R.RhinoApp.RunScript('_Redo', False)
         redo = snapshot()
         return dict(input=case, before=before, after=after, after_script=after_script,
                     undo=undo, redo=redo, success=success, events=events, history=history,
-                    source_3dm=source_3dm, document_tolerance=float(doc.ModelAbsoluteTolerance),
+                    empty_storage=empty_storage, source_3dm=source_3dm, document_tolerance=float(doc.ModelAbsoluteTolerance),
                     tolerance_policy=dict(zero=float(R.RhinoMath.ZeroTolerance),
                         coefficient=float(G.Intersect.Intersection.MeshIntersectionsTolerancesCoefficient))), 0
     finally:

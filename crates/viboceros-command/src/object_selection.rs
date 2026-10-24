@@ -136,7 +136,7 @@ impl ObjectSelectionFilter {
             }
             Self::HiddenObjects => !object.attributes().is_visible(),
             Self::LockedObjects => object.attributes().is_locked(),
-            Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
+            Self::Mesh => matches!(geometry, Geometry::Mesh(_) | Geometry::EmptyMesh),
             Self::FaceAppend | Self::MeshAndSubD => {
                 matches!(geometry, Geometry::Mesh(_) | Geometry::SubD(_))
             }

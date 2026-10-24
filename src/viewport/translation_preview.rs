@@ -83,6 +83,9 @@ impl Viewport {
                             return false;
                         };
                         let bounds = cache.get(object, document.tolerance()).bounds();
+                        let Some(bounds) = bounds else {
+                            return true;
+                        };
                         objects.transform.transform_point(bounds.min()).is_ok()
                             && objects.transform.transform_point(bounds.max()).is_ok()
                     });

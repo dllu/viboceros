@@ -185,6 +185,7 @@ pub(super) fn visit(
         let owner = object.id();
         let mut add = |a, b, mesh| add_segment(&mut segments, owner, order, mesh, a, b, metric);
         match object.geometry() {
+            Geometry::EmptyMesh => {}
             Geometry::Mesh(_) if mesh_edges => {
                 cache
                     .meshes

@@ -153,6 +153,7 @@ pub fn snapshot(scene: &Scene) -> Value {
             "color":[color.red,color.green,color.blue],"color_source":a.color_source()as u8,"groups":groups});
         match obj.geometry() {
             Geometry::Mesh(m)=>row["mesh"]=json!({"vertices":m.vertices().iter().map(|p|p.to_array()).collect::<Vec<_>>(),"faces":m.faces().iter().map(|f|f.indices()).collect::<Vec<_>>()}),
+            Geometry::EmptyMesh=>row["mesh"]=json!({"vertices":[],"faces":[]}),
             Geometry::Point(p)=>row["point"]=json!(p.to_array()),
             Geometry::Brep(_)=>row["kind"]=json!("Brep"),
             _=>row["kind"]=json!("other"),
@@ -184,6 +185,17 @@ pub fn check(scene: &Scene, value: &Value, stage: &str) -> Value {
     if geometry {
         for (a, n) in a.iter().zip(n) {
             let error = if a.get("mesh").is_some() && n.get("mesh").is_some() {
+                if a["mesh"]["faces"].as_array().unwrap().is_empty()
+                    || n["mesh"]["faces"].as_array().unwrap().is_empty()
+                {
+                    let both_empty = [&a["mesh"], &n["mesh"]].iter().all(|mesh| {
+                        mesh["faces"].as_array().unwrap().is_empty()
+                            && mesh["vertices"].as_array().unwrap().is_empty()
+                    });
+                    geometry &= both_empty;
+                    maximum = if both_empty { maximum } else { None };
+                    continue;
+                }
                 let a: TriangleMesh = reference::mesh(&a["mesh"]);
                 let n: TriangleMesh = reference::mesh(&n["mesh"]);
                 geometry &= (a.area().unwrap() - n.area().unwrap()).abs() <= 1e-7;
@@ -244,7 +256,7 @@ pub const COMPATIBILITY_GAPS: [&str; 18] = [
     "boolean_tolerance_intersection_zero",
 ];
 
-pub const SET_COMPATIBILITY_GAPS: [&str; 14] = [
+pub const SET_COMPATIBILITY_GAPS: [&str; 12] = [
     "boolean_sets_difference_nested_targets_post",
     "boolean_sets_difference_nested_targets_pre",
     "boolean_sets_difference_overlapping_targets_post",
@@ -253,10 +265,8 @@ pub const SET_COMPATIBILITY_GAPS: [&str; 14] = [
     "boolean_sets_intersection_nested_targets_pre",
     "boolean_sets_intersection_overlapping_targets_post",
     "boolean_sets_intersection_overlapping_targets_pre",
-    "boolean_split_controls_target_inside",
     "boolean_split_face_touch_post",
     "boolean_split_face_touch_pre",
     "boolean_split_identical_post",
     "boolean_split_identical_pre",
-    "boolean_split_stages_contained_second",
 ];

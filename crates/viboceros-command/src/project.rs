@@ -87,7 +87,11 @@ pub(super) fn line(
     direction: Vector3,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, GeometryError> {
-    let distance = extent(point, target.bounds(), tolerance)?;
+    let distance = extent(
+        point,
+        target.bounds().ok_or(GeometryError::EmptyPointSet)?,
+        tolerance,
+    )?;
     NurbsCurve::try_new(
         1,
         vec![

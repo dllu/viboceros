@@ -84,7 +84,6 @@
     "Performance parity and complete Rhino command coverage"
   ],
   "sha256": {
-    "crates/viboceros-command/src/contour.rs": "31eb9d7951160861a607911721fd681f115730999d9286d6cc02ca413cd80113",
     "crates/viboceros-command/src/contour/geometry.rs": "eebc23a1a3d89aeed8d9e785719928f5966e36226ba0be44e186223f008f0053",
     "crates/viboceros-command/src/contour/brep.rs": "d8092795e307150ba9c16b27fe0b81096e1729dfc87e7f913de41159f0f65f41",
     "crates/viboceros-command/src/contour/tests.rs": "cf0699e7c359f95897bf418172027ad8ba1dcb40accd9b522abd2673e90399f3",
@@ -116,5 +115,8 @@
     "docs/box-native-prior-source/crates/viboceros-oracle/src/plane_arrays.rs": "4bad2f228719a005ac4479e4df96e8b0b8e17c12d0cdee0fb52f996b5d282f5d",
     "docs/box-native-prior-source/docs/contour-brep-parameterization.md": "7a1f3088cb3c04700e693bd52dd1ecb8f9d1a0edcb966155991b8e1b3abe3a73",
     "docs/edge-analysis-native-prior-source/tools/rhino_oracle/rhino_worker.py": "acc799a842aedf36bfae231c96654237c128baeaf710c4d30452d62acc46d76a"
+  },
+  "git_sha256": {
+    "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:crates/viboceros-command/src/contour.rs": "31eb9d7951160861a607911721fd681f115730999d9286d6cc02ca413cd80113"
   }
 }

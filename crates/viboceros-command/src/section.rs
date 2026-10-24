@@ -81,7 +81,7 @@ fn cutter_for(
     extend: bool,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, GeometryError> {
-    let bounds = geometry.bounds();
+    let bounds = geometry.bounds().ok_or(GeometryError::EmptyPointSet)?;
     let a = bounds.min().to_array();
     let b = bounds.max().to_array();
     let mut low = [f64::INFINITY; 2];

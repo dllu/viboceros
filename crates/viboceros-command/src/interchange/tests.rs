@@ -4,6 +4,48 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::Point3;
 
 #[test]
+fn empty_mesh_save_and_open_preserve_object_identity_metadata_and_groups() {
+    use viboceros_document::ObjectAttributes;
+    let registry = CommandRegistry::with_builtins();
+    let mut source = Document::default();
+    let id = source
+        .add_geometry_with_attributes(
+            Geometry::EmptyMesh,
+            ObjectAttributes::on_layer(source.current_layer_id()).with_name("Empty outside"),
+        )
+        .unwrap();
+    source
+        .add_group(Some("Split results".into()), [id])
+        .unwrap();
+    source
+        .set_object_user_text([id], "owner", Some("target"))
+        .unwrap();
+    source
+        .set_object_geometry_user_text([id], "role", Some("outside"))
+        .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("empty mesh.3dm");
+    registry
+        .execute(&mut source, &format!("SaveAs \"{}\"", path.display()))
+        .unwrap();
+    let mut opened = Document::default();
+    registry
+        .execute(&mut opened, &format!("Open3dm \"{}\"", path.display()))
+        .unwrap();
+    let object = opened.object(id).unwrap();
+    assert!(matches!(object.geometry(), Geometry::EmptyMesh));
+    assert_eq!(object.attributes().name(), Some("Empty outside"));
+    assert_eq!(object.attributes().user_text()["owner"], "target");
+    assert_eq!(object.geometry_user_text()["role"], "outside");
+    assert_eq!(object.group_ids().len(), 1);
+    assert_eq!(
+        opened.group(object.group_ids()[0]).unwrap().name(),
+        Some("Split results")
+    );
+    assert_eq!(opened.bounds(), None);
+}
+
+#[test]
 fn save_as_3dm_replaces_file_with_a_readable_backup() {
     let registry = CommandRegistry::with_builtins();
     let directory = tempfile::tempdir().unwrap();
@@ -476,7 +518,13 @@ fn file_commands_preserve_repeated_spaces_in_quoted_and_unquoted_paths() {
                 .execute(&mut target, &format!("{import} {argument}"))
                 .unwrap();
             assert_eq!(target.objects().len(), 1);
-            let bounds = target.objects().next().unwrap().geometry().bounds();
+            let bounds = target
+                .objects()
+                .next()
+                .unwrap()
+                .geometry()
+                .bounds()
+                .unwrap();
             assert_eq!(bounds.max(), Point3::try_new(0.5, 0.5, 0.0).unwrap());
         }
     }

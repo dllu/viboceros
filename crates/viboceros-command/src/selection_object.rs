@@ -115,7 +115,9 @@ impl SelectionObject<'_> {
 
     fn disjoint_bounds(&self, geometry: &Geometry) -> bool {
         let source = self.mesh.bounds();
-        let target = geometry.bounds();
+        let Some(target) = geometry.bounds() else {
+            return true;
+        };
         let a = source.min().to_array();
         let b = source.max().to_array();
         let c = target.min().to_array();
@@ -132,6 +134,7 @@ impl SelectionObject<'_> {
             return Ok(VolumeRelation::OUTSIDE);
         }
         match geometry {
+            Geometry::EmptyMesh => Ok(VolumeRelation::OUTSIDE),
             Geometry::BlockInstance(_) => Err(
                 viboceros_geometry::GeometryError::UnsupportedBlockInstanceOperation {
                     operation: "volume classification",

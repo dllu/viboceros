@@ -33,7 +33,7 @@ fn native(value: &Value) -> Value {
 
 fn objects(document: &Document, witness: Option<ObjectId>) -> Value {
     normalized(document.objects().map(|object| {
-        let geometry=object.geometry();let bounds=geometry.bounds();
+        let geometry=object.geometry();let bounds=geometry.bounds().unwrap();
         let (kind,vertices,points)=match geometry {
             Geometry::Point(p)=>("Point",Value::Null,json!([p.to_array()])),
             Geometry::Polyline(p)=>("Curve",Value::Null,json!(p.vertices().iter().map(|p|p.to_array()).collect::<Vec<_>>())),

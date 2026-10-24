@@ -75,10 +75,10 @@ TOLERANCE = tolerance_cases(scene, box)
 FAMILIES = dict(commands=CASES, lifecycle=LIFECYCLE, options=OPTIONS, memory=MEMORY, syntax=SYNTAX, tolerance=TOLERANCE,
                 policy={'boolean_policy_auto_defaults': scene(preselect=False, arguments='_Tolerance=_Auto', document_tolerance=1e-3)})
 if __package__:
-    from .mesh_boolean_sets_cases import set_cases, split_cases, split_controls, split_stages
+    from .mesh_boolean_sets_cases import set_cases, split_cases, split_controls, split_stages, empty_cases
 else:
-    from mesh_boolean_sets_cases import set_cases, split_cases, split_controls, split_stages
-FAMILIES.update(sets=set_cases(scene, box), split=split_cases(scene, box), split_controls=split_controls(scene, box), split_stages=split_stages(scene, box))
+    from mesh_boolean_sets_cases import set_cases, split_cases, split_controls, split_stages, empty_cases
+FAMILIES.update(sets=set_cases(scene, box), split=split_cases(scene, box), split_controls=split_controls(scene, box), split_stages=split_stages(scene, box), empty=empty_cases(scene, box))
 ALL_CASES = {name: value for cases in FAMILIES.values() for name, value in cases.items()}
 
 

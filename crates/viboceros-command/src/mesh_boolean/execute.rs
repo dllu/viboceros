@@ -29,6 +29,7 @@ impl MeshBooleanCommand {
                 return Err(CommandError::Usage("selectable mesh Boolean sources"));
             }
             meshes.push(match obj.geometry() {
+                Geometry::EmptyMesh => return Err(GeometryError::EmptyMesh.into()),
                 Geometry::Mesh(mesh) => Cow::Borrowed(mesh),
                 Geometry::NurbsSurface(s) => Cow::Owned(
                     s.tessellate(interface::SURFACE_DISPLAY_SAMPLES_PER_SPAN, doc.tolerance())?,
@@ -76,10 +77,10 @@ impl MeshBooleanCommand {
         let mut added = 0;
         // The owner supplies retained attributes and memberships for every result.
         let extras = output
-            .map(|mesh| (owner, Geometry::Mesh(mesh), BTreeMap::new()))
+            .map(|geometry| (owner, geometry, BTreeMap::new()))
             .collect::<Vec<_>>();
         doc.replace_object_geometries_with_history(
-            [(owner, Geometry::Mesh(initial))],
+            [(owner, initial)],
             viboceros_document::ReplacementHistory::EveryReplacement,
         )?;
         let removed = first
@@ -112,7 +113,7 @@ fn stage(
     _: &[&TriangleMesh],
     _: usize,
     _: Tolerance,
-) -> Result<Vec<TriangleMesh>, CommandError> {
+) -> Result<Vec<Geometry>, CommandError> {
     Err(CommandError::MeshBooleanRequiresNativeKernel)
 }
 #[cfg(feature = "native-smlib")]
@@ -121,6 +122,6 @@ fn stage(
     meshes: &[&TriangleMesh],
     first: usize,
     tolerance: Tolerance,
-) -> Result<Vec<TriangleMesh>, CommandError> {
+) -> Result<Vec<Geometry>, CommandError> {
     super::geometry::stage(kind, meshes, first, tolerance)
 }

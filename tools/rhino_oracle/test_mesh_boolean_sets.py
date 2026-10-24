@@ -43,7 +43,7 @@ class MeshBooleanSetTests(unittest.TestCase):
         commands=log('commands','MESH_BOOLEAN_SETS_COMMAND')
         getters=log('getters','MESH_BOOLEAN_SETS_GETTER')
         self.assertEqual(summarize(commands,getters),data)
-        self.assertEqual((data['command_matched'],data['getter_matched']),(50,53))
+        self.assertEqual((data['command_matched'],data['getter_matched']),(52,55))
         for bad in ['\n'.join(commands.splitlines()[:-1]),commands+'\n'+commands.splitlines()[0]]:
             with self.assertRaises(ValueError):summarize(bad,getters)
         for what in ['metadata','geometry','status','ownership','kernel_failure']:

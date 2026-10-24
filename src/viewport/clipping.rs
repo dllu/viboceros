@@ -367,7 +367,7 @@ impl Viewport {
             })
             // Keep unsupported unselected geometry from invalidating a valid
             // fit. The renderer likewise omits unrepresentable local vertices.
-            .map(|object| cache.get(object, document.tolerance()).bounds())
+            .filter_map(|object| cache.get(object, document.tolerance()).bounds())
             .filter(|bounds| {
                 self.gpu_position(bounds.min()).is_some()
                     && self.gpu_position(bounds.max()).is_some()
@@ -420,7 +420,9 @@ impl Viewport {
                 }) else {
                     continue;
                 };
-                let source = cache.get(object, document.tolerance()).bounds();
+                let Some(source) = cache.get(object, document.tolerance()).bounds() else {
+                    continue;
+                };
                 let lo = source.min().to_array();
                 let hi = source.max().to_array();
                 for map in instances.transforms {
@@ -467,7 +469,9 @@ impl Viewport {
                 };
                 if transform.grips.iter().any(|grip| grip.object == id) {
                     if let Some(posed) = self.grip_preview_geometry(object, transform, document) {
-                        let posed = posed.bounds();
+                        let Some(posed) = posed.bounds() else {
+                            continue;
+                        };
                         if self.gpu_position(posed.min()).is_some()
                             && self.gpu_position(posed.max()).is_some()
                         {
@@ -482,6 +486,9 @@ impl Viewport {
                         .bounds()
                 } else {
                     cache.get(object, document.tolerance()).bounds()
+                };
+                let Some(source) = source else {
+                    continue;
                 };
                 let min = source.min().to_array();
                 let max = source.max().to_array();
@@ -518,7 +525,9 @@ impl Viewport {
                 }) {
                     continue;
                 }
-                let mut posed = display.geometry.bounds();
+                let Some(mut posed) = display.geometry.bounds() else {
+                    continue;
+                };
                 if let Some(map) = display.transform {
                     let lo = posed.min().to_array();
                     let hi = posed.max().to_array();

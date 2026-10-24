@@ -80,7 +80,6 @@
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
     "crates/viboceros-command/src/geometry_check.rs": "49c9c4761fa288c4ebbe845e6d9fdc24440cd3b47029977e08d8e15a1b2e51ff",
-    "crates/viboceros-command/src/geometry_check/tests.rs": "32aa6e9047a74b9c31d696508b3d5303a78a388b3a10dc9052e7b87cb6e7f11a",
     "crates/viboceros-command/src/interchange.rs": "336571c9da4a1cbff2bbd3066668aacf18d711f052b3ef6212c08c7c9cb9e39a",
     "crates/viboceros-io/src/lib.rs": "88fb1236dfd45ac8bf04000466c7e7d8ed0e2c02cb6dc1cc412098f1041af083",
     "crates/viboceros-io/src/three_dm.rs": "3266ee75a1019975959537102e7afc497bd7c0bf27193cf820502d9ee5dc3052",
@@ -120,6 +119,7 @@
     "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "f86d9b7cd8d7e0274037065ceb5665e746d03c8a5984105bd90404b5d044bd3b",
     "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "9b4f5299b5e6347f84e1a710c9262c6e1c09a7fd196addf73862c31ece8f0b05",
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-opennurbs/native/CMakeLists.txt": "16c59be64e7363f10760f19af8a389f6ef0f9e5a761bffba02e9e4cb8e2e40bc",
-    "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-io/src/three_dm_curves.rs": "ac3b799e54edcc8c84a8e0efb2ec5b4176a6b7880e4139f49e34970c62809834"
+    "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-io/src/three_dm_curves.rs": "ac3b799e54edcc8c84a8e0efb2ec5b4176a6b7880e4139f49e34970c62809834",
+    "0b6a838c0ba6ca1f439d87edcecedccd590c67c6:crates/viboceros-command/src/geometry_check/tests.rs": "32aa6e9047a74b9c31d696508b3d5303a78a388b3a10dc9052e7b87cb6e7f11a"
   }
 }

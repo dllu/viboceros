@@ -405,7 +405,14 @@ fn picked_circle_and_polygon_tilt_and_box_corners_project_like_the_prompt() {
         .execute(&mut document, "Box 0,0,1 2,3,9 4")
         .unwrap();
     assert_eq!(
-        document.objects().next().unwrap().geometry().bounds().max(),
+        document
+            .objects()
+            .next()
+            .unwrap()
+            .geometry()
+            .bounds()
+            .unwrap()
+            .max(),
         point(2.0, 3.0, 5.0)
     );
     registry.execute(&mut document, "Undo").unwrap();

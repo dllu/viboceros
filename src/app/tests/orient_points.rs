@@ -126,7 +126,7 @@ fn orient_points_command_first_grips_and_scale_memory_follow_their_own_options()
         app.document.control_point_locations(copy.id()),
         Some([point(0., 0., 0.), point(2., 0., 0.)].as_slice())
     );
-    let vertices = copy.geometry().bounds();
+    let vertices = copy.geometry().bounds().unwrap();
     assert_eq!(vertices.max(), point(2., 0., 0.));
     assert_eq!(app.document.undo().unwrap().as_deref(), Some("Orient"));
     assert_eq!(app.document.objects().count(), 1);

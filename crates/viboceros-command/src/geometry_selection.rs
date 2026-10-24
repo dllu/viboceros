@@ -156,7 +156,7 @@ impl GeometrySelectionFilter {
                 Geometry::SubD(subd) => subd.has_boundary() == matches!(self, Self::OpenSubD),
                 _ => false,
             },
-            Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
+            Self::Mesh => matches!(geometry, Geometry::Mesh(_) | Geometry::EmptyMesh),
             Self::OpenMesh => match geometry {
                 Geometry::Mesh(mesh) => !mesh.topology().is_closed(),
                 _ => false,

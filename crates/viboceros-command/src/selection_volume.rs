@@ -186,12 +186,16 @@ impl SelectionSphere {
         geometry: &Geometry,
         tolerance: Tolerance,
     ) -> Result<VolumeRelation, CommandError> {
+        let Some(bounds) = geometry.bounds() else {
+            return Ok(VolumeRelation::OUTSIDE);
+        };
         if !matches!(geometry, Geometry::PointCloud(_))
-            && let Some(relation) = self.classify_bounds(geometry.bounds())
+            && let Some(relation) = self.classify_bounds(bounds)
         {
             return Ok(relation);
         }
         match geometry {
+            Geometry::EmptyMesh => Ok(VolumeRelation::OUTSIDE),
             Geometry::BlockInstance(_) => Err(
                 viboceros_geometry::GeometryError::UnsupportedBlockInstanceOperation {
                     operation: "volume classification",
@@ -496,12 +500,16 @@ impl SelectionBox {
         geometry: &Geometry,
         tolerance: Tolerance,
     ) -> Result<VolumeRelation, CommandError> {
+        let Some(bounds) = geometry.bounds() else {
+            return Ok(VolumeRelation::OUTSIDE);
+        };
         if !matches!(geometry, Geometry::PointCloud(_))
-            && let Some(relation) = self.classify_bounds(geometry.bounds())
+            && let Some(relation) = self.classify_bounds(bounds)
         {
             return Ok(relation);
         }
         match geometry {
+            Geometry::EmptyMesh => Ok(VolumeRelation::OUTSIDE),
             Geometry::BlockInstance(_) => Err(
                 viboceros_geometry::GeometryError::UnsupportedBlockInstanceOperation {
                     operation: "volume classification",

@@ -95,6 +95,9 @@ def compare_meshes(actual_key, expected_key):
     # Replayed/forged coordinates or faces produce a distinct comparison key.
     a, n = json.loads(actual_key), json.loads(expected_key)
     list(triangles([a]))
+    if not a['faces'] or not n['faces']:
+        both_empty = all(not mesh['vertices'] and not mesh['faces'] for mesh in [a, n])
+        return (0., True) if both_empty else (None, False)
     error = sampled_boundary_distance([a], [n])
     area, volume = measures([a])
     native_area, native_volume = measures([n])

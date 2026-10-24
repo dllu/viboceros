@@ -488,6 +488,7 @@ fn nearest_object_snap_with_metric(
             consider_candidate(&mut object_best, metric, source.owner, kind, point);
         };
         match object.geometry() {
+            Geometry::EmptyMesh => {}
             Geometry::Point(point) => emit(ObjectSnapKind::Point, *point),
             Geometry::PointCloud(cloud) => {
                 if modes.contains(ObjectSnapKind::Point)

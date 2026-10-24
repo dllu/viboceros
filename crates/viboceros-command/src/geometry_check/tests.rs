@@ -13,6 +13,37 @@ fn bad_mesh() -> Geometry {
     )
 }
 #[test]
+fn empty_mesh_is_selectable_invalid_and_can_be_moved_deleted_and_restored() {
+    let r = CommandRegistry::with_builtins();
+    let mut d = Document::default();
+    let id = d.add_geometry(Geometry::EmptyMesh).unwrap();
+    r.execute(&mut d, "SelMesh").unwrap();
+    assert!(d.is_selected(id));
+    assert!(
+        r.execute(&mut d, "Check")
+            .unwrap()
+            .starts_with("Check: 0 valid, 1 invalid, 0 not checked")
+    );
+    d.clear_selection();
+    r.execute(&mut d, "SelBadObjects").unwrap();
+    assert!(d.is_selected(id));
+    r.execute(&mut d, "Move 0,0,0 1000,2000,3000").unwrap();
+    assert!(matches!(
+        d.object(id).unwrap().geometry(),
+        Geometry::EmptyMesh
+    ));
+    assert_eq!(d.bounds(), None);
+    r.execute(&mut d, "Delete").unwrap();
+    assert!(d.object(id).is_none());
+    d.undo().unwrap();
+    assert!(matches!(
+        d.object(id).unwrap().geometry(),
+        Geometry::EmptyMesh
+    ));
+    d.redo().unwrap();
+    assert!(d.object(id).is_none());
+}
+#[test]
 fn check_reports_native_errors_and_preserves_geometry_selection_and_redo() {
     let r = CommandRegistry::with_builtins();
     let mut d = Document::default();

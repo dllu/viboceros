@@ -178,7 +178,7 @@ impl Viewport {
                         .layer(object.attributes().layer_id())
                         .is_some_and(|layer| layer.is_visible())
             })
-            .map(|object| object.geometry().bounds())
+            .filter_map(|object| object.geometry().bounds())
             .reduce(|a, b| a.union(b).expect("finite bounds"))
     }
 

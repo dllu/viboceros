@@ -799,6 +799,10 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
   // Grip edits can retain coincident vertices and collapsed polygon records.
   // Validate finite coordinates and face bounds below, without discarding the
   // object solely because its geometric validity check fails.
+  if (mesh.VertexCount() == 0 && mesh.FaceCount() == 0) {
+    output.object_type = VIBO_OBJECT_TRIANGLE_MESH;
+    return true;
+  }
   if (mesh.VertexCount() <= 0 || mesh.FaceCount() <= 0) {
     return false;
   }
@@ -1751,6 +1755,8 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
       return brep_for(source.geometry_data, source.geometry_data_count, error, validate);
     }
     case VIBO_OBJECT_TRIANGLE_MESH: {
+      if (!source.coordinate_count && !source.index_count && !source.geometry_data_count &&
+          !source.knot_u_count && !source.knot_v_count) return new ON_Mesh();
       if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
           source.index_count == 0 || source.index_count % 4 != 0 ||
           source.indices == nullptr ||

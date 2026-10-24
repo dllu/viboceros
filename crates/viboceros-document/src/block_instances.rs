@@ -6,7 +6,7 @@ use std::sync::Arc;
 pub struct BlockInstance {
     reference: BlockReference,
     members: Arc<Vec<ResolvedBlockMember>>,
-    bounds: BoundingBox3,
+    bounds: Option<BoundingBox3>,
     insertion_points: Arc<Vec<BlockInsertionPoint>>,
 }
 
@@ -33,7 +33,7 @@ impl BlockInstance {
     pub fn members(&self) -> &[ResolvedBlockMember] {
         &self.members
     }
-    pub const fn bounds(&self) -> BoundingBox3 {
+    pub const fn bounds(&self) -> Option<BoundingBox3> {
         self.bounds
     }
 
@@ -41,6 +41,7 @@ impl BlockInstance {
         let bounds = self
             .members
             .iter()
+            .filter(|member| member.geometry.bounds().is_some())
             .map(|member| member.geometry.tight_bounds(tolerance))
             .collect::<Result<Vec<_>, _>>()?;
         BoundingBox3::from_points(
@@ -90,11 +91,17 @@ impl BlockInstance {
     }
 }
 
-fn member_bounds(members: &[ResolvedBlockMember]) -> Result<BoundingBox3, GeometryError> {
-    BoundingBox3::from_points(members.iter().flat_map(|member| {
-        let bounds = member.geometry.bounds();
-        [bounds.min(), bounds.max()]
-    }))
+fn member_bounds(members: &[ResolvedBlockMember]) -> Result<Option<BoundingBox3>, GeometryError> {
+    let mut bounds = None;
+    for member in members {
+        if let Some(member_bounds) = member.geometry.bounds() {
+            bounds = Some(match bounds {
+                None => member_bounds,
+                Some(previous) => BoundingBox3::union(previous, member_bounds)?,
+            });
+        }
+    }
+    Ok(bounds)
 }
 
 pub(super) fn in_catalog(

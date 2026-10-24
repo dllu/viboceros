@@ -895,6 +895,7 @@ impl Viewport {
     ) -> ProjectedPrimitives {
         let mut projected = ProjectedPrimitives::default();
         match geometry {
+            Geometry::EmptyMesh => {}
             Geometry::BlockInstance(instance) => {
                 for member in instance.members() {
                     let mut leaf = self.projected_primitives(

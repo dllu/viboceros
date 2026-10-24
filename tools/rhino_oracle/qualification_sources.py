@@ -153,7 +153,9 @@ def with_shared_sources(paths):
         expanded.extend(['crates/viboceros-smlib/src/native/mesh_boolean.rs',
                          'crates/viboceros-smlib/native/mesh_boolean.h'])
     if 'crates/viboceros-document/src/lib.rs' in expanded:
-        expanded.append('crates/viboceros-document/src/object_geometry.rs')
+        expanded.extend(['crates/viboceros-document/src/object_geometry.rs',
+                         'crates/viboceros-document/src/geometry.rs',
+                         'crates/viboceros-document/src/block_instances.rs'])
     if 'crates/viboceros-document/src/control_points.rs' in expanded:
         expanded.append('crates/viboceros-document/src/control_points/geometry.rs')
     if any(p in expanded for p in ['src/viewport.rs', 'src/viewport/scene.rs',
@@ -239,7 +241,8 @@ def with_shared_sources(paths):
                                     'tools/rhino_oracle/generate_mesh_boolean.py']):
         expanded.extend(['tools/rhino_oracle/mesh_boolean_command_cases.py',
                          'tools/rhino_oracle/mesh_boolean_option_cases.py',
-                         'tools/rhino_oracle/mesh_boolean_sets_cases.py'])
+                         'tools/rhino_oracle/mesh_boolean_sets_cases.py',
+                         'tools/rhino_oracle/mesh_empty_capture.py'])
     if 'crates/viboceros-command/tests/mesh_boolean_command_native.rs' in expanded:
         expanded.append('crates/viboceros-command/tests/support/mesh_boolean_replay.rs')
     expanded.append('tools/rhino_oracle/qualification_sources.py')

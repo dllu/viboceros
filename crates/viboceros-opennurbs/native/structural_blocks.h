@@ -69,7 +69,10 @@ ON_InstanceRef* structural_instance_for(const ViboWriteObject& source,const std:
   const auto& definition=definitions[source.indices[0]];
   ON_BoundingBox bounds(ON_3dPoint(definition.bounds[0],definition.bounds[1],definition.bounds[2]),
       ON_3dPoint(definition.bounds[3],definition.bounds[4],definition.bounds[5]));
-  if(!bounds.IsValid()||!bounds.Transform(transform)){error="invalid placed block bounds";return nullptr;}
+  bool empty=true;
+  for(int axis=0;axis<3;++axis)empty=empty&&definition.bounds[axis]==1.&&definition.bounds[axis+3]==-1.;
+  if(empty)bounds=ON_BoundingBox::EmptyBoundingBox;
+  else if(!bounds.IsValid()||!bounds.Transform(transform)){error="invalid placed block bounds";return nullptr;}
   auto* instance=new ON_InstanceRef();instance->m_instance_definition_uuid=ids[source.indices[0]];
   instance->m_xform=transform;instance->m_bbox=bounds;
   if(!instance->IsValid(nullptr)){delete instance;error="invalid native block instance";return nullptr;}

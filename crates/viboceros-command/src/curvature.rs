@@ -219,7 +219,7 @@ impl Command for CurvatureCommand {
                 match geometry {
                     Geometry::NurbsSurface(surface) => {
                         let (u, v) = surface.closest_parameters(target, tolerance)?;
-                        let bounds = geometry.bounds();
+                        let bounds = surface.control_point_bounds();
                         Some(Target::Surface(
                             surface,
                             None,
@@ -238,10 +238,7 @@ impl Command for CurvatureCommand {
                                 Some(face),
                                 [u, v],
                                 f.is_reversed(),
-                                geometry
-                                    .bounds()
-                                    .min()
-                                    .distance_to(geometry.bounds().max())?,
+                                brep.bounds().min().distance_to(brep.bounds().max())?,
                             ))
                         } else {
                             None

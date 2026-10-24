@@ -84,7 +84,9 @@ fn plane_origins(
     let mut low: Option<BigRational> = None;
     let mut high: Option<BigRational> = None;
     for object in inputs {
-        let bounds = object.geometry().bounds();
+        let Some(bounds) = object.geometry().bounds() else {
+            continue;
+        };
         let a = bounds.min().to_array();
         let b = bounds.max().to_array();
         for mask in 0..8 {

@@ -16,7 +16,10 @@ pub(super) fn run(
         context
     }
     .construction_plane;
-    let objects = document.selected_objects().collect::<Vec<_>>();
+    let objects = document
+        .selected_objects()
+        .filter(|o| o.geometry().bounds().is_some())
+        .collect::<Vec<_>>();
     let count = objects.len();
     if options.mode == Some(AlignmentMode::ToFitPlane) {
         if count < 3 {
@@ -34,7 +37,13 @@ pub(super) fn run(
         .map(|object| {
             // Each object gets a geometry-local arithmetic origin, independently
             // of the display CPlane and of other selected objects.
-            let frame = orientation.with_origin(object.geometry().bounds().center()?);
+            let frame = orientation.with_origin(
+                object
+                    .geometry()
+                    .bounds()
+                    .ok_or(viboceros_geometry::GeometryError::EmptyPointSet)?
+                    .center()?,
+            );
             let bounds = crate::object_bounds::local_bounds(
                 [object.geometry()],
                 frame,

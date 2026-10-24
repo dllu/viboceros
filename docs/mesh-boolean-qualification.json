@@ -5848,10 +5848,10 @@
     "tools/rhino_oracle/client.py": "f98c6bd863d9638633cadf15d6e8bedff378aa16a06bb80491c251c3cd37bec5",
     "tools/rhino_oracle/fixtures/mesh_boolean_controls.json": "6fa2b9750074ab3eeec172852ad0d62c33de7fdd4e2b078ad12da4f30b35bc7f",
     "tools/rhino_oracle/fixtures/mesh_boolean_sdk.json": "93393c4dd80d73711acc705284e71bb0dd2a3be546d2d4bf566d39257a8c06e6",
-    "tools/rhino_oracle/generate_mesh_boolean.py": "a965f63bb7ae9a5f8ed84b36050b21093b7c90fe094029304412eaf50fd07bf0",
+    "tools/rhino_oracle/generate_mesh_boolean.py": "a49ce52ce2e0ec0812710550229fce5a350b346b0ebc5801b5f4fd68f00cf975",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/mesh_boolean_cases.py": "83017e2d4d2a9dcc2215a8a02c689718b7fdd565e575d3a9d487b4ecd0c7a7a0",
-    "tools/rhino_oracle/mesh_boolean_comparison.py": "f2c1a3cc006adb448c04d889f4bb81d9991cee77e24ed3ea898f1a336b557e8d",
+    "tools/rhino_oracle/mesh_boolean_comparison.py": "21920b4819739f4ffd94afcb1654439992f72de03c2cfc82110b9890e8ee9c80",
     "tools/rhino_oracle/mesh_boolean_probe.py": "c848aabb01acb3752893d9f890c21e3f062b2d47e0923656b29a605c5ab782d8",
     "tools/rhino_oracle/observations/mesh_boolean_controls.json": "af15bd5ca5bd79d3d982139a4ad09dfd07519b117353aac7e2692b337928368d",
     "tools/rhino_oracle/observations/mesh_boolean_sdk.json": "6be54072319cc8039a1eb2f15b5125b7ac6c4a861c535183593d6e21fec6377f",
@@ -5865,13 +5865,14 @@
     "tools/rhino_oracle/observations/source_snapshots/c1453029b18410d4c8ba5f05b2f918813a10777ea50427301e456be3c97f414e.gz": "4a3c293b8a2e4379bca3856c8073271ba51b3074edbbdcc5bbb7b38a9ab23246",
     "tools/rhino_oracle/observations/source_snapshots/c848aabb01acb3752893d9f890c21e3f062b2d47e0923656b29a605c5ab782d8.gz": "6850d4baa89dbe7e9e4cffe821e0d482efade4bd63cd6febfbafcc2bdf97daa3",
     "tools/rhino_oracle/observations/source_snapshots/cda2aaeb84f5e2df817e020148104cd8cd457b6a2e5cc10c6287adf7489f680a.gz": "0cf66cebe10bdd0b8472b182cf6d9d22153248293af6da09b59bc5c6f9663afa",
-    "tools/rhino_oracle/qualification_sources.py": "9ce6657656bb2fb574e68b35a3af21a59a79e372de9e16cc7a9b3004ad119551",
+    "tools/rhino_oracle/qualification_sources.py": "b6b961e921a714d4faaa3ed1861be13326777dd42f4c0da2aa3c55ebed14a1c2",
     "tools/rhino_oracle/report_mesh_boolean.py": "603bb8950f3755b7f290dd178be4569ec1b2aad60e1b93e98d5acb134922670c",
     "tools/rhino_oracle/rhino_worker.py": "1d17f1a48c80b0f8eb01a5e275fe72e6f95323f6c5c83118e15bc55e980baca4",
-    "tools/rhino_oracle/structural_sdk.py": "f50693a047f40446674ae4eff2a1e5fb5c8b1567b4bb100ffe204fa448e81a84",
+    "tools/rhino_oracle/structural_sdk.py": "f55d00964df768da1b8367fe0db0ee0806e50be8804860517da06f13d8f6232b",
     "tools/rhino_oracle/test_mesh_boolean.py": "e49fc46f8725b452a4ccfe424c57ed170cd5ccf509efe09b445322e6185e47c0",
-    "tools/rhino_oracle/mesh_boolean_command_cases.py": "d9c21b816c33885ba7da81465a46ee31c5f38b6cd8ea3449cb9405eafd879d6d",
+    "tools/rhino_oracle/mesh_boolean_command_cases.py": "5522e21f7fc96e1930aab6a68651fe37e93a5a50e8e62f7473534f07c381dc2f",
     "tools/rhino_oracle/mesh_boolean_option_cases.py": "3c7d5170747d015928e6b8469c1b48167a8294f35d32aad67274ce3a9d48da5c",
-    "tools/rhino_oracle/mesh_boolean_sets_cases.py": "cb389c75e84c421a15ae74d8faea3ef9c84d8e32ca79c3e6ac49fecefda02ae5"
+    "tools/rhino_oracle/mesh_boolean_sets_cases.py": "2d5d2d5bc7b152d8a3c656f5b2eff3bce991baeab0f7a24c3a4df0dc07ee7cb8",
+    "tools/rhino_oracle/mesh_empty_capture.py": "25e034e5240b320cff27142857146774afc72e5c8aac010b389639af9826c48d"
   }
 }

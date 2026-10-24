@@ -56,6 +56,7 @@ impl Command for DuplicateBorderCommand {
         let mut border_count = 0_usize;
         for (geometry, input_attributes, input_groups) in selected {
             let loops: Vec<Geometry> = match geometry {
+                Geometry::EmptyMesh => Vec::new(),
                 Geometry::SubD(_) | Geometry::BlockInstance(_) => {
                     return Err(CommandError::UnsupportedDuplicateBorderGeometry);
                 }

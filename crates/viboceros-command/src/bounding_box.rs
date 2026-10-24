@@ -208,10 +208,15 @@ fn oriented_bounds<'a>(
     coordinates: Frame3,
     tolerance: Tolerance,
 ) -> Result<OrientedBounds, GeometryError> {
-    let first = geometries.next().ok_or(GeometryError::EmptyPointSet)?;
+    let first = geometries
+        .find(|g| g.bounds().is_some())
+        .ok_or(GeometryError::EmptyPointSet)?;
     // The working origin belongs to the geometry, not the CPlane. A distant
     // CPlane origin must not collapse small source extents during subtraction.
-    let anchor = first.bounds().center()?;
+    let anchor = first
+        .bounds()
+        .ok_or(GeometryError::EmptyPointSet)?
+        .center()?;
     let frame = coordinates.with_origin(anchor);
     let bounds = crate::object_bounds::local_bounds(
         std::iter::once(first).chain(geometries),

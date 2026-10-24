@@ -54,8 +54,8 @@ def point_triangle(p, triangle):
 
 
 def sampled_boundary_distance(first, second):
-    if not first or not second:
-        return 0. if not first and not second else None
+    if not any(m['faces'] for m in first) or not any(m['faces'] for m in second):
+        return 0. if not any(m['faces'] for m in first) and not any(m['faces'] for m in second) else None
 
     def directed(source, target):
         target = list(triangles(target))

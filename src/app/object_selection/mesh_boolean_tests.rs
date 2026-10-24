@@ -154,3 +154,10 @@ fn mesh_boolean_sets_getters_replay_native_selection_options_geometry_and_histor
             .clone()
     );
 }
+
+#[test]
+fn empty_mesh_split_getters_match_native_storage_and_history() {
+    let (rows, gaps) = replay(native::family_rows(&["empty"]), "MESH_BOOLEAN_EMPTY_GETTER");
+    assert_eq!(rows.len(), 2);
+    assert!(gaps.is_empty(), "{gaps:?}");
+}

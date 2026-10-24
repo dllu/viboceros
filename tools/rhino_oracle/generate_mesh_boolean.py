@@ -13,7 +13,7 @@ COMMAND_FAMILIES = tuple(FAMILIES)
 HERE = Path(__file__).resolve().parent
 SOURCES = ['generate_mesh_boolean.py', 'mesh_boolean_cases.py', 'mesh_boolean_probe.py',
            'mesh_boolean_command_cases.py', 'mesh_boolean_command_probe.py', 'join_probe.py',
-           'mesh_boolean_option_cases.py', 'mesh_boolean_sets_cases.py',
+           'mesh_boolean_option_cases.py', 'mesh_boolean_sets_cases.py', 'mesh_empty_capture.py',
            'client.py', 'rhino_worker.py', 'structural_sdk.py', 'merge_edges_probe.py']
 
 
@@ -53,6 +53,8 @@ def main():
         folder.mkdir(exist_ok=True)
         for row in data['results']:
             (folder/(row['id']+'.3dm')).write_bytes(base64.b64decode(row['value']['source_3dm']))
+            if row['value'].get('empty_storage'):
+                (folder/(row['id']+'-result.3dm')).write_bytes(base64.b64decode(row['value']['empty_storage']['result_3dm']))
     print('Recorded {} mesh Boolean workflows'.format(len(data['results'])), flush=True)
 
 

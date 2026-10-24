@@ -8552,6 +8552,7 @@ impl Command for DuplicateEdgeCommand {
             .selected_objects()
             .map(|object| {
                 let edges = match object.geometry() {
+                    Geometry::EmptyMesh => Vec::new(),
                     Geometry::SubD(_) | Geometry::BlockInstance(_) => {
                         return Err(CommandError::UnsupportedDuplicateEdgeGeometry);
                     }
@@ -8791,6 +8792,7 @@ impl Command for DuplicateMeshEdgeCommand {
         let meshes = document
             .selected_objects()
             .map(|object| match object.geometry() {
+                Geometry::EmptyMesh => Err(GeometryError::EmptyMesh.into()),
                 Geometry::Mesh(mesh) => Ok(mesh),
                 Geometry::Point(_)
                 | Geometry::PointCloud(_)
@@ -9195,6 +9197,7 @@ impl Command for ExtractWireframeCommand {
                 }
             };
             let wires = match geometry {
+                Geometry::EmptyMesh => Vec::new(),
                 Geometry::SubD(_) | Geometry::BlockInstance(_) => {
                     return Err(CommandError::UnsupportedExtractWireframeGeometry);
                 }
