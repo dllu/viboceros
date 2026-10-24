@@ -217,6 +217,9 @@ queries. Face trim containment and projected UV charts stay in one geometry
 policy, while command selection, source replacement and history stay separate.
 The app's two-set prompt snapshots the first picked set before clearing the
 transient selection for the second; both phases use the parametric-object filter.
+Boolean pickers reuse its routing while owning their filters, hints, options,
+and cancellation policy in `app/boolean_solids`. Its `input`, `options`, and
+`selection` modules preserve ordered picks and command-specific history behavior.
 The geometry [shortness module](../curve-shortness.md) keeps representation-dependent
 selection integration separate from accuracy-controlled arc-length measurement.
 The [`measurements` command module](../commands/measurements.md) owns read-only

@@ -1,5 +1,6 @@
-//! Two successive object selections for the intersection command.
+//! Shared two-set prompt routing for intersections, Booleans, and curve/surface tools.
 
+use super::boolean_solids::BooleanOptions;
 use super::*;
 use viboceros_command::ObjectSelectionFilter;
 use viboceros_document::{ObjectId, SelectionMode};
@@ -17,88 +18,6 @@ pub(super) struct TwoSetsPrompt {
     pub(super) uv_face: Option<usize>,
     pub(super) uv_subcurves: super::uv_subcurve_input::SubcurveInputs,
     pub(super) projection: Option<super::project::ProjectSession>,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) enum BooleanPromptKind {
-    Intersection,
-    Difference,
-    Split,
-    MeshIntersection(&'static str),
-    MeshDifference(&'static str),
-    MeshSplit(&'static str),
-}
-impl BooleanPromptKind {
-    pub(super) fn name(self) -> &'static str {
-        match self {
-            Self::Intersection => "BooleanIntersection",
-            Self::Difference => "BooleanDifference",
-            Self::Split => "BooleanSplit",
-            Self::MeshIntersection(_) => "MeshBooleanIntersection",
-            Self::MeshDifference(_) => "MeshBooleanDifference",
-            Self::MeshSplit(_) => "MeshBooleanSplit",
-        }
-    }
-    pub(super) fn is_intersection(self) -> bool {
-        matches!(self, Self::Intersection | Self::MeshIntersection(_))
-    }
-    pub(super) fn is_difference(self) -> bool {
-        matches!(self, Self::Difference | Self::MeshDifference(_))
-    }
-    pub(super) fn filter(self) -> ObjectSelectionFilter {
-        if self.mesh_tolerance().is_some() {
-            ObjectSelectionFilter::EdgeAnalysis
-        } else {
-            ObjectSelectionFilter::SurfaceComponents
-        }
-    }
-    pub(super) fn mesh_tolerance(self) -> Option<&'static str> {
-        match self {
-            Self::MeshIntersection(t) | Self::MeshDifference(t) | Self::MeshSplit(t) => Some(t),
-            _ => None,
-        }
-    }
-    pub(super) fn with_mesh_tolerance(self, value: &'static str) -> Self {
-        match self {
-            Self::MeshIntersection(_) => Self::MeshIntersection(value),
-            Self::MeshDifference(_) => Self::MeshDifference(value),
-            Self::MeshSplit(_) => Self::MeshSplit(value),
-            _ => self,
-        }
-    }
-}
-#[derive(Clone, Debug)]
-pub(super) struct BooleanOptions {
-    pub(super) kind: BooleanPromptKind,
-    pub(super) delete_input: bool,
-    pub(super) delete_cutters: bool,
-    pub(super) preselected_first: bool,
-}
-impl BooleanOptions {
-    pub(super) fn command_line(&self, include_hidden: bool) -> String {
-        if let Some(tolerance) = self.kind.mesh_tolerance() {
-            let mut command = format!("{} Tolerance={tolerance}", self.kind.name());
-            if self.kind.is_difference() {
-                command.push_str(&format!(
-                    " DeleteInput={}",
-                    if self.delete_input { "Yes" } else { "No" }
-                ));
-            }
-            return command;
-        }
-        let mut command = format!(
-            "{} DeleteInput={}",
-            self.kind.name(),
-            if self.delete_input { "Yes" } else { "No" }
-        );
-        if self.kind == BooleanPromptKind::Difference && (include_hidden || self.delete_input) {
-            command.push_str(&format!(
-                " DeleteCutters={}",
-                if self.delete_cutters { "Yes" } else { "No" }
-            ));
-        }
-        command
-    }
 }
 
 impl TwoSetsPrompt {
@@ -215,45 +134,8 @@ impl TwoSetsPrompt {
         }
         if let Some(kind) = self.uv_mapping {
             kind.hint(self.first.is_some())
-        } else if self
-            .boolean
-            .as_ref()
-            .is_some_and(|o| o.kind == BooleanPromptKind::Split)
-        {
-            if self.first.is_some() {
-                "Select cutters; Enter splits, Esc cancels"
-            } else {
-                "Select targets; Enter continues, Esc cancels"
-            }
-        } else if self
-            .boolean
-            .as_ref()
-            .is_some_and(|o| matches!(o.kind, BooleanPromptKind::MeshSplit(_)))
-        {
-            if self.first.is_some() {
-                "Select cutting objects; Enter splits, Esc cancels"
-            } else {
-                "Select objects to split; Enter continues, Esc cancels"
-            }
-        } else if self
-            .boolean
-            .as_ref()
-            .is_some_and(|o| o.kind.is_difference())
-        {
-            if self.first.is_some() {
-                "Select cutters; Enter subtracts, Esc cancels"
-            } else {
-                "Select targets; Enter continues, Esc cancels"
-            }
-        } else if self
-            .boolean
-            .as_ref()
-            .is_some_and(|o| o.kind.mesh_tolerance().is_some())
-            && self.first.is_some()
-        {
-            "Select second set; Enter executes the mesh Boolean, Esc cancels"
-        } else if self.boolean.is_some() && self.first.is_some() {
-            "Select second set; empty Enter intersects the first set, Esc cancels"
+        } else if let Some(options) = &self.boolean {
+            options.kind.hint(self.first.is_some())
         } else if self.first.is_some() {
             "Select second set; Enter intersects, Esc cancels"
         } else {
@@ -360,14 +242,7 @@ impl VibocerosApp {
                 return;
             }
             if let Some(options) = &prompt.boolean {
-                let command = if let Some(tolerance) = options.kind.mesh_tolerance()
-                    && options.kind.is_difference()
-                    && prompt.first.is_none()
-                {
-                    format!("{} Tolerance={tolerance}", options.kind.name())
-                } else {
-                    options.command_line(false)
-                };
+                let command = options.prompt_line(prompt.first.is_some());
                 self.push_log(format!("{}: {}", command, prompt.hint()));
                 return;
             }
@@ -552,39 +427,7 @@ impl VibocerosApp {
             self.command_input.clear();
             let name = prompt.name();
             if let Some(options) = prompt.boolean {
-                if options.kind.mesh_tolerance().is_some()
-                    && let Some(first) = &prompt.first
-                {
-                    // The live cancelled getter retains its first set, but
-                    // native Undo/Redo treats those picks as transient. A
-                    // marker-only transaction folds into the preceding entry.
-                    let result = (|| {
-                        self.document.begin_transaction(name)?;
-                        match self
-                            .document
-                            .release_command_selection_on_history_replay(first.iter().copied())
-                        {
-                            Ok(()) => self.document.commit_transaction().map(|_| ()),
-                            Err(error) => {
-                                let _ = self.document.rollback_transaction();
-                                Err(error)
-                            }
-                        }
-                    })();
-                    if let Err(error) = result {
-                        self.push_log(format!("Error: {error}"));
-                    }
-                }
-                let _ = self.document.select_command_results(
-                    if options.kind == BooleanPromptKind::Split {
-                        vec![]
-                    } else {
-                        prompt.first.unwrap_or_default()
-                    },
-                );
-                if announce {
-                    self.push_log(format!("Cancelled {}", options.kind.name()));
-                }
+                self.cancel_boolean_solids_prompt(options, prompt.first, announce);
                 return;
             }
             if prompt.control_polygon.is_some() {

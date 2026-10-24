@@ -2554,7 +2554,7 @@
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
     "crates/viboceros-geometry/src/subd/soft_crease.rs": "1f9bfbfca6b71418e39846e9847351267ee6a26023ac035a041d91247c232f3f",
-    "tools/rhino_oracle/qualification_sources.py": "b6b961e921a714d4faaa3ed1861be13326777dd42f4c0da2aa3c55ebed14a1c2",
+    "tools/rhino_oracle/qualification_sources.py": "d327b4f217d7fdbbb736005c39bd77fb74ac4dcfb1d5ca53a335f9e42ce48ec1",
     "tools/rhino_oracle/fixtures/soft_crease_chains.json": "52e803491ae30f9f947c0614de0eb658849a104e4d0ff7ae9329dae124cd5820",
     "tools/rhino_oracle/observations/soft_crease_chains.json": "b9e55a5c87b73ca0fa9c0d7a7d055c54307511f4e4d6a2777ebb6a5d8dcd382d",
     "tools/rhino_oracle/fixtures/soft_crease_chains/result/chains_branch_constant.3dm": "9949cf75dfed460c818a78d6b989fe18f675e274402f44948d450e13ca41fae9",
@@ -2767,10 +2767,10 @@
     "src/app/control_polygon.rs": "6dc558a4af3e733c62ea389672c76a6a850952b2e13bba1bb489fead41f48fe3",
     "src/app/control_polygon/subcurve.rs": "e492448e7a04c6d0b6dded19a194e84e7c66da839be2be8e5197cd19338d6dc3",
     "src/app/control_polygon/tests.rs": "c38a1213e4aa3edd135cfc05cb05323d4e276cbe3c4e80821b934798232351dc",
-    "src/app/intersect_two_sets.rs": "bb9d13d5389f3a596aedfc883b84d45373db8a949081bd2bdf2cf11eadcc31f5",
+    "src/app/intersect_two_sets.rs": "046ba48cd7b110e25110afc926761adb07f2ded4e3958e09a0aa4840d4c7d10a",
     "src/app/uv_subcurve_input.rs": "780943c42b0e9e833cdb4edc0e2b02d57bf54c7ceecf2ef5fbafbff518a37a27",
     "src/app/apply_curves.rs": "b0743d6fc840623ff75f9de6e99c47cc12fefebd2cd2abde8d539344ac9f7101",
-    "src/app/boolean_solids.rs": "78a83af0dcaade346233a9ad200736dfafc702343b43bcb33eebd95f7542c77a",
+    "src/app/boolean_solids.rs": "75242cac6e37bd63787524a0872e94a55c8e2b2c23fd1c4d817dda8cf1bff8fa",
     "src/app/curve_deviation/subcurves.rs": "51b6adc3b9f6ca85437c715dfe4861f73a5cd7f703551acaf5cb1b5209d24172",
     "src/app/iplane.rs": "8a1b436aa686eba2ca6f063fa8d4968f5bdbf3e5aaf99dad2ce92a5c03f19596",
     "src/app/point_deviation.rs": "98cc65e3efc83c3a26542e3f3ef601431146f6e02d42a48fbeea5ee727e6be31",
@@ -2891,6 +2891,9 @@
     "crates/viboceros-command/tests/support/mesh_boolean.rs": "be1cc8fc7500dcf5dd0af1bc1da431d3bdcbaf7b8de74c129e7ddb1ff2d052f5",
     "crates/viboceros-command/tests/support/frozen_scene.rs": "2ae32554550c6a6870df9c08798b3f55e0f8263fbd439ec6c4c611277e147845",
     "crates/viboceros-command/src/mesh_boolean/geometry/components.rs": "29702a9e5ebe0f9708266d2f97f667af76087c40c0fa3ff15dd28abd1d7ff535",
-    "crates/viboceros-command/src/mesh_boolean/geometry/split.rs": "3643baa38dd0f408321d5c8c1f0b3b26728610499272fbb827be79cefa699e9f"
+    "crates/viboceros-command/src/mesh_boolean/geometry/split.rs": "3643baa38dd0f408321d5c8c1f0b3b26728610499272fbb827be79cefa699e9f",
+    "src/app/boolean_solids/input.rs": "2b14b21343ff65509c35032c1a81b128a5acd6f911fce2d0bcd23df5236a5be1",
+    "src/app/boolean_solids/options.rs": "294d3a74651178b34df6079badf868a4e97c9657f5ee4ea232e50799f6a0b518",
+    "src/app/boolean_solids/selection.rs": "1780f77ce57ef466218a16a8fa849531fb964a3ad19ec12d6e40981078a39a4e"
   }
 }

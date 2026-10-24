@@ -1006,10 +1006,10 @@
     "src/app/control_polygon/subcurve.rs": "e492448e7a04c6d0b6dded19a194e84e7c66da839be2be8e5197cd19338d6dc3",
     "src/app/control_polygon/tests.rs": "c38a1213e4aa3edd135cfc05cb05323d4e276cbe3c4e80821b934798232351dc",
     "crates/viboceros-command/tests/support/control_polygon.rs": "c8659f900f9909512db96f48728a9a06ca300ac8c8e43c8fddb54d16929d46e6",
-    "src/app/intersect_two_sets.rs": "bb9d13d5389f3a596aedfc883b84d45373db8a949081bd2bdf2cf11eadcc31f5",
+    "src/app/intersect_two_sets.rs": "046ba48cd7b110e25110afc926761adb07f2ded4e3958e09a0aa4840d4c7d10a",
     "src/app/uv_subcurve_input.rs": "780943c42b0e9e833cdb4edc0e2b02d57bf54c7ceecf2ef5fbafbff518a37a27",
     "src/app/apply_curves.rs": "b0743d6fc840623ff75f9de6e99c47cc12fefebd2cd2abde8d539344ac9f7101",
-    "src/app/boolean_solids.rs": "78a83af0dcaade346233a9ad200736dfafc702343b43bcb33eebd95f7542c77a",
+    "src/app/boolean_solids.rs": "75242cac6e37bd63787524a0872e94a55c8e2b2c23fd1c4d817dda8cf1bff8fa",
     "src/app/curve_deviation/subcurves.rs": "51b6adc3b9f6ca85437c715dfe4861f73a5cd7f703551acaf5cb1b5209d24172",
     "src/app/iplane.rs": "8a1b436aa686eba2ca6f063fa8d4968f5bdbf3e5aaf99dad2ce92a5c03f19596",
     "src/app/point_deviation.rs": "98cc65e3efc83c3a26542e3f3ef601431146f6e02d42a48fbeea5ee727e6be31",
@@ -1104,7 +1104,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "b6b961e921a714d4faaa3ed1861be13326777dd42f4c0da2aa3c55ebed14a1c2",
+    "tools/rhino_oracle/qualification_sources.py": "d327b4f217d7fdbbb736005c39bd77fb74ac4dcfb1d5ca53a335f9e42ce48ec1",
     "tools/rhino_oracle/fixtures/rebuild_normals_sdk.json": "f10d27e064b4c11c615bb0bf633d4f298e4833174bd618abfbec8d2665f3fab2",
     "tools/rhino_oracle/observations/rebuild_normals_sdk.json": "b74843296ad33cd2f3bb95d0606e99edff50509d3c866e2ed64ece3ddceab14d",
     "tools/rhino_oracle/fixtures/rebuild_normals_command.json": "9ab102a645c2158524411591d443e8c407457dc682c20c4765bbc98aa0ddb181",
@@ -1160,6 +1160,9 @@
     "crates/viboceros-command/src/mesh_boolean/geometry/components.rs": "29702a9e5ebe0f9708266d2f97f667af76087c40c0fa3ff15dd28abd1d7ff535",
     "crates/viboceros-command/src/mesh_boolean/geometry/split.rs": "3643baa38dd0f408321d5c8c1f0b3b26728610499272fbb827be79cefa699e9f",
     "crates/viboceros-document/src/geometry.rs": "23475fdce1290a66ce3af3b95c82376e34361f862ecec4190b6eb141c889f117",
-    "crates/viboceros-document/src/block_instances.rs": "5214bcd1f856caea9f73d3bceb43822b77f603ad9e350685a00a22f0415e5bc9"
+    "crates/viboceros-document/src/block_instances.rs": "5214bcd1f856caea9f73d3bceb43822b77f603ad9e350685a00a22f0415e5bc9",
+    "src/app/boolean_solids/input.rs": "2b14b21343ff65509c35032c1a81b128a5acd6f911fce2d0bcd23df5236a5be1",
+    "src/app/boolean_solids/options.rs": "294d3a74651178b34df6079badf868a4e97c9657f5ee4ea232e50799f6a0b518",
+    "src/app/boolean_solids/selection.rs": "1780f77ce57ef466218a16a8fa849531fb964a3ad19ec12d6e40981078a39a4e"
   }
 }

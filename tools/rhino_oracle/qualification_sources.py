@@ -1,5 +1,11 @@
 """Shared source inventory for extracted application and geometry modules."""
 
+BOOLEAN_PROMPT_MODULES = [
+    'src/app/boolean_solids/input.rs',
+    'src/app/boolean_solids/options.rs',
+    'src/app/boolean_solids/selection.rs',
+]
+
 # These modules previously lived inside src/app.rs. Qualifiers that bind the app
 # root must also bind its extracted implementation and shared regression inputs.
 APPLICATION_MODULES = [
@@ -42,6 +48,7 @@ APPLICATION_MODULES = [
     'src/app/uv_subcurve_input.rs',
     'src/app/apply_curves.rs',
     'src/app/boolean_solids.rs',
+    *BOOLEAN_PROMPT_MODULES,
     'src/app/curve_deviation/subcurves.rs',
     'src/app/iplane.rs',
     'src/app/point_deviation.rs',
@@ -206,6 +213,8 @@ def with_shared_sources(paths):
         ])
     if 'src/app.rs' in expanded:
         expanded.extend(APPLICATION_MODULES)
+    if 'src/app/boolean_solids.rs' in expanded:
+        expanded.extend(BOOLEAN_PROMPT_MODULES)
     if any(p in expanded for p in ['crates/viboceros-opennurbs/native/subd.cpp', 'crates/viboceros-geometry/src/subd.rs']):
         expanded.extend(SUBD_MODULES)
     if ('crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp' in expanded or

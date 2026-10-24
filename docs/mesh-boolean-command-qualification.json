@@ -117082,7 +117082,7 @@
     "docs/mesh-boolean-commands.md": "cf8d24fddc3452372944de696543809293a48fc61db71d91f79f600fb30174f9",
     "src/app.rs": "d004640e42228b2665f1775ee50c70fa343245e5068fa82176967aee9604a0ca",
     "src/app/apply_curves.rs": "b0743d6fc840623ff75f9de6e99c47cc12fefebd2cd2abde8d539344ac9f7101",
-    "src/app/boolean_solids.rs": "78a83af0dcaade346233a9ad200736dfafc702343b43bcb33eebd95f7542c77a",
+    "src/app/boolean_solids.rs": "75242cac6e37bd63787524a0872e94a55c8e2b2c23fd1c4d817dda8cf1bff8fa",
     "src/app/component_selection.rs": "94a1c809f99a270cb31ebc85c61cd33649d084312ab4a726e763f25922812127",
     "src/app/control_polygon.rs": "6dc558a4af3e733c62ea389672c76a6a850952b2e13bba1bb489fead41f48fe3",
     "src/app/control_polygon/subcurve.rs": "e492448e7a04c6d0b6dded19a194e84e7c66da839be2be8e5197cd19338d6dc3",
@@ -117101,7 +117101,7 @@
     "src/app/interactive_state/metadata.rs": "fbafb777ff716f2d4b6d1f009e12897df2189c3dfe8aa06f2046bd917bec2d1c",
     "src/app/interactive_state/mod.rs": "1c200249ea8ac710380c15e0bfbc27fc585eb96aac042aa0c26f72097bf0672b",
     "src/app/interactive_state/prompts.rs": "861356e24b769c9f1d2bb9aefd8565dc69041536e4d1edf68f5d3ee6cc23767c",
-    "src/app/intersect_two_sets.rs": "bb9d13d5389f3a596aedfc883b84d45373db8a949081bd2bdf2cf11eadcc31f5",
+    "src/app/intersect_two_sets.rs": "046ba48cd7b110e25110afc926761adb07f2ded4e3958e09a0aa4840d4c7d10a",
     "src/app/iplane.rs": "8a1b436aa686eba2ca6f063fa8d4968f5bdbf3e5aaf99dad2ce92a5c03f19596",
     "src/app/object_selection.rs": "b9396e49ff9cce7a255aca309b989979b6b66a719a12c4bdbe11ff31a1e88a3d",
     "src/app/object_selection/control_polygon_tests.rs": "ef0bfead8c03cad41c9348c6e26629a4a67a7d22d3a4fcf1ecd788c676a48e23",
@@ -117338,10 +117338,13 @@
     "tools/rhino_oracle/observations/source_snapshots/e570596115187bbb9857c0b4333ac1a74a50b65ca3da76a984b1ca059c321fd4.gz": "fdeea69a266a4ff34a0d86f98d79557a6f8b90bda3051852f6837b50f130a662",
     "tools/rhino_oracle/observations/source_snapshots/ee621f1f02e9d18cd140fc3aa435c08f8cdd4968c79397177c528f25a7fd2ea7.gz": "3acbf94eb1e7fcb45221d41eaa9644c73e918f70b3336e370a489b27d4ef8809",
     "tools/rhino_oracle/observations/source_snapshots/f98c6bd863d9638633cadf15d6e8bedff378aa16a06bb80491c251c3cd37bec5.gz": "a12d46a5476486aea5efd2eeebe4dcdb7e64e88a9db526d1e00d2b0f87940864",
-    "tools/rhino_oracle/qualification_sources.py": "b6b961e921a714d4faaa3ed1861be13326777dd42f4c0da2aa3c55ebed14a1c2",
+    "tools/rhino_oracle/qualification_sources.py": "d327b4f217d7fdbbb736005c39bd77fb74ac4dcfb1d5ca53a335f9e42ce48ec1",
     "tools/rhino_oracle/report_mesh_boolean_commands.py": "ee51717fb79860840d8c86111924745e809083578a438553080177b3b234cb29",
     "tools/rhino_oracle/rhino_worker.py": "1d17f1a48c80b0f8eb01a5e275fe72e6f95323f6c5c83118e15bc55e980baca4",
     "tools/rhino_oracle/structural_sdk.py": "f55d00964df768da1b8367fe0db0ee0806e50be8804860517da06f13d8f6232b",
-    "tools/rhino_oracle/test_mesh_boolean_commands.py": "2ff219d39574f514399d3dc6225c5ebf494f5f749b68b0c926ea4597af0f5b76"
+    "tools/rhino_oracle/test_mesh_boolean_commands.py": "2ff219d39574f514399d3dc6225c5ebf494f5f749b68b0c926ea4597af0f5b76",
+    "src/app/boolean_solids/input.rs": "2b14b21343ff65509c35032c1a81b128a5acd6f911fce2d0bcd23df5236a5be1",
+    "src/app/boolean_solids/options.rs": "294d3a74651178b34df6079badf868a4e97c9657f5ee4ea232e50799f6a0b518",
+    "src/app/boolean_solids/selection.rs": "1780f77ce57ef466218a16a8fa849531fb964a3ad19ec12d6e40981078a39a4e"
   }
 }

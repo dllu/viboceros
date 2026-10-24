@@ -1,0 +1,133 @@
+//! Boolean picker policy, remembered options, and command formatting.
+use viboceros_command::ObjectSelectionFilter;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(in crate::app) enum BooleanPromptKind {
+    Intersection,
+    Difference,
+    Split,
+    MeshIntersection(&'static str),
+    MeshDifference(&'static str),
+    MeshSplit(&'static str),
+}
+impl BooleanPromptKind {
+    pub(in crate::app) fn from_name(name: &str) -> Option<Self> {
+        [
+            Self::Intersection,
+            Self::Difference,
+            Self::Split,
+            Self::MeshIntersection("Auto"),
+            Self::MeshDifference("Auto"),
+            Self::MeshSplit("Auto"),
+        ]
+        .into_iter()
+        .find(|kind| kind.name().eq_ignore_ascii_case(name))
+    }
+    pub(in crate::app) fn name(self) -> &'static str {
+        match self {
+            Self::Intersection => "BooleanIntersection",
+            Self::Difference => "BooleanDifference",
+            Self::Split => "BooleanSplit",
+            Self::MeshIntersection(_) => "MeshBooleanIntersection",
+            Self::MeshDifference(_) => "MeshBooleanDifference",
+            Self::MeshSplit(_) => "MeshBooleanSplit",
+        }
+    }
+    pub(in crate::app) fn is_intersection(self) -> bool {
+        matches!(self, Self::Intersection | Self::MeshIntersection(_))
+    }
+    pub(in crate::app) fn is_difference(self) -> bool {
+        matches!(self, Self::Difference | Self::MeshDifference(_))
+    }
+    pub(in crate::app) fn shares_sets(self) -> bool {
+        self == Self::Split
+    }
+    pub(in crate::app) fn allows_empty_second(self) -> bool {
+        self == Self::Intersection
+    }
+    pub(in crate::app) fn hint(self, second: bool) -> &'static str {
+        match (self, second) {
+            (Self::Split, true) => "Select cutters; Enter splits, Esc cancels",
+            (Self::Split, false) => "Select targets; Enter continues, Esc cancels",
+            (Self::MeshSplit(_), true) => "Select cutting objects; Enter splits, Esc cancels",
+            (Self::MeshSplit(_), false) => "Select objects to split; Enter continues, Esc cancels",
+            (Self::Difference | Self::MeshDifference(_), true) => {
+                "Select cutters; Enter subtracts, Esc cancels"
+            }
+            (Self::Difference | Self::MeshDifference(_), false) => {
+                "Select targets; Enter continues, Esc cancels"
+            }
+            (Self::MeshIntersection(_), true) => {
+                "Select second set; Enter executes the mesh Boolean, Esc cancels"
+            }
+            (Self::Intersection, true) => {
+                "Select second set; empty Enter intersects the first set, Esc cancels"
+            }
+            (_, false) => "Select first set; Enter continues, Esc cancels",
+        }
+    }
+    pub(in crate::app) fn filter(self) -> ObjectSelectionFilter {
+        if self.mesh_tolerance().is_some() {
+            ObjectSelectionFilter::EdgeAnalysis
+        } else {
+            ObjectSelectionFilter::SurfaceComponents
+        }
+    }
+    pub(in crate::app) fn mesh_tolerance(self) -> Option<&'static str> {
+        match self {
+            Self::MeshIntersection(t) | Self::MeshDifference(t) | Self::MeshSplit(t) => Some(t),
+            _ => None,
+        }
+    }
+    pub(in crate::app) fn with_mesh_tolerance(self, value: &'static str) -> Self {
+        match self {
+            Self::MeshIntersection(_) => Self::MeshIntersection(value),
+            Self::MeshDifference(_) => Self::MeshDifference(value),
+            Self::MeshSplit(_) => Self::MeshSplit(value),
+            _ => self,
+        }
+    }
+}
+#[derive(Clone, Debug)]
+pub(in crate::app) struct BooleanOptions {
+    pub(in crate::app) kind: BooleanPromptKind,
+    pub(in crate::app) delete_input: bool,
+    pub(in crate::app) delete_cutters: bool,
+    pub(in crate::app) preselected_first: bool,
+}
+impl BooleanOptions {
+    pub(in crate::app) fn prompt_line(&self, second: bool) -> String {
+        if let Some(tolerance) = self.kind.mesh_tolerance()
+            && self.kind.is_difference()
+            && !second
+        {
+            format!("{} Tolerance={tolerance}", self.kind.name())
+        } else {
+            self.command_line(false)
+        }
+    }
+    pub(in crate::app) fn command_line(&self, include_hidden: bool) -> String {
+        if let Some(tolerance) = self.kind.mesh_tolerance() {
+            let mut command = format!("{} Tolerance={tolerance}", self.kind.name());
+            if self.kind.is_difference() {
+                command.push_str(&format!(
+                    " DeleteInput={}",
+                    if self.delete_input { "Yes" } else { "No" }
+                ));
+            }
+            return command;
+        }
+        let mut command = format!(
+            "{} DeleteInput={}",
+            self.kind.name(),
+            if self.delete_input { "Yes" } else { "No" }
+        );
+        if self.kind == BooleanPromptKind::Difference && (include_hidden || self.delete_input) {
+            command.push_str(&format!(
+                " DeleteCutters={}",
+                if self.delete_cutters { "Yes" } else { "No" }
+            ));
+        }
+        command
+    }
+}

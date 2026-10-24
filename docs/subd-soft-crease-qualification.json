@@ -2767,7 +2767,7 @@
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
     "crates/viboceros-geometry/src/subd/soft_crease.rs": "1f9bfbfca6b71418e39846e9847351267ee6a26023ac035a041d91247c232f3f",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "7d57142d4b2596c65fd012bf64b86c243ea1533c2a5f30c2f8356c85e94ff4b5",
-    "tools/rhino_oracle/qualification_sources.py": "b6b961e921a714d4faaa3ed1861be13326777dd42f4c0da2aa3c55ebed14a1c2",
+    "tools/rhino_oracle/qualification_sources.py": "d327b4f217d7fdbbb736005c39bd77fb74ac4dcfb1d5ca53a335f9e42ce48ec1",
     "tools/rhino_oracle/fixtures/soft_crease_discovery.json": "a4b4b8c11be52c6dd3fb40375fab38969adcbfdf7a7c4656456528d1554fff3a",
     "tools/rhino_oracle/observations/soft_crease_discovery.json": "1fd646203a9582e12b96643fcc9d4505b23c66a834b712a0c8fba93c55f85adc",
     "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_boundary.3dm": "9984321e1dbb0118f11da2b5c96d3cfdcdae7f2d88b4396e16545f23ee830f7d",
