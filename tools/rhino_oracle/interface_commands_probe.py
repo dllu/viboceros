@@ -191,4 +191,3 @@ def run(operation, host):
             try:restore()
             except Exception as error:errors.append(error)
         if errors:raise errors[0]
-
