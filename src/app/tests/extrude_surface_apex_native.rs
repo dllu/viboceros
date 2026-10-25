@@ -1,7 +1,6 @@
 //! Native command corpus replayed through source selection and the point getter.
+use super::surface_apex_support as support;
 use super::*;
-#[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]
-mod support;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();

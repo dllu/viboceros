@@ -175,6 +175,7 @@ mod bezier;
 mod extrude_along_curve;
 mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
+mod crease_splitting;
 mod curve_connections;
 mod curve_segments;
 mod extension_backend;
@@ -906,6 +907,7 @@ pub trait Command: Send + Sync {
 
 #[derive(Default)]
 pub struct CommandRegistry {
+    crease_splitting: crease_splitting::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     edge_analysis: std::sync::Arc<edge_analysis::Session>,
@@ -936,6 +938,11 @@ pub struct CommandRegistry {
 }
 
 impl CommandRegistry {
+    /// Current application policy; independent registries retain independent settings.
+    pub fn crease_splitting(&self) -> bool {
+        self.crease_splitting.get().0
+    }
+
     pub fn with_builtins() -> Self {
         let mut registry = Self::default();
         registry
@@ -1336,7 +1343,14 @@ impl CommandRegistry {
             .register(extrude_surface_path::ExtrudeSurfacePathCommand)
             .expect("unique built-in command");
         registry
-            .register(ExtrudeCurveAlongCurveCommand)
+            .register(crease_splitting::CreaseSplittingCommand(
+                registry.crease_splitting.clone(),
+            ))
+            .expect("unique built-in command");
+        registry
+            .register(ExtrudeCurveAlongCurveCommand(
+                registry.crease_splitting.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(ExtrudeCurveToPointCommand)

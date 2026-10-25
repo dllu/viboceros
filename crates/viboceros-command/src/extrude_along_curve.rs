@@ -1,12 +1,14 @@
 //! Fixed-orientation curve-path extrusion and transactional document policy.
 use super::*;
+mod options;
+mod topology;
 
 #[cfg(feature = "native-smlib")]
 mod native;
 
 const EXTRUDE_CURVE_ALONG_CURVE_USAGE: &str = "ExtrudeCrvAlongCrv [PathName=name] [DeleteInput=Yes|No] [Output=Surface] [Solid=Yes|No] [SplitAtTangents=Yes|No]";
 
-pub(super) struct ExtrudeCurveAlongCurveCommand;
+pub(super) struct ExtrudeCurveAlongCurveCommand(pub crease_splitting::Preference);
 
 impl Command for ExtrudeCurveAlongCurveCommand {
     fn name(&self) -> &'static str {
@@ -14,7 +16,7 @@ impl Command for ExtrudeCurveAlongCurveCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (path_name, delete_input, solid) = parse_curve_along_curve_options(arguments)?;
+        let (path_name, delete_input, solid, split) = options::parse(arguments)?;
         let selected = selected_ids(document)?;
         let path_id = resolve_curve_along_curve_path(document, &selected, path_name.as_deref())?;
         let path = document
@@ -32,7 +34,8 @@ impl Command for ExtrudeCurveAlongCurveCommand {
             return Err(CommandError::CurveAlongCurveProfilesRequired);
         }
 
-        let path_is_open = !path.is_closed()?;
+        let crease = self.0.get().0;
+        let path_cuts = topology::cuts(&path, crease, split)?;
         #[cfg(feature = "native-smlib")]
         let native_path = viboceros_smlib::KernelCurve::from_nurbs_for_modeling(&path)?;
         let mut extrusions = Vec::new();
@@ -46,26 +49,16 @@ impl Command for ExtrudeCurveAlongCurveCommand {
                 continue;
             };
             #[cfg(not(feature = "native-smlib"))]
-            let geometry = if solid
-                && path_is_open
-                && profile.is_closed()?
-                && profile.is_planar(document.tolerance())?
-            {
-                Geometry::Brep(Brep::try_extruded_curve_along_curve(
-                    &profile,
-                    &path,
-                    document.tolerance(),
-                )?)
-            } else {
-                Geometry::NurbsSurface(NurbsSurface::try_extruded_curve_along_curve(
-                    &profile, &path,
-                )?)
-            };
+            let wall = NurbsSurface::try_extruded_curve_along_curve(&profile, &path)?;
             #[cfg(feature = "native-smlib")]
-            let geometry = native::extrude(
+            let wall = native::surface(&profile, &native_path)?;
+            let profile_cuts = topology::cuts(&profile, crease, split)?;
+            let geometry = topology::finish(
+                wall,
                 &profile,
-                &native_path,
-                solid && path_is_open,
+                &path,
+                [&profile_cuts, &path_cuts],
+                solid,
                 document.tolerance(),
             )?;
             extrusions.push((*id, geometry));
@@ -75,16 +68,13 @@ impl Command for ExtrudeCurveAlongCurveCommand {
         }
 
         let output_count = extrusions.len();
-        let solid_count = extrusions
-            .iter()
-            .filter(|(_, geometry)| matches!(geometry, Geometry::Brep(_)))
-            .count();
-        for (_, geometry) in &extrusions {
-            document.add_geometry(geometry.clone())?;
+        let input_ids = extrusions.iter().map(|(id, _)| *id).collect::<Vec<_>>();
+        for (_, geometry) in extrusions {
+            document.add_geometry(geometry)?;
         }
         if delete_input {
-            for (id, _) in &extrusions {
-                document.delete_object(*id)?;
+            for id in input_ids {
+                document.delete_object(id)?;
             }
         }
         let retained_selection = selected
@@ -92,9 +82,8 @@ impl Command for ExtrudeCurveAlongCurveCommand {
             .filter(|id| *id != path_id && document.object(*id).is_some())
             .collect::<Vec<_>>();
         document.select_objects_direct(retained_selection, SelectionMode::Replace)?;
-        let surface_count = output_count - solid_count;
         Ok(format!(
-            "Extruded {output_count} curve object(s) along the fixed-orientation path into {solid_count} exact capped B-rep solid(s) and {surface_count} exact NURBS surface(s){}",
+            "Extruded {output_count} curve object(s) along the path{}",
             if delete_input {
                 ", deleting the input profiles"
             } else {
@@ -102,50 +91,6 @@ impl Command for ExtrudeCurveAlongCurveCommand {
             }
         ))
     }
-}
-
-fn parse_curve_along_curve_options(
-    arguments: &[&str],
-) -> Result<(Option<String>, bool, bool), CommandError> {
-    let mut path_name = None;
-    let mut delete_input = None;
-    let mut output_seen = false;
-    let mut solid = None;
-    let mut split_at_tangents_seen = false;
-    for argument in arguments {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE));
-        };
-        if option_name_eq(name, "PathName") && path_name.is_none() && !value.is_empty() {
-            path_name = Some(value.to_owned());
-        } else if option_name_eq(name, "DeleteInput") && delete_input.is_none() {
-            delete_input = Some(
-                parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?,
-            );
-        } else if option_name_eq(name, "Output") && !output_seen {
-            if !value
-                .trim_start_matches('_')
-                .eq_ignore_ascii_case("Surface")
-            {
-                return Err(CommandError::UnsupportedCurveAlongCurveOutput);
-            }
-            output_seen = true;
-        } else if option_name_eq(name, "Solid") && solid.is_none() {
-            solid = Some(
-                parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?,
-            );
-        } else if option_name_eq(name, "SplitAtTangents") && !split_at_tangents_seen {
-            parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?;
-            split_at_tangents_seen = true;
-        } else {
-            return Err(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE));
-        }
-    }
-    Ok((
-        path_name,
-        delete_input.unwrap_or(false),
-        solid.unwrap_or(false),
-    ))
 }
 
 pub(super) fn resolve_curve_along_curve_path(

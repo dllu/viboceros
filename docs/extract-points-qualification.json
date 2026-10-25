@@ -59789,7 +59789,7 @@
     "crates/viboceros-command/src/extract_points/tests.rs": "85f5aaf1a4fea0b8ac5372c9b520aaa87841ce9ec170456e80b1f363ef8a1104",
     "crates/viboceros-command/src/insert_point.rs": "0e948a1ef1f886d78709e1827a6b9b0c8f64d850fa2f1414f577f3db2c4d59cf",
     "crates/viboceros-command/src/insert_point/arguments.rs": "bb58f088febb9cc55239a0b98ac937ed20d85c4b77cfc1ab60fc5bde00236455",
-    "crates/viboceros-command/src/lib.rs": "d46fe52702fc948bc7b34658fce1b3b100f7732538b02ef1d6ba4a44a7239789",
+    "crates/viboceros-command/src/lib.rs": "a609042064ab4af3e877318c3fb3157ab99af7fd76054ea2a56deacbc10c7c72",
     "crates/viboceros-command/src/mesh_boolean.rs": "c4f2bd72509dd45d4cb0dc633268da557e3656af52d94de419babfb6dd842f80",
     "crates/viboceros-command/src/mesh_boolean/arguments.rs": "4a6ad213fd85ef2779fe09e620d1afdf514f9ef7b77cca98a5ca5177228a8fce",
     "crates/viboceros-command/src/mesh_boolean/execute.rs": "bd64cf2a412f6a8d1db9149f943b45038afc8ac91193f1b01060291f473a7ae1",
@@ -59869,7 +59869,7 @@
     "crates/viboceros-document/src/selection.rs": "9618d60bf65250e5cda636ce04aa4f904c9298644f9520c72b88643b1370ef9f",
     "crates/viboceros-document/src/selection/replay_tests.rs": "685f817b05d5ae6744dc2ec9dc49763b3f5ef54e53e01b1d6fb9910bd0ca1759",
     "crates/viboceros-document/src/subd_display.rs": "986859786237c1d80ceb1c08065bff04b66c27c999b90db836375a5b711c8cd0",
-    "crates/viboceros-geometry/src/lib.rs": "3c3f995d0d223434891c01e8ed6c9ecc8c5a162c07bdbb25aa9fe3ee10aa4dee",
+    "crates/viboceros-geometry/src/lib.rs": "9549b4ca38ec3809c9fa46c52764905358fd2af4619ae408eb29fb9d8777d8c7",
     "crates/viboceros-geometry/src/mesh/channel_transfer.rs": "e3b566f95a49835027447cd80370b104c1abcc36ee452c1826d3595532e5f9c9",
     "crates/viboceros-geometry/src/mesh/channel_transfer/tests.rs": "7a3fcfa904f3776d5efd0f6112da96b6c2bd189988607262644d70218ff1a3f4",
     "crates/viboceros-geometry/src/mesh/channel_transfer/weights.rs": "0cab99adfb5ebbe5f4c9e3012fdf0b44be020f39e6de27bbccc7f3aaac3e0f72",
@@ -59954,7 +59954,7 @@
     "src/app/tests/face_edge_input.rs": "5a3073701e8da3181f8e3306badcc2fcc2f6b175740891dc1d612b0c204e4abc",
     "src/app/tests/mesh_edit_input.rs": "a4fd1266f4f6fa9b6dabd24745f9ec11375fd2e3e299c0f422475d488b378105",
     "src/app/tests/mesh_primitive_input.rs": "31ed51730b62b47d6dc9c3b9528a3855f898029f76883d050ff5e07a63ed58b5",
-    "src/app/tests/mod.rs": "c7297735f774d6b2125fdb8b18921fe7a63c20484f85661177eaf1cd707a7b89",
+    "src/app/tests/mod.rs": "f952d0f72168af42367293dd99fd5ac9436d2bf96800f5ece758b5d42742f369",
     "src/app/tests/polyline_closure.rs": "f215e64f86f7ac2628d272145108dc7661ac269e8000ba54c2ca316749309fd5",
     "src/app/tests/primitive_input.rs": "cb745190ea55cfbca6bbc77c7da7ed8c1e845590cf114318949718179e055652",
     "src/app/tests/round_primitive_input.rs": "5d700393bc1a19f4fdc67402ba38a6058cff1cc9cd5220453d9569b95e8d6b64",
@@ -60098,8 +60098,10 @@
     "tools/rhino_oracle/observations/source_snapshots/df92f0b0d028d1ff8885c26ec2f868103509fc5a130002903156d6ceff390248.gz": "c9172a30fe650c9a1c2db748dfb6defadad06b84db9f5a0be2cd764550bd3d67",
     "tools/rhino_oracle/observations/source_snapshots/f7194c16c3d914a1ee38dd5cb68678a3781f3943956e80e3c4d935d1a5cfabc7.gz": "b4b86385cec662133e6c7d94d683f9c71b21235a2110327741798649f31fe592",
     "tools/rhino_oracle/owned_brep_command.py": "d4f80d5be8a04368c9810453134acbd2fa6d762deb0dd2ccae2efd343947169e",
-    "tools/rhino_oracle/qualification_sources.py": "f09c11aac47d88c1e1069bdd8c7e6a330b4fac8558f5fb2d0b8b0ec916825d02",
+    "tools/rhino_oracle/qualification_sources.py": "1413e1056f2b5ed7c7b04edde54241aac8e86eba7fd7cc1100f5dfef3c49aa92",
     "tools/rhino_oracle/report_extract_points.py": "7e46df249f70c71e78f704768a9b8c1aed3e654ecf6fbd2a36ab7ff4a8166d83",
-    "tools/rhino_oracle/test_extract_points.py": "5d3a88c9ede14e929891b53bb5bb72151f5b94ee63a183971384652181b71d00"
+    "tools/rhino_oracle/test_extract_points.py": "5d3a88c9ede14e929891b53bb5bb72151f5b94ee63a183971384652181b71d00",
+    "crates/viboceros-command/src/crease_splitting.rs": "aef210d905f803998a059582812ec3ba9da9d19ef95e1530a2903cb1d53a9500",
+    "crates/viboceros-command/src/crease_splitting/tests.rs": "b2ce0dc2bb57902cfa3d3ce4e6bad2901215b90e1cd4a91808dab61fae22a772"
   }
 }

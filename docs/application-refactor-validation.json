@@ -83,13 +83,13 @@
     "c55b1cc029ac5954ed7079f61eedaa25ee8f9492:src/app/tests/mesh_edit_input.rs": "830d7640281a0ba9cc53add8908e6ebbcc2451c21688e28f0df71169ac2ccca1",
     "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/interactive_state/prompts.rs": "58af4a1f006faa716017c1064292b7e56454cb61f2a9b6eefadf4e7c3c592920",
     "a0d6b36381c20d97b6c38740df8000081a058017:src/app/selection_input.rs": "b2613b77a55730f01beecda72b96832b0b51d984d3863fa5016e6f11ba1f3e2e",
-    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:docs/development.md": "8c11cc779b1c6286431200863178489ca1453ba1ad88165bf83cef9da85bc243"
+    "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:docs/development.md": "8c11cc779b1c6286431200863178489ca1453ba1ad88165bf83cef9da85bc243",
+    "02fead1d8870372d6db024f112f7ae0799a5be22:docs/command-test-refactor-validation.json": "90a245219fdee3e54546a7e89acf3002d22f2e7357d95cad938d5d3304672cb3"
   },
   "sha256": {
     "README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
     "docs/architecture.md": "2cf24025a30a8257eae80be9b2863774da5476f3ae8d139cc092ce7cf6264ef9",
     "docs/architecture/application.md": "994dd07975a4073f80cf56a7c778428e6b6a62ea9c670c013bcdc11534d98976",
-    "docs/command-test-refactor-validation.json": "90a245219fdee3e54546a7e89acf3002d22f2e7357d95cad938d5d3304672cb3",
     "docs/oracle/editing-evidence.md": "4abdfe308d3a4bb552bd10902b0929629770ee82c5762d59b6b6b81b945b10f9",
     "docs/validation-checkpoint.md": "9508c8ab87eca6c61646c3bbb9ed25f8a19992a45159b902102a585fe7deebaa",
     "docs/validation/2026-10-09/blocks-section.md": "5d01f0518bae06537c47697af87c29dfe98f01f58ae02e8447e15eb6d09fed1b",

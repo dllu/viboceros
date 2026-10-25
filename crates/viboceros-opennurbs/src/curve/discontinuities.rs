@@ -1,5 +1,14 @@
-//! Interior tangent or aesthetic smoothness breaks from public OpenNURBS.
+//! Interior G1, G2, or aesthetic smoothness breaks from public OpenNURBS.
 use super::{CurveQueryError, c_char, c_int};
+
+/// Public OpenNURBS geometric continuity policies, independent of curve speed.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[repr(i32)]
+pub enum CurveContinuity {
+    G1 = 0,
+    Gsmooth = 1,
+    G2 = 2,
+}
 
 unsafe extern "C" {
     fn vibo_curve_discontinuities(
@@ -8,7 +17,7 @@ unsafe extern "C" {
         controls: *const f64,
         knot_count: usize,
         knots: *const f64,
-        smooth: c_int,
+        continuity_kind: c_int,
         cos_angle_tolerance: f64,
         found: *mut usize,
         parameters: *mut f64,
@@ -26,6 +35,28 @@ pub fn curve_discontinuities(
     controls: &[[f64; 4]],
     knots: &[f64],
     smooth: bool,
+    cos_angle_tolerance: f64,
+) -> Result<Vec<f64>, CurveQueryError> {
+    curve_continuity_breaks(
+        degree,
+        controls,
+        knots,
+        if smooth {
+            CurveContinuity::Gsmooth
+        } else {
+            CurveContinuity::G1
+        },
+        cos_angle_tolerance,
+    )
+}
+
+/// Interior discontinuities for the chosen G1, G2, or Gsmooth policy. G2
+/// compares curvature vectors; Gsmooth uses the native aesthetic curvature test.
+pub fn curve_continuity_breaks(
+    degree: usize,
+    controls: &[[f64; 4]],
+    knots: &[f64],
+    continuity: CurveContinuity,
     cos_angle_tolerance: f64,
 ) -> Result<Vec<f64>, CurveQueryError> {
     let degree = u32::try_from(degree)
@@ -53,7 +84,7 @@ pub fn curve_discontinuities(
             controls.as_flattened().as_ptr(),
             knots.len(),
             knots.as_ptr(),
-            c_int::from(smooth),
+            continuity as c_int,
             cos_angle_tolerance,
             &mut found,
             parameters.as_mut_ptr(),
@@ -121,6 +152,17 @@ mod tests {
             assert_eq!(
                 curve_discontinuities(2, &controls, &knots, true, cosine).unwrap(),
                 smooth
+            );
+            assert_eq!(
+                curve_continuity_breaks(
+                    2,
+                    &controls,
+                    &knots,
+                    CurveContinuity::G2,
+                    1_f64.to_radians().cos()
+                )
+                .unwrap(),
+                vec![2., 3., 5.]
             );
             assert_eq!(controls, before);
         }

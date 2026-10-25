@@ -258,7 +258,7 @@
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "50da8b4782440543b5bc1209c4988b0bf5ac44ace55ff040b587e54c3020ee67",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "crates/viboceros-io/src/three_dm/mesh_ngon.rs": "a8b04d6c4a5b62ee1c2caa3accc7cdec72a30eeaffd1ce6d31f4fb4aceb22a2a",
-    "tools/rhino_oracle/qualification_sources.py": "f09c11aac47d88c1e1069bdd8c7e6a330b4fac8558f5fb2d0b8b0ec916825d02",
+    "tools/rhino_oracle/qualification_sources.py": "1413e1056f2b5ed7c7b04edde54241aac8e86eba7fd7cc1100f5dfef3c49aa92",
     "tools/rhino_oracle/observations/source_snapshots/d8181fce0898f74203cf1f3060689553385c8e91cdcb5bc1790a76b230a7d3dd.gz": "c01142e5acb6f4ad876d83ed71e73207ebefe07918d859e93936ba35a9c78966",
     "tools/rhino_oracle/observations/source_snapshots/0a38a3b9fa37e4bb3269ea3ccc0296c314c03f1489603a094506a01aedb6a395.gz": "f9c4b9721601c11183732e6f6a962d6d24c0e9799f69135e5d4db84a6ff01631",
     "tools/rhino_oracle/observations/source_snapshots/8f679396f41192b68e6497785e5324695f805e2124cd01414c5f614b70598b42.gz": "d76d7b6f53c9d7d472a2dd98187b7b25c1c8734018b063360cba401e78c2518c",
@@ -319,8 +319,8 @@
     "crates/viboceros-opennurbs/native/extrusion_cap_projection.h": "43726099974602db55c0bf95b4d37bedabdbda2852d27c5c04e07f3f1ac162ec",
     "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f",
     "crates/viboceros-opennurbs/native/CMakeLists.txt": "1fc44d0d3063e0c7c355f4aae602b41d676e37021bf758638990f402d7fa4d79",
-    "crates/viboceros-opennurbs/native/curve_discontinuities.h": "340baef502a143e1342e3bf3e034e4ec0db116cfd3d1bdef12129c7647e63f7b",
-    "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "e5fe8f02fba133c77dea26aad38e674e1b76a5514acec7171c1efb3c55e79b32",
-    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "836673ac588154cee0f16c3ea57b4f68054e93f13db6c816e3d21b43fa11e88a"
+    "crates/viboceros-opennurbs/native/curve_discontinuities.h": "4355187845a43c9f2a1f4022ab90d877b9b417babc76d28de818955bd685ac0e",
+    "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5",
+    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad"
   }
 }

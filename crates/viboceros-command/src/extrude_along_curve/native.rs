@@ -1,29 +1,17 @@
-//! Native exact translational sweep and shared native end-cap construction.
+//! Native exact translational sweep, recentered independently per profile.
 use super::*;
-use viboceros_smlib::{KernelCurve, Shape};
+use viboceros_smlib::KernelCurve;
 
-pub(super) fn extrude(
+pub(super) fn surface(
     curve: &NurbsCurve,
     path: &KernelCurve,
-    solid: bool,
-    tolerance: Tolerance,
-) -> Result<Geometry, CommandError> {
+) -> Result<NurbsSurface, CommandError> {
     let origin = curve.evaluate(*curve.domain().start())?;
     let zero = Point3::try_new(0., 0., 0.)?;
     let local = curve.transformed(AffineTransform3::from_translation(origin.vector_to(zero)?))?;
     let profile = KernelCurve::from_nurbs_for_modeling(&local)?;
     let restore = AffineTransform3::from_translation(zero.vector_to(origin)?);
-    if solid && curve.is_closed()? && curve.is_planar(tolerance)? {
-        Ok(Geometry::Brep(
-            Shape::translational_sweep(&profile, path, tolerance)?
-                .to_brep(tolerance)?
-                .transformed(restore, tolerance)?,
-        ))
-    } else {
-        Ok(Geometry::NurbsSurface(
-            profile.translational_sweep(path)?.transformed(restore)?,
-        ))
-    }
+    Ok(profile.translational_sweep(path)?.transformed(restore)?)
 }
 
 #[cfg(test)]

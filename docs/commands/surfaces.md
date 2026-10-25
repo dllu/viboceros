@@ -207,17 +207,12 @@ trimmed cap, shared rational rim, and one twice-used wall seam; open and
 nonplanar profiles remain surfaces. `Output=Surface` and `Solid=No` are accepted
 explicitly; SubD output is not yet represented.
 
-`ExtrudeCrvAlongCrv` creates an exact fixed-orientation sum surface from each
-selected profile and a curve path. Name the path with `PathName=`, or select it
-last; the toolbar uses the last-selected convention. The path is retained and
-deselected. `DeleteInput=Yes` removes only successfully extruded profiles.
-Profile degree, knots, and weights become U; path data becomes V; tensor weights
-are multiplied exactly. With an open path whose endpoints leave the profile
-plane, `Solid=Yes` turns each closed planar profile into an exact capped B-rep
-with translated planar trims, shared rational rims, and an exact copy of the
-path as the twice-used wall seam. Open and nonplanar profiles, or profiles swept
-along a closed path, remain surfaces. `Output=Surface` and `Solid=No` are
-accepted explicitly.
+`ExtrudeCrvAlongCrv` creates exact fixed-orientation sum surfaces from selected
+profiles and a path named with `PathName=`, or selected last. `SplitAtTangents`
+and `CreaseSplitting` now create shared edges in both directions. `Solid=Yes`
+caps eligible planar boundary loops; `DeleteInput` applies only to profiles.
+See [curve-path extrusion](../smlib-translational-sweep.md) for defaults,
+source policy, native comparisons, and remaining limitations.
 
 `Revolve` creates exact rational NURBS surfaces around an arbitrary two-point
 axis. Supply a signed sweep from -360 through 360 degrees, or use

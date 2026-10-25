@@ -501,11 +501,10 @@ fn generated_surface_command(
             source_ids.iter().copied(),
             viboceros_document::SelectionMode::Replace,
         )?;
-        viboceros_command::CommandRegistry::with_builtins().execute_in_context(
-            &mut document,
-            command,
-            context,
-        )?;
+        let registry = viboceros_command::CommandRegistry::with_builtins();
+        // These legacy native captures explicitly disabled crease splitting.
+        registry.execute(&mut document, "CreaseSplitting Disable")?;
+        registry.execute_in_context(&mut document, command, context)?;
         let surfaces = document
             .objects()
             .filter(|object| !source_ids.contains(&object.id()))

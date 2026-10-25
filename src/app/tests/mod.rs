@@ -46,9 +46,15 @@ mod curve_array;
 mod curve_completion;
 mod curve_deviation;
 mod curve_input;
+#[cfg(feature = "native-smlib")]
+#[path = "../../../crates/viboceros-oracle/tests/support/curve_path.rs"]
+mod curve_path_support;
 mod curve_rebuild_preview;
 mod delete_grips;
 mod delete_subcurve;
+#[cfg(feature = "native-smlib")]
+#[path = "../../../crates/viboceros-oracle/tests/support/compare.rs"]
+mod diagnostic_comparison;
 mod distance;
 mod distribute;
 mod divide_creases;
@@ -65,6 +71,8 @@ mod evaluate_uv;
 mod extract_curvature_graph;
 mod extract_points;
 mod extract_surface;
+#[cfg(feature = "native-smlib")]
+mod extrude_curve_path_native;
 mod extrude_surface;
 mod extrude_surface_apex;
 #[cfg(feature = "native-smlib")]
@@ -133,6 +141,9 @@ mod polyline_on_mesh;
 mod primitive_input;
 mod round_primitive_input;
 mod selection_sidebar;
+#[cfg(feature = "native-smlib")]
+#[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]
+mod surface_apex_support;
 mod transform_input;
 mod trim_split_input;
 

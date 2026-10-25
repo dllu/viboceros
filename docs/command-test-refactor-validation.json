@@ -138,7 +138,6 @@
     "crates/viboceros-command/src/tests/surfaces/direction.rs": "8912cab0a07315ee9d027ce8c4e31a529db149c6adf2da402426636ee8f28706",
     "crates/viboceros-command/src/tests/surfaces/extend.rs": "5a02b6a5634b3070d3407bb8146ba110ccbdb4590b0676b9504fbd3004e3cedd",
     "crates/viboceros-command/src/tests/surfaces/extraction.rs": "645362670f5a8c6602c3f9250910bb0b8c1b09c1fc01dd9eadbfde4bc2078134",
-    "crates/viboceros-command/src/tests/surfaces/extrusions.rs": "b910b92beec0e6bde3575ae7e30605ea4d9b068b606797ec8f1373c4defbc966",
     "crates/viboceros-command/src/tests/surfaces/isocurve_split.rs": "0397be842bf85b9eaeba821812b3392a33c3a51ae122b4e32aacc9e7447a365d",
     "crates/viboceros-command/src/tests/surfaces/mod.rs": "162e01b3bf779930a810bf671bdfed7f99d4c0594620798c9ae41d02a3ad0c1d",
     "crates/viboceros-command/src/tests/surfaces/seams.rs": "4adb9153cb1a3a984a1e57f42c6652c8b9974ff81716d7421f4d2288f34890f7",
@@ -162,5 +161,8 @@
   "validation_git_sha256": {
     "225a7d7a965e9cbfc6eea534f864c76eddd216b1:README.md": "4b9ac76e2f76be97e09de3a7759a500d46a9575f094ed4b0a5d14904e5f56ba2",
     "225a7d7a965e9cbfc6eea534f864c76eddd216b1:docs/development.md": "c826cecb53cbffe7440e5810580c3726b2050b082e00ceca9ba34a48840e394b"
+  },
+  "git_sha256": {
+    "02fead1d8870372d6db024f112f7ae0799a5be22:crates/viboceros-command/src/tests/surfaces/extrusions.rs": "b910b92beec0e6bde3575ae7e30605ea4d9b068b606797ec8f1373c4defbc966"
   }
 }

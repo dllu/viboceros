@@ -193,6 +193,23 @@ def _expand_sources_once(paths):
              'crates/viboceros-command/src/mesh_partition/appearance.rs'}
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
                                       'src/component_seams/arguments.rs') for p in paths]
+    if 'crates/viboceros-command/src/lib.rs' in expanded:
+        expanded.extend(['crates/viboceros-command/src/crease_splitting.rs',
+                         'crates/viboceros-command/src/crease_splitting/tests.rs'])
+    if 'crates/viboceros-command/src/extrude_along_curve.rs' in expanded:
+        expanded.extend(['crates/viboceros-command/src/extrude_along_curve/options.rs',
+                         'crates/viboceros-command/src/extrude_along_curve/topology.rs',
+                         'crates/viboceros-command/src/extrude_along_curve/native.rs'])
+    if 'crates/viboceros-geometry/src/nurbs.rs' in expanded:
+        expanded.append('crates/viboceros-geometry/src/nurbs/discontinuities.rs')
+    if 'crates/viboceros-oracle/src/lib.rs' in expanded:
+        expanded.append('crates/viboceros-oracle/src/curve_path_extrusion.rs')
+    if 'crates/viboceros-oracle/tests/support/surface_apex.rs' in expanded:
+        expanded.append('crates/viboceros-oracle/tests/support/compare.rs')
+    if any(p in expanded for p in ['src/app/tests/extrude_surface_apex_native.rs',
+                                   'src/app/tests/extrude_curve_path_native.rs']):
+        expanded.extend(['src/app/tests/mod.rs',
+                         'crates/viboceros-oracle/tests/support/compare.rs'])
     if any(p in expanded for p in ['crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp',
             'crates/viboceros-opennurbs/src/curve.rs', 'crates/viboceros-smlib/native/surface_apex_extrusion.h']):
         expanded.extend(['crates/viboceros-opennurbs/native/curve_discontinuities.h',

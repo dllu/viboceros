@@ -1,68 +1,61 @@
-# Native fixed-orientation curve-path extrusion
+# Fixed-orientation curve-path extrusion
 
-Linux builds with `--features native-smlib` use usd-brep for
-`ExtrudeCrvAlongCrv` sheets and capped solids. The separate command module
-keeps parsing, path selection and transactional document policy. Native builds
-exclude the direct Rust tensor and cap builders from this command.
+`ExtrudeCrvAlongCrv [PathName=name] [Output=Surface] [Solid=Yes|No]
+[DeleteInput=Yes|No] [SplitAtTangents=Yes|No]` translates each selected profile
+along the path without rotating it. Name the path or select it last. Outputs
+use the current layer and default attributes; the path is retained and deselected.
+Profiles remain selected unless deleted. Defaults are Solid=No, DeleteInput=No,
+and SplitAtTangents=No.
 
-The adapter calls existing `SmBSplineSurface::CreateSweepSurface` with
-`bDoTranslationalSweep=True`. It copies the path and translates that private
-copy by its evaluated start point using native `Transform`. This constructs
-`profile(u) + path(v) - path(start)` exactly, with fixed profile orientation,
-profile U and path V. The public `SmApiCreateSweep` wrapper instead selects a
-rotating approximate sweep; its source-audited restriction is in the
-[limitations ledger](usd-brep-limitations.md).
+`SplitAtTangents=Yes` now partitions both curve directions at geometric G2
+breaks using a one-degree angular tolerance. `CreaseSplitting Enable|Disable|Toggle`
+independently controls G1 cuts above 0.1 degree, initially enabled. These two
+policies are combined; repeated knots or unequal parameter speeds alone do not
+force edges. The new application preference is currently connected to this
+command; integration with other surface constructors remains work to do.
 
-Closed planar profiles along open paths use native `CreateEndCapsFromSurface`
-on a private B-rep configured with the document tolerance. Cap construction,
-checked stitching, manifold checks and exact NURBS conversion now share the
-apex extrusion helper. Export reuses the existing validated B-rep transfer.
-Caps whose endpoint displacement remains in the profile plane are rejected.
-Open/nonplanar profiles and closed paths retain sheet output when Solid is
-requested. Constant paths are rejected before native tensor construction.
+`Solid=Yes` caps planar boundary loops of the resulting surface. This also
+handles open profiles along closed paths: a bent open profile can yield planar
+rim loops and a capped solid. A flat sheet remains a sheet. Requesting caps on
+an already closed result is rejected. All results are staged before editing;
+failed commands preserve sources, groups, selection, and prior redo history.
 
-The native path is imported once per command batch. Each profile is built
-relative to its start point and restored with the existing affine transform.
-Native input curves remain owned and usable. Profile and path preparation
-reuse [native active-interval clamping](smlib-curve-import.md) and uniform negative-gauge handling; mixed-sign
-weights and discontinuous interior knots retain importer restrictions. Native
-construction checks the existing one-million-control transfer limit before
-allocating the tensor product.
+Native builds use usd-brep `SmBSplineSurface::CreateSweepSurface` with
+`bDoTranslationalSweep=True`. A private path is shifted by its evaluated start;
+profiles are recentered independently and restored afterward. This constructs
+`profile(u) + path(v) - path(start)`, retaining exact rational tensor data.
+The public `SmApiCreateSweep` wrapper selects a rotating approximate sweep;
+see the [limitations ledger](usd-brep-limitations.md). Portable builds use the
+existing Rust tensor constructor. Both routes reuse public OpenNURBS continuity
+queries, the shared exact face grid, and existing planar-hole capping. Closed
+seams are retained; cap and wall boundaries share their original edges.
 
-All results are staged before document edits. Output attributes remain on the
-current layer, source profiles obey DeleteInput, the path is retained and
-deselected, and source groups, selection order and Undo/Redo follow the existing
-command flow. A later coplanar cap failure preserves the batch and prior redo.
-Separate tangent-splitting behavior remains further work: the existing command
-accepts SplitAtTangents but does not split these tensors.
+The native path is imported once per batch. Active-interval clamping and
+uniform negative-gauge handling use the [shared importer](smlib-curve-import.md).
+Its mixed-sign weight and positional-discontinuity restrictions remain.
+Existing tensor, face-grid, and capping resource limits apply.
 
-The [live fixture](../tools/rhino_oracle/fixtures/curve_native_along.json) covers
-a line, a rational profile, a kinked polyline, a reversed path, a closed circular
-path, unclamped profiles/paths and uniformly negative homogeneous gauges.
-The worker disables CreaseSplitting and SplitAtTangents and records complete
-raw NURBS sheet definitions. See the
-[official command options](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudecrvalongcrv.htm).
-The [raw observations](../tools/rhino_oracle/observations/curve_native_along.json)
-and [comparison](smlib-translational-sweep-comparison.json) retain six complete
-raw matches out of seven, without normalization. The unclamped-path case has
-different outer knots and controls because canonical import clamps its active
-interval. All seven captured 9×9 point grids match at `1e-10` absolute / `1e-12`
-relative epsilon; maximum point-coordinate error is `7.11e-15`. Grid agreement
-does not certify the continuous surface. The same rebuilt probe also matches
-all six retained straight-extrusion/apex sheet records after shared-helper cleanup.
-Native cap regressions independently check rational translation grids, preserved
-parameters and input handles, analytic signed volume for positive/negative paths,
-and invalid paths/caps. These cases do not establish arbitrary self-intersection,
-near-planarity, scale extremes, tangent splitting or Rhino performance parity.
+The [qualification record](curve-path-extrusion-qualification.json) binds 272
+licensed command captures: 168 profile/path combinations and 104 angular and
+curvature cases. API and ordinary application-command replays cover face counts,
+solid classification, bounds, volume, retained source identity, and successful
+Undo/Redo at `1e-6` absolute epsilon. Native helper selection and attributes,
+interactive picking, continuous surface distance, and performance are not qualified.
+Eight native commands failed; in four, Rhino had already deleted the profile.
+Viboceros rolls back those deletions, so failure-state parity is deliberately
+incomplete. Original producer sources are archived with each capture.
 
-Release validation passed 1,310 native command tests and 59 native bridge tests
-(three tests ignored across those suites), two portable command regressions and
-1,095 Python oracle tests. Native clippy with warnings denied and workspace
-formatting checks passed.
+The older [seven-case fixture](../tools/rhino_oracle/fixtures/curve_native_along.json)
+and [raw comparison](smlib-translational-sweep-comparison.json) remain separate:
+both splitting policies were disabled. Six raw NURBS definitions match exactly;
+the unclamped path has different outer knots and controls after canonical import.
+All seven captured 9×9 grids match at `1e-10` absolute / `1e-12` relative epsilon,
+with maximum coordinate error `7.11e-15`. Grids do not certify the continuous locus.
 
 ```sh
-CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-smlib \
-  --features native --test translational_sweep
-CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-command \
-  --features native-smlib extrude_curve_along_curve
+cargo test -p viboceros-oracle --features native-smlib --test curve_path_native
+cargo test -p viboceros-command --features native-smlib --lib extrude_curve_along_curve
 ```
+
+See the [official extrusion options](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudecrvalongcrv.htm)
+and [crease setting](https://docs.mcneel.com/rhino/8/help/en-us/options/general.htm#CreaseSplitting).

@@ -55,6 +55,7 @@ ConvertToSingleSpans
 Copy
 CopyToLayer
 Crease
+CreaseSplitting
 CreateUniqueBlock
 CreateUVCrv
 CrvDeviation
@@ -366,6 +367,7 @@ SubDBox
 SubDCone
 SubDCrease
 SubDCylinder
+SubDDisplayToggle
 SubDEllipsoid
 SubDivide
 SubDPlane

@@ -175,6 +175,7 @@ fn extrude_curve_along_curve_matches_rhino_sum_surface_and_path_retention() {
         "ExtrudeCrvAlongCrv PathName=Rail Output=SubD",
         "ExtrudeCrvAlongCrv PathName=Rail Solid=Yes Solid=No",
         "ExtrudeCrvAlongCrv PathName=Rail SplitAtTangents=Maybe",
+        "ExtrudeCrvAlongCrv PathName=Rail SplitAtTangents=Yes SplitAtTangents=No",
         "ExtrudeCrvAlongCrv PathName=Rail extra",
     ] {
         assert!(
@@ -281,7 +282,7 @@ fn extrude_curve_along_curve_solid_caps_closed_planar_profiles() {
                 "ExtrudeCrvAlongCrv PathName=SolidRail Solid=Yes DeleteInput=No",
             )
             .unwrap(),
-        "Extruded 4 curve object(s) along the fixed-orientation path into 2 exact capped B-rep solid(s) and 2 exact NURBS surface(s)"
+        "Extruded 4 curve object(s) along the path"
     );
     let outputs = document
         .objects()
@@ -315,7 +316,9 @@ fn extrude_curve_along_curve_solid_caps_closed_planar_profiles() {
             < 0.01
     );
     assert!(matches!(outputs[2].geometry(), Geometry::NurbsSurface(_)));
-    assert!(matches!(outputs[3].geometry(), Geometry::NurbsSurface(_)));
+    assert!(
+        matches!(outputs[3].geometry(), Geometry::Brep(b) if !b.is_solid() && b.faces().len()==4)
+    );
     assert!(source_ids.iter().all(|id| document.is_selected(*id)));
     assert!(!document.is_selected(path_id));
     assert_eq!(document.undo_label(), Some("ExtrudeCrvAlongCrv"));
