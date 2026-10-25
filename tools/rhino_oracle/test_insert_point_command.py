@@ -53,6 +53,12 @@ class InsertPointCommandTests(unittest.TestCase):
     def test_shared_source_expansion_binds_extracted_code_in_one_pass(self):
         for root, required in [
             ('src/app.rs', ['src/app/insert_point.rs', 'src/viewport/insert_point.rs']),
+            ('crates/viboceros-geometry/src/loft.rs', [
+                'crates/viboceros-geometry/src/loft/parameterize.rs',
+                'crates/viboceros-geometry/src/loft/parameterize/tests.rs',
+                'crates/viboceros-geometry/src/integration/cash_karp.rs',
+                'crates/viboceros-opennurbs/native/curve_speeds.h',
+                'crates/viboceros-opennurbs/src/curve/speeds.rs']),
             ('src/viewport.rs', ['src/viewport/insert_point.rs']),
             ('crates/viboceros-geometry/src/mesh.rs', [
                 'crates/viboceros-geometry/src/mesh/aspect_ratio.rs',

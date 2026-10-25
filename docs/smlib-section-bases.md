@@ -12,6 +12,12 @@ and common full knot vectors. Sources are immutable; native handles never enter
 document state. Command helpers propagate kernel failures through the existing
 typed error conversion before document mutation.
 
+Before exact basis edits, Loft now shares the
+[region-based parameter preparation](loft.md#geometry-and-modules) between
+backends. Full-multiplicity curvature breaks can be matched; simple smooth knots
+retain their original correspondence. Both backends preserve the same remaining
+symmetric near-tie limitation documented in [Loft validation](loft-validation.md).
+
 Loft keeps its per-section weight scale and shared endpoint-weight normalization,
 including the first-section knot policy that can move later unequal-end-weight
 profiles. Sweep1 keeps its common weight scale and positive-weight requirement.
@@ -45,7 +51,7 @@ Freeform/Roadlike frames. Sampled sections and the fitted surface are checked
 against the portable model. Shared-policy tests verify operation order, budget
 rejection before backend entry, layout validation and immutable inputs.
 
-The complete native geometry/command/bridge run passes 3,595 tests (11 ignored),
+The original native section-basis qualification run passed 3,595 tests (11 ignored),
 with two additional debug policy regressions passing: 3,597 distinct cases in
 total. Workspace lint passes in both feature configurations with warnings denied,
 and formatting passes. The [comparison](smlib-section-bases-comparison.json)
@@ -64,11 +70,11 @@ section matching does not change those existing geometry/representation policies
 Native degree, resource, chart and weight restrictions remain those of the
 existing exact-edit adapters, including the documented full-order degree-elevation
 failure. These finite checks do not certify arbitrary profile/weight ratios,
-continuous fit error or kernel speedups. Fresh licensed Rhino captures remain
-unavailable pending repair of the Wine licensing startup described in
-[isocurve qualification](smlib-isocurves.md).
+continuous fit error or kernel speedups. Fresh Rhino 8.32 captures for the new
+Loft region policy are retained with their frozen producer sources; see
+[Loft validation](loft-validation.md).
 
 ```sh
-CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-smlib \
+CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib \
   --features native --test loft_basis --test section_sweep
 ```

@@ -22,6 +22,13 @@ every possible input.
 
 ## Geometry and modules
 
+`loft/parameterize` first matches curvature-discontinuous, full-multiplicity
+section boundaries when raw knot vectors differ. It uses a coarse length estimate
+and monotone boundary correspondence, then preserves relative knots inside each
+matched region. Simple smooth knots retain their correspondence; changing them
+piecewise would deform the profile. Matching degree/knot layouts take the existing
+structural path, as do segmented inputs with positional jumps.
+
 `loft/compatible` constructs a shared normalized basis through exact clamping,
 degree elevation and knot insertion. It then normalizes endpoint weights through
 the shared [projective normalizer](nurbs-numerics.md#endpoint-weight-normalization),
@@ -71,56 +78,11 @@ Tests also exercise open grids and split spheres with sewn seams and poles.
 
 ## Validation and limits
 
-Permanent fixtures contain 34 API loft cases, 33 command cases, and four
-same-file 3DM interchange cases. All 67 API/command fixtures now also request
-289 unrounded surface points on a 17-by-17 normalized-UV grid per output face,
-in addition to coefficients and command state. Exploratory comparisons cover 90 API cases:
-two through six sections, all five styles, closed loops, rational circles,
-mixed degrees and knots, polylines, common weight scales, and unequal endpoint
-weights. On the tested Rhino 8.32 build, all 90 API and 33 command cases match at
-`1e-9 + 1e-12 * max(|a|, |b|)`; largest numeric differences are respectively
-`1.25e-13` and `7.11e-15`. Command records include face directions, validity,
-edge/vertex counts, and document state. Faces are compared in UV-domain order,
-not implementation-specific allocation order.
+The [validation record](loft-validation.md) describes native fixtures, replay
+commands, sampled error bounds, and the remaining native comparison gaps.
 
-`loft_end_weights.json` adds equal-weight large-coordinate and ordinary
-unequal-weight ruled profiles. `loft_end_weights_diagnostics.json` retains three
-near-equal-weight cases, **not passing references** at the ordinary `1e-9`
-absolute / `1e-12` relative bound. In the public Rhino 8 probe, changing an end
-weight from `1` to `1 ± 1e-8` moves a supplied endpoint from `6e8` to
-`6e8 ± 3`, and changes the second profile's endpoint heights by `1.5`.
-The unit-scale case has the same `3e-8` endpoint displacement. Native tests
-independently compare all 289 ruled-surface points to the original profiles
-under the analytic Möbius parameter map and retain their exact corner locations.
-The diagnostic is not merely a difference in surface parameter speed.
-
-The `sample_geometry=true` oracle field enables these additional points for both
-API and command operations, in U-major/V-minor order. Geometry-API sampling stays
-outside the construction timer; command timings still include result recording.
-A fresh 72-case run of the expanded fixtures passes all 67 existing cases and the
-two new passing cases at `1e-9 + 1e-12 * max(|a|, |b|)`; the three deliberate
-diagnostics remain visible. Grid samples are bounded checks, not continuous
-surface-error certificates.
-The 67 existing API/command cases also pass a separate fresh run at their default
-document tolerances, with maximum absolute error `1.25e-13`.
-
-A combined live run of the 34 permanent API cases, all 33 commands, four loft
-3DM cases, and eight existing morphed 3DM cases also passes the stricter
-`2e-12 + 1e-14 * max(|a|, |b|)` bound. Both readers validate and mesh the same
-exported loft B-reps. Periodic 3DM records canonicalize only the two outer knot
-entries that OpenNURBS does not store; all stored coefficients remain checked.
-
-```sh
-tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/loft.json \
-  --absolute-epsilon 1e-9 --relative-epsilon 1e-12
-tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/loft_command.json \
-  --absolute-epsilon 1e-9 --relative-epsilon 1e-12
-tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/loft_3dm_interchange.json \
-  --absolute-epsilon 2e-12 --relative-epsilon 1e-14
-```
-
-Limits are 256 sections, 512 compatible controls per section, and 4096 grid
-faces. Finite-input checks and resource limits precede large fitting allocations.
+Limits are 256 sections, 512 compatible controls per section, 65,536 attempted
+length-integration steps per preparation, and 4096 grid faces. Finite-input checks and resource limits precede large fitting allocations.
 Common weight scales and local-coordinate solves avoid avoidable reciprocal
 overflow and world-offset cancellation. Coincident consecutive compatible
 control polygons are rejected. No general self-intersection, denominator-pole,
@@ -131,7 +93,8 @@ interactive seam editing, start/end tangent matching, Rebuild/Refit simplificati
 `SplitAtTangents`, and configurable global `CreaseSplitting`. Nonparallel or
 nonplanar closed sections currently keep input order. Native parameter preservation
 of analytic input curves is not promised: loft deliberately builds a normalized
-compatible basis. The command does not cap its ends.
+compatible basis. Nearly symmetric profiles can select a different boundary from Rhino when
+coarse length comparisons tie at machine precision. The command does not cap its ends.
 
 API timing measures repeated tensor construction only. Command timing includes
 document setup, execution, recording, and cleanup. One small-fixture run took

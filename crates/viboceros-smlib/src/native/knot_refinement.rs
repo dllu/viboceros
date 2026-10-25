@@ -2,8 +2,8 @@
 use super::*;
 use viboceros_geometry::SurfaceKnotDirection;
 
-/// Match section degree, knots and endpoint-weight policy using the existing
-/// native clamping, exact elevation and refinement operations.
+/// Share section-region parameters, then match degree, knots and endpoint
+/// weights with existing native clamping, exact elevation and refinement.
 pub fn prepare_loft_sections(curves: &[NurbsCurve]) -> Result<Vec<NurbsCurve>, Error> {
     viboceros_geometry::prepare_loft_sections_with_operations(
         curves,

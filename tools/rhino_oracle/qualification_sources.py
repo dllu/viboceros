@@ -200,6 +200,15 @@ def _expand_sources_once(paths):
         expanded.extend(['crates/viboceros-command/src/extrude_along_curve/options.rs',
                          'crates/viboceros-command/src/extrude_along_curve/topology.rs',
                          'crates/viboceros-command/src/extrude_along_curve/native.rs'])
+    if any(p in expanded for p in ['crates/viboceros-geometry/src/loft.rs',
+                                   'crates/viboceros-geometry/src/loft/compatible.rs']):
+        expanded.extend(['crates/viboceros-geometry/src/loft/parameterize.rs',
+                         'crates/viboceros-geometry/src/loft/parameterize/tests.rs',
+                         'crates/viboceros-geometry/src/integration/cash_karp.rs',
+                         'crates/viboceros-opennurbs/src/curve.rs',
+                         'crates/viboceros-opennurbs/src/lib.rs',
+                         'crates/viboceros-opennurbs/build.rs',
+                         'crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp'])
     if 'crates/viboceros-geometry/src/nurbs.rs' in expanded:
         expanded.append('crates/viboceros-geometry/src/nurbs/discontinuities.rs')
     if 'crates/viboceros-oracle/src/lib.rs' in expanded:

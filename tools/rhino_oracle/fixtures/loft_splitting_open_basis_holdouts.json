@@ -1,0 +1,455 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-open-basis-weighted",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 2.0
+            },
+            {
+              "point": [
+                0.3,
+                0.5,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.7,
+                -0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                -0.5,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.7,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                1.0
+              ],
+              "weight": 3.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.7,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "command": false,
+      "sample_geometry": true,
+      "inspect_inputs": true,
+      "inspect_compatible": true,
+      "inspect_matching": true,
+      "inspect_geometric_matching": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-open-basis-unit",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.7,
+                -0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                -0.5,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.7,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.7,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "command": false,
+      "sample_geometry": true,
+      "inspect_inputs": true,
+      "inspect_compatible": true,
+      "inspect_matching": true,
+      "inspect_geometric_matching": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-open-basis-translated-domain",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.7,
+                -0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                -0.5,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.7,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            5.0,
+            5.0,
+            5.0,
+            6.4,
+            7.0,
+            7.0,
+            7.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "command": false,
+      "sample_geometry": true,
+      "inspect_inputs": true,
+      "inspect_compatible": true,
+      "inspect_matching": true,
+      "inspect_geometric_matching": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-open-basis-cubic",
+      "curves": [
+        {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.7,
+                -0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                -0.5,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.25,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.7,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.7,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "command": false,
+      "sample_geometry": true,
+      "inspect_inputs": true,
+      "inspect_compatible": true,
+      "inspect_matching": true,
+      "inspect_geometric_matching": true
+    }
+  ]
+}

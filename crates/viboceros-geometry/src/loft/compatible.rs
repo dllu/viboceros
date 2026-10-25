@@ -1,6 +1,6 @@
 use super::*;
 
-/// Exact degree/knot matching, followed by Rhino's common-basis end-weight policy.
+/// Region correspondence, exact basis matching, and common endpoint weights.
 pub(super) fn prepare(curves: &[NurbsCurve]) -> Result<Vec<NurbsCurve>, GeometryError> {
     prepare_with_operations(
         curves,
@@ -20,8 +20,9 @@ pub(super) fn prepare_with_operations<E: From<GeometryError>>(
         context: "compatible section controls",
         maximum: MAX_LOFT_SECTION_CONTROLS,
     };
+    let parameterized = super::parameterize::prepare(curves, clamp)?;
     let sections = crate::section_basis::prepare_with_operations(
-        curves,
+        &parameterized,
         MAX_LOFT_SECTION_CONTROLS,
         limit,
         crate::section_basis::WeightScale::PerSection,

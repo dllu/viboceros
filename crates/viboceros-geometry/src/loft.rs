@@ -1,9 +1,10 @@
-//! Surface construction from ordered, structurally compatible section curves.
+//! Surface construction from ordered sections with shared parameter preparation.
 
 use crate::{GeometryError, NurbsCurve, NurbsSurface, Real, WeightedPoint3};
 
 mod compatible;
 mod interpolate;
+mod parameterize;
 #[cfg(test)]
 mod tests;
 
@@ -27,7 +28,7 @@ pub enum LoftStyle {
 pub type LoftInterpolation<'a> = crate::CubicInterpolationSystem<'a>;
 
 /// Lofts ordered profiles without reordering, reversing or relocating seams.
-/// U runs through the sections; V follows each section's normalized parameter.
+/// U runs through the sections; V follows the matched section regions.
 /// Matching follows Rhino's common-basis endpoint-weight policy. With unequal
 /// endpoint-weight ratios, later sections' geometric images may change; this
 /// is not an unconditional exact interpolation of the original input curves.
@@ -95,7 +96,7 @@ pub fn try_loft_nurbs_curves_with_operations<E: From<GeometryError>>(
     Ok(surface.try_reparameterized(0.0..=u, 0.0..=v)?)
 }
 
-/// Shared Loft weight and basis policy with exact caller-supplied operations.
+/// Shared Loft region matching, weights and basis with exact supplied edits.
 pub fn prepare_loft_sections_with_operations<E: From<GeometryError>>(
     curves: &[NurbsCurve],
     clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,

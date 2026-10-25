@@ -246,7 +246,6 @@
     "crates/viboceros-geometry/src/nurbs_surface/periodic.rs": "f237f0100e2a46db90429d5315c1e09c2518881f282fcbb1c4f02884cc2b3a00",
     "crates/viboceros-smlib/src/lib.rs": "58f0c7d308d7c50702926ccf983dd162b0f69891c0a537b643a3e8a1c292e49e",
     "crates/viboceros-smlib/src/native.rs": "dc9263ba7a4eb9e590ad5370a229ea601852b8977f989e5e0588d74e8c9699e5",
-    "crates/viboceros-smlib/src/native/knot_refinement.rs": "90179927c9d0d607e88fc64d2badfb2616e53b9fb1e88d1f9da19680730beb82",
     "src/app.rs": "8dd3210e1cf42d16e27c665e3132b7c4121d88e9535568b7c8323a3b6b49d2d7",
     "src/app/refinement.rs": "2664ad9538852c0e22d51399c348a1ed22868876e44be123755159cf0746a97d",
     "src/app/named_view.rs": "c760fb8ac081bcee8b117801e547bb4f84aa1d6c17f75cc399497df5e5ee5bf1",
@@ -2709,6 +2708,7 @@
     }
   },
   "current_source_git_sha256": {
-    "ea90c059c50aa5594481e4fe677e691baa7a2c23:tools/rhino_oracle/test_insert_knot_command.py": "b06eadbee8eec06ca3c4227320a106547459e42be77e603ed517dff730be13e7"
+    "ea90c059c50aa5594481e4fe677e691baa7a2c23:tools/rhino_oracle/test_insert_knot_command.py": "b06eadbee8eec06ca3c4227320a106547459e42be77e603ed517dff730be13e7",
+    "8ad3069d4c9b8973eaed1c801da2a0fe98455839:crates/viboceros-smlib/src/native/knot_refinement.rs": "90179927c9d0d607e88fc64d2badfb2616e53b9fb1e88d1f9da19680730beb82"
   }
 }
