@@ -1,0 +1,1831 @@
+{
+  "engine": "rhino",
+  "protocol_version": 1,
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-0-00",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: 64b986cc-909d-4d97-86e3-d0d6896c3b17\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0017278776790328,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 1,
+                  "volume": null,
+                  "is_solid": false
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017278776790328,
+                  6.0
+                ]
+              ],
+              "face_count": 1,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017278776790328,
+                  6.0
+                ]
+              ],
+              "face_count": 1,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-0-01",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: a3e1c98e-5f5c-48a6-8f91-5d4b17a2d216\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0017278776790328,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 2,
+                  "volume": 22.292400634533664,
+                  "is_solid": true
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017278776790328,
+                  6.0
+                ]
+              ],
+              "face_count": 2,
+              "volume": 22.292400634533664,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017278776790328,
+                  6.0
+                ]
+              ],
+              "face_count": 2,
+              "volume": 22.292400634533664,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-0-10",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: 562675e2-6012-48f9-9c5c-be17f9539699\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_Yes\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0017278776790328,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 3,
+                  "volume": null,
+                  "is_solid": false
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017278776790328,
+                  6.0
+                ]
+              ],
+              "face_count": 3,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017278776790328,
+                  6.0
+                ]
+              ],
+              "face_count": 3,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-0-11",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: ed301509-7efd-4930-aa09-8518b5433363\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _Solid=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _DeleteInput=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _SplitAtTangents=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0017278776790328,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 4,
+                  "volume": 22.292400634533667,
+                  "is_solid": true
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017278776790328,
+                  6.0
+                ]
+              ],
+              "face_count": 4,
+              "volume": 22.292400634533667,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017278776790328,
+                  6.0
+                ]
+              ],
+              "face_count": 4,
+              "volume": 22.292400634533667,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-1-00",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: 07ec35d9-2a18-43fa-a5fc-3b9865449b57\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _Solid=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _DeleteInput=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _SplitAtTangents=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0017453310241888,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 1,
+                  "volume": null,
+                  "is_solid": false
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017453310241888,
+                  6.0
+                ]
+              ],
+              "face_count": 1,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017453310241888,
+                  6.0
+                ]
+              ],
+              "face_count": 1,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-1-01",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: b5e40351-fa74-4d8c-91a6-5291dc70a1ef\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.001745331024189,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 2,
+                  "volume": 22.292493719041172,
+                  "is_solid": true
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001745331024189,
+                  6.0
+                ]
+              ],
+              "face_count": 2,
+              "volume": 22.292493719041172,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001745331024189,
+                  6.0
+                ]
+              ],
+              "face_count": 2,
+              "volume": 22.292493719041172,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-1-10",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: d968b4b6-4a68-4dc9-ab06-45bc02497c2f\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_Yes\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0017453310241888,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 3,
+                  "volume": null,
+                  "is_solid": false
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017453310241888,
+                  6.0
+                ]
+              ],
+              "face_count": 3,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0017453310241888,
+                  6.0
+                ]
+              ],
+              "face_count": 3,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-1-11",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: 675214cc-c14c-438d-b236-a2121e4327e9\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _Solid=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _DeleteInput=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _SplitAtTangents=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.001745331024189,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 4,
+                  "volume": 22.292493719041172,
+                  "is_solid": true
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001745331024189,
+                  6.0
+                ]
+              ],
+              "face_count": 4,
+              "volume": 22.292493719041172,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001745331024189,
+                  6.0
+                ]
+              ],
+              "face_count": 4,
+              "volume": 22.292493719041172,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-2-00",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: dc3bc22a-8db5-4020-aacd-2a31052d6ebf\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _Solid=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _DeleteInput=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _SplitAtTangents=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.001762784370408,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 2,
+                  "volume": null,
+                  "is_solid": false
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001762784370408,
+                  6.0
+                ]
+              ],
+              "face_count": 2,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001762784370408,
+                  6.0
+                ]
+              ],
+              "face_count": 2,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-2-01",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: b67f06c0-a091-44af-bad4-60589ebf54c3\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.001762784370408,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 3,
+                  "volume": 22.292586803554332,
+                  "is_solid": true
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001762784370408,
+                  6.0
+                ]
+              ],
+              "face_count": 3,
+              "volume": 22.292586803554332,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001762784370408,
+                  6.0
+                ]
+              ],
+              "face_count": 3,
+              "volume": 22.292586803554332,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-2-10",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: 87e02bb0-165b-44a8-bdca-dfd57d053654\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_Yes\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.001762784370408,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 4,
+                  "volume": null,
+                  "is_solid": false
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001762784370408,
+                  6.0
+                ]
+              ],
+              "face_count": 4,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001762784370408,
+                  6.0
+                ]
+              ],
+              "face_count": 4,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-2-11",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: d76f1961-9364-4fc1-bc29-5d4e94b8afe3\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _Solid=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _DeleteInput=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _SplitAtTangents=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.001762784370408,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 5,
+                  "volume": 22.292586803554332,
+                  "is_solid": true
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001762784370408,
+                  6.0
+                ]
+              ],
+              "face_count": 5,
+              "volume": 22.292586803554332,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.001762784370408,
+                  6.0
+                ]
+              ],
+              "face_count": 5,
+              "volume": 22.292586803554332,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-3-00",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: bb234db6-6fe7-4468-ad3e-dacacb8792b6\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _Solid=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _DeleteInput=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _SplitAtTangents=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0043633508207015,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 2,
+                  "volume": null,
+                  "is_solid": false
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0043633508207015,
+                  6.0
+                ]
+              ],
+              "face_count": 2,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0043633508207015,
+                  6.0
+                ]
+              ],
+              "face_count": 2,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-3-01",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: 649eb212-99eb-438b-81c1-b2f65d981ed8\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0043633508207015,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 3,
+                  "volume": 22.30645649128924,
+                  "is_solid": true
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0043633508207015,
+                  6.0
+                ]
+              ],
+              "face_count": 3,
+              "volume": 22.30645649128924,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0043633508207015,
+                  6.0
+                ]
+              ],
+              "face_count": 3,
+              "volume": 22.30645649128924,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-3-10",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: d5ffdcb0-475e-4434-9d82-415b4ee94786\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _Solid=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _DeleteInput=_No\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=No ): _SplitAtTangents=_Yes\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0043633508207015,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 4,
+                  "volume": null,
+                  "is_solid": false
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0043633508207015,
+                  6.0
+                ]
+              ],
+              "face_count": 4,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0043633508207015,
+                  6.0
+                ]
+              ],
+              "face_count": 4,
+              "volume": null,
+              "is_solid": false
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "apex-tangent-threshold-3-11",
+      "value": {
+        "history": "Command: _ExtrudeSrfToPoint\nSelect surfaces to Extrude: _SelID\nObject ID to select: a5ffd21b-484a-439e-9d39-b9483d8c1d75\n1 surface added to selection.\nSelect surfaces to Extrude. Press Enter when done: _Enter\nSelect surfaces to Extrude. Press Enter when done\nPoint to extrude to ( Solid=No  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _Solid=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _DeleteInput=_No\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): _SplitAtTangents=_Yes\nPoint to extrude to ( Solid=Yes  DeleteInput=No  ToBoundary  SplitAtTangents=Yes ): w1,0.5,6\nCommand: _Cancel\nCommand: _Cancel\nCommand: _Cancel",
+        "events": [
+          {
+            "name": "SelID",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "ExtrudeSrfToPoint",
+            "selected": [],
+            "result": "Success",
+            "objects": {
+              "source_present": true,
+              "breps": [
+                {
+                  "bounds": [
+                    [
+                      -3.0,
+                      -1.0,
+                      0.0
+                    ],
+                    [
+                      3.0,
+                      1.0043633508207015,
+                      6.0
+                    ]
+                  ],
+                  "face_count": 5,
+                  "volume": 22.30645649128924,
+                  "is_solid": true
+                }
+              ],
+              "source_unchanged": true
+            }
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          },
+          {
+            "name": "Cancel",
+            "selected": [],
+            "result": "Success"
+          }
+        ],
+        "document_tolerance": {
+          "relative": 1e-12,
+          "angular": 1e-08,
+          "absolute": 1e-06
+        },
+        "after": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0043633508207015,
+                  6.0
+                ]
+              ],
+              "face_count": 5,
+              "volume": 22.30645649128924,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        },
+        "undo": {
+          "source_present": true,
+          "breps": [],
+          "source_unchanged": true
+        },
+        "redo": {
+          "source_present": true,
+          "breps": [
+            {
+              "bounds": [
+                [
+                  -3.0,
+                  -1.0,
+                  0.0
+                ],
+                [
+                  3.0,
+                  1.0043633508207015,
+                  6.0
+                ]
+              ],
+              "face_count": 5,
+              "volume": 22.30645649128924,
+              "is_solid": true
+            }
+          ],
+          "source_unchanged": true
+        }
+      }
+    }
+  ],
+  "provenance": {
+    "request_sha256": "ef4b2ad23a465616d424d50fc53cd5a6b8e505229053ff32cb6191ed0b152785",
+    "sources": {
+      "generate_surface_apex_tangents.py": "691d25cde941f42e8045d1dca59ecb1df5116fcfb938b58dd3a070413e7a020c",
+      "surface_apex_tangent_cases.py": "7d310807ea1af122e2166f53c430b7da3948240439732f2b968f86fbcd9f8708",
+      "surface_apex_command_probe.py": "c61107cba5355b145fe3ee3e1a0847780b8e289d9f02142f38082dfb6f24f59e",
+      "surface_apex_extrusion_probe.py": "5fa4b8042b01aab7148f02d3d1bf48234fcb828917862843408b1ebda03bedcf",
+      "surface_extrusion_probe.py": "fab60f7305636e9cb2bd406b2d9e4a7e58ca9563b36b93e363e29060e0d771c1",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "client.py": "3b67cf8fa6f590e3bdbd5a3744ebbc8beab08bd6b0413c0d653dd4153d752543",
+      "rhino_worker.py": "939e04b5a415b62f069eb3fdece3d50e0f190934926b05b22e6eaf6e74325739",
+      "structural_sdk.py": "3d255b9d58cf16ce47f967e4773a3865f6247e41d8ff209014e56cf0c696995b"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+--- a/SmGeomUtility.cpp
++++ b/SmGeomUtility.cpp
+@@ -5810,16 +5810,16 @@
+   // G2
+   //  when G2/C2 && Angle between normal vectors is less than continuity angle tolerance
+   //         and Difference between radii of curvature and curvature are less than ratio tolerance
+-  double     dCurvature1    = aVals1[2].Length() ;
+-  double     dCurvature2    = aVals2[2].Length() ;
++  double     dCurvature1    = aFrenet1[2].Length() ;
++  double     dCurvature2    = aFrenet2[2].Length() ;
+   double     dCurvatureGap  = dCurvature1 - dCurvature2 ;
+              dAngRad        = 0.0 ;
+   if(   !SM_IS_ZERO(dCurvature1) 
+      && !SM_IS_ZERO(dCurvature2))
+     {
+-      SmVector3d sNormal1 = aVals1[2] ; sNormal1 /= dCurvature1 ;
+-      SmVector3d sNormal2 = aVals2[2] ; sNormal2 /= dCurvature2 ;
+-      sNormal1.AngleBetween(sNormal1, dAngRad) ;
++      SmVector3d sNormal1 = aFrenet1[2] ; sNormal1 /= dCurvature1 ;
++      SmVector3d sNormal2 = aFrenet2[2] ; sNormal2 /= dCurvature2 ;
++      sNormal1.AngleBetween(sNormal2, dAngRad) ;
+     }
+ 
+   if(   (sRtn == SM_ERR)

@@ -217,6 +217,7 @@ pub use shell::Fixture as ShellFixture;
 mod surface_tapered_extrusion;
 pub use surface_tapered_extrusion::Fixture as SurfaceTaperedExtrusionFixture;
 pub mod surface_apex_extrusion;
+pub use surface_apex_extrusion::CommandFixture as SurfaceApexCommandFixture;
 pub use surface_apex_extrusion::Fixture as SurfaceApexExtrusionFixture;
 mod surface_extrusion;
 pub use surface_extrusion::Fixture as SurfaceExtrusionFixture;
@@ -1748,6 +1749,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SurfaceApexExtrusionFixture,
     },
+    SurfaceApexCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceApexCommandFixture,
+    },
     SelectedCoplanarFaces {
         id: String,
         #[serde(flatten)]
@@ -2941,6 +2947,7 @@ impl Operation {
             | Self::ProjectCurveSurface { id, .. }
             | Self::SurfacePathExtrusion { id, .. }
             | Self::SurfaceApexExtrusion { id, .. }
+            | Self::SurfaceApexCommand { id, .. }
             | Self::SelectedCoplanarFaces { id, .. }
             | Self::DivideAlongCreases { id, .. }
             | Self::TwoRailSweep { id, .. }
@@ -6199,6 +6206,9 @@ fn execute(
         }
         Operation::SurfaceApexExtrusion { fixture, .. } => {
             surface_apex_extrusion::run(fixture, iterations, tolerance)?
+        }
+        Operation::SurfaceApexCommand { fixture, .. } => {
+            surface_apex_extrusion::run_command(fixture, iterations, tolerance)?
         }
         Operation::SelectedCoplanarFaces { fixture, .. } => {
             selected_coplanar_faces::run(fixture, iterations, tolerance)?

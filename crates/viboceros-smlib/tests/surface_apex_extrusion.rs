@@ -1,6 +1,7 @@
 #![cfg(feature = "native")]
 use viboceros_geometry::{
-    Brep, Circle3, Frame3, NurbsSurface, Point3, Tolerance, UnitVector3, Vector3,
+    Brep, Circle3, Frame3, NurbsCurve, NurbsSurface, Point3, Tolerance, UnitVector3, Vector3,
+    WeightedPoint3,
 };
 use viboceros_smlib::Shape;
 fn p(x: f64, y: f64, z: f64) -> Point3 {
@@ -180,5 +181,85 @@ fn native_surface_apex_connected_faces_exclude_shared_internal_walls() {
         .unwrap();
     assert!(!walls.is_solid());
     assert_eq!(walls.faces().len(), 6);
+    assert_eq!(source.to_brep(tol()).unwrap(), before);
+}
+
+#[test]
+fn surface_apex_tangent_splits_preserve_weighted_affine_walls_and_the_source() {
+    let w = 0.5_f64.sqrt();
+    let points = vec![
+        p(-2., 1., 0.),
+        p(-3., 1., 0.),
+        p(-3., 0., 0.),
+        p(-3., -1., 0.),
+        p(-2., -1., 0.),
+        p(0., -1., 0.),
+        p(2., -1., 0.),
+        p(3., -1., 0.),
+        p(3., 0., 0.),
+        p(3., 1., 0.),
+        p(2., 1., 0.),
+        p(0., 1., 0.),
+        p(-2., 1., 0.),
+    ];
+    let weights = [1., w, 1., w, 1., 1., 1., w, 1., w, 1., 1., 1.];
+    let profile = NurbsCurve::try_new_rational(
+        2,
+        points
+            .into_iter()
+            .zip(weights)
+            .map(|(point, weight)| WeightedPoint3::try_new(point, weight).unwrap())
+            .collect(),
+        vec![
+            0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 5., 5., 6., 6., 6.,
+        ],
+    )
+    .unwrap();
+    let base = Brep::try_planar_face(&profile, tol()).unwrap();
+    let source = Shape::from_brep(&base, tol()).unwrap();
+    let before = source.to_brep(tol()).unwrap();
+    let apex = p(1., 0.5, 6.);
+    for split in [false, true] {
+        for cap in [false, true] {
+            let b = source
+                .extruded_faces_to_point_with_tangents(apex, cap, split, tol())
+                .unwrap()
+                .to_brep(tol())
+                .unwrap();
+            assert_eq!(
+                b.faces().len(),
+                if split { 4 } else { 1 } + usize::from(cap)
+            );
+            assert_eq!(b.is_solid(), cap);
+            if cap {
+                assert!(
+                    (b.signed_volume(tol()).unwrap().abs() - (16. + 2. * std::f64::consts::PI))
+                        .abs()
+                        < 1e-5
+                );
+            }
+            for t in [0.2, 0.6, 1.4, 2.4, 4.7, 5.4] {
+                let start = profile.evaluate(t).unwrap();
+                for fraction in [0.2, 0.6, 0.9] {
+                    let expected = start
+                        .translated(start.vector_to(apex).unwrap().scaled(fraction).unwrap())
+                        .unwrap();
+                    assert!(
+                        b.faces().iter().any(|f| f
+                            .surface()
+                            .closest_parameters(expected, tol())
+                            .is_ok_and(|(u, v)| f
+                                .surface()
+                                .evaluate(u, v)
+                                .unwrap()
+                                .distance_to(expected)
+                                .unwrap()
+                                < 1e-6)),
+                        "split={split} cap={cap} t={t} fraction={fraction}"
+                    );
+                }
+            }
+        }
+    }
     assert_eq!(source.to_brep(tol()).unwrap(), before);
 }

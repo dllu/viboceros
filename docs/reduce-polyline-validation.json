@@ -82,7 +82,6 @@
     "crates/viboceros-geometry/tests/polyline_reduction.rs": "baa7be2eea1bac4149028c362612731bdf43d00c25bdb9b501bbd0709934cabd",
     "crates/viboceros-opennurbs/native/curve_queries.h": "0fe8b48766cb5e1111fe64a53cd8b6c0a31bdab567990526de3ed39089eedbbe",
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "4192f6eff42f0d354de86444ccade8124d595fbb6fd2710f909b53b37430ca1d",
-    "crates/viboceros-opennurbs/src/curve.rs": "c1cc8dc676feb8a39d6cee397731a8129a0ca477771daa5fa48f448aed13909b",
     "crates/viboceros-opennurbs/src/curve/polyline.rs": "f9fa45c4543bf558ddf1851ad68eb13210a6cc1874f1724032a5062e3c48ad15",
     "crates/viboceros-opennurbs/src/lib.rs": "ca5119be1486dc6efa1d815e247b1ea90c62a0a6745309110b4f6c1b4ba2de7c",
     "src/app.rs": "b329dd3b02cdc1b81b3c270c1c48b40dc9f75897bb5f69cdea2388a4ebad1648",
@@ -190,5 +189,8 @@
       "log": "docs/reduce-polyline-fmt.log.gz",
       "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
-  ]
+  ],
+  "source_git_sha256": {
+    "7ee363ec07a5c25f6d45a8e367f175a11665e27a:crates/viboceros-opennurbs/src/curve.rs": "c1cc8dc676feb8a39d6cee397731a8129a0ca477771daa5fa48f448aed13909b"
+  }
 }

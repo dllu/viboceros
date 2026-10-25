@@ -193,6 +193,19 @@ def _expand_sources_once(paths):
              'crates/viboceros-command/src/mesh_partition/appearance.rs'}
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
                                       'src/component_seams/arguments.rs') for p in paths]
+    if any(p in expanded for p in ['crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp',
+            'crates/viboceros-opennurbs/src/curve.rs', 'crates/viboceros-smlib/native/surface_apex_extrusion.h']):
+        expanded.extend(['crates/viboceros-opennurbs/native/curve_discontinuities.h',
+                         'crates/viboceros-opennurbs/native/curve_discontinuity_query.h',
+                         'crates/viboceros-opennurbs/src/curve/discontinuities.rs'])
+    if 'crates/viboceros-smlib/native/bridge.cpp' in expanded:
+        expanded.append('crates/viboceros-smlib/native/surface_apex_extrusion.h')
+    if any(p in expanded for p in ['crates/viboceros-smlib/native/bridge.cpp',
+            'crates/viboceros-smlib/build.rs', 'crates/viboceros-smlib/native/surface_apex_extrusion.h']):
+        expanded.extend(['third_party/patches/usd-brep-curve-continuity.patch',
+                         'third_party/patches/usd-brep-curve-continuity.cmake',
+                         'tools/usd_brep/curve_continuity_probe.cpp',
+                         'crates/viboceros-smlib/tests/curve_continuity.rs'])
     if 'crates/viboceros-oracle/src/interface.rs' in expanded:
         expanded.append('crates/viboceros-oracle/src/interface/tests.rs')
     if 'tools/rhino_oracle/rhino_worker.py' in expanded:

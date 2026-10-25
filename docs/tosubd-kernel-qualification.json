@@ -2130,14 +2130,14 @@
     "The initial 43-workflow discovery used an incorrect option phase; it is retained only as diagnostic evidence."
   ],
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "9b61d6c87c6d657668cc8060940c1d426005f125a15138b8b9edecf45bef755f",
+    "crates/viboceros-opennurbs/build.rs": "8c92b16468b2bc2340f60a72c2f6e343c85cf6d6791e3591c6790dd513ac6080",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "50da8b4782440543b5bc1209c4988b0bf5ac44ace55ff040b587e54c3020ee67",
     "crates/viboceros-opennurbs/native/subd.cpp": "da23bdbf18b6709f4156d193546d09acc18a02cbb863a68a0fa8465e2b2cea55",
     "crates/viboceros-opennurbs/native/subd.h": "4a94d9836d3dcab38f2694497a320b9a0e98dbf77eecd3de6717c23d60024808",
     "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
     "crates/viboceros-opennurbs/native/subd_interpolation.h": "fe3f6d607f1b4cd94556b6ba667b579de06efee53dc970bc0ae35444d31d29bd",
-    "crates/viboceros-opennurbs/src/lib.rs": "f514a3c60d7ef1c2b040c610f74d1758cdb386d61a4069c2a2ea0abc07eee2e7",
+    "crates/viboceros-opennurbs/src/lib.rs": "e9f1af6922b0d280af62ae61ffb7e1fd45d46efe615412a355f3e3a0b4a5ebae",
     "crates/viboceros-geometry/src/lib.rs": "3c3f995d0d223434891c01e8ed6c9ecc8c5a162c07bdbb25aa9fe3ee10aa4dee",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
     "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
@@ -2256,7 +2256,7 @@
     "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "c20619d7a3861b87af0225a5df25582d52613291d6c42db0f61a075be57f364c",
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "2b847cd80f03db7473219aaec007f292fa6cc3793d11068b5c05038038864e99",
-    "tools/rhino_oracle/qualification_sources.py": "9a95849af7f347fce4188efe54c57e6e07471004e4ea1b550349e93bdd7cdc1d",
+    "tools/rhino_oracle/qualification_sources.py": "f09c11aac47d88c1e1069bdd8c7e6a330b4fac8558f5fb2d0b8b0ec916825d02",
     "tools/rhino_oracle/interface_commands_probe.py": "24ad3695e8527287c8909b4c4861609b80cf0d0378f6565bd0a3116cb03251cb"
   }
 }

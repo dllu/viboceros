@@ -17,6 +17,7 @@ unsafe extern "C" {
         shape: *const NativeSolid,
         apex: *const f64,
         cap_base: c_int,
+        split_at_tangents: c_int,
         tolerance: f64,
         out: *mut *mut NativeSolid,
         error: *mut c_char,
@@ -111,12 +112,24 @@ impl Shape {
         cap_base: bool,
         tolerance: viboceros_geometry::Tolerance,
     ) -> Result<Self, Error> {
+        self.extruded_faces_to_point_with_tangents(apex, cap_base, false, tolerance)
+    }
+
+    /// Choose whether tangent boundary joins become separate wall faces.
+    pub fn extruded_faces_to_point_with_tangents(
+        &self,
+        apex: Point3,
+        cap_base: bool,
+        split_at_tangents: bool,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<Self, Error> {
         let mut pointer = std::ptr::null_mut();
         call(|error, capacity| unsafe {
             vb_shape_extrude_faces_to_point(
                 self.model.handle.as_ptr(),
                 apex.to_array().as_ptr(),
                 c_int::from(cap_base),
+                c_int::from(split_at_tangents),
                 tolerance.absolute(),
                 &mut pointer,
                 error,

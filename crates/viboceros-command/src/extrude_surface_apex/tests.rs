@@ -19,13 +19,24 @@ fn patch() -> Geometry {
 #[test]
 fn surface_apex_options_parse_strictly_and_update_atomically() {
     let mut options = SurfaceApexOptions::default();
-    options.update(&["Solid=No", "DeleteInput=Yes"]).unwrap();
+    assert!(!options.split_at_tangents);
+    options
+        .update(&["Solid=No", "DeleteInput=Yes", "SplitAtTangents=Yes"])
+        .unwrap();
+    assert!(options.split_at_tangents);
     let before = options;
     assert!(options.update(&["Solid=Yes", "DeleteInput=bad"]).is_err());
     assert_eq!(options, before);
     assert!(SurfaceApexInput::parse(&["1,2,3", "Direction=0,0,1"]).is_err());
     assert!(SurfaceApexInput::parse(&["Solid=Yes", "Solid=No"]).is_err());
     assert!(SurfaceApexInput::parse(&["Face=0", "Faces=All"]).is_err());
+    assert!(SurfaceApexInput::parse(&["SplitAtTangents=Yes", "SplitAtTangents=No"]).is_err());
+    assert!(
+        options
+            .update(&["Solid=Yes", "SplitAtTangents=bad"])
+            .is_err()
+    );
+    assert_eq!(options, before);
     assert_eq!(
         SurfaceApexInput::parse(&["1,2,3"]).unwrap().apex,
         Some(p(1., 2., 3.))

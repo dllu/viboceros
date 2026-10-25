@@ -36,9 +36,18 @@ fn surface_apex_sdk_matches_licensed_geometry() {
 
 #[test]
 fn surface_apex_commands_match_licensed_geometry_and_history() {
+    replay_commands(support::cases(), "SURFACE_APEX_COMMAND");
+}
+
+#[test]
+fn surface_apex_tangents_match_licensed_geometry_and_history() {
+    replay_commands(support::tangent_cases(), "SURFACE_APEX_TANGENTS_COMMAND");
+}
+
+fn replay_commands(cases: Vec<(Value, Value)>, prefix: &str) {
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
     let registry = CommandRegistry::with_builtins();
-    for (op, native) in support::cases() {
+    for (op, native) in cases {
         let fixture: SurfaceApexExtrusionFixture = serde_json::from_value(op.clone()).unwrap();
         let original = fixture.source_face(tolerance).unwrap();
         let mut doc = Document::new(tolerance);
@@ -53,13 +62,14 @@ fn surface_apex_commands_match_licensed_geometry_and_history() {
             .execute(
                 &mut doc,
                 &format!(
-                    "ExtrudeSrfToPoint {x},{y},{z} FaceRefs={source}:0 Solid={} DeleteInput={}",
+                    "ExtrudeSrfToPoint {x},{y},{z} FaceRefs={source}:0 Solid={} DeleteInput={} SplitAtTangents={}",
                     if fixture.solid { "Yes" } else { "No" },
                     if op["delete_input"] == true {
                         "Yes"
                     } else {
                         "No"
-                    }
+                    },
+                    if op["split_at_tangents"] == true { "Yes" } else { "No" }
                 ),
             )
             .unwrap();
@@ -69,7 +79,7 @@ fn surface_apex_commands_match_licensed_geometry_and_history() {
         registry.execute(&mut doc, "Redo").unwrap();
         let redo = support::measure(&doc, source, &original, &native["redo"]);
         println!(
-            "SURFACE_APEX_COMMAND {}",
+            "{prefix} {}",
             json!({"id":op["id"],"after":after,"undo":undo,"redo":redo})
         );
     }

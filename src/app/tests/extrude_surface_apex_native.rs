@@ -10,8 +10,17 @@ fn enter(app: &mut VibocerosApp, input: &str) {
 
 #[test]
 fn surface_apex_gui_matches_native_geometry_and_history() {
+    replay_commands(support::cases(), "SURFACE_APEX_APP");
+}
+
+#[test]
+fn surface_apex_tangents_gui_match_native_geometry_and_history() {
+    replay_commands(support::tangent_cases(), "SURFACE_APEX_TANGENTS_APP");
+}
+
+fn replay_commands(cases: Vec<(serde_json::Value, serde_json::Value)>, prefix: &str) {
     let tolerance = viboceros_geometry::Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
-    for (op, native) in support::cases() {
+    for (op, native) in cases {
         let fixture: viboceros_oracle::SurfaceApexExtrusionFixture =
             serde_json::from_value(op.clone()).unwrap();
         let original = fixture.source_face(tolerance).unwrap();
@@ -34,9 +43,14 @@ fn surface_apex_gui_matches_native_geometry_and_history() {
         enter(
             &mut app,
             &format!(
-                "Solid={} DeleteInput={}",
+                "Solid={} DeleteInput={} SplitAtTangents={}",
                 if fixture.solid { "Yes" } else { "No" },
                 if op["delete_input"] == true {
+                    "Yes"
+                } else {
+                    "No"
+                },
+                if op["split_at_tangents"] == true {
                     "Yes"
                 } else {
                     "No"
@@ -57,7 +71,7 @@ fn surface_apex_gui_matches_native_geometry_and_history() {
         enter(&mut app, "Redo");
         let redo = support::measure(&app.document, source, &original, &native["redo"]);
         println!(
-            "SURFACE_APEX_APP {}",
+            "{prefix} {}",
             serde_json::json!({"id":op["id"],"after":after,"undo":undo,"redo":redo})
         );
     }

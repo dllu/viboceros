@@ -65,6 +65,35 @@ def compare(actual, expected):
     raise ValueError('unexpected surface apex metric')
 
 
+def load_capture(fixture, observation, recipe):
+    paths = set()
+    query = HERE/('fixtures/'+fixture+'.json')
+    saved = HERE/('observations/'+observation+'.json')
+    q, data = json.loads(query.read_text()), json.loads(saved.read_text())
+    if q != recipe() or hashlib.sha256(query.read_bytes()).hexdigest() != data['provenance']['request_sha256']:
+        raise ValueError('native surface apex request changed')
+    paths.update(str(p.relative_to(ROOT)) for p in [query, saved])
+    for source, sha in data['provenance']['sources'].items():
+        archive = HERE/'observations/source_snapshots'/(sha+'.gz')
+        if hashlib.sha256(gzip.decompress(archive.read_bytes())).hexdigest() != sha:
+            raise ValueError('native surface apex producer changed: '+source)
+        paths.add(str(archive.relative_to(ROOT)))
+    if [o['id'] for o in q['operations']] != [r['id'] for r in data['results']]:
+        raise ValueError('native surface apex coverage differs')
+    if all(op['op'] == 'surface_apex_command' for op in q['operations']):
+        for op, row in zip(q['operations'], data['results']):
+            v = row['value']
+            compare(v['document_tolerance'], q['tolerance'])
+            if (not v['after']['breps'] or v['after']['source_present'] is op['delete_input']
+                    or v['after']['source_unchanged'] is not True):
+                raise ValueError('native surface apex command failed')
+            compare(v['undo'], dict(source_present=True, source_unchanged=True, breps=[]))
+            compare(v['redo'], v['after'])
+            if not any(e['name'] == 'ExtrudeSrfToPoint' and e['result'] == 'Success' for e in v['events']):
+                raise ValueError('native surface apex command did not complete')
+    return data, paths
+
+
 def native():
     paths = set()
     captures = []
@@ -72,31 +101,9 @@ def native():
         ('surface_apex_extrusion', 'surface_apex_sdk_rhino_20261024', sdk_request),
         ('surface_apex_command', 'surface_apex_command_tolerance', command_request),
     ]:
-        query = HERE/('fixtures/'+fixture+'.json')
-        saved = HERE/('observations/'+observation+'.json')
-        q, data = json.loads(query.read_text()), json.loads(saved.read_text())
-        if q != recipe() or hashlib.sha256(query.read_bytes()).hexdigest() != data['provenance']['request_sha256']:
-            raise ValueError('native surface apex request changed')
-        paths.update(str(p.relative_to(ROOT)) for p in [query, saved])
-        for source, sha in data['provenance']['sources'].items():
-            archive = HERE/'observations/source_snapshots'/(sha+'.gz')
-            if hashlib.sha256(gzip.decompress(archive.read_bytes())).hexdigest() != sha:
-                raise ValueError('native surface apex producer changed: '+source)
-            paths.add(str(archive.relative_to(ROOT)))
-        if [o['id'] for o in q['operations']] != [r['id'] for r in data['results']]:
-            raise ValueError('native surface apex coverage differs')
-        if fixture == 'surface_apex_command':
-            for op, row in zip(q['operations'], data['results']):
-                v = row['value']
-                compare(v['document_tolerance'], q['tolerance'])
-                if (not v['after']['breps'] or v['after']['source_present'] is op['delete_input']
-                        or v['after']['source_unchanged'] is not True):
-                    raise ValueError('native surface apex command failed')
-                compare(v['undo'], dict(source_present=True, source_unchanged=True, breps=[]))
-                compare(v['redo'], v['after'])
-                if not any(e['name'] == 'ExtrudeSrfToPoint' and e['result'] == 'Success' for e in v['events']):
-                    raise ValueError('native surface apex command did not complete')
+        data, current = load_capture(fixture, observation, recipe)
         captures.append(data)
+        paths.update(current)
     return captures, paths
 
 

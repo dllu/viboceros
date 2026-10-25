@@ -1,18 +1,20 @@
 //! Native surface and original face extrusion to an explicit apex.
 use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
-pub const USAGE: &str = "ExtrudeSrfToPoint apex [Solid=Yes|No] [DeleteInput=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+pub const USAGE: &str = "ExtrudeSrfToPoint apex [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceToPointCommand;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SurfaceApexOptions {
     pub solid: bool,
     pub delete_input: bool,
+    pub split_at_tangents: bool,
 }
 impl Default for SurfaceApexOptions {
     fn default() -> Self {
         Self {
             solid: true,
             delete_input: false,
+            split_at_tangents: false,
         }
     }
 }
@@ -33,6 +35,7 @@ impl SurfaceApexOptions {
             match key.as_str() {
                 "solid" => next.solid = value,
                 "deleteinput" => next.delete_input = value,
+                "splitattangents" => next.split_at_tangents = value,
                 _ => return Err(CommandError::Usage(USAGE)),
             }
         }
@@ -41,9 +44,10 @@ impl SurfaceApexOptions {
     }
     pub fn command_options(self) -> String {
         format!(
-            "Solid={} DeleteInput={}",
+            "Solid={} DeleteInput={} SplitAtTangents={}",
             if self.solid { "Yes" } else { "No" },
-            if self.delete_input { "Yes" } else { "No" }
+            if self.delete_input { "Yes" } else { "No" },
+            if self.split_at_tangents { "Yes" } else { "No" }
         )
     }
 }
@@ -124,9 +128,10 @@ impl Command for ExtrudeSurfaceToPointCommand {
                     let local =
                         brep.transformed(AffineTransform3::from_translation(shift), tolerance)?;
                     let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
-                        .extruded_faces_to_point(
+                        .extruded_faces_to_point_with_tangents(
                             apex.translated(shift)?,
                             input.options.solid,
+                            input.options.split_at_tangents,
                             tolerance,
                         )?
                         .to_brep(tolerance)?

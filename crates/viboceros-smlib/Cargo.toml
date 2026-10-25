@@ -7,10 +7,11 @@ rust-version.workspace = true
 
 [features]
 default = []
-native = ["dep:cmake", "dep:viboceros-geometry", "dep:thiserror", "dep:i_overlay"]
+native = ["dep:cmake", "dep:viboceros-geometry", "dep:viboceros-opennurbs", "dep:thiserror", "dep:i_overlay"]
 
 [dependencies]
 viboceros-geometry = { workspace = true, optional = true }
+viboceros-opennurbs = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 i_overlay = { workspace = true, optional = true }
 

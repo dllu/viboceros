@@ -29,7 +29,7 @@ fn surface_apex_source_picker_and_atomic_options_survive_cancel() {
     let mut app = test_app();
     let s = source(&mut app);
     let before = app.document.object(s).unwrap().clone();
-    enter(&mut app, "ExtrudeSrfToPoint Solid=No");
+    enter(&mut app, "ExtrudeSrfToPoint Solid=No SplitAtTangents=Yes");
     assert!(app.object_prompt.is_some());
     app.apply_selection_click(SelectionClick {
         object_id: Some(s),
@@ -40,9 +40,10 @@ fn surface_apex_source_picker_and_atomic_options_survive_cancel() {
         panic!()
     };
     assert!(!options.solid);
+    assert!(options.split_at_tangents);
     enter(&mut app, "Solid=Yes DeleteInput=Yes");
     let active = app.active_command;
-    enter(&mut app, "Solid=No DeleteInput=bad");
+    enter(&mut app, "Solid=No SplitAtTangents=No DeleteInput=bad");
     assert_eq!(app.active_command, active);
     enter(&mut app, "Cancel");
     assert!(app.active_command.is_none());

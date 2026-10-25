@@ -1370,8 +1370,6 @@
     "No continuous global Rhino equality, complete NURBS protocol parity, general conditioning or throughput claim. Upstream repo.sh/prog_test, USD, Python-binding and GUI harnesses were not run."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "de57b6b0337844bdd85639599c5973cfa3f4657d228b300aa630aeec69222c5c",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "ebc5b482e64a1b26cc560738f1a522684e5e084530993f90a4923b240a853fd0",
     "crates/viboceros-smlib/native/bridge.h": "d1aa0d03c32cf564aba2bafd98b30b43d657dedb66f16a0afb84f1928805141c",
     "crates/viboceros-smlib/native/bridge.cpp": "2d1aa7ca77c6d47c10077d1e427fbd77d672debd2dd03b04b682a92004a9a50f",
     "crates/viboceros-smlib/native/surface_fillet.h": "7db50016bc07956fcab5dd4a8baffeda253741c54bd83febc5f7a0c238e05b79",
@@ -1503,6 +1501,8 @@
     "2d049746b4717fdbfea76c2b000f277253cb59e4:crates/viboceros-smlib/tests/surface_fillet_picks.rs": "a575b263d45c8a7dcb97c3f9d2925a845bb97716dfcf838bf8f94be06c459764",
     "2d049746b4717fdbfea76c2b000f277253cb59e4:crates/viboceros-oracle/src/surface_fillet.rs": "eb491a8b60891cc6c61b6bc49b4244c385756c2e7b04115154b0eb1489b2c13b",
     "2d049746b4717fdbfea76c2b000f277253cb59e4:crates/viboceros-oracle/src/surface_fillet_parent_tests.rs": "3d8b9253039a6cc7ab16b6385e9ec65d169800262767df5294d79e306025ad7f",
-    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:tools/rhino_oracle/surface_fillet_probe.py": "f7771d6d91fdf4d398741250c728ce1309114c94857461b5c8bc7a691f953641"
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:tools/rhino_oracle/surface_fillet_probe.py": "f7771d6d91fdf4d398741250c728ce1309114c94857461b5c8bc7a691f953641",
+    "7ee363ec07a5c25f6d45a8e367f175a11665e27a:crates/viboceros-smlib/build.rs": "de57b6b0337844bdd85639599c5973cfa3f4657d228b300aa630aeec69222c5c",
+    "7ee363ec07a5c25f6d45a8e367f175a11665e27a:crates/viboceros-smlib/native/CMakeLists.txt": "ebc5b482e64a1b26cc560738f1a522684e5e084530993f90a4923b240a853fd0"
   }
 }

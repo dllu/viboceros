@@ -2273,6 +2273,10 @@ def compare_responses(
             from .remap_cplane_comparison import canonical
             local_value = canonical(operation, local_value, native=False)
             native_value = canonical(operation, native_value, native=True)
+        if operation is not None and operation.get('op') == 'surface_apex_command':
+            from .surface_apex_comparison import canonical
+            local_value = canonical(operation, local_value, native=False)
+            native_value = canonical(operation, native_value, native=True)
         if isinstance(local_value,dict) and local_value.get('comparison_policy')=='block_context_member_permutation':
             if not isinstance(native_value,dict) or native_value.get('comparison_policy')!=local_value['comparison_policy']:
                 raise OracleProtocolError('native context comparison policy mismatch')

@@ -22,6 +22,8 @@ fn build_native() {
         "USD BRep source is missing"
     );
     println!("cargo:rerun-if-changed=native");
+    println!("cargo:rerun-if-changed=../viboceros-opennurbs/native/curve_discontinuity_query.h");
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/curve_continuity_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/isocurve_pair_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/surface_patch_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/curve_segment_limits_probe.cpp");
@@ -81,6 +83,8 @@ fn build_native() {
         "usd-brep-basis-evaluation.patch",
         "usd-brep-curve-evaluation-basis.patch",
         "usd-brep-basis-evaluation.cmake",
+        "usd-brep-curve-continuity.patch",
+        "usd-brep-curve-continuity.cmake",
         "usd-brep-point-interpolation.patch",
         "usd-brep-point-interpolation.cmake",
         "usd-brep-curve-exact-split.patch",
@@ -128,6 +132,12 @@ fn build_native() {
         .define("VIBOCEROS_SMLIB_ASAN", if sanitize { "ON" } else { "OFF" })
         .profile("Release")
         .build();
+    println!(
+        "cargo:rustc-env=VIBOCEROS_NATIVE_CURVE_CONTINUITY_PROBE={}",
+        destination
+            .join("build/viboceros_smlib_curve_continuity_probe")
+            .display()
+    );
     println!(
         "cargo:rustc-env=VIBOCEROS_NATIVE_CIRCULAR_FILLET_RAILS_PROBE={}",
         destination

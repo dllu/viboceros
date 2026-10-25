@@ -27,9 +27,11 @@ def validate(op):
     except (ImportError, ValueError, SystemError):
         from surface_apex_extrusion_probe import validate as sdk_validate
     if (not isinstance(op, dict) or op.get('op') != 'surface_apex_command'
-            or type(op.get('delete_input')) is not bool or type(op.get('preselect')) is not bool):
+            or type(op.get('delete_input')) is not bool or type(op.get('preselect')) is not bool
+            or ('split_at_tangents' in op and type(op['split_at_tangents']) is not bool)
+            or ('surface_details' in op and type(op['surface_details']) is not bool)):
         raise ValueError('invalid surface apex command options')
-    recipe = {k: v for k, v in op.items() if k not in ('delete_input', 'preselect')}
+    recipe = {k: v for k, v in op.items() if k not in ('delete_input', 'preselect', 'split_at_tangents', 'surface_details')}
     recipe['op'] = 'surface_apex_extrusion'
     sdk_validate(recipe)
 
@@ -66,6 +68,8 @@ def run(op, host, iterations, tolerance):
                 bounds = b.GetBoundingBox(True)
                 outputs.append(dict(is_solid=bool(b.IsSolid), face_count=int(b.Faces.Count), volume=volume,
                                     bounds=[host['_xyz'](bounds.Min), host['_xyz'](bounds.Max)]))
+                if op.get('surface_details', False):
+                    outputs[-1]['surfaces'] = [host['_nurbs_surface_definition'](face.UnderlyingSurface()) for face in b.Faces]
             finally:
                 if mass is not None:
                     mass.Dispose()
@@ -102,6 +106,8 @@ def run(op, host, iterations, tolerance):
         select = '' if op['preselect'] else ' _SelID '+str(source_id)+' _Enter'
         macro = '_ExtrudeSrfToPoint'+select+' _Solid=_'+('Yes' if op['solid'] else 'No')
         macro += ' _DeleteInput=_'+('Yes' if op['delete_input'] else 'No')
+        if 'split_at_tangents' in op:
+            macro += ' _SplitAtTangents=_'+('Yes' if op['split_at_tangents'] else 'No')
         macro += ' w'+host['_command_point'](op['apex'])+' _Cancel _Cancel _Cancel'
         success, after, events = observe_command(R.Commands.Command, 'ExtrudeSrfToPoint',
             lambda: R.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)

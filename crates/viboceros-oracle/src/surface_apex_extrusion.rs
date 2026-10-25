@@ -10,6 +10,56 @@ pub struct Fixture {
     #[serde(default = "default_true")]
     pub solid: bool,
 }
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct CommandFixture {
+    #[serde(flatten)]
+    pub extrusion: Fixture,
+    pub delete_input: bool,
+    pub preselect: bool,
+    #[serde(default)]
+    pub split_at_tangents: bool,
+    #[serde(default)]
+    pub surface_details: bool,
+}
+
+pub(super) fn run_command(
+    f: &CommandFixture,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    if iterations != 1 || f.surface_details {
+        return Err(ProbeError::FixtureInvariant(
+            "surface apex command replay requires one iteration and portable geometry diagnostics",
+        ));
+    }
+    measure_probe(iterations, || -> Result<Value, ProbeError> {
+        let original = f.extrusion.source_face(tolerance)?;
+        let mut doc = Document::new(tolerance);
+        let source = doc.add_geometry(original.clone())?;
+        if f.preselect {
+            doc.select_objects_direct([source], SelectionMode::Replace)?;
+        }
+        doc.clear_history()?;
+        let [x, y, z] = f.extrusion.apex;
+        let registry = CommandRegistry::with_builtins();
+        registry.execute(&mut doc,&format!(
+            "ExtrudeSrfToPoint {x},{y},{z} FaceRefs={source}:0 Solid={} DeleteInput={} SplitAtTangents={}",
+            if f.extrusion.solid {"Yes"} else {"No"},
+            if f.delete_input {"Yes"} else {"No"},
+            if f.split_at_tangents {"Yes"} else {"No"},
+        ))?;
+        let after = snapshot(&doc, source, &original)?;
+        registry.execute(&mut doc, "Undo")?;
+        let undo = snapshot(&doc, source, &original)?;
+        registry.execute(&mut doc, "Redo")?;
+        let redo = snapshot(&doc, source, &original)?;
+        Ok(
+            json!({"after":after,"undo":undo,"redo":redo,"document_tolerance":{
+            "absolute":tolerance.absolute(),"relative":tolerance.relative(),"angular":tolerance.angular()}}),
+        )
+    })
+}
 impl Fixture {
     /// The selected face as an independent source, shared by command/UI replays.
     pub fn source_face(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
