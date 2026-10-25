@@ -145,6 +145,29 @@ pub fn loft_surface_rebuilt(
     }
 }
 
+/// Refit supported ordered profiles, then use native common-basis operations
+/// and interpolation. Curved profiles remain explicitly unsupported.
+pub fn loft_surface_refitted(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    closed: bool,
+    ends: viboceros_geometry::LoftEndPoints,
+    fit_tolerance: f64,
+) -> Result<NurbsSurface, Error> {
+    if closed && !ends.is_empty() {
+        return Err(viboceros_geometry::GeometryError::InvalidControlNet {
+            context: "closed Loft cannot have point ends",
+        }
+        .into());
+    }
+    let sections = viboceros_geometry::try_prepare_refitted_loft_sections(curves, fit_tolerance)?;
+    if ends.is_empty() {
+        loft_surface(&sections, style, closed)
+    } else {
+        loft_surface_with_end_points(&sections, style, ends)
+    }
+}
+
 #[repr(C)]
 struct InterpolationSystem {
     knots: *const f64,

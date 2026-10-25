@@ -1,4 +1,4 @@
-//! Refit must not silently run an ordinary Loft while its fitter is unfinished.
+//! Curved Refit must not silently run an ordinary Loft.
 use serde_json::{Value, json};
 use std::path::Path;
 use viboceros_oracle::{ProbeRequest, run_request};
@@ -48,11 +48,13 @@ fn zero_refit_matches_all_native_ordinary_lofts_and_preserves_sources() {
 }
 
 #[test]
-fn positive_refit_reports_the_missing_fitter_instead_of_false_geometry() {
+fn curved_refit_reports_the_missing_policy_instead_of_false_geometry() {
     let (query, _) = fixture();
     let mut count = 0;
     for op in query["operations"].as_array().unwrap() {
-        if op["refit_tolerance"].as_f64().unwrap() <= 0. {
+        if op["refit_tolerance"].as_f64().unwrap() <= 0.
+            || op["id"].as_str().unwrap().starts_with("loft-refit-line-")
+        {
             continue;
         }
         for command in [false, true] {
@@ -62,14 +64,11 @@ fn positive_refit_reports_the_missing_fitter_instead_of_false_geometry() {
             request["operations"] = json!([op]);
             let request: ProbeRequest = serde_json::from_value(request).unwrap();
             let error = run_request(&request).unwrap_err().to_string();
-            assert!(
-                error.contains("Loft Refit section approximation is not implemented"),
-                "{error}"
-            );
+            assert!(error.contains("Loft Refit currently requires"), "{error}");
             count += 1;
         }
     }
-    assert_eq!(count, 150);
+    assert_eq!(count, 120);
 }
 
 #[test]

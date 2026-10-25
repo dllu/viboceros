@@ -9,6 +9,7 @@ pub struct Options {
     pub natural_seams: bool,
     pub ends: LoftEndPoints,
     pub rebuild_point_count: usize,
+    pub refit_tolerance: Option<f64>,
 }
 
 impl Options {
@@ -19,7 +20,7 @@ impl Options {
     /// Replaces options supplied in this input; duplicate keys in one input fail.
     pub fn updated(self, arguments: &[&str]) -> Result<Self, CommandError> {
         let mut result = self;
-        let mut seen = 0u8;
+        let mut seen = 0u16;
         let mut simplify = None;
         for argument in arguments {
             let (name, value) = argument.split_once('=').unwrap_or((argument, ""));
@@ -58,11 +59,21 @@ impl Options {
                     .filter(|n| *n <= viboceros_geometry::MAX_LOFT_SECTION_CONTROLS)
                     .ok_or(CommandError::Usage(USAGE))?;
                 64
+            } else if option_name_eq(name, "Refit") || option_name_eq(name, "RefitTolerance") {
+                result.refit_tolerance = Some(
+                    value
+                        .parse::<f64>()
+                        .ok()
+                        .filter(|t| t.is_finite() && *t >= 0.)
+                        .ok_or(CommandError::Usage(USAGE))?,
+                );
+                256
             } else if option_name_eq(name, "Simplify") {
                 simplify = Some(
                     match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                        "none" => false,
-                        "rebuild" => true,
+                        "none" => 0,
+                        "rebuild" => 1,
+                        "refit" => 2,
                         _ => return Err(CommandError::Usage(USAGE)),
                     },
                 );
@@ -75,10 +86,35 @@ impl Options {
             }
             seen |= key;
         }
-        if simplify == Some(false) {
+        let rebuild_requested = seen & 64 != 0 || simplify == Some(1);
+        let refit_requested = seen & 256 != 0 || simplify == Some(2);
+        if rebuild_requested && refit_requested {
+            return Err(CommandError::Usage(USAGE));
+        }
+        if seen & 64 != 0 {
+            result.refit_tolerance = None;
+        }
+        if seen & 256 != 0 {
             result.rebuild_point_count = 0;
-        } else if simplify == Some(true) && result.rebuild_point_count == 0 {
-            result.rebuild_point_count = 10;
+        }
+        match simplify {
+            Some(0) => {
+                result.rebuild_point_count = 0;
+                result.refit_tolerance = None;
+            }
+            Some(1) => {
+                result.refit_tolerance = None;
+                if result.rebuild_point_count == 0 {
+                    result.rebuild_point_count = 10;
+                }
+            }
+            Some(2) => {
+                result.rebuild_point_count = 0;
+                result
+                    .refit_tolerance
+                    .get_or_insert(Tolerance::DEFAULT.absolute());
+            }
+            _ => {}
         }
         if result.closed && !result.ends.is_empty() {
             return Err(CommandError::Usage(USAGE));
@@ -110,6 +146,9 @@ impl Options {
         }
         if self.rebuild_point_count != 0 {
             result.push_str(&format!(" Rebuild={}", self.rebuild_point_count));
+        }
+        if let Some(tolerance) = self.refit_tolerance {
+            result.push_str(&format!(" Refit={tolerance}"));
         }
         result
     }

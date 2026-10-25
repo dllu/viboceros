@@ -1,0 +1,1672 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-normal-0.001-closed",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": true,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-normal-0.001-start",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        -2.0,
+        -3.0,
+        -2.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-normal-0.001-end",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        6.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-normal-0.001-both",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        -2.0,
+        -3.0,
+        -2.0
+      ],
+      "end_point": [
+        6.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-loose-0.001-closed",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": true,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-loose-0.001-start",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        -2.0,
+        -3.0,
+        -2.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-loose-0.001-end",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        6.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-loose-0.001-both",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        -2.0,
+        -3.0,
+        -2.0
+      ],
+      "end_point": [
+        6.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-tight-0.001-closed",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": true,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-tight-0.001-start",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        -2.0,
+        -3.0,
+        -2.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-tight-0.001-end",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        6.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-tight-0.001-both",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        -2.0,
+        -3.0,
+        -2.0
+      ],
+      "end_point": [
+        6.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-straight-0.001-closed",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": true,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-straight-0.001-start",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        -2.0,
+        -3.0,
+        -2.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-straight-0.001-end",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        6.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-straight-0.001-both",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        -2.0,
+        -3.0,
+        -2.0
+      ],
+      "end_point": [
+        6.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-lines-line-uniform-0.001-closed",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                -2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                -2.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                10.0,
+                2.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "style": "uniform",
+      "closed": true,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    }
+  ]
+}

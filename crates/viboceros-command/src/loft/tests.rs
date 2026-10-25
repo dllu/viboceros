@@ -425,6 +425,12 @@ fn simplify_options_select_or_disable_rebuilding_without_partial_edits() {
             .rebuild_point_count,
         0
     );
-    assert!(expected.updated(&["Simplify=Refit"]).is_err());
+    assert_eq!(
+        expected
+            .updated(&["Simplify=Refit"])
+            .unwrap()
+            .refit_tolerance,
+        Some(Tolerance::DEFAULT.absolute())
+    );
     assert!(expected.updated(&["Rebuild=6", "RebuildCount=9"]).is_err());
 }

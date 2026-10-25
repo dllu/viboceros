@@ -128,6 +128,8 @@ impl VibocerosApp {
             "RebuildPointCount",
             "RebuildCount",
             "Simplify",
+            "Refit",
+            "RefitTolerance",
         ]
         .into_iter()
         .find(|option| name.eq_ignore_ascii_case(option))

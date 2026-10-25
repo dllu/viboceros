@@ -1,0 +1,96 @@
+use super::*;
+
+#[test]
+fn refit_options_round_trip_switch_modes_and_validate_atomically() {
+    let rebuilt = Options::parse(&["Rebuild=6"]).unwrap();
+    let refitted = rebuilt.updated(&["Refit=0.00012345678901234567"]).unwrap();
+    assert_eq!(refitted.rebuild_point_count, 0);
+    assert_eq!(
+        Options::parse(&refitted.arguments().split_whitespace().collect::<Vec<_>>()).unwrap(),
+        refitted
+    );
+    assert_eq!(
+        refitted.updated(&["Rebuild=8"]).unwrap().refit_tolerance,
+        None
+    );
+    assert_eq!(
+        refitted
+            .updated(&["Simplify=None"])
+            .unwrap()
+            .refit_tolerance,
+        None
+    );
+    assert_eq!(refitted.updated(&["_Simplify=_Refit"]).unwrap(), refitted);
+    for arguments in [
+        vec!["Refit=-1"],
+        vec!["Refit=NaN"],
+        vec!["Refit=inf"],
+        vec!["Refit=1", "RefitTolerance=2"],
+        vec!["Refit=1", "Rebuild=4"],
+        vec!["Rebuild=0", "Refit=0"],
+        vec!["Simplify=Refit", "Rebuild=4"],
+        vec!["Simplify=Rebuild", "Refit=0.01"],
+    ] {
+        assert!(refitted.updated(&arguments).is_err(), "{arguments:?}");
+    }
+}
+
+#[test]
+fn straight_refit_retains_originals_selection_and_single_undo_redo() {
+    let registry = CommandRegistry::with_builtins();
+    for ends in ["", "StartPoint=0,0,-2", "EndPoint=0,0,7"] {
+        let mut document = Document::default();
+        for command in ["Line 0,0,0 2,0,0", "Line 0,0,3 4,0,3"] {
+            registry.execute(&mut document, command).unwrap();
+        }
+        let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        document.clear_history().unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        registry
+            .execute(
+                &mut document,
+                &format!("Loft Type=Normal Refit=0.001 {ends}"),
+            )
+            .unwrap();
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), ids);
+        for source in &before {
+            assert_eq!(document.object(source.id()).unwrap(), source);
+        }
+        let output = document.objects().find(|o| !ids.contains(&o.id())).unwrap();
+        let Geometry::Brep(brep) = output.geometry() else {
+            panic!("Loft BRep")
+        };
+        assert_eq!(brep.faces()[0].surface().degree_v(), 3);
+        assert_eq!(brep.faces()[0].surface().control_point_count_v(), 4);
+        assert_eq!(document.undo_label(), Some("Loft"));
+        let after = document.objects().cloned().collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+    }
+}
+
+#[test]
+fn unsupported_curved_refit_never_commits_or_changes_history() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    for command in ["Line 0,0,0 2,0,0", "Circle 0,0,3 2"] {
+        registry.execute(&mut document, command).unwrap();
+    }
+    let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    document
+        .select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    document.clear_history().unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    let error = registry
+        .execute(&mut document, "Loft Refit=0.001")
+        .unwrap_err();
+    assert!(error.to_string().contains("Loft Refit currently requires"));
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(document.undo_label(), None);
+}

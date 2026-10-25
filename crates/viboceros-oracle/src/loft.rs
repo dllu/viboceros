@@ -36,11 +36,6 @@ impl LoftFixture {
                     "Loft Refit and Rebuild are mutually exclusive",
                 ));
             }
-            if tolerance > 0. {
-                return Err(ProbeError::FixtureInvariant(
-                    "Loft Refit section approximation is not implemented",
-                ));
-            }
         }
         Ok(())
     }
@@ -81,6 +76,7 @@ pub(super) fn run(
         fixture.closed,
         ends,
         fixture.rebuild_point_count,
+        fixture.refit_tolerance,
         tolerance,
     )?;
     let started = Instant::now();
@@ -91,6 +87,7 @@ pub(super) fn run(
             fixture.closed,
             ends,
             fixture.rebuild_point_count,
+            fixture.refit_tolerance,
             tolerance,
         )?);
     }
@@ -113,8 +110,33 @@ fn fixture_surface(
     closed: bool,
     ends: viboceros_geometry::LoftEndPoints,
     rebuild: usize,
+    refit: Option<f64>,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, ProbeError> {
+    if let Some(fit_tolerance) = refit.filter(|t| *t > 0.) {
+        #[cfg(feature = "native-smlib")]
+        {
+            return viboceros_smlib::loft_surface_refitted(
+                curves,
+                style,
+                closed,
+                ends,
+                fit_tolerance,
+            )
+            .map_err(CommandError::from)
+            .map_err(ProbeError::from);
+        }
+        #[cfg(not(feature = "native-smlib"))]
+        {
+            return Ok(viboceros_geometry::try_loft_nurbs_curves_refitted(
+                curves,
+                style,
+                closed,
+                ends,
+                fit_tolerance,
+            )?);
+        }
+    }
     if rebuild != 0 {
         #[cfg(feature = "native-smlib")]
         {
@@ -225,7 +247,17 @@ pub(super) fn build_brep(fixture: &LoftFixture, tolerance: Tolerance) -> Result<
             ends,
             viboceros_geometry::LoftOptions::default(),
             tolerance,
-            &mut |c, s, e| fixture_surface(c, s, false, e, fixture.rebuild_point_count, tolerance),
+            &mut |c, s, e| {
+                fixture_surface(
+                    c,
+                    s,
+                    false,
+                    e,
+                    fixture.rebuild_point_count,
+                    fixture.refit_tolerance,
+                    tolerance,
+                )
+            },
         );
     }
     Brep::try_loft_with_surface(
@@ -240,6 +272,7 @@ pub(super) fn build_brep(fixture: &LoftFixture, tolerance: Tolerance) -> Result<
                 closed,
                 viboceros_geometry::LoftEndPoints::default(),
                 fixture.rebuild_point_count,
+                fixture.refit_tolerance,
                 tolerance,
             )
         },
@@ -272,6 +305,9 @@ fn command(
     }
     if fixture.rebuild_point_count != 0 {
         command.push_str(&format!(" Rebuild={}", fixture.rebuild_point_count));
+    }
+    if let Some(tolerance) = fixture.refit_tolerance {
+        command.push_str(&format!(" Refit={tolerance}"));
     }
     let mut elapsed = 0_u128;
     let mut result = Value::Null;

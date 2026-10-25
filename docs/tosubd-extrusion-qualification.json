@@ -1018,7 +1018,7 @@
     "Five misplaced-inner-profile workflows are retained as diagnostics and excluded from conversion comparisons; their invalid native B-rep form was recorded separately."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/lib.rs": "0ad8f56d8b745c8e4dfad7b775313f59a02b42b34afc70c620bdff889200fddc",
+    "crates/viboceros-geometry/src/lib.rs": "a86da352237363f2cc735388d542cd077d204e692583925609f3af9af10543d2",
     "crates/viboceros-geometry/src/error.rs": "e03ea19c5b36f97cbd32f959d853bba42d471627f5cf21a4f5e3b39e7a4b379d",
     "crates/viboceros-geometry/src/brep.rs": "e45e31aead0f81119fb6f4ed211998663d56c7458356dfa7fa59df3c4d55de21",
     "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",
@@ -1047,7 +1047,7 @@
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
-    "tools/rhino_oracle/rhino_worker.py": "8eeccf022a7a5b17283042a289c82c3ad5e56200673e88d47979e01e5ddbf6b7",
+    "tools/rhino_oracle/rhino_worker.py": "d4533e338870885f4a684b03e86f8428147ef4251d294b920f18cce894f3d045",
     "tools/rhino_oracle/report_extrusions.py": "f55d5bb8d78e9e3c54bded906fecb7b171a3038b5c860ee438cec8a7591f4a98",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
     "tools/rhino_oracle/fixtures/tosubd_extrusions.json": "00f7b598aea12033c12945d2a9b1566e661e68e2bbd757c2c35bba49b64d16fd",
@@ -1061,7 +1061,7 @@
     "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f",
     "crates/viboceros-opennurbs/native/CMakeLists.txt": "1fc44d0d3063e0c7c355f4aae602b41d676e37021bf758638990f402d7fa4d79",
     "crates/viboceros-io/src/three_dm/mesh_ngon.rs": "a8b04d6c4a5b62ee1c2caa3accc7cdec72a30eeaffd1ce6d31f4fb4aceb22a2a",
-    "tools/rhino_oracle/qualification_sources.py": "46f0c161a3a2b4e56886fdf0dc4f3fee0473b38658852387ff83f573d3468a98",
+    "tools/rhino_oracle/qualification_sources.py": "a4f51160c26b96c0e873e7ece6c6190ae043e2325b0cff90da6f45284dedebb6",
     "crates/viboceros-opennurbs/src/extrusion/surface.rs": "73e13ebbe2b74a74fad7f686684ce51de280bd6fcd8e3ff417cd25291cb4e648",
     "crates/viboceros-geometry/src/subd.rs": "0977f351f9100b105acfe9fb61b6b5ae5245a7ec01c5cf6946b3d522389fd076",
     "crates/viboceros-geometry/src/subd/extrusion_conversion.rs": "aa9eeafa0e11f9ddcee965e59a0b6b6c899ec6be6c09e37acff346b0857f0629",

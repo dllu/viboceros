@@ -7,12 +7,14 @@ mod interpolate;
 mod parameterize;
 mod points;
 mod rebuild;
+mod refit;
 pub(crate) use points::validate_end_points;
 pub use points::{
     LoftEndPoints, try_loft_nurbs_curves_with_end_points,
     try_loft_nurbs_curves_with_end_points_and_operations,
 };
 pub use rebuild::{try_loft_nurbs_curves_rebuilt, try_prepare_rebuilt_loft_sections_with};
+pub use refit::{try_loft_nurbs_curves_refitted, try_prepare_refitted_loft_sections};
 #[cfg(test)]
 mod tests;
 

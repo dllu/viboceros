@@ -2435,6 +2435,11 @@ def _loft(operation, iterations):
     if refit is not None and (type(refit) not in (int, float) or math.isnan(refit)
                               or math.isinf(refit) or refit < 0. or rebuild is not None):
         raise ValueError('invalid Loft refit tolerance or conflicting simplification')
+    refit_angle = operation.get('refit_angle_tolerance')
+    if refit_angle is not None and (type(refit_angle) not in (int, float)
+            or math.isnan(refit_angle) or math.isinf(refit_angle)
+            or refit_angle < 0. or refit_angle > math.pi or refit is None):
+        raise ValueError('invalid Loft refit angle tolerance')
     curves = []
     styles = {
         "normal": Rhino.Geometry.LoftType.Normal,
@@ -2458,6 +2463,8 @@ def _loft(operation, iterations):
             arguments.append(rebuild)
         elif refit is not None:
             factory = Rhino.Geometry.Brep.CreateFromLoftRefit
+            if refit_angle is not None:
+                arguments.append(refit_angle)
             arguments.append(refit)
         result.extend(factory(*arguments) or [])
         if not result and not operation.get("allow_empty", False):

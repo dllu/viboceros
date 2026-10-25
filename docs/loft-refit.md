@@ -1,41 +1,37 @@
-# Loft Refit investigation
+# Loft Refit
 
 [Loft](loft.md) · [Section rebuilding](loft-rebuild.md)
 
-Positive-tolerance Refit is still unimplemented. The oracle now rejects a
-positive `refit_tolerance` explicitly, including command requests, instead of
-silently producing an ordinary loft. Zero disables simplification; invalid
-negative tolerances and conflicting rebuild requests fail before geometry work.
+`Loft Refit=0.001` refits straight profiles to polynomial cubic lines before
+lofting. Rational weights, uneven parameter spacing, and continuous multiple
+spans are supported. Sources, selection and attributes remain intact; accepting
+the result creates one undo step. Interactive Loft accepts `Refit` followed by a
+tolerance, or `RefitTolerance=<value>`. `Simplify=Refit` selects the current Refit
+tolerance, defaulting to `1e-9`; `Simplify=None` disables simplification. Refit and
+Rebuild cannot be supplied together. Zero leaves the original profiles unchanged.
 
-Fresh Rhino 8.32 captures retain 100 ordered API cases across five profile
-families, five Loft styles and four tolerances. All 75 positive-tolerance results
-have polynomial cubic sections and retain their input definitions. All 25 zero
-cases equal the existing native zero-Rebuild captures. A 16-case pilot repeats
-cases in the main family; another 45 cases use equal translated profiles to
-isolate the section fitter from common-basis union. Successful captures and their
-content-addressed producer archives are immutable.
+Positive Refit currently requires a clamped, continuous, non-reversing collinear
+control polygon with same-sign weights. Exact rational comparisons admit the
+profile; a sampled linearity test is insufficient. The cubic has uniform line
+speed. Exact handle-rounding bounds guarantee its complete image lies within
+the requested distance of the source segment. This preserves the geometric
+segment, **not its original parameter correspondence**. Inputs exceeding the
+512-control or 256-section limits, and tolerances below representable handle
+accuracy, fail explicitly.
 
-Neither independent public fitter tested so far explains Loft Refit. At
-`tolerance=0.001`, a smooth rational quarter arc produces multiple internal knots
-in the loft, while independent `Curve.Fit(3, ...)` sections have only simple
-internal knots. With equal translated radius-two quarter arcs, Loft Refit uses
-two cubic spans; `BezierCurve.CreateCubicBeziers` returns four, with different
-handles. These are measurements, not evidence of a shared hidden algorithm.
-The public [cubic-Bezier API](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_BezierCurve_CreateCubicBeziers.htm)
-and [Loft Refit API](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/Overload_Rhino_Geometry_Brep_CreateFromLoftRefit.htm)
-remain independent reference operations.
+Curved profiles remain unsupported and fail before document mutation. Native
+captures show that Rhino refits even polynomial quadratics and cubics, changing
+their clocks. Neither `Curve.Fit(3, ...)`, the public cubic-Bezier fitter, nor the
+separate [certified source-parameter approximation](cubic-approximation.md)
+reproduces that general Loft policy. No curved-profile parity is claimed.
 
-The shared curve fitter has been refactored into adaptive policy, parameter
-sampling, interpolation/handle solving and separate regression modules. This
-moves existing code without changing its arc-length fitting policy. It does not
-establish Rhino Refit parity or a continuous approximation bound for that fitter.
-A separate [certified cubic primitive](cubic-approximation.md) now supplies
-source-parameter fits and whole-curve bounds for the next fitting work. The
-[validation record](loft-refit-validation.json) records the checks and limits.
+The [validation record](loft-refit-lines-validation.json) binds the implementation,
+native captures and verification results. The earlier
+[investigation](loft-refit-validation.json) retains its historical source bindings.
+Native data and content-addressed producer archives remain immutable.
 
 ```sh
-cargo test -p viboceros-geometry --lib curve_fit
-cargo test -p viboceros-oracle --test loft_refit_native
-cargo test -p viboceros-oracle --features native-smlib --test loft_refit_native
-python3 -m unittest tools.rhino_oracle.test_loft_refit tools.rhino_oracle.test_capture_family
+cargo test -p viboceros-oracle --test loft_refit_lines_native --test loft_refit_native
+cargo test -p viboceros-oracle --features native-smlib --test loft_refit_lines_native --test loft_refit_native
+python3 -m unittest tools.rhino_oracle.test_loft_refit_lines
 ```
