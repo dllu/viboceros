@@ -46,6 +46,8 @@ impl VibocerosApp {
             self.fillet_surface_prompt = None;
         } else if self.blend_surface_prompt.is_some() {
             self.blend_surface_prompt = None;
+        } else if self.loft_prompt.is_some() && self.plane_prompt.is_none() {
+            self.cancel_interactive_command(true);
         } else if self.tween_surfaces_prompt.is_some() {
             self.cancel_tween_surfaces();
         } else if self.planar_boolean_prompt.is_some() {

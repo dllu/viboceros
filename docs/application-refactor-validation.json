@@ -84,7 +84,11 @@
     "ef5a14115bbdea43ae5d203f53de232e2aca02f5:src/app/interactive_state/prompts.rs": "58af4a1f006faa716017c1064292b7e56454cb61f2a9b6eefadf4e7c3c592920",
     "a0d6b36381c20d97b6c38740df8000081a058017:src/app/selection_input.rs": "b2613b77a55730f01beecda72b96832b0b51d984d3863fa5016e6f11ba1f3e2e",
     "8c6f69d564b63af0c66eaa46dfa87f35dbe2e86f:docs/development.md": "8c11cc779b1c6286431200863178489ca1453ba1ad88165bf83cef9da85bc243",
-    "02fead1d8870372d6db024f112f7ae0799a5be22:docs/command-test-refactor-validation.json": "90a245219fdee3e54546a7e89acf3002d22f2e7357d95cad938d5d3304672cb3"
+    "02fead1d8870372d6db024f112f7ae0799a5be22:docs/command-test-refactor-validation.json": "90a245219fdee3e54546a7e89acf3002d22f2e7357d95cad938d5d3304672cb3",
+    "a4cedc7114cf0c54cce72e13e8b29c33412122a2:src/app/drafting_input.rs": "ec6d4cddf2d6491d6841babfd64b7a2abc849cb545d490d06488e202c711213b",
+    "a4cedc7114cf0c54cce72e13e8b29c33412122a2:src/app/interactive_state/metadata.rs": "fbafb777ff716f2d4b6d1f009e12897df2189c3dfe8aa06f2046bd917bec2d1c",
+    "a4cedc7114cf0c54cce72e13e8b29c33412122a2:src/app/interactive_state/mod.rs": "1c200249ea8ac710380c15e0bfbc27fc585eb96aac042aa0c26f72097bf0672b",
+    "a4cedc7114cf0c54cce72e13e8b29c33412122a2:src/app/sidebar.rs": "448e17369b0ae80c81532e5d49af583d74501c9e4fb64a395578a8284efcfe80"
   },
   "sha256": {
     "README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
@@ -104,11 +108,7 @@
     "docs/validation/2026-10-09/tween-surfaces.md": "80da5ba05d4658b510bead314c87d41a287bd890856bf33601cd36075be1118a",
     "docs/validation/2026-10-09/uv-maps.md": "5784ac8cd4ba1a460e4093d7154b44acfe0062d81c8ee2f5e3a4a07ddeff0a31",
     "docs/validation/2026-10-09/workspace.md": "899c18f00f71a186ed049f5810fccd1bdb541c978de396981bc6c9f9da0fd39f",
-    "src/app/drafting_input.rs": "ec6d4cddf2d6491d6841babfd64b7a2abc849cb545d490d06488e202c711213b",
     "src/app/interactive_start.rs": "e34b9827542d0403606428577564306d4dab88f4ba2c5e4897dad1323a093622",
-    "src/app/interactive_state/metadata.rs": "fbafb777ff716f2d4b6d1f009e12897df2189c3dfe8aa06f2046bd917bec2d1c",
-    "src/app/interactive_state/mod.rs": "1c200249ea8ac710380c15e0bfbc27fc585eb96aac042aa0c26f72097bf0672b",
-    "src/app/sidebar.rs": "448e17369b0ae80c81532e5d49af583d74501c9e4fb64a395578a8284efcfe80",
     "src/app/tests/arc_input.rs": "4e20965c46689f9bfe53fe77d870f25f5056bb95c8d9c64eb4ecae840a545a5c",
     "src/app/tests/command_focus.rs": "47574bf3360cbc2209caa04a444c15bd6fb66035e3165ab31bc2277e01c8e429",
     "src/app/tests/curve_input.rs": "bbc1b9b0da91964171eb06989f4c0c02267f08015e67a75ed8ffe63d049d32f1",

@@ -68,6 +68,8 @@ layer. `SplitAtTangents=Yes` adds curvature-break partitions independently of th
 global `CreaseSplitting` preference; `Natural` retains supplied profile seams.
 `StartPoint=x,y,z` and `EndPoint=x,y,z` add [point poles](../loft-points.md),
 including a single closed profile with two poles.
+Bare `Loft` opens ordered curve selection; its `Point` option picks either pole
+with snapping. Enter accepts, `Undo` revises input, and Escape cancels.
 See [Loft geometry, ordering, tests and limits](../loft.md), especially
 the endpoint-weight normalization policy for rational profiles.
 

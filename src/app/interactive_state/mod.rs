@@ -90,6 +90,7 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum InteractiveCommand {
+    LoftPoint,
     FaceCreate {
         anchor: Option<Point3>,
     },

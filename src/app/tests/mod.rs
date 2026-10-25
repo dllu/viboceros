@@ -100,6 +100,7 @@ mod interface;
 mod intersect_two_sets;
 mod length;
 mod line_through_points;
+mod loft_input;
 mod loft_options;
 mod maelstrom;
 mod mark_foci;
@@ -281,6 +282,7 @@ pub(super) fn test_app() -> VibocerosApp {
         boolean_two_prompt: None,
         planar_boolean_prompt: None,
         tween_surfaces_prompt: None,
+        loft_prompt: None,
         blend_surface_prompt: None,
         fillet_surface_prompt: None,
         reparameterize_prompt: None,

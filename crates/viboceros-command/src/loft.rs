@@ -1,7 +1,10 @@
 use super::*;
 use viboceros_geometry::{LoftEndPoints, LoftOptions, LoftStyle};
 
-const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+pub const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+
+mod options;
+pub use options::Options;
 
 pub(super) struct LoftCommand(pub crease_splitting::Preference);
 
@@ -11,40 +14,8 @@ impl Command for LoftCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (mut style, mut closed, mut split, mut natural) = (None, None, None, false);
-        let mut ends = LoftEndPoints::default();
-        for argument in arguments {
-            if option_name_eq(argument, "Natural") && !natural {
-                natural = true;
-                continue;
-            }
-            let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
-            if option_name_eq(name, "Type") && style.is_none() {
-                style = Some(
-                    match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                        "normal" => LoftStyle::Normal,
-                        "loose" => LoftStyle::Loose,
-                        "tight" => LoftStyle::Tight,
-                        "straight" => LoftStyle::Straight,
-                        "uniform" => LoftStyle::Uniform,
-                        _ => return Err(CommandError::Usage(USAGE)),
-                    },
-                );
-            } else if option_name_eq(name, "Closed") && closed.is_none() {
-                closed = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
-            } else if option_name_eq(name, "SplitAtTangents") && split.is_none() {
-                split = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
-            } else if option_name_eq(name, "StartPoint") && ends.start.is_none() {
-                ends.start = Some(parse_point(&[value])?.0);
-            } else if option_name_eq(name, "EndPoint") && ends.end.is_none() {
-                ends.end = Some(parse_point(&[value])?.0);
-            } else {
-                return Err(CommandError::Usage(USAGE));
-            }
-        }
-        if closed.unwrap_or(false) && !ends.is_empty() {
-            return Err(CommandError::Usage(USAGE));
-        }
+        let input = Options::parse(arguments)?;
+        let ends = input.ends;
         let selected = selected_ids(document)?;
         let profiles = selected
             .iter()
@@ -59,14 +30,14 @@ impl Command for LoftCommand {
             .collect::<Result<Vec<_>, CommandError>>()?;
         let options = LoftOptions {
             crease_splitting: self.0.get().0,
-            split_at_tangents: split.unwrap_or(false),
-            natural_seams: natural,
+            split_at_tangents: input.split_at_tangents,
+            natural_seams: input.natural_seams,
         };
         let brep = if ends.is_empty() {
             Brep::try_loft_with_surface_options(
                 &profiles,
-                style.unwrap_or_default(),
-                closed.unwrap_or(false),
+                input.style,
+                input.closed,
                 options,
                 document.tolerance(),
                 &mut surface,
@@ -74,7 +45,7 @@ impl Command for LoftCommand {
         } else {
             Brep::try_loft_with_surface_end_points(
                 &profiles,
-                style.unwrap_or_default(),
+                input.style,
                 ends,
                 options,
                 document.tolerance(),

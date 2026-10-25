@@ -17,6 +17,9 @@ impl VibocerosApp {
         {
             return self.select_uv_point(point);
         }
+        if let Some(accepted) = self.accept_loft_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_refinement_drafting_point(point) {
             return accepted;
         }
@@ -147,7 +150,8 @@ impl VibocerosApp {
             InteractiveCommand::ProjectDirection { start } => {
                 return self.accept_project_direction_point(start, point);
             }
-            InteractiveCommand::RemapCPlane
+            InteractiveCommand::LoftPoint
+            | InteractiveCommand::RemapCPlane
             | InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientCurveToEdge
             | InteractiveCommand::OffsetCurveOnSurface

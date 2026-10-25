@@ -20,8 +20,17 @@ Poles share the grid's topology rather than introducing coincident mesh vertices
 The sampled closed-solid normalizer also covers solids closed by poles, including
 reversed profile traversal. Collapsed boundaries reuse tessellation's sampled
 normal limits on several meridians; all outside probes still have to agree.
-Numeric options are available through the command line; interactive Point picking
-is still incomplete.
+
+In the application, enter `Loft`, then select curves in order. Choose `Point`
+before selecting curves to pick a start pole, or after selecting them to pick an
+end pole. `StartPoint` and `EndPoint` explicitly choose an end. Point getters use
+the usual object snaps, coordinate filters, units, relative coordinates, and
+construction plane. Enter creates the result; `Undo` revises a pick or option,
+and Escape cancels and restores the initial selection without consuming model
+undo/redo. `Type`, `Closed`, and `SplitAtTangents` accept values at the prompt;
+`Natural` retains seams. A fully specified numeric command with enough selected
+profiles still executes immediately. Native interactive Point replay in the
+oracle worker remains unsupported.
 
 `LoftEndPoints` and `try_loft_nurbs_curves_with_end_points` expose the ordered
 geometry API. The usd-brep adapter delegates its basis edits and interpolation

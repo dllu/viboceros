@@ -510,6 +510,9 @@ impl VibocerosApp {
                 .picking_replace_block()
                 .then_some(ObjectSelectionFilter::Blocks);
         }
+        if let Some(p) = &self.loft_prompt {
+            return p.selecting().then_some(ObjectSelectionFilter::Curves);
+        }
         if let Some(p) = &self.tween_surfaces_prompt {
             return p.selecting().then_some(ObjectSelectionFilter::Surfaces);
         }

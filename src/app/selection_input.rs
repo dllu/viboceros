@@ -56,6 +56,9 @@ impl VibocerosApp {
         if self.pick_replace_block(click.object_id) {
             return;
         }
+        if self.select_loft_curves(click.object_id, click.mode) {
+            return;
+        }
         if self.pick_tween_surface(click.object_id) {
             return;
         }
@@ -718,6 +721,9 @@ impl VibocerosApp {
         }
         if self.intersection_prompt.is_some() {
             self.select_intersection_prompt_objects(selection.object_ids, selection.mode);
+            return;
+        }
+        if self.select_loft_curves(selection.object_ids.iter().copied(), selection.mode) {
             return;
         }
         if self.object_prompt.is_some() {

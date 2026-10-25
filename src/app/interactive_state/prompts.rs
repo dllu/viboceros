@@ -4,6 +4,7 @@ use super::*;
 impl InteractiveCommand {
     pub(in crate::app) const fn prompt(self) -> &'static str {
         match self {
+            Self::LoftPoint => "Loft: pick the point end (Esc cancels)",
             Self::RemapCPlane => {
                 "RemapCPlane: click a target viewport, or choose CPlane or View (Esc cancels)"
             }

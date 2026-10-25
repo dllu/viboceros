@@ -104,6 +104,10 @@ APPLICATION_MODULES = [
     'src/app/tests/arc_input.rs',
     'src/app/tests/command_focus.rs',
     'src/app/tests/loft_options.rs',
+    'src/app/tests/loft_input.rs',
+    'src/app/loft.rs',
+    'src/app/loft/input.rs',
+    'src/app/loft/selection.rs',
     'src/app/tests/curve_input.rs',
     'src/app/tests/extrusion_input.rs',
     'src/app/tests/extract_points.rs',
@@ -198,6 +202,7 @@ def _expand_sources_once(paths):
         expanded.extend(['crates/viboceros-command/src/crease_splitting.rs',
                          'crates/viboceros-command/src/crease_splitting/tests.rs',
                          'crates/viboceros-command/src/loft.rs',
+                         'crates/viboceros-command/src/loft/options.rs',
                          'crates/viboceros-command/src/loft/tests.rs'])
     if 'crates/viboceros-geometry/src/brep/loft.rs' in expanded:
         expanded.extend(['crates/viboceros-geometry/src/brep/loft/profiles.rs',

@@ -105,7 +105,7 @@ overflow and world-offset cancellation. Coincident consecutive compatible
 control polygons are rejected. No general self-intersection, denominator-pole,
 or continuous approximation certificate is claimed.
 
-Not implemented: interactive point-end picking, general spatial profile/seam matching,
+Not implemented: general spatial profile/seam matching,
 interactive seam editing, start/end tangent matching, and Rebuild/Refit
 simplification. Nonparallel or nonplanar closed sections currently keep input
 order. Native parameter preservation

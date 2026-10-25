@@ -1,5 +1,35 @@
 use super::*;
 
+#[test]
+fn options_round_trip_and_partial_updates_preserve_full_precision() {
+    for style in ["Normal", "Loose", "Tight", "Straight", "Uniform"] {
+        let input = format!("Type={style} Closed=No SplitAtTangents=Yes Natural");
+        let options = Options::parse(&input.split_whitespace().collect::<Vec<_>>()).unwrap();
+        assert_eq!(
+            Options::parse(&options.arguments().split_whitespace().collect::<Vec<_>>()).unwrap(),
+            options
+        );
+        if style != "Uniform" {
+            let options = options
+                .updated(&[
+                    "StartPoint=-1.2345678901234567,2.3e-27,1e250",
+                    "EndPoint=4,5,6",
+                ])
+                .unwrap();
+            assert_eq!(
+                Options::parse(&options.arguments().split_whitespace().collect::<Vec<_>>())
+                    .unwrap(),
+                options
+            );
+            assert!(options.updated(&["Closed=Yes"]).is_err());
+            assert!(options.updated(&["Type=Normal", "_Type=Tight"]).is_err());
+            let changed = options.updated(&["Type=Straight"]).unwrap();
+            assert_eq!(changed.ends, options.ends);
+            assert!(changed.natural_seams && changed.split_at_tangents);
+        }
+    }
+}
+
 fn sources(document: &mut Document) -> Vec<ObjectId> {
     let registry = CommandRegistry::with_builtins();
     for command in ["Line 0,0,0 1,0,0", "Line 0,0,3 2,0,3", "Line 0,0,5 1,0,5"] {

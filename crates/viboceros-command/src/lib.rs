@@ -483,7 +483,7 @@ mod curve_domain;
 pub mod curve_reference;
 mod delete_subcurve;
 mod edge_surface;
-mod loft;
+pub mod loft;
 mod point_arguments;
 mod point_cloud;
 pub mod point_fitting;

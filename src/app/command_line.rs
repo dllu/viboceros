@@ -45,6 +45,7 @@ impl VibocerosApp {
             && self.merge_face_prompt.is_none()
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
+            && self.loft_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()
             && self.blend_surface_prompt.is_none()
             && self.fillet_surface_prompt.is_none()
@@ -198,6 +199,8 @@ impl VibocerosApp {
                         "FilletSrf"
                     } else if self.blend_surface_prompt.is_some() {
                         "BlendSrf"
+                    } else if self.loft_prompt.is_some() {
+                        "Loft"
                     } else if self.tween_surfaces_prompt.is_some() {
                         "TweenSurfaces"
                     } else if self.shell_prompt.is_some() {
@@ -304,6 +307,8 @@ impl VibocerosApp {
                             } else if let Some(p) = &self.fillet_surface_prompt {
                                 p.hint()
                             } else if let Some(p) = &self.blend_surface_prompt {
+                                p.hint()
+                            } else if let Some(p)=&self.loft_prompt {
                                 p.hint()
                             } else if let Some(p)=&self.tween_surfaces_prompt {
                                 p.hint()

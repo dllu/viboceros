@@ -204,6 +204,7 @@ mod interactive_cancel;
 mod interactive_start;
 mod interactive_state;
 mod interface;
+mod loft;
 mod prompt_cancel;
 mod selection_input;
 mod sidebar;
@@ -395,6 +396,7 @@ pub struct VibocerosApp {
     boolean_two_prompt: Option<boolean_two::Prompt>,
     planar_boolean_prompt: Option<planar_boolean::Prompt>,
     tween_surfaces_prompt: Option<tween_surfaces::Prompt>,
+    loft_prompt: Option<loft::Prompt>,
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
@@ -551,6 +553,7 @@ impl VibocerosApp {
             boolean_two_prompt: None,
             planar_boolean_prompt: None,
             tween_surfaces_prompt: None,
+            loft_prompt: None,
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
             reparameterize_prompt: None,
@@ -755,6 +758,9 @@ impl VibocerosApp {
         {
             return;
         }
+        if self.continue_loft_point_option(&input) {
+            return;
+        }
         if self.try_one_shot_snap(&input) {
             return;
         }
@@ -795,6 +801,9 @@ impl VibocerosApp {
             return;
         }
         if self.continue_fillet_surface(&input) {
+            return;
+        }
+        if self.continue_loft(&input) {
             return;
         }
         if self.continue_blend_surface(&input) {
@@ -937,6 +946,7 @@ impl VibocerosApp {
             || self.start_refinement(&input)
             || self.start_reparameterize(&input)
             || self.start_fillet_surface(&input)
+            || self.start_loft(&input)
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)

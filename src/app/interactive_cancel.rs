@@ -23,6 +23,7 @@ impl VibocerosApp {
         self.finish_select_uv();
         self.refinement_prompt = None;
         self.reparameterize_prompt = None;
+        self.cancel_loft(announce);
         self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
         self.cancel_boolean_two();

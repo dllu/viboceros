@@ -26,6 +26,7 @@ impl VibocerosApp {
                     && self.plane_prompt.is_none()
                     && self.set_view_prompt.is_none()
                     && self.object_prompt.is_none()
+                    && self.loft_prompt.is_none()
                     && self.group_prompt.is_none()
                     && self.intersection_prompt.is_none()
                     && self.edge_prompt.is_none();
