@@ -44051,7 +44051,7 @@
     "crates/viboceros-opennurbs/native/subd_sharpness.h": "4aa10d3a91dd82046545eb6a1c42a3e3e7c8efe0a86afc8f79b6a68b04dc2ec3",
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/native/subd_spin.h": "2f6fcc055a2fd66d94d18f1c68c8a0d35d720d9e6be42a97959077983b8477f4",
-    "crates/viboceros-opennurbs/native/surface_queries.h": "9b18a0196a78f534cab8c6462d5d11c6399cacadeccbfabf83d158de6f657d57",
+    "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
     "crates/viboceros-opennurbs/src/mesh.rs": "5f7c67743b623a375b12872e45c8b8d641089637ce47f444f493b93778e409b2",
     "crates/viboceros-opennurbs/src/subd.rs": "4d6f8b956aa37c52ac9f17a6ddead1d66ffa1faff48d218217e92c4363e810f9",
     "crates/viboceros-opennurbs/src/subd/chains.rs": "aab561c2ff51bdd3e8f14d1d848c083d3f06c04b5b6d1f4e57180f4b0b3faf4d",
@@ -44061,7 +44061,7 @@
     "crates/viboceros-opennurbs/src/subd/sharpness.rs": "42fe6fa63dffe37abe4f03d7b3720780b831b191c0a680da0b9350048a921ca2",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
     "crates/viboceros-opennurbs/src/subd/spin.rs": "d0d1a7fe592665d79edea42628e7e04d8cf8e59781fb67b4d4092f1bd390f326",
-    "crates/viboceros-opennurbs/src/surface.rs": "1ead44b75a19808334eab183adc668e379b45670cc6acbe6f6d15342d2b3c2db",
+    "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "docs/commands/extract-point-components.md": "b033fd9d44af83892b9348b8976a3a2034cfea692f4eb6e367f95021f03f6401",
     "docs/commands/extract-points.md": "8c21172b7d2f0165ceb8fe034a18bedd487fa7eab5287a53020424fe152a0efe",
     "src/app.rs": "64f850247fe9656bc650a0387448491310980a0bc72bf7ef249f81f3df695011",
@@ -44340,12 +44340,18 @@
     "tools/rhino_oracle/observations/source_snapshots/f5d386069628fa149e18146f650a52442b8ac113f0e6b3dcc64bca20ccc5c53c.gz": "8d127bfd4faa8ef1ea91dd74807dca9b1ee1d97103155d32e9e5df56c86cdf95",
     "tools/rhino_oracle/observations/source_snapshots/fc026de798511f760cdf732316624b4d70a08cefb83c64ae4526670f2d138a23.gz": "3a34b50a7c5e949e51c1f2e685115e49a0486a8a615266285d2dd5f89f938c73",
     "tools/rhino_oracle/owned_brep_command.py": "d4f80d5be8a04368c9810453134acbd2fa6d762deb0dd2ccae2efd343947169e",
-    "tools/rhino_oracle/qualification_sources.py": "1413e1056f2b5ed7c7b04edde54241aac8e86eba7fd7cc1100f5dfef3c49aa92",
+    "tools/rhino_oracle/qualification_sources.py": "8be78704490174f40a321e684aff1d0aeae43e37724d4e0c3b99a95629a31ed3",
     "tools/rhino_oracle/report_extract_points.py": "7e46df249f70c71e78f704768a9b8c1aed3e654ecf6fbd2a36ab7ff4a8166d83",
     "tools/rhino_oracle/report_extract_points_subd.py": "21ba79795ea5842916a630a45028d345c37e55291ccb8d739e4b5a327d50bf44",
     "tools/rhino_oracle/test_extract_points.py": "5d3a88c9ede14e929891b53bb5bb72151f5b94ee63a183971384652181b71d00",
     "tools/rhino_oracle/test_extract_points_subd.py": "56b8ae844c896b8d8aaa215559a16391dd5fd8eed9bc865f15ac36633901419f",
     "crates/viboceros-command/src/crease_splitting.rs": "aef210d905f803998a059582812ec3ba9da9d19ef95e1530a2903cb1d53a9500",
-    "crates/viboceros-command/src/crease_splitting/tests.rs": "b2ce0dc2bb57902cfa3d3ce4e6bad2901215b90e1cd4a91808dab61fae22a772"
+    "crates/viboceros-command/src/crease_splitting/tests.rs": "b2ce0dc2bb57902cfa3d3ce4e6bad2901215b90e1cd4a91808dab61fae22a772",
+    "crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs": "83605c795a6a36bead90513c0ca9cc2df72b41620b20805f323b730eb1187b37",
+    "crates/viboceros-opennurbs/src/lib.rs": "1d0eead50d496fae368b4d04777e053b92d953a817324ca1194df379bf836b74",
+    "crates/viboceros-opennurbs/src/curve.rs": "43a4b16995eebd36d0084d1ced9bf183f13192d0b33465bea46e06d02789cee4",
+    "crates/viboceros-opennurbs/native/curve_discontinuities.h": "4355187845a43c9f2a1f4022ab90d877b9b417babc76d28de818955bd685ac0e",
+    "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5",
+    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad"
   }
 }

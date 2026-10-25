@@ -73,21 +73,24 @@ extern "C" int32_t vibo_surface_frames(const uint32_t* degree, const size_t* cou
 // G1 queries optionally omit tiny strips adjacent to singular transverse sides.
 // Trimming stays strictly inside the neighboring knot span, retaining every
 // ordinary span while avoiding undefined endpoint normals.
-extern "C" int32_t vibo_surface_discontinuities(const uint32_t* degree,const size_t* count,
+extern "C" int32_t vibo_surface_continuity_breaks(const uint32_t* degree,const size_t* count,
     const double* controls,const size_t* knot_count,const double* knots_u,const double* knots_v,
-    const int32_t* regular_only,double* breaks_u,double* breaks_v,size_t* found,
+    const int32_t* regular_only,int32_t continuity_kind,double cosine,double* breaks_u,double* breaks_v,size_t* found,
     char* error,size_t capacity) {
   set_error(error,capacity,"");
   try {
     if(!degree || !count || !controls || !knot_count || !knots_u || !knots_v ||
        !regular_only || !breaks_u || !breaks_v || !found || count[0]==0 || count[1]==0 ||
-       count[0]>std::numeric_limits<size_t>::max()/count[1]/4) {
+       count[0]>std::numeric_limits<size_t>::max()/count[1]/4 ||
+       continuity_kind<0 || continuity_kind>2 || !std::isfinite(cosine) || cosine < -1. || cosine > 1.) {
       set_error(error,capacity,"Invalid surface discontinuity buffers");return 0;
     }
     found[0]=found[1]=0;vibo_begin_open_nurbs();std::string message;
     auto owned=surface_query_geometry(degree,count,controls,knot_count,knots_u,knots_v,message);
     const auto* surface=ON_NurbsSurface::Cast(owned.get());
     if(!surface){set_error(error,capacity,message.empty()?"Surface discontinuity transfer failed":message);return 0;}
+    const auto continuity=continuity_kind==2?ON::continuity::G2_continuous:
+        continuity_kind==1?ON::continuity::Gsmooth_continuous:ON::continuity::G1_continuous;
     for(int axis=0;axis<2;++axis) {
       ON_NurbsSurface query(*surface);const int transverse=1-axis;
       if(regular_only[axis]) {
@@ -104,7 +107,7 @@ extern "C" int32_t vibo_surface_discontinuities(const uint32_t* degree,const siz
         }
       }
       const auto domain=query.Domain(axis);double start=domain[0],parameter=0.;double* output=axis==0?breaks_u:breaks_v;
-      while(query.GetNextDiscontinuity(axis,ON::continuity::G1_continuous,start,domain[1],&parameter)) {
+      while(query.GetNextDiscontinuity(axis,continuity,start,domain[1],&parameter,nullptr,nullptr,cosine)) {
         if(!(parameter>start && parameter<domain[1]) || found[axis]>=knot_count[axis]) {
           set_error(error,capacity,"Invalid surface discontinuity traversal");return 0;
         }
@@ -113,6 +116,15 @@ extern "C" int32_t vibo_surface_discontinuities(const uint32_t* degree,const siz
     }
     return 1;
   }catch(const std::exception& exception){set_error(error,capacity,std::string("Surface discontinuity query failed: ")+exception.what());return 0;}
+}
+
+// Retain the existing C ABI and default G1 angular policy.
+extern "C" int32_t vibo_surface_discontinuities(const uint32_t* degree,const size_t* count,
+    const double* controls,const size_t* knot_count,const double* knots_u,const double* knots_v,
+    const int32_t* regular_only,double* breaks_u,double* breaks_v,size_t* found,
+    char* error,size_t capacity) {
+  return vibo_surface_continuity_breaks(degree,count,controls,knot_count,knots_u,knots_v,
+      regular_only,0,ON_DEFAULT_ANGLE_TOLERANCE_COSINE,breaks_u,breaks_v,found,error,capacity);
 }
 
 // Native control-net conversion retains Greville UVs, limit normals, periodic

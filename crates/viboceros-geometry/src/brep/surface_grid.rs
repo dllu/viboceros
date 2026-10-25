@@ -210,13 +210,13 @@ fn parameters(domain: RangeInclusive<Real>, cuts: &[Real]) -> Result<Vec<Real>, 
     result.push(*domain.end());
     Ok(result)
 }
-fn root(parent: &[usize], mut i: usize) -> usize {
+pub(super) fn root(parent: &[usize], mut i: usize) -> usize {
     while parent[i] != i {
         i = parent[i];
     }
     i
 }
-fn unite(parent: &mut [usize], a: usize, b: usize) {
+pub(super) fn unite(parent: &mut [usize], a: usize, b: usize) {
     let a = root(parent, a);
     let b = root(parent, b);
     parent[a.max(b)] = a.min(b);

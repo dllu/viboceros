@@ -14,8 +14,8 @@ pub use curve::{
 
 mod surface;
 pub use surface::{
-    SurfaceDefinition, SurfaceQueryError, surface_control_polygon_mesh, surface_discontinuities,
-    surface_frames,
+    SurfaceDefinition, SurfaceQueryError, surface_continuity_breaks, surface_control_polygon_mesh,
+    surface_discontinuities, surface_frames,
 };
 
 mod subd;

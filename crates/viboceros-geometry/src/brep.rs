@@ -63,6 +63,7 @@ mod shrink;
 pub use shrink::BrepSurfaceShrinkMode;
 mod solid_orientation;
 mod surface_grid;
+mod surface_partition;
 pub use solid_orientation::BrepSolidOrientation;
 mod tessellation;
 mod tolerance;

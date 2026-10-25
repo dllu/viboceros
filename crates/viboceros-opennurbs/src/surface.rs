@@ -10,7 +10,7 @@ pub struct SurfaceDefinition<'a> {
     pub knots: [&'a [f64]; 2],
 }
 unsafe extern "C" {
-    fn vibo_surface_discontinuities(
+    fn vibo_surface_continuity_breaks(
         degree: *const u32,
         count: *const usize,
         controls: *const f64,
@@ -18,6 +18,8 @@ unsafe extern "C" {
         knots_u: *const f64,
         knots_v: *const f64,
         regular_only: *const c_int,
+        continuity: c_int,
+        cos_angle_tolerance: f64,
         breaks_u: *mut f64,
         breaks_v: *mut f64,
         found: *mut usize,
@@ -120,7 +122,26 @@ pub fn surface_discontinuities(
     surface: SurfaceDefinition<'_>,
     regular_only: [bool; 2],
 ) -> Result<[Vec<f64>; 2], SurfaceQueryError> {
-    if !valid_surface(&surface) {
+    surface_continuity_breaks(
+        surface,
+        regular_only,
+        crate::CurveContinuity::G1,
+        1_f64.to_radians().cos(),
+    )
+}
+
+/// Interior isocurve continuity breaks in either surface direction, with the
+/// selected G1, G2, or Gsmooth policy and an explicit angular cosine.
+pub fn surface_continuity_breaks(
+    surface: SurfaceDefinition<'_>,
+    regular_only: [bool; 2],
+    continuity: crate::CurveContinuity,
+    cos_angle_tolerance: f64,
+) -> Result<[Vec<f64>; 2], SurfaceQueryError> {
+    if !valid_surface(&surface)
+        || !cos_angle_tolerance.is_finite()
+        || !(-1. ..=1.).contains(&cos_angle_tolerance)
+    {
         return Err(SurfaceQueryError(
             "Invalid surface discontinuity input".into(),
         ));
@@ -132,7 +153,7 @@ pub fn surface_discontinuities(
     let flags = regular_only.map(i32::from);
     let knot_count = surface.knots.map(<[f64]>::len);
     let status = unsafe {
-        vibo_surface_discontinuities(
+        vibo_surface_continuity_breaks(
             surface.degree.as_ptr(),
             surface.count.as_ptr(),
             surface.controls.as_flattened().as_ptr(),
@@ -140,6 +161,8 @@ pub fn surface_discontinuities(
             surface.knots[0].as_ptr(),
             surface.knots[1].as_ptr(),
             flags.as_ptr(),
+            continuity as c_int,
+            cos_angle_tolerance,
             u.as_mut_ptr(),
             v.as_mut_ptr(),
             found.as_mut_ptr(),
@@ -160,7 +183,13 @@ pub fn surface_discontinuities(
             ));
         }
         values.truncate(found[axis]);
-        if values.iter().any(|x| !x.is_finite()) || values.windows(2).any(|w| w[1] <= w[0]) {
+        let lo = surface.knots[axis][surface.degree[axis] as usize];
+        let hi = surface.knots[axis][surface.count[axis]];
+        if values
+            .iter()
+            .any(|x| !x.is_finite() || *x <= lo || *x >= hi)
+            || values.windows(2).any(|w| w[1] <= w[0])
+        {
             return Err(SurfaceQueryError(
                 "Invalid surface discontinuity values".into(),
             ));
@@ -222,6 +251,95 @@ pub fn surface_control_polygon_mesh(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn explicit_surface_angle_keeps_the_original_default_and_rejects_invalid_cosines() {
+        let height = 0.25_f64.to_radians().tan();
+        let controls = [0., 1.]
+            .into_iter()
+            .flat_map(|y| [[0., y, 0., 1.], [1., y, 0., 1.], [2., y, height, 1.]])
+            .collect::<Vec<_>>();
+        let u = [0., 0., 1., 2., 2.];
+        let v = [0., 0., 1., 1.];
+        let definition = || SurfaceDefinition {
+            degree: [1, 1],
+            count: [3, 2],
+            controls: &controls,
+            knots: [&u, &v],
+        };
+        assert_eq!(
+            surface_discontinuities(definition(), [false; 2]).unwrap(),
+            [vec![], vec![]]
+        );
+        for level in [
+            crate::CurveContinuity::G1,
+            crate::CurveContinuity::G2,
+            crate::CurveContinuity::Gsmooth,
+        ] {
+            assert_eq!(
+                surface_continuity_breaks(
+                    definition(),
+                    [true; 2],
+                    level,
+                    0.1_f64.to_radians().cos()
+                )
+                .unwrap(),
+                [vec![1.], vec![]]
+            );
+        }
+        for cosine in [f64::NAN, f64::INFINITY, -2., 2.] {
+            assert!(
+                surface_continuity_breaks(
+                    definition(),
+                    [true; 2],
+                    crate::CurveContinuity::G1,
+                    cosine
+                )
+                .is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn rational_arc_to_line_has_a_curvature_break_without_a_tangent_break() {
+        let w = 0.5_f64.sqrt();
+        let profile = [
+            [0., 0., 1.],
+            [1., 0., w],
+            [1., 1., 1.],
+            [1., 2., 1.],
+            [1., 3., 1.],
+        ];
+        let controls = [0., 1.]
+            .into_iter()
+            .flat_map(|y| profile.map(|[x, z, w]| [x, y, z, w]))
+            .collect::<Vec<_>>();
+        let u = [0., 0., 0., 1., 1., 2., 2., 2.];
+        let v = [0., 0., 1., 1.];
+        let definition = || SurfaceDefinition {
+            degree: [2, 1],
+            count: [5, 2],
+            controls: &controls,
+            knots: [&u, &v],
+        };
+        assert_eq!(
+            surface_continuity_breaks(
+                definition(),
+                [true; 2],
+                crate::CurveContinuity::G1,
+                1_f64.to_radians().cos()
+            )
+            .unwrap(),
+            [vec![], vec![]]
+        );
+        for level in [crate::CurveContinuity::G2, crate::CurveContinuity::Gsmooth] {
+            assert_eq!(
+                surface_continuity_breaks(definition(), [true; 2], level, 1_f64.to_radians().cos())
+                    .unwrap(),
+                [vec![1.], vec![]]
+            );
+        }
+    }
+
     #[test]
     fn warped_surface_frames_preserve_normal_when_parameter_derivative_units_diverge() {
         for model_exponent in [-20, 0, 40, 80] {

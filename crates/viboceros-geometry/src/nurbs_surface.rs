@@ -7,6 +7,7 @@ mod analytic_torus;
 mod basis;
 mod closest_point;
 mod control_polygon;
+mod discontinuities;
 mod evaluate;
 mod grip_deletion;
 mod grips;

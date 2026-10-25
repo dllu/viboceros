@@ -236,6 +236,19 @@ def _expand_sources_once(paths):
                          'src/app/uv_subcurve_input/edges.rs'])
     if 'crates/viboceros-geometry/src/brep.rs' in expanded:
         expanded.append('crates/viboceros-geometry/src/brep/edge_representation.rs')
+        expanded.append('crates/viboceros-geometry/src/brep/surface_partition.rs')
+    if 'crates/viboceros-geometry/src/brep/surface_partition.rs' in expanded:
+        expanded.extend([
+            'crates/viboceros-geometry/src/brep/surface_partition/topology.rs',
+            'crates/viboceros-geometry/src/brep/surface_partition/query_budget.rs',
+            'crates/viboceros-geometry/src/brep/surface_partition/tests.rs',
+            'crates/viboceros-geometry/src/brep/surface_grid.rs',
+            'crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs',
+        ])
+    if 'crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs' in expanded:
+        expanded.extend(['crates/viboceros-opennurbs/src/lib.rs',
+                         'crates/viboceros-opennurbs/src/curve.rs',
+                         'crates/viboceros-opennurbs/src/surface.rs'])
     if 'crates/viboceros-geometry/tests/extrusion.rs' in expanded:
         expanded.append('crates/viboceros-geometry/tests/extrusion/rational_caps.rs')
     if 'crates/viboceros-io/tests/extrusion.rs' in expanded:
@@ -430,6 +443,7 @@ def _expand_sources_once(paths):
             'crates/viboceros-command/src/extract_control_polygon.rs' in expanded):
         expanded.extend([
             'crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs',
+            'crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs',
             'crates/viboceros-opennurbs/src/surface.rs',
             'crates/viboceros-opennurbs/native/surface_queries.h',
         ])
