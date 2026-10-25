@@ -193,6 +193,10 @@ def _expand_sources_once(paths):
              'crates/viboceros-command/src/mesh_partition/appearance.rs'}
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
                                       'src/component_seams/arguments.rs') for p in paths]
+    if 'crates/viboceros-oracle/src/interface.rs' in expanded:
+        expanded.append('crates/viboceros-oracle/src/interface/tests.rs')
+    if 'tools/rhino_oracle/rhino_worker.py' in expanded:
+        expanded.append('tools/rhino_oracle/interface_commands_probe.py')
     if 'Cargo.toml' in expanded:
         expanded.append('.cargo/config.toml')
     if 'src/app/uv_subcurve_input.rs' in expanded:

@@ -8,6 +8,59 @@ mod tests {
         app.run_command();
     }
     #[test]
+    fn interface_subd_sequences_match_native_api_states() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tools/rhino_oracle");
+        let query: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(root.join("fixtures/interface_subd.json")).unwrap(),
+        )
+        .unwrap();
+        let native: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(root.join("observations/interface_subd.json")).unwrap(),
+        )
+        .unwrap();
+        for (op, expected) in query["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(native["results"].as_array().unwrap())
+        {
+            let mut app = test_app();
+            app.grid_snap = op["grid_snap"].as_bool().unwrap();
+            app.osnap = op["osnap"].as_bool().unwrap();
+            app.smart_track = op["smart_track"].as_bool().unwrap();
+            app.active_viewport = op["active_viewport"].as_u64().unwrap() as usize;
+            app.document
+                .set_subd_control_net(op["subd_control_net"].as_bool().unwrap());
+            for (view, mode) in app
+                .viewports
+                .iter_mut()
+                .zip(op["display_modes"].as_array().unwrap())
+            {
+                view.display_mode =
+                    viboceros_command::interface::DisplayMode::parse(mode.as_str().unwrap())
+                        .unwrap();
+            }
+            let snapshot = |app: &VibocerosApp| {
+                serde_json::json!({
+                "grid_snap":app.grid_snap,"osnap":app.osnap,"smart_track":app.smart_track,
+                "active_viewport":app.active_viewport,"subd_control_net":app.document.subd_control_net(),
+                "display_modes":app.viewports.iter().map(|v|v.display_mode.label()).collect::<Vec<_>>()})
+            };
+            let mut states = vec![snapshot(&app)];
+            for command in op["commands"].as_array().unwrap() {
+                enter(&mut app, command.as_str().unwrap());
+                states.push(snapshot(&app));
+            }
+            let value = serde_json::json!({"states":states});
+            assert_eq!(value, expected["value"], "{}", op["id"]);
+            assert!(!app.document.can_undo());
+            println!(
+                "INTERFACE_SUBD_APP {}",
+                serde_json::json!({"id":op["id"],"value":value})
+            );
+        }
+    }
+    #[test]
     fn subd_display_toggle_preserves_a_pending_point_direction() {
         let mut app = test_app();
         enter(&mut app, "Line");

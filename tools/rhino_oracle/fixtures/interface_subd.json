@@ -1,0 +1,1670 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-0-0",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-0-1",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-0-2",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-0-3",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-1-0",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-1-1",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-1-2",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-1-3",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-2-0",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-2-1",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-2-2",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-2-3",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-3-0",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-3-1",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-3-2",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-3-3",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-4-0",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-4-1",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-4-2",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-4-3",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-5-0",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-5-1",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-5-2",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-5-3",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-6-0",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-6-1",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-6-2",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-6-3",
+      "subd_control_net": false,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-7-0",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-7-1",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-7-2",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-0-7-3",
+      "subd_control_net": false,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-0-0",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-0-1",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-0-2",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-0-3",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-1-0",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-1-1",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-1-2",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-1-3",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": false,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-2-0",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-2-1",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-2-2",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-2-3",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-3-0",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-3-1",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-3-2",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-3-3",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": false,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-4-0",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-4-1",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-4-2",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-4-3",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-5-0",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-5-1",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-5-2",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-5-3",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": false,
+      "smart_track": true,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-6-0",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-6-1",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-6-2",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-6-3",
+      "subd_control_net": true,
+      "grid_snap": false,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-7-0",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 0,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-7-1",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 1,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-7-2",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 2,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "interface-subd-1-7-3",
+      "subd_control_net": true,
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "active_viewport": 3,
+      "display_modes": [
+        "Wireframe",
+        "Shaded",
+        "Ghosted",
+        "Wireframe"
+      ],
+      "commands": [
+        "SubDDisplayToggle",
+        "Snap",
+        "SetDisplayMode Viewport=All Mode=Ghosted",
+        "'-_SubDDisplayToggle",
+        "SetDisplayMode Mode=Shaded",
+        "DisableOsnap Toggle",
+        "SmartTrack Toggle",
+        "_SubDDisplayToggle",
+        "SubDDisplayToggle"
+      ]
+    }
+  ]
+}

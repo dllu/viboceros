@@ -25,6 +25,7 @@ For current command support, use the [command reference](../commands/README.md).
 
 ## Documents and viewports
 
+- [Interface state API](interface-state.md): drafting, viewport modes and SubD appearance.
 - [Document workflows](document-workflows.md): groups, conversions, picking and grips.
 - [Construction planes](construction-planes.md): frame and option captures.
 - [Cameras and views](cameras.md): SetView, named views, Plan and Zoom.

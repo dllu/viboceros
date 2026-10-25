@@ -1941,6 +1941,9 @@ Rhino.RhinoApp.Idle += execute_owned_controls
             if any(op.get('op') == 'affine_preview' for op in request.get('operations',[])):
                 for name in ('affine_preview_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get("op") == "interface_commands" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("interface_commands_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "mesh_snap_settings" or "snap_to_meshes" in op for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("mesh_snap_settings_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)

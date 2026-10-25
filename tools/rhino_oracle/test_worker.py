@@ -1518,10 +1518,6 @@ class RhinoWorkerTests(unittest.TestCase):
                         if mesh_enabled is not None:
                             self.assertEqual([state["snap_to_meshes"] for state in value["states"]], [mesh_enabled] * 2)
                 self.assertTrue(mesh.enabled, "mesh switch must restore even when other cleanup fails")
-                if failure == "restore":
-                    # Cancellation failed before the pre-existing view/settings
-                    # cleanup. Only the separate mesh finally can run here.
-                    continue
                 self.assertEqual(aid.GetCurrentState(), original_aid)
                 self.assertEqual(track.GetCurrentState(), original_track)
                 self.assertEqual([view.ActiveViewport.DisplayMode for view in views], original_modes)
