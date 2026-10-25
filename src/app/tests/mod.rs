@@ -67,6 +67,8 @@ mod extract_points;
 mod extract_surface;
 mod extrude_surface;
 mod extrude_surface_apex;
+#[cfg(feature = "native-smlib")]
+mod extrude_surface_apex_native;
 mod extrude_surface_path;
 mod extrude_surface_tapered;
 mod extrude_tapered;

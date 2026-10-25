@@ -123,7 +123,20 @@ fn surface_apex_face_delete_preserves_remainder_identity_attributes_and_groups()
 fn surface_apex_later_coplanar_face_failure_preserves_batch_and_redo() {
     let mut doc = Document::default();
     let registry = CommandRegistry::with_builtins();
-    let s = doc.add_geometry(patch()).unwrap();
+    let circle = |radius| {
+        Circle3::try_new(
+            p(0., 0., 0.),
+            radius,
+            UnitVector3::try_new(0., 0., 1., doc.tolerance()).unwrap(),
+            doc.tolerance(),
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap()
+    };
+    let annulus =
+        Brep::try_planar_face_with_holes(&circle(3.), &[circle(1.)], doc.tolerance()).unwrap();
+    let s = doc.add_geometry(Geometry::Brep(annulus)).unwrap();
     let other = doc
         .add_geometry(Geometry::NurbsSurface(
             NurbsSurface::try_new(
@@ -145,7 +158,9 @@ fn surface_apex_later_coplanar_face_failure_preserves_batch_and_redo() {
         registry
             .execute(
                 &mut doc,
-                &format!("ExtrudeSrfToPoint 1,0,6 FaceRefs={s}:0,{other}:0 DeleteInput=Yes")
+                &format!(
+                    "ExtrudeSrfToPoint 1,0,6 FaceRefs={s}:0,{other}:0 Solid=No DeleteInput=Yes"
+                )
             )
             .is_err()
     );

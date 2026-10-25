@@ -1,4 +1,4 @@
-"""Independent public SDK surface/apex recipes; licensed capture remains pending."""
+"""Independent public SDK surface/apex recipes."""
 import copy
 import math
 
@@ -13,7 +13,7 @@ def validate(operation):
             or operation['source'].get('type') not in ('surface', 'brep', 'box_brep')):
         raise ValueError('invalid surface apex extrusion fields or options')
     apex = operation['apex']
-    if not isinstance(apex, list) or len(apex) != 3 or any(type(x) not in (int, float) or not math.isfinite(x) for x in apex):
+    if not isinstance(apex, list) or len(apex) != 3 or any(type(x) not in (int, float) or math.isnan(x) or math.isinf(x) for x in apex):
         raise ValueError('invalid surface apex extrusion target')
 
 

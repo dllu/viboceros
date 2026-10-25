@@ -1,6 +1,6 @@
 //! Native surface and original face extrusion to an explicit apex.
 use super::*;
-use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusions};
+use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
 pub const USAGE: &str = "ExtrudeSrfToPoint apex [Solid=Yes|No] [DeleteInput=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceToPointCommand;
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -107,7 +107,7 @@ impl Command for ExtrudeSurfaceToPointCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let input = SurfaceApexInput::parse(args)?;
         let apex = input.apex.ok_or(CommandError::Usage(USAGE))?;
-        let count = apply_face_extrusions(
+        let count = apply_face_extrusion_products(
             doc,
             &input.faces,
             input.options.delete_input,
@@ -134,7 +134,17 @@ impl Command for ExtrudeSurfaceToPointCommand {
                             AffineTransform3::from_translation(zero.vector_to(origin)?),
                             tolerance,
                         )?;
-                    Ok(Geometry::Brep(result))
+                    if input.options.solid {
+                        Ok(vec![Geometry::Brep(result)])
+                    } else {
+                        // A singular apex does not join otherwise separate boundary
+                        // loops. Rhino emits one object for each edge-connected wall.
+                        Ok(result
+                            .into_edge_connected_components(tolerance)?
+                            .into_iter()
+                            .map(Geometry::Brep)
+                            .collect())
+                    }
                 }
                 #[cfg(not(feature = "native-smlib"))]
                 {

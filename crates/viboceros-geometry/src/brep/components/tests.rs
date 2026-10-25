@@ -133,3 +133,73 @@ fn every_cube_face_subset_matches_an_independent_shared_edge_graph() {
         );
     }
 }
+
+#[test]
+fn component_extraction_preserves_geometry_sense_poles_and_shared_vertex_tolerances() {
+    let tolerance = Tolerance::DEFAULT;
+    let shared_vertex = TriangleMesh::try_new(
+        vec![
+            point(0., 0., 0.),
+            point(2., 0., 0.),
+            point(0., 2., 0.),
+            point(-2., 0., 0.),
+            point(0., 0., -2.),
+        ],
+        vec![[0, 1, 2], [0, 3, 4]],
+        tolerance,
+    )
+    .unwrap();
+    let source = Brep::try_combine(
+        vec![
+            cube(),
+            cube().reversed(),
+            Brep::try_surface_face(NurbsSurface::try_sphere(frame(), 2.).unwrap(), tolerance)
+                .unwrap(),
+            Brep::try_surface_face(
+                NurbsSurface::try_cylinder(frame(), 2., 0., 3.).unwrap(),
+                tolerance,
+            )
+            .unwrap(),
+            Brep::try_from_mesh(&shared_vertex, true, tolerance).unwrap(),
+        ],
+        tolerance,
+    )
+    .unwrap();
+    let before = source.clone();
+    let partition = source.edge_connected_face_components();
+    assert_eq!(partition.len(), 6);
+    let results = source
+        .clone()
+        .into_edge_connected_components(tolerance)
+        .unwrap();
+    for (result, faces) in results.iter().zip(&partition) {
+        assert_eq!(result, &source.sub_brep(faces, tolerance).unwrap());
+    }
+    assert_eq!(source, before);
+    assert_eq!(
+        cube().into_edge_connected_components(tolerance).unwrap(),
+        vec![cube()]
+    );
+}
+
+#[test]
+fn component_extraction_compacts_many_independent_sheets_in_source_order() {
+    let tolerance = Tolerance::DEFAULT;
+    let parts = (0..1024)
+        .map(|i| {
+            let x = i as f64 * 3.;
+            let mesh = TriangleMesh::try_new(
+                vec![point(x, 0., 0.), point(x + 1., 0., 0.), point(x, 1., 0.)],
+                vec![[0, 1, 2]],
+                tolerance,
+            )
+            .unwrap();
+            Brep::try_from_mesh(&mesh, true, tolerance).unwrap()
+        })
+        .collect::<Vec<_>>();
+    let combined = Brep::try_combine(parts.clone(), tolerance).unwrap();
+    assert_eq!(
+        combined.into_edge_connected_components(tolerance).unwrap(),
+        parts
+    );
+}

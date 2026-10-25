@@ -1,0 +1,243 @@
+{
+  "iterations": 1,
+  "protocol_version": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": 12.0,
+            "is_solid": true,
+            "face_count": 5,
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                6.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 136726379,
+      "id": "apex_planar"
+    },
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": 12.0,
+            "is_solid": true,
+            "face_count": 5,
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -6.0
+              ],
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 16448975,
+      "id": "apex_planar_down"
+    },
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": 11.499999999999996,
+            "is_solid": true,
+            "face_count": 5,
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                6.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 8666992,
+      "id": "apex_warped"
+    },
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": 12.499999999999995,
+            "is_solid": true,
+            "face_count": 5,
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -6.0
+              ],
+              [
+                2.0,
+                3.0,
+                1.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 33500671,
+      "id": "apex_warped_down"
+    },
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": 10.833333333333316,
+            "is_solid": true,
+            "face_count": 5,
+            "bounds": [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                6.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 13046265,
+      "id": "apex_warped_off_axis"
+    },
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": 50.265483077740654,
+            "is_solid": true,
+            "face_count": 3,
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                6.000000000000001
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 20706177,
+      "id": "apex_ring_hole"
+    },
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": null,
+            "is_solid": false,
+            "face_count": 2,
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                6.000000000000001
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 1770020,
+      "id": "apex_ring_walls"
+    },
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": 0.666666666666667,
+            "is_solid": true,
+            "face_count": 5,
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 8628845,
+      "id": "apex_box_face"
+    },
+    {
+      "value": {
+        "breps": [
+          {
+            "volume": 11.50000000001307,
+            "is_solid": true,
+            "face_count": 5,
+            "bounds": [
+              [
+                10000.0,
+                -30000.0,
+                50000.0
+              ],
+              [
+                10002.0,
+                -29997.0,
+                50006.0
+              ]
+            ]
+          }
+        ]
+      },
+      "elapsed_ns": 13023376,
+      "id": "apex_shifted"
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "provenance": {
+    "request_sha256": "ef7f7cc4995b31095cf999236aa12ee766990c244f73e7f76a353930b4d9c898",
+    "sources": {
+      "generate_surface_apex.py": "87648db62a52eaf74a955fad7efeef0d17397ccc625a19b86570c59f9afe2861",
+      "surface_apex_extrusion_probe.py": "5fa4b8042b01aab7148f02d3d1bf48234fcb828917862843408b1ebda03bedcf",
+      "surface_extrusion_probe.py": "fab60f7305636e9cb2bd406b2d9e4a7e58ca9563b36b93e363e29060e0d771c1",
+      "client.py": "3b67cf8fa6f590e3bdbd5a3744ebbc8beab08bd6b0413c0d653dd4153d752543",
+      "rhino_worker.py": "123ea4f023779c70cb1049b34f473f14f242e2f7a66bd16a8fdf4c62925fbe18"
+    }
+  }
+}

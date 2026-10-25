@@ -367,6 +367,12 @@ def _expand_sources_once(paths):
         expanded.extend(APPLICATION_MODULES)
     if 'src/app/boolean_solids.rs' in expanded:
         expanded.extend(BOOLEAN_PROMPT_MODULES)
+    if 'crates/viboceros-command/src/extrude_surface.rs' in expanded:
+        expanded.append('crates/viboceros-command/src/extrude_surface/apply.rs')
+    if any(p in expanded for p in ['crates/viboceros-geometry/src/brep.rs',
+            'crates/viboceros-geometry/src/brep/join_edges/automatic/components.rs']):
+        expanded.extend(['crates/viboceros-geometry/src/brep/components.rs',
+                         'crates/viboceros-geometry/src/brep/components/tests.rs'])
     if any(p in expanded for p in ['crates/viboceros-opennurbs/native/subd.cpp', 'crates/viboceros-geometry/src/subd.rs']):
         expanded.extend(SUBD_MODULES)
     if ('crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp' in expanded or

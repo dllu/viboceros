@@ -34,6 +34,10 @@ remainders stage before document edits. Results use the current layer, become
 selected and form one Undo/Redo operation. A failure on a later selected face
 preserves the entire document batch, source picks, history and Redo.
 
+With `Solid=No`, disconnected outer and hole walls become separate objects,
+in boundary order. Their common apex does not join the walls. All products and
+source deletion still form one Undo/Redo operation.
+
 The native adapter copies boundary curves over their actual edge intervals,
 splits at G1 discontinuities and calls `SmBSplineSurface::CreateRuledSurface`
 with a weight-preserving collapsed copy at the apex. Native face construction
@@ -55,13 +59,18 @@ comparative performance certificate is claimed.
 Nine independent Python `surface_apex_extrusion` fixtures cover planar and
 warped bases, targets above/below/off-axis, rational holes, uncapped walls,
 box-face inputs and translated sources. The Rust side runs the actual command.
-The pending Rhino recipe uses public
+The SDK comparison uses public
 [Surface.CreateExtrusionToPoint](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Surface_CreateExtrusionToPoint.htm),
-retains a duplicated source face and joins the resulting B-reps. SDK mock tests
-check allocation cleanup and plumbing, and do not establish native parity.
-Licensed Rhino capture remains unavailable because of the recorded
-[Wine SSPI startup failure](../oracle-sspi.md). See
-[qualification](../surface-apex-extrusion-qualification.json) and
+retains a duplicated source face and joins the resulting B-reps. Its nine
+licensed captures match within an absolute epsilon of 0.000001. Separately,
+72 licensed command captures cover both Solid/DeleteInput settings,
+preselection and source picking. Rust command and GUI replays check product
+counts, bounds, volumes, retained source identity and Undo/Redo. Selection,
+attributes and full getter equivalence are outside that comparison.
+The SDK recipe combines disconnected walls for its geometry comparison;
+the command corpus verifies separate output objects. See
+[native qualification](../surface-apex-native-qualification.json),
+[initial implementation tests](../surface-apex-extrusion-qualification.json) and
 [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrftopoint.htm).
 
 ```sh

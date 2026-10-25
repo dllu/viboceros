@@ -216,7 +216,7 @@ mod shell;
 pub use shell::Fixture as ShellFixture;
 mod surface_tapered_extrusion;
 pub use surface_tapered_extrusion::Fixture as SurfaceTaperedExtrusionFixture;
-mod surface_apex_extrusion;
+pub mod surface_apex_extrusion;
 pub use surface_apex_extrusion::Fixture as SurfaceApexExtrusionFixture;
 mod surface_extrusion;
 pub use surface_extrusion::Fixture as SurfaceExtrusionFixture;

@@ -25,61 +25,14 @@ pub(super) fn collect(
         counts[membership[edge_face[a]]] += 1;
     }
     let mut outputs = Vec::with_capacity(components.len());
-    let mut vertex_map = vec![0; joined.vertices.len()];
-    let mut edge_map = vec![0; joined.edges.len()];
-    for (i, faces) in components.into_iter().enumerate() {
+    let extracted = joined.copy_face_components(&components, tolerance)?;
+    for ((i, faces), mut brep) in components.into_iter().enumerate().zip(extracted) {
         let source_indices = faces
             .iter()
             .map(|&f| sources[f])
             .collect::<BTreeSet<_>>()
             .into_iter()
             .collect();
-        // Gather only this component's references. Repeated sub_brep calls
-        // would rescan every global vertex/edge for every isolated component.
-        let mut vertex_ids = Vec::new();
-        let mut edge_ids = Vec::new();
-        for &f in &faces {
-            for trim in joined.faces[f].loops.iter().flat_map(|l| &l.trims) {
-                vertex_ids.extend(trim.vertices);
-                if let Some(e) = trim.edge {
-                    edge_ids.push(e);
-                }
-            }
-        }
-        vertex_ids.sort_unstable();
-        vertex_ids.dedup();
-        edge_ids.sort_unstable();
-        edge_ids.dedup();
-        let vertices = vertex_ids
-            .into_iter()
-            .enumerate()
-            .map(|(i, v)| {
-                vertex_map[v] = i;
-                joined.vertices[v]
-            })
-            .collect();
-        let edges = edge_ids
-            .into_iter()
-            .enumerate()
-            .map(|(i, e)| {
-                edge_map[e] = i;
-                let mut edge = joined.edges[e].clone();
-                edge.vertices = edge.vertices.map(|v| vertex_map[v]);
-                edge
-            })
-            .collect();
-        let faces = faces
-            .into_iter()
-            .map(|f| {
-                let mut face = joined.faces[f].clone();
-                for trim in face.loops.iter_mut().flat_map(|l| &mut l.trims) {
-                    trim.vertices = trim.vertices.map(|v| vertex_map[v]);
-                    trim.edge = trim.edge.map(|e| edge_map[e]);
-                }
-                face
-            })
-            .collect();
-        let mut brep = Brep::try_new(vertices, edges, faces, tolerance)?;
         if counts[i] > 0 {
             // Orientation does not require a representable mass integral:
             // finite, regular shells can have underflowing/overflowing volume.
