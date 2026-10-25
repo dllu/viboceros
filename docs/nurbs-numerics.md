@@ -81,6 +81,12 @@ Signed-weight curves can leave their control hull; if a local result overflows,
 evaluation retries without centering because the world-space result may still
 be finite. An actual zero homogeneous denominator remains an error.
 
+`viboceros_opennurbs::curve_tangents` separately exposes public `ON_Curve::EvTangent`
+for command decisions that depend on native rounding. It retains tiny components
+in constant coordinates. The [32 seam/reversal queries](loft-tangent-rounding.json)
+match all 96 licensed Rhino tangent components bit for bit on the tested build.
+This is bounded rounding evidence; ordinary geometry evaluation keeps its local frame.
+
 UV trim evaluation lives in `nurbs2/evaluate` and applies the same local-coordinate
 and exact endpoint policy. `evaluate_on_side` and
 `evaluate_with_derivative_on_side` expose independent knot limits. Origins are

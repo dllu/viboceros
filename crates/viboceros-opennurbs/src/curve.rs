@@ -4,8 +4,10 @@ mod discontinuities;
 mod polyline;
 pub use discontinuities::{CurveContinuity, curve_continuity_breaks, curve_discontinuities};
 mod recognition;
+mod tangents;
 pub use polyline::curve_polyline_vertices;
 pub use recognition::{AnalyticCurve, curve_analytic_form, polyline_simplify_indices};
+pub use tangents::curve_tangents;
 
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 #[error("OpenNURBS curve: {0}")]

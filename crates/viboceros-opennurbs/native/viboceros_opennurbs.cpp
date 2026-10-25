@@ -2056,6 +2056,7 @@ bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttribut
 #include "geometry_check.h"
 #include "curve_queries.h"
 #include "curve_discontinuities.h"
+#include "curve_tangents.h"
 #include "surface_queries.h"
 #include "extrusion_queries.h"
 

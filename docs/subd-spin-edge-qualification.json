@@ -721,13 +721,13 @@
     "The owned native grip-enabled probe stalled without a response and was terminated by its runner. Grip-state parity remains unqualified; the request, timeout and frozen producer sources are retained. Arbitrary topology, continuous surface error and comparative performance remain unqualified."
   ],
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "8c92b16468b2bc2340f60a72c2f6e343c85cf6d6791e3591c6790dd513ac6080",
+    "crates/viboceros-opennurbs/build.rs": "6fcef9161d3c421280092fade709efb92d3331d1c637ac0f81ca7f03eb1f20b8",
     "crates/viboceros-opennurbs/native/subd.cpp": "da23bdbf18b6709f4156d193546d09acc18a02cbb863a68a0fa8465e2b2cea55",
     "crates/viboceros-opennurbs/native/subd.h": "4a94d9836d3dcab38f2694497a320b9a0e98dbf77eecd3de6717c23d60024808",
     "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
     "crates/viboceros-opennurbs/native/subd_crease.h": "d5eb85162f2c276646950d5080f82131bd293dcaf32617d92dbd658fa2666a2e",
     "crates/viboceros-opennurbs/native/subd_edges.h": "49e4529894e72b6a0817323ceb0f802451316a39b0af837a3674db1110f09d93",
-    "crates/viboceros-opennurbs/src/lib.rs": "1d0eead50d496fae368b4d04777e053b92d953a817324ca1194df379bf836b74",
+    "crates/viboceros-opennurbs/src/lib.rs": "4460a9a5a603a50b5866edc42fb36013309d136f988c5be52d4069d44f876952",
     "crates/viboceros-opennurbs/src/subd.rs": "4d6f8b956aa37c52ac9f17a6ddead1d66ffa1faff48d218217e92c4363e810f9",
     "crates/viboceros-opennurbs/src/subd/crease.rs": "58bf7eaa6b1a6edc850d4bcd78eb0d1e7f24cca9ad4ef5447901bf7ba31272d1",
     "crates/viboceros-opennurbs/src/subd/edges.rs": "964405af7e7efed5091a7f416b8ed852843ea66dfd24699ca21e371933386778",
@@ -902,7 +902,7 @@
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "2b847cd80f03db7473219aaec007f292fa6cc3793d11068b5c05038038864e99",
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
-    "tools/rhino_oracle/qualification_sources.py": "8be78704490174f40a321e684aff1d0aeae43e37724d4e0c3b99a95629a31ed3",
+    "tools/rhino_oracle/qualification_sources.py": "1a4d52dc238d116723b9d0b80935d4b5657bf4f571c110b5b15c488deba38728",
     "crates/viboceros-command/src/control_points.rs": "c8e45c0a70dc71ec9982a70f21e49bcc65d8856f4c14a18923fda2687ab6d689",
     "crates/viboceros-command/src/object_selection.rs": "e2b78d2f66fe90a5276afe6bad89f05bbedd12059793578c1236290ce398ea6e",
     "crates/viboceros-command/tests/vertex_seams_native.rs": "d75b83f91acc91ecaf895d928224f6f51a3e568be888e6133a9a93ce687fdb28",
@@ -1160,9 +1160,13 @@
     "crates/viboceros-command/src/crease_splitting.rs": "aef210d905f803998a059582812ec3ba9da9d19ef95e1530a2903cb1d53a9500",
     "crates/viboceros-command/src/crease_splitting/tests.rs": "b2ce0dc2bb57902cfa3d3ce4e6bad2901215b90e1cd4a91808dab61fae22a772",
     "crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs": "83605c795a6a36bead90513c0ca9cc2df72b41620b20805f323b730eb1187b37",
-    "crates/viboceros-opennurbs/src/curve.rs": "43a4b16995eebd36d0084d1ced9bf183f13192d0b33465bea46e06d02789cee4",
+    "crates/viboceros-opennurbs/src/curve.rs": "fa9d41c61991c82b2678ec453eb78a73569edc7989d0ed6f0c37c03784bb3766",
     "crates/viboceros-opennurbs/native/curve_discontinuities.h": "4355187845a43c9f2a1f4022ab90d877b9b417babc76d28de818955bd685ac0e",
     "crates/viboceros-opennurbs/native/curve_discontinuity_query.h": "b60b68947b0e572e57fc55bf506d95f2b2992d952ddf17f8471cdfad86ec8bd5",
-    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad"
+    "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad",
+    "crates/viboceros-opennurbs/native/curve_tangents.h": "99be0dc2d58cfcc999e8b8402fd18eb9ca0b3cd7173a3195b2121bf047ddded7",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "1fc44d0d3063e0c7c355f4aae602b41d676e37021bf758638990f402d7fa4d79",
+    "crates/viboceros-opennurbs/src/curve/tangents.rs": "dea679afab06d648bf1ffa74cde8c7e34dd5b0d7a97f4b03fb78bb16705a6c8b",
+    "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d"
   }
 }
