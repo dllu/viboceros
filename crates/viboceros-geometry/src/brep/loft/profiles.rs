@@ -1,6 +1,34 @@
 //! Parallel-section ordering, traversal alignment, and nearest-knot seams.
 use super::*;
 
+pub(super) fn prepare(
+    curves: &[NurbsCurve],
+    options: LoftOptions,
+    tolerance: Tolerance,
+) -> Result<(Vec<NurbsCurve>, bool), GeometryError> {
+    if curves
+        .iter()
+        .any(|c| c.control_points().len() > MAX_LOFT_SECTION_CONTROLS)
+    {
+        return Err(GeometryError::LoftResourceLimit {
+            context: "section controls",
+            maximum: MAX_LOFT_SECTION_CONTROLS,
+        });
+    }
+    let mut profiles = curves.to_vec();
+    let oriented = sort_parallel_profiles(&mut profiles, tolerance)?;
+    if profiles
+        .iter()
+        .map(NurbsCurve::is_closed)
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .all(|c| c)
+    {
+        align_closed_profiles(&mut profiles, !options.natural_seams)?;
+    }
+    Ok((profiles, oriented))
+}
+
 pub(super) fn sort_parallel_profiles(
     curves: &mut [NurbsCurve],
     tolerance: Tolerance,

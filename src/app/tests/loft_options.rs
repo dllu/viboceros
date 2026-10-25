@@ -58,3 +58,39 @@ fn loft_splitting_options_use_the_ordinary_command_entry_and_preserve_undo() {
     enter(&mut app, "Redo");
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
 }
+
+#[test]
+fn point_ended_loft_uses_command_entry_and_restores_its_poles_on_redo() {
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let circle = viboceros_geometry::Circle3::try_new(
+        Point3::try_new(0., 0., 1.).unwrap(),
+        1.,
+        viboceros_geometry::UnitVector3::try_new(0., 0., 1., tolerance).unwrap(),
+        tolerance,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let id = app
+        .document
+        .add_geometry(Geometry::NurbsCurve(circle))
+        .unwrap();
+    app.document
+        .select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Loft StartPoint=0,0,-1 EndPoint=0,0,3");
+    let output = app.document.objects().find(|o| o.id() != id).unwrap();
+    let Geometry::Brep(brep) = output.geometry() else {
+        panic!("Loft point-ended B-rep")
+    };
+    assert!(brep.is_solid());
+    assert_eq!((brep.vertices().len(), brep.edges().len()), (2, 1));
+    let after = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
+}

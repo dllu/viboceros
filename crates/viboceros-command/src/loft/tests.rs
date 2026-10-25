@@ -104,6 +104,12 @@ fn invalid_lofts_are_atomic_and_do_not_add_history() {
         "Loft SplitAtTangents=Yes SplitAtTangents=No",
         "Loft Natural Natural",
         "Loft Natural=Yes",
+        "Loft StartPoint=0,0,-1 StartPoint=0,0,-2",
+        "Loft EndPoint=0,0,4 EndPoint=0,0,5",
+        "Loft StartPoint=NaN,0,0",
+        "Loft EndPoint=1,2,3,4",
+        "Loft StartPoint=0,0,-1 Closed=Yes",
+        "Loft EndPoint=0,0,5 Type=Uniform",
     ] {
         let before = document.objects().cloned().collect::<Vec<_>>();
         let selection = document.selected_object_ids().collect::<Vec<_>>();
@@ -139,6 +145,64 @@ fn invalid_lofts_are_atomic_and_do_not_add_history() {
         Err(CommandError::LoftRequiresCurves)
     ));
     assert_eq!(document.objects().count(), 4);
+}
+
+#[test]
+fn a_single_closed_profile_and_two_points_form_a_closed_mesh_with_atomic_history() {
+    let mut document = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    let circle = viboceros_geometry::Circle3::try_new(
+        Point3::try_new(0., 0., 1.).unwrap(),
+        1.,
+        viboceros_geometry::UnitVector3::try_new(0., 0., 1., document.tolerance()).unwrap(),
+        document.tolerance(),
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let id = document.add_geometry(Geometry::NurbsCurve(circle)).unwrap();
+    document
+        .select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    document.clear_history().unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    registry
+        .execute(
+            &mut document,
+            "Loft StartPoint=0,0,-1 EndPoint=0,0,3 Natural",
+        )
+        .unwrap();
+    let output = document.objects().find(|o| o.id() != id).unwrap();
+    let Geometry::Brep(brep) = output.geometry() else {
+        panic!("point-ended Loft B-rep")
+    };
+    assert!(brep.is_solid());
+    assert_eq!(
+        (
+            brep.faces().len(),
+            brep.vertices().len(),
+            brep.edges().len()
+        ),
+        (1, 2, 1)
+    );
+    for point in [
+        Point3::try_new(0., 0., -1.).unwrap(),
+        Point3::try_new(0., 0., 3.).unwrap(),
+    ] {
+        assert!(brep.vertices().iter().any(|v| v.point() == point));
+    }
+    let mesh = brep
+        .polygon_mesh(0., false, false, document.tolerance())
+        .unwrap();
+    assert!(mesh.topology().is_manifold());
+    assert!(mesh.topology().is_closed());
+    assert!(document.is_selected(id));
+    assert!(!document.is_selected(output.id()));
+    let after = document.objects().cloned().collect::<Vec<_>>();
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
 }
 
 fn capsule_sources(document: &mut Document) -> Vec<ObjectId> {

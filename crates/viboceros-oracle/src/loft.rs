@@ -11,6 +11,21 @@ pub struct LoftFixture {
     pub command: bool,
     #[serde(default)]
     pub sample_geometry: bool,
+    #[serde(default)]
+    pub start_point: Option<[f64; 3]>,
+    #[serde(default)]
+    pub end_point: Option<[f64; 3]>,
+    #[serde(default)]
+    pub inspect_inputs: bool,
+}
+
+impl LoftFixture {
+    fn end_points(&self) -> Result<viboceros_geometry::LoftEndPoints, GeometryError> {
+        Ok(viboceros_geometry::LoftEndPoints {
+            start: self.start_point.map(Point3::try_from).transpose()?,
+            end: self.end_point.map(Point3::try_from).transpose()?,
+        })
+    }
 }
 
 pub(super) fn run(
@@ -24,20 +39,60 @@ pub(super) fn run(
         .map(nurbs_curve_from_definition)
         .collect::<Result<Vec<_>, _>>()?;
     let style = parse_style(&fixture.style)?;
+    let ends = fixture.end_points()?;
     if fixture.command {
         return command(fixture, &curves, iterations, tolerance);
     }
-    let mut surface = surface(&curves, style, fixture.closed)?;
+    let before = fixture.inspect_inputs.then(|| {
+        curves
+            .iter()
+            .map(nurbs_curve_definition_value)
+            .collect::<Vec<_>>()
+    });
+    let mut surface = fixture_surface(&curves, style, fixture.closed, ends)?;
     let started = Instant::now();
     for _ in 0..iterations {
-        surface = black_box(self::surface(&curves, style, fixture.closed)?);
+        surface = black_box(fixture_surface(&curves, style, fixture.closed, ends)?);
     }
     let elapsed =
         u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    let surfaces = json!([surface_record(&surface, fixture.sample_geometry)?]);
     Ok((
-        json!([surface_record(&surface, fixture.sample_geometry)?]),
+        if let Some(before) = before {
+            json!({"before":before,"after":curves.iter().map(nurbs_curve_definition_value).collect::<Vec<_>>(),"surfaces":surfaces})
+        } else {
+            surfaces
+        },
         elapsed,
     ))
+}
+
+fn fixture_surface(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    closed: bool,
+    ends: viboceros_geometry::LoftEndPoints,
+) -> Result<NurbsSurface, ProbeError> {
+    if ends.is_empty() {
+        return surface(curves, style, closed);
+    }
+    if closed {
+        return Err(ProbeError::FixtureInvariant(
+            "closed Loft cannot have point ends",
+        ));
+    }
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::loft_surface_with_end_points(curves, style, ends)
+            .map_err(CommandError::from)
+            .map_err(ProbeError::from)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_loft_nurbs_curves_with_end_points(
+            curves, style, ends,
+        )?)
+    }
 }
 
 fn surface(
@@ -98,6 +153,22 @@ pub(super) fn build_brep(fixture: &LoftFixture, tolerance: Tolerance) -> Result<
         .iter()
         .map(nurbs_curve_from_definition)
         .collect::<Result<Vec<_>, _>>()?;
+    let ends = fixture.end_points()?;
+    if !ends.is_empty() {
+        if fixture.closed {
+            return Err(ProbeError::FixtureInvariant(
+                "closed Loft cannot have point ends",
+            ));
+        }
+        return Brep::try_loft_with_surface_end_points(
+            &curves,
+            parse_style(&fixture.style)?,
+            ends,
+            viboceros_geometry::LoftOptions::default(),
+            tolerance,
+            &mut |c, s, e| fixture_surface(c, s, false, e),
+        );
+    }
     Brep::try_loft_with_surface(
         &curves,
         parse_style(&fixture.style)?,
@@ -114,7 +185,7 @@ fn command(
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let registry = CommandRegistry::with_builtins();
-    let command = format!(
+    let mut command = format!(
         "Loft Type={} Closed={}",
         if fixture.style.is_empty() {
             "normal"
@@ -123,6 +194,14 @@ fn command(
         },
         if fixture.closed { "Yes" } else { "No" }
     );
+    for (name, point) in [
+        ("StartPoint", fixture.start_point),
+        ("EndPoint", fixture.end_point),
+    ] {
+        if let Some([x, y, z]) = point {
+            command.push_str(&format!(" {name}={x},{y},{z}"));
+        }
+    }
     let mut elapsed = 0_u128;
     let mut result = Value::Null;
     for iteration in 0..=iterations {

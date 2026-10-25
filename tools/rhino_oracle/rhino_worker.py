@@ -2418,6 +2418,16 @@ def _loft_surface_record(surface, operation):
 
 
 def _loft(operation, iterations):
+    has_points = any(operation.get(key) is not None for key in ("start_point", "end_point"))
+    for key in ("start_point", "end_point"):
+        value = operation.get(key)
+        if value is not None and (not isinstance(value, list) or len(value) != 3 or
+                any(type(x) not in (int, float) or math.isnan(x) or math.isinf(x) for x in value)):
+            raise ValueError("invalid Loft point end: " + key)
+    if has_points and operation.get("command", False):
+        raise ValueError("point-ended command capture requires an explicit Point selection workflow")
+    if has_points and operation.get("closed", False):
+        raise ValueError("closed Loft cannot have point ends")
     curves = []
     styles = {
         "normal": Rhino.Geometry.LoftType.Normal,
@@ -2432,16 +2442,19 @@ def _loft(operation, iterations):
             brep.Dispose()
         del result[:]
         result.extend(Rhino.Geometry.Brep.CreateFromLoft(
-            curves, Rhino.Geometry.Point3d.Unset, Rhino.Geometry.Point3d.Unset,
+            curves,
+            _point(operation["start_point"]) if operation.get("start_point") is not None else Rhino.Geometry.Point3d.Unset,
+            _point(operation["end_point"]) if operation.get("end_point") is not None else Rhino.Geometry.Point3d.Unset,
             styles[operation.get("style", "normal")], operation.get("closed", False)
         ) or [])
-        if not result:
+        if not result and not operation.get("allow_empty", False):
             raise ValueError("Rhino could not create the loft")
     try:
         for definition in operation["curves"]:
             curves.append(_nurbs_curve_from_definition(definition))
         if operation.get("command", False):
             return _loft_command(operation, iterations, curves)
+        before = [_nurbs_curve_definition(c) for c in curves] if operation.get("inspect_inputs", False) else None
         _unused, elapsed = _measure(iterations, build)
         surfaces = []
         for brep in result:
@@ -2449,6 +2462,8 @@ def _loft(operation, iterations):
                 raise ValueError("Rhino loft is invalid")
             for face in brep.Faces:
                 surfaces.append(_loft_surface_record(face, operation))
+        if before is not None:
+            return dict(before=before, after=[_nurbs_curve_definition(c) for c in curves], surfaces=surfaces), elapsed
         return surfaces, elapsed
     finally:
         for brep in result:

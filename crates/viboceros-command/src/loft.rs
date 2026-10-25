@@ -1,7 +1,7 @@
 use super::*;
-use viboceros_geometry::{LoftOptions, LoftStyle};
+use viboceros_geometry::{LoftEndPoints, LoftOptions, LoftStyle};
 
-const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural]";
+const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
 pub(super) struct LoftCommand(pub crease_splitting::Preference);
 
@@ -12,6 +12,7 @@ impl Command for LoftCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let (mut style, mut closed, mut split, mut natural) = (None, None, None, false);
+        let mut ends = LoftEndPoints::default();
         for argument in arguments {
             if option_name_eq(argument, "Natural") && !natural {
                 natural = true;
@@ -33,9 +34,16 @@ impl Command for LoftCommand {
                 closed = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
             } else if option_name_eq(name, "SplitAtTangents") && split.is_none() {
                 split = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
+            } else if option_name_eq(name, "StartPoint") && ends.start.is_none() {
+                ends.start = Some(parse_point(&[value])?.0);
+            } else if option_name_eq(name, "EndPoint") && ends.end.is_none() {
+                ends.end = Some(parse_point(&[value])?.0);
             } else {
                 return Err(CommandError::Usage(USAGE));
             }
+        }
+        if closed.unwrap_or(false) && !ends.is_empty() {
+            return Err(CommandError::Usage(USAGE));
         }
         let selected = selected_ids(document)?;
         let profiles = selected
@@ -49,24 +57,54 @@ impl Command for LoftCommand {
                     .ok_or(CommandError::LoftRequiresCurves)
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
-        let brep = Brep::try_loft_with_surface_options(
-            &profiles,
-            style.unwrap_or_default(),
-            closed.unwrap_or(false),
-            LoftOptions {
-                crease_splitting: self.0.get().0,
-                split_at_tangents: split.unwrap_or(false),
-                natural_seams: natural,
-            },
-            document.tolerance(),
-            &mut surface,
-        )?;
+        let options = LoftOptions {
+            crease_splitting: self.0.get().0,
+            split_at_tangents: split.unwrap_or(false),
+            natural_seams: natural,
+        };
+        let brep = if ends.is_empty() {
+            Brep::try_loft_with_surface_options(
+                &profiles,
+                style.unwrap_or_default(),
+                closed.unwrap_or(false),
+                options,
+                document.tolerance(),
+                &mut surface,
+            )?
+        } else {
+            Brep::try_loft_with_surface_end_points(
+                &profiles,
+                style.unwrap_or_default(),
+                ends,
+                options,
+                document.tolerance(),
+                &mut surface_with_end_points,
+            )?
+        };
         let faces = brep.faces().len();
         document.add_geometry(Geometry::Brep(brep))?;
         Ok(format!(
             "Lofted {} curve sections into one BRep with {faces} faces",
             profiles.len(),
         ))
+    }
+}
+
+fn surface_with_end_points(
+    curves: &[NurbsCurve],
+    style: LoftStyle,
+    ends: LoftEndPoints,
+) -> Result<NurbsSurface, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::loft_surface_with_end_points(curves, style, ends)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_loft_nurbs_curves_with_end_points(
+            curves, style, ends,
+        )?)
     }
 }
 

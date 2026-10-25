@@ -66,6 +66,8 @@ curves. Normal, Loose, Tight, Straight and Uniform styles are supported, as are
 periodic closed lofts. Inputs are retained; output is unselected on the current
 layer. `SplitAtTangents=Yes` adds curvature-break partitions independently of the
 global `CreaseSplitting` preference; `Natural` retains supplied profile seams.
+`StartPoint=x,y,z` and `EndPoint=x,y,z` add [point poles](../loft-points.md),
+including a single closed profile with two poles.
 See [Loft geometry, ordering, tests and limits](../loft.md), especially
 the endpoint-weight normalization policy for rational profiles.
 

@@ -5,6 +5,12 @@ use crate::{GeometryError, NurbsCurve, NurbsSurface, Real, WeightedPoint3};
 mod compatible;
 mod interpolate;
 mod parameterize;
+mod points;
+pub(crate) use points::validate_end_points;
+pub use points::{
+    LoftEndPoints, try_loft_nurbs_curves_with_end_points,
+    try_loft_nurbs_curves_with_end_points_and_operations,
+};
 #[cfg(test)]
 mod tests;
 
@@ -67,8 +73,17 @@ pub fn try_loft_nurbs_curves_with_operations<E: From<GeometryError>>(
     solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<NurbsSurface, E> {
     validate_count(curves.len(), closed)?;
+    let sections = checked_sections(curves, prepare)?;
+    surface_from_sections(&sections, style, closed, solve)
+}
+
+fn checked_sections<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    prepare: &mut impl FnMut(&[NurbsCurve]) -> Result<Vec<NurbsCurve>, E>,
+) -> Result<Vec<NurbsCurve>, E> {
     let sections = prepare(curves)?;
-    if sections.len() != curves.len()
+    if sections.is_empty()
+        || sections.len() != curves.len()
         || sections.iter().any(|s| {
             s.degree() != sections[0].degree()
                 || s.knots() != sections[0].knots()
@@ -80,7 +95,16 @@ pub fn try_loft_nurbs_curves_with_operations<E: From<GeometryError>>(
         }
         .into());
     }
-    let (degree, knots, controls) = interpolate::loft_with_solver(&sections, style, closed, solve)?;
+    Ok(sections)
+}
+
+fn surface_from_sections<E: From<GeometryError>>(
+    sections: &[NurbsCurve],
+    style: LoftStyle,
+    closed: bool,
+    solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsSurface, E> {
+    let (degree, knots, controls) = interpolate::loft_with_solver(sections, style, closed, solve)?;
     let count_v = sections[0].control_points().len();
     let count_u = controls.len() / count_v;
     let surface = NurbsSurface::try_new_rational(

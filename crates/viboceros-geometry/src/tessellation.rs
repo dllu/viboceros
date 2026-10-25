@@ -97,7 +97,12 @@ pub(crate) fn triangle_corners(
     })
 }
 
-fn limiting_normal(surface: &NurbsSurface, p: Point2, a: Point2, b: Point2) -> Option<UnitVector3> {
+pub(crate) fn limiting_normal(
+    surface: &NurbsSurface,
+    p: Point2,
+    a: Point2,
+    b: Point2,
+) -> Option<UnitVector3> {
     let mut previous: Option<UnitVector3> = None;
     let mut last = None;
     let mut converged = 0;

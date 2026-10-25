@@ -4,14 +4,18 @@
 
 ```text
 Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No]
-     [SplitAtTangents=Yes|No] [Natural]
+     [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z]
 ```
 
-Select at least two curves, or three for `Closed=Yes`. Defaults are `Normal`
+Select at least two curves, or one with a point end; `Closed=Yes` requires three.
+Defaults are `Normal`
 and `Closed=No`. The result is one B-rep on the current layer, with fresh
 attributes, no groups, and no selection. Source objects, attributes, groups,
 and selection remain intact. The command is one atomic undo/redo operation.
 Unsupported options and invalid geometry fail before document mutation.
+
+Optional [point ends](loft-points.md) taper either side to a pole. A single curve
+suffices with a point end; Uniform and `Closed=Yes` do not accept point ends.
 
 Open profiles retain selection order. Parallel planar closed profiles are sorted
 by plane offset along the first profile's oriented area normal; opposite profile
@@ -101,7 +105,7 @@ overflow and world-offset cancellation. Coincident consecutive compatible
 control polygons are rejected. No general self-intersection, denominator-pole,
 or continuous approximation certificate is claimed.
 
-Not implemented: point-end lofts, general spatial profile/seam matching,
+Not implemented: interactive point-end picking, general spatial profile/seam matching,
 interactive seam editing, start/end tangent matching, and Rebuild/Refit
 simplification. Nonparallel or nonplanar closed sections currently keep input
 order. Native parameter preservation

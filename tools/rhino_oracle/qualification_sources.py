@@ -202,6 +202,8 @@ def _expand_sources_once(paths):
     if 'crates/viboceros-geometry/src/brep/loft.rs' in expanded:
         expanded.extend(['crates/viboceros-geometry/src/brep/loft/profiles.rs',
                          'crates/viboceros-geometry/src/brep/loft/orientation.rs',
+                         'crates/viboceros-geometry/src/brep/loft/tests.rs',
+                         'crates/viboceros-geometry/src/tessellation.rs',
                          'crates/viboceros-opennurbs/src/curve.rs'])
     if 'crates/viboceros-command/src/extrude_along_curve.rs' in expanded:
         expanded.extend(['crates/viboceros-command/src/extrude_along_curve/options.rs',
@@ -211,6 +213,8 @@ def _expand_sources_once(paths):
                                    'crates/viboceros-geometry/src/loft/compatible.rs']):
         expanded.extend(['crates/viboceros-geometry/src/loft/parameterize.rs',
                          'crates/viboceros-geometry/src/loft/parameterize/tests.rs',
+                         'crates/viboceros-geometry/src/loft/points.rs',
+                         'crates/viboceros-geometry/src/loft/points/tests.rs',
                          'crates/viboceros-geometry/src/integration/cash_karp.rs',
                          'crates/viboceros-opennurbs/src/curve.rs',
                          'crates/viboceros-opennurbs/src/lib.rs',

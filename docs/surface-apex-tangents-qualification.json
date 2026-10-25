@@ -31881,7 +31881,7 @@
     "tools/rhino_oracle/observations/surface_apex_tangent_angles.json": "159feab38037c2571fba771645c2c1956dbb8647db71eec264f9c68b67d36555",
     "tools/rhino_oracle/observations/surface_apex_tangent_threshold.json": "9acf777bdeb4507ae211f73b3bb958c7d6148b6976833ae96e12f0093701ad09",
     "tools/rhino_oracle/observations/surface_apex_tangents.json": "f061e581f829b348a9bf2638c8fc92c287767ce94eb65cdeda909bbce822d56c",
-    "tools/rhino_oracle/qualification_sources.py": "caede30b3ee8c2ea8b0f9c586cff53d3b7d1a43948cdf8904c09207aec89a48b",
+    "tools/rhino_oracle/qualification_sources.py": "53abe00e529ede965778ec99e50473f0ae8325abccd3abefd57e6618fbeefaec",
     "tools/rhino_oracle/report_surface_apex_native.py": "2a77e4b6af528c80d8d5d2f81fcf5dec4ed6cc27c72a66694ed128f53f54f2b5",
     "tools/rhino_oracle/report_surface_apex_tangents.py": "547e18b313e8f48c7ca65beba86f1eafa920e3fca4d877459f777905b3865da6",
     "tools/rhino_oracle/surface_apex_command_probe.py": "8d34c7d1e79daa5435121e48f3270ad1b70618c45d694d546edc2598554c209f",
@@ -31907,6 +31907,6 @@
     "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d",
     "crates/viboceros-opennurbs/native/curve_speeds.h": "aa8198867c2a32d66afb4037c4400271fff7b39b4fba60a28a229da7e09d41dc",
     "crates/viboceros-opennurbs/src/curve/speeds.rs": "a86eb397c8f7bab0e6ddca11dd651b1f1f3b3b5cc8e91273a8117fdef2f9b263",
-    "src/app/tests/loft_options.rs": "c18d1c4b499d8d2527c0a571c7e456f1ee24eb896b3db9a530b453235f73317b"
+    "src/app/tests/loft_options.rs": "7f9467c6ec50a2a8b28d7a63546c47977f9a83070f45c01915427be89b64b852"
   }
 }

@@ -96,6 +96,21 @@ pub fn loft_surface(
     )
 }
 
+/// Ordered point-ended Loft using native exact basis edits and cubic solving.
+pub fn loft_surface_with_end_points(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    ends: viboceros_geometry::LoftEndPoints,
+) -> Result<NurbsSurface, Error> {
+    viboceros_geometry::try_loft_nurbs_curves_with_end_points_and_operations(
+        curves,
+        style,
+        ends,
+        &mut prepare_loft_sections,
+        &mut solve_cubic_system,
+    )
+}
+
 #[repr(C)]
 struct InterpolationSystem {
     knots: *const f64,

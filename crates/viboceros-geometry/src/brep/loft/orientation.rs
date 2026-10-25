@@ -1,5 +1,6 @@
 //! Conservative command normalization using the existing closest-point solver.
 use super::*;
+use crate::{Point2, UnitVector3};
 
 /// Only reverse when six outside closest-point probes agree. Conflicting or
 /// unsupported probes retain the supplied sense, including self-overlap cases.
@@ -48,24 +49,71 @@ pub(super) fn all_outside_probes_point_inward(
             let Ok(point) = surface.evaluate(u, v) else {
                 return false;
             };
-            let Ok(normal) = surface.normal_at(u, v) else {
-                return false;
-            };
             let Ok(direction) = point
                 .vector_to(outside)
                 .and_then(|d| d.normalized_nonzero())
             else {
                 return false;
             };
-            let Ok(dot) = normal.as_vector().dot(direction.as_vector()) else {
-                return false;
+            let inward = |normal: UnitVector3| {
+                normal
+                    .as_vector()
+                    .dot(direction.as_vector())
+                    .is_ok_and(|dot| dot < -tolerance.angular().max(1e-6))
             };
-            if dot >= -tolerance.angular().max(1e-6) {
-                return false;
+            match surface.normal_at(u, v) {
+                Ok(normal) if inward(normal) => {}
+                Ok(_) => return false,
+                Err(_) => {
+                    let Some(normals) = pole_normals(surface, u, v) else {
+                        return false;
+                    };
+                    if !normals.into_iter().all(inward) {
+                        return false;
+                    }
+                }
             }
         }
     }
     true
+}
+
+/// A collapsed boundary has no regular normal. Reuse the renderer's converged
+/// one-sided samples on several meridians; never relax normal_at's exact contract.
+fn pole_normals(surface: &NurbsSurface, u: Real, v: Real) -> Option<Vec<UnitVector3>> {
+    let nu = surface.control_point_count_u();
+    let (column, span, fraction) = if u == *surface.domain_u().start()
+        && crate::nurbs_surface::knots_are_clamped_at_start(surface.degree_u(), surface.knots_u())
+    {
+        (0, surface.spans_u().next()?, 0.01)
+    } else if u == *surface.domain_u().end()
+        && crate::nurbs_surface::knots_are_clamped_at_end(surface.degree_u(), surface.knots_u())
+    {
+        (nu - 1, surface.spans_u().last()?, 0.99)
+    } else {
+        return None;
+    };
+    let controls = surface.control_points();
+    if !(1..surface.control_point_count_v())
+        .all(|j| controls[j * nu + column].point() == controls[column].point())
+    {
+        return None;
+    }
+    let interior = crate::interpolate_scalar([span.0, span.1], [0., 1.], fraction).ok()?;
+    let mut normals = Vec::with_capacity(4);
+    for v in [
+        v,
+        surface.parameter_at_v(0.25).ok()?,
+        surface.parameter_at_v(0.5).ok()?,
+        surface.parameter_at_v(0.75).ok()?,
+    ] {
+        let p = Point2::try_new(u, v).ok()?;
+        let neighbor = Point2::try_new(interior, v).ok()?;
+        normals.push(crate::tessellation::limiting_normal(
+            surface, p, neighbor, neighbor,
+        )?);
+    }
+    Some(normals)
 }
 
 #[cfg(test)]

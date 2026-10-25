@@ -287,8 +287,9 @@ pub use intersection::{
 };
 pub use line::LineSegment;
 pub use loft::{
-    LoftInterpolation, LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS,
+    LoftEndPoints, LoftInterpolation, LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS,
     prepare_loft_sections_with_operations, try_loft_nurbs_curves,
+    try_loft_nurbs_curves_with_end_points, try_loft_nurbs_curves_with_end_points_and_operations,
     try_loft_nurbs_curves_with_operations, try_loft_nurbs_curves_with_preparation,
 };
 pub use mesh::{
