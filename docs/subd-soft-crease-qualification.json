@@ -2730,12 +2730,12 @@
     ]
   },
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "6fcef9161d3c421280092fade709efb92d3331d1c637ac0f81ca7f03eb1f20b8",
+    "crates/viboceros-opennurbs/build.rs": "25eafad52479bdd64caf928585ba2652877b6466c92fd4937dce290b0edeccc3",
     "crates/viboceros-opennurbs/native/subd.cpp": "da23bdbf18b6709f4156d193546d09acc18a02cbb863a68a0fa8465e2b2cea55",
     "crates/viboceros-opennurbs/native/subd.h": "4a94d9836d3dcab38f2694497a320b9a0e98dbf77eecd3de6717c23d60024808",
     "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
-    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "25e58ba68932123f7ee4c5589a9be7fdc797052d9e82d01341a0045946ef2bf9",
-    "crates/viboceros-opennurbs/src/lib.rs": "4460a9a5a603a50b5866edc42fb36013309d136f988c5be52d4069d44f876952",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "6cafae75be0f3387ff84912064409bd1afcfdd40400bdaa3753804c260f71c10",
+    "crates/viboceros-opennurbs/src/lib.rs": "78832c556269de01b468ac918881fc517ec56521e7e73f1c6d4b9ce62d48dd80",
     "crates/viboceros-opennurbs/src/subd.rs": "4d6f8b956aa37c52ac9f17a6ddead1d66ffa1faff48d218217e92c4363e810f9",
     "crates/viboceros-opennurbs/native/subd_crease.h": "d5eb85162f2c276646950d5080f82131bd293dcaf32617d92dbd658fa2666a2e",
     "crates/viboceros-opennurbs/native/subd_edges.h": "49e4529894e72b6a0817323ceb0f802451316a39b0af837a3674db1110f09d93",
@@ -2767,7 +2767,7 @@
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
     "crates/viboceros-geometry/src/subd/soft_crease.rs": "1f9bfbfca6b71418e39846e9847351267ee6a26023ac035a041d91247c232f3f",
     "crates/viboceros-opennurbs/native/extrusion_roundoff.h": "9cd89d3aad50a95045b60f466d39bf5af018ccd015cdfd6f9be8240fc98bc871",
-    "tools/rhino_oracle/qualification_sources.py": "1a4d52dc238d116723b9d0b80935d4b5657bf4f571c110b5b15c488deba38728",
+    "tools/rhino_oracle/qualification_sources.py": "96479d1e178a7971b6c8dc1717fbf67e9d8e6af808307d7e366094aebb660667",
     "tools/rhino_oracle/fixtures/soft_crease_discovery.json": "a4b4b8c11be52c6dd3fb40375fab38969adcbfdf7a7c4656456528d1554fff3a",
     "tools/rhino_oracle/observations/soft_crease_discovery.json": "1fd646203a9582e12b96643fcc9d4505b23c66a834b712a0c8fba93c55f85adc",
     "tools/rhino_oracle/fixtures/soft_crease_discovery/result/soft_boundary.3dm": "9984321e1dbb0118f11da2b5c96d3cfdcdae7f2d88b4396e16545f23ee830f7d",
@@ -3253,6 +3253,8 @@
     "crates/viboceros-opennurbs/src/curve/discontinuities.rs": "e7c5dc99f53958d58107e1dce914f1976a91284d7fa2b12ee3b76276893ebfad",
     "crates/viboceros-opennurbs/native/curve_tangents.h": "99be0dc2d58cfcc999e8b8402fd18eb9ca0b3cd7173a3195b2121bf047ddded7",
     "crates/viboceros-opennurbs/src/curve/tangents.rs": "dea679afab06d648bf1ffa74cde8c7e34dd5b0d7a97f4b03fb78bb16705a6c8b",
-    "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d"
+    "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d",
+    "crates/viboceros-opennurbs/native/curve_speeds.h": "aa8198867c2a32d66afb4037c4400271fff7b39b4fba60a28a229da7e09d41dc",
+    "crates/viboceros-opennurbs/src/curve/speeds.rs": "a86eb397c8f7bab0e6ddca11dd651b1f1f3b3b5cc8e91273a8117fdef2f9b263"
   }
 }

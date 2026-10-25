@@ -44,6 +44,7 @@ fn main() {
     println!("cargo:rerun-if-changed=native/curve_queries.h");
     println!("cargo:rerun-if-changed=native/curve_discontinuities.h");
     println!("cargo:rerun-if-changed=native/curve_tangents.h");
+    println!("cargo:rerun-if-changed=native/curve_speeds.h");
     println!("cargo:rerun-if-changed=native/curve_discontinuity_query.h");
     println!("cargo:rerun-if-changed=native/surface_queries.h");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.cpp");

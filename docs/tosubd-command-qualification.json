@@ -8645,14 +8645,14 @@
     "Arbitrary topology, continuous surface error, full native parity and comparative speed remain unqualified."
   ],
   "sha256": {
-    "crates/viboceros-opennurbs/build.rs": "6fcef9161d3c421280092fade709efb92d3331d1c637ac0f81ca7f03eb1f20b8",
+    "crates/viboceros-opennurbs/build.rs": "25eafad52479bdd64caf928585ba2652877b6466c92fd4937dce290b0edeccc3",
     "crates/viboceros-opennurbs/native/mesh_codec.h": "90d8bec623453bd51804d264ea651b11eaaaad51d0663e5d3a5db3155b967ec1",
     "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "50da8b4782440543b5bc1209c4988b0bf5ac44ace55ff040b587e54c3020ee67",
     "crates/viboceros-opennurbs/native/subd.cpp": "da23bdbf18b6709f4156d193546d09acc18a02cbb863a68a0fa8465e2b2cea55",
     "crates/viboceros-opennurbs/native/subd.h": "4a94d9836d3dcab38f2694497a320b9a0e98dbf77eecd3de6717c23d60024808",
     "crates/viboceros-opennurbs/native/subd_codec.h": "d574067295275a49f7b740594fa520121d5e23763072741327739a109dedf730",
     "crates/viboceros-opennurbs/native/subd_interpolation.h": "fe3f6d607f1b4cd94556b6ba667b579de06efee53dc970bc0ae35444d31d29bd",
-    "crates/viboceros-opennurbs/src/lib.rs": "4460a9a5a603a50b5866edc42fb36013309d136f988c5be52d4069d44f876952",
+    "crates/viboceros-opennurbs/src/lib.rs": "78832c556269de01b468ac918881fc517ec56521e7e73f1c6d4b9ce62d48dd80",
     "crates/viboceros-geometry/src/lib.rs": "9549b4ca38ec3809c9fa46c52764905358fd2af4619ae408eb29fb9d8777d8c7",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "2c36409d5b8a64ab694d401ddc705045d6ca70767353320b8833c7f0aef0d80e",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
@@ -8771,7 +8771,7 @@
     "crates/viboceros-geometry/tests/support/mesh_equivalence.rs": "497558f80c8dd5f7db5c2a67501b299e8ae95ce4d8dc573aea1603fa720160d4",
     "crates/viboceros-opennurbs/native/mesh_modeling.h": "c20619d7a3861b87af0225a5df25582d52613291d6c42db0f61a075be57f364c",
     "crates/viboceros-geometry/src/nurbs_surface/control_polygon.rs": "2b847cd80f03db7473219aaec007f292fa6cc3793d11068b5c05038038864e99",
-    "tools/rhino_oracle/qualification_sources.py": "1a4d52dc238d116723b9d0b80935d4b5657bf4f571c110b5b15c488deba38728",
+    "tools/rhino_oracle/qualification_sources.py": "96479d1e178a7971b6c8dc1717fbf67e9d8e6af808307d7e366094aebb660667",
     "crates/viboceros-geometry/src/error.rs": "e03ea19c5b36f97cbd32f959d853bba42d471627f5cf21a4f5e3b39e7a4b379d",
     "crates/viboceros-geometry/src/brep.rs": "6a1d2433659da9f7e8db91212ab6d90ec4430fa0453fad5276a1a36bd4fb111f",
     "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",
@@ -8788,7 +8788,7 @@
     "crates/viboceros-io/tests/extrusion.rs": "d4785d11611056342f967c46bf941f3f981e5e03475a6b6bd20f1231be571b59",
     "crates/viboceros-opennurbs/native/extrusion_codec.h": "d920fe03ac2848f59d8d40b7786de024f1ece0ce583a0ca8b2f6d5e72b652f93",
     "crates/viboceros-opennurbs/native/extrusion_queries.h": "ebc8d1c93cd6f01f14c0a03ac6699de3e1c31591cbd96a0f0f1401316ded1ba2",
-    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "25e58ba68932123f7ee4c5589a9be7fdc797052d9e82d01341a0045946ef2bf9",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "6cafae75be0f3387ff84912064409bd1afcfdd40400bdaa3753804c260f71c10",
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "ee04edd5c0b301746e66136c924b3456427db9e70a90a521dd5daf1b36bb27c8",
     "crates/viboceros-opennurbs/src/extrusion.rs": "5e1b07a7bd19d4a9b942cbeab47f0d706a8605bf57fab8ef1e9c809e985dd744",
     "crates/viboceros-command/src/to_nurbs.rs": "be4747752e901c731f24dde21cd1bee669727049a7cc245cca40fb155dc9655a",
@@ -9048,10 +9048,12 @@
     "crates/viboceros-geometry/src/brep/surface_partition/tests.rs": "b0ebe95cce036e2e0febf2cdeac8140f76226ac2ddf34974b3f00ad6ed38c833",
     "crates/viboceros-geometry/src/brep/surface_grid.rs": "b1065deb5b3bf1ea1a746651771451a0333079233beb518803d04a6e1359a593",
     "crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs": "83605c795a6a36bead90513c0ca9cc2df72b41620b20805f323b730eb1187b37",
-    "crates/viboceros-opennurbs/src/curve.rs": "fa9d41c61991c82b2678ec453eb78a73569edc7989d0ed6f0c37c03784bb3766",
+    "crates/viboceros-opennurbs/src/curve.rs": "ae023c447973a55f46966f379465d38a19097755d92cc497e0830b6970069f8b",
     "crates/viboceros-geometry/src/brep/surface_partition/query_budget.rs": "7f87b0eb583403c85b586b592a7a8d299f289bdf11490a7e805be6b89f0b7aa5",
     "crates/viboceros-opennurbs/native/curve_tangents.h": "99be0dc2d58cfcc999e8b8402fd18eb9ca0b3cd7173a3195b2121bf047ddded7",
     "crates/viboceros-opennurbs/src/curve/tangents.rs": "dea679afab06d648bf1ffa74cde8c7e34dd5b0d7a97f4b03fb78bb16705a6c8b",
-    "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d"
+    "crates/viboceros-opennurbs/src/curve/tangents/tests.rs": "99cd62cfa7ba1c368d8c0933c091bfa3faa772638b5d0bc99f72ceda4b2bba6d",
+    "crates/viboceros-opennurbs/native/curve_speeds.h": "aa8198867c2a32d66afb4037c4400271fff7b39b4fba60a28a229da7e09d41dc",
+    "crates/viboceros-opennurbs/src/curve/speeds.rs": "a86eb397c8f7bab0e6ddca11dd651b1f1f3b3b5cc8e91273a8117fdef2f9b263"
   }
 }

@@ -218,7 +218,9 @@ def _expand_sources_once(paths):
     if any(p in expanded for p in ['crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp',
             'crates/viboceros-opennurbs/src/curve.rs', 'crates/viboceros-opennurbs/src/lib.rs']):
         expanded.extend(['crates/viboceros-opennurbs/native/curve_tangents.h',
+                         'crates/viboceros-opennurbs/native/curve_speeds.h',
                          'crates/viboceros-opennurbs/native/CMakeLists.txt',
+                         'crates/viboceros-opennurbs/src/curve/speeds.rs',
                          'crates/viboceros-opennurbs/src/curve/tangents.rs',
                          'crates/viboceros-opennurbs/src/curve/tangents/tests.rs'])
     if 'crates/viboceros-smlib/native/bridge.cpp' in expanded:

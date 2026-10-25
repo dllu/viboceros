@@ -1,0 +1,1095 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-domain-seam1-1-compatible-preparation-matching-aspect-0-g2-speeds-jets",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            5.0,
+            5.0,
+            6.0,
+            6.0,
+            6.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            1.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            5.0,
+            5.0,
+            6.0,
+            6.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -0.15625,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.875,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.25,
+                -1.75,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.25,
+                -0.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.25,
+                1.25,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.875,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.625,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                1.25,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                -0.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.15625,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "command": false,
+      "sample_geometry": true,
+      "inspect_inputs": true,
+      "inspect_compatible": true,
+      "inspect_preparation": true,
+      "inspect_matching": true,
+      "inspect_geometric_matching": true,
+      "inspect_curve_speeds": true,
+      "inspect_curve_speed_jets": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-domain-seam1-1-compatible-preparation-matching-aspect-3-g2-speeds-jets",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            5.0,
+            5.0,
+            6.0,
+            6.0,
+            6.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            1.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            5.0,
+            5.0,
+            6.0,
+            6.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -40.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                14.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                20.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                20.0,
+                -0.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                20.0,
+                1.25,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                14.0,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -10.0,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -16.0,
+                1.25,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -16.0,
+                -0.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -16.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -40.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "command": false,
+      "sample_geometry": true,
+      "inspect_inputs": true,
+      "inspect_compatible": true,
+      "inspect_preparation": true,
+      "inspect_matching": true,
+      "inspect_geometric_matching": true,
+      "inspect_curve_speeds": true,
+      "inspect_curve_speed_jets": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-domain-seam1-1-compatible-preparation-matching-affine-0-g2-speeds-jets",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            5.0,
+            5.0,
+            6.0,
+            6.0,
+            6.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            1.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            5.0,
+            5.0,
+            6.0,
+            6.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -0.625,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.875,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.25,
+                -1.75,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.25,
+                -0.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.25,
+                1.25,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.875,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.625,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                1.25,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                -0.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.625,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "command": false,
+      "sample_geometry": true,
+      "inspect_inputs": true,
+      "inspect_compatible": true,
+      "inspect_preparation": true,
+      "inspect_matching": true,
+      "inspect_geometric_matching": true,
+      "inspect_curve_speeds": true,
+      "inspect_curve_speed_jets": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-domain-seam1-1-compatible-preparation-matching-affine-3-g2-speeds-jets",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            5.0,
+            5.0,
+            6.0,
+            6.0,
+            6.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            1.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            4.0,
+            5.0,
+            5.0,
+            6.0,
+            6.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -10.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                14.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                20.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                20.0,
+                -0.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                20.0,
+                1.25,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                14.0,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -10.0,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -16.0,
+                1.25,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -16.0,
+                -0.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -16.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -10.0,
+                -1.75,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "command": false,
+      "sample_geometry": true,
+      "inspect_inputs": true,
+      "inspect_compatible": true,
+      "inspect_preparation": true,
+      "inspect_matching": true,
+      "inspect_geometric_matching": true,
+      "inspect_curve_speeds": true,
+      "inspect_curve_speed_jets": true
+    }
+  ]
+}
