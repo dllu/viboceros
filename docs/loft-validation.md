@@ -2,6 +2,14 @@
 
 [Loft usage and architecture](loft.md)
 
+## Open profile ordering
+
+The [ordering regression](loft-ordering.md) checks 464 native command records
+(456 distinct recipes) across section permutations, directions and spatial
+arrangements. Both backends match their complete geometry and command state at
+absolute `1e-9`. The [ordering record](loft-ordering-validation.json) also gives
+the updated 140-command Rebuild comparison and its remaining differences.
+
 ## Command options and orientation
 
 Command and application regressions exercise the ordinary command entry,

@@ -43,7 +43,7 @@ fn sources(document: &mut Document) -> Vec<ObjectId> {
 }
 
 #[test]
-fn loft_uses_selection_order_and_fresh_attributes_with_undo_redo() {
+fn loft_reorders_geometry_preserving_selection_and_fresh_attributes_with_undo_redo() {
     let registry = CommandRegistry::with_builtins();
     for closed in [false, true] {
         let mut document = Document::default();
@@ -104,6 +104,18 @@ fn loft_uses_selection_order_and_fresh_attributes_with_undo_redo() {
                 .unwrap()
                 < 1e-12
         );
+        if !closed {
+            // Native orders these line sections 2,1,0 while retaining the
+            // document selection 2,0,1 through the command and undo/redo.
+            let end = surface
+                .evaluate(*surface.domain_u().end(), *surface.domain_v().start())
+                .unwrap();
+            assert!(
+                end.distance_to(Point3::try_new(0., 0., 0.).unwrap())
+                    .unwrap()
+                    < 1e-12
+            );
+        }
         assert_eq!(document.objects().count(), 4);
         assert_eq!(document.selected_object_count(), 3);
         let after = document.objects().cloned().collect::<Vec<_>>();

@@ -30,16 +30,17 @@ stricter comparisons remain explicit ignored diagnostics. Existing unreconstruct
 Loft tests retain their own tighter tolerances. No continuous error bound or
 arbitrary-scale Rhino agreement is established.
 
-A separate 140-command capture matches 105 complete raw records on the portable
-backend and 106 on the native backend at `1e-6`. The remaining 35/34 records retain
-the broader Loft limitations: 15/14 closed-solid face-sense differences and 20
-open cubic-profile U-chart differences, including one crease partition difference.
-The complete raw comparison remains a diagnostic rather
-than a claim of full command parity. For one cubic case, reversing U registers
-the sampled geometry within `5e-8`; the implementation does not identify cases
-or rewrite results using fixture names.
+A separate 140-command capture originally matched 105 complete raw records on
+the portable backend and 106 on the native backend at `1e-6`. The later
+[profile-ordering change](loft-ordering.md) resolves the open cubic U-chart
+differences: current totals are 124/125 matches, with 15/14 closed-solid face-sense
+differences and one open Straight crease partition difference remaining.
+The complete raw comparison remains an explicit ignored diagnostic. All 48 open
+non-Straight records additionally run as ordinary regressions at `1e-6`.
 
-The [source and capture record](loft-rebuild-validation.json) records this scope.
+The [original rebuild record](loft-rebuild-validation.json) retains the initial
+measurements; the [ordering record](loft-ordering-validation.json) records the
+updated command comparison.
 
 ```sh
 cargo test -p viboceros-geometry --test loft_rebuild_native

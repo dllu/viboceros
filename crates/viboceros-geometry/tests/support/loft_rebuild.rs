@@ -3,7 +3,7 @@ use std::path::Path;
 use viboceros_geometry::{LoftEndPoints, LoftStyle, NurbsCurve, NurbsSurface, Point3, Tolerance};
 #[allow(dead_code)]
 #[path = "loft_parameters.rs"]
-mod definitions;
+pub(crate) mod definitions;
 
 pub fn compare<E: std::fmt::Debug>(
     epsilon: f64,

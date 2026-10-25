@@ -1,4 +1,4 @@
-//! Parallel-section ordering, traversal alignment, and nearest-knot seams.
+//! Traversal alignment and nearest-knot seams for private Loft profiles.
 use super::*;
 
 pub(super) fn prepare(
@@ -16,59 +16,53 @@ pub(super) fn prepare(
         });
     }
     let mut profiles = curves.to_vec();
-    let oriented = sort_parallel_profiles(&mut profiles, tolerance)?;
-    if profiles
+    let oriented = super::ordering::sort_profiles(&mut profiles, tolerance)?;
+    let closed = profiles
         .iter()
         .map(NurbsCurve::is_closed)
-        .collect::<Result<Vec<_>, _>>()?
-        .into_iter()
-        .all(|c| c)
-    {
+        .collect::<Result<Vec<_>, _>>()?;
+    if closed.iter().all(|c| *c) {
         align_closed_profiles(&mut profiles, !options.natural_seams)?;
+    } else if closed.iter().all(|c| !c) {
+        align_open_profiles(&mut profiles)?;
     }
     Ok((profiles, oriented))
 }
 
-pub(super) fn sort_parallel_profiles(
-    curves: &mut [NurbsCurve],
-    tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
-    for curve in curves.iter() {
-        if !curve.is_closed()? || !curve.is_planar(tolerance)? {
-            return Ok(false);
-        }
-    }
-    let normals = curves
-        .iter()
-        .map(area_normal)
-        .collect::<Result<Vec<_>, _>>()?;
-    let Some(axis) = normals[0] else {
-        return Ok(false);
+fn align_open_profiles(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> {
+    let Some(first) = curves.first() else {
+        return Ok(());
     };
-    for normal in &normals {
-        let Some(normal) = normal else {
-            return Ok(false);
-        };
-        if axis.cross(*normal)?.length()? > tolerance.angular().max(1e-12) {
-            return Ok(false);
+    let mut previous = [
+        first.evaluate(*first.domain().start())?,
+        first.evaluate(*first.domain().end())?,
+    ];
+    for curve in &mut curves[1..] {
+        let ends = [
+            curve.evaluate(*curve.domain().start())?,
+            curve.evaluate(*curve.domain().end())?,
+        ];
+        let distances = [
+            previous[0].distance_to(ends[0])?,
+            previous[1].distance_to(ends[1])?,
+            previous[0].distance_to(ends[1])?,
+            previous[1].distance_to(ends[0])?,
+        ];
+        let mut forward = distances[0] + distances[1];
+        let mut backward = distances[2] + distances[3];
+        if !forward.is_finite() || !backward.is_finite() {
+            let scale = distances.into_iter().fold(0_f64, f64::max);
+            forward = distances[0] / scale + distances[1] / scale;
+            backward = distances[2] / scale + distances[3] / scale;
+        }
+        if backward < forward {
+            *curve = curve.reversed()?;
+            previous = [ends[1], ends[0]];
+        } else {
+            previous = ends;
         }
     }
-    let origin = curves[0].control_points()[0].point();
-    let mut ordered = Vec::with_capacity(curves.len());
-    for (curve, normal) in curves.iter().zip(normals) {
-        let offset = origin
-            .vector_to(curve.control_points()[0].point())?
-            .dot(axis)?;
-        ordered.push((offset, curve.clone(), normal.unwrap()));
-    }
-    ordered.sort_by(|a, b| a.0.total_cmp(&b.0));
-    // Sorting follows the first selected section's area normal. The first
-    // sorted section retains its original traversal for the later tangent pass.
-    let reference = ordered[0].2;
-    for (curve, (_, source, _)) in curves.iter_mut().zip(ordered) {
-        *curve = source;
-    }
-    Ok(reference.dot(axis)? > 0.)
+    Ok(())
 }
 
 pub(super) fn align_closed_profiles(
@@ -133,7 +127,7 @@ fn seam_tangent(curve: &NurbsCurve) -> Result<[Real; 3], GeometryError> {
         })
 }
 
-fn area_normal(curve: &NurbsCurve) -> Result<Option<Vector3>, GeometryError> {
+pub(super) fn area_normal(curve: &NurbsCurve) -> Result<Option<Vector3>, GeometryError> {
     // Integrate in local, scaled coordinates. Only the area direction is
     // needed; do not form squared world-scale areas or reciprocal tiny weights.
     let origin = curve.control_points()[0].point();

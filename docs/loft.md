@@ -21,11 +21,10 @@ shared arc-length rebuild before lofting.
 Optional [point ends](loft-points.md) taper either side to a pole. A single curve
 suffices with a point end; Uniform and `Closed=Yes` do not accept point ends.
 
-Open profiles retain selection order. Parallel planar closed profiles are sorted
-by plane offset along the first profile's oriented area normal; opposite profile
-directions are aligned by consecutive seam tangents. Each later seam moves to
-the knot nearest the preceding seam; `Natural` retains the supplied seams while
-still aligning traversal. General spatial seam matching remains incomplete.
+[Profile ordering](loft-ordering.md) sorts parallel planar profiles by plane
+offset and uses a midpoint chain for other open sections. Traversal is aligned
+on private copies. Closed profiles move each later seam to the nearest knot;
+`Natural` retains supplied seams while still aligning traversal.
 
 `CreaseSplitting` controls tangent-break partitioning at 0.1 degrees.
 `SplitAtTangents=Yes` additionally splits curvature breaks at 1 degree,
@@ -109,7 +108,7 @@ overflow and world-offset cancellation. Coincident consecutive compatible
 control polygons are rejected. No general self-intersection, denominator-pole,
 or continuous approximation certificate is claimed.
 
-Not implemented: general spatial profile/seam matching,
+Not implemented: general closed spatial profile/seam matching,
 interactive seam editing, start/end tangent matching, and Refit simplification. Nonparallel or nonplanar closed sections currently keep input
 order. Native parameter preservation
 of analytic input curves is not promised: loft deliberately builds a normalized

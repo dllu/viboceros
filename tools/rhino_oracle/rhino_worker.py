@@ -2459,7 +2459,14 @@ def _loft(operation, iterations):
         for definition in operation["curves"]:
             curves.append(_nurbs_curve_from_definition(definition))
         if operation.get("command", False):
-            return _loft_command(operation, iterations, curves)
+            value, elapsed = _loft_command(operation, iterations, curves)
+            if operation.get('inspect_input_planes', False):
+                planes = []
+                for curve in curves:
+                    success, plane = curve.TryGetPlane(Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance)
+                    planes.append(dict(planar=bool(success), normal=_xyz(plane.Normal) if success else None))
+                value['input_planes'] = planes
+            return value, elapsed
         before = [_nurbs_curve_definition(c) for c in curves] if operation.get("inspect_inputs", False) else None
         _unused, elapsed = _measure(iterations, build)
         surfaces = []

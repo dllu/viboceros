@@ -209,6 +209,7 @@ def _expand_sources_once(paths):
         expanded.append('crates/viboceros-geometry/src/curve_rebuild/tests.rs')
     if 'crates/viboceros-geometry/src/brep/loft.rs' in expanded:
         expanded.extend(['crates/viboceros-geometry/src/brep/loft/profiles.rs',
+                         'crates/viboceros-geometry/src/brep/loft/ordering.rs',
                          'crates/viboceros-geometry/src/brep/loft/orientation.rs',
                          'crates/viboceros-geometry/src/brep/loft/tests.rs',
                          'crates/viboceros-geometry/src/tessellation.rs',

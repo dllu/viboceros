@@ -1,0 +1,6635 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-0-012",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-0-021",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-0-102",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-0-120",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-0-201",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-0-210",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-1-012",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-1-021",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-1-102",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-1-120",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-1-201",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-spread_cubic-1-210",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                5.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                5.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                5.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                2.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-0-012",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-0-021",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-0-102",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-0-120",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-0-201",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-0-210",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-1-012",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-1-021",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-1-102",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-1-120",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-1-201",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-same_plane_cubic-1-210",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                4.3999999999999995,
+                0.6,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                3.0,
+                -1.2,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.8999999999999999,
+                2.4,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.2,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                103.7,
+                0.55,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                102.5,
+                -1.1,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                100.7,
+                2.2,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                100.1,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-0-012",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-0-021",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-0-102",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-0-120",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-0-201",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-0-210",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-1-012",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-1-021",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-1-102",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-1-120",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-1-201",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-rational_line-1-210",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                91.0,
+                0.0,
+                5.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                89.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                41.0,
+                0.0,
+                2.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                39.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 10.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-0-012",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-0-021",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-0-102",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-0-120",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-0-201",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-0-210",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-1-012",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-1-021",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-1-102",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-1-120",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-1-201",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-order-holdout-cubic_line-1-210",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                51.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                49.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                100.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "command": true,
+      "rebuild_point_count": 0,
+      "inspect_input_planes": true,
+      "sample_geometry": true
+    }
+  ]
+}

@@ -2,11 +2,12 @@
 //! ordered tensor loft API.
 
 use super::*;
+mod ordering;
 mod orientation;
 mod profiles;
 use crate::{LoftEndPoints, LoftStyle, MAX_LOFT_SECTION_CONTROLS, try_loft_nurbs_curves};
 #[cfg(test)]
-use profiles::sort_parallel_profiles;
+use ordering::sort_profiles as sort_parallel_profiles;
 
 /// Command policies layered over ordered tensor Loft construction.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -29,11 +30,12 @@ impl Default for LoftOptions {
 }
 
 impl Brep {
-    /// Loft with command-style crease splitting and automatic ordering for
-    /// parallel planar closed profiles. Their plane offsets are sorted along
-    /// the first profile's oriented area normal. Closed profiles align traversal
-    /// with their preceding seam tangent and move seams to the nearest knot.
-    /// Other profiles retain input order; general spatial matching is incomplete.
+    /// Loft with command-style ordering, traversal alignment and crease splits.
+    /// Parallel planar profiles sort by plane offset; open profiles use the
+    /// supporting-plane convention, with a midpoint-chain fallback for lines,
+    /// coincident planes and spatial sections. Open traversal minimizes endpoint
+    /// pairing distance. Closed profiles align seam tangents and nearest knots;
+    /// nonparallel or nonplanar closed sections retain input order.
     pub fn try_loft(
         curves: &[NurbsCurve],
         style: LoftStyle,

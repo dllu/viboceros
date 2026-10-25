@@ -2,6 +2,50 @@ use super::*;
 use crate::Circle3;
 
 #[test]
+fn open_command_ordering_preserves_sources_and_the_ordered_tensor_api() {
+    let profiles = [2., 5., 0.].map(|z| {
+        NurbsCurve::try_new(
+            3,
+            [(0., 0.), (1., 2.), (2., -2.), (3., 0.)]
+                .map(|(x, y)| Point3::try_new(x, y, z).unwrap())
+                .to_vec(),
+            vec![0., 0., 0., 0., 1., 1., 1., 1.],
+        )
+        .unwrap()
+    });
+    // This inflected curve has zero signed area; its support plane still
+    // supplies the native negative-Z ordering in either traversal direction.
+    for curves in [profiles.clone(), profiles.map(|c| c.reversed().unwrap())] {
+        let before = curves.clone();
+        let tensor = try_loft_nurbs_curves(&curves, LoftStyle::Normal, false).unwrap();
+        let brep = Brep::try_loft(&curves, LoftStyle::Normal, false, Tolerance::DEFAULT).unwrap();
+        let surface = brep.faces()[0].surface();
+        assert_eq!(
+            tensor
+                .evaluate(*tensor.domain_u().start(), *tensor.domain_v().start())
+                .unwrap()
+                .z(),
+            2.
+        );
+        assert_eq!(
+            surface
+                .evaluate(*surface.domain_u().start(), *surface.domain_v().start())
+                .unwrap()
+                .z(),
+            5.
+        );
+        assert_eq!(
+            surface
+                .evaluate(*surface.domain_u().end(), *surface.domain_v().start())
+                .unwrap()
+                .z(),
+            0.
+        );
+        assert_eq!(curves, before);
+    }
+}
+
+#[test]
 fn point_closed_solids_face_outward_for_both_profile_traversals() {
     let original = circle(1., 1.);
     for profile in [original.clone(), original.reversed().unwrap()] {
