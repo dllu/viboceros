@@ -75,10 +75,11 @@ fn smooth_subd_edges_and_vertices_pick_in_each_projection_and_display_mode() {
                     );
                 }
             }
-            let cached = view
-                .display_cache
-                .borrow_mut()
-                .get(doc.object(id).unwrap(), doc.tolerance());
+            let cached = view.display_cache.borrow_mut().get(
+                doc.object(id).unwrap(),
+                doc.tolerance(),
+                doc.subd_control_net(),
+            );
             let address = cached.edges().as_ptr();
             assert_eq!(address, cached.edges().as_ptr());
             let all = view.components_in_rectangle(
@@ -421,10 +422,11 @@ fn mesh_topology_vertices_pick_in_all_views_without_changing_crease_filters() {
                     .iter()
                     .any(|p| p.kind == ComponentSelectionKind::MeshVertex)
             );
-            let display = view
-                .display_cache
-                .borrow_mut()
-                .get(doc.object(id).unwrap(), doc.tolerance());
+            let display = view.display_cache.borrow_mut().get(
+                doc.object(id).unwrap(),
+                doc.tolerance(),
+                doc.subd_control_net(),
+            );
             let points = display.polygon_vertex_points(&doc, doc.object(id).unwrap());
             assert_eq!(
                 points.as_ptr(),

@@ -233,10 +233,17 @@ impl Viewport {
                         };
                         let bounds = if let Some(geometry) = objects.source_geometry {
                             cache
-                                .temporary_source(object, geometry, document.tolerance())
+                                .temporary_source(
+                                    object,
+                                    geometry,
+                                    document.tolerance(),
+                                    document.subd_control_net(),
+                                )
                                 .bounds()
                         } else {
-                            cache.get(object, document.tolerance()).bounds()
+                            cache
+                                .get(object, document.tolerance(), document.subd_control_net())
+                                .bounds()
                         };
                         let Some(bounds) = bounds else {
                             return true;

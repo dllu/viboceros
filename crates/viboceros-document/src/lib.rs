@@ -449,6 +449,7 @@ impl Group {
 
 #[derive(Clone, Debug)]
 pub struct Document {
+    subd_control_net: bool,
     block_edit: Option<Box<block_edit::BlockEditSession>>,
     tolerance: Tolerance,
     units: LengthUnitSystem,
@@ -468,6 +469,8 @@ pub struct Document {
     history: History,
 }
 
+mod subd_display;
+
 impl Document {
     pub fn new(tolerance: Tolerance) -> Self {
         let default_layer = Layer {
@@ -481,6 +484,7 @@ impl Document {
         let current_layer = default_layer.id;
         Self {
             block_edit: None,
+            subd_control_net: false,
             tolerance,
             units: LengthUnitSystem::default(),
             layers: vec![default_layer],

@@ -16,6 +16,7 @@ struct Entry {
     transform: AffineTransform3,
     tolerance: Tolerance,
     density: i32,
+    control_net: bool,
     geometry: Rc<DisplayGeometry>,
 }
 
@@ -90,6 +91,7 @@ impl Viewport {
             return None;
         }
         let density = object.attributes().wire_density();
+        let control_net = document.subd_control_net();
         let mut cache = self.grip_preview_cache.borrow_mut();
         let stale = cache.entries.get(&object.id()).is_none_or(|entry| {
             !entry.source.shares_storage_with(object.geometry_snapshot())
@@ -98,6 +100,7 @@ impl Viewport {
                 || entry.transform != preview.transform
                 || entry.tolerance != tolerance
                 || entry.density != density
+                || entry.control_net != control_net
         });
         if stale {
             let geometry = object
@@ -113,7 +116,13 @@ impl Viewport {
                     transform: preview.transform,
                     tolerance,
                     density,
-                    geometry: Rc::new(DisplayGeometry::new(geometry.into(), density, tolerance)),
+                    control_net,
+                    geometry: Rc::new(DisplayGeometry::in_appearance(
+                        geometry.into(),
+                        density,
+                        tolerance,
+                        control_net,
+                    )),
                 },
             );
         }

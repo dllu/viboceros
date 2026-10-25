@@ -80,10 +80,11 @@ impl Viewport {
             ) {
                 continue;
             }
-            let display = self
-                .display_cache
-                .borrow_mut()
-                .get(object, document.tolerance());
+            let display = self.display_cache.borrow_mut().get(
+                object,
+                document.tolerance(),
+                document.subd_control_net(),
+            );
             for (edge, segments) in display.edges().iter().enumerate() {
                 let distance = segments
                     .iter()
@@ -125,10 +126,11 @@ impl Viewport {
             else {
                 continue;
             };
-            let display = self
-                .display_cache
-                .borrow_mut()
-                .get(object, document.tolerance());
+            let display = self.display_cache.borrow_mut().get(
+                object,
+                document.tolerance(),
+                document.subd_control_net(),
+            );
             let Some(segments) = display.edges().get(pick.edge) else {
                 continue;
             };

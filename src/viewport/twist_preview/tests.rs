@@ -76,9 +76,11 @@ fn native_twist_cubic_cages_rigid_placements_and_overlay_styles() {
                 let actual = &image.objects[id];
                 assert!(Rc::ptr_eq(
                     &actual.geometry,
-                    &display
-                        .borrow_mut()
-                        .get(doc.object(*id).unwrap(), doc.tolerance())
+                    &display.borrow_mut().get(
+                        doc.object(*id).unwrap(),
+                        doc.tolerance(),
+                        doc.subd_control_net()
+                    )
                 ));
                 let source = doc.object(*id).unwrap().geometry();
                 match source {
@@ -215,9 +217,11 @@ fn native_twist_cubic_cages_rigid_placements_and_overlay_styles() {
                         doc.tolerance(),
                     )
                     .unwrap();
-                    let source = display
-                        .borrow_mut()
-                        .get(doc.object(ids[0]).unwrap(), doc.tolerance());
+                    let source = display.borrow_mut().get(
+                        doc.object(ids[0]).unwrap(),
+                        doc.tolerance(),
+                        doc.subd_control_net(),
+                    );
                     for (a, b) in actual.wires().iter().zip(source.wires()) {
                         near(a[0], morph.morph_point(b[0]).unwrap(), 1e-11, label);
                         near(a[1], morph.morph_point(b[1]).unwrap(), 1e-11, label);
@@ -503,10 +507,11 @@ fn twist_gpu_overlay_is_visible_over_opaque_faces_and_obeys_world_clip_planes() 
             objects.insert(
                 id,
                 PreviewObject {
-                    geometry: view
-                        .display_cache
-                        .borrow_mut()
-                        .get(doc.object(id).unwrap(), doc.tolerance()),
+                    geometry: view.display_cache.borrow_mut().get(
+                        doc.object(id).unwrap(),
+                        doc.tolerance(),
+                        doc.subd_control_net(),
+                    ),
                     transform: None,
                 },
             );

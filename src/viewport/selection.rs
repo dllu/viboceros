@@ -251,10 +251,11 @@ impl Viewport {
                     filter.accepts_object(object) && selection_candidate(document, object, preview)
                 })
                 .filter_map(|object| {
-                    let display = self
-                        .display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance());
+                    let display = self.display_cache.borrow_mut().get(
+                        object,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    );
                     let primitives = self.projected_object_display(
                         &display,
                         rect,
@@ -422,10 +423,11 @@ impl Viewport {
             }
             let hit = match object.geometry() {
                 Geometry::BlockInstance(instance) => {
-                    let display = self
-                        .display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance());
+                    let display = self.display_cache.borrow_mut().get(
+                        object,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    );
                     document
                         .block_instance_member_displays(object.attributes(), instance)
                         .unwrap_or_default()
@@ -453,10 +455,11 @@ impl Viewport {
                     PickHit::screen(0, distance)
                 }
                 _ => {
-                    let display = self
-                        .display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance());
+                    let display = self.display_cache.borrow_mut().get(
+                        object,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    );
                     let surface = matches!(
                         object.geometry(),
                         Geometry::NurbsSurface(_)
@@ -570,10 +573,11 @@ impl Viewport {
                 filter.accepts_object(object) && selection_candidate(document, object, preview)
             })
             .filter_map(|object| {
-                let display = self
-                    .display_cache
-                    .borrow_mut()
-                    .get(object, document.tolerance());
+                let display = self.display_cache.borrow_mut().get(
+                    object,
+                    document.tolerance(),
+                    document.subd_control_net(),
+                );
                 let primitives = self.projected_object_display(
                     &display,
                     viewport_rect,
@@ -607,10 +611,11 @@ impl Viewport {
                 filter.accepts_object(object) && selection_candidate(document, object, preview)
             })
             .filter_map(|object| {
-                let display = self
-                    .display_cache
-                    .borrow_mut()
-                    .get(object, document.tolerance());
+                let display = self.display_cache.borrow_mut().get(
+                    object,
+                    document.tolerance(),
+                    document.subd_control_net(),
+                );
                 let primitives = self.projected_object_display(
                     &display,
                     viewport_rect,
@@ -647,10 +652,11 @@ impl Viewport {
                 filter.accepts_object(object) && selection_candidate(document, object, preview)
             })
             .filter_map(|object| {
-                let display = self
-                    .display_cache
-                    .borrow_mut()
-                    .get(object, document.tolerance());
+                let display = self.display_cache.borrow_mut().get(
+                    object,
+                    document.tolerance(),
+                    document.subd_control_net(),
+                );
                 self.projected_object_display(
                     &display,
                     viewport_rect,
@@ -677,10 +683,11 @@ impl Viewport {
         {
             return None;
         }
-        let display = self
-            .display_cache
-            .borrow_mut()
-            .get(source, document.tolerance());
+        let display = self.display_cache.borrow_mut().get(
+            source,
+            document.tolerance(),
+            document.subd_control_net(),
+        );
         let strokes = self
             .projected_object_display(&display, rect, document, source.attributes())
             .segments;
@@ -696,10 +703,11 @@ impl Viewport {
                         && selection_candidate(document, object, preview)
                 })
                 .filter_map(|object| {
-                    let display = self
-                        .display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance());
+                    let display = self.display_cache.borrow_mut().get(
+                        object,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    );
                     let projected = self.projected_object_display(
                         &display,
                         rect,
@@ -730,10 +738,11 @@ impl Viewport {
         {
             return None;
         }
-        let display = self
-            .display_cache
-            .borrow_mut()
-            .get(source, document.tolerance());
+        let display = self.display_cache.borrow_mut().get(
+            source,
+            document.tolerance(),
+            document.subd_control_net(),
+        );
         let projected =
             self.projected_object_display(&display, rect, document, source.attributes());
         let boundary = ScreenBoundary::from_segments(&projected.segments)?;
@@ -747,10 +756,11 @@ impl Viewport {
                         && selection_candidate(document, object, preview)
                 })
                 .filter_map(|object| {
-                    let display = self
-                        .display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance());
+                    let display = self.display_cache.borrow_mut().get(
+                        object,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    );
                     let primitives = self.projected_object_display(
                         &display,
                         rect,

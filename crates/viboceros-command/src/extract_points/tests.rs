@@ -119,7 +119,7 @@ fn extract_points_prompt_uses_the_typed_parser_and_filters_non_sources() {
     prompt.update_options("Output=PointCloud").unwrap();
     assert_eq!(
         prompt.command_line(),
-        "ExtractPt OutputLayer=Current Output=PointCloud SubDLocation=Surface"
+        "ExtractPt OutputLayer=Current Output=PointCloud SubDLocation=Display"
     );
     let mut doc = Document::default();
     let point = doc

@@ -11,6 +11,21 @@ extern "C" int vibo_subd_control_mesh(const uint8_t* bytes,size_t count,uint32_t
     require(mesh.IsValid() && mesh.VertexCount()<=4000000 && mesh.FaceCount()<=1000000,
       "Invalid or excessive SubD control mesh");
     auto result=std::make_unique<ViboSubDResult>();
+    // Public conversion orders geometry faces by ID and texture faces by the
+    // active linked list. Texture conversion splits every face if any is not a quad.
+    std::vector<const ON_SubDFace*> source_faces;
+    ON_SubDFaceIterator faces(*subd);
+    for(const ON_SubDFace* f=faces.FirstFace();f;f=faces.NextFace()) source_faces.push_back(f);
+    auto sorted_faces=source_faces;
+    std::sort(sorted_faces.begin(),sorted_faces.end(),[](auto* a,auto* b){return a->m_id<b->m_id;});
+    std::unordered_map<const ON_SubDFace*,uint32_t> ordinals;
+    for(size_t i=0;i<sorted_faces.size();++i) ordinals.emplace(sorted_faces[i],static_cast<uint32_t>(i));
+    const bool split_texture=priority==1 && std::any_of(source_faces.begin(),source_faces.end(),[](auto* f){return f->EdgeCount()!=4;});
+    for(auto* face:priority==0?sorted_faces:source_faces) {
+      const unsigned n=split_texture || (priority==0 && face->EdgeCount()>4)?face->EdgeCount():1;
+      for(unsigned i=0;i<n;++i) result->face_sources.push_back(ordinals.at(face));
+    }
+    require(result->face_sources.size()==static_cast<size_t>(mesh.FaceCount()),"Incomplete control mesh face mapping");
     for(int i=0;i<mesh.VertexCount();++i) {
       point(result->points,mesh.Vertex(i));point(result->surface_points,mesh.Vertex(i));
       result->vertex_tags.push_back(0);

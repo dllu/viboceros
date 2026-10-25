@@ -38,7 +38,8 @@ ascending component ordinal. With multiple component owners, preselection follow
 document order and command-first extraction follows owner pick order. Each face retains its corner order, including shared locations
 repeated by another selected component.
 
-`SubDLocation=Surface` is the default. Selected SubD vertices and face corners
+`SubDLocation=Display` follows the [current appearance](subd-display.md),
+smooth by default. `SubDLocation=Surface` fixes smooth extraction. Selected SubD vertices and face corners
 contribute their limit locations; smooth edges contribute the control points of
 clamped cubic edge curves. Regular curves have four or five controls; curves
 near extraordinary vertices use an endpoint-constrained, eight-span fit to 17
@@ -47,7 +48,7 @@ between stations and has no continuous model-tolerance guarantee.
 
 `SubDLocation=ControlNet` extracts control vertices, face corners and oriented
 edge endpoints. This explicit Viboceros option supplies control-net locations
-without requiring a flat SubD viewport. Flat SubD rendering is not implemented.
+without changing the viewport appearance.
 The same location choice applies to whole SubDs.
 
 Output attributes, groups and layering follow ExtractPt's ordinary options.

@@ -16,6 +16,7 @@ pub mod contour;
 pub mod crease;
 pub mod extract_control_polygon;
 mod extract_points;
+mod subd_display;
 pub mod vertex_seams;
 use extract_control_polygon::ExtractControlPolygonCommand;
 mod create_unique_block;
@@ -1603,6 +1604,9 @@ impl CommandRegistry {
         registry
             .register(CrvEndCommand)
             .expect("unique built-in command");
+        registry
+            .register(subd_display::SubDDisplayToggle)
+            .expect("unique SubDDisplayToggle");
         registry
             .register(extract_points::ExtractPtCommand)
             .expect("unique built-in command");

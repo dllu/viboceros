@@ -28,10 +28,11 @@ impl Viewport {
             if allowed.is_some_and(|ids| !ids.contains(&object.id())) {
                 continue;
             }
-            let display = self
-                .display_cache
-                .borrow_mut()
-                .get(object, document.tolerance());
+            let display = self.display_cache.borrow_mut().get(
+                object,
+                document.tolerance(),
+                document.subd_control_net(),
+            );
             if let Geometry::BlockInstance(instance) = object.geometry() {
                 let Ok(states) =
                     document.block_instance_member_displays(object.attributes(), instance)
@@ -156,10 +157,11 @@ impl Viewport {
             else {
                 continue;
             };
-            let root = self
-                .display_cache
-                .borrow_mut()
-                .get(object, document.tolerance());
+            let root = self.display_cache.borrow_mut().get(
+                object,
+                document.tolerance(),
+                document.subd_control_net(),
+            );
             let display = if let Some(index) = pick.member {
                 let Geometry::BlockInstance(instance) = object.geometry() else {
                     continue;

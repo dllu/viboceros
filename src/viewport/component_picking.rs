@@ -99,10 +99,11 @@ impl Viewport {
                     .filter(|p| p.kind == ComponentSelectionKind::MeshVertex)
                 {
                     let object = document.object(pick.object).unwrap();
-                    let display = self
-                        .display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance());
+                    let display = self.display_cache.borrow_mut().get(
+                        object,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    );
                     if let Some(point) = display
                         .polygon_vertex_points(document, object)
                         .get(pick.index)
@@ -120,10 +121,11 @@ impl Viewport {
                         let Some(object) = document.object(p.object) else {
                             return false;
                         };
-                        let display = self
-                            .display_cache
-                            .borrow_mut()
-                            .get(object, document.tolerance());
+                        let display = self.display_cache.borrow_mut().get(
+                            object,
+                            document.tolerance(),
+                            document.subd_control_net(),
+                        );
                         return display.edges().get(p.index).is_some_and(|segments| {
                             segments.iter().flatten().all(|point| {
                                 !mesh_points.contains(&(
@@ -194,7 +196,7 @@ impl Viewport {
             {
                 self.display_cache
                     .borrow_mut()
-                    .get(source, document.tolerance())
+                    .get(source, document.tolerance(), document.subd_control_net())
                     .component_face_representative(face)
                     .unwrap_or(face)
             } else {
@@ -272,10 +274,11 @@ impl Viewport {
             ) {
                 continue;
             }
-            let display = self
-                .display_cache
-                .borrow_mut()
-                .get(object, document.tolerance());
+            let display = self.display_cache.borrow_mut().get(
+                object,
+                document.tolerance(),
+                document.subd_control_net(),
+            );
             let mut test = |primitives: &ProjectedPrimitives, kind, index| {
                 let selected = match (crossing, inverted) {
                     (false, false) => primitives.is_windowed_by(selection),
@@ -384,10 +387,11 @@ impl Viewport {
                     }
                 }
                 ComponentSelectionKind::MeshVertex | ComponentSelectionKind::SubDVertex => {
-                    let display = self
-                        .display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance());
+                    let display = self.display_cache.borrow_mut().get(
+                        object,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    );
                     if let Some(point) = display
                         .polygon_vertex_points(document, object)
                         .get(pick.index)
@@ -412,10 +416,11 @@ impl Viewport {
                     ) {
                         continue;
                     }
-                    let display = self
-                        .display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance());
+                    let display = self.display_cache.borrow_mut().get(
+                        object,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    );
                     let Some(region) = display.component_face_region(pick.index) else {
                         continue;
                     };

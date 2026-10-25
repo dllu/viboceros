@@ -23,6 +23,26 @@ fn keypress(code: egui::Key, shift: bool) -> Vec<egui::Event> {
 }
 
 #[test]
+fn empty_tab_toggles_subd_while_point_input_retains_the_key() {
+    let context = egui::Context::default();
+    let mut app = test_app();
+    app.command_focus_requested = true;
+    command_line_frame(&context, &mut app, vec![]);
+    for flat in [true, false] {
+        command_line_frame(&context, &mut app, keypress(egui::Key::Tab, false));
+        assert_eq!(app.document.subd_control_net(), flat);
+        assert!(app.command_input.is_empty());
+        assert!(!app.document.can_undo());
+    }
+    app.command_input = "Line".into();
+    app.run_command();
+    command_line_frame(&context, &mut app, vec![]);
+    command_line_frame(&context, &mut app, keypress(egui::Key::Tab, false));
+    assert!(!app.document.subd_control_net());
+    assert!(app.active_command.is_some());
+}
+
+#[test]
 fn tabs_cycle_fuzzy_matches_and_shift_tab_goes_back_without_executing() {
     let context = egui::Context::default();
     let mut app = test_app();

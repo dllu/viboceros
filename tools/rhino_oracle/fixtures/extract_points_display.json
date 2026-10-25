@@ -1,0 +1,186 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_smooth_whole",
+      "case": "display_subd_smooth_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_smooth_control",
+      "case": "display_subd_smooth_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_smooth_edit",
+      "case": "display_subd_smooth_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_flat_whole",
+      "case": "display_subd_flat_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_flat_control",
+      "case": "display_subd_flat_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_flat_edit",
+      "case": "display_subd_flat_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_irregular_smooth_whole",
+      "case": "display_subd_irregular_smooth_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_irregular_smooth_control",
+      "case": "display_subd_irregular_smooth_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_irregular_smooth_edit",
+      "case": "display_subd_irregular_smooth_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_irregular_flat_whole",
+      "case": "display_subd_irregular_flat_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_irregular_flat_control",
+      "case": "display_subd_irregular_flat_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_irregular_flat_edit",
+      "case": "display_subd_irregular_flat_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_grid_smooth_whole",
+      "case": "display_subd_grid_smooth_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_grid_smooth_control",
+      "case": "display_subd_grid_smooth_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_grid_smooth_edit",
+      "case": "display_subd_grid_smooth_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_grid_flat_whole",
+      "case": "display_subd_grid_flat_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_grid_flat_control",
+      "case": "display_subd_grid_flat_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_grid_flat_edit",
+      "case": "display_subd_grid_flat_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_strip_smooth_whole",
+      "case": "display_subd_strip_smooth_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_strip_smooth_control",
+      "case": "display_subd_strip_smooth_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_strip_smooth_edit",
+      "case": "display_subd_strip_smooth_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_strip_flat_whole",
+      "case": "display_subd_strip_flat_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_strip_flat_control",
+      "case": "display_subd_strip_flat_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_strip_flat_edit",
+      "case": "display_subd_strip_flat_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_triangles_smooth_whole",
+      "case": "display_subd_triangles_smooth_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_triangles_smooth_control",
+      "case": "display_subd_triangles_smooth_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_triangles_smooth_edit",
+      "case": "display_subd_triangles_smooth_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_triangles_flat_whole",
+      "case": "display_subd_triangles_flat_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_triangles_flat_control",
+      "case": "display_subd_triangles_flat_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_triangles_flat_edit",
+      "case": "display_subd_triangles_flat_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_creased_smooth_whole",
+      "case": "display_subd_creased_smooth_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_creased_smooth_control",
+      "case": "display_subd_creased_smooth_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_creased_smooth_edit",
+      "case": "display_subd_creased_smooth_edit"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_creased_flat_whole",
+      "case": "display_subd_creased_flat_whole"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_creased_flat_control",
+      "case": "display_subd_creased_flat_control"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "display_subd_creased_flat_edit",
+      "case": "display_subd_creased_flat_edit"
+    }
+  ]
+}

@@ -164,13 +164,13 @@ pub(super) fn resolve(
                     .filter(|p| p.0 == Kind::Edge)
                     .map(|p| p.1)
                     .collect::<Vec<_>>();
-                let curves = if options.control_net || edges.is_empty() {
+                let curves = if options.control_net(document) || edges.is_empty() {
                     Vec::new()
                 } else {
                     subd.edge_nurbs_curves(&edges)?
                 };
                 let mut curves = curves.into_iter();
-                let vertices = if options.control_net {
+                let vertices = if options.control_net(document) {
                     subd.control_points()
                 } else {
                     subd.surface_points()
@@ -182,7 +182,7 @@ pub(super) fn resolve(
                             .iter()
                             .map(|&v| vertices[v as usize])
                             .collect(),
-                        Kind::Edge if options.control_net => {
+                        Kind::Edge if options.control_net(document) => {
                             subd.edges()[index].map(|v| vertices[v as usize]).to_vec()
                         }
                         Kind::Edge => curves

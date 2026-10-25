@@ -133,7 +133,7 @@ fn extract_points_subd_location_edits_are_local_and_cancel_preserves_redo() {
                 .unwrap()
                 .description
                 .command_line()
-                .contains("SubDLocation=Surface")
+                .contains("SubDLocation=Display")
         );
         if row["value"]["input"]["flat"] == true {
             enter(&mut app, "SubDLocation=ControlNet");

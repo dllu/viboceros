@@ -575,6 +575,7 @@ fn plan_parses_as_a_transparent_interface_command() {
 
 fn state() -> InterfaceState {
     InterfaceState {
+        subd_control_net: false,
         grid_snap: true,
         ortho: false,
         ortho_snap_to_cplane_z: false,

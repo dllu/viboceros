@@ -280,6 +280,7 @@ impl RectSelectionMode {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum InterfaceCommand {
+    SubDDisplayToggle,
     BlockManager,
     SetZoomScale(ZoomScale),
     SetZoomExtentsBorder {
@@ -354,7 +355,8 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 51] = [
+pub const COMMAND_NAMES: [&str; 52] = [
+    "SubDDisplayToggle",
     "BlockManager",
     "Options",
     "SetZoomExtentsBorder",
@@ -408,7 +410,7 @@ pub const COMMAND_NAMES: [&str; 51] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 3View; 4View [Projection=FirstAngle|ThirdAngle]; NewViewport; SplitViewportHorizontal; SplitViewportVertical; CloseViewport; ViewportTabs [Show|Hide|Toggle|Align=Bottom|Top|Left|Right]; -ViewportProperties Title=<name>; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView [CPlane|World] (prompts for a view; Enter/Esc cancels); SetView World Top|Bottom|Front|Back|Right|Left|Perspective|TwoPointPerspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=nonnegative-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 3View; 4View [Projection=FirstAngle|ThirdAngle]; NewViewport; SplitViewportHorizontal; SplitViewportVertical; CloseViewport; ViewportTabs [Show|Hide|Toggle|Align=Bottom|Top|Left|Right]; -ViewportProperties Title=<name>; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView [CPlane|World] (prompts for a view; Enter/Esc cancels); SetView World Top|Bottom|Front|Back|Right|Left|Perspective|TwoPointPerspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=nonnegative-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SubDDisplayToggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: empty-input Tab toggles SubD display; Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -450,6 +452,13 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
         [value] => SwitchAction::parse(value).ok_or(InterfaceError::Usage(usage)),
         _ => Err(InterfaceError::Usage(usage)),
     };
+    if name.eq_ignore_ascii_case("SubDDisplayToggle") {
+        return Some(if args.is_empty() {
+            Ok(InterfaceCommand::SubDDisplayToggle)
+        } else {
+            Err(InterfaceError::Usage("SubDDisplayToggle"))
+        });
+    }
     if name.eq_ignore_ascii_case("BlockManager") {
         return Some(if args.is_empty() {
             Ok(InterfaceCommand::BlockManager)
@@ -1012,6 +1021,7 @@ fn parse_display_mode(args: &[&str]) -> Result<InterfaceCommand, InterfaceError>
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InterfaceState {
+    pub subd_control_net: bool,
     pub grid_snap: bool,
     pub ortho: bool,
     pub ortho_snap_to_cplane_z: bool,
@@ -1038,6 +1048,17 @@ impl InterfaceState {
         }
         let on_off = |value| if value { "On" } else { "Off" };
         Ok(match command {
+            InterfaceCommand::SubDDisplayToggle => {
+                self.subd_control_net = !self.subd_control_net;
+                format!(
+                    "SubD display: {}",
+                    if self.subd_control_net {
+                        "Flat"
+                    } else {
+                        "Smooth"
+                    }
+                )
+            }
             InterfaceCommand::BlockManager => "Block definitions opened".into(),
             InterfaceCommand::SetZoomScale(scale) => {
                 format!("View zoom scale factor {} requested", scale.value())

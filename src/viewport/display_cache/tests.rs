@@ -328,10 +328,11 @@ fn cached_window_geometry_matches_original_projection_in_every_view_and_mode() {
         for mode in DisplayMode::ALL {
             view.display_mode = mode;
             for object in document.objects() {
-                let display = view
-                    .display_cache
-                    .borrow_mut()
-                    .get(object, document.tolerance());
+                let display = view.display_cache.borrow_mut().get(
+                    object,
+                    document.tolerance(),
+                    document.subd_control_net(),
+                );
                 assert_eq!(
                     view.projected_display(&display, rect(), document.tolerance()),
                     view.projected_primitives(

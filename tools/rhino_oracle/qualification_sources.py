@@ -57,6 +57,7 @@ APPLICATION_MODULES = [
     'src/app/extract_points/input_order.rs',
     'src/app/extract_points/order_tests.rs',
     'src/app/extract_points/whole_subd_tests.rs',
+    'src/app/subd_display.rs',
     'src/viewport/polygon_edges.rs',
     'src/viewport/polygon_edges/tests.rs',
     'src/app/control_polygon.rs',
@@ -175,6 +176,16 @@ MESH_MODULES = [
 
 
 def with_shared_sources(paths):
+    """Resolve shared dependencies to closure, independently of rule order."""
+    expanded = list(dict.fromkeys(paths))
+    while True:
+        following = _expand_sources_once(expanded)
+        if set(following) == set(expanded):
+            return following
+        expanded = following
+
+
+def _expand_sources_once(paths):
     moved = {'src/app/object_selection/quadrangulate_mesh.rs':
              'src/app/object_selection/mesh_conversion.rs',
              'src/app/control_polygon/subcurve.rs': 'src/app/curve_extraction_subcurve.rs',
@@ -206,7 +217,8 @@ def with_shared_sources(paths):
                          'tools/rhino_oracle/mesh_trim_pick_trace.py',
                          'tools/rhino_oracle/managed_mouse_callback.py'])
     if 'tools/rhino_oracle/extract_points_cases.py' in expanded:
-        expanded.extend(['tools/rhino_oracle/extract_points_subd_cases.py',
+        expanded.extend(['tools/rhino_oracle/extract_points_display_cases.py',
+                         'tools/rhino_oracle/extract_points_subd_cases.py',
                          'tools/rhino_oracle/extract_points_order_cases.py',
                          'tools/rhino_oracle/extract_points_curve_range_input.py',
                          'tools/rhino_oracle/extract_points_target_cases.py',
@@ -253,6 +265,7 @@ def with_shared_sources(paths):
                          'crates/viboceros-document/src/selection.rs',
                          'crates/viboceros-document/src/selection/replay_tests.rs',
                          'crates/viboceros-document/src/control_points.rs',
+                         'crates/viboceros-document/src/subd_display.rs',
                          'crates/viboceros-document/src/object_geometry.rs',
                          'crates/viboceros-document/src/geometry.rs',
                          'crates/viboceros-document/src/block_instances.rs'])
@@ -260,13 +273,17 @@ def with_shared_sources(paths):
         expanded.append('crates/viboceros-document/src/control_points/geometry.rs')
     if any(p in expanded for p in ['src/viewport.rs', 'src/viewport/scene.rs',
                                    'src/viewport/display_cache.rs']):
-        expanded.extend(['src/viewport/mesh_normals.rs',
+        expanded.extend(['src/viewport/display_cache/subd.rs',
+                         'src/viewport/display_cache/subd_tests.rs',
+                         'src/viewport/mesh_normals.rs',
                          'src/viewport/mesh_normals/tests.rs',
                          'src/viewport/insert_point.rs'])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend([
             'crates/viboceros-command/src/error.rs',
             'crates/viboceros-command/src/extract_points.rs',
+            'crates/viboceros-command/src/subd_display.rs',
+            'crates/viboceros-command/tests/subd_display_native.rs',
             'crates/viboceros-command/src/extract_points/components.rs',
             'crates/viboceros-command/src/extract_points/components/brep.rs',
             'crates/viboceros-command/src/component_selection.rs',

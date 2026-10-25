@@ -103,6 +103,8 @@ def run(operation, host, iterations, tolerance):
         if case.get('component_capture') or case.get('whole_subd'):
             from extract_points_component_input import select
             doc.SubDAppearance = G.SubDComponentLocation.ControlNet if case['flat'] else G.SubDComponentLocation.Surface
+            if case.get('display_toggle'):
+                doc.SubDAppearance = G.SubDComponentLocation.Surface if case['flat'] else G.SubDComponentLocation.ControlNet
             if case.get('component_capture'):select(doc,ids,case,host)
         subd_witness = None
         if case.get('whole_subd'):
@@ -138,6 +140,15 @@ def run(operation, host, iterations, tolerance):
         if case.get('clear_initial_grips'):
             for key in ids:
                 for grip in (doc.Objects.FindId(key).GetGrips() or []):grip.Select(False)
+        display_toggle = None
+        if case.get('display_toggle'):
+            toggle_before=snapshot()
+            initial=doc.SubDAppearance==G.SubDComponentLocation.ControlNet
+            if not R.RhinoApp.RunScript('_SubDDisplayToggle',True):
+                raise ValueError('owned SubD display toggle failed')
+            display_toggle=dict(before=toggle_before,after=snapshot(),initial=initial,
+                result=doc.SubDAppearance==G.SubDComponentLocation.ControlNet)
+            subd_witness['control_net']=display_toggle['result']
         before = snapshot()
         if case.get('component_getter'):host['_record_progress']('ExtractPt getter: before snapshot ready')
         component_records = None
@@ -213,6 +224,7 @@ def run(operation, host, iterations, tolerance):
         else:
             success, after, events = observe_command(R.Commands.Command, 'ExtractPt',
                 execute, snapshot, lambda: [], True)
+        display_modes=[doc.SubDAppearance==G.SubDComponentLocation.ControlNet]
         text = R.RhinoApp.CommandHistoryWindowText
         history = text[len(history):] if text.startswith(history) else text[-3000:]
         if not success:
@@ -220,13 +232,16 @@ def run(operation, host, iterations, tolerance):
         if not R.RhinoApp.RunScript('_Undo', False):
             raise ValueError('owned ExtractPt Undo failed')
         undo = snapshot()
+        display_modes.append(doc.SubDAppearance==G.SubDComponentLocation.ControlNet)
         if not R.RhinoApp.RunScript('_Redo', False):
             raise ValueError('owned ExtractPt Redo failed')
         redo = snapshot()
+        display_modes.append(doc.SubDAppearance==G.SubDComponentLocation.ControlNet)
         return dict(input=case, source_3dm=source_3dm, before=before, after=after,
                     undo=undo, redo=redo, success=success, events=events, macro=macro,
                     history=history, getter=receipt[0] if receipt else None, curve_profile=profile, component_records=component_records,
-                    subd_witness=subd_witness,configuration=configuration), 0
+                    subd_witness=subd_witness,configuration=configuration,
+                    display_toggle=display_toggle,display_modes=display_modes), 0
     finally:
         for obj in list(doc.Objects):
             if obj.GripsOn:

@@ -244,6 +244,7 @@ impl Document {
     }
     pub(super) fn clone_block_edit_model(&self) -> Document {
         Document {
+            subd_control_net: self.subd_control_net,
             block_edit: self.block_edit.clone(),
             tolerance: self.tolerance,
             units: self.units.clone(),

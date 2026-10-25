@@ -15,7 +15,13 @@ impl super::display_cache::DisplayGeometry {
                 .get_or_init(|| mesh.topology_vertex_points()),
             Geometry::SubD(subd) => document
                 .control_point_locations(object.id())
-                .unwrap_or_else(|| subd.surface_points()),
+                .unwrap_or_else(|| {
+                    if self.subd_control_net {
+                        subd.control_points()
+                    } else {
+                        subd.surface_points()
+                    }
+                }),
             _ => &[],
         }
     }
@@ -52,10 +58,11 @@ impl Viewport {
             }
             return;
         }
-        let display = self
-            .display_cache
-            .borrow_mut()
-            .get(object, document.tolerance());
+        let display = self.display_cache.borrow_mut().get(
+            object,
+            document.tolerance(),
+            document.subd_control_net(),
+        );
         for (index, segments) in display.edges().iter().enumerate() {
             visit(index, segments);
         }
@@ -112,10 +119,11 @@ impl Viewport {
             {
                 continue;
             }
-            let display = self
-                .display_cache
-                .borrow_mut()
-                .get(object, document.tolerance());
+            let display = self.display_cache.borrow_mut().get(
+                object,
+                document.tolerance(),
+                document.subd_control_net(),
+            );
             let hidden = document
                 .hidden_control_point_indices(object.id())
                 .into_iter()
@@ -168,10 +176,11 @@ impl Viewport {
             .into_iter()
             .flatten()
             .collect::<std::collections::BTreeSet<_>>();
-        let display = self
-            .display_cache
-            .borrow_mut()
-            .get(object, document.tolerance());
+        let display = self.display_cache.borrow_mut().get(
+            object,
+            document.tolerance(),
+            document.subd_control_net(),
+        );
         let points = if matches!(object.geometry(), Geometry::Mesh(_))
             && document.grip_mode(object.id()).is_some()
         {
@@ -231,10 +240,11 @@ impl Viewport {
             }
             return;
         }
-        let display = self
-            .display_cache
-            .borrow_mut()
-            .get(object, document.tolerance());
+        let display = self.display_cache.borrow_mut().get(
+            object,
+            document.tolerance(),
+            document.subd_control_net(),
+        );
         if let Some(segments) = display.edges().get(index) {
             for &[a, b] in segments {
                 if let Some(segment) = self.project_selection_segment(a, b, rect) {

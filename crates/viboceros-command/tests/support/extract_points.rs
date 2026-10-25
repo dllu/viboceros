@@ -272,6 +272,10 @@ pub fn whole_subd_rows() -> Vec<Value> {
         .collect()
 }
 
+pub fn display_rows() -> Vec<Value> {
+    component_rows_for(&["display"])
+}
+
 pub fn setup_whole_subd(row: &Value) -> (Document, Vec<ObjectId>) {
     let (mut doc, ids) = setup(row);
     if row["path"] == "picked" {

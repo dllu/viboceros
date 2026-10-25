@@ -235,16 +235,16 @@ impl VibocerosApp {
                     ui.label(RichText::new(format!("{label}:")).strong());
                     let id = ui.make_persistent_id("main_command_input");
                     let focused = ui.memory(|memory| memory.focused() == Some(id));
-                    let (tab, reverse, older, newer) = if focused && idle {
+                    let (tab, reverse, older, newer) = if focused && (idle || (self.active_command.is_none() && self.command_input.is_empty())) {
                         ui.input_mut(|input| {
                             // Consume Shift+Tab first: plain Tab must not steal it.
-                            let reverse =
+                            let reverse = idle &&
                                 consume_exact_key(input, egui::Modifiers::SHIFT, egui::Key::Tab);
                             let tab = reverse
                                 || consume_exact_key(input, egui::Modifiers::NONE, egui::Key::Tab);
-                            let older =
+                            let older = idle &&
                                 consume_exact_key(input, egui::Modifiers::NONE, egui::Key::ArrowUp);
-                            let newer = consume_exact_key(
+                            let newer = idle && consume_exact_key(
                                 input,
                                 egui::Modifiers::NONE,
                                 egui::Key::ArrowDown,
@@ -267,6 +267,9 @@ impl VibocerosApp {
                             self.command_line.completion.reset();
                             self.command_focus_requested = true;
                         }
+                    } else if tab && !reverse && self.command_input.is_empty() {
+                        self.apply_interface_command(viboceros_command::interface::InterfaceCommand::SubDDisplayToggle);
+                        self.command_focus_requested=true;
                     } else if tab && let Some(text) = self.command_line.completion.cycle(reverse) {
                         self.command_line.completion_cursor = Some(completion_cursor(&text));
                         self.command_input = text;
@@ -426,7 +429,7 @@ impl VibocerosApp {
 
 // Egui's consume_key deliberately ignores extra Shift/Alt modifiers. Keep
 // text-selection and platform shortcuts intact by matching these keys exactly.
-fn consume_exact_key(
+pub(super) fn consume_exact_key(
     input: &mut egui::InputState,
     modifiers: egui::Modifiers,
     key: egui::Key,

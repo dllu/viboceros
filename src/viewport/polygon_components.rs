@@ -111,10 +111,11 @@ impl Viewport {
             Geometry::SubD(_) => ComponentSelectionKind::SubDFace,
             _ => return Vec::new(),
         };
-        let display = self
-            .display_cache
-            .borrow_mut()
-            .get(object, document.tolerance());
+        let display = self.display_cache.borrow_mut().get(
+            object,
+            document.tolerance(),
+            document.subd_control_net(),
+        );
         let regions = display.polygon_face_regions();
         let mut groups = (0..regions.outlines.len())
             .map(|_| ProjectedPrimitives::default())

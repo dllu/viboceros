@@ -11,6 +11,16 @@ impl SubD {
         &self,
         priority: SubDControlNetPriority,
     ) -> Result<TriangleMesh, GeometryError> {
+        self.control_net_mesh_with_face_sources(priority)
+            .map(|(mesh, _)| mesh)
+    }
+
+    /// Native flat display mesh and the original active face ordinal for each
+    /// stored mesh face, including every triangle in an n-gon fan.
+    pub fn control_net_mesh_with_face_sources(
+        &self,
+        priority: SubDControlNetPriority,
+    ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
         let data = viboceros_opennurbs::subd_control_mesh_with_priority(self.archive(), priority)?;
         let points = data
             .points
@@ -37,9 +47,15 @@ impl SubD {
             .into_iter()
             .map(Vector3::try_from)
             .collect::<Result<Vec<_>, _>>()?;
-        mesh.try_with_texture_coordinates(
-            (!data.mesh_texture_coordinates.is_empty()).then_some(data.mesh_texture_coordinates),
-        )?
-        .try_with_vertex_normals((!vertex_normals.is_empty()).then_some(vertex_normals))
+        let mesh = mesh
+            .try_with_texture_coordinates(
+                (!data.mesh_texture_coordinates.is_empty())
+                    .then_some(data.mesh_texture_coordinates),
+            )?
+            .try_with_vertex_normals((!vertex_normals.is_empty()).then_some(vertex_normals))?;
+        Ok((
+            mesh,
+            data.face_sources.into_iter().map(|i| i as usize).collect(),
+        ))
     }
 }

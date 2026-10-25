@@ -18,7 +18,7 @@ and periodic control rings retain their existing Rhino ordering. Source order
 follows selection actions. Point objects and empty meshes contribute nothing;
 the interactive filter excludes them and block instances.
 
-Whole SubDs default to limit-surface vertex locations. Choose
+Whole SubDs follow the [SubD display](subd-display.md) by default. Choose
 `SubDLocation=ControlNet` for control vertices, corresponding to Rhino's flat
 appearance, or `SubDLocation=Surface` for smooth appearance. This choice also
 applies to component inputs; selected grips keep their displayed locations.

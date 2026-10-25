@@ -367,7 +367,11 @@ impl Viewport {
             })
             // Keep unsupported unselected geometry from invalidating a valid
             // fit. The renderer likewise omits unrepresentable local vertices.
-            .filter_map(|object| cache.get(object, document.tolerance()).bounds())
+            .filter_map(|object| {
+                cache
+                    .get(object, document.tolerance(), document.subd_control_net())
+                    .bounds()
+            })
             .filter(|bounds| {
                 self.gpu_position(bounds.min()).is_some()
                     && self.gpu_position(bounds.max()).is_some()
@@ -420,7 +424,10 @@ impl Viewport {
                 }) else {
                     continue;
                 };
-                let Some(source) = cache.get(object, document.tolerance()).bounds() else {
+                let Some(source) = cache
+                    .get(object, document.tolerance(), document.subd_control_net())
+                    .bounds()
+                else {
                     continue;
                 };
                 let lo = source.min().to_array();
@@ -482,10 +489,17 @@ impl Viewport {
                 }
                 let source = if let Some(geometry) = transform.source_geometry {
                     cache
-                        .temporary_source(object, geometry, document.tolerance())
+                        .temporary_source(
+                            object,
+                            geometry,
+                            document.tolerance(),
+                            document.subd_control_net(),
+                        )
                         .bounds()
                 } else {
-                    cache.get(object, document.tolerance()).bounds()
+                    cache
+                        .get(object, document.tolerance(), document.subd_control_net())
+                        .bounds()
                 };
                 let Some(source) = source else {
                     continue;

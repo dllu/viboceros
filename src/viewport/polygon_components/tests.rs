@@ -87,7 +87,11 @@ fn polygon_picking_and_windows_cover_control_faces_in_each_display_and_projectio
                 );
             }
             let object = doc.object(id).unwrap();
-            let cached = view.display_cache.borrow_mut().get(object, doc.tolerance());
+            let cached = view.display_cache.borrow_mut().get(
+                object,
+                doc.tolerance(),
+                doc.subd_control_net(),
+            );
             let outline = cached.component_face_outline(0);
             assert!(!outline.is_empty());
             let pointer = outline.as_ptr();
@@ -143,10 +147,11 @@ fn logical_mesh_ngons_share_boundaries_and_emit_one_pick_per_region() {
     view.last_rect = Some(rect());
     view.zoom_extents(&doc, ZoomExtentsBorders::default())
         .unwrap();
-    let display = view
-        .display_cache
-        .borrow_mut()
-        .get(doc.object(id).unwrap(), doc.tolerance());
+    let display = view.display_cache.borrow_mut().get(
+        doc.object(id).unwrap(),
+        doc.tolerance(),
+        doc.subd_control_net(),
+    );
     assert_eq!(display.component_face_outline(0).len(), 6);
     assert_eq!(
         display.component_face_outline(0).as_ptr(),
@@ -197,10 +202,11 @@ fn polygon_regions_follow_new_geometry_snapshots_and_archive_face_indices() {
     let mut doc = Document::default();
     let id = doc.add_geometry(Geometry::SubD(subd())).unwrap();
     let view = Viewport::new(ViewKind::Top);
-    let before = view
-        .display_cache
-        .borrow_mut()
-        .get(doc.object(id).unwrap(), doc.tolerance());
+    let before = view.display_cache.borrow_mut().get(
+        doc.object(id).unwrap(),
+        doc.tolerance(),
+        doc.subd_control_net(),
+    );
     let _ = before.component_face_outline(0);
     let Geometry::SubD(source) = doc.object(id).unwrap().geometry() else {
         panic!()
@@ -210,10 +216,11 @@ fn polygon_regions_follow_new_geometry_snapshots_and_archive_face_indices() {
     assert_eq!(read.faces(), refined.faces());
     doc.replace_object_geometries([(id, Geometry::SubD(read))])
         .unwrap();
-    let after = view
-        .display_cache
-        .borrow_mut()
-        .get(doc.object(id).unwrap(), doc.tolerance());
+    let after = view.display_cache.borrow_mut().get(
+        doc.object(id).unwrap(),
+        doc.tolerance(),
+        doc.subd_control_net(),
+    );
     assert!(!std::rc::Rc::ptr_eq(&before, &after));
     for i in children {
         assert!(!after.component_face_outline(i).is_empty());

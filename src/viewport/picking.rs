@@ -197,10 +197,11 @@ impl Viewport {
             {
                 return false;
             }
-            let display = self
-                .display_cache
-                .borrow_mut()
-                .get(object, document.tolerance());
+            let display = self.display_cache.borrow_mut().get(
+                object,
+                document.tolerance(),
+                document.subd_control_net(),
+            );
             display.mesh().is_none()
                 || (matches!(object.geometry(), Geometry::Brep(_))
                     && display.face_sources().is_none())
@@ -286,11 +287,11 @@ impl Viewport {
                 ) && matches!(object.geometry(), Geometry::NurbsSurface(_))
                 || mode == FacePickMode::Any && matches!(object.geometry(), Geometry::SubD(_))
             {
-                Some(
-                    self.display_cache
-                        .borrow_mut()
-                        .get(object, document.tolerance()),
-                )
+                Some(self.display_cache.borrow_mut().get(
+                    object,
+                    document.tolerance(),
+                    document.subd_control_net(),
+                ))
             } else {
                 None
             };

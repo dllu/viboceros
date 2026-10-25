@@ -530,10 +530,11 @@ fn subd_limit_surface_reaches_display_and_object_picking() {
             DisplayMode::Ghosted,
         ] {
             view.display_mode = mode;
-            let display = view
-                .display_cache
-                .borrow_mut()
-                .get(document.object(id).unwrap(), document.tolerance());
+            let display = view.display_cache.borrow_mut().get(
+                document.object(id).unwrap(),
+                document.tolerance(),
+                document.subd_control_net(),
+            );
             let mesh = display.mesh().unwrap();
             assert_eq!(mesh.faces().len(), 64);
             assert!(!display.wires().is_empty());

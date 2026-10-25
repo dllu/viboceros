@@ -18,7 +18,7 @@ pub(super) struct ExtractPointOptions {
     pub(super) output_layer: ExtractPointOutputLayer,
     pub(super) output: ExtractPointOutput,
     pub(super) components: Vec<components::Target>,
-    pub(super) control_net: bool,
+    pub(super) control_net: Option<bool>,
     pub(super) inputs: Vec<inputs::Target>,
 }
 
@@ -29,7 +29,7 @@ pub(super) fn parse_extract_point_arguments(
     let mut output = ExtractPointOutput::Points;
     let mut components = Vec::new();
     let mut inputs = Vec::new();
-    let mut control_net = false;
+    let mut control_net = None;
     let mut location_seen = false;
     let mut output_layer_seen = false;
     let mut output_seen = false;
@@ -87,9 +87,11 @@ pub(super) fn parse_extract_point_arguments(
             ));
         } else if name.eq_ignore_ascii_case("SubDLocation") && !location_seen {
             control_net = if value.eq_ignore_ascii_case("ControlNet") {
-                true
+                Some(true)
             } else if value.eq_ignore_ascii_case("Surface") {
-                false
+                Some(false)
+            } else if value.eq_ignore_ascii_case("Display") {
+                None
             } else {
                 return Err(CommandError::Usage(USAGE));
             };
@@ -109,6 +111,10 @@ pub(super) fn parse_extract_point_arguments(
 }
 
 impl ExtractPointOptions {
+    pub(super) fn control_net(&self, document: &Document) -> bool {
+        self.control_net
+            .unwrap_or_else(|| document.subd_control_net())
+    }
     pub(super) fn ranges(&self) -> impl Iterator<Item = &ranges::Target> {
         self.inputs.iter().filter_map(|input| match input {
             inputs::Target::Range(range) => Some(range),
@@ -144,12 +150,12 @@ impl ExtractPointOptions {
                 },
                 ChoiceSelectionOption {
                     name: "SubDLocation",
-                    value: if self.control_net {
-                        "ControlNet"
-                    } else {
-                        "Surface"
+                    value: match self.control_net {
+                        Some(true) => "ControlNet",
+                        Some(false) => "Surface",
+                        None => "Display",
                     },
-                    choices: &["Surface", "ControlNet"],
+                    choices: &["Display", "Surface", "ControlNet"],
                     toggle: None,
                 },
             ],

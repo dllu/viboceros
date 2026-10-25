@@ -12,10 +12,11 @@ impl Viewport {
         let geometry = document.object(target.0)?.geometry();
         // A projected surface mesh gives a local seed; the location is resolved
         // against the original surface, never accepted from tessellation alone.
-        let display = self
-            .display_cache
-            .borrow_mut()
-            .get(document.object(target.0)?, document.tolerance());
+        let display = self.display_cache.borrow_mut().get(
+            document.object(target.0)?,
+            document.tolerance(),
+            document.subd_control_net(),
+        );
         let hint = display
             .mesh()
             .and_then(|mesh| self.mesh_face_pick_with_point(pointer, rect, mesh))

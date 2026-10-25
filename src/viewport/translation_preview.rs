@@ -82,7 +82,9 @@ impl Viewport {
                         let Some(object) = document.object(*id) else {
                             return false;
                         };
-                        let bounds = cache.get(object, document.tolerance()).bounds();
+                        let bounds = cache
+                            .get(object, document.tolerance(), document.subd_control_net())
+                            .bounds();
                         let Some(bounds) = bounds else {
                             return true;
                         };

@@ -134,12 +134,15 @@ mod copy_options;
 mod crease;
 mod curve_extraction_subcurve;
 mod extract_points;
+#[cfg(test)]
+pub(crate) use extract_points::native as extract_points_native;
 mod extract_surface;
 mod insert_point;
 mod merge_coplanar_face;
 mod shell;
 mod shrink_trimmed;
 mod soft_crease;
+mod subd_display;
 mod subd_spin_edge;
 mod subdivide;
 mod to_subd;

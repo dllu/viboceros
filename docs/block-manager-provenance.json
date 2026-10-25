@@ -45,8 +45,6 @@
   "graphics_contract": "GUI tests exercise direct actions and egui text/shape output; no production GPU capture or native panel interaction replay.",
   "sha256": {
     "crates/viboceros-command/src/interface.rs": "6b9cfd8699f350e03869cbd3cab34f855e5f984b3a5a5169577cf32f32684e51",
-    "crates/viboceros-command/src/interface/tests.rs": "4ce743827f3a96fb497aba59f20a44ad0564896d8c11d5f22f17ede743156c30",
-    "src/app/interface.rs": "aec70e0ed056a6c62a6ca9e5579f52bdb16653b06caee30c70fb836a50d1ecf9",
     "tools/rhino_oracle/fixtures/block_management.json": "beb59783f1e8fbcdd1b9eacdbd89932927ec96a0b376747bd46f512b3c81993e",
     "tools/rhino_oracle/observations/block_management.json": "30f0fff2be4d82d60c8dde6c908940f2281217708ac0ebdc1a7e9088cd710e85",
     "docs/block-manager-comparison.json": "30b98c3f454f217b557108eefa4363e4f35b562da3089ff5f665bd746b33572c",
@@ -84,5 +82,9 @@
     "src/app/block_manager.rs": "docs/block-unique-prior-source/src/app/block_manager.rs",
     "tools/rhino_oracle/block_workflow_probe.py": "docs/block-unique-prior-source/tools/rhino_oracle/block_workflow_probe.py",
     "crates/viboceros-document/src/lib.rs": "docs/block-add-prior-source/crates/viboceros-document/src/lib.rs"
+  },
+  "git_sha256": {
+    "24d973a725c9ab1f2e976fd0a092a0c1fdf803fd:crates/viboceros-command/src/interface/tests.rs": "4ce743827f3a96fb497aba59f20a44ad0564896d8c11d5f22f17ede743156c30",
+    "24d973a725c9ab1f2e976fd0a092a0c1fdf803fd:src/app/interface.rs": "aec70e0ed056a6c62a6ca9e5579f52bdb16653b06caee30c70fb836a50d1ecf9"
   }
 }

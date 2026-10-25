@@ -107,6 +107,7 @@ pub(crate) struct MorphPreviewCache<K> {
     object_ids: Vec<ObjectId>,
     grips: Vec<ControlPointId>,
     tolerance: Option<Tolerance>,
+    control_net: bool,
     centers: Option<Vec<Point3>>,
     key: Option<K>,
     pub(super) image: Option<Rc<MorphPreviewImage>>,
@@ -119,6 +120,7 @@ impl<K> Default for MorphPreviewCache<K> {
             object_ids: Vec::new(),
             grips: Vec::new(),
             tolerance: None,
+            control_net: false,
             centers: None,
             key: None,
             image: None,
@@ -145,7 +147,8 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
         document: &Document,
         display_cache: &RefCell<DisplayCache>,
     ) -> Result<Rc<MorphPreviewImage>, viboceros_command::CommandError> {
-        let valid = self.tolerance == Some(document.tolerance())
+        let valid = self.control_net == document.subd_control_net()
+            && self.tolerance == Some(document.tolerance())
             && self.object_ids == ids
             && self.grips == grips
             && self.sources.iter().all(|s| {
@@ -196,7 +199,7 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                         snapshot: o.geometry_snapshot().clone(),
                         density: o.attributes().wire_density(),
                         group: o.top_group(),
-                        display: display.get(o, document.tolerance()),
+                        display: display.get(o, document.tolerance(), document.subd_control_net()),
                         cage: None,
                         boundary_cage: None,
                         boundary_display: None,
@@ -205,6 +208,7 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                 })
                 .collect::<Result<Vec<_>, viboceros_document::DocumentError>>()?;
             self.tolerance = Some(document.tolerance());
+            self.control_net = document.subd_control_net();
             self.centers = None;
             self.key = None;
             self.image = None;
@@ -267,10 +271,11 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                     }
                 }
                 PreviewObject {
-                    geometry: Rc::new(DisplayGeometry::new(
+                    geometry: Rc::new(DisplayGeometry::in_appearance(
                         geometry.into(),
                         source.density,
                         document.tolerance(),
+                        document.subd_control_net(),
                     )),
                     transform: None,
                 }
@@ -313,9 +318,10 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                                 viboceros_command::morph_preview_operations(),
                             )?))
                         }
-                        Geometry::Point(_) | Geometry::PointCloud(_) | Geometry::Mesh(_) => {
-                            Cage::Direct
-                        }
+                        Geometry::Point(_)
+                        | Geometry::PointCloud(_)
+                        | Geometry::Mesh(_)
+                        | Geometry::SubD(_) => Cage::Direct,
                         g => {
                             let c = g
                                 .nurbs_curve_representation()?
@@ -366,13 +372,14 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                                 wires,
                             ))
                         } else {
-                            Rc::new(DisplayGeometry::new(
+                            Rc::new(DisplayGeometry::in_appearance(
                                 source
                                     .snapshot
                                     .morphed(&morph, document.tolerance())?
                                     .into(),
                                 source.density,
                                 document.tolerance(),
+                                document.subd_control_net(),
                             ))
                         }
                     }

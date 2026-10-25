@@ -5,6 +5,7 @@
 //! handles. Retaining ownership prevents address reuse from masquerading as a hit.
 
 use super::*;
+mod subd;
 use std::cell::{OnceCell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -91,13 +92,24 @@ impl DisplayCache {
         &self.analyses.last().unwrap().segments
     }
 
-    pub(super) fn get(&mut self, object: &Object, tolerance: Tolerance) -> Rc<DisplayGeometry> {
+    pub(super) fn get(
+        &mut self,
+        object: &Object,
+        tolerance: Tolerance,
+        control_net: bool,
+    ) -> Rc<DisplayGeometry> {
+        let control_net = control_net
+            && matches!(
+                object.geometry(),
+                Geometry::SubD(_) | Geometry::BlockInstance(_)
+            );
         let density = object.attributes().wire_density();
         let entry = self.entries.entry(object.id()).or_insert_with(|| {
-            Rc::new(DisplayGeometry::new(
+            Rc::new(DisplayGeometry::in_appearance(
                 object.geometry_snapshot().clone(),
                 density,
                 tolerance,
+                control_net,
             ))
         });
         if !entry
@@ -105,11 +117,13 @@ impl DisplayCache {
             .shares_storage_with(object.geometry_snapshot())
             || entry.wire_density != density
             || entry.tolerance != tolerance
+            || entry.subd_control_net != control_net
         {
-            *entry = Rc::new(DisplayGeometry::new(
+            *entry = Rc::new(DisplayGeometry::in_appearance(
                 object.geometry_snapshot().clone(),
                 density,
                 tolerance,
+                control_net,
             ));
         }
         Rc::clone(entry)
@@ -125,17 +139,33 @@ impl DisplayCache {
         object: &Object,
         geometry: &GeometrySnapshot,
         tolerance: Tolerance,
+        control_net: bool,
     ) -> Rc<DisplayGeometry> {
+        let control_net =
+            control_net && matches!(&**geometry, Geometry::SubD(_) | Geometry::BlockInstance(_));
         let density = object.attributes().wire_density();
         let entry = self
             .temporary_sources
             .entry(object.id())
-            .or_insert_with(|| Rc::new(DisplayGeometry::new(geometry.clone(), density, tolerance)));
+            .or_insert_with(|| {
+                Rc::new(DisplayGeometry::in_appearance(
+                    geometry.clone(),
+                    density,
+                    tolerance,
+                    control_net,
+                ))
+            });
         if !entry.geometry.shares_storage_with(geometry)
             || entry.wire_density != density
             || entry.tolerance != tolerance
+            || entry.subd_control_net != control_net
         {
-            *entry = Rc::new(DisplayGeometry::new(geometry.clone(), density, tolerance));
+            *entry = Rc::new(DisplayGeometry::in_appearance(
+                geometry.clone(),
+                density,
+                tolerance,
+                control_net,
+            ));
         }
         Rc::clone(entry)
     }
@@ -143,6 +173,7 @@ impl DisplayCache {
 
 pub(super) struct DisplayGeometry {
     pub(super) geometry: GeometrySnapshot,
+    pub(super) subd_control_net: bool,
     bounds: OnceCell<Option<viboceros_geometry::BoundingBox3>>,
     wire_density: i32,
     tolerance: Tolerance,
@@ -162,6 +193,18 @@ struct GeneratedDisplayMesh {
 }
 
 impl DisplayGeometry {
+    pub(super) fn in_appearance(
+        geometry: GeometrySnapshot,
+        density: i32,
+        tolerance: Tolerance,
+        control_net: bool,
+    ) -> Self {
+        let control_net =
+            control_net && matches!(&*geometry, Geometry::SubD(_) | Geometry::BlockInstance(_));
+        let mut result = Self::new(geometry, density, tolerance);
+        result.subd_control_net = control_net;
+        result
+    }
     pub(super) fn with_wires(
         geometry: GeometrySnapshot,
         wire_density: i32,
@@ -181,6 +224,7 @@ impl DisplayGeometry {
         Self {
             geometry,
             bounds: OnceCell::new(),
+            subd_control_net: false,
             wire_density,
             tolerance,
             wires: OnceCell::new(),
@@ -203,10 +247,11 @@ impl DisplayGeometry {
                 .members()
                 .iter()
                 .map(|member| {
-                    Rc::new(Self::new(
+                    Rc::new(Self::in_appearance(
                         member.geometry.clone(),
                         member.attributes.wire_density(),
                         self.tolerance,
+                        self.subd_control_net,
                     ))
                 })
                 .collect(),
@@ -301,7 +346,13 @@ impl DisplayGeometry {
     fn generated_mesh(&self) -> Option<&GeneratedDisplayMesh> {
         self.mesh
             .get_or_init(|| match &*self.geometry {
-                Geometry::SubD(subd) => Self::subd_display(subd),
+                Geometry::SubD(subd) => {
+                    if self.subd_control_net {
+                        Self::subd_flat(subd)
+                    } else {
+                        Self::subd_display(subd)
+                    }
+                }
                 Geometry::NurbsSurface(surface) => surface
                     .tessellate(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
                     .ok()
@@ -323,44 +374,6 @@ impl DisplayGeometry {
             .as_ref()
     }
 
-    fn subd_display(subd: &viboceros_geometry::SubD) -> Option<GeneratedDisplayMesh> {
-        let display = subd.display_mesh_with_normals().ok()?;
-        let mesh = display.mesh;
-        if display.face_corner_normals.len() != mesh.faces().len()
-            || display.face_sources.len() != mesh.face_count()
-        {
-            return None;
-        }
-        let mut normals = Vec::with_capacity(mesh.triangles().len());
-        for (face_index, (face, native)) in mesh
-            .faces()
-            .iter()
-            .zip(display.face_corner_normals)
-            .enumerate()
-        {
-            let indices = face.indices();
-            for (offset, triangle) in mesh.triangles()[2 * face_index..2 * face_index + 2]
-                .iter()
-                .enumerate()
-            {
-                let fallback = mesh
-                    .face_normal(2 * face_index + offset)
-                    .map(|n| NaVector3::new(n.x(), n.y(), n.z()))
-                    .unwrap_or_else(|_| NaVector3::new(0., 0., 1.));
-                normals.push(triangle.map(|vertex| {
-                    let n = native[indices.iter().position(|i| *i == vertex).unwrap()].to_array();
-                    NaVector3::new(n[0], n[1], n[2])
-                        .try_normalize(Real::EPSILON)
-                        .unwrap_or(fallback)
-                }));
-            }
-        }
-        Some(GeneratedDisplayMesh {
-            mesh,
-            normals: Some(normals),
-            face_sources: Some(display.face_sources),
-        })
-    }
     pub(super) fn normals(&self) -> &[[NaVector3<Real>; 3]] {
         if let Some(normals) = self
             .generated_mesh()
@@ -391,6 +404,13 @@ impl DisplayGeometry {
                         .collect();
                 }
                 Geometry::SubD(subd) => {
+                    if self.subd_control_net {
+                        return subd
+                            .edges()
+                            .iter()
+                            .map(|e| vec![e.map(|i| subd.control_points()[i as usize])])
+                            .collect();
+                    }
                     return subd
                         .display_edge_polylines()
                         .map(|lines| {
@@ -450,5 +470,7 @@ impl Viewport {
     }
 }
 
+#[cfg(test)]
+mod subd_tests;
 #[cfg(test)]
 mod tests;

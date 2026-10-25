@@ -108,9 +108,11 @@ fn native_maelstrom_cubic_cages_surface_controls_and_rigid_placements_match_prev
                 let object = &image.objects[id];
                 assert!(Rc::ptr_eq(
                     &object.geometry,
-                    &display
-                        .borrow_mut()
-                        .get(doc.object(*id).unwrap(), doc.tolerance())
+                    &display.borrow_mut().get(
+                        doc.object(*id).unwrap(),
+                        doc.tolerance(),
+                        doc.subd_control_net()
+                    )
                 ));
                 if let Geometry::Point(source) = doc.object(*id).unwrap().geometry() {
                     near(
@@ -246,9 +248,11 @@ fn native_maelstrom_cubic_cages_surface_controls_and_rigid_placements_match_prev
                     }
                     Geometry::Mesh(_) => {
                         let morph = morph(preview);
-                        let source = display
-                            .borrow_mut()
-                            .get(doc.object(*id).unwrap(), doc.tolerance());
+                        let source = display.borrow_mut().get(
+                            doc.object(*id).unwrap(),
+                            doc.tolerance(),
+                            doc.subd_control_net(),
+                        );
                         for (a, b) in image.objects[id]
                             .geometry
                             .wires()

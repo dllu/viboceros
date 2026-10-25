@@ -383,7 +383,7 @@ impl Viewport {
                 DisplayMode::Ghosted => 1.25,
             } + if selected { 1.5 } else { 0.0 };
             let mut display = DisplayObject {
-                geometry: cache.get(object, document.tolerance()),
+                geometry: cache.get(object, document.tolerance(), document.subd_control_net()),
                 color,
                 face_color: if self.display_mode == DisplayMode::Ghosted {
                     color_with_alpha(base_color, 110)
@@ -419,7 +419,12 @@ impl Viewport {
                     };
                     geometry
                 } else if let Some(geometry) = transform.source_geometry {
-                    cache.temporary_source(object, geometry, document.tolerance())
+                    cache.temporary_source(
+                        object,
+                        geometry,
+                        document.tolerance(),
+                        document.subd_control_net(),
+                    )
                 } else {
                     Rc::clone(&display.geometry)
                 };

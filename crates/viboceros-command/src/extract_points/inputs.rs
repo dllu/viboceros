@@ -49,7 +49,7 @@ pub(super) fn visit(
     {
         emit(
             object.id(),
-            whole_points(object.geometry(), options.control_net)?,
+            whole_points(object.geometry(), options.control_net(document))?,
             false,
         )?;
     }
@@ -64,7 +64,7 @@ pub(super) fn visit(
                 if !owners.contains(id) && seen.insert(*id) {
                     emit(
                         *id,
-                        whole_points(object.geometry(), options.control_net)?,
+                        whole_points(object.geometry(), options.control_net(document))?,
                         false,
                     )?;
                 }

@@ -352,6 +352,7 @@ impl VibocerosApp {
 
     pub(super) fn interface_state(&self) -> InterfaceState {
         InterfaceState {
+            subd_control_net: self.document.subd_control_net(),
             grid_snap: self.grid_snap,
             ortho: self.ortho,
             ortho_snap_to_cplane_z: self.ortho_snap_to_cplane_z,
@@ -966,6 +967,7 @@ impl VibocerosApp {
                     });
                     return;
                 }
+                self.document.set_subd_control_net(state.subd_control_net);
                 self.grid_snap = state.grid_snap;
                 self.ortho = state.ortho;
                 self.ortho_snap_to_cplane_z = state.ortho_snap_to_cplane_z;
@@ -1172,6 +1174,15 @@ impl VibocerosApp {
 
     pub(super) fn handle_interface_shortcuts(&mut self, ui: &mut egui::Ui) {
         self.handle_plane_shortcuts(ui);
+        if !ui.ctx().egui_wants_keyboard_input()
+            && self.command_input.is_empty()
+            && self.active_command.is_none()
+            && ui.input_mut(|i| {
+                super::command_line::consume_exact_key(i, egui::Modifiers::NONE, egui::Key::Tab)
+            })
+        {
+            self.apply_interface_command(InterfaceCommand::SubDDisplayToggle);
+        }
         // These keys have no text-editing meaning. Text editors retain their
         // own undo history; document undo/redo is not intercepted here.
         let max_view_modifiers = if cfg!(target_os = "macos") {

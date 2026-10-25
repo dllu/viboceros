@@ -99,6 +99,7 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
         return Err(invalid());
     }
     let mut state = InterfaceState {
+        subd_control_net: false,
         grid_snap: fixture.grid_snap,
         ortho: fixture.ortho.unwrap_or(false),
         ortho_snap_to_cplane_z: fixture.ortho_snap_to_cplane_z.unwrap_or(false),
