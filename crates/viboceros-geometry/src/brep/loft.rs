@@ -2,14 +2,37 @@
 //! ordered tensor loft API.
 
 use super::*;
+mod orientation;
+mod profiles;
 use crate::{LoftStyle, MAX_LOFT_SECTION_CONTROLS, try_loft_nurbs_curves};
+use profiles::{align_closed_profiles, sort_parallel_profiles};
+
+/// Command policies layered over ordered tensor Loft construction.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct LoftOptions {
+    /// Split G1 tangent breaks using the command's global preference.
+    pub crease_splitting: bool,
+    /// Also split G2 curvature breaks, independently of crease splitting.
+    pub split_at_tangents: bool,
+    /// Retain profile seams while still aligning their traversal directions.
+    pub natural_seams: bool,
+}
+impl Default for LoftOptions {
+    fn default() -> Self {
+        Self {
+            crease_splitting: true,
+            split_at_tangents: false,
+            natural_seams: false,
+        }
+    }
+}
 
 impl Brep {
     /// Loft with command-style crease splitting and automatic ordering for
     /// parallel planar closed profiles. Their plane offsets are sorted along
-    /// the first profile's oriented area normal; opposite profile directions
-    /// are aligned. Seams are retained, not relocated. Other profiles retain
-    /// input order. This does not implement general spatial seam matching.
+    /// the first profile's oriented area normal. Closed profiles align traversal
+    /// with their preceding seam tangent and move seams to the nearest knot.
+    /// Other profiles retain input order; general spatial matching is incomplete.
     pub fn try_loft(
         curves: &[NurbsCurve],
         style: LoftStyle,
@@ -28,6 +51,25 @@ impl Brep {
         tolerance: Tolerance,
         loft: &mut impl FnMut(&[NurbsCurve], LoftStyle, bool) -> Result<NurbsSurface, E>,
     ) -> Result<Self, E> {
+        Self::try_loft_with_surface_options(
+            curves,
+            style,
+            closed,
+            LoftOptions::default(),
+            tolerance,
+            loft,
+        )
+    }
+
+    /// Apply explicit topology and seam policies with a delegated tensor backend.
+    pub fn try_loft_with_surface_options<E: From<GeometryError>>(
+        curves: &[NurbsCurve],
+        style: LoftStyle,
+        closed: bool,
+        options: LoftOptions,
+        tolerance: Tolerance,
+        loft: &mut impl FnMut(&[NurbsCurve], LoftStyle, bool) -> Result<NurbsSurface, E>,
+    ) -> Result<Self, E> {
         crate::loft::validate_count(curves.len(), closed)?;
         if curves
             .iter()
@@ -40,117 +82,42 @@ impl Brep {
             .into());
         }
         let mut profiles = curves.to_vec();
-        let oriented = orient_parallel_profiles(&mut profiles, tolerance)?;
+        let oriented = sort_parallel_profiles(&mut profiles, tolerance)?;
+        if profiles
+            .iter()
+            .map(NurbsCurve::is_closed)
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .all(|c| c)
+        {
+            align_closed_profiles(&mut profiles, !options.natural_seams)?;
+        }
         let mut surface = loft(&profiles, style, closed)?;
-        // Rhino's straight polyline branch retains its bilinear patch direction;
-        // curved profiles and the smooth loft styles reverse the V direction.
-        if oriented && !(style == LoftStyle::Straight && profiles.iter().all(|c| c.degree() == 1)) {
+        // Retain the established open-loft chart policy. Native Straight
+        // direction exceptions remain unresolved; see docs/loft-validation.md.
+        if oriented
+            && !closed
+            && !(style == LoftStyle::Straight && profiles.iter().all(|c| c.degree() == 1))
+        {
             surface = surface.try_reversed_v()?;
         }
-        let [u, v] = surface.sampled_kink_parameters(0.1_f64.to_radians())?;
-        Ok(Self::try_surface_grid(&surface, &u, &v, tolerance)?)
-    }
-}
-
-fn orient_parallel_profiles(
-    curves: &mut [NurbsCurve],
-    tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
-    for curve in curves.iter() {
-        if !curve.is_closed()? || !curve.is_planar(tolerance)? {
-            return Ok(false);
+        let mut criteria = Vec::new();
+        if options.crease_splitting {
+            criteria.push((crate::CurveContinuity::G1, 0.1_f64.to_radians()));
         }
-    }
-    let normals = curves
-        .iter()
-        .map(area_normal)
-        .collect::<Result<Vec<_>, _>>()?;
-    let Some(axis) = normals[0] else {
-        return Ok(false);
-    };
-    let mut dots = Vec::with_capacity(curves.len());
-    for normal in normals {
-        let Some(normal) = normal else {
-            return Ok(false);
-        };
-        let dot = axis.dot(normal)?;
-        if axis.cross(normal)?.length()? > tolerance.angular().max(1e-12) {
-            return Ok(false);
+        if options.split_at_tangents {
+            criteria.push((crate::CurveContinuity::G2, 1_f64.to_radians()));
         }
-        dots.push(dot);
-    }
-    let origin = curves[0].control_points()[0].point();
-    let mut ordered = Vec::with_capacity(curves.len());
-    for (curve, dot) in curves.iter().zip(dots) {
-        let offset = origin
-            .vector_to(curve.control_points()[0].point())?
-            .dot(axis)?;
-        ordered.push((
-            offset,
-            if dot < 0.0 {
-                curve.reversed()?
-            } else {
-                curve.clone()
-            },
-        ));
-    }
-    ordered.sort_by(|a, b| a.0.total_cmp(&b.0));
-    for (curve, (_, source)) in curves.iter_mut().zip(ordered) {
-        *curve = source;
-    }
-    Ok(true)
-}
-
-fn area_normal(curve: &NurbsCurve) -> Result<Option<Vector3>, GeometryError> {
-    // Integrate in local, scaled coordinates. Only the area direction is
-    // needed; do not form squared world-scale areas or reciprocal tiny weights.
-    let origin = curve.control_points()[0].point();
-    let points = curve
-        .control_points()
-        .iter()
-        .map(|c| origin.vector_to(c.point()))
-        .collect::<Result<Vec<_>, _>>()?;
-    let scale = points
-        .iter()
-        .flat_map(|p| p.to_array())
-        .map(Real::abs)
-        .fold(0.0, Real::max);
-    if scale == 0.0 {
-        return Ok(None);
-    }
-    let weight_scale = curve
-        .control_points()
-        .iter()
-        .map(|c| c.weight().abs())
-        .fold(0.0, Real::max);
-    let controls = points
-        .iter()
-        .zip(curve.control_points())
-        .map(|(p, c)| {
-            WeightedPoint3::try_new(
-                Point3::try_new(p.x() / scale, p.y() / scale, p.z() / scale)?,
-                c.weight() / weight_scale,
-            )
-        })
-        .collect::<Result<Vec<_>, GeometryError>>()?;
-    let local = NurbsCurve::try_new_rational(curve.degree(), controls, curve.knots().to_vec())?
-        .try_reparameterized(0.0..=1.0)?;
-    let mut area = [0.0; 3];
-    for (a, b) in local.spans() {
-        for (axis, value) in area.iter_mut().enumerate() {
-            *value += crate::integration::integrate_adaptive(a, b, 1e-12 * (b - a), 1e-10, |t| {
-                let (p, tangent) = local.evaluate_with_derivative(t)?;
-                Ok(Vector3::try_new(p.x(), p.y(), p.z())?
-                    .cross(tangent)?
-                    .to_array()[axis])
-            })?;
+        let mut brep =
+            Self::try_surface_partitioned_at_discontinuities(&surface, &criteria, tolerance)?;
+        if closed
+            && brep.is_solid()
+            && orientation::all_outside_probes_point_inward(&surface, tolerance)
+        {
+            brep.reverse_orientation();
         }
+        Ok(brep)
     }
-    let area = Vector3::try_from(area)?;
-    if area.length()? <= 1e-10 {
-        return Ok(None);
-    }
-    Ok(Some(area.normalized_nonzero()?.as_vector()))
 }
 
 #[cfg(test)]
@@ -203,6 +170,47 @@ mod tests {
             .unwrap();
         assert!(mesh.topology().is_manifold());
         assert!(!mesh.topology().is_closed());
+    }
+
+    #[test]
+    fn natural_retains_offset_seams_while_automatic_alignment_avoids_a_twist() {
+        let first = circle(0., 1.);
+        let second = circle(2., 1.);
+        let second = second
+            .try_change_closed_seam(second.parameter_at(0.25).unwrap())
+            .unwrap();
+        let source = [first, second];
+        let before = source.clone();
+        for (natural, expected) in [(false, [1., 0., 1.]), (true, [0.5, 0.5, 1.])] {
+            let brep = Brep::try_loft_with_surface_options(
+                &source,
+                LoftStyle::Normal,
+                false,
+                LoftOptions {
+                    natural_seams: natural,
+                    ..LoftOptions::default()
+                },
+                Tolerance::DEFAULT,
+                &mut try_loft_nurbs_curves,
+            )
+            .unwrap();
+            assert_eq!(brep.faces().len(), 1);
+            let surface = brep.faces()[0].surface();
+            let middle = surface
+                .evaluate(
+                    surface.parameter_at_u(0.5).unwrap(),
+                    *surface.domain_v().start(),
+                )
+                .unwrap();
+            assert!(
+                middle
+                    .distance_to(Point3::try_from(expected).unwrap())
+                    .unwrap()
+                    < 1e-12,
+                "Natural={natural}: {middle:?}"
+            );
+            assert_eq!(source, before);
+        }
     }
 
     #[test]
@@ -264,7 +272,7 @@ mod tests {
         .unwrap();
         let mut curves = [circle(0.0, 1.0), tilted];
         let original = curves.clone();
-        assert!(!orient_parallel_profiles(&mut curves, Tolerance::DEFAULT).unwrap());
+        assert!(!sort_parallel_profiles(&mut curves, Tolerance::DEFAULT).unwrap());
         assert_eq!(curves, original);
     }
 }

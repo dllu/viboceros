@@ -1359,7 +1359,7 @@ impl CommandRegistry {
             .register(RevolveCommand)
             .expect("unique built-in command");
         registry
-            .register(loft::LoftCommand)
+            .register(loft::LoftCommand(registry.crease_splitting.clone()))
             .expect("unique built-in command");
         registry
             .register(sweep::SweepCommand)

@@ -103,6 +103,7 @@ APPLICATION_MODULES = [
     'src/app/sidebar.rs',
     'src/app/tests/arc_input.rs',
     'src/app/tests/command_focus.rs',
+    'src/app/tests/loft_options.rs',
     'src/app/tests/curve_input.rs',
     'src/app/tests/extrusion_input.rs',
     'src/app/tests/extract_points.rs',
@@ -195,7 +196,13 @@ def _expand_sources_once(paths):
                                       'src/component_seams/arguments.rs') for p in paths]
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend(['crates/viboceros-command/src/crease_splitting.rs',
-                         'crates/viboceros-command/src/crease_splitting/tests.rs'])
+                         'crates/viboceros-command/src/crease_splitting/tests.rs',
+                         'crates/viboceros-command/src/loft.rs',
+                         'crates/viboceros-command/src/loft/tests.rs'])
+    if 'crates/viboceros-geometry/src/brep/loft.rs' in expanded:
+        expanded.extend(['crates/viboceros-geometry/src/brep/loft/profiles.rs',
+                         'crates/viboceros-geometry/src/brep/loft/orientation.rs',
+                         'crates/viboceros-opennurbs/src/curve.rs'])
     if 'crates/viboceros-command/src/extrude_along_curve.rs' in expanded:
         expanded.extend(['crates/viboceros-command/src/extrude_along_curve/options.rs',
                          'crates/viboceros-command/src/extrude_along_curve/topology.rs',

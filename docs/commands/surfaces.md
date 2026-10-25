@@ -64,7 +64,9 @@ closed-direction compatibility, crease topology, and numeric limits.
 `Loft Type=Normal Closed=No` creates one shared-topology B-rep from selected
 curves. Normal, Loose, Tight, Straight and Uniform styles are supported, as are
 periodic closed lofts. Inputs are retained; output is unselected on the current
-layer. See [Loft geometry, ordering, tests and limits](../loft.md), especially
+layer. `SplitAtTangents=Yes` adds curvature-break partitions independently of the
+global `CreaseSplitting` preference; `Natural` retains supplied profile seams.
+See [Loft geometry, ordering, tests and limits](../loft.md), especially
 the endpoint-weight normalization policy for rational profiles.
 
 ## One-rail sweeps

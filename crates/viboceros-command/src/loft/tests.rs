@@ -100,6 +100,10 @@ fn invalid_lofts_are_atomic_and_do_not_add_history() {
         "Loft DeleteInput=Yes Closed=Yes Closed=No",
         "Loft 1,2,3",
         "Loft Rebuild=10",
+        "Loft SplitAtTangents=Maybe",
+        "Loft SplitAtTangents=Yes SplitAtTangents=No",
+        "Loft Natural Natural",
+        "Loft Natural=Yes",
     ] {
         let before = document.objects().cloned().collect::<Vec<_>>();
         let selection = document.selected_object_ids().collect::<Vec<_>>();
@@ -135,4 +139,109 @@ fn invalid_lofts_are_atomic_and_do_not_add_history() {
         Err(CommandError::LoftRequiresCurves)
     ));
     assert_eq!(document.objects().count(), 4);
+}
+
+fn capsule_sources(document: &mut Document) -> Vec<ObjectId> {
+    let points = [
+        [-2., 1.],
+        [-3., 1.],
+        [-3., 0.],
+        [-3., -1.],
+        [-2., -1.],
+        [0., -1.],
+        [2., -1.],
+        [3., -1.],
+        [3., 0.],
+        [3., 1.],
+        [2., 1.],
+        [0., 1.],
+        [-2., 1.],
+    ];
+    let w = std::f64::consts::FRAC_1_SQRT_2;
+    let weights = [1., w, 1., w, 1., 1., 1., w, 1., w, 1., 1., 1.];
+    let ids = [(1., 0.), (1.25, 2.), (0.75, 4.)]
+        .into_iter()
+        .map(|(scale, z)| {
+            let controls = points
+                .iter()
+                .zip(weights)
+                .map(|(p, w)| {
+                    viboceros_geometry::WeightedPoint3::try_new(
+                        Point3::try_new(p[0] * scale, p[1] * scale, z).unwrap(),
+                        w,
+                    )
+                    .unwrap()
+                })
+                .collect();
+            let curve = viboceros_geometry::NurbsCurve::try_new_rational(
+                2,
+                controls,
+                vec![
+                    0., 0., 0., 1., 1., 2., 2., 3., 3., 4., 4., 5., 5., 6., 6., 6.,
+                ],
+            )
+            .unwrap();
+            document.add_geometry(Geometry::NurbsCurve(curve)).unwrap()
+        })
+        .collect::<Vec<_>>();
+    document
+        .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+        .unwrap();
+    document.clear_history().unwrap();
+    ids
+}
+
+#[test]
+fn curvature_splitting_is_independent_of_the_global_crease_preference() {
+    for crease in [false, true] {
+        for split in [false, true] {
+            let mut document = Document::default();
+            let registry = CommandRegistry::with_builtins();
+            let ids = capsule_sources(&mut document);
+            let before = document.objects().cloned().collect::<Vec<_>>();
+            registry
+                .execute(
+                    &mut document,
+                    if crease {
+                        "CreaseSplitting Enable"
+                    } else {
+                        "CreaseSplitting Disable"
+                    },
+                )
+                .unwrap();
+            registry
+                .execute(
+                    &mut document,
+                    if split {
+                        "Loft SplitAtTangents=Yes Natural"
+                    } else {
+                        "Loft SplitAtTangents=No Natural"
+                    },
+                )
+                .unwrap();
+            let output = document.objects().find(|o| !ids.contains(&o.id())).unwrap();
+            let Geometry::Brep(brep) = output.geometry() else {
+                panic!("Loft B-rep")
+            };
+            assert_eq!(brep.faces().len(), if split { 4 } else { 1 });
+            assert!(
+                document
+                    .objects()
+                    .filter(|o| ids.contains(&o.id()))
+                    .cloned()
+                    .eq(before.iter().cloned())
+            );
+            let after = document.objects().cloned().collect::<Vec<_>>();
+            registry
+                .execute(&mut document, "CreaseSplitting Toggle")
+                .unwrap();
+            assert_eq!(document.undo_label(), Some("Loft"));
+            registry.execute(&mut document, "Undo").unwrap();
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+            assert_eq!(registry.crease_splitting(), !crease);
+            registry.execute(&mut document, "Redo").unwrap();
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+            assert_eq!(registry.crease_splitting(), !crease);
+        }
+    }
 }

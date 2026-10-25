@@ -1,9 +1,9 @@
 use super::*;
-use viboceros_geometry::LoftStyle;
+use viboceros_geometry::{LoftOptions, LoftStyle};
 
-const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No]";
+const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural]";
 
-pub(super) struct LoftCommand;
+pub(super) struct LoftCommand(pub crease_splitting::Preference);
 
 impl Command for LoftCommand {
     fn name(&self) -> &'static str {
@@ -11,8 +11,12 @@ impl Command for LoftCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (mut style, mut closed) = (None, None);
+        let (mut style, mut closed, mut split, mut natural) = (None, None, None, false);
         for argument in arguments {
+            if option_name_eq(argument, "Natural") && !natural {
+                natural = true;
+                continue;
+            }
             let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             if option_name_eq(name, "Type") && style.is_none() {
                 style = Some(
@@ -27,6 +31,8 @@ impl Command for LoftCommand {
                 );
             } else if option_name_eq(name, "Closed") && closed.is_none() {
                 closed = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
+            } else if option_name_eq(name, "SplitAtTangents") && split.is_none() {
+                split = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
             } else {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -43,10 +49,15 @@ impl Command for LoftCommand {
                     .ok_or(CommandError::LoftRequiresCurves)
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
-        let brep = Brep::try_loft_with_surface(
+        let brep = Brep::try_loft_with_surface_options(
             &profiles,
             style.unwrap_or_default(),
             closed.unwrap_or(false),
+            LoftOptions {
+                crease_splitting: self.0.get().0,
+                split_at_tangents: split.unwrap_or(false),
+                natural_seams: natural,
+            },
             document.tolerance(),
             &mut surface,
         )?;

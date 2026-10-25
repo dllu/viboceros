@@ -48,6 +48,7 @@ pub use join_edges::{
     BrepEdgeMergeScope, BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report,
 };
 mod loft;
+pub use loft::LoftOptions;
 mod mass_properties;
 mod morph;
 mod parameter_frame;

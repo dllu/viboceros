@@ -2,6 +2,36 @@
 
 [Loft usage and architecture](loft.md)
 
+## Command options and orientation
+
+Command and application regressions exercise the ordinary command entry,
+independent global crease and per-command curvature splitting, malformed-option
+atomicity, source preservation, and preference changes across undo/redo.
+Eight additional native closed-ring captures cover circular and square profiles,
+Normal and Straight styles, and both traversal directions. The portable B-rep
+regression checks topology counts, face sense, bounds within `1e-6`, stored
+coefficients and knots, and 25 surface points per face within `1e-9`.
+
+```sh
+cargo test -p viboceros-command --lib loft::tests
+cargo test -p viboceros-geometry --lib brep::loft
+cargo test -p viboceros-geometry --test loft_orientation_native
+cargo test -p viboceros --features native-smlib app::tests::loft_options
+```
+
+The wider 276-case exploratory command replay remains incomplete: 185 full
+matches, 48 bounds-only differences, 39 face-sense differences (some also in
+bounds), and four Straight chart differences. Several native bounds underestimate
+their own sampled geometry. All 67 established API/command outcomes remain
+unchanged in that replay. These categories describe retained observations, not
+a general parity guarantee. Straight UV direction also varies on circle and
+four/five-section holdouts, so degree and section count do not determine it.
+Closed self-overlaps can give conflicting outside normal probes; the orientation
+pass deliberately leaves those cases unresolved.
+
+[Command implementation and capture bindings](loft-command-options.json) record
+the validated scope and remaining differences.
+
 ## Section preparation
 
 The ordered section-preparation regression corpus compares 46 native Rhino 8.32

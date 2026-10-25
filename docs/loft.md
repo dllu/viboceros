@@ -4,6 +4,7 @@
 
 ```text
 Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No]
+     [SplitAtTangents=Yes|No] [Natural]
 ```
 
 Select at least two curves, or three for `Closed=Yes`. Defaults are `Normal`
@@ -14,11 +15,20 @@ Unsupported options and invalid geometry fail before document mutation.
 
 Open profiles retain selection order. Parallel planar closed profiles are sorted
 by plane offset along the first profile's oriented area normal; opposite profile
-directions are aligned. Their existing seams are retained. Curved closed profiles
-and smooth loft styles reverse the resulting surface's V direction. Rhino's
-straight, degree-one polyline branch instead retains the bilinear patch direction.
-These are observed command policies, not guarantees of outward orientation for
-every possible input.
+directions are aligned by consecutive seam tangents. Each later seam moves to
+the knot nearest the preceding seam; `Natural` retains the supplied seams while
+still aligning traversal. General spatial seam matching remains incomplete.
+
+`CreaseSplitting` controls tangent-break partitioning at 0.1 degrees.
+`SplitAtTangents=Yes` additionally splits curvature breaks at 1 degree,
+independently of that global preference; its default is `No`. Both create exact
+shared-topology patches without changing the tensor geometry. Preferences live
+outside document undo; undo/redo restores the Loft result with its original splits.
+
+Open lofts retain the established UV-direction policy. Closed solid lofts
+reverse face sense when all six outside closest-point probes point inward;
+conflicting or unsupported probes retain the supplied sense. This sampled policy
+does not certify outward orientation, particularly for self-overlapping lofts.
 
 ## Geometry and modules
 
@@ -64,8 +74,11 @@ Final domains use the longest Euclidean control polygons in each direction,
 matching the tested Rhino surface-size policy.
 
 The ordered `try_loft_nurbs_curves` API does not sort, reverse, or move seams.
-`Brep::try_loft` adds the command policies and splits sampled isocurve-tangent
-kinks larger than 0.1 degrees. Smooth, fully multiple circle knots stay intact.
+`Brep::try_loft` adds the default command policies. `LoftOptions` and
+`Brep::try_loft_with_surface_options` expose the seam and splitting controls
+with a delegated tensor backend. `brep/loft/profiles` owns section ordering and
+seams; `brep/loft/orientation` owns the sampled closed-solid orientation pass.
+Smooth, fully multiple circle knots stay intact when only crease splitting is on.
 The tangent predicate samples transverse span endpoints and midpoints, like
 OpenNURBS; it is not a continuous maximum-angle certificate.
 
@@ -89,9 +102,9 @@ control polygons are rejected. No general self-intersection, denominator-pole,
 or continuous approximation certificate is claimed.
 
 Not implemented: point-end lofts, general spatial profile/seam matching,
-interactive seam editing, start/end tangent matching, Rebuild/Refit simplification,
-`SplitAtTangents`, and configurable global `CreaseSplitting`. Nonparallel or
-nonplanar closed sections currently keep input order. Native parameter preservation
+interactive seam editing, start/end tangent matching, and Rebuild/Refit
+simplification. Nonparallel or nonplanar closed sections currently keep input
+order. Native parameter preservation
 of analytic input curves is not promised: loft deliberately builds a normalized
 compatible basis. Nearly symmetric profiles can select a different boundary from Rhino when
 coarse length comparisons tie at machine precision. The command does not cap its ends.

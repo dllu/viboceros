@@ -100,6 +100,7 @@ mod interface;
 mod intersect_two_sets;
 mod length;
 mod line_through_points;
+mod loft_options;
 mod maelstrom;
 mod mark_foci;
 mod merge_edge;

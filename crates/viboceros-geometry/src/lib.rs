@@ -177,6 +177,7 @@ pub use units::{LengthUnitSystem, UnitError};
 
 pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
+pub use brep::LoftOptions;
 pub use brep::{
     Brep, BrepBooleanOperation, BrepBoundaryRestoration, BrepConvexBooleanPlan,
     BrepConvexIntersection, BrepConvexRegion, BrepCoplanarPartitionComponent,
