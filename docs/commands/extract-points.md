@@ -12,11 +12,19 @@ ExtractPt Output=PointCloud OutputLayer=Current
 ```
 
 Sources contribute curve defining points, NURBS surface control nets, B-rep
-face support controls, raw mesh vertices, SubD control vertices, or point-cloud locations.
+face support controls, raw mesh vertices, SubD vertex locations, or point-cloud locations.
 Raw mesh locations include unused and coincident vertices. Closed curve seams
 and periodic control rings retain their existing Rhino ordering. Source order
 follows selection actions. Point objects and empty meshes contribute nothing;
 the interactive filter excludes them and block instances.
+
+Whole SubDs default to limit-surface vertex locations. Choose
+`SubDLocation=ControlNet` for control vertices, corresponding to Rhino's flat
+appearance, or `SubDLocation=Surface` for smooth appearance. This choice also
+applies to component inputs; selected grips keep their displayed locations.
+The [SubD qualification](../extract-points-subd-qualification.json) compares 56
+native scenes through commands and UI selection, including boundaries, creases,
+irregular and triangular topology, both output types, attributes and history.
 
 Selected grips contribute their current displayed locations, including SubD
 edit points. They replace whole-object extraction for their owner. Other whole
@@ -59,7 +67,7 @@ both output options before selection.
 [Component extraction](extract-point-components.md) supports B-rep faces and
 edges, and mesh/SubD faces, edges and topology vertices, including smooth SubD
 edge control points. [Temporary curve portions](extract-point-ranges.md) use
-`SubCrv`. Smooth SubD whole-object limit locations remain unimplemented.
+`SubCrv`.
 
 `OutputLayer=TargetObject` remains unavailable. The installed Rhino
 8.32.26160.13001 rejects that value, despite its inclusion in the command

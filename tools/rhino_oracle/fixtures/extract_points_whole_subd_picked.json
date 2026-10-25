@@ -1,0 +1,126 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_smooth_points",
+      "case": "picked_whole_subd_smooth_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_smooth_pointcloud",
+      "case": "picked_whole_subd_smooth_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_flat_points",
+      "case": "picked_whole_subd_flat_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_flat_pointcloud",
+      "case": "picked_whole_subd_flat_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_irregular_smooth_points",
+      "case": "picked_whole_subd_irregular_smooth_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_irregular_smooth_pointcloud",
+      "case": "picked_whole_subd_irregular_smooth_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_irregular_flat_points",
+      "case": "picked_whole_subd_irregular_flat_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_irregular_flat_pointcloud",
+      "case": "picked_whole_subd_irregular_flat_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_grid_smooth_points",
+      "case": "picked_whole_subd_grid_smooth_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_grid_smooth_pointcloud",
+      "case": "picked_whole_subd_grid_smooth_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_grid_flat_points",
+      "case": "picked_whole_subd_grid_flat_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_grid_flat_pointcloud",
+      "case": "picked_whole_subd_grid_flat_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_strip_smooth_points",
+      "case": "picked_whole_subd_strip_smooth_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_strip_smooth_pointcloud",
+      "case": "picked_whole_subd_strip_smooth_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_strip_flat_points",
+      "case": "picked_whole_subd_strip_flat_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_strip_flat_pointcloud",
+      "case": "picked_whole_subd_strip_flat_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_triangles_smooth_points",
+      "case": "picked_whole_subd_triangles_smooth_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_triangles_smooth_pointcloud",
+      "case": "picked_whole_subd_triangles_smooth_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_triangles_flat_points",
+      "case": "picked_whole_subd_triangles_flat_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_triangles_flat_pointcloud",
+      "case": "picked_whole_subd_triangles_flat_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_creased_smooth_points",
+      "case": "picked_whole_subd_creased_smooth_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_creased_smooth_pointcloud",
+      "case": "picked_whole_subd_creased_smooth_pointcloud"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_creased_flat_points",
+      "case": "picked_whole_subd_creased_flat_points"
+    },
+    {
+      "op": "extract_points_command",
+      "id": "picked_whole_subd_creased_flat_pointcloud",
+      "case": "picked_whole_subd_creased_flat_pointcloud"
+    }
+  ]
+}

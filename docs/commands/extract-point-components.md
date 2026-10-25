@@ -48,7 +48,7 @@ between stations and has no continuous model-tolerance guarantee.
 `SubDLocation=ControlNet` extracts control vertices, face corners and oriented
 edge endpoints. This explicit Viboceros option supplies control-net locations
 without requiring a flat SubD viewport. Flat SubD rendering is not implemented.
-Whole SubD extraction continues to return its control vertices.
+The same location choice applies to whole SubDs.
 
 Output attributes, groups and layering follow ExtractPt's ordinary options.
 Preselected components remain selected immediately after extraction; Undo and

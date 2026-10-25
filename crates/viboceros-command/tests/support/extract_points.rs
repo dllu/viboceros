@@ -257,6 +257,48 @@ pub fn edge_form_rows() -> Vec<Value> {
     component_rows_for(&["component_edge_holdouts"])
 }
 
+pub fn whole_subd_rows() -> Vec<Value> {
+    component_rows_for(&["whole_subd_picked", "whole_subd_final"])
+        .into_iter()
+        .map(|mut row| {
+            row["path"] = if row["value"]["input"]["getter"] == true {
+                "picked"
+            } else {
+                "preselected"
+            }
+            .into();
+            row
+        })
+        .collect()
+}
+
+pub fn setup_whole_subd(row: &Value) -> (Document, Vec<ObjectId>) {
+    let (mut doc, ids) = setup(row);
+    if row["path"] == "picked" {
+        // Native command-first SelID picks retain their chronological order;
+        // API preselection uses object-table order instead.
+        let selected = row["value"]["input"]["whole"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|i| ids[i.as_u64().unwrap() as usize]);
+        doc.select_objects_direct([], SelectionMode::Replace)
+            .unwrap();
+        for id in selected {
+            doc.select_objects_direct([id], SelectionMode::Add).unwrap();
+        }
+    }
+    (doc, ids)
+}
+
+pub fn whole_subd_command(row: &Value) -> String {
+    let mut input = command(row);
+    if row["value"]["input"]["flat"] == true {
+        input.push_str(" SubDLocation=ControlNet");
+    }
+    input
+}
+
 pub fn range_rows() -> Vec<Value> {
     component_rows_for(&[
         "ranges",

@@ -100,10 +100,31 @@ def run(operation, host, iterations, tolerance):
             doc.Objects.UnselectAll()
         doc.ClearUndoRecords(True)
         doc.ClearRedoRecords()
-        if case.get('component_capture'):
+        if case.get('component_capture') or case.get('whole_subd'):
             from extract_points_component_input import select
             doc.SubDAppearance = G.SubDComponentLocation.ControlNet if case['flat'] else G.SubDComponentLocation.Surface
-            select(doc,ids,case,host)
+            if case.get('component_capture'):select(doc,ids,case,host)
+        subd_witness = None
+        if case.get('whole_subd'):
+            subd_witness = dict(control_net=doc.SubDAppearance==G.SubDComponentLocation.ControlNet,sources=[])
+            for source,key in enumerate(ids):
+                geometry=doc.Objects.FindId(key).Geometry
+                if isinstance(geometry,G.SubD):
+                    vertices=[]
+                    vertex=geometry.Vertices.First
+                    while vertex is not None:
+                        vertices.append(dict(id=int(vertex.Id),control=host['_xyz'](vertex.ControlNetPoint),
+                            surface=host['_xyz'](vertex.SurfacePoint())))
+                        vertex=vertex.Next
+                    subd_witness['sources'].append(dict(source=source,vertices=vertices))
+        configuration = None
+        if case.get('whole_subd_configured'):
+            untouched=snapshot()
+            script='_-ExtractPt _OutputLayer=_'+case['layer']+' _Output=_'+case['output']+' _Cancel'
+            R.RhinoApp.RunScript(script,True)
+            if snapshot()!=untouched:
+                raise ValueError('owned ExtractPt option configuration changed the document')
+            configuration=dict(script=script,document_unchanged=True)
         for index in case['whole']:
             doc.Objects.Select(ids[index], True)
         for index in case['order']:
@@ -146,6 +167,7 @@ def run(operation, host, iterations, tolerance):
         if case.get('component_capture') and not case.get('component_getter'):
             options = options[:1]
         macro = '_-ExtractPt '+' '.join(options)+('' if case.get('getter') or case.get('component_getter') else ' _Enter')
+        if case.get('whole_subd_configured'):macro='_-ExtractPt'
         history = R.RhinoApp.CommandHistoryWindowText
         receipt = []
         def execute():
@@ -203,7 +225,8 @@ def run(operation, host, iterations, tolerance):
         redo = snapshot()
         return dict(input=case, source_3dm=source_3dm, before=before, after=after,
                     undo=undo, redo=redo, success=success, events=events, macro=macro,
-                    history=history, getter=receipt[0] if receipt else None, curve_profile=profile, component_records=component_records), 0
+                    history=history, getter=receipt[0] if receipt else None, curve_profile=profile, component_records=component_records,
+                    subd_witness=subd_witness,configuration=configuration), 0
     finally:
         for obj in list(doc.Objects):
             if obj.GripsOn:

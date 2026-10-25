@@ -1,6 +1,10 @@
 """Fixed grip extraction scenes; requests cannot supply executable input."""
 from copy import deepcopy
 try:
+    from .extract_points_subd_cases import WHOLE as WHOLE_SUBD, PICKED as WHOLE_SUBD_PICKED, MIXED as WHOLE_SUBD_MIXED, VERIFIED as WHOLE_SUBD_VERIFIED, FINAL as WHOLE_SUBD_FINAL
+except (ImportError, ValueError, SystemError):
+    from extract_points_subd_cases import WHOLE as WHOLE_SUBD, PICKED as WHOLE_SUBD_PICKED, MIXED as WHOLE_SUBD_MIXED, VERIFIED as WHOLE_SUBD_VERIFIED, FINAL as WHOLE_SUBD_FINAL
+try:
     from .extract_points_order_cases import ORDER, GRIPS as ORDER_GRIPS, EDGES as ORDER_EDGES, DISPLAYS as ORDER_DISPLAYS
 except (ImportError, ValueError, SystemError):
     from extract_points_order_cases import ORDER, GRIPS as ORDER_GRIPS, EDGES as ORDER_EDGES, DISPLAYS as ORDER_DISPLAYS
@@ -77,6 +81,9 @@ METADATA = {
 for case in METADATA.values():
     case.update(output='PointCloud', layer='Input', getter=True)
 FAMILIES = dict(grips=CASES, controls=CONTROLS, verified=VERIFIED, metadata=METADATA,
+                whole_subd=WHOLE_SUBD,whole_subd_picked=WHOLE_SUBD_PICKED,whole_subd_mixed=WHOLE_SUBD_MIXED,
+                whole_subd_verified=WHOLE_SUBD_VERIFIED,
+                whole_subd_final=WHOLE_SUBD_FINAL,
                 ranges_order=ORDER,
                 ranges_order_grips=ORDER_GRIPS,
                 ranges_order_edges=ORDER_EDGES,

@@ -40,7 +40,7 @@ class ExtractPointsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             stage_helpers(request(),ROOT/'tools/rhino_oracle',Path(directory))
             self.assertEqual({p.name for p in Path(directory).iterdir()}, {'extract_points_probe.py',
-                'extract_points_cases.py','extract_points_order_cases.py','extract_points_curve_range_input.py','grip_navigation_probe.py','grip_transform_probe.py',
+                'extract_points_cases.py','extract_points_subd_cases.py','extract_points_order_cases.py','extract_points_curve_range_input.py','grip_navigation_probe.py','grip_transform_probe.py',
                 'join_probe.py','merge_edges_probe.py','extract_points_geometry.py','extract_points_getter.py','managed_component_input.py',
                 'extract_points_component_input.py','extract_points_component_cases.py','extract_points_brep_cases.py','extract_points_target_cases.py','extract_points_range_cases.py','extract_points_edge_range_input.py','owned_brep_command.py'})
 

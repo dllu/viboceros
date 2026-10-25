@@ -56,6 +56,7 @@ APPLICATION_MODULES = [
     'src/app/extract_points/edge_ranges_tests.rs',
     'src/app/extract_points/input_order.rs',
     'src/app/extract_points/order_tests.rs',
+    'src/app/extract_points/whole_subd_tests.rs',
     'src/viewport/polygon_edges.rs',
     'src/viewport/polygon_edges/tests.rs',
     'src/app/control_polygon.rs',
@@ -205,7 +206,8 @@ def with_shared_sources(paths):
                          'tools/rhino_oracle/mesh_trim_pick_trace.py',
                          'tools/rhino_oracle/managed_mouse_callback.py'])
     if 'tools/rhino_oracle/extract_points_cases.py' in expanded:
-        expanded.extend(['tools/rhino_oracle/extract_points_order_cases.py',
+        expanded.extend(['tools/rhino_oracle/extract_points_subd_cases.py',
+                         'tools/rhino_oracle/extract_points_order_cases.py',
                          'tools/rhino_oracle/extract_points_curve_range_input.py',
                          'tools/rhino_oracle/extract_points_target_cases.py',
                          'tools/rhino_oracle/extract_points_getter.py',
@@ -275,6 +277,7 @@ def with_shared_sources(paths):
             'crates/viboceros-command/src/extract_points/ranges.rs',
             'crates/viboceros-command/src/extract_points/tests.rs',
             'crates/viboceros-command/tests/extract_points_native.rs',
+            'crates/viboceros-command/tests/extract_points_subd_native.rs',
             'crates/viboceros-command/tests/extract_point_ranges_native.rs',
             'crates/viboceros-command/tests/support/extract_points.rs',
             'crates/viboceros-command/src/mesh_split.rs',

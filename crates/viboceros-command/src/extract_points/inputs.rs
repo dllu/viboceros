@@ -15,9 +15,10 @@ impl Target {
     }
 }
 
-fn whole_points(geometry: &Geometry) -> Result<Vec<Point3>, CommandError> {
+fn whole_points(geometry: &Geometry, control_net: bool) -> Result<Vec<Point3>, CommandError> {
     Ok(match geometry {
         Geometry::Brep(brep) => components::whole_brep_points(brep)?,
+        Geometry::SubD(subd) if !control_net => subd.surface_points().to_vec(),
         geometry => geometry.extract_point_locations()?,
     })
 }
@@ -46,7 +47,11 @@ pub(super) fn visit(
         .selected_objects()
         .filter(|o| !owners.contains(&o.id()) && !explicit.contains(&o.id()))
     {
-        emit(object.id(), whole_points(object.geometry())?, false)?;
+        emit(
+            object.id(),
+            whole_points(object.geometry(), options.control_net)?,
+            false,
+        )?;
     }
     // Temporary curve references precede selected grips, just like whole
     // curve inputs, while keeping their own fresh output attributes.
@@ -57,7 +62,11 @@ pub(super) fn visit(
             Target::Object(id) => {
                 let object = resolver.object(*id)?;
                 if !owners.contains(id) && seen.insert(*id) {
-                    emit(*id, whole_points(object.geometry())?, false)?;
+                    emit(
+                        *id,
+                        whole_points(object.geometry(), options.control_net)?,
+                        false,
+                    )?;
                 }
             }
             Target::Range(range) => emit(range.object, resolver.points(range)?, true)?,
