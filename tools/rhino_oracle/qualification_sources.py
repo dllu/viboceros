@@ -192,6 +192,14 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if 'crates/viboceros-geometry/src/curve_fit.rs' in paths:
+        paths = [*paths,
+            'crates/viboceros-geometry/src/curve_fit/interpolate.rs',
+            'crates/viboceros-geometry/src/curve_fit/sampler.rs',
+            'crates/viboceros-geometry/src/curve_fit/tests.rs',
+            'crates/viboceros-geometry/src/curve_fit/constraints_tests.rs',
+            'crates/viboceros-geometry/src/curve_fit/station_tests.rs',
+        ]
     moved = {'src/app/object_selection/quadrangulate_mesh.rs':
              'src/app/object_selection/mesh_conversion.rs',
              'src/app/control_polygon/subcurve.rs': 'src/app/curve_extraction_subcurve.rs',

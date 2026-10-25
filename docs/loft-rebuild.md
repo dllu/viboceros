@@ -16,7 +16,8 @@ ordinary Curve Rebuild retains its periodic policy. Tangents are not projected.
 Degrees are `min(3, count - 1)`. Matching the public SDK, 0 and 1 disable rebuilding;
 closed profiles also retain their original basis for count 2. Larger closed
 requests add one seam control. The 512-control limit includes that extra control
-and is checked before fitting any profile. Refit remains unimplemented.
+and is checked before fitting any profile. [Refit remains unimplemented](loft-refit.md);
+its native fitting and parameterization differences are retained for investigation.
 
 Fresh Rhino 8.32 captures cover 433 ordered API cases: 397 returned surfaces
 match both backends within absolute `1e-6` across full control nets, weights,

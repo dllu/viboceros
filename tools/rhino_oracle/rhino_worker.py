@@ -2431,6 +2431,10 @@ def _loft(operation, iterations):
     rebuild = operation.get('rebuild_point_count')
     if rebuild is not None and (type(rebuild) is not int or rebuild < 0 or rebuild > 512):
         raise ValueError('invalid Loft rebuild point count')
+    refit = operation.get('refit_tolerance')
+    if refit is not None and (type(refit) not in (int, float) or math.isnan(refit)
+                              or math.isinf(refit) or refit < 0. or rebuild is not None):
+        raise ValueError('invalid Loft refit tolerance or conflicting simplification')
     curves = []
     styles = {
         "normal": Rhino.Geometry.LoftType.Normal,
@@ -2452,6 +2456,9 @@ def _loft(operation, iterations):
         if rebuild is not None:
             factory = Rhino.Geometry.Brep.CreateFromLoftRebuild
             arguments.append(rebuild)
+        elif refit is not None:
+            factory = Rhino.Geometry.Brep.CreateFromLoftRefit
+            arguments.append(refit)
         result.extend(factory(*arguments) or [])
         if not result and not operation.get("allow_empty", False):
             raise ValueError("Rhino could not create the loft")
@@ -2477,6 +2484,19 @@ def _loft(operation, iterations):
                 surfaces.append(_loft_surface_record(face, operation))
         if before is not None:
             record=dict(before=before, after=[_nurbs_curve_definition(c) for c in curves], surfaces=surfaces)
+            if operation.get('inspect_refit_beziers', False):
+                from loft_refit_probe import cubic_sections
+                record['refit_beziers'] = cubic_sections(curves, refit,
+                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    Rhino.Geometry, _nurbs_curve_definition)
+            if operation.get('inspect_refitted', False):
+                record['refitted'] = []
+                for curve in curves:
+                    fitted = curve.Fit(3, refit, Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians)
+                    try:
+                        record['refitted'].append(_nurbs_curve_definition(fitted) if fitted is not None else None)
+                    finally:
+                        if fitted is not None: fitted.Dispose()
             if operation.get('inspect_rebuilt', False):
                 record['rebuilt'] = []
                 for preserve in (False, True):
@@ -2517,8 +2537,12 @@ def _loft_command(operation, iterations, curves):
         count = operation['rebuild_point_count']
         simplify = '_Simplify=_None' if count == 0 else '_Simplify=_Rebuild _RebuildCount=%d' % count
         macro = macro.rsplit('_Enter', 1)[0] + simplify + ' _Enter'
+    elif operation.get('refit_tolerance') is not None:
+        fit = operation['refit_tolerance']
+        simplify = '_Simplify=_None' if fit == 0 else '_Simplify=_Refit _RefitTolerance=%.17g' % fit
+        macro = macro.rsplit('_Enter', 1)[0] + simplify + ' _Enter'
     return _curve_surface_command(curves, macro, iterations, "loft", record,
-                                  verify_script=operation.get('rebuild_point_count') is not None)
+                                  verify_script=operation.get('rebuild_point_count') is not None or operation.get('refit_tolerance') is not None)
 
 
 def _run_surface_script(script, verify):

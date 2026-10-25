@@ -15,6 +15,10 @@ linear solver is introduced. Coordinate translation and exact constant-channel
 preservation retain small detail; fixed endpoint/kink controls are copied back
 directly rather than round-tripped through the solver.
 
+The shared `curve_fit` root owns validation and adaptive refinement; `sampler`
+owns parameter maps and source sampling, and `interpolate` owns fixed handles
+and collocation solves. Regression modules are separate from implementation.
+
 Degree-one fits and fully constrained nets bypass the solver. Portable builds
 retain their existing cubic band and general-degree reduced dense solve.
 Internal Sweep1 and Pipe rail fitting now reuse the native producer through

@@ -19,9 +19,32 @@ pub struct LoftFixture {
     pub inspect_inputs: bool,
     #[serde(default)]
     pub rebuild_point_count: usize,
+    #[serde(default)]
+    pub refit_tolerance: Option<f64>,
 }
 
 impl LoftFixture {
+    fn validate_simplification(&self) -> Result<(), ProbeError> {
+        if let Some(tolerance) = self.refit_tolerance {
+            if !tolerance.is_finite() || tolerance < 0. {
+                return Err(ProbeError::FixtureInvariant(
+                    "Loft Refit requires a nonnegative finite tolerance",
+                ));
+            }
+            if self.rebuild_point_count != 0 {
+                return Err(ProbeError::FixtureInvariant(
+                    "Loft Refit and Rebuild are mutually exclusive",
+                ));
+            }
+            if tolerance > 0. {
+                return Err(ProbeError::FixtureInvariant(
+                    "Loft Refit section approximation is not implemented",
+                ));
+            }
+        }
+        Ok(())
+    }
+
     fn end_points(&self) -> Result<viboceros_geometry::LoftEndPoints, GeometryError> {
         Ok(viboceros_geometry::LoftEndPoints {
             start: self.start_point.map(Point3::try_from).transpose()?,
@@ -35,6 +58,7 @@ pub(super) fn run(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    fixture.validate_simplification()?;
     let curves = fixture
         .curves
         .iter()
@@ -182,6 +206,7 @@ fn parse_style(value: &str) -> Result<viboceros_geometry::LoftStyle, ProbeError>
 }
 
 pub(super) fn build_brep(fixture: &LoftFixture, tolerance: Tolerance) -> Result<Brep, ProbeError> {
+    fixture.validate_simplification()?;
     let curves = fixture
         .curves
         .iter()
