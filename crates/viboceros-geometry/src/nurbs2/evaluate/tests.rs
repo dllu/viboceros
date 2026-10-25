@@ -151,3 +151,42 @@ fn signed_uv_images_retry_unshifted_without_hiding_real_poles() {
         Err(GeometryError::ZeroWeightAtParameter)
     );
 }
+
+#[test]
+fn coordinate_line_charts_retain_small_native_coordinates_exactly() {
+    let end = 9.133210757523264;
+    let cut = 1.572174649391035;
+    for axis in 0..2 {
+        for sign in [-1., 1.] {
+            let mut a = [0.25, 0.25];
+            let mut b = a;
+            a[axis] = if sign < 0. { end } else { 0. };
+            b[axis] = if sign < 0. { 0. } else { end };
+            let (start, stop) = if sign < 0. { (-end, 0.) } else { (0., end) };
+            let line = NurbsCurve2::try_new(
+                1,
+                vec![Point2::try_from(a).unwrap(), Point2::try_from(b).unwrap()],
+                vec![start, start, stop, stop],
+            )
+            .unwrap();
+            let t = sign * cut;
+            let (point, derivative) = line.evaluate_with_derivative(t).unwrap();
+            assert_eq!(point.to_array()[axis], cut);
+            assert_eq!(derivative[axis], sign);
+            assert_eq!(derivative[1 - axis], 0.);
+            assert_eq!(line.evaluate(t).unwrap(), point);
+        }
+    }
+    let start = Point2::try_new(-0., 0.25).unwrap();
+    let line = NurbsCurve2::try_new(
+        1,
+        vec![start, Point2::try_new(end, 0.25).unwrap()],
+        vec![0., 0., end, end],
+    )
+    .unwrap();
+    assert_eq!(line.evaluate(0.).unwrap().x().to_bits(), (-0_f64).to_bits());
+    assert_eq!(
+        line.evaluate_with_derivative(0.).unwrap().0.x().to_bits(),
+        (-0_f64).to_bits()
+    );
+}

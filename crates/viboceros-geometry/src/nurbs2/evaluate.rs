@@ -30,6 +30,9 @@ impl NurbsCurve2 {
         if let Some(point) = self.endpoint(span, parameter) {
             return Ok(point);
         }
+        if let Some(jet) = self.coordinate_line(parameter) {
+            return Ok(jet.0);
+        }
         self.with_controls(
             span,
             |origin, active| {
@@ -54,6 +57,9 @@ impl NurbsCurve2 {
         side: ParameterSide,
     ) -> Result<(Point2, [Real; 2]), GeometryError> {
         let span = self.checked_span(parameter, side)?;
+        if let Some(jet) = self.coordinate_line(parameter) {
+            return Ok((self.endpoint(span, parameter).unwrap_or(jet.0), jet.1));
+        }
         self.with_controls(
             span,
             |origin, active| {
@@ -91,6 +97,35 @@ impl NurbsCurve2 {
             },
             || self.exact_jet(span, parameter, true),
         )
+    }
+
+    /// Axis-aligned identity charts need no interpolation or origin restoration.
+    /// Subtracting a long segment and adding its origin can otherwise erase
+    /// bits of a small, exactly representable interior coordinate.
+    fn coordinate_line(&self, parameter: Real) -> Option<(Point2, [Real; 2])> {
+        if self.degree != 1 || self.control_points.len() != 2 || self.rational {
+            return None;
+        }
+        let a = self.control_points[0].point.to_array();
+        let b = self.control_points[1].point.to_array();
+        let domain = self.domain();
+        let mut point = a;
+        let mut derivative = [0.; 2];
+        for axis in 0..2 {
+            if a[axis] == b[axis] {
+                continue;
+            }
+            let sign = if a[axis] == *domain.start() && b[axis] == *domain.end() {
+                1.
+            } else if a[axis] == -*domain.start() && b[axis] == -*domain.end() {
+                -1.
+            } else {
+                return None;
+            };
+            point[axis] = sign * parameter;
+            derivative[axis] = sign;
+        }
+        Some((Point2::try_from(point).ok()?, derivative))
     }
 
     fn checked_span(&self, parameter: Real, side: ParameterSide) -> Result<usize, GeometryError> {
