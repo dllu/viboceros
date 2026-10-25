@@ -1501,6 +1501,12 @@ class OracleClient:
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
             stage_structural_sdk_helpers(request, worker_source.parent, job_path)
+            if any(op.get('inspect_refit_clock') for op in request['operations']):
+                shutil.copyfile(worker_source.with_name('loft_refit_clock_probe.py'),
+                                job_path / 'loft_refit_clock_probe.py')
+            if any(op.get('inspect_refit_sources') for op in request['operations']):
+                for name in ['loft_refit_source_probe.py', 'loft_refit_probe.py']:
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
             if any(op.get('inspect_refit_beziers') for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('loft_refit_probe.py'),
                                 job_path / 'loft_refit_probe.py')

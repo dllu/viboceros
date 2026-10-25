@@ -2942,9 +2942,9 @@
     "tools/rhino_oracle/generate_planar_mesh.py": "35b937bed4d877ce6636cd373143ebdeda6f609f1bbd489c9e4391741a289e7b",
     "tools/rhino_oracle/report_planar_mesh.py": "fe5ec384cf4d18c5be78ee6ca0c0126bc11baf8de2127053617d4c66fe4938f9",
     "tools/rhino_oracle/test_planar_mesh.py": "0039629674295a8eaa9f819e677ea2c1f9f5ec8e76bc00e20705660304766f64",
-    "tools/rhino_oracle/client.py": "1aa9c98bf227fd991d50a7a20a31222be7150cac90187901421f8df298e73345",
+    "tools/rhino_oracle/client.py": "ebe1271c4a882f7d3426a60698242ec8924bd9b7d2f877ff88101440d63c5796",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
-    "tools/rhino_oracle/rhino_worker.py": "d4533e338870885f4a684b03e86f8428147ef4251d294b920f18cce894f3d045",
+    "tools/rhino_oracle/rhino_worker.py": "bfb11e2f8b5141a6e78fd441936001acd94d3f90f80729fcf9723803bf4ddd22",
     "tools/rhino_oracle/fixtures/planar_mesh.json": "12ae5506ed587c9fbe60a566dc129b8d34187e0c73907ab6f8bd6b4a0bbeb5a8",
     "tools/rhino_oracle/observations/planar_mesh.json": "f7b5402a4276dc707247518da4c62d31189dbcd018eac8ba0140a935fb6f259f",
     "tools/rhino_oracle/fixtures/planar_mesh_postselect.json": "f3163a992f6b522d2c5dc327a80ff2d4a1ec0d5f25312eec446cdbeacc20983f",
@@ -3120,6 +3120,6 @@
     "crates/viboceros-geometry/src/bezier.rs": "758426eed4d35be3c0a928120e7ac607c6cd1059d6c827f78950fad22759f033",
     "crates/viboceros-geometry/src/bezier/polynomial.rs": "9b6227607fcd9954c904b89665f42338a6fefbe8d7327cd76075d3f14d337a0b",
     "crates/viboceros-geometry/src/brep/surface_partition/g1/exact_ray.rs": "a51abd99d4cecfa33dcbc27034653dd114df6d0a9ba0ba4fcb68df5adf250929",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "b9aba52acb0e9d610cc4e9f7219c62ed5666639daae72ad4aa2e5bc5f08918b3"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "3701958bd5347362d4294cc25e39434960c958d0b84502b2da31e2bdbd61c6a1"
   }
 }

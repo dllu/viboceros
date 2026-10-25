@@ -103,7 +103,7 @@
     "tools/rhino_oracle/observations/source_snapshots/1d33687f0f250802b4ec1545aacb2d7adf9c344040ba39209a9c5526cdccd5ac.gz": "53b876b4afb7fffc6bcd400ef3e8caaba3355a5495bdcc518b70cc4552233183",
     "tools/rhino_oracle/observations/source_snapshots/53569d7a4e0e4428325c83190dc3fa10d5e519f491756f3738d086f3ac6fb04d.gz": "23d2ff273962b0d34d11867c7fed9d8fd6466b5b6c2de2b30a7100ac39d01797",
     "src/app/tests/mod.rs": "41fb798ffd28d9980cdf2c01759d8317252a32c937855f43dd018b4ff30a7b42",
-    "tools/rhino_oracle/rhino_worker.py": "d4533e338870885f4a684b03e86f8428147ef4251d294b920f18cce894f3d045",
+    "tools/rhino_oracle/rhino_worker.py": "bfb11e2f8b5141a6e78fd441936001acd94d3f90f80729fcf9723803bf4ddd22",
     "src/app.rs": "49a2dd7a7b4823043c0a544d219a4127c99c137deb3a58fce299aa823c0f6da1",
     "crates/viboceros-oracle/src/lib.rs": "8493a58f3eea3cf105c537bc04db14219875d3ee5e51bd41052822f8386652fc",
     "crates/viboceros-geometry/src/brep/loft/profiles.rs": "675c624795f48d407f46c034e5600fe859fa4d9112b176f8699176abe7fa24f8",
@@ -263,9 +263,9 @@
     "src/viewport/display_cache/subd.rs": "6a2c769367a60aff44cd69af6f64223dc6189b2c6a96f9a51ff24aedab7220e1",
     "src/viewport/display_cache/subd_tests.rs": "42734500cbcbb0e7487e0e5827174fdcd442fc28271aa576a4bcaf41e23a60c2",
     "crates/viboceros-geometry/src/brep/loft/ordering.rs": "6a7a36aa3dc95838cf458b15a94f46fd6ed0d75b6af1ea7457aec58550dd6dfb",
-    "crates/viboceros-geometry/src/loft/refit.rs": "d2f0d28b85efbf056f76cb12c848ea0adb9f511a9842cae68497c68d4001463e",
-    "crates/viboceros-geometry/src/loft/refit/tests.rs": "ef5b7de922fd71965778d62e7f1f74abd988d5fb6d93b9bcaabc110afda61e09",
-    "crates/viboceros-oracle/tests/loft_refit_lines_native.rs": "9c0aa61f9453b490550db81cadf72512696fdd5cd4e66b33bd1e076cf5c88eca"
+    "crates/viboceros-geometry/src/loft/refit.rs": "9c46b82eae59f895179072e07f37e0417b6d5699dad425287342293bd13440a4",
+    "crates/viboceros-geometry/src/loft/refit/tests.rs": "83d2024bb19ea83a218ce0083a314474967e2d6b636c67f125e5b0e91cd14696",
+    "crates/viboceros-oracle/tests/loft_refit_lines_native.rs": "bc37468944604a436a59321f25ef89df2dc81bfcb917bac0e671f38819a4d7f6"
   },
   "maximum_matching_native_command_full_record_numeric_difference": 3.3942846044965336e-07
 }

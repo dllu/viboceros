@@ -25,6 +25,30 @@ const MAX_DEPTH: usize = 48;
 const MAX_WORK: usize = 2_000_000;
 const MAX_BITS: u64 = 8192;
 
+/// Exact active endpoints under the existing extraction/work/bit budgets.
+/// One-sided values retain the original source, including unclamped domains.
+pub(crate) fn exact_curve_endpoints(
+    curve: &NurbsCurve,
+) -> Result<Option<[[Rational; 3]; 2]>, GeometryError> {
+    let mut budget = Budget(MAX_WORK);
+    let Some(spline) = curve::Spline::spatial(curve, &mut budget)? else {
+        return Ok(None);
+    };
+    let mut points = Vec::with_capacity(2);
+    for (t, side) in [
+        (Rational::zero(), crate::ParameterSide::Right),
+        (Rational::one(), crate::ParameterSide::Left),
+    ] {
+        let h = spline.value_on_side(&t, side, &mut budget)?;
+        let point = std::array::from_fn(|i| &h[i] / &h[3]);
+        for coordinate in &point {
+            budget.check(coordinate)?;
+        }
+        points.push(point);
+    }
+    Ok(Some([points.remove(0), points.remove(0)]))
+}
+
 impl NurbsCurve {
     /// Certify distances at specified parameters against the complete stored
     /// rational curve, using exact one-sided evaluation and the existing work

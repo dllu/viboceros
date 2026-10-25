@@ -126998,7 +126998,7 @@
     "src/viewport/polygon_edges/tests.rs": "365beb37c1900e732670cb811bb4864571b40a6345378de8e395314303558eda",
     "src/viewport/scene.rs": "61ca36c1f2edf039a6d8784181a6202b465293f3150423b98ad921015155c532",
     "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
-    "tools/rhino_oracle/client.py": "1aa9c98bf227fd991d50a7a20a31222be7150cac90187901421f8df298e73345",
+    "tools/rhino_oracle/client.py": "ebe1271c4a882f7d3426a60698242ec8924bd9b7d2f877ff88101440d63c5796",
     "tools/rhino_oracle/component_picking.py": "e4e91e99f7a6645cb39a2bab4e879320755eca894d4e96a72ea83f53c3682bed",
     "tools/rhino_oracle/extract_points_brep_cases.py": "fc026de798511f760cdf732316624b4d70a08cefb83c64ae4526670f2d138a23",
     "tools/rhino_oracle/extract_points_cases.py": "179f5e7ef3a5090d9871ab494074ca8123d9fb18b032a216139e87aec986fd39",
@@ -127322,6 +127322,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "b9aba52acb0e9d610cc4e9f7219c62ed5666639daae72ad4aa2e5bc5f08918b3"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "3701958bd5347362d4294cc25e39434960c958d0b84502b2da31e2bdbd61c6a1"
   }
 }

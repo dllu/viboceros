@@ -10,12 +10,14 @@ tolerance, or `RefitTolerance=<value>`. `Simplify=Refit` selects the current Ref
 tolerance, defaulting to `1e-9`; `Simplify=None` disables simplification. Refit and
 Rebuild cannot be supplied together. Zero leaves the original profiles unchanged.
 
-Positive Refit currently requires a clamped, continuous, non-reversing collinear
+Positive Refit currently requires a continuous, non-reversing collinear
 control polygon with same-sign weights. Exact rational comparisons admit the
 profile; a sampled linearity test is insufficient. The cubic has uniform line
 speed. Exact handle-rounding bounds guarantee its complete image lies within
 the requested distance of the source segment. This preserves the geometric
-segment, **not its original parameter correspondence**. Inputs exceeding the
+segment, **not its original parameter correspondence**. Unclamped active endpoints
+are extracted exactly, including their rounding error in the distance bound.
+Inputs exceeding the
 512-control or 256-section limits, and tolerances below representable handle
 accuracy, fail explicitly.
 
@@ -23,11 +25,12 @@ Curved profiles remain unsupported and fail before document mutation. Native
 captures show that Rhino refits even polynomial quadratics and cubics, changing
 their clocks. Neither `Curve.Fit(3, ...)`, the public cubic-Bezier fitter, nor the
 separate [certified source-parameter approximation](cubic-approximation.md)
-reproduces that general Loft policy. No curved-profile parity is claimed.
+reproduces that general Loft policy. [Profile-set preparation](loft-refit-preparation.md)
+explains the new paired-input reference and its limits. No curved-profile parity is claimed.
 
-The [validation record](loft-refit-lines-validation.json) binds the implementation,
-native captures and verification results. The earlier
-[investigation](loft-refit-validation.json) retains its historical source bindings.
+The [validation record](loft-refit-preparation-validation.json) binds the implementation,
+native captures and verification results. Earlier [straight-profile checks](loft-refit-lines-validation.json) and the
+[investigation](loft-refit-validation.json) retain their historical source bindings.
 Native data and content-addressed producer archives remain immutable.
 
 ```sh

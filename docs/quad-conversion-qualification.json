@@ -296,9 +296,9 @@
     "tools/rhino_oracle/mesh_channel_capture.py": "d9b8ef0ad8ccb9dc63fb91cbf495a59182e4165b1d65f1d611d4070aac0ce41c",
     "tools/rhino_oracle/report_quad_conversion.py": "aab708c50cca7b5a8e297353a280873114aef6b3c265ab04f56f6d0915d62418",
     "tools/rhino_oracle/test_quad_conversion.py": "f409cb027cbdaea47aece680100544cde6ac6adfe54835041554fd8c9239394f",
-    "tools/rhino_oracle/rhino_worker.py": "d4533e338870885f4a684b03e86f8428147ef4251d294b920f18cce894f3d045",
+    "tools/rhino_oracle/rhino_worker.py": "bfb11e2f8b5141a6e78fd441936001acd94d3f90f80729fcf9723803bf4ddd22",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
-    "tools/rhino_oracle/client.py": "1aa9c98bf227fd991d50a7a20a31222be7150cac90187901421f8df298e73345",
+    "tools/rhino_oracle/client.py": "ebe1271c4a882f7d3426a60698242ec8924bd9b7d2f877ff88101440d63c5796",
     "tools/rhino_oracle/fixtures/mesh_quad_conversion.json": "10c0f575568931709096cf1da56b533121a54962abfa477c15803947ff5bdfd0",
     "tools/rhino_oracle/observations/mesh_quad_conversion_dispatch_failure.json": "a78931f20cf478771495652a03af2ce5ee8c7ed9a5b8a250de154a7e8b0335a3",
     "tools/rhino_oracle/observations/mesh_quad_conversion_dispatch_failure.log": "6418abacf8005f3ecdb74d7ab453cd2ecf611e776287e4988f2b97eeb6090604",
@@ -462,6 +462,6 @@
     "crates/viboceros-command/src/loft.rs": "2afdeeac349f532a7cb6b343e096701200d0875e3d66def29736307fa8879c21",
     "crates/viboceros-command/src/loft/tests.rs": "483dcde1ad5bbf72a54fe66c7aa914c17d9a69163f75884fafff75c64efc31db",
     "crates/viboceros-command/src/loft/options.rs": "dd930b281785e1e78ef82391b927d1b0d41e1e549fa6470b584bd58dab75f703",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "b9aba52acb0e9d610cc4e9f7219c62ed5666639daae72ad4aa2e5bc5f08918b3"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "3701958bd5347362d4294cc25e39434960c958d0b84502b2da31e2bdbd61c6a1"
   }
 }

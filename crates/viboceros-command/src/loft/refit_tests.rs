@@ -94,3 +94,55 @@ fn unsupported_curved_refit_never_commits_or_changes_history() {
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     assert_eq!(document.undo_label(), None);
 }
+
+#[test]
+fn unclamped_rational_profiles_preserve_sources_and_create_one_undo_step() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    let ids = (0..3)
+        .map(|i| {
+            let z = f64::from(i) * 5.;
+            let curve = NurbsCurve::try_new_rational(
+                2,
+                [
+                    ([0., 0., z], 1.),
+                    ([3., 2., z + 1.], 2.),
+                    ([12., 8., z + 4.], 0.5),
+                ]
+                .into_iter()
+                .map(|(point, weight)| {
+                    viboceros_geometry::WeightedPoint3::try_new(
+                        Point3::try_from(point).unwrap(),
+                        weight,
+                    )
+                    .unwrap()
+                })
+                .collect(),
+                vec![-1., -1., 0., 1., 2., 2.],
+            )
+            .unwrap();
+            document.add_geometry(Geometry::NurbsCurve(curve)).unwrap()
+        })
+        .collect::<Vec<_>>();
+    document
+        .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+        .unwrap();
+    document.clear_history().unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    registry.execute(&mut document, "Loft Refit=0.001").unwrap();
+    for source in &before {
+        assert_eq!(document.object(source.id()).unwrap(), source);
+    }
+    let output = document.objects().find(|o| !ids.contains(&o.id())).unwrap();
+    let Geometry::Brep(brep) = output.geometry() else {
+        panic!("Loft BRep")
+    };
+    assert_eq!(brep.faces()[0].surface().degree_v(), 3);
+    assert_eq!(brep.faces()[0].surface().control_point_count_v(), 4);
+    assert_eq!(document.undo_label(), Some("Loft"));
+    let after = document.objects().cloned().collect::<Vec<_>>();
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+}

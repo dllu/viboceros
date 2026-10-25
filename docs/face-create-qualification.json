@@ -3841,9 +3841,9 @@
     "tools/rhino_oracle/report_face_create.py": "6828abdf62819f126446854bd8d55cb438d92286d67eef802de76d63aa71b755",
     "tools/rhino_oracle/test_face_create.py": "2752f7792144e28d4da8d51323fcc1f4cfe93491b287b0d5f5e3669b20a66226",
     "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
-    "tools/rhino_oracle/client.py": "1aa9c98bf227fd991d50a7a20a31222be7150cac90187901421f8df298e73345",
+    "tools/rhino_oracle/client.py": "ebe1271c4a882f7d3426a60698242ec8924bd9b7d2f877ff88101440d63c5796",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
-    "tools/rhino_oracle/rhino_worker.py": "d4533e338870885f4a684b03e86f8428147ef4251d294b920f18cce894f3d045",
+    "tools/rhino_oracle/rhino_worker.py": "bfb11e2f8b5141a6e78fd441936001acd94d3f90f80729fcf9723803bf4ddd22",
     "tools/rhino_oracle/fixtures/face_create.json": "26fc3b89bd149d5506fb6f95c3fd75d30b01a2b46099739fc54f20af8057d8e1",
     "tools/rhino_oracle/observations/face_create.json": "2472619c22ffac8634f52948a2ae81195b9b6b4276276f3f329b1d99060c1db8",
     "tools/rhino_oracle/fixtures/face_create_variants.json": "416766d0f73ecabbbaca1ab26e558502810653ec9e04d8214e454a10a868a804",
@@ -4128,6 +4128,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "b9aba52acb0e9d610cc4e9f7219c62ed5666639daae72ad4aa2e5bc5f08918b3"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "3701958bd5347362d4294cc25e39434960c958d0b84502b2da31e2bdbd61c6a1"
   }
 }

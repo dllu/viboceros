@@ -16,6 +16,7 @@ fn straight_refit_matches_native_surfaces_and_preserves_sources() {
         "loft_refit_policy",
         "loft_refit_lines",
         "loft_refit_line_ends",
+        "loft_refit_line_inputs",
     ] {
         let read = |folder| -> Value {
             serde_json::from_slice(
@@ -63,6 +64,6 @@ fn straight_refit_matches_native_surfaces_and_preserves_sources() {
             maximum = maximum.max(difference);
         }
     }
-    assert_eq!(matched, 121);
+    assert_eq!(matched, 211);
     println!("LOFT_REFIT_LINES matched={matched} maximum={maximum}");
 }

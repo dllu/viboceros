@@ -173,8 +173,8 @@
     "crates/viboceros-geometry/src/loft/rebuild/tests.rs": "6a9f615a76f0fcf38f222a49d5d775314cfe219bb96720cd97f5cd8a53e52534",
     "crates/viboceros-geometry/tests/support/loft_rebuild.rs": "668b312194c4eef23d367f0c7fac9750e217ad44d42a954c1726128f2b64835b",
     "crates/viboceros-geometry/tests/loft_rebuild_native.rs": "3f0e821bdc04207494d6a675c066abe85c8fc5eb1680636b989807258aa24dd8",
-    "crates/viboceros-geometry/src/loft/refit.rs": "d2f0d28b85efbf056f76cb12c848ea0adb9f511a9842cae68497c68d4001463e",
-    "crates/viboceros-geometry/src/loft/refit/tests.rs": "ef5b7de922fd71965778d62e7f1f74abd988d5fb6d93b9bcaabc110afda61e09",
-    "crates/viboceros-oracle/tests/loft_refit_lines_native.rs": "9c0aa61f9453b490550db81cadf72512696fdd5cd4e66b33bd1e076cf5c88eca"
+    "crates/viboceros-geometry/src/loft/refit.rs": "9c46b82eae59f895179072e07f37e0417b6d5699dad425287342293bd13440a4",
+    "crates/viboceros-geometry/src/loft/refit/tests.rs": "83d2024bb19ea83a218ce0083a314474967e2d6b636c67f125e5b0e91cd14696",
+    "crates/viboceros-oracle/tests/loft_refit_lines_native.rs": "bc37468944604a436a59321f25ef89df2dc81bfcb917bac0e671f38819a4d7f6"
   }
 }

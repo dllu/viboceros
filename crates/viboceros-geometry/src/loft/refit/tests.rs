@@ -76,7 +76,60 @@ fn continuous_piecewise_lines_and_stationary_ends_are_admitted() {
 }
 
 #[test]
-fn curves_reversals_jumps_unclamped_curves_and_mixed_weights_fail_explicitly() {
+fn unclamped_rational_lines_use_active_endpoints_with_one_final_rounding() {
+    for weights in [[1., 2., 0.5], [-1., -2., -0.5]] {
+        let source = curve(
+            &[[0., 0., 0.], [1., 0.5, 0.], [4., 2., 0.]],
+            &weights,
+            2,
+            vec![-13., -13., -3., 7., 17., 17.],
+        );
+        let before = source.clone();
+        let fit = try_prepare_refitted_loft_sections(std::slice::from_ref(&source), 1e-12)
+            .unwrap()
+            .remove(0);
+        for i in 0..=16 {
+            let t = f64::from(i) / 16.;
+            let x = (1. - t) * (2. / 3.) + t * (8. / 5.);
+            assert!(
+                fit.evaluate(t)
+                    .unwrap()
+                    .distance_to(Point3::try_new(x, x / 2., 0.).unwrap())
+                    .unwrap()
+                    < 1e-15
+            );
+        }
+        assert_eq!(source, before);
+        assert!(try_prepare_refitted_loft_sections(std::slice::from_ref(&source), 1e-18).is_err());
+        assert_eq!(
+            try_prepare_refitted_loft_sections(std::slice::from_ref(&source), 0.).unwrap(),
+            [source]
+        );
+    }
+}
+
+#[test]
+fn inactive_outer_controls_do_not_define_the_fitted_segment() {
+    let source = curve(
+        &[
+            [0., 0., 0.],
+            [1., 0., 0.],
+            [1., 0., 0.],
+            [1., 0., 0.],
+            [2., 0., 0.],
+        ],
+        &[1.; 5],
+        2,
+        vec![-1., 0., 0., 0., 1., 1., 1., 2.],
+    );
+    assert!(matches!(
+        try_prepare_refitted_loft_sections(&[source], 1e-9),
+        Err(GeometryError::UnsupportedCurveApproximation { .. })
+    ));
+}
+
+#[test]
+fn curves_reversals_jumps_and_mixed_weights_fail_explicitly() {
     let source = uneven(&[1.; 4]);
     let mut near = source
         .control_points()
@@ -97,12 +150,6 @@ fn curves_reversals_jumps_unclamped_curves_and_mixed_weights_fail_explicitly() {
             &[1.; 4],
             1,
             vec![0., 0., 0.5, 0.5, 1., 1.],
-        ),
-        curve(
-            &[[0., 0., 0.], [1., 0., 0.], [3., 0., 0.]],
-            &[1.; 3],
-            2,
-            vec![-2., -1., 0., 1., 2., 3.],
         ),
         curve(
             &[[0., 0., 0.]; 4],
@@ -141,4 +188,17 @@ fn unrepresentable_handle_tolerances_and_resource_overflows_are_rejected() {
         try_prepare_refitted_loft_sections(&vec![line; 257], 0.001),
         Err(GeometryError::LoftResourceLimit { maximum: 256, .. })
     ));
+    let degree = 100;
+    let source = NurbsCurve::try_new(
+        degree,
+        (0..=degree)
+            .map(|i| Point3::try_new(i as f64, 0., 0.).unwrap())
+            .collect(),
+        (0..2 * (degree + 1)).map(|i| i as f64).collect(),
+    )
+    .unwrap();
+    assert_eq!(
+        try_prepare_refitted_loft_sections(&[source], 1e-9),
+        Err(GeometryError::SurfaceCurveCertificateWorkLimit)
+    );
 }

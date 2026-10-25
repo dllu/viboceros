@@ -4,14 +4,16 @@ use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::{One, Signed, Zero};
 
 /// Refit ordered straight profiles to polynomial cubics. Zero retains the
-/// original definitions. Positive tolerance currently requires clamped,
-/// continuous, non-reversing collinear control polygons with same-sign weights.
+/// original definitions. Positive tolerance currently requires continuous,
+/// non-reversing collinear control polygons with same-sign weights.
 /// Other profiles fail explicitly; the general curved Refit policy is pending.
 ///
 /// Collinearity and control order are checked with exact rational arithmetic.
 /// Positive rational basis functions then keep the source on its endpoint
 /// segment. The cubic uses uniform line speed and one final rounding per handle;
-/// its whole-image distance from that segment is bounded by `fit_tolerance`.
+/// its whole-image distance from the active segment is bounded by `fit_tolerance`.
+/// Unclamped endpoints use the shared bounded exact extraction, retaining their
+/// rational values through handle construction and the final error check.
 /// This changes parameter correspondence and never mutates the sources.
 pub fn try_prepare_refitted_loft_sections(
     curves: &[NurbsCurve],
@@ -68,7 +70,7 @@ pub fn try_loft_nurbs_curves_refitted(
 
 fn straight(source: &NurbsCurve, tolerance: Real) -> Result<NurbsCurve, GeometryError> {
     let unsupported = || GeometryError::UnsupportedCurveApproximation {
-        context: "Loft Refit currently requires continuous clamped non-reversing straight sections with same-sign weights",
+        context: "Loft Refit currently requires continuous non-reversing straight sections with same-sign weights",
     };
     let controls = source.control_points();
     if controls.len() > MAX_LOFT_SECTION_CONTROLS {
@@ -80,11 +82,9 @@ fn straight(source: &NurbsCurve, tolerance: Real) -> Result<NurbsCurve, Geometry
     let knots = source.knots();
     let degree = source.degree();
     let domain = source.domain();
-    if knots[..=degree].iter().any(|k| k != domain.start())
-        || knots[controls.len()..].iter().any(|k| k != domain.end())
-        || knots
-            .windows(degree + 1)
-            .any(|w| w[0] > *domain.start() && w[0] < *domain.end() && w[0] == w[degree])
+    if knots
+        .windows(degree + 1)
+        .any(|w| w[0] > *domain.start() && w[0] < *domain.end() && w[0] == w[degree])
         || controls
             .iter()
             .any(|c| c.weight().is_sign_negative() != controls[0].weight().is_sign_negative())
@@ -110,6 +110,17 @@ fn straight(source: &NurbsCurve, tolerance: Real) -> Result<NurbsCurve, Geometry
         }
         previous = parameter;
     }
+    let [start, end] = if knots[..=degree].iter().all(|k| k == domain.start())
+        && knots[controls.len()..].iter().all(|k| k == domain.end())
+    {
+        [start, end]
+    } else {
+        crate::surface_pullback::exact_curve_endpoints(source)?.ok_or_else(unsupported)?
+    };
+    if start == end {
+        return Err(unsupported());
+    }
+    let delta = std::array::from_fn::<_, 3, _>(|i| &end[i] - &start[i]);
     let limit = rational(tolerance);
     let mut result = Vec::with_capacity(4);
     for index in 0..=3 {

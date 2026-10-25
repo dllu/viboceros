@@ -1818,7 +1818,6 @@
     "tools/rhino_oracle/observations/surface_curve_offset_extensions.json": "c6fa4257f16f3c3b0487b1f5c80aac595b4527a333547a480b0416004f71529b",
     "tools/rhino_oracle/surface_curve_offset_probe.py": "d3a4d6c6bf17208af450f42627c8c162650a886f9cb1023eddc84908a509dbd9",
     "tools/rhino_oracle/generate_surface_curve_offset.py": "1a55cd5e0562040ae8b38f5d6cb854c84de6ab5f10dd0cd3ea144ed2921b8920",
-    "crates/viboceros-geometry/src/surface_pullback.rs": "ea0109223b6a1b4fd4345f8cfe373b8d29ad1642aea6d42e0cafa353072b330b",
     "crates/viboceros-geometry/src/surface_pullback/interpolation.rs": "8face7abec9239440c795b6052cd8ceda3a507aa59bab8c0189e6b9b59c4db17",
     "crates/viboceros-geometry/src/surface_pullback/periodic.rs": "cadc58c1bd761c68b6de40b858fd6c2f9192ab1bbdf494b2a48e7dcdc9dd3804",
     "crates/viboceros-geometry/src/surface_pullback/periodic/tests.rs": "3f5caca40dd07396b5bf0bbccbe00454933ef7300c321b5609f1f7b4621aa5b3",
@@ -1861,7 +1860,8 @@
     "6e34823faa34d19f9d28cd4f0e9bc931a59d6c70:tools/rhino_oracle/test_surface_curve_offset.py": "a42d0e88016f15dfbd2afc81592179db753c4829df19a3f558223ded27beb64d",
     "ea8ab922823387238e70373f90a0361f480d776b:crates/viboceros-geometry/src/error.rs": "ac102875d83beac9257ebbb5487de17d145321bcdee1c2278f4e4052f5d8742d",
     "2ed922f736d97c642b24792415c0ecabe4ca6e05:crates/viboceros-geometry/src/brep.rs": "c8b417cdb1da87f116ec337737c955c97f7c7de36d8c3f8dc3587af3a6b38c1a",
-    "6763136a0829adbc1fcdd99653ec2e5ce076f64f:crates/viboceros-smlib/native/bridge.cpp": "2d1aa7ca77c6d47c10077d1e427fbd77d672debd2dd03b04b682a92004a9a50f"
+    "6763136a0829adbc1fcdd99653ec2e5ce076f64f:crates/viboceros-smlib/native/bridge.cpp": "2d1aa7ca77c6d47c10077d1e427fbd77d672debd2dd03b04b682a92004a9a50f",
+    "ea0b50f25f7487ba44949c762af8c249dce6effb:crates/viboceros-geometry/src/surface_pullback.rs": "ea0109223b6a1b4fd4345f8cfe373b8d29ad1642aea6d42e0cafa353072b330b"
   },
   "historical_source_note": "Original qualification hashes are retained. Evolving source files use immutable Git revisions; captured artifacts remain local. These maps do not claim a fresh replay of the current implementation."
 }

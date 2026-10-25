@@ -5,7 +5,7 @@ use crate::{
 };
 mod certificate;
 pub use certificate::PreparedSurfaceCurveBounds;
-pub(crate) use certificate::edit_point_bounds;
+pub(crate) use certificate::{edit_point_bounds, exact_curve_endpoints};
 #[cfg(test)]
 pub(crate) mod certified_tests;
 mod interpolation;

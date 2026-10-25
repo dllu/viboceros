@@ -2491,6 +2491,17 @@ def _loft(operation, iterations):
                 surfaces.append(_loft_surface_record(face, operation))
         if before is not None:
             record=dict(before=before, after=[_nurbs_curve_definition(c) for c in curves], surfaces=surfaces)
+            if operation.get('inspect_refit_clock', False):
+                from loft_refit_clock_probe import inspect
+                record['refit_clock'] = inspect(curves[0], refit,
+                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    Rhino.Geometry, _nurbs_curve_definition)
+            if operation.get('inspect_refit_sources', False):
+                from loft_refit_source_probe import inspect
+                record['refit_sources'] = inspect(curves, refit,
+                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance,
+                    Rhino.Geometry, _nurbs_curve_definition)
             if operation.get('inspect_refit_beziers', False):
                 from loft_refit_probe import cubic_sections
                 record['refit_beziers'] = cubic_sections(curves, refit,

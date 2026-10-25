@@ -31857,7 +31857,7 @@
     "third_party/usd-brep/source/SMLib/src/SmBSplineSurfaceNLib.cpp": "b971fc6c381f25805d6b5fec6463359bd20850f0e50fb0c75510c4e563061b1b",
     "third_party/usd-brep/source/SMLib/src/SmGeomUtility.cpp": "3480c818c94c9741e2b9bc27b085735107282881a885122a4dcd8a8618d5e30b",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
-    "tools/rhino_oracle/client.py": "1aa9c98bf227fd991d50a7a20a31222be7150cac90187901421f8df298e73345",
+    "tools/rhino_oracle/client.py": "ebe1271c4a882f7d3426a60698242ec8924bd9b7d2f877ff88101440d63c5796",
     "tools/rhino_oracle/fixtures/surface_apex_tangent_angles.json": "f8c4039ea0d52a33041a554a7229b770e73cea9327b901349313798facfa54e5",
     "tools/rhino_oracle/fixtures/surface_apex_tangent_threshold.json": "ef4b2ad23a465616d424d50fc53cd5a6b8e505229053ff32cb6191ed0b152785",
     "tools/rhino_oracle/fixtures/surface_apex_tangents.json": "1adfcfd48b09703a05453cec5476a92efae4de5df3cf8a5f559de49b753d219a",
