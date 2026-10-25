@@ -8,6 +8,7 @@ pub struct Options {
     pub split_at_tangents: bool,
     pub natural_seams: bool,
     pub ends: LoftEndPoints,
+    pub rebuild_point_count: usize,
 }
 
 impl Options {
@@ -19,6 +20,7 @@ impl Options {
     pub fn updated(self, arguments: &[&str]) -> Result<Self, CommandError> {
         let mut result = self;
         let mut seen = 0u8;
+        let mut simplify = None;
         for argument in arguments {
             let (name, value) = argument.split_once('=').unwrap_or((argument, ""));
             let key = if option_name_eq(name, "Type") {
@@ -46,6 +48,25 @@ impl Options {
             } else if option_name_eq(name, "EndPoint") {
                 result.ends.end = Some(parse_point(&[value])?.0);
                 32
+            } else if option_name_eq(name, "Rebuild")
+                || option_name_eq(name, "RebuildPointCount")
+                || option_name_eq(name, "RebuildCount")
+            {
+                result.rebuild_point_count = value
+                    .parse::<usize>()
+                    .ok()
+                    .filter(|n| *n <= viboceros_geometry::MAX_LOFT_SECTION_CONTROLS)
+                    .ok_or(CommandError::Usage(USAGE))?;
+                64
+            } else if option_name_eq(name, "Simplify") {
+                simplify = Some(
+                    match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                        "none" => false,
+                        "rebuild" => true,
+                        _ => return Err(CommandError::Usage(USAGE)),
+                    },
+                );
+                128
             } else {
                 return Err(CommandError::Usage(USAGE));
             };
@@ -53,6 +74,11 @@ impl Options {
                 return Err(CommandError::Usage(USAGE));
             }
             seen |= key;
+        }
+        if simplify == Some(false) {
+            result.rebuild_point_count = 0;
+        } else if simplify == Some(true) && result.rebuild_point_count == 0 {
+            result.rebuild_point_count = 10;
         }
         if result.closed && !result.ends.is_empty() {
             return Err(CommandError::Usage(USAGE));
@@ -81,6 +107,9 @@ impl Options {
                 let [x, y, z] = point.to_array();
                 result.push_str(&format!(" {name}={x},{y},{z}"));
             }
+        }
+        if self.rebuild_point_count != 0 {
+            result.push_str(&format!(" Rebuild={}", self.rebuild_point_count));
         }
         result
     }

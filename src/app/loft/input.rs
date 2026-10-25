@@ -120,9 +120,17 @@ impl VibocerosApp {
             self.finish_loft();
         } else if let Some(option) = p.value {
             self.update_loft_options(&format!("{option}={input}"));
-        } else if let Some(option) = ["Type", "Closed", "SplitAtTangents"]
-            .into_iter()
-            .find(|option| name.eq_ignore_ascii_case(option))
+        } else if let Some(option) = [
+            "Type",
+            "Closed",
+            "SplitAtTangents",
+            "Rebuild",
+            "RebuildPointCount",
+            "RebuildCount",
+            "Simplify",
+        ]
+        .into_iter()
+        .find(|option| name.eq_ignore_ascii_case(option))
         {
             self.loft_prompt.as_mut().unwrap().value = Some(option);
             self.log_loft();

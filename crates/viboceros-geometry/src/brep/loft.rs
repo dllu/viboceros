@@ -75,13 +75,7 @@ impl Brep {
         let (profiles, oriented) = profiles::prepare(curves, options, tolerance)?;
         let surface = loft(&profiles, style, closed)?;
         Ok(Self::from_loft_surface(
-            surface,
-            style,
-            closed,
-            options,
-            tolerance,
-            oriented,
-            profiles.iter().all(|c| c.degree() == 1),
+            surface, style, closed, options, tolerance, oriented,
         )?)
     }
 
@@ -119,13 +113,7 @@ impl Brep {
         let (profiles, oriented) = profiles::prepare(curves, options, tolerance)?;
         let surface = loft(&profiles, style, ends)?;
         Ok(Self::from_loft_surface(
-            surface,
-            style,
-            false,
-            options,
-            tolerance,
-            oriented,
-            profiles.iter().all(|c| c.degree() == 1),
+            surface, style, false, options, tolerance, oriented,
         )?)
     }
 
@@ -136,8 +124,8 @@ impl Brep {
         options: LoftOptions,
         tolerance: Tolerance,
         oriented: bool,
-        linear_profiles: bool,
     ) -> Result<Self, GeometryError> {
+        let linear_profiles = surface.degree_v() == 1;
         // Retain the established open-loft chart policy. Native Straight
         // direction exceptions remain unresolved; see docs/loft-validation.md.
         if oriented && !closed && !(style == LoftStyle::Straight && linear_profiles) {

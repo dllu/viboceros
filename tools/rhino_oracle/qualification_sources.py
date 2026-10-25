@@ -105,6 +105,7 @@ APPLICATION_MODULES = [
     'src/app/tests/command_focus.rs',
     'src/app/tests/loft_options.rs',
     'src/app/tests/loft_input.rs',
+    'src/app/tests/loft_rebuild.rs',
     'src/app/loft.rs',
     'src/app/loft/input.rs',
     'src/app/loft/selection.rs',
@@ -204,6 +205,8 @@ def _expand_sources_once(paths):
                          'crates/viboceros-command/src/loft.rs',
                          'crates/viboceros-command/src/loft/options.rs',
                          'crates/viboceros-command/src/loft/tests.rs'])
+    if 'crates/viboceros-geometry/src/curve_rebuild.rs' in expanded:
+        expanded.append('crates/viboceros-geometry/src/curve_rebuild/tests.rs')
     if 'crates/viboceros-geometry/src/brep/loft.rs' in expanded:
         expanded.extend(['crates/viboceros-geometry/src/brep/loft/profiles.rs',
                          'crates/viboceros-geometry/src/brep/loft/orientation.rs',
@@ -218,6 +221,10 @@ def _expand_sources_once(paths):
                                    'crates/viboceros-geometry/src/loft/compatible.rs']):
         expanded.extend(['crates/viboceros-geometry/src/loft/parameterize.rs',
                          'crates/viboceros-geometry/src/loft/parameterize/tests.rs',
+                         'crates/viboceros-geometry/src/loft/rebuild.rs',
+                         'crates/viboceros-geometry/src/loft/rebuild/tests.rs',
+                         'crates/viboceros-geometry/tests/support/loft_rebuild.rs',
+                         'crates/viboceros-geometry/tests/loft_rebuild_native.rs',
                          'crates/viboceros-geometry/src/loft/points.rs',
                          'crates/viboceros-geometry/src/loft/points/tests.rs',
                          'crates/viboceros-geometry/src/integration/cash_karp.rs',

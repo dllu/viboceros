@@ -3,7 +3,7 @@ use super::*;
 #[test]
 fn options_round_trip_and_partial_updates_preserve_full_precision() {
     for style in ["Normal", "Loose", "Tight", "Straight", "Uniform"] {
-        let input = format!("Type={style} Closed=No SplitAtTangents=Yes Natural");
+        let input = format!("Type={style} Closed=No SplitAtTangents=Yes Natural Rebuild=6");
         let options = Options::parse(&input.split_whitespace().collect::<Vec<_>>()).unwrap();
         assert_eq!(
             Options::parse(&options.arguments().split_whitespace().collect::<Vec<_>>()).unwrap(),
@@ -129,7 +129,7 @@ fn invalid_lofts_are_atomic_and_do_not_add_history() {
         "Loft Type=Loose Type=Normal",
         "Loft DeleteInput=Yes Closed=Yes Closed=No",
         "Loft 1,2,3",
-        "Loft Rebuild=10",
+        "Loft Rebuild=513",
         "Loft SplitAtTangents=Maybe",
         "Loft SplitAtTangents=Yes SplitAtTangents=No",
         "Loft Natural Natural",
@@ -338,4 +338,81 @@ fn curvature_splitting_is_independent_of_the_global_crease_preference() {
             assert_eq!(registry.crease_splitting(), !crease);
         }
     }
+}
+
+#[test]
+fn loft_rebuild_preserves_inputs_and_records_one_atomic_result() {
+    let mut document = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    let ids = sources(&mut document);
+    document.clear_history().unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    for invalid in ["-1", "513", "NaN", "4.5"] {
+        assert!(
+            registry
+                .execute(&mut document, &format!("Loft Rebuild={invalid}"))
+                .is_err()
+        );
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(document.undo_label(), None);
+    }
+    assert!(
+        registry
+            .execute(&mut document, "Loft Rebuild=6 RebuildCount=8")
+            .is_err()
+    );
+    registry
+        .execute(&mut document, "Loft RebuildCount=6")
+        .unwrap();
+    let output = document.objects().find(|o| !ids.contains(&o.id())).unwrap();
+    let Geometry::Brep(brep) = output.geometry() else {
+        panic!("Loft B-rep")
+    };
+    assert_eq!(brep.faces()[0].surface().degree_v(), 3);
+    assert_eq!(brep.faces()[0].surface().control_point_count_v(), 6);
+    assert!(
+        document
+            .objects()
+            .filter(|o| ids.contains(&o.id()))
+            .cloned()
+            .eq(before.iter().cloned())
+    );
+    let after = document.objects().cloned().collect::<Vec<_>>();
+    assert_eq!(document.undo_label(), Some("Loft"));
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+}
+
+#[test]
+fn simplify_options_select_or_disable_rebuilding_without_partial_edits() {
+    let expected = Options::parse(&["Rebuild=6"]).unwrap();
+    for args in [
+        ["Simplify=Rebuild", "RebuildCount=6"],
+        ["RebuildPointCount=6", "_Simplify=_Rebuild"],
+    ] {
+        assert_eq!(Options::parse(&args).unwrap(), expected);
+    }
+    assert_eq!(
+        Options::parse(&["Simplify=Rebuild"])
+            .unwrap()
+            .rebuild_point_count,
+        10
+    );
+    assert_eq!(
+        expected
+            .updated(&["Simplify=None"])
+            .unwrap()
+            .rebuild_point_count,
+        0
+    );
+    assert_eq!(
+        Options::parse(&["Simplify=None", "Rebuild=6"])
+            .unwrap()
+            .rebuild_point_count,
+        0
+    );
+    assert!(expected.updated(&["Simplify=Refit"]).is_err());
+    assert!(expected.updated(&["Rebuild=6", "RebuildCount=9"]).is_err());
 }

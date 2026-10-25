@@ -17,6 +17,8 @@ pub struct LoftFixture {
     pub end_point: Option<[f64; 3]>,
     #[serde(default)]
     pub inspect_inputs: bool,
+    #[serde(default)]
+    pub rebuild_point_count: usize,
 }
 
 impl LoftFixture {
@@ -49,10 +51,24 @@ pub(super) fn run(
             .map(nurbs_curve_definition_value)
             .collect::<Vec<_>>()
     });
-    let mut surface = fixture_surface(&curves, style, fixture.closed, ends)?;
+    let mut surface = fixture_surface(
+        &curves,
+        style,
+        fixture.closed,
+        ends,
+        fixture.rebuild_point_count,
+        tolerance,
+    )?;
     let started = Instant::now();
     for _ in 0..iterations {
-        surface = black_box(fixture_surface(&curves, style, fixture.closed, ends)?);
+        surface = black_box(fixture_surface(
+            &curves,
+            style,
+            fixture.closed,
+            ends,
+            fixture.rebuild_point_count,
+            tolerance,
+        )?);
     }
     let elapsed =
         u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
@@ -72,7 +88,25 @@ fn fixture_surface(
     style: viboceros_geometry::LoftStyle,
     closed: bool,
     ends: viboceros_geometry::LoftEndPoints,
+    rebuild: usize,
+    tolerance: Tolerance,
 ) -> Result<NurbsSurface, ProbeError> {
+    if rebuild != 0 {
+        #[cfg(feature = "native-smlib")]
+        {
+            return viboceros_smlib::loft_surface_rebuilt(
+                curves, style, closed, ends, rebuild, tolerance,
+            )
+            .map_err(CommandError::from)
+            .map_err(ProbeError::from);
+        }
+        #[cfg(not(feature = "native-smlib"))]
+        {
+            return Ok(viboceros_geometry::try_loft_nurbs_curves_rebuilt(
+                curves, style, closed, ends, rebuild, tolerance,
+            )?);
+        }
+    }
     if ends.is_empty() {
         return surface(curves, style, closed);
     }
@@ -166,7 +200,7 @@ pub(super) fn build_brep(fixture: &LoftFixture, tolerance: Tolerance) -> Result<
             ends,
             viboceros_geometry::LoftOptions::default(),
             tolerance,
-            &mut |c, s, e| fixture_surface(c, s, false, e),
+            &mut |c, s, e| fixture_surface(c, s, false, e, fixture.rebuild_point_count, tolerance),
         );
     }
     Brep::try_loft_with_surface(
@@ -174,7 +208,16 @@ pub(super) fn build_brep(fixture: &LoftFixture, tolerance: Tolerance) -> Result<
         parse_style(&fixture.style)?,
         fixture.closed,
         tolerance,
-        &mut surface,
+        &mut |c, s, closed| {
+            fixture_surface(
+                c,
+                s,
+                closed,
+                viboceros_geometry::LoftEndPoints::default(),
+                fixture.rebuild_point_count,
+                tolerance,
+            )
+        },
     )
 }
 
@@ -201,6 +244,9 @@ fn command(
         if let Some([x, y, z]) = point {
             command.push_str(&format!(" {name}={x},{y},{z}"));
         }
+    }
+    if fixture.rebuild_point_count != 0 {
+        command.push_str(&format!(" Rebuild={}", fixture.rebuild_point_count));
     }
     let mut elapsed = 0_u128;
     let mut result = Value::Null;

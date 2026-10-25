@@ -17642,7 +17642,7 @@
     "src/app/tests/face_edge_input.rs": "5a3073701e8da3181f8e3306badcc2fcc2f6b175740891dc1d612b0c204e4abc",
     "src/app/tests/mesh_edit_input.rs": "a4fd1266f4f6fa9b6dabd24745f9ec11375fd2e3e299c0f422475d488b378105",
     "src/app/tests/mesh_primitive_input.rs": "31ed51730b62b47d6dc9c3b9528a3855f898029f76883d050ff5e07a63ed58b5",
-    "src/app/tests/mod.rs": "471369764667bb08f96d549b18b5d4cddbada892d70e82be3c0c677884857052",
+    "src/app/tests/mod.rs": "41fb798ffd28d9980cdf2c01759d8317252a32c937855f43dd018b4ff30a7b42",
     "src/app/tests/polyline_closure.rs": "f215e64f86f7ac2628d272145108dc7661ac269e8000ba54c2ca316749309fd5",
     "src/app/tests/primitive_input.rs": "cb745190ea55cfbca6bbc77c7da7ed8c1e845590cf114318949718179e055652",
     "src/app/tests/round_primitive_input.rs": "5d700393bc1a19f4fdc67402ba38a6058cff1cc9cd5220453d9569b95e8d6b64",
@@ -17679,17 +17679,18 @@
     "tools/rhino_oracle/observations/source_snapshots/3b67cf8fa6f590e3bdbd5a3744ebbc8beab08bd6b0413c0d653dd4153d752543.gz": "c6df47edb99674713eaf2a39c87ae641363094dcd24cb5fd02fceb3aff74bfda",
     "tools/rhino_oracle/observations/source_snapshots/8e8e2c6c987a69b093ede61823da45c2f8775977276630f3b428a3f6ceeb324c.gz": "e68074d0a437f72894cc279ba3fd9c16ebb6345d735e3deac1d7c881b2146b25",
     "tools/rhino_oracle/observations/source_snapshots/920c932aff1beb93d20916fc8090f96bdc83c37b1657c7538f636d50dcafe880.gz": "bf488af432eabab60a50722c767e90d432890704930e8a63e1f3fc2b6a379f00",
-    "tools/rhino_oracle/qualification_sources.py": "89f679634fbb812f4c9d4ecf5f42ddc3f30d7cf49bc1e3ca06936f24ad691be7",
+    "tools/rhino_oracle/qualification_sources.py": "d20d6059a9e09012c6fcdb4856f82db915ef25a8d28522424b5482db245e6605",
     "tools/rhino_oracle/references/interface_subd.py": "920c932aff1beb93d20916fc8090f96bdc83c37b1657c7538f636d50dcafe880",
     "tools/rhino_oracle/report_interface_subd.py": "581b168427438d0ddded7f7efe95d51ddbd9a6a7682a34e0ed208bc134d12a1b",
-    "tools/rhino_oracle/rhino_worker.py": "e4af9b0d40eb151e514635f7bfab41dec14807bf7bea1fee5f5a9ebc55c6dcc4",
+    "tools/rhino_oracle/rhino_worker.py": "9e0a50751ee86e5c3641ecd587814b00ff3b463e055e126b9107ae4f318b6f91",
     "tools/rhino_oracle/test_interface_commands.py": "e6d3cc7d9100ec4efd9c94122e886a095faf6c58bbbbe10086fe5948c62cb9f8",
     "tools/rhino_oracle/test_interface_subd.py": "91639c9d623d71d96d7c2da8f5ba7a8ca606822b81b0da20b3cbafe15060f0b1",
     "tools/rhino_oracle/test_worker.py": "c6a913973e7aee9e18e7e55503122898d154e26b7fd20ae645e45157ac01a901",
     "src/app/tests/loft_options.rs": "7f9467c6ec50a2a8b28d7a63546c47977f9a83070f45c01915427be89b64b852",
     "src/app/tests/loft_input.rs": "76e43d095ef7c5bb7e43479214e8965c1b2182ed21af1fe27dbe27aa2838642e",
-    "src/app/loft.rs": "eafa162a65bffb1eaf7d0167bc1cd0d701e3927058828e61a92a6e3bcf12a753",
-    "src/app/loft/input.rs": "91f3c8feb788a42819f8aaa7621d24e5a0450ae28903ebf175ed38b47d9c190f",
-    "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3"
+    "src/app/loft.rs": "a9838af044669cee73166508e15ef41778033ab4a7e977b940c51e87ff2052fe",
+    "src/app/loft/input.rs": "751aafee5106999210401b34bc63e6afdf8ac795cf747e4f165a7ee5c84a359d",
+    "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
+    "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d"
   }
 }

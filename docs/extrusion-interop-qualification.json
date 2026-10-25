@@ -199,7 +199,7 @@
     "ToSubD command, option persistence, component selection, UI and creator integration are qualified separately. These source-file comparisons qualify file interchange."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/lib.rs": "567d91b5af88169788935764a09c755e675702b284c649cfeffbd6d08f315358",
+    "crates/viboceros-geometry/src/lib.rs": "0ad8f56d8b745c8e4dfad7b775313f59a02b42b34afc70c620bdff889200fddc",
     "crates/viboceros-geometry/src/error.rs": "e03ea19c5b36f97cbd32f959d853bba42d471627f5cf21a4f5e3b39e7a4b379d",
     "crates/viboceros-geometry/src/brep.rs": "e45e31aead0f81119fb6f4ed211998663d56c7458356dfa7fa59df3c4d55de21",
     "crates/viboceros-geometry/src/brep/extrusion.rs": "4dbf4a7fc172be515bd115a1d33db7ca5ac3f9f7a1bfdb54a4ce80645e7ce977",
@@ -228,7 +228,7 @@
     "tools/rhino_oracle/tosubd_probe.py": "2724a2ec087268a2ed00f09dcc0ecadda313365a6b6e69abbda9f37f239db0a8",
     "tools/rhino_oracle/generate_tosubd.py": "d8a7f9eff1b3427a4849a471df9d1724bcebc94d219bc68ba39a85e6875b4435",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
-    "tools/rhino_oracle/rhino_worker.py": "e4af9b0d40eb151e514635f7bfab41dec14807bf7bea1fee5f5a9ebc55c6dcc4",
+    "tools/rhino_oracle/rhino_worker.py": "9e0a50751ee86e5c3641ecd587814b00ff3b463e055e126b9107ae4f318b6f91",
     "tools/rhino_oracle/report_extrusions.py": "f55d5bb8d78e9e3c54bded906fecb7b171a3038b5c860ee438cec8a7591f4a98",
     "tools/rhino_oracle/test_extrusions.py": "6c09bfc7340742355f92902fb939349446bb1e2f5bbf7071f435f29ba3c59298",
     "tools/rhino_oracle/fixtures/tosubd_extrusions.json": "00f7b598aea12033c12945d2a9b1566e661e68e2bbd757c2c35bba49b64d16fd",
@@ -242,7 +242,7 @@
     "crates/viboceros-opennurbs/native/extrusion_roundoff_test.cpp": "8a3b1e4fb9a2c6a626b92e7be44a3bc27471e4a5c6bc08c8c142f90e62e1e86f",
     "crates/viboceros-opennurbs/native/CMakeLists.txt": "1fc44d0d3063e0c7c355f4aae602b41d676e37021bf758638990f402d7fa4d79",
     "crates/viboceros-io/src/three_dm/mesh_ngon.rs": "a8b04d6c4a5b62ee1c2caa3accc7cdec72a30eeaffd1ce6d31f4fb4aceb22a2a",
-    "tools/rhino_oracle/qualification_sources.py": "89f679634fbb812f4c9d4ecf5f42ddc3f30d7cf49bc1e3ca06936f24ad691be7",
+    "tools/rhino_oracle/qualification_sources.py": "d20d6059a9e09012c6fcdb4856f82db915ef25a8d28522424b5482db245e6605",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_rectangle_00.3dm": "c802038509d83be6bbfe818278744bc2333d30d7b80ebfeac738523b8308f9da",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_rectangle_open_00.3dm": "7afae390176bd35b3435ae2f377c2e5e10d77141d26e4eb03552e3ae9c178378",
     "tools/rhino_oracle/fixtures/extrusions/tosubd_extrusion_rectangle_negative_00.3dm": "95c52c0d3c65c00227f792561c5bd96c4498417168731ca4ddf333229156a9d5",

@@ -39,10 +39,10 @@ impl Prompt {
             (Some(End::Finish), _) => "Pick the end point of the loft (Esc cancels)",
             (_, Some(_)) => "Enter the option value (Esc cancels)",
             _ if self.state.finished_profiles => {
-                "Enter creates the loft; Type/Closed/SplitAtTangents/Natural/Undo (Esc cancels)"
+                "Enter creates the loft; Type/Closed/SplitAtTangents/Rebuild/Natural/Undo (Esc cancels)"
             }
             _ => {
-                "Select curves in order; Point/Type/Closed/SplitAtTangents/Natural/Undo; Enter creates the loft"
+                "Select curves in order; Point/Type/Closed/SplitAtTangents/Rebuild/Natural/Undo; Enter creates the loft"
             }
         }
     }

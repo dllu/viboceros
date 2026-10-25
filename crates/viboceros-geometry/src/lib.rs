@@ -253,7 +253,8 @@ pub use curve_offset::{
 pub use curve_rebuild::{
     CurveRebuildInterpolation, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_REBUILD_POINT_COUNT,
     try_interpolate_affine_greville_with_solver, try_rebuild_curve,
-    try_rebuild_curve_with_interpolation,
+    try_rebuild_curve_with_interpolation, try_rebuild_open_curve,
+    try_rebuild_open_curve_with_interpolation,
 };
 pub use curve_segment::CurveSegment3;
 pub use curve_through::{
@@ -288,9 +289,10 @@ pub use intersection::{
 pub use line::LineSegment;
 pub use loft::{
     LoftEndPoints, LoftInterpolation, LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS,
-    prepare_loft_sections_with_operations, try_loft_nurbs_curves,
+    prepare_loft_sections_with_operations, try_loft_nurbs_curves, try_loft_nurbs_curves_rebuilt,
     try_loft_nurbs_curves_with_end_points, try_loft_nurbs_curves_with_end_points_and_operations,
     try_loft_nurbs_curves_with_operations, try_loft_nurbs_curves_with_preparation,
+    try_prepare_rebuilt_loft_sections_with,
 };
 pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,

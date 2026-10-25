@@ -2428,6 +2428,9 @@ def _loft(operation, iterations):
         raise ValueError("point-ended command capture requires an explicit Point selection workflow")
     if has_points and operation.get("closed", False):
         raise ValueError("closed Loft cannot have point ends")
+    rebuild = operation.get('rebuild_point_count')
+    if rebuild is not None and (type(rebuild) is not int or rebuild < 0 or rebuild > 512):
+        raise ValueError('invalid Loft rebuild point count')
     curves = []
     styles = {
         "normal": Rhino.Geometry.LoftType.Normal,
@@ -2441,12 +2444,15 @@ def _loft(operation, iterations):
         for brep in result:
             brep.Dispose()
         del result[:]
-        result.extend(Rhino.Geometry.Brep.CreateFromLoft(
-            curves,
+        arguments = [curves,
             _point(operation["start_point"]) if operation.get("start_point") is not None else Rhino.Geometry.Point3d.Unset,
             _point(operation["end_point"]) if operation.get("end_point") is not None else Rhino.Geometry.Point3d.Unset,
-            styles[operation.get("style", "normal")], operation.get("closed", False)
-        ) or [])
+            styles[operation.get("style", "normal")], operation.get("closed", False)]
+        factory = Rhino.Geometry.Brep.CreateFromLoft
+        if rebuild is not None:
+            factory = Rhino.Geometry.Brep.CreateFromLoftRebuild
+            arguments.append(rebuild)
+        result.extend(factory(*arguments) or [])
         if not result and not operation.get("allow_empty", False):
             raise ValueError("Rhino could not create the loft")
     try:
@@ -2463,7 +2469,19 @@ def _loft(operation, iterations):
             for face in brep.Faces:
                 surfaces.append(_loft_surface_record(face, operation))
         if before is not None:
-            return dict(before=before, after=[_nurbs_curve_definition(c) for c in curves], surfaces=surfaces), elapsed
+            record=dict(before=before, after=[_nurbs_curve_definition(c) for c in curves], surfaces=surfaces)
+            if operation.get('inspect_rebuilt', False):
+                record['rebuilt'] = []
+                for preserve in (False, True):
+                    definitions = []
+                    for curve in curves:
+                        rebuilt = curve.Rebuild(rebuild, 3, preserve)
+                        try:
+                            definitions.append(_nurbs_curve_definition(rebuilt) if rebuilt is not None else None)
+                        finally:
+                            if rebuilt is not None: rebuilt.Dispose()
+                    record['rebuilt'].append(definitions)
+            return record, elapsed
         return surfaces, elapsed
     finally:
         for brep in result:
@@ -2488,7 +2506,12 @@ def _loft_command(operation, iterations, curves):
     macro = "_-Loft %s_Type=%s _Closed=%s _Enter" % (
         seam, operation.get("style", "normal"),
         "Yes" if operation.get("closed", False) else "No")
-    return _curve_surface_command(curves, macro, iterations, "loft", record)
+    if operation.get('rebuild_point_count') is not None:
+        count = operation['rebuild_point_count']
+        simplify = '_Simplify=_None' if count == 0 else '_Simplify=_Rebuild _RebuildCount=%d' % count
+        macro = macro.rsplit('_Enter', 1)[0] + simplify + ' _Enter'
+    return _curve_surface_command(curves, macro, iterations, "loft", record,
+                                  verify_script=operation.get('rebuild_point_count') is not None)
 
 
 def _run_surface_script(script, verify):

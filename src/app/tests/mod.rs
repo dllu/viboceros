@@ -102,6 +102,7 @@ mod length;
 mod line_through_points;
 mod loft_input;
 mod loft_options;
+mod loft_rebuild;
 mod maelstrom;
 mod mark_foci;
 mod merge_edge;

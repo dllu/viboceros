@@ -5,6 +5,7 @@
 ```text
 Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No]
      [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z]
+     [Rebuild=0..512]
 ```
 
 Select at least two curves, or one with a point end; `Closed=Yes` requires three.
@@ -13,6 +14,9 @@ and `Closed=No`. The result is one B-rep on the current layer, with fresh
 attributes, no groups, and no selection. Source objects, attributes, groups,
 and selection remain intact. The command is one atomic undo/redo operation.
 Unsupported options and invalid geometry fail before document mutation.
+
+[Section rebuilding](loft-rebuild.md) constructs clamped profiles through the
+shared arc-length rebuild before lofting.
 
 Optional [point ends](loft-points.md) taper either side to a pole. A single curve
 suffices with a point end; Uniform and `Closed=Yes` do not accept point ends.
@@ -106,8 +110,7 @@ control polygons are rejected. No general self-intersection, denominator-pole,
 or continuous approximation certificate is claimed.
 
 Not implemented: general spatial profile/seam matching,
-interactive seam editing, start/end tangent matching, and Rebuild/Refit
-simplification. Nonparallel or nonplanar closed sections currently keep input
+interactive seam editing, start/end tangent matching, and Refit simplification. Nonparallel or nonplanar closed sections currently keep input
 order. Native parameter preservation
 of analytic input curves is not promised: loft deliberately builds a normalized
 compatible basis. Nearly symmetric profiles can select a different boundary from Rhino when

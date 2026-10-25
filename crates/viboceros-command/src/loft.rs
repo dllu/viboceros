@@ -1,7 +1,7 @@
 use super::*;
 use viboceros_geometry::{LoftEndPoints, LoftOptions, LoftStyle};
 
-pub const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+pub const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z] [Rebuild=0..512]";
 
 mod options;
 pub use options::Options;
@@ -40,7 +40,20 @@ impl Command for LoftCommand {
                 input.closed,
                 options,
                 document.tolerance(),
-                &mut surface,
+                &mut |c, s, closed| {
+                    if input.rebuild_point_count == 0 {
+                        surface(c, s, closed)
+                    } else {
+                        rebuilt_surface(
+                            c,
+                            s,
+                            closed,
+                            ends,
+                            input.rebuild_point_count,
+                            document.tolerance(),
+                        )
+                    }
+                },
             )?
         } else {
             Brep::try_loft_with_surface_end_points(
@@ -49,7 +62,20 @@ impl Command for LoftCommand {
                 ends,
                 options,
                 document.tolerance(),
-                &mut surface_with_end_points,
+                &mut |c, s, ends| {
+                    if input.rebuild_point_count == 0 {
+                        surface_with_end_points(c, s, ends)
+                    } else {
+                        rebuilt_surface(
+                            c,
+                            s,
+                            false,
+                            ends,
+                            input.rebuild_point_count,
+                            document.tolerance(),
+                        )
+                    }
+                },
             )?
         };
         let faces = brep.faces().len();
@@ -58,6 +84,27 @@ impl Command for LoftCommand {
             "Lofted {} curve sections into one BRep with {faces} faces",
             profiles.len(),
         ))
+    }
+}
+
+pub(super) fn rebuilt_surface(
+    curves: &[NurbsCurve],
+    style: LoftStyle,
+    closed: bool,
+    ends: LoftEndPoints,
+    count: usize,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::loft_surface_rebuilt(curves, style, closed, ends, count, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_loft_nurbs_curves_rebuilt(
+            curves, style, closed, ends, count, tolerance,
+        )?)
     }
 }
 

@@ -111,6 +111,40 @@ pub fn loft_surface_with_end_points(
     )
 }
 
+/// Rebuild ordered sections using native basis evaluation and solving, then
+/// reuse the ordinary native Loft preparation/interpolation and pole policy.
+pub fn loft_surface_rebuilt(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    closed: bool,
+    ends: viboceros_geometry::LoftEndPoints,
+    point_count: usize,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, Error> {
+    let sections = viboceros_geometry::try_prepare_rebuilt_loft_sections_with(
+        curves,
+        style,
+        closed,
+        ends,
+        point_count,
+        tolerance,
+        &mut |c, n, d, t| {
+            viboceros_geometry::try_rebuild_open_curve_with_interpolation(
+                viboceros_geometry::CurveRef::NurbsCurve(c),
+                n,
+                d,
+                t,
+                &mut solve_rebuild_interpolation,
+            )
+        },
+    )?;
+    if ends.is_empty() {
+        loft_surface(&sections, style, closed)
+    } else {
+        loft_surface_with_end_points(&sections, style, ends)
+    }
+}
+
 #[repr(C)]
 struct InterpolationSystem {
     knots: *const f64,
