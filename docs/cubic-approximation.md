@@ -16,6 +16,21 @@ uncertain, zero-limit or extreme cases retain exact rational arithmetic.
 The same engine provides `parameter_curve_deviation_bound(other, limit)` for two
 curves with affinely normalized domains. A returned bound proves the entire
 correspondence; `None` is inconclusive or unsupported, not an equality proof.
+For different parameter clocks, `mapped_curve_deviation_bound(other, pairs,
+limit)` accepts 2–4097 normalized parameter pairs, strictly increasing from
+`[0, 0]` to `[1, 1]`. It proves every interval of the resulting piecewise affine
+correspondence, splitting exactly at either curve's knots. Coverage of both
+domains also bounds symmetric Hausdorff distance; it does not find an optimal
+matching or prove topology. Sampling can propose pairs, but cannot accept a fit.
+
+The JSON/Python operation `curve_deviation_bound` accepts exactly two `curves`,
+optional `correspondence` pairs (default: normalized identity), and optional
+`absolute_tolerance`, including zero. It returns `certified`,
+`maximum_deviation_bound` (null when unproved), and before/after definitions.
+Three native curved Refit results certify within `0.001` using proposed matching
+pairs, while their original normalized clocks fail that same correspondence
+test. This validates a distance primitive, not the Rhino fitting algorithm.
+[Validation](curve-correspondence-validation.json) retains the source bindings.
 
 The JSON/Python oracle operation `curve_cubic_approximation` accepts a standard
 `curve` definition, optional `absolute_tolerance`, and optional source
@@ -39,7 +54,7 @@ at `1e-6` and `1e-9`, analytical witnesses and resource checks. An integer-contr
 polynomial vanishes at five uniform samples yet exceeds one unit between them;
 the continuous bound detects it and forces refinement.
 
-This is a source-parameter approximation primitive. Rhino Loft Refit still
+This is a source-parameter approximation primitive. Curved Rhino Loft Refit still
 requires its own fitting and parameterization policy and remains unimplemented.
 No Rhino Refit or arbitrary-scale performance parity is claimed.
 

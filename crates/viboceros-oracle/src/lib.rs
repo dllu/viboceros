@@ -261,7 +261,7 @@ mod extension_backend;
 mod non_manifold_selection;
 mod planar_surface;
 mod volume_selection;
-pub use curve_approximation::CubicApproximationFixture;
+pub use curve_approximation::{CubicApproximationFixture, CurveCorrespondenceFixture};
 pub use curve_frames::CurveFramesFixture;
 pub use curve_native::NativeCurveFixture;
 mod polycurve_native;
@@ -908,6 +908,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: CubicApproximationFixture,
+    },
+    CurveDeviationBound {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurveCorrespondenceFixture,
     },
     CurveArea {
         id: String,
@@ -2824,6 +2829,7 @@ impl Operation {
             | Self::ThreeDmBrepInterchange { id, .. }
             | Self::CurveNative { id, .. }
             | Self::CurveCubicApproximation { id, .. }
+            | Self::CurveDeviationBound { id, .. }
             | Self::CurveArea { id, .. }
             | Self::EllipseOffsetGeometry { id, .. }
             | Self::CurveOffsetGeometry { id, .. }
@@ -3586,6 +3592,9 @@ fn execute(
         }
         Operation::CurveCubicApproximation { fixture, .. } => {
             curve_approximation::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurveDeviationBound { fixture, .. } => {
+            curve_approximation::deviation(fixture, iterations, tolerance)?
         }
         Operation::CurveArea { curve, .. } => curve_area::run(curve, iterations, tolerance)?,
         Operation::EllipseOffsetGeometry {

@@ -1,6 +1,9 @@
 //! Curve correspondence reuses the exact surface-image Bernstein machinery.
 use super::*;
 
+mod correspondence;
+#[cfg(test)]
+mod mapped_tests;
 #[cfg(test)]
 mod tests;
 
@@ -20,7 +23,33 @@ impl NurbsCurve {
         other: &NurbsCurve,
         limit: Real,
     ) -> Result<Option<Real>, GeometryError> {
-        bound(self, other, limit).map_err(map_work_error)
+        self.mapped_curve_deviation_bound(other, &[[0., 0.], [1., 1.]], limit)
+    }
+
+    /// Certifies complete curve images using a supplied piecewise affine
+    /// parameter correspondence. Each pair contains normalized parameters of
+    /// `self` and `other`; pairs must increase strictly in both coordinates,
+    /// start at `[0, 0]` and end at `[1, 1]`. Each domain is normalized exactly
+    /// from its stored endpoints. At most 4097 pairs are accepted.
+    ///
+    /// A returned bound proves Euclidean distance at most `limit` everywhere
+    /// along the correspondence, including both limits of every knot. Because
+    /// the correspondence covers both complete domains, it also bounds their
+    /// symmetric Hausdorff distance. It does not prove that this correspondence
+    /// is optimal, or certify topology, tangents, or injectivity. `None` means
+    /// outside this correspondence's limit or unsupported, never proof that the
+    /// geometric images are different. Reverse traversal by reversing a curve.
+    ///
+    /// The exact extraction, weight-sign, degree, arithmetic and work limits of
+    /// [`Self::parameter_curve_deviation_bound`] apply. Proposed matching pairs
+    /// may come from sampling; acceptance always certifies the intervals too.
+    pub fn mapped_curve_deviation_bound(
+        &self,
+        other: &NurbsCurve,
+        correspondence: &[[Real; 2]],
+        limit: Real,
+    ) -> Result<Option<Real>, GeometryError> {
+        correspondence::bound(self, other, correspondence, limit).map_err(map_work_error)
     }
 }
 
@@ -29,44 +58,4 @@ pub(super) fn map_work_error(error: GeometryError) -> GeometryError {
         GeometryError::SurfaceCurveCertificateWorkLimit => GeometryError::CurveApproximationLimit,
         other => other,
     }
-}
-
-fn bound(a: &NurbsCurve, b: &NurbsCurve, limit: Real) -> Result<Option<Real>, GeometryError> {
-    if !limit.is_finite() || limit < 0. {
-        return Err(GeometryError::InvalidTolerance);
-    }
-    if a.degree() > MAX_DEGREE || b.degree() > MAX_DEGREE {
-        return Ok(None);
-    }
-    let mut budget = Budget(MAX_WORK);
-    let Some(a) = curve::Spline::spatial(a, &mut budget)? else {
-        return Ok(None);
-    };
-    let Some(b) = curve::Spline::spatial(b, &mut budget)? else {
-        return Ok(None);
-    };
-    let mut cuts = a.cuts();
-    cuts.extend(b.cuts());
-    cuts.sort();
-    cuts.dedup();
-    let mut bound = 0_f64;
-    let mut coefficients = interval::Coefficients::default();
-    for pair in cuts.windows(2) {
-        let a = a.extract(&pair[0], &pair[1], &mut budget)?;
-        let b = b.extract(&pair[0], &pair[1], &mut budget)?;
-        match interval::curves(&a, &b, limit, &mut coefficients, &mut budget, true)? {
-            interval::Outcome::Within(value) => {
-                bound = bound.max(value);
-                continue;
-            }
-            interval::Outcome::Outside => return Ok(None),
-            interval::Outcome::Inconclusive => {}
-        }
-        let difference = algebra::difference(&a, &b, &mut budget)?;
-        let Some(piece_bound) = algebra::hull_bound(difference, limit, &mut budget)? else {
-            return Ok(None);
-        };
-        bound = bound.max(piece_bound);
-    }
-    Ok(Some(bound))
 }

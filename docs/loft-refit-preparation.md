@@ -14,6 +14,13 @@ nine cases. Simplifying the inputs first does not explain the difference.
 Independent `Curve.Fit`, cubic-Bezier fitting, or single-input `MakeCompatible`
 therefore cannot simply replace the multiple-profile preparation. This evidence
 does not yet establish how every larger or mixed profile set is fitted.
+Six further cases vary profile count, scale and companion shape. For these three
+source families at two tolerances, two, three and four equal translated inputs
+produce exactly the same complete definition of profile zero. Different
+companions can change its basis; control counts alone do not prove a geometric
+change. The shared [curve correspondence certificate](cubic-approximation.md)
+now checks complete images across distinct parameter clocks. Three paired native
+fits certify at `0.001`; this does not implement the fitting policy.
 
 Another 21 cases retain public length and normalized-length queries at three
 fractional tolerances. The existing quadrature model reproduces 63 length
