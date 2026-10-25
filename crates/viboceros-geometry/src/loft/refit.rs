@@ -1,17 +1,28 @@
-//! The straight-profile part of Loft Refit, without a sampled linearity test.
+//! Loft Refit for certified straight regions and resolved polygon corners.
 use super::*;
 use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::{One, Signed, Zero};
+mod matching;
+mod polyline;
 
-/// Refit ordered straight profiles to polynomial cubics. Zero retains the
-/// original definitions. Positive tolerance currently requires continuous,
-/// non-reversing collinear control polygons with same-sign weights.
-/// Other profiles fail explicitly; the general curved Refit policy is pending.
+struct Section {
+    curve: NurbsCurve,
+    vertices: Vec<[Rational; 3]>,
+}
+
+/// Refit ordered profiles made of certified straight regions to polynomial
+/// cubics. Zero retains the original definitions. Positive tolerance requires
+/// same-sign weights, continuous regions with ordered collinear controls, and
+/// internal bends above the legacy one-degree corner threshold. Constant spans
+/// and redundant collinear vertices disappear; true reversals remain.
+/// Smooth fitting and mixed open/closed profiles fail explicitly.
 ///
 /// Collinearity and control order are checked with exact rational arithmetic.
 /// Positive rational basis functions then keep the source on its endpoint
-/// segment. The cubic uses uniform line speed and one final rounding per handle;
-/// its whole-image distance from the active segment is bounded by `fit_tolerance`.
+/// segment. Region matching uses degree-one proxies before constructing a shared
+/// cubic basis. Exact source vertices remain authoritative; direct construction
+/// avoids rounded knot-insertion drift. One final rounding per control bounds
+/// the complete image distance by `fit_tolerance`.
 /// Unclamped endpoints use the shared bounded exact extraction, retaining their
 /// rational values through handle construction and the final error check.
 /// This changes parameter correspondence and never mutates the sources.
@@ -28,16 +39,29 @@ pub fn try_prepare_refitted_loft_sections(
             maximum: MAX_LOFT_SECTIONS,
         });
     }
-    curves
+    if fit_tolerance == 0. {
+        return Ok(curves.to_vec());
+    }
+    let sections = curves
         .iter()
-        .map(|source| {
-            if fit_tolerance == 0. {
-                Ok(source.clone())
-            } else {
-                straight(source, fit_tolerance)
+        .map(|source| match straight(source, fit_tolerance) {
+            Err(GeometryError::UnsupportedCurveApproximation { .. }) => {
+                polyline::refit(source, fit_tolerance)
             }
+            result => result,
         })
-        .collect()
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    if let Some(first) = sections.first() {
+        let closed = first.curve.is_closed()?;
+        for section in &sections[1..] {
+            if section.curve.is_closed()? != closed {
+                return Err(GeometryError::UnsupportedCurveApproximation {
+                    context: "Loft Refit currently requires profiles with matching open/closed state",
+                });
+            }
+        }
+    }
+    matching::prepare(sections, fit_tolerance)
 }
 
 /// Loft the refitted ordered sections, retaining the usual style, closed-loft
@@ -68,7 +92,7 @@ pub fn try_loft_nurbs_curves_refitted(
     }
 }
 
-fn straight(source: &NurbsCurve, tolerance: Real) -> Result<NurbsCurve, GeometryError> {
+fn straight(source: &NurbsCurve, tolerance: Real) -> Result<Section, GeometryError> {
     let unsupported = || GeometryError::UnsupportedCurveApproximation {
         context: "Loft Refit currently requires continuous non-reversing straight sections with same-sign weights",
     };
@@ -120,6 +144,18 @@ fn straight(source: &NurbsCurve, tolerance: Real) -> Result<NurbsCurve, Geometry
     if start == end {
         return Err(unsupported());
     }
+    let controls = cubic_controls(&start, &end, tolerance)?;
+    Ok(Section {
+        curve: NurbsCurve::try_new_rational(3, controls, vec![0., 0., 0., 0., 1., 1., 1., 1.])?,
+        vertices: vec![start, end],
+    })
+}
+
+fn cubic_controls(
+    start: &[Rational; 3],
+    end: &[Rational; 3],
+    tolerance: Real,
+) -> Result<Vec<WeightedPoint3>, GeometryError> {
     let delta = std::array::from_fn::<_, 3, _>(|i| &end[i] - &start[i]);
     let limit = rational(tolerance);
     let mut result = Vec::with_capacity(4);
@@ -140,8 +176,10 @@ fn straight(source: &NurbsCurve, tolerance: Real) -> Result<NurbsCurve, Geometry
         }
         result.push(WeightedPoint3::try_new(crate::Point3::try_from(xyz)?, 1.)?);
     }
-    NurbsCurve::try_new_rational(3, result, vec![0., 0., 0., 0., 1., 1., 1., 1.])
+    Ok(result)
 }
 
+#[cfg(test)]
+mod polyline_tests;
 #[cfg(test)]
 mod tests;

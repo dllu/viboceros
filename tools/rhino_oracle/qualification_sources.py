@@ -215,6 +215,7 @@ def _expand_sources_once(paths):
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/tests.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/correspondence.rs',
             'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/mapped_tests.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/linear.rs',
         ])
     if 'crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs' in expanded:
         expanded.extend([
@@ -257,6 +258,9 @@ def _expand_sources_once(paths):
                          'crates/viboceros-geometry/src/loft/rebuild/tests.rs',
                          'crates/viboceros-geometry/src/loft/refit.rs',
                          'crates/viboceros-geometry/src/loft/refit/tests.rs',
+                         'crates/viboceros-geometry/src/loft/refit/polyline.rs',
+                         'crates/viboceros-geometry/src/loft/refit/matching.rs',
+                         'crates/viboceros-geometry/src/loft/refit/polyline_tests.rs',
                          'crates/viboceros-oracle/tests/loft_refit_lines_native.rs',
                          'crates/viboceros-geometry/tests/support/loft_rebuild.rs',
                          'crates/viboceros-geometry/tests/loft_rebuild_native.rs',

@@ -54,6 +54,10 @@ fn curved_refit_reports_the_missing_policy_instead_of_false_geometry() {
     for op in query["operations"].as_array().unwrap() {
         if op["refit_tolerance"].as_f64().unwrap() <= 0.
             || op["id"].as_str().unwrap().starts_with("loft-refit-line-")
+            || op["id"]
+                .as_str()
+                .unwrap()
+                .starts_with("loft-refit-polygon-")
         {
             continue;
         }
@@ -68,7 +72,7 @@ fn curved_refit_reports_the_missing_policy_instead_of_false_geometry() {
             count += 1;
         }
     }
-    assert_eq!(count, 120);
+    assert_eq!(count, 90);
 }
 
 #[test]
@@ -88,5 +92,17 @@ fn invalid_and_conflicting_simplification_is_rejected_before_geometry() {
         let request: ProbeRequest = serde_json::from_value(request).unwrap();
         let error = run_request(&request).unwrap_err().to_string();
         assert!(error.contains(reason), "{error}");
+    }
+    for angle in [-1., 4., 0.] {
+        let mut op = query["operations"][0].clone();
+        op["curves"] = json!([]);
+        op["refit_tolerance"] = json!(0.001);
+        op["refit_angle_tolerance"] = json!(angle);
+        let mut request = query.clone();
+        request["operations"] = json!([op]);
+        let error = run_request(&serde_json::from_value::<ProbeRequest>(request).unwrap())
+            .unwrap_err()
+            .to_string();
+        assert!(error.contains("angle tolerance"), "{error}");
     }
 }

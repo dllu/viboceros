@@ -21,10 +21,27 @@ pub struct LoftFixture {
     pub rebuild_point_count: usize,
     #[serde(default)]
     pub refit_tolerance: Option<f64>,
+    #[serde(default)]
+    pub refit_angle_tolerance: Option<f64>,
 }
 
 impl LoftFixture {
     fn validate_simplification(&self) -> Result<(), ProbeError> {
+        if let Some(angle) = self.refit_angle_tolerance {
+            if !angle.is_finite()
+                || !(0. ..=std::f64::consts::PI).contains(&angle)
+                || self.refit_tolerance.is_none()
+            {
+                return Err(ProbeError::FixtureInvariant(
+                    "invalid Loft Refit angle tolerance",
+                ));
+            }
+            if self.refit_tolerance.is_some_and(|t| t > 0.) {
+                return Err(ProbeError::FixtureInvariant(
+                    "explicit Loft Refit angle tolerances are not implemented",
+                ));
+            }
+        }
         if let Some(tolerance) = self.refit_tolerance {
             if !tolerance.is_finite() || tolerance < 0. {
                 return Err(ProbeError::FixtureInvariant(

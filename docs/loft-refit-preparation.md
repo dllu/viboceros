@@ -2,7 +2,7 @@
 
 [Loft Refit](loft-refit.md) · [Validation](loft-refit-preparation-validation.json)
 
-General curved Refit remains unimplemented. New public Rhino 8.32 measurements
+Smooth curved Refit remains unimplemented. New public Rhino 8.32 measurements
 isolate a suitable reference: [NurbsCurve.MakeCompatible](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_NurbsCurve_MakeCompatible.htm) with simplification
 method `2`, the complete profile set, no point ends, and the requested Refit
 and angle tolerances. Nine equal translated pairs reproduce all control coordinates and
@@ -30,13 +30,14 @@ batches have distinct numerical behavior; a `0.0565` position difference is
 retained as a counterexample. Inverse-parameter parity and continuous curve
 bounds are not established by these length observations.
 
-The straight-profile implementation now handles unclamped active domains through
-bounded exact rational extraction, without first rounding a clamped copy. Its
-cubic endpoint and handle errors are checked against the exact active segment.
-A separate 90-case family covers distinct unclamped polynomial/rational profiles,
-mixed line clocks, reversed traversal and shifted domains across all five styles.
-The earlier 121 straight-profile references remain regressions. Native captures
-are immutable and retain their exact producer archives.
+The [polygon implementation](loft-refit.md) now fits certified straight regions,
+preserves resolved corners and matches region charts before constructing a shared
+cubic basis. Unclamped rational endpoints remain exact through the final rounding
+bound. New native captures retain 171 cases covering spatial and closed polygons,
+different corner counts, point ends and the one-degree corner threshold.
+Smooth cases and native empty-result cases remain explicit limitations;
+[validation](loft-refit-polylines-validation.json) distinguishes them from matches.
+The earlier straight-profile references remain regressions. Captures are immutable.
 
 ```sh
 cargo test -p viboceros-oracle --test loft_refit_lines_native

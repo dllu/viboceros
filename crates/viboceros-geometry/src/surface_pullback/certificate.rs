@@ -10,6 +10,7 @@ mod cubic;
 mod curve;
 mod curve_pair;
 mod interval;
+mod linear;
 mod polyline;
 mod pushup;
 mod surface;
@@ -24,6 +25,8 @@ const MAX_IMAGE_DEGREE: usize = 64;
 const MAX_DEPTH: usize = 48;
 const MAX_WORK: usize = 2_000_000;
 const MAX_BITS: u64 = 8192;
+
+pub(crate) use linear::exact_linear_curve_vertices;
 
 /// Exact active endpoints under the existing extraction/work/bit budgets.
 /// One-sided values retain the original source, including unclamped domains.

@@ -235,8 +235,6 @@
     "crates/viboceros-command/src/loft/tests.rs": "483dcde1ad5bbf72a54fe66c7aa914c17d9a69163f75884fafff75c64efc31db",
     "crates/viboceros-geometry/src/loft.rs": "1ec81978234e72686d3925c80078c3eb1b01d752ba22bbf4b1df664dc085d2a5",
     "crates/viboceros-geometry/src/lib.rs": "a86da352237363f2cc735388d542cd077d204e692583925609f3af9af10543d2",
-    "crates/viboceros-oracle/src/loft.rs": "696e950816c5b4d2c9a14cbc21448639a3aef954e81afed7a104bd74c5edf292",
-    "crates/viboceros-oracle/tests/loft_refit_native.rs": "ff6334e419943bf01a89c554d2285ed9e948d58212a7bce25a61057382058df6",
     "crates/viboceros-smlib/src/native.rs": "afc9c4612f92769fa331240ac89b1dcb1c7baca6d07ec8cc8a818e58d24ed008",
     "crates/viboceros-smlib/src/native/knot_refinement.rs": "2750c8bcba5da0aa6e72fd745dbead84de4342122d2542d91063721f8539cf45",
     "src/app/loft.rs": "419ef59d93fbffe1bf3450c3b343fe047ce05075b1bd27c5a5d83daa8d38d6b5",
@@ -330,6 +328,8 @@
     "ea0b50f25f7487ba44949c762af8c249dce6effb:docs/loft-refit.md": "54b67e8e3a7af047481cd4cf892cd41736b7ad88696a02ec0c36d50076579dfc",
     "ea0b50f25f7487ba44949c762af8c249dce6effb:crates/viboceros-command/src/loft/refit_tests.rs": "b9aba52acb0e9d610cc4e9f7219c62ed5666639daae72ad4aa2e5bc5f08918b3",
     "ae3b68d75095d4b9bf919c2fa3bd6a61d16425d1:tools/rhino_oracle/qualification_sources.py": "a4f51160c26b96c0e873e7ece6c6190ae043e2325b0cff90da6f45284dedebb6",
-    "ae3b68d75095d4b9bf919c2fa3bd6a61d16425d1:crates/viboceros-geometry/src/error.rs": "e03ea19c5b36f97cbd32f959d853bba42d471627f5cf21a4f5e3b39e7a4b379d"
+    "ae3b68d75095d4b9bf919c2fa3bd6a61d16425d1:crates/viboceros-geometry/src/error.rs": "e03ea19c5b36f97cbd32f959d853bba42d471627f5cf21a4f5e3b39e7a4b379d",
+    "ceaa24e06b22d0515fafb643b7a1a22f012a4558:crates/viboceros-oracle/src/loft.rs": "696e950816c5b4d2c9a14cbc21448639a3aef954e81afed7a104bd74c5edf292",
+    "ceaa24e06b22d0515fafb643b7a1a22f012a4558:crates/viboceros-oracle/tests/loft_refit_native.rs": "ff6334e419943bf01a89c554d2285ed9e948d58212a7bce25a61057382058df6"
   }
 }

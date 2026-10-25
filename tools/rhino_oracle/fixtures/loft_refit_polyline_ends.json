@@ -1,0 +1,5626 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-normal-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-normal-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-normal-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-loose-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-loose-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-loose-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-tight-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-tight-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-tight-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-straight-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-straight-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-straight-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-uniform-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "uniform",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-uniform-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "uniform",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-corner-uniform-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "uniform",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-normal-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-normal-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-normal-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-loose-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-loose-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-loose-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-tight-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-tight-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-tight-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-straight-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-straight-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-straight-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-uniform-0.001-ends-10",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "uniform",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-uniform-0.001-ends-01",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "uniform",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-rectangle-uniform-0.001-ends-11",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4.0,
+            4.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "uniform",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "start_point": [
+        0.0,
+        0.0,
+        -3.0
+      ],
+      "end_point": [
+        0.0,
+        0.0,
+        9.0
+      ]
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-smooth-seam-normal",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "normal",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-smooth-seam-loose",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "loose",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-smooth-seam-tight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "tight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-smooth-seam-straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-polyline-smooth-seam-uniform",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3,
+            4,
+            5.0,
+            5.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "uniform",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    }
+  ]
+}

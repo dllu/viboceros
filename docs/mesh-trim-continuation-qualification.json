@@ -18554,7 +18554,7 @@
     "tools/rhino_oracle/observations/source_snapshots/ed05a7b0a6d0498877cf9b57be0d72a824db30a64870a4027b9e2cb1890007a5.gz": "9b4aadef21de5eb0153801f0219b39dec7efa6df164e1ba9456ed08bacb08767",
     "tools/rhino_oracle/observations/source_snapshots/f2b3c347c9764eff546025ceee913f9203616e4803cf7a45afa3a77cf62f4974.gz": "48f9a41cb80a9ef4d95ebdf7e518a26cf548d99c837cf1d98d3654b56cae7b80",
     "tools/rhino_oracle/outline_comparison.py": "d21f3b371976e508591e9999edabdfddc80483425508103fdce2529309afacd5",
-    "tools/rhino_oracle/qualification_sources.py": "baf8646ed90f896da8705e73e8036a04841518d42016cef2ede2035cb399f2cc",
+    "tools/rhino_oracle/qualification_sources.py": "1068c801233b102ec9ad1019aa138e0d367b1b8010ecbb7c3075d48f292e508b",
     "tools/rhino_oracle/report_mesh_boolean_commands.py": "5bae7df0d5edaf5c6ecdc296f518f5ed633f4c435c542d100d60a6e1cf19b0d2",
     "tools/rhino_oracle/report_mesh_split.py": "8e7fd0ee23b6e90ad2a926d5c8aa67d666959f3163718378dbe40e18ee99964f",
     "tools/rhino_oracle/report_mesh_split_channels.py": "3380a5e7461be334399cecea30b4bd15815dd0beefbc1ba10f5806bad7e9f11b",
@@ -18647,6 +18647,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "3701958bd5347362d4294cc25e39434960c958d0b84502b2da31e2bdbd61c6a1"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "7614509b740ba2093c729d903b680b996450967828501afb11a72c2bcbcd1800"
   }
 }

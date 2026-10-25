@@ -54,7 +54,7 @@ at `1e-6` and `1e-9`, analytical witnesses and resource checks. An integer-contr
 polynomial vanishes at five uniform samples yet exceeds one unit between them;
 the continuous bound detects it and forces refinement.
 
-This is a source-parameter approximation primitive. Curved Rhino Loft Refit still
+This is a source-parameter approximation primitive. Smooth Rhino Loft Refit still
 requires its own fitting and parameterization policy and remains unimplemented.
 No Rhino Refit or arbitrary-scale performance parity is claimed.
 

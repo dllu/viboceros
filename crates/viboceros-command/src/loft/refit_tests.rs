@@ -96,6 +96,61 @@ fn unsupported_curved_refit_never_commits_or_changes_history() {
 }
 
 #[test]
+fn polygon_refit_preserves_sources_and_supports_crease_splitting_and_undo() {
+    for split in [false, true] {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "CreaseSplitting Disable")
+            .unwrap();
+        for z in [0., 3.] {
+            let c = NurbsCurve::try_new(
+                1,
+                [[0., 0.], [0.5, 0.], [2., 0.], [2., 1.]]
+                    .map(|p| Point3::try_new(p[0], p[1], z).unwrap())
+                    .to_vec(),
+                vec![0., 0., 1., 2., 3., 3.],
+            )
+            .unwrap();
+            document.add_geometry(Geometry::NurbsCurve(c)).unwrap();
+        }
+        let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        document.clear_history().unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let option = if split { "Yes" } else { "No" };
+        registry
+            .execute(
+                &mut document,
+                &format!("Loft Type=Straight Refit=0.001 SplitAtTangents={option}"),
+            )
+            .unwrap();
+        for original in &before {
+            assert_eq!(document.object(original.id()).unwrap(), original);
+        }
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), ids);
+        let Geometry::Brep(brep) = document
+            .objects()
+            .find(|o| !ids.contains(&o.id()))
+            .unwrap()
+            .geometry()
+        else {
+            panic!("Loft BRep")
+        };
+        assert_eq!(brep.faces().len(), if split { 2 } else { 1 });
+        assert!(brep.faces().iter().all(|f| f.surface().degree_v() == 3));
+        assert_eq!(document.undo_label(), Some("Loft"));
+        let after = document.objects().cloned().collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+    }
+}
+
+#[test]
 fn unclamped_rational_profiles_preserve_sources_and_create_one_undo_step() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
