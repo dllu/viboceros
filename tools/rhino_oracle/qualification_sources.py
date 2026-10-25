@@ -283,9 +283,19 @@ def _expand_sources_once(paths):
             'crates/viboceros-geometry/src/brep/surface_partition/topology.rs',
             'crates/viboceros-geometry/src/brep/surface_partition/query_budget.rs',
             'crates/viboceros-geometry/src/brep/surface_partition/tests.rs',
+            'crates/viboceros-geometry/src/brep/surface_partition/g1.rs',
+            'crates/viboceros-geometry/src/brep/surface_partition/g1/cone.rs',
+            'crates/viboceros-geometry/src/brep/surface_partition/g1/exact_ray.rs',
+            'crates/viboceros-geometry/src/brep/surface_partition/g1/extract.rs',
             'crates/viboceros-geometry/src/brep/surface_grid.rs',
             'crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs',
         ])
+    if any(p in expanded for p in ['crates/viboceros-geometry/src/bezier.rs',
+            'crates/viboceros-geometry/src/nurbs/circularity.rs',
+            'crates/viboceros-geometry/src/bounds/bezier/compose.rs',
+            'crates/viboceros-geometry/src/brep/surface_partition/g1/extract.rs']):
+        expanded.extend(['crates/viboceros-geometry/src/bezier.rs',
+                         'crates/viboceros-geometry/src/bezier/polynomial.rs'])
     if 'crates/viboceros-geometry/src/nurbs_surface/discontinuities.rs' in expanded:
         expanded.extend(['crates/viboceros-opennurbs/src/lib.rs',
                          'crates/viboceros-opennurbs/src/curve.rs',

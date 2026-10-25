@@ -3,6 +3,8 @@ use crate::{
     GeometryError, NurbsCurve, NurbsSurface, Point3, SurfaceKnotDirection, WeightedPoint3,
 };
 
+pub(crate) mod polynomial;
+
 #[cfg(test)]
 mod tests;
 

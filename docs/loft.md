@@ -86,8 +86,9 @@ The ordered `try_loft_nurbs_curves` API does not sort, reverse, or move seams.
 with a delegated tensor backend. `brep/loft/profiles` owns section ordering and
 seams; `brep/loft/orientation` owns the sampled closed-solid orientation pass.
 Smooth, fully multiple circle knots stay intact when only crease splitting is on.
-The tangent predicate samples transverse span endpoints and midpoints, like
-OpenNURBS; it is not a continuous maximum-angle certificate.
+The raw tangent query samples transverse span endpoints and midpoints. The
+partitioner adds [adaptive G1 checks](surface-creases.md) between those samples;
+this remains subject to numerical and work limits.
 
 `brep/surface_grid` partitions tensor surfaces exactly at ordered native UV
 parameters. Neighboring patches share vertices and isocurve edges; closed seams

@@ -2663,9 +2663,13 @@ def _surface_jets(operation, iterations, curvature=False):
             for key, derivative in zip(["du", "dv", "duu", "duv", "dvv"], derivatives):
                 record[key] = _xyz(derivative)
             records.append(record)
-        return {"domain_u": [float(domains[0].T0), float(domains[0].T1)],
+        value = {"domain_u": [float(domains[0].T0), float(domains[0].T1)],
                 "domain_v": [float(domains[1].T0), float(domains[1].T1)],
-                "samples": records}, elapsed
+                "samples": records}
+        if operation.get('inspect_crease') is not None:
+            from surface_crease_probe import inspect
+            value['crease'] = inspect(surface, operation['inspect_crease'], globals())
+        return value, elapsed
     finally:
         for item in reversed(owned):
             item.Dispose()

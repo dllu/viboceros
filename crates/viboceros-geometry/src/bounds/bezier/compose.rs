@@ -101,32 +101,6 @@ fn basis(
     Ok(result)
 }
 
-fn binomial(degree: usize) -> Vec<f64> {
-    let mut result = vec![1.; degree + 1];
-    for i in 1..=degree {
-        result[i] = result[i - 1] * (degree + 1 - i) as f64 / i as f64;
-    }
-    result
-}
-
 fn product(a: &[f64], b: &[f64], budget: &mut Budget) -> Result<Vec<f64>, GeometryError> {
-    budget.charge(a.len().saturating_mul(b.len()))?;
-    let (p, q) = (a.len() - 1, b.len() - 1);
-    let (cp, cq, cn) = (binomial(p), binomial(q), binomial(p + q));
-    let mut result = vec![0.; p + q + 1];
-    for k in 0..=p + q {
-        let mut correction = 0.;
-        for i in k.saturating_sub(q)..=k.min(p) {
-            let value = a[i] * b[k - i] * (cp[i] * cq[k - i] / cn[k]);
-            let sum = result[k] + value;
-            correction += if result[k].abs() >= value.abs() {
-                (result[k] - sum) + value
-            } else {
-                (value - sum) + result[k]
-            };
-            result[k] = sum;
-        }
-        result[k] += correction;
-    }
-    Ok(result)
+    crate::bezier::polynomial::product(a, b, &mut |n| budget.charge(n))
 }

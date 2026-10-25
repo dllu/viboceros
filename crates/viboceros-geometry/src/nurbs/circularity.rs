@@ -144,13 +144,7 @@ fn span_on_circle(
     unit_sphere_bound(&q, minimum_weight, delta)
 }
 
-pub(super) fn binomial(degree: usize) -> Vec<Real> {
-    let mut values = vec![1.; degree + 1];
-    for i in 1..=degree {
-        values[i] = values[i - 1] * (degree + 1 - i) as Real / i as Real;
-    }
-    values
-}
+pub(super) use crate::bezier::polynomial::binomial;
 
 /// A positive rational denominator and Bernstein numerator residual bound the
 /// entire unit-sphere locus. Ellipses reuse this after an affine planar map.

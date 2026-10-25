@@ -4,6 +4,116 @@ fn point(x: Real, y: Real, z: Real) -> WeightedPoint3 {
     WeightedPoint3::try_new(Point3::try_new(x, y, z).unwrap(), 1.).unwrap()
 }
 
+fn hidden_crease(amplitude: Real) -> NurbsSurface {
+    let controls = [0., -amplitude / 6., amplitude / 6., 0.]
+        .into_iter()
+        .enumerate()
+        .flat_map(|(v, z)| {
+            (0..3).map(move |u| point(u as Real, v as Real / 3., if u == 2 { z } else { 0. }))
+        })
+        .collect();
+    NurbsSurface::try_new_rational(
+        1,
+        3,
+        3,
+        4,
+        controls,
+        vec![0., 0., 1., 2., 2.],
+        vec![0., 0., 0., 0., 1., 1., 1., 1.],
+    )
+    .unwrap()
+}
+
+#[test]
+fn a_crease_between_native_samples_is_split_without_changing_the_tensor() {
+    let surface = hidden_crease(0.04);
+    let before = surface.clone();
+    let angle = 0.1_f64.to_radians();
+    // Its angle is atan(A*t*(1-t)*(t-1/2)): zero at 0, 1/2 and 1,
+    // but about 0.107 degrees at 1/4. The basic public query misses it.
+    for continuity in [
+        CurveContinuity::G1,
+        CurveContinuity::G2,
+        CurveContinuity::Gsmooth,
+    ] {
+        assert_eq!(
+            surface.discontinuity_parameters(continuity, angle).unwrap(),
+            [Vec::<Real>::new(), Vec::new()]
+        );
+        let result = Brep::try_surface_partitioned_at_discontinuities(
+            &surface,
+            &[(continuity, angle)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            (
+                result.faces().len(),
+                result.edges().len(),
+                result.vertices().len()
+            ),
+            (2, 7, 6)
+        );
+        check_locus(&surface, &result);
+        assert_eq!(surface, before);
+    }
+}
+
+#[test]
+fn a_bend_below_the_angle_limit_retains_its_single_face() {
+    for amplitude in [0., 0.02] {
+        let surface = hidden_crease(amplitude);
+        let result = Brep::try_surface_partitioned_at_discontinuities(
+            &surface,
+            &[(CurveContinuity::G1, 0.1_f64.to_radians())],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(result.faces().len(), 1);
+        assert_eq!(result.faces()[0].surface(), &surface);
+    }
+}
+
+#[test]
+fn adaptive_crease_work_uses_the_shared_partition_budget() {
+    let surface = hidden_crease(0.04);
+    let mut cuts = [vec![], vec![]];
+    assert!(g1::augment(&surface, 0.1_f64.to_radians(), &mut cuts, &mut 0).is_err());
+}
+
+#[test]
+fn zero_and_obtuse_angle_limits_retain_smooth_enough_cells() {
+    let (sine, cosine) = 160_f64.to_radians().sin_cos();
+    for (end, angle) in [
+        ([3., 0.], 0.),
+        ([1. + cosine, sine], 170_f64.to_radians()),
+        ([1. + cosine, sine], std::f64::consts::PI),
+    ] {
+        let controls = [0., 1.]
+            .into_iter()
+            .flat_map(|y| [[0., 0.], [1., 0.], end].map(move |[x, z]| point(x, y, z)))
+            .collect();
+        let surface = NurbsSurface::try_new_rational(
+            1,
+            1,
+            3,
+            2,
+            controls,
+            vec![0., 0., 1., 2., 2.],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap();
+        let result = Brep::try_surface_partitioned_at_discontinuities(
+            &surface,
+            &[(CurveContinuity::G1, angle)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(result.faces().len(), 1);
+        assert_eq!(result.faces()[0].surface(), &surface);
+    }
+}
+
 fn check_locus(source: &NurbsSurface, result: &Brep) {
     for face in result.faces() {
         let surface = face.surface();

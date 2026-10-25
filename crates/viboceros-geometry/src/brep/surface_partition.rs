@@ -2,6 +2,7 @@
 use super::*;
 use crate::CurveContinuity;
 
+mod g1;
 mod query_budget;
 #[cfg(test)]
 mod tests;
@@ -12,9 +13,10 @@ const MAX_WORK: usize = 16_000_000;
 
 impl Brep {
     /// Construct a new tensor shell, splitting each restricted surface at the
-    /// requested public OpenNURBS isocurve continuity breaks. A crease may end
-    /// at another edge. The query samples transverse spans; it is not a
-    /// continuous maximum-angle certificate. Faces retain their native charts,
+    /// requested isocurve continuity breaks. The public OpenNURBS query is
+    /// augmented by bounded adaptive G1 checks between its transverse samples.
+    /// A crease may end at another edge. This is not a formal continuous-angle
+    /// certificate. Faces retain their native charts,
     /// and share original-surface isocurves and sewn closed/singular boundaries.
     /// Accepts at most three criteria and 4096 faces within a shared work budget.
     /// Full-order interior knots are rejected rather than sewn across jumps.
@@ -55,10 +57,10 @@ impl Brep {
                 if !query_budget::needed(current, continuity, &mut budget)? {
                     continue;
                 }
-                for (all, cuts) in candidates
-                    .iter_mut()
-                    .zip(current.discontinuity_parameters(continuity, angle)?)
-                {
+                let mut breaks = current.discontinuity_parameters(continuity, angle)?;
+                // G2 and Gsmooth also require G1 at C0 candidate knots.
+                g1::augment(current, angle, &mut breaks, &mut budget)?;
+                for (all, cuts) in candidates.iter_mut().zip(breaks) {
                     all.extend(cuts);
                 }
             }

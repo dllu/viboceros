@@ -98,7 +98,7 @@ fn open_loft_commands_match_native_order_direction_topology_and_source_state() {
 }
 
 #[test]
-fn rebuilt_open_non_straight_commands_match_native_raw_records() {
+fn rebuilt_open_commands_match_native_raw_records() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
     let query: Value = serde_json::from_slice(
         &std::fs::read(root.join("fixtures/loft_rebuild_commands.json")).unwrap(),
@@ -127,7 +127,7 @@ fn rebuilt_open_non_straight_commands_match_native_raw_records() {
             .iter()
             .map(definitions::curve)
             .collect::<Vec<_>>();
-        if curves.iter().any(|c| c.is_closed().unwrap()) || op["style"] == "straight" {
+        if curves.iter().any(|c| c.is_closed().unwrap()) {
             continue;
         }
         let mut request = query.clone();
@@ -140,6 +140,6 @@ fn rebuilt_open_non_straight_commands_match_native_raw_records() {
         maximum = maximum.max(error);
         matched += 1;
     }
-    assert_eq!(matched, 48);
+    assert_eq!(matched, 60);
     println!("LOFT_ORDER_REBUILD matched={matched} maximum={maximum}");
 }

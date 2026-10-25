@@ -6,7 +6,7 @@ use viboceros_oracle::{ProbeRequest, run_request};
 mod comparison;
 
 #[test]
-#[ignore = "Retained native command face-sense and crease differences; full raw comparison"]
+#[ignore = "Retained native command face-sense differences; full raw comparison"]
 fn rebuilt_loft_commands_match_native_geometry_topology_and_source_state() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
     let query: Value = serde_json::from_slice(
