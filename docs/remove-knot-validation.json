@@ -262,7 +262,6 @@
     "tools/rhino_oracle/generate_remove_knot_followup.py": "973056e471c66c73978482d93e21660194f620fd2805ec0caf27927c6a535058",
     "tools/rhino_oracle/generate_remove_knot_smooth_periodic.py": "1f6ba9a2ee7b83610b37c8d21d5b50076c6b9310b8aa6b08a96e964347329dd9",
     "tools/rhino_oracle/test_remove_knot_command.py": "54470be0c31dff3df184ca9e5b4006e0a0216a1fc9c980f8f2c3ea4e2ee8eaeb",
-    "tools/rhino_oracle/test_insert_knot_command.py": "b06eadbee8eec06ca3c4227320a106547459e42be77e603ed517dff730be13e7",
     "docs/commands/remove-knot.md": "0da57f53c7ff54d50f3e104b04d39361b0a46172b49481d99d2c0e1a49bdca10",
     "docs/commands/nurbs.md": "b7e564a9f0677ff0590dc7fd5711c82f95449196968db941fe97989e3f4d957b"
   },
@@ -2708,5 +2707,8 @@
       "periodic_surface_V_V": 0.0,
       "periodic_surface_V_U_to_V": 0.0
     }
+  },
+  "current_source_git_sha256": {
+    "ea90c059c50aa5594481e4fe677e691baa7a2c23:tools/rhino_oracle/test_insert_knot_command.py": "b06eadbee8eec06ca3c4227320a106547459e42be77e603ed517dff730be13e7"
   }
 }

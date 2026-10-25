@@ -12,12 +12,27 @@ def captured_source_digest(name,digest):
         data=gzip.decompress((HERE/'observations/source_snapshots'/(digest+'.gz')).read_bytes())
     return hashlib.sha256(data).hexdigest()
 class InsertKnotCommands(TestCase):
+    def assert_same_recipe(self, actual, expected):
+        actual,expected=dict(actual),dict(expected)
+        saved=Path(actual.pop('artifact_path'))
+        relative=Path(expected.pop('artifact_path')).relative_to(HERE.resolve().parents[1])
+        self.assertTrue(saved.is_absolute())
+        self.assertEqual(saved.parts[-len(relative.parts):],relative.parts)
+        self.assertEqual(actual,expected)
+    def test_recipe_relocation_preserves_asset_identity_and_actions(self):
+        original=request()['operations'][0];relocated=copy.deepcopy(original)
+        relative=Path(original['artifact_path']).relative_to(HERE.resolve().parents[1])
+        relocated['artifact_path']=str(Path(HERE.resolve().anchor)/'historical'/'checkout'/relative)
+        self.assert_same_recipe(relocated,original)
+        for field,value in [('artifact_path',relocated['artifact_path'].replace('/fixtures/','/other-fixtures/')),('actions',['Different action'])]:
+            changed=copy.deepcopy(relocated);changed[field]=value
+            with self.subTest(field=field),self.assertRaises(AssertionError):self.assert_same_recipe(changed,original)
     def test_symmetric_pairs_centers_and_parameters(self):
         from .generate_insert_knot_symmetry import request as symmetry
         q=symmetry();capture=json.loads((HERE/'observations/insert_knot_symmetry.json').read_text());self.assertEqual(len(q['operations']),19)
         self.assertEqual([o['id']for o in q['operations']],[r['id']for r in capture['results']])
         for op,row in zip(q['operations'],capture['results']):
-            v=row['value'];self.assertEqual(v['recipe'],op);self.assertTrue(v['success']);self.assertEqual([e['name']for e in v['events']].count('InsertKnot'),1)
+            v=row['value'];self.assert_same_recipe(v['recipe'],op);self.assertTrue(v['success']);self.assertEqual([e['name']for e in v['events']].count('InsertKnot'),1)
             path=Path(op['artifact_path']);self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),capture['provenance']['fixtures'][path.name])
         for name,digest in capture['provenance']['sources'].items():
             self.assertEqual(captured_source_digest(name,digest),digest,name)
@@ -26,7 +41,7 @@ class InsertKnotCommands(TestCase):
         q=followup();capture=json.loads((HERE/'observations/insert_knot_followup.json').read_text());self.assertEqual(len(q['operations']),49)
         self.assertEqual([o['id']for o in q['operations']],[r['id']for r in capture['results']])
         for op,row in zip(q['operations'],capture['results']):
-            v=row['value'];self.assertEqual(v['recipe'],op);events=[e for e in v['events']if e['name']=='InsertKnot'];self.assertEqual(len(events),1)
+            v=row['value'];self.assert_same_recipe(v['recipe'],op);events=[e for e in v['events']if e['name']=='InsertKnot'];self.assertEqual(len(events),1)
             self.assertEqual(v['success'],events[0]['result']=='Success');path=Path(op['artifact_path']);self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),capture['provenance']['fixtures'][path.name])
         for name,digest in capture['provenance']['sources'].items():
             self.assertEqual(captured_source_digest(name,digest),digest,name)
@@ -47,8 +62,7 @@ class InsertKnotCommands(TestCase):
         self.assertEqual([r['id']for r in capture['results']],[o['id']for o in q['operations']])
         results={}
         for row,op in zip(capture['results'],q['operations']):
-            v=row['value'];actual=dict(v['recipe']);expected=dict(op)
-            self.assertEqual(Path(actual.pop('artifact_path')).name,Path(expected.pop('artifact_path')).name);self.assertEqual(actual,expected)
+            v=row['value'];self.assert_same_recipe(v['recipe'],op)
             events=[e for e in v['events']if e['name']=='InsertKnot'];self.assertEqual(len(events),1)
             self.assertEqual(v['success'],events[0]['result']=='Success')
             results[events[0]['result']]=results.get(events[0]['result'],0)+1
