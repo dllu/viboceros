@@ -251,6 +251,7 @@ mod projected_object_snap;
 pub use projected_object_snap::ProjectedObjectSnapFixture;
 mod sweep;
 pub use sweep::SweepFixture;
+mod curve_approximation;
 mod curve_area;
 mod curve_join_close;
 mod curve_native;
@@ -260,6 +261,7 @@ mod extension_backend;
 mod non_manifold_selection;
 mod planar_surface;
 mod volume_selection;
+pub use curve_approximation::CubicApproximationFixture;
 pub use curve_frames::CurveFramesFixture;
 pub use curve_native::NativeCurveFixture;
 mod polycurve_native;
@@ -901,6 +903,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: NativeCurveFixture,
+    },
+    CurveCubicApproximation {
+        id: String,
+        #[serde(flatten)]
+        fixture: CubicApproximationFixture,
     },
     CurveArea {
         id: String,
@@ -2816,6 +2823,7 @@ impl Operation {
             | Self::ThreeDmCurveInterchange { id, .. }
             | Self::ThreeDmBrepInterchange { id, .. }
             | Self::CurveNative { id, .. }
+            | Self::CurveCubicApproximation { id, .. }
             | Self::CurveArea { id, .. }
             | Self::EllipseOffsetGeometry { id, .. }
             | Self::CurveOffsetGeometry { id, .. }
@@ -3575,6 +3583,9 @@ fn execute(
         }
         Operation::CurveNative { fixture, .. } => {
             curve_native::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurveCubicApproximation { fixture, .. } => {
+            curve_approximation::run(fixture, iterations, tolerance)?
         }
         Operation::CurveArea { curve, .. } => curve_area::run(curve, iterations, tolerance)?,
         Operation::EllipseOffsetGeometry {

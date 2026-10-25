@@ -69,6 +69,12 @@ impl I {
         if b == 0. {
             return None;
         }
+        if a == b {
+            return Self::point(1.);
+        }
+        if a == -b {
+            return Self::point(-1.);
+        }
         if a == 0. {
             return Self::point(0.);
         }

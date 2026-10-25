@@ -46,6 +46,49 @@ struct Work {
 }
 #[derive(Default)]
 pub(super) struct Coefficients(BTreeMap<(usize, usize), Vec<I>>);
+
+/// Screen an exact curve difference using outward finite intervals. All work
+/// is charged to the caller; uncertain and extreme values retain exact fallback.
+pub(super) fn curves(
+    a: &[H],
+    b: &[H],
+    limit: Real,
+    coefficients: &mut Coefficients,
+    budget: &mut Budget,
+    subdivide: bool,
+) -> Result<Outcome, GeometryError> {
+    let available = FLOAT_WORK.min(budget.0);
+    let mut work = Work {
+        remaining: available,
+        coefficients: std::mem::take(&mut coefficients.0),
+    };
+    let result = (|| {
+        if limit < Real::MIN_POSITIVE {
+            return None;
+        }
+        let convert = |net: &[H]| {
+            net.iter()
+                .map(|p| {
+                    Some([
+                        I::exact(&p[0])?,
+                        I::exact(&p[1])?,
+                        I::exact(&p[2])?,
+                        I::exact(&p[3])?,
+                    ])
+                })
+                .collect::<Option<Vec<_>>>()
+        };
+        let difference = difference(&convert(a)?, &convert(b)?, &mut work)?;
+        if subdivide {
+            hull(difference, limit, &mut work)
+        } else {
+            coefficient_bound(&difference, limit, &mut work)
+        }
+    })();
+    coefficients.0 = work.coefficients;
+    budget.charge(available - work.remaining)?;
+    Ok(result.unwrap_or(Outcome::Inconclusive))
+}
 impl Work {
     fn charge(&mut self, n: usize) -> Option<()> {
         self.remaining = self.remaining.checked_sub(n)?;
@@ -204,12 +247,16 @@ fn calculate(
             }
         }
     }
-    let c = work.coefficients(image.len() - 1, spatial.len() - 1)?;
-    let mut difference = vec![[zero(); 4]; image.len() + spatial.len() - 1];
-    for (i, a) in image.iter().enumerate() {
-        for (j, b) in spatial.iter().enumerate() {
+    hull(difference(&image, &spatial, work)?, limit, work)
+}
+fn difference(a: &[F], b: &[F], work: &mut Work) -> Option<Vec<F>> {
+    let columns = b.len();
+    let c = work.coefficients(a.len() - 1, b.len() - 1)?;
+    let mut difference = vec![[zero(); 4]; a.len() + b.len() - 1];
+    for (i, a) in a.iter().enumerate() {
+        for (j, b) in b.iter().enumerate() {
             work.charge(4)?;
-            let c = c[i * spatial.len() + j];
+            let c = c[i * columns + j];
             for axis in 0..3 {
                 let d = a[axis].mul(b[3])?.sub(b[axis].mul(a[3])?)?;
                 difference[i + j][axis] = difference[i + j][axis].add(c.mul(d)?)?;
@@ -217,7 +264,24 @@ fn calculate(
             difference[i + j][3] = difference[i + j][3].add(c.mul(a[3])?.mul(b[3])?)?;
         }
     }
-    hull(difference, limit, work)
+    Some(difference)
+}
+fn coefficient_bound(net: &[F], limit: Real, work: &mut Work) -> Option<Outcome> {
+    work.charge(4 * net.len())?;
+    for p in [&net[0], net.last()?] {
+        if norm_squared(p, limit)?.lo > 1. {
+            return Some(Outcome::Outside);
+        }
+    }
+    let mut bound = 0_f64;
+    for p in net {
+        let square = norm_squared(p, limit)?;
+        if square.hi > 1. {
+            return Some(Outcome::Inconclusive);
+        }
+        bound = bound.max(upper(square.hi, limit));
+    }
+    Some(Outcome::Within(bound))
 }
 fn norm_squared(p: &F, limit: Real) -> Option<I> {
     if p[3].lo <= 0. {

@@ -258,12 +258,9 @@
     "Full native CreateUVCrv sizing and off-surface projection parity remain outside this correction."
   ],
   "source_sha256": {
-    "crates/viboceros-geometry/src/surface_pullback.rs": "4d7d97377bd6b9abefc8e9080dab50b688d2fa35f830ddd179a3ea23c6e7bb0c",
     "crates/viboceros-geometry/src/surface_pullback/certified_tests.rs": "ea8cdfc0f7fb2512a45ae64bb46e177c9f3049348de179671d34b006489e34f8",
-    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
     "crates/viboceros-geometry/src/nurbs/sampling.rs": "bca2aa4e92def49fa00ccc1158c61987c2294ebd350fc90311047121e59993e4",
     "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
-    "crates/viboceros-geometry/src/polycurve.rs": "7e12b570052bb53a128d576809af3b209ff25b3e63ac2aebe31c1b9c84f92115",
     "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
     "crates/viboceros-geometry/tests/surface_pullback_units.rs": "54de9950dafc3f4145daaea8a6e0d36070f8b46edb95243b63102191a62e0852",
     "crates/viboceros-command/src/create_uv_curves.rs": "c9532940abee280b73ec8a144cade8b87cd1d5df8694e15509c1c070416998a6",
@@ -272,7 +269,6 @@
   },
   "artifact_sha256": {
     "docs/pullback-parameter-units.md": "a70fc479f92e071121b71c5855217b9fd2c6df104915f8e8ef17068b0d597a36",
-    "docs/surface-parameter-frames.md": "fdb4fc17b146100f2b93c90bf9ac5767af85ddd09ade08eb7281aa7ec55184c0",
     "docs/commands/create-uv-curves.md": "f8d5e90519fcb3b906cc90c79a10987a72b319049fac18dd7382306f5d3cce8f",
     "docs/pullback-units-baseline-geometry.rs.gz": "3b6944cd8bc45136ee129b683f2bc38bd479e7345a0a2aa68767c2b1df3f262f",
     "docs/pullback-units-baseline-command.rs.gz": "c1f6deb3d6c2f247f56592833658570f63500152bc79166e72596aa5de414d90",
@@ -298,9 +294,13 @@
     "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "source_git_sha256": {
-    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6"
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "0e30b1886dd81ee690bec9be50c176bbc5755d2c:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/surface_pullback.rs": "4d7d97377bd6b9abefc8e9080dab50b688d2fa35f830ddd179a3ea23c6e7bb0c",
+    "0b3cdc76db59aa692f3410055a38c0a5c8e9f7e3:crates/viboceros-geometry/src/polycurve.rs": "7e12b570052bb53a128d576809af3b209ff25b3e63ac2aebe31c1b9c84f92115"
   },
   "artifact_git_sha256": {
-    "0c85fd337d79601e2051193599f802203e25b60b:README.md": "e68964eee562f38398b0736ce19bfd9e324ad327ad1009adcdf4c7afb396cbf7"
+    "0c85fd337d79601e2051193599f802203e25b60b:README.md": "e68964eee562f38398b0736ce19bfd9e324ad327ad1009adcdf4c7afb396cbf7",
+    "0c85fd337d79601e2051193599f802203e25b60b:docs/surface-parameter-frames.md": "fdb4fc17b146100f2b93c90bf9ac5767af85ddd09ade08eb7281aa7ec55184c0"
   }
 }

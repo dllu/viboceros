@@ -28,7 +28,9 @@ remain independent reference operations.
 The shared curve fitter has been refactored into adaptive policy, parameter
 sampling, interpolation/handle solving and separate regression modules. This
 moves existing code without changing its arc-length fitting policy. It does not
-establish Rhino Refit parity or a continuous approximation bound. The
+establish Rhino Refit parity or a continuous approximation bound for that fitter.
+A separate [certified cubic primitive](cubic-approximation.md) now supplies
+source-parameter fits and whole-curve bounds for the next fitting work. The
 [validation record](loft-refit-validation.json) records the checks and limits.
 
 ```sh

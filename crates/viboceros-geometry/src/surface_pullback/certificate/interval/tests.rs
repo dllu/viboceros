@@ -55,6 +55,77 @@ fn zero_identities_overflow_and_subnormal_boundaries_are_conservative() {
     );
 }
 
+#[test]
+fn equal_nonzero_scalar_ratios_retain_exact_unit_bounds() {
+    for value in [0.25, -0.25, Real::MIN_POSITIVE, 1e-200, 1e200, Real::MAX] {
+        let a = I::point(value).unwrap();
+        let b = I::point(-value).unwrap();
+        let same = a.div(a).unwrap();
+        let opposite = a.div(b).unwrap();
+        assert_eq!([same.lo, same.hi], [1., 1.]);
+        assert_eq!([opposite.lo, opposite.hi], [-1., -1.]);
+    }
+    assert!(I::point(0.).unwrap().div(I::point(0.).unwrap()).is_none());
+}
+
+#[test]
+fn curve_interval_decisions_are_checked_by_independent_exact_products() {
+    let mut coefficients = Coefficients::default();
+    let mut accepted = 0;
+    let mut outside = 0;
+    for degree in 1..=7 {
+        let a = (0..=degree)
+            .map(|i| {
+                let w = rational([1., 0.75, 1.5][i % 3]);
+                [
+                    rational(i as Real) * &w,
+                    rational((i * i) as Real / 7.) * &w,
+                    Rational::zero(),
+                    w,
+                ]
+            })
+            .collect::<Vec<_>>();
+        for offset in [0., 1e-7, 0.01] {
+            let b = a
+                .iter()
+                .map(|p| {
+                    [
+                        p[0].clone(),
+                        p[1].clone(),
+                        rational(offset) * &p[3],
+                        p[3].clone(),
+                    ]
+                })
+                .collect::<Vec<_>>();
+            for limit in [1e-9, 1e-6, 0.1] {
+                for subdivide in [false, true] {
+                    let mut budget = Budget(MAX_WORK);
+                    let outcome =
+                        curves(&a, &b, limit, &mut coefficients, &mut budget, subdivide).unwrap();
+                    let difference = algebra::difference(&a, &b, &mut budget).unwrap();
+                    match outcome {
+                        Outcome::Within(value) => {
+                            assert!(value <= limit);
+                            assert!(
+                                algebra::hull_bound(difference, value, &mut budget)
+                                    .unwrap()
+                                    .is_some()
+                            );
+                            accepted += 1;
+                        }
+                        Outcome::Outside => {
+                            assert!(algebra::norm_bound(&difference[0], limit).is_none());
+                            outside += 1;
+                        }
+                        Outcome::Inconclusive => {}
+                    }
+                }
+            }
+        }
+    }
+    assert!(accepted > 30 && outside > 20);
+}
+
 fn fixture(offset: Real) -> (Vec<H>, Vec<Uv>, Vec<H>) {
     let net = (0..=2)
         .flat_map(|j| {

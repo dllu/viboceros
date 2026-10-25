@@ -207,6 +207,25 @@ def _expand_sources_once(paths):
              'crates/viboceros-command/src/mesh_partition/appearance.rs'}
     expanded = [moved.get(p, p).replace('src/vertex_seams/arguments.rs',
                                       'src/component_seams/arguments.rs') for p in paths]
+    if 'crates/viboceros-geometry/src/surface_pullback/certificate.rs' in expanded:
+        expanded.extend([
+            'crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/cubic/tests.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/tests.rs',
+        ])
+    if 'crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs' in expanded:
+        expanded.extend([
+            'crates/viboceros-geometry/src/curve_fit.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs',
+            'crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs',
+            'crates/viboceros-geometry/src/exact_scalar.rs',
+        ])
+    if 'crates/viboceros-oracle/src/curve_approximation.rs' in expanded:
+        expanded.extend([
+            'crates/viboceros-geometry/src/surface_pullback/certificate.rs',
+            'crates/viboceros-oracle/tests/cubic_approximation_native.rs',
+        ])
     if 'crates/viboceros-command/src/lib.rs' in expanded:
         expanded.extend(['crates/viboceros-command/src/crease_splitting.rs',
                          'crates/viboceros-command/src/crease_splitting/tests.rs',

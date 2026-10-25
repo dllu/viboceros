@@ -6,7 +6,9 @@ use std::collections::BTreeMap;
 
 mod affine;
 mod algebra;
+mod cubic;
 mod curve;
+mod curve_pair;
 mod interval;
 mod polyline;
 mod pushup;

@@ -1,0 +1,625 @@
+{
+  "feature": "Certified source-parameter cubic curve approximation",
+  "reference": "Rhino 8.32.26160.13001 public Curve.PointAt and one-sided Curve.DerivativeAt source positions",
+  "native_capture_records": 40,
+  "distinct_native_source_definitions": 20,
+  "captures": {
+    "cubic_approximation_sources": 20,
+    "cubic_approximation_holdouts": 20
+  },
+  "uniform_positions_per_curve": 33,
+  "off_grid_positions_per_curve": 11,
+  "native_reference_parameter_samples": 880,
+  "fitting_cases_per_configuration": 40,
+  "native_position_comparisons_per_configuration": 1760,
+  "configurations": [
+    "default",
+    "native-smlib"
+  ],
+  "shared_rust_producer": true,
+  "configuration_records_identical": true,
+  "source_definitions_unchanged": true,
+  "source_parameter_domains_retained": true,
+  "polynomial_weights": 1.0,
+  "summary": [
+    {
+      "absolute_tolerance": 1e-06,
+      "cases_per_configuration": 20,
+      "maximum_certified_bound": 9.903159705738131e-07,
+      "maximum_native_position_difference": 4.1080487635250595e-07,
+      "maximum_off_grid_position_difference": 4.1080487635250595e-07,
+      "maximum_controls": 385
+    },
+    {
+      "absolute_tolerance": 1e-09,
+      "cases_per_configuration": 20,
+      "maximum_certified_bound": 9.97897394668516e-10,
+      "maximum_native_position_difference": 6.884678382945708e-10,
+      "maximum_off_grid_position_difference": 6.884678382945708e-10,
+      "maximum_controls": 1537
+    }
+  ],
+  "cases": [
+    {
+      "bound": 4.44089209850063e-16,
+      "controls": 4,
+      "id": "cubic-source-line-0",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 2.220446049250313e-16,
+      "maximum_off_grid_sample_difference": 2.220446049250313e-16
+    },
+    {
+      "bound": 4.44089209850063e-16,
+      "controls": 4,
+      "id": "cubic-source-line-0",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 2.220446049250313e-16,
+      "maximum_off_grid_sample_difference": 2.220446049250313e-16
+    },
+    {
+      "bound": 5.551115123125788e-16,
+      "controls": 4,
+      "id": "cubic-source-line-1",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 4.440892098500626e-16,
+      "maximum_off_grid_sample_difference": 2.220446049250313e-16
+    },
+    {
+      "bound": 5.551115123125788e-16,
+      "controls": 4,
+      "id": "cubic-source-line-1",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 4.440892098500626e-16,
+      "maximum_off_grid_sample_difference": 2.220446049250313e-16
+    },
+    {
+      "bound": 8.88178419700126e-16,
+      "controls": 4,
+      "id": "cubic-source-line-2",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 8.881784197001252e-16,
+      "maximum_off_grid_sample_difference": 8.881784197001252e-16
+    },
+    {
+      "bound": 8.88178419700126e-16,
+      "controls": 4,
+      "id": "cubic-source-line-2",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 8.881784197001252e-16,
+      "maximum_off_grid_sample_difference": 8.881784197001252e-16
+    },
+    {
+      "bound": 1.7957444177028647e-07,
+      "controls": 97,
+      "id": "cubic-source-quarter-0",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 9.44627349848298e-08,
+      "maximum_off_grid_sample_difference": 9.44627349848298e-08
+    },
+    {
+      "bound": 7.018160907832386e-10,
+      "controls": 385,
+      "id": "cubic-source-quarter-0",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 4.253484961129021e-10,
+      "maximum_off_grid_sample_difference": 4.253484961129021e-10
+    },
+    {
+      "bound": 2.257005928834976e-07,
+      "controls": 97,
+      "id": "cubic-source-quarter-1",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 1.2229620776341317e-07,
+      "maximum_off_grid_sample_difference": 1.2229620776341317e-07
+    },
+    {
+      "bound": 8.805657884483181e-10,
+      "controls": 385,
+      "id": "cubic-source-quarter-1",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 5.479886280735517e-10,
+      "maximum_off_grid_sample_difference": 5.479886280735517e-10
+    },
+    {
+      "bound": 2.758928120641706e-07,
+      "controls": 97,
+      "id": "cubic-source-quarter-2",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 1.5018124954380478e-07,
+      "maximum_off_grid_sample_difference": 1.5018124954380478e-07
+    },
+    {
+      "bound": 9.97897394668516e-10,
+      "controls": 478,
+      "id": "cubic-source-quarter-2",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 4.1282549063426377e-10,
+      "maximum_off_grid_sample_difference": 4.1282549063426377e-10
+    },
+    {
+      "bound": 9.520343762535943e-07,
+      "controls": 172,
+      "id": "cubic-source-cubic-0",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 2.760332466943273e-07,
+      "maximum_off_grid_sample_difference": 2.760332466943273e-07
+    },
+    {
+      "bound": 9.842611924519941e-10,
+      "controls": 871,
+      "id": "cubic-source-cubic-0",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 2.8071814553413146e-10,
+      "maximum_off_grid_sample_difference": 2.8071814553413146e-10
+    },
+    {
+      "bound": 9.903159705738131e-07,
+      "controls": 178,
+      "id": "cubic-source-cubic-1",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 3.0457287797142867e-07,
+      "maximum_off_grid_sample_difference": 3.0457287797142867e-07
+    },
+    {
+      "bound": 9.625005613986929e-10,
+      "controls": 880,
+      "id": "cubic-source-cubic-1",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 3.198833880254901e-10,
+      "maximum_off_grid_sample_difference": 3.198833880254901e-10
+    },
+    {
+      "bound": 8.902082471324061e-07,
+      "controls": 184,
+      "id": "cubic-source-cubic-2",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 3.3323960354425475e-07,
+      "maximum_off_grid_sample_difference": 3.3323960354425475e-07
+    },
+    {
+      "bound": 9.759799560870356e-10,
+      "controls": 886,
+      "id": "cubic-source-cubic-2",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 3.602060461470654e-10,
+      "maximum_off_grid_sample_difference": 3.602060461470654e-10
+    },
+    {
+      "bound": 8.978722088514324e-08,
+      "controls": 385,
+      "id": "cubic-source-circle-0",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 5.596868508385998e-08,
+      "maximum_off_grid_sample_difference": 5.596868508385998e-08
+    },
+    {
+      "bound": 3.509080453916193e-10,
+      "controls": 1537,
+      "id": "cubic-source-circle-0",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 2.0881486712630797e-10,
+      "maximum_off_grid_sample_difference": 2.0881486712630797e-10
+    },
+    {
+      "bound": 1.1285029654206524e-07,
+      "controls": 385,
+      "id": "cubic-source-circle-1",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 6.667656810774357e-08,
+      "maximum_off_grid_sample_difference": 6.667656810774357e-08
+    },
+    {
+      "bound": 4.4028293683459747e-10,
+      "controls": 1537,
+      "id": "cubic-source-circle-1",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 2.3693880120439544e-10,
+      "maximum_off_grid_sample_difference": 2.3693880120439544e-10
+    },
+    {
+      "bound": 1.3794640597256354e-07,
+      "controls": 385,
+      "id": "cubic-source-circle-2",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 7.771851826930709e-08,
+      "maximum_off_grid_sample_difference": 7.771851826930709e-08
+    },
+    {
+      "bound": 5.385082741185057e-10,
+      "controls": 1537,
+      "id": "cubic-source-circle-2",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 2.66701807245142e-10,
+      "maximum_off_grid_sample_difference": 2.66701807245142e-10
+    },
+    {
+      "bound": 4.44089209850063e-16,
+      "controls": 13,
+      "id": "cubic-source-polygon-0",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 2.7755575615628914e-17,
+      "maximum_off_grid_sample_difference": 0.0
+    },
+    {
+      "bound": 4.44089209850063e-16,
+      "controls": 13,
+      "id": "cubic-source-polygon-0",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 2.7755575615628914e-17,
+      "maximum_off_grid_sample_difference": 0.0
+    },
+    {
+      "bound": 5.551115123125788e-16,
+      "controls": 13,
+      "id": "cubic-source-polygon-1",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 4.440892098500626e-16,
+      "maximum_off_grid_sample_difference": 3.3306690738754696e-16
+    },
+    {
+      "bound": 5.551115123125788e-16,
+      "controls": 13,
+      "id": "cubic-source-polygon-1",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 4.440892098500626e-16,
+      "maximum_off_grid_sample_difference": 3.3306690738754696e-16
+    },
+    {
+      "bound": 8.88178419700126e-16,
+      "controls": 13,
+      "id": "cubic-source-polygon-2",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 4.440892098500626e-16,
+      "maximum_off_grid_sample_difference": 2.220446049250313e-16
+    },
+    {
+      "bound": 8.88178419700126e-16,
+      "controls": 13,
+      "id": "cubic-source-polygon-2",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 4.440892098500626e-16,
+      "maximum_off_grid_sample_difference": 2.220446049250313e-16
+    },
+    {
+      "bound": 9.57931791036906e-07,
+      "controls": 337,
+      "id": "cubic-source-hidden-bump",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 1.5577328260629741e-07,
+      "maximum_off_grid_sample_difference": 1.5577328260629741e-07
+    },
+    {
+      "bound": 9.958967058139324e-10,
+      "controls": 1489,
+      "id": "cubic-source-hidden-bump",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 6.884678382945708e-10,
+      "maximum_off_grid_sample_difference": 6.884678382945708e-10
+    },
+    {
+      "bound": 9.863374734342654e-07,
+      "controls": 256,
+      "id": "cubic-source-spatial-rational",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 4.1080487635250595e-07,
+      "maximum_off_grid_sample_difference": 4.1080487635250595e-07
+    },
+    {
+      "bound": 9.904196459598523e-10,
+      "controls": 1510,
+      "id": "cubic-source-spatial-rational",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 4.519680507962154e-10,
+      "maximum_off_grid_sample_difference": 4.519680507962154e-10
+    },
+    {
+      "bound": 6.310961198575707e-16,
+      "controls": 10,
+      "id": "cubic-source-unclamped",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 4.440892098500626e-16,
+      "maximum_off_grid_sample_difference": 4.440892098500626e-16
+    },
+    {
+      "bound": 6.310961198575706e-16,
+      "controls": 10,
+      "id": "cubic-source-unclamped",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 4.440892098500626e-16,
+      "maximum_off_grid_sample_difference": 4.440892098500626e-16
+    },
+    {
+      "bound": 9.429750024913646e-16,
+      "controls": 7,
+      "id": "cubic-source-nonuniform-kink",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 2.2644195468014703e-15,
+      "maximum_off_grid_sample_difference": 1.3506446028928519e-15
+    },
+    {
+      "bound": 9.429750024913644e-16,
+      "controls": 7,
+      "id": "cubic-source-nonuniform-kink",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 2.2644195468014703e-15,
+      "maximum_off_grid_sample_difference": 1.3506446028928519e-15
+    },
+    {
+      "bound": 1.7957444177028647e-07,
+      "controls": 97,
+      "id": "cubic-source-shifted-quarter-domain",
+      "limit": 1e-06,
+      "maximum_native_sample_difference": 9.446273496595014e-08,
+      "maximum_off_grid_sample_difference": 9.446273496595014e-08
+    },
+    {
+      "bound": 7.018160907832386e-10,
+      "controls": 385,
+      "id": "cubic-source-shifted-quarter-domain",
+      "limit": 1e-09,
+      "maximum_native_sample_difference": 4.253480105205743e-10,
+      "maximum_off_grid_sample_difference": 4.253480105205743e-10
+    }
+  ],
+  "continuous_parameter_error_certified": true,
+  "methods": [
+    "NurbsCurve::try_approximate_cubic",
+    "NurbsCurve::try_approximate_cubic_with_bound",
+    "NurbsCurve::parameter_curve_deviation_bound",
+    "JSON/Python oracle: curve_cubic_approximation"
+  ],
+  "checked": [
+    "Exact rational restrictions of original stored knots, controls and weights",
+    "Rounded Hermite controls and an independent final whole-curve certificate",
+    "20 native source curves at 33 uniform and 11 non-grid positions",
+    "Holdout parameters explicitly differ from every fitted interpolation knot",
+    "Independent exact products check the outward interval curve decisions",
+    "Exact zero under different bases, domains and weight gauges",
+    "A nonuniform rational parameterization with the same geometric locus",
+    "One-sided knot jumps, kinks, constants, closed curves and unclamped domains",
+    "A quintic bump hidden between five uniform samples",
+    "Subnormal distances, tiny/translated coordinates and non-dyadic parameter intervals",
+    "Unrepresentable endpoint rejection and overflowing initial handle refinement",
+    "Extreme positive weight-ratio depth failure and output-control preflight",
+    "JSON validation, source retention, default tolerance and sample handling"
+  ],
+  "limits": {
+    "maximum_degree": 16,
+    "maximum_controls": 4096,
+    "maximum_depth": 48,
+    "work_units_per_fitting_or_verification_phase": 2000000,
+    "maximum_rational_bits": 8192,
+    "maximum_oracle_parameters": 4096,
+    "weights": "independently common-sign gauges"
+  },
+  "certificate_regressions_passed": 66,
+  "pullback_unit_regressions_passed": 4,
+  "preserved_refit_oracle_regressions_passed": 3,
+  "oracle_regressions_per_configuration": 3,
+  "rust_checks": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "passed": true
+    },
+    {
+      "name": "certificate",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "surface_pullback::certificate",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true
+    },
+    {
+      "name": "pullback-units",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--test",
+        "surface_pullback_units",
+        "--frozen"
+      ],
+      "passed": true
+    },
+    {
+      "name": "oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "cubic_approximation_native",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true
+    },
+    {
+      "name": "refit",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--test",
+        "loft_refit_native",
+        "--frozen"
+      ],
+      "passed": true
+    },
+    {
+      "name": "native-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--test",
+        "cubic_approximation_native",
+        "--frozen",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "passed": true
+    },
+    {
+      "name": "native-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--features",
+        "native-smlib",
+        "--frozen",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "passed": true
+    }
+  ],
+  "python_tests_passed": 1966,
+  "python_test_seconds": 304.376,
+  "python_json_cli_smoke": {
+    "passed": true,
+    "transport": "Python OracleClient and real JSON CLI, using the staged debug binary in place of the Cargo release launcher",
+    "backend": "native-smlib",
+    "cases": [
+      {
+        "id": "cubic-source-line-0-holdout",
+        "bound": 4.44089209850063e-16,
+        "maximum_native_difference": 2.220446049250313e-16,
+        "positions": 11
+      },
+      {
+        "id": "cubic-source-quarter-0-holdout",
+        "bound": 1.7957444177028647e-07,
+        "maximum_native_difference": 9.44627349848298e-08,
+        "positions": 11
+      }
+    ],
+    "seconds": 0.9983882480300963
+  },
+  "historical_source_binding_repairs": 21,
+  "implements_rhino_loft_refit": false,
+  "performance_qualified": false,
+  "limitations": [
+    "This retains source parameters; Rhino Loft Refit fitting and chart policy remain unimplemented.",
+    "The bound certifies positions, not smoothness after rounding, topology or injectivity.",
+    "Mixed weight signs and degrees above 16 are unsupported; unresolved resource or representability limits fail.",
+    "Native source comparisons use 20 finite-scale inputs; arbitrary-scale or Rhino Refit performance parity is not claimed.",
+    "Python wire validation uses the staged debug binary instead of rebuilding the Cargo release profile."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "d1507b781a362eef2bd42d0aa4fa735124351517fffdd75081deccf4be0fea91",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs": "d733be755cf8529dc60d705fd5e20479a7953b09aeca9df27e232f82f24317a1",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/cubic/tests.rs": "57101ff7b6919ba8d78a470ed6225c59aba3e4891e5cb0aa5f1d7b4b37f0b486",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair.rs": "931e8d37d938e8d04c593798588bef8094f48ec4909b6509ce0517edc9cf8717",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve_pair/tests.rs": "5ae34d6a7dc213bd098ceef7d8f8a23ef8a817fce974e0b0cec8247f4e2a6139",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs": "1d57c4074cf00091c874a796e3e0b3d2c455ef23b1958a99c57408e0b0fccaa2",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/tests.rs": "39c8c7f18efcf6272cf68d0a0807fcd1d51fde2e8f606004e54dd03120aedad6",
+    "crates/viboceros-geometry/src/interval.rs": "7ee824c09e2ba9f728ed8e3bfcfa23b23cf5e6ad63dfeaf64bd0d832cceab727",
+    "crates/viboceros-oracle/src/curve_approximation.rs": "db913a0edf554f392a638528e524ec308a1da324c44875c6be0211f991187fc2",
+    "crates/viboceros-oracle/tests/cubic_approximation_native.rs": "e8ebb3c2ebc21ae6a4fb348ca20e7e4dbfce8b4c388c4742825340462d7e18dc",
+    "tools/rhino_oracle/generate_cubic_approximation_sources.py": "731c4f054aac5240f899d8ec4a64c08ae25bc5b3cddf9b5ff08686590db07f3b",
+    "tools/rhino_oracle/test_cubic_approximation.py": "95c00a497f0ab590e132ebff19c75d5ec0cc1ec8a1562e95bfeda472b102ca29",
+    "tools/rhino_oracle/qualification_sources.py": "46f0c161a3a2b4e56886fdf0dc4f3fee0473b38658852387ff83f573d3468a98",
+    "docs/cubic-approximation.md": "649588c20b5380e5dd01fc70b64e2e0d8f510f855fe136d4cb42e2f5c8cacc02",
+    "docs/loft-refit.md": "4a10c37e544ecb13ed9510e625edb771140d4e556c61f3d4b643b6a2ff8fbc2d",
+    "tools/rhino_oracle/fixtures/cubic_approximation_sources.json": "a34abaf7f8288d9c614dd5d26fb0c512a7e3490a7285ea42a8d4157d14bd0e15",
+    "tools/rhino_oracle/observations/cubic_approximation_sources.json": "9bed08bb1e9ca6326453c2c703428bb34f86be3a33c2d6162c092a94214f4453",
+    "tools/rhino_oracle/observations/source_snapshots/fc8cc9987b4b411c111c00ea4304bb1296207d1c2cedc089dcacad158affa05f.gz": "f2ba9fa4f15c202900139707e461475e47035c07ac88d2839d93ae32bca6d470",
+    "tools/rhino_oracle/observations/source_snapshots/1d33687f0f250802b4ec1545aacb2d7adf9c344040ba39209a9c5526cdccd5ac.gz": "53b876b4afb7fffc6bcd400ef3e8caaba3355a5495bdcc518b70cc4552233183",
+    "tools/rhino_oracle/observations/source_snapshots/709c140d538d1d6b6400ead31c67bb9755f8a011ded3d7057c5c994b0fc99913.gz": "a13d27ada9bb30f712f69d92df69563aecede4a0bfe0537af8d57c11cffb34fe",
+    "tools/rhino_oracle/observations/source_snapshots/8ae60fc3ca97eac1af2109d719e6147f8132d715b96946024e4488087f89aa03.gz": "77b214781f8a445d4f4ca6bd14c1d33af7dcfca2d5106b0fbed4e3d089ec8b25",
+    "tools/rhino_oracle/observations/source_snapshots/93ca297025e8818a8a4449eb223bd2e6e07ed8a2486dd4dca1169eea95eb5f57.gz": "c9778cade7f3decddc091ce014762f43625da8f9180045d6879be88bcb2b16bc",
+    "tools/rhino_oracle/observations/source_snapshots/a083823c776ca49cf466448307dfc4f04a5d5aecdc86b43a6876e0fe4aceedcd.gz": "26c5452d59e2fe178d637a5b89a7f7421aa5aea4069e0468d93b87bc4a0e9b66",
+    "tools/rhino_oracle/observations/source_snapshots/dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9.gz": "fbd17990aa13535271a26444c03b4d43dcb5bcf4857960a33112b159a7230df6",
+    "crates/viboceros-oracle/src/lib.rs": "8493a58f3eea3cf105c537bc04db14219875d3ee5e51bd41052822f8386652fc",
+    "tools/rhino_oracle/generate_cubic_approximation_holdouts.py": "b76d9d163380aee52c0bf81cdc06ad790094fd8162ca2c2865257c5e313f3da6",
+    "tools/rhino_oracle/fixtures/cubic_approximation_holdouts.json": "0932192b79e905a21b9d16ea0db089e40a8a02b2b6bb04af2286b84f035146b0",
+    "tools/rhino_oracle/observations/cubic_approximation_holdouts.json": "4f69764fcc613812a36215d631b0ef63e0a1a0af93e73daabd2109c14fab7579",
+    "tools/rhino_oracle/observations/source_snapshots/b76d9d163380aee52c0bf81cdc06ad790094fd8162ca2c2865257c5e313f3da6.gz": "549b6f9596f58d0bccf0b8dc3b0dddca14017f054dda576a9b240855998852a7",
+    "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
+    "Cargo.lock": "98ef01d39470beb321375904c23b95764482bea4cebf8174a176b86174851424",
+    ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
+    "README.md": "2fa447cce3037aef92f112020a67341b3001c55b6bf81ddecae181befe69785e",
+    "crates/viboceros-geometry/src/lib.rs": "0ad8f56d8b745c8e4dfad7b775313f59a02b42b34afc70c620bdff889200fddc",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
+    "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
+    "crates/viboceros-geometry/src/error.rs": "e03ea19c5b36f97cbd32f959d853bba42d471627f5cf21a4f5e3b39e7a4b379d",
+    "crates/viboceros-geometry/src/tolerance.rs": "a5d8ff84321ee02cabcdac0666c9965aa7d1211f893c0321b05cf9a30a420123",
+    "crates/viboceros-geometry/src/nurbs.rs": "8809247594745c0fd04e5e60ac0ab87e37f70e639bfb5bebb73db63df8576d2b",
+    "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
+    "crates/viboceros-geometry/src/nurbs/evaluate/jet.rs": "294a9177a8b20ea3e21f550f4e7926864589782568748d275cae777298d595ca",
+    "crates/viboceros-geometry/src/nurbs/evaluate/exact.rs": "6e1c28d5fc69c307f0f5121ee604ab22aaaf89b69b4b298f397aa60b690a54c9",
+    "crates/viboceros-geometry/src/nurbs/evaluate/query.rs": "491f1f059a4439fa5d34be70003d824cd2f3fde15bc47a3a77d3ac7d63ec4098",
+    "crates/viboceros-geometry/src/nurbs/evaluate/scaled_first.rs": "fb8adf207954f411cca7789da673934ed829f0bbfb3a82af67cb474678ab136b",
+    "crates/viboceros-geometry/src/nurbs/evaluate/tangent.rs": "df92387d32cb154165b9b363f0abe21da51c9e071256dc3252089b7d568441f1",
+    "crates/viboceros-geometry/src/point/distance_key.rs": "84c636f2b8d6cf3d69c5c49ae282e959f2ac30a56a8af16025bc2f2fb606ddd0",
+    "crates/viboceros-geometry/src/point/distance_order.rs": "e4ee5574070f09e83944050ed63514d17bf76a808dd0df3445d6c173b2f348b1",
+    "crates/viboceros-geometry/src/parameter.rs": "66eff84b5540d40dd2396bcc14d81fcc97f1595926b22e8d048807448f657253",
+    "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
+    "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
+    "crates/viboceros-geometry/src/nurbs/exact.rs": "671ca58b242c3bc86131a6cf89806595fb738141cd33e462f709ac5f7ef59881",
+    "crates/viboceros-geometry/src/nurbs/exact/dyadic.rs": "5b0c6c5d95399b628432a08331c47c3c5aa39076e30f3291f63d156230165445",
+    "crates/viboceros-geometry/src/surface_pullback.rs": "ea0109223b6a1b4fd4345f8cfe373b8d29ad1642aea6d42e0cafa353072b330b",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
+    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "crates/viboceros-geometry/tests/surface_pullback_units.rs": "54de9950dafc3f4145daaea8a6e0d36070f8b46edb95243b63102191a62e0852",
+    "crates/viboceros-oracle/src/main.rs": "4085792d2d21b01f6ce191620fec3da10385c46956b9669500c0c0505e2c23a5",
+    "crates/viboceros-oracle/src/curve_native.rs": "a82040fa64ae8d41832899de34dfebaef6a576aef11cf33d3f90bfd18d1019fb",
+    "crates/viboceros-oracle/tests/loft_refit_native.rs": "bf70e0dbe6276daa0cddbe8a6309f56a6491af5acd7e06c88b4cfe9982744a32",
+    "tools/rhino_oracle/client.py": "1aa9c98bf227fd991d50a7a20a31222be7150cac90187901421f8df298e73345",
+    "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
+    "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
+    "tools/rhino_oracle/rhino_worker.py": "8eeccf022a7a5b17283042a289c82c3ad5e56200673e88d47979e01e5ddbf6b7",
+    "tools/rhino_oracle/generate_loft_rebuild.py": "1d33687f0f250802b4ec1545aacb2d7adf9c344040ba39209a9c5526cdccd5ac",
+    "tools/rhino_oracle/fixtures/loft.json": "709c140d538d1d6b6400ead31c67bb9755f8a011ded3d7057c5c994b0fc99913",
+    "crates/viboceros-geometry/src/curve_fit.rs": "b5f529a3183b3e281882d01ad86e9f498b75af29ba865db8fd51370962e90522",
+    "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
+    "crates/viboceros-oracle/src/curve_path_extrusion.rs": "2d6f83f75044a95a490fed392c88fd9256556e268136f91a2f32877a7f47b174",
+    "tools/rhino_oracle/interface_commands_probe.py": "24ad3695e8527287c8909b4c4861609b80cf0d0378f6565bd0a3116cb03251cb",
+    "crates/viboceros-geometry/src/curve_fit/interpolate.rs": "d18695d559e2ed87641e3fc0648b60ec6e4f2e470434e7e59ec99d280b5ae4f3",
+    "crates/viboceros-geometry/src/curve_fit/sampler.rs": "cb6cf09b98fb1f35996872b9d3be5fdc216f46f2cf2cca4d1d2ab36f5167ed93",
+    "crates/viboceros-geometry/src/curve_fit/tests.rs": "2ddbd80248f463a81fe791e01026e525248df7f8e9ce1d11a733a414edbef1f2",
+    "crates/viboceros-geometry/src/curve_fit/constraints_tests.rs": "fac8294fd228907be0c607d0f88d10780fd11b00a08b26b7d6c3bafb1cec0aba",
+    "crates/viboceros-geometry/src/curve_fit/station_tests.rs": "7b2cd78fc436e38d059421906f617aa0818805413cc61dea31e6feda7989382c"
+  }
+}
