@@ -32577,7 +32577,7 @@
     "tools/rhino_oracle/observations/source_snapshots/f6959ff6aba3cd3e0fd891428a4b024fe12963f1919a948b345de3ec28f937aa.gz": "ab3d13de8185e8bee0fc31b0dd61146b1ddd343a89de9f4287611af8398e5caf",
     "tools/rhino_oracle/observations/source_snapshots/fc026de798511f760cdf732316624b4d70a08cefb83c64ae4526670f2d138a23.gz": "3a34b50a7c5e949e51c1f2e685115e49a0486a8a615266285d2dd5f89f938c73",
     "tools/rhino_oracle/owned_brep_command.py": "d4f80d5be8a04368c9810453134acbd2fa6d762deb0dd2ccae2efd343947169e",
-    "tools/rhino_oracle/qualification_sources.py": "fc30579eed165293d5b45c9db3545ce45238cef947a8f2d3ed0cd29fe752dd83",
+    "tools/rhino_oracle/qualification_sources.py": "f079b0c3660380837a4afa87a81c5af4b3b679841097e31f66b38a45de78d60b",
     "tools/rhino_oracle/report_extract_points.py": "7e46df249f70c71e78f704768a9b8c1aed3e654ecf6fbd2a36ab7ff4a8166d83",
     "tools/rhino_oracle/report_subd_display.py": "c14cd94ac35993ca3f9c8efaa683aca5f7e95b3f2f927d297a39c62e65e7b8b4",
     "tools/rhino_oracle/test_extract_points.py": "5d3a88c9ede14e929891b53bb5bb72151f5b94ee63a183971384652181b71d00",

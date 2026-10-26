@@ -263,7 +263,6 @@
     "Native adaptive handle adjustment, subdivision, general smooth fitting and explicit angle overrides remain unfinished. The retained full scalar SDK diagnostic remains failing; this feature makes no new scalar parity claim."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/curve_fit.rs": "98d8139931f203f2c908fa436af384e8651ef961af612b4645428a107edf1a5b",
     "crates/viboceros-geometry/src/curve_fit/g1/correspondence.rs": "0be1ffeb236a780720c9762d07bab10334691c0f2b7607ff405d71824b33429a",
     "crates/viboceros-geometry/src/loft/refit/candidate/tests.rs": "ca41063d7bc5ec6f931b8c0a2a02c6ed49d67687402b8941ab36042217250646",
     "tools/rhino_oracle/fixtures/loft_refit_candidate_boundary.json": "f037e891ee9b0e213b5ad31656f8b1f99c333c95f22358a8cf1286948816c25c",
@@ -361,7 +360,6 @@
     "crates/viboceros-geometry/src/nurbs/arc_length/linear.rs": "4d844cd939fda03ef88a7fe5195048d4c7a7a69da5ac4d6a97693477abb29bfd",
     "crates/viboceros-geometry/src/curve_fit/interpolate.rs": "d18695d559e2ed87641e3fc0648b60ec6e4f2e470434e7e59ec99d280b5ae4f3",
     "crates/viboceros-geometry/src/curve_fit/sampler.rs": "cb6cf09b98fb1f35996872b9d3be5fdc216f46f2cf2cca4d1d2ab36f5167ed93",
-    "crates/viboceros-geometry/src/curve_fit/tests.rs": "2ddbd80248f463a81fe791e01026e525248df7f8e9ce1d11a733a414edbef1f2",
     "crates/viboceros-geometry/src/curve_fit/constraints_tests.rs": "fac8294fd228907be0c607d0f88d10780fd11b00a08b26b7d6c3bafb1cec0aba",
     "crates/viboceros-geometry/src/curve_fit/station_tests.rs": "7b2cd78fc436e38d059421906f617aa0818805413cc61dea31e6feda7989382c",
     "crates/viboceros-geometry/src/surface_pullback/certificate/cubic.rs": "d733be755cf8529dc60d705fd5e20479a7953b09aeca9df27e232f82f24317a1",
@@ -423,6 +421,8 @@
     "2d2466eea2570fd95605bcd4892224bb118a2188:tools/rhino_oracle/qualification_sources.py": "029c6af8079b985cdf1f206ddf7f3e112171bb6d4205ddf0532cbe4dde4df566",
     "2d2466eea2570fd95605bcd4892224bb118a2188:crates/viboceros-oracle/tests/loft_refit_native.rs": "5f422e2af79fac970bba4cf9049a5bcb08d1c1640888e088398833ae414cca04",
     "2d2466eea2570fd95605bcd4892224bb118a2188:tools/rhino_oracle/client.py": "6202f8f013b085ac382d2a5e0ed1334bc3c6ef1ac352ea005667e927592a4337",
-    "2d2466eea2570fd95605bcd4892224bb118a2188:tools/rhino_oracle/rhino_worker.py": "64cd083480c410577eacfbdac9aaf71243e3342bbcc2640e323d2d969906eed6"
+    "2d2466eea2570fd95605bcd4892224bb118a2188:tools/rhino_oracle/rhino_worker.py": "64cd083480c410577eacfbdac9aaf71243e3342bbcc2640e323d2d969906eed6",
+    "6c73e9adc0b597cbcb626a8aaf233531731cc72e:crates/viboceros-geometry/src/curve_fit.rs": "98d8139931f203f2c908fa436af384e8651ef961af612b4645428a107edf1a5b",
+    "6c73e9adc0b597cbcb626a8aaf233531731cc72e:crates/viboceros-geometry/src/curve_fit/tests.rs": "2ddbd80248f463a81fe791e01026e525248df7f8e9ce1d11a733a414edbef1f2"
   }
 }

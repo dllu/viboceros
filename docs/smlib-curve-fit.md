@@ -15,7 +15,8 @@ linear solver is introduced. Coordinate translation and exact constant-channel
 preservation retain small detail; fixed endpoint/kink controls are copied back
 directly rather than round-tripped through the solver.
 
-The shared `curve_fit` root owns validation and adaptive refinement; `sampler`
+The shared `curve_fit` root exposes the public fitting API; `adaptive` owns
+validation, refinement and bounded sample caching. `sampler`
 owns parameter maps and source sampling, and `interpolate` owns fixed handles
 and collocation solves. Regression modules are separate from implementation.
 

@@ -34,6 +34,10 @@ supported records use a `1e-8` parity threshold; the other 219 smooth records
 retain `1e-9`. This numerical comparison is distinct from the continuous
 source-to-fit bound. Command references cover all five styles and Straight's
 face splitting, source selection, attributes and output topology.
+The [subdivision references](loft-refit-subdivision-validation.json) distinguish
+whole-profile fits from independently trimmed fits, including source-domain
+changes and reversals. Fitting each half separately does not reproduce the joined
+result; those observations do not establish a subdivision or joining policy.
 General subdivision, piece joining, multispan smooth sources, single-input smooth
 preparation and explicit angle overrides remain unfinished. Degree, profile,
 work and correspondence limits follow the [shared proposals](loft-refit-candidates.md).

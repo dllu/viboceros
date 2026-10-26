@@ -199,6 +199,8 @@ def _expand_sources_once(paths):
         ]
     if 'crates/viboceros-geometry/src/curve_fit.rs' in paths:
         paths = [*paths,
+            'crates/viboceros-geometry/src/curve_fit/adaptive.rs',
+            'crates/viboceros-geometry/src/curve_fit/adaptive/tests.rs',
             'crates/viboceros-geometry/src/curve_fit/g1.rs',
             'crates/viboceros-geometry/src/curve_fit/g1/adjust.rs',
             'crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs',
