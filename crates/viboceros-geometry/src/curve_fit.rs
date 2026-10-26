@@ -5,6 +5,7 @@ use crate::{
     curve::{ArcLengthKink, ArcLengthSampler},
 };
 
+pub(crate) mod g1;
 mod interpolate;
 use interpolate::interpolate_fit;
 mod sampler;

@@ -1,7 +1,8 @@
-//! Loft Refit for certified straight regions and resolved polygon corners.
+//! Loft Refit with certified polygon regions and initial smooth cubic proposals.
 use super::*;
 use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::{One, Signed, Zero};
+mod candidate;
 mod matching;
 mod polyline;
 
@@ -10,12 +11,17 @@ struct Section {
     vertices: Vec<[Rational; 3]>,
 }
 
-/// Refit ordered profiles made of certified straight regions to polynomial
-/// cubics. Zero retains the original definitions. Positive tolerance requires
-/// same-sign weights, continuous regions with ordered collinear controls, and
+/// Refit ordered profiles to certified polynomial cubics. Zero retains the
+/// original definitions. The polygon path requires same-sign weights and
+/// continuous regions with ordered collinear controls, and
 /// internal bends above the legacy one-degree corner threshold. Constant spans
 /// and redundant collinear vertices disappear; true reversals remain.
-/// Smooth fitting and mixed open/closed profiles fail explicitly.
+/// With at least two profiles, a set of clamped single-Bezier sources may
+/// instead use an initial endpoint-tangent cubic when its complete image error
+/// is bounded by half the tolerance. Monotone correspondence proposals require
+/// a complete certificate across every matching interval. Tolerance must be
+/// smaller than every endpoint chord. Adaptive smooth fitting, multispan smooth sources
+/// and mixed open/closed profiles remain unsupported.
 ///
 /// Collinearity and control order are checked with exact rational arithmetic.
 /// Positive rational basis functions then keep the source on its endpoint
@@ -25,6 +31,8 @@ struct Section {
 /// the complete image distance by `fit_tolerance`.
 /// Unclamped endpoints use the shared bounded exact extraction, retaining their
 /// rational values through handle construction and the final error check.
+/// The smooth initial proposal uses the shared endpoint-tangent constructor;
+/// its rounded controls require a continuous exact Bernstein certificate.
 /// This changes parameter correspondence and never mutates the sources.
 pub fn try_prepare_refitted_loft_sections(
     curves: &[NurbsCurve],
@@ -50,7 +58,14 @@ pub fn try_prepare_refitted_loft_sections(
             }
             result => result,
         })
-        .collect::<Result<Vec<_>, GeometryError>>()?;
+        .collect::<Result<Vec<_>, GeometryError>>();
+    let sections = match sections {
+        Ok(sections) => sections,
+        Err(GeometryError::UnsupportedCurveApproximation { .. }) if curves.len() >= 2 => {
+            return candidate::prepare(curves, fit_tolerance);
+        }
+        Err(error) => return Err(error),
+    };
     if let Some(first) = sections.first() {
         let closed = first.curve.is_closed()?;
         for section in &sections[1..] {

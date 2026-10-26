@@ -16,8 +16,15 @@ regions with ordered controls. Exact rational span extraction admits the source;
 sampled linearity is insufficient. Constant spans and redundant collinear
 vertices disappear; reversals remain. Internal bends must exceed the legacy
 one-degree corner threshold, with a conservative floating boundary margin.
-Shallower bends and smooth curved regions still require the pending smooth fitter.
+Shallower bends still require the adaptive smooth fitter.
 Mixed open/closed profile sets and explicit JSON Refit angle overrides fail.
+
+[Initial smooth fits](loft-refit-candidates.md) are also supported for sets of
+at least two clamped single-Bezier profiles. The endpoint-tangent cubic must
+have a continuous positional bound within half the requested tolerance; the
+tolerance must be smaller than each endpoint chord. For example, `Refit=0.1`
+can fit an open polynomial cubic while tighter settings may need the pending
+adjustment and subdivision rules. Unsupported fits fail before document mutation.
 
 Degree-one proxies propose a shared region chart before cubic construction.
 The final controls use exact source vertices, including unclamped endpoints;
@@ -30,8 +37,8 @@ are limited to 512 controls and 256 profiles. Unrepresentable tolerances or regi
 lengths fail explicitly.
 
 [Polygon validation](loft-refit-polylines-validation.json) covers the new command
-behavior and full native surface records. Smooth Refit still needs its own fitting
-and parameterization policy; the separate [source-parameter approximation](cubic-approximation.md)
+behavior and full native surface records. Adaptive smooth Refit still needs its adjustment
+and subdivision policy; the separate [source-parameter approximation](cubic-approximation.md)
 is not a substitute. [Profile-set preparation](loft-refit-preparation.md)
 retains the paired-input reference and its limits.
 

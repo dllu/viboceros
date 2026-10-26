@@ -817,7 +817,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "68f2a4ca7f080823675e7087c7cce48f3e63e05b9ee9462cf05651ab46b425f3",
+    "tools/rhino_oracle/qualification_sources.py": "029c6af8079b985cdf1f206ddf7f3e112171bb6d4205ddf0532cbe4dde4df566",
     "tools/rhino_oracle/fixtures/nonplanar_sample_shaded.json": "64837a3938537fc68151ca2b0c147539d74d83e23ba2a6ae5714e4fd23ec3b0c",
     "tools/rhino_oracle/observations/nonplanar_sample_shaded.json": "45061456e515baa50db7082e48db0a7f190466df28f18fc053dc59fcd970888d",
     "tools/rhino_oracle/fixtures/nonplanar_sample_shaded/nonplanar_sample_shaded_angle.3dm": "35c66fcc99ea846d2427eb7798e1697e6442941fe323b3736386f722c239cbbb",
@@ -993,6 +993,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "7614509b740ba2093c729d903b680b996450967828501afb11a72c2bcbcd1800"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "40c852ec2a108bc969579e0f05adb54d563f7b9457f640e32706f2130de1c404"
   }
 }

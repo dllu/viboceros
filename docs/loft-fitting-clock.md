@@ -24,7 +24,8 @@ preparation remains the same. Translation does not explain that branch.
 Full scalar SDK parity remains unfinished. A retained strict diagnostic compares
 2,090 queries at five precisions; it is ignored in the default suite and remains
 failing. Other precisions must not be treated as native-compatible on the basis
-of the `1e-4` comparisons. General smooth Loft Refit is still unsupported.
+of the `1e-4` comparisons. Adaptive smooth Loft Refit remains unfinished; the [initial proposal](loft-refit-candidates.md)
+now has a separate continuous acceptance bound.
 
 Tolerance must lie strictly in `(0, 1)`. Kernel batches allow 1,048,576 fractions;
 the oracle accepts 4,096. Preparation and inverse refinement each allow 65,536

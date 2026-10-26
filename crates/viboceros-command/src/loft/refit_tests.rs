@@ -201,3 +201,56 @@ fn unclamped_rational_profiles_preserve_sources_and_create_one_undo_step() {
     registry.execute(&mut document, "Redo").unwrap();
     assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
 }
+
+#[test]
+fn certified_smooth_refit_preserves_sources_and_has_atomic_undo_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    for z in [0., 3.] {
+        let curve = NurbsCurve::try_new(
+            3,
+            [[0., 0.], [1., 2.], [3., -1.], [4., 1.]]
+                .map(|p| Point3::try_new(p[0], p[1], z).unwrap())
+                .to_vec(),
+            [vec![0.; 4], vec![1.; 4]].concat(),
+        )
+        .unwrap();
+        document.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+    }
+    let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    document
+        .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+        .unwrap();
+    document.clear_history().unwrap();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    registry
+        .execute(&mut document, "Loft Type=Straight Refit=0.1")
+        .unwrap();
+    for source in &before {
+        assert_eq!(document.object(source.id()).unwrap(), source);
+    }
+    assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), ids);
+    let Geometry::Brep(brep) = document
+        .objects()
+        .find(|o| !ids.contains(&o.id()))
+        .unwrap()
+        .geometry()
+    else {
+        panic!("Loft BRep")
+    };
+    let surface = brep.faces()[0].surface();
+    assert_eq!(surface.control_point_count_v(), 4);
+    // Public native initial proposal, distinct from the unrefitted source.
+    let control = surface.control_points()[surface.control_point_count_u()].point();
+    assert!((control.x() - 0.968956044923331).abs() < 1e-12);
+    assert!((control.y() - 1.937912089846662).abs() < 1e-12);
+    assert_eq!(document.undo_label(), Some("Loft"));
+    let after = document.objects().cloned().collect::<Vec<_>>();
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    // A tighter fit needs adaptive smooth fitting and cannot mutate the document.
+    assert!(registry.execute(&mut document, "Loft Refit=0.001").is_err());
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+}
