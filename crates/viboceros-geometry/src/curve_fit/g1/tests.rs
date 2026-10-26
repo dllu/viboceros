@@ -2,7 +2,7 @@ use super::*;
 use crate::{Point3, Real, WeightedPoint3};
 use serde_json::Value;
 use std::path::Path;
-fn curve(d: &Value) -> NurbsCurve {
+pub(super) fn curve(d: &Value) -> NurbsCurve {
     NurbsCurve::try_new_rational(
         d["degree"].as_u64().unwrap() as usize,
         d["control_points"]

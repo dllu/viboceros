@@ -1,0 +1,254 @@
+{
+  "results": [
+    {
+      "elapsed_ns": 11161804,
+      "value": {
+        "distance": 0.16421356237309473,
+        "point": [
+          1.5303300717886583,
+          1.5303300999911627,
+          0.0
+        ],
+        "parameter": 0.500000007271161
+      },
+      "id": "loft-refit-adjustment-query-quarter-1e-08-1.0"
+    },
+    {
+      "elapsed_ns": 1670837,
+      "value": {
+        "distance": 0.16421356237309473,
+        "point": [
+          1.5303300717886583,
+          1.5303300999911627,
+          0.0
+        ],
+        "parameter": 1.8284271513357664
+      },
+      "id": "loft-refit-adjustment-query-quarter-1e-08-3.6568542494923806"
+    },
+    {
+      "elapsed_ns": 137329,
+      "value": {
+        "distance": 0.16421356207980622,
+        "point": [
+          1.5303605709421157,
+          1.5302995997893292,
+          0.0
+        ],
+        "parameter": 0.49998428043608
+      },
+      "id": "loft-refit-adjustment-query-quarter-0.0001-1.0"
+    },
+    {
+      "elapsed_ns": 106812,
+      "value": {
+        "distance": 0.16421356207980656,
+        "point": [
+          1.5303605709421162,
+          1.5302995997893292,
+          0.0
+        ],
+        "parameter": 1.828369640592069
+      },
+      "id": "loft-refit-adjustment-query-quarter-0.0001-3.6568542494923806"
+    },
+    {
+      "elapsed_ns": 221252,
+      "value": {
+        "distance": 0.16421356207980622,
+        "point": [
+          1.5303605709421157,
+          1.5302995997893292,
+          0.0
+        ],
+        "parameter": 0.49998428043608
+      },
+      "id": "loft-refit-adjustment-query-quarter-0.001-1.0"
+    },
+    {
+      "elapsed_ns": 122070,
+      "value": {
+        "distance": 0.16421356207980656,
+        "point": [
+          1.5303605709421162,
+          1.5302995997893292,
+          0.0
+        ],
+        "parameter": 1.828369640592069
+      },
+      "id": "loft-refit-adjustment-query-quarter-0.001-3.6568542494923806"
+    },
+    {
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 0.04072815582727017,
+        "point": [
+          1.8404227847983374,
+          1.418109978126013,
+          0.0
+        ],
+        "parameter": 0.5161581152579897
+      },
+      "id": "loft-refit-adjustment-query-quadratic-1e-08-1.0"
+    },
+    {
+      "elapsed_ns": 114441,
+      "value": {
+        "distance": 0.040728155827270435,
+        "point": [
+          1.8404227847983372,
+          1.4181099781260127,
+          0.0
+        ],
+        "parameter": 3.3931098342441834
+      },
+      "id": "loft-refit-adjustment-query-quadratic-1e-08-6.573779882445936"
+    },
+    {
+      "elapsed_ns": 99182,
+      "value": {
+        "distance": 0.040736407279412246,
+        "point": [
+          1.8400087035266153,
+          1.41819759414635,
+          0.0
+        ],
+        "parameter": 0.5160632965764116
+      },
+      "id": "loft-refit-adjustment-query-quadratic-0.0001-1.0"
+    },
+    {
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 0.04073640727941198,
+        "point": [
+          1.8400087035266155,
+          1.4181975941463503,
+          0.0
+        ],
+        "parameter": 3.392486517102745
+      },
+      "id": "loft-refit-adjustment-query-quadratic-0.0001-6.573779882445936"
+    },
+    {
+      "elapsed_ns": 129700,
+      "value": {
+        "distance": 0.04079748481916896,
+        "point": [
+          1.8369356295520278,
+          1.4188447925454124,
+          0.0
+        ],
+        "parameter": 0.5153594965700123
+      },
+      "id": "loft-refit-adjustment-query-quadratic-0.001-1.0"
+    },
+    {
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 0.04079748481916869,
+        "point": [
+          1.836935629552028,
+          1.4188447925454126,
+          0.0
+        ],
+        "parameter": 3.387859890779412
+      },
+      "id": "loft-refit-adjustment-query-quadratic-0.001-6.573779882445936"
+    },
+    {
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 1.2938527173167779e-12,
+        "point": [
+          2.0000000000570566,
+          0.4999999999823448,
+          0.0
+        ],
+        "parameter": 0.5000000000125493
+      },
+      "id": "loft-refit-adjustment-query-polynomial_cubic-1e-08-1.0"
+    },
+    {
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 1.2938272954703366e-12,
+        "point": [
+          2.000000000057056,
+          0.4999999999823449,
+          0.0
+        ],
+        "parameter": 3.936013846106421
+      },
+      "id": "loft-refit-adjustment-query-polynomial_cubic-1e-08-7.872027692015266"
+    },
+    {
+      "elapsed_ns": 68665,
+      "value": {
+        "distance": 4.050184436332762e-06,
+        "point": [
+          2.000178603541587,
+          0.49994473375451437,
+          0.0
+        ],
+        "parameter": 0.5000392831742388
+      },
+      "id": "loft-refit-adjustment-query-polynomial_cubic-0.0001-1.0"
+    },
+    {
+      "elapsed_ns": 61035,
+      "value": {
+        "distance": 4.050184436332762e-06,
+        "point": [
+          2.000178603541587,
+          0.49994473375451437,
+          0.0
+        ],
+        "parameter": 3.936323084243072
+      },
+      "id": "loft-refit-adjustment-query-polynomial_cubic-0.0001-7.872027692015266"
+    },
+    {
+      "elapsed_ns": 76294,
+      "value": {
+        "distance": 6.38029100051234e-05,
+        "point": [
+          2.0028135618702287,
+          0.4991293866723249,
+          0.0
+        ],
+        "parameter": 0.5006188324177057
+      },
+      "id": "loft-refit-adjustment-query-polynomial_cubic-0.001-1.0"
+    },
+    {
+      "elapsed_ns": 91553,
+      "value": {
+        "distance": 6.38029100052825e-05,
+        "point": [
+          2.0028135618702287,
+          0.4991293866723251,
+          0.0
+        ],
+        "parameter": 3.9408853119365284
+      },
+      "id": "loft-refit-adjustment-query-polynomial_cubic-0.001-7.872027692015266"
+    }
+  ],
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine_version": "8.32.26160.13001",
+  "engine": "rhino",
+  "provenance": {
+    "request_sha256": "f0f300bdb60dc171cbf57fb2806b57905478796706ad24769601039070d75606",
+    "sources": {
+      "generate_loft_refit_adjustment_queries.py": "dee420ca1a9a81131cb72ce849eb39734ac5a0cb384373e0f058b8d596a0e7db",
+      "observations/loft_refit_coarse.json": "e93663756c4b357db9033d7b38a90b9d50a2399e74376b97d28dba2df5738ce9",
+      "observations/loft_scalar_clock.json": "94ca605d81f0aa30521356a37ab9d012792a77033b4f8519f6d3083d59d5b7d3",
+      "rhino_worker.py": "f6e1842eea195ab3efd0f2a99da89ea7cd60285c210c38e22cd6fb0cacdda90e",
+      "client.py": "957056cde3f8997cc3825142f3850399a701e8713cc3b524675786d719be1961",
+      "structural_sdk.py": "a083823c776ca49cf466448307dfc4f04a5d5aecdc86b43a6876e0fe4aceedcd",
+      "capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9"
+    }
+  }
+}

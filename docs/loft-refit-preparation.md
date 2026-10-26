@@ -2,8 +2,9 @@
 
 [Loft Refit](loft-refit.md) · [Validation](loft-refit-preparation-validation.json)
 
-The [initial smooth proposal](loft-refit-candidates.md) is now supported under
-a continuous positional bound; adaptive adjustment remains unfinished. Public Rhino 8.32 measurements
+The [smooth proposals](loft-refit-candidates.md), including a common handle
+correction, now use a continuous positional bound; subdivision remains unfinished.
+Public Rhino 8.32 measurements
 isolate a suitable reference: [NurbsCurve.MakeCompatible](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_NurbsCurve_MakeCompatible.htm) with simplification
 method `2`, the complete profile set, no point ends, and the requested Refit
 and angle tolerances. Nine equal translated pairs reproduce all control coordinates and

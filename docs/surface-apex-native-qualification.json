@@ -10021,7 +10021,7 @@
     "tools/rhino_oracle/observations/source_snapshots/fab60f7305636e9cb2bd406b2d9e4a7e58ca9563b36b93e363e29060e0d771c1.gz": "b02ac081b27300edc0c53c5d014356e2eea899519fc7743da5622c79e92c1fb5",
     "tools/rhino_oracle/observations/surface_apex_command_tolerance.json": "50c84f7b7a0e3c0be48830727f19177ff0c0b84cfd430e1bf82a1cb3379a4f7a",
     "tools/rhino_oracle/observations/surface_apex_sdk_rhino_20261024.json": "1f0a5bc1c0995dbe213a481ca71694941ed8ebc2a5b070cb5f3fd2f9c002591e",
-    "tools/rhino_oracle/qualification_sources.py": "029c6af8079b985cdf1f206ddf7f3e112171bb6d4205ddf0532cbe4dde4df566",
+    "tools/rhino_oracle/qualification_sources.py": "fc30579eed165293d5b45c9db3545ce45238cef947a8f2d3ed0cd29fe752dd83",
     "tools/rhino_oracle/report_surface_apex_native.py": "2a77e4b6af528c80d8d5d2f81fcf5dec4ed6cc27c72a66694ed128f53f54f2b5",
     "tools/rhino_oracle/surface_apex_command_probe.py": "8d34c7d1e79daa5435121e48f3270ad1b70618c45d694d546edc2598554c209f",
     "tools/rhino_oracle/surface_apex_extrusion_probe.py": "5fa4b8042b01aab7148f02d3d1bf48234fcb828917862843408b1ebda03bedcf",

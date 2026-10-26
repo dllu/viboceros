@@ -58211,7 +58211,7 @@
     "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
     "third_party/patches/usd-brep-curve-continuity.cmake": "30e07ba6eaae12e34ae76bca34838f408d4f18952eca88497bf42f35fcaa19b1",
     "third_party/patches/usd-brep-curve-continuity.patch": "4888e12c1fb6f3c6a7ff330250f1033daff2d39f13fe3401b236c1e542477602",
-    "tools/rhino_oracle/client.py": "6202f8f013b085ac382d2a5e0ed1334bc3c6ef1ac352ea005667e927592a4337",
+    "tools/rhino_oracle/client.py": "b36d2f201d8020d51b2c911f00111a232e3c180da5c3c0db2d105dc1f2e3f91d",
     "tools/rhino_oracle/curve_path_comparison.py": "b743254c17b05a39f399e9641a14349eb47dcdcfafc7acd12bf3224362497e6f",
     "tools/rhino_oracle/curve_path_extrusion_cases.py": "3fe2471871c56c443d4e8cdfd3832427365ae08964135532a8c528630922d732",
     "tools/rhino_oracle/curve_path_extrusion_probe.py": "b9b6b1778ebe6ddd9a09cdd56a202ce502528561fcb8f3ee627d480504b08a94",
@@ -58233,9 +58233,9 @@
     "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
     "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
     "tools/rhino_oracle/observations/source_snapshots/f39dd29b5e3ae0109fcb6ef92cd4c3aad49757713b42762b6fe8cad46eea8830.gz": "6021fe2d3e1132e6aa6fb5c351eae050ec010638f9e3e6f3f647971eb60b8b6f",
-    "tools/rhino_oracle/qualification_sources.py": "029c6af8079b985cdf1f206ddf7f3e112171bb6d4205ddf0532cbe4dde4df566",
+    "tools/rhino_oracle/qualification_sources.py": "fc30579eed165293d5b45c9db3545ce45238cef947a8f2d3ed0cd29fe752dd83",
     "tools/rhino_oracle/report_curve_path_extrusion.py": "cdbbe03f72f7bb976444e8de860b264fcd37382db55f96d0cd36d6c672e65eea",
-    "tools/rhino_oracle/rhino_worker.py": "64cd083480c410577eacfbdac9aaf71243e3342bbcc2640e323d2d969906eed6",
+    "tools/rhino_oracle/rhino_worker.py": "ea6b32f20f4f25bc68ec19456e8188f88ffc70593726248588e640f63cf17bb6",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/test_curve_path_extrusion.py": "d68f79650afb84e36235aac052a2d21ede83598194c6624708bd46f0bc38d978",
     "tools/usd_brep/curve_continuity_probe.cpp": "7b7502c9010e308aafa4aa579ccb6a73cd0f689342a57ecf483fa0bf6fcde562",
@@ -58255,6 +58255,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "40c852ec2a108bc969579e0f05adb54d563f7b9457f640e32706f2130de1c404"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "ea88a8e1b15baaecb77ac67837654ac42ea4c9825322c6a297cad011908b3188"
   }
 }

@@ -2501,6 +2501,12 @@ def _loft(operation, iterations):
                 record['refit_sets'] = inspect(curves[0], refit,
                     Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
                     Rhino.Geometry, _nurbs_curve_definition)
+            if operation.get('inspect_refit_adjustment', False):
+                from loft_refit_adjustment_probe import inspect as adjustment_probe
+                record['refit_adjustment'] = adjustment_probe(curves[0], globals(),
+                    operation.get('refit_adjustment_fractional_tolerance', 1e-4),
+                    operation.get('refit_adjustment_nonrational', False),
+                    operation.get('refit_adjustment_local_seed'))
             if operation.get('inspect_refit_frames', False):
                 from loft_refit_frame_probe import inspect
                 record['refit_frames'] = inspect(curves[0], refit,

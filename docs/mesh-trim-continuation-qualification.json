@@ -18465,7 +18465,7 @@
     "src/viewport/polygon_components/tests.rs": "808ca569dc1717dae8e5554f845f41b3727d4c1d21a37cdfb7c7c7d4b6b1d7ad",
     "src/viewport/scene.rs": "61ca36c1f2edf039a6d8784181a6202b465293f3150423b98ad921015155c532",
     "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
-    "tools/rhino_oracle/client.py": "6202f8f013b085ac382d2a5e0ed1334bc3c6ef1ac352ea005667e927592a4337",
+    "tools/rhino_oracle/client.py": "b36d2f201d8020d51b2c911f00111a232e3c180da5c3c0db2d105dc1f2e3f91d",
     "tools/rhino_oracle/component_picking.py": "e4e91e99f7a6645cb39a2bab4e879320755eca894d4e96a72ea83f53c3682bed",
     "tools/rhino_oracle/fixtures/mesh_trim_continuation.json": "4fb422f069c02c025d28a7267c563919d837763ae704185fe53cd167bb0ebaa7",
     "tools/rhino_oracle/fixtures/mesh_trim_continuation/mesh_trim_continuation_shared_both_sides.3dm": "6cc06a026904187d3ac2b33a24e4d9cc22e6e56f5d8fa99f3250e88eb3d798e3",
@@ -18554,14 +18554,14 @@
     "tools/rhino_oracle/observations/source_snapshots/ed05a7b0a6d0498877cf9b57be0d72a824db30a64870a4027b9e2cb1890007a5.gz": "9b4aadef21de5eb0153801f0219b39dec7efa6df164e1ba9456ed08bacb08767",
     "tools/rhino_oracle/observations/source_snapshots/f2b3c347c9764eff546025ceee913f9203616e4803cf7a45afa3a77cf62f4974.gz": "48f9a41cb80a9ef4d95ebdf7e518a26cf548d99c837cf1d98d3654b56cae7b80",
     "tools/rhino_oracle/outline_comparison.py": "d21f3b371976e508591e9999edabdfddc80483425508103fdce2529309afacd5",
-    "tools/rhino_oracle/qualification_sources.py": "029c6af8079b985cdf1f206ddf7f3e112171bb6d4205ddf0532cbe4dde4df566",
+    "tools/rhino_oracle/qualification_sources.py": "fc30579eed165293d5b45c9db3545ce45238cef947a8f2d3ed0cd29fe752dd83",
     "tools/rhino_oracle/report_mesh_boolean_commands.py": "5bae7df0d5edaf5c6ecdc296f518f5ed633f4c435c542d100d60a6e1cf19b0d2",
     "tools/rhino_oracle/report_mesh_split.py": "8e7fd0ee23b6e90ad2a926d5c8aa67d666959f3163718378dbe40e18ee99964f",
     "tools/rhino_oracle/report_mesh_split_channels.py": "3380a5e7461be334399cecea30b4bd15815dd0beefbc1ba10f5806bad7e9f11b",
     "tools/rhino_oracle/report_mesh_split_kernel.py": "d2acf61f9ededee3fa1108ba9ff724fbe934149d9ef970aefb63451b6382a596",
     "tools/rhino_oracle/report_mesh_trim.py": "b5d2dd6b9a0c3563737e5fcba1939e12c9100364344a453fbd7ab4f29d89d42a",
     "tools/rhino_oracle/report_mesh_trim_continuations.py": "033f5a505bf94a38f1ce8b35347fa6d98dfc41c2c15b26495b4fb28a2a8980a2",
-    "tools/rhino_oracle/rhino_worker.py": "64cd083480c410577eacfbdac9aaf71243e3342bbcc2640e323d2d969906eed6",
+    "tools/rhino_oracle/rhino_worker.py": "ea6b32f20f4f25bc68ec19456e8188f88ffc70593726248588e640f63cf17bb6",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/test_mesh_boolean_commands.py": "2ff219d39574f514399d3dc6225c5ebf494f5f749b68b0c926ea4597af0f5b76",
     "tools/rhino_oracle/test_mesh_split.py": "0c4445bccddff4fd04276c1d7323ec24502e1c9b9f30b92c4baa82c79ea18d46",
@@ -18647,6 +18647,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "40c852ec2a108bc969579e0f05adb54d563f7b9457f640e32706f2130de1c404"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "ea88a8e1b15baaecb77ac67837654ac42ea4c9825322c6a297cad011908b3188"
   }
 }

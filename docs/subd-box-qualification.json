@@ -680,7 +680,7 @@
     "tools/rhino_oracle/subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
     "tools/rhino_oracle/generate_subd_box.py": "055f46a8b6ddcd56c52975e96b2e1166ae7bfceef2483f4044deed4eca7036c5",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
-    "tools/rhino_oracle/rhino_worker.py": "64cd083480c410577eacfbdac9aaf71243e3342bbcc2640e323d2d969906eed6",
+    "tools/rhino_oracle/rhino_worker.py": "ea6b32f20f4f25bc68ec19456e8188f88ffc70593726248588e640f63cf17bb6",
     "tools/rhino_oracle/fixtures/subd_box.json": "fb3bddad8c7d23347a25e31da1b7b702c18de1ddb0b2b4f63561fab073eabf23",
     "tools/rhino_oracle/observations/subd_box.json": "22740b74ce7b370b50148d7b4fbdfd4a20fcb07725926fa5a78d2d1f1c2e637a",
     "tools/rhino_oracle/report_subd_box.py": "7d0fb89966f074c0f2be336465f058e9912c1185657dd376b118a336d51fe1af",
@@ -709,7 +709,7 @@
     "src/app/tests/trim_split_input.rs": "c977ba8ded17a45a91ff5924271876c1f731e85f8a5882fadda7bae93db4458d",
     "src/app/ui.rs": "d135bb752f98fa28a7dd0443f3ae7d2e0771e1ea73a2bcf0d398d96aec187535",
     "src/app/viewport_input.rs": "10630534234ca8ac3fe469c0f58df3087cf575254c14aac1bc0a1a8b892adf7e",
-    "tools/rhino_oracle/qualification_sources.py": "029c6af8079b985cdf1f206ddf7f3e112171bb6d4205ddf0532cbe4dde4df566",
+    "tools/rhino_oracle/qualification_sources.py": "fc30579eed165293d5b45c9db3545ce45238cef947a8f2d3ed0cd29fe752dd83",
     "crates/viboceros-opennurbs/native/subd_archive_sharpness.h": "21ea999d6e6693655d409fe1bd379543efeb99ff62dd7b31df66ddaa02c30b2c",
     "crates/viboceros-opennurbs/native/subd_soft_crease.h": "d0bbe10233b5bb2696a050c59102afcacef78065c12d0da878c843ff01c62abf",
     "crates/viboceros-opennurbs/src/subd/soft_crease.rs": "eabcbbee4c964e47afa149703e5c2f4895df1785fd3fda0f20ad8ba590ed283d",
@@ -983,6 +983,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "40c852ec2a108bc969579e0f05adb54d563f7b9457f640e32706f2130de1c404"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "ea88a8e1b15baaecb77ac67837654ac42ea4c9825322c6a297cad011908b3188"
   }
 }

@@ -692,8 +692,8 @@
     "tools/rhino_oracle/subd_box_probe.py": "fc78de5d50975ceb9a63db5b98047a99fc5fcaac0aff44118feed89ce9164fdb",
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
-    "tools/rhino_oracle/client.py": "6202f8f013b085ac382d2a5e0ed1334bc3c6ef1ac352ea005667e927592a4337",
-    "tools/rhino_oracle/rhino_worker.py": "64cd083480c410577eacfbdac9aaf71243e3342bbcc2640e323d2d969906eed6",
+    "tools/rhino_oracle/client.py": "b36d2f201d8020d51b2c911f00111a232e3c180da5c3c0db2d105dc1f2e3f91d",
+    "tools/rhino_oracle/rhino_worker.py": "ea6b32f20f4f25bc68ec19456e8188f88ffc70593726248588e640f63cf17bb6",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/report_quad_command.py": "242f0f6adf400906f666626a43e7a4dbdc5da3097ed26cb109c8875b8341ad01",
     "tools/rhino_oracle/test_quad_command.py": "ed74e34a09a8dc2020f7266b3ef01edf15e3bbdd4269683747bf006f1670495e",
@@ -840,7 +840,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "029c6af8079b985cdf1f206ddf7f3e112171bb6d4205ddf0532cbe4dde4df566",
+    "tools/rhino_oracle/qualification_sources.py": "fc30579eed165293d5b45c9db3545ce45238cef947a8f2d3ed0cd29fe752dd83",
     "tools/rhino_oracle/fixtures/quad_command_discovery.json": "37ff3f32868075a17d53431d9cba24b597ca2f80664913f7ce54580ed757d5da",
     "tools/rhino_oracle/observations/quad_command_discovery.json": "4599fb89018d922d714a4700062c6f328ef39917aaeff0d23dfd8eaec347cc9f",
     "tools/rhino_oracle/fixtures/quad_command_discovery/quad_command_default_square.3dm": "659e2a29b0bd448649ba166f238d1b46559c9d0a9e848416c15a615b469d02c4",
@@ -1004,6 +1004,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "40c852ec2a108bc969579e0f05adb54d563f7b9457f640e32706f2130de1c404"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "ea88a8e1b15baaecb77ac67837654ac42ea4c9825322c6a297cad011908b3188"
   }
 }

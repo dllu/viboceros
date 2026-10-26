@@ -17,15 +17,18 @@ unchanged before/after definitions. Both oracle engines implement this operation
 Native single-input Refit domains equal the source length estimate at `1e-4`
 in 24 measurements. At this precision, 418 ordered/reversed scalar positions
 and 19 direct protocol records with 228 reordered/repeated positions match within
-`1e-9`. This does **not** establish which sampling sequence the fitter uses.
+`1e-9`. These scalar measurements do **not** establish a fitter sampling sequence.
+The [handle correction](loft-refit-adjustment.md) uses a separately qualified
+incremental batch.
 Adding a second coincident profile changes fitting while zero-simplification
 preparation remains the same. Translation does not explain that branch.
 
 Full scalar SDK parity remains unfinished. A retained strict diagnostic compares
 2,090 queries at five precisions; it is ignored in the default suite and remains
 failing. Other precisions must not be treated as native-compatible on the basis
-of the `1e-4` comparisons. Adaptive smooth Loft Refit remains unfinished; the [initial proposal](loft-refit-candidates.md)
-now has a separate continuous acceptance bound.
+of the `1e-4` comparisons. Adaptive smooth Loft Refit remains unfinished;
+[smooth proposals](loft-refit-candidates.md)
+have a separate continuous acceptance bound.
 
 Tolerance must lie strictly in `(0, 1)`. Kernel batches allow 1,048,576 fractions;
 the oracle accepts 4,096. Preparation and inverse refinement each allow 65,536

@@ -1,4 +1,4 @@
-//! Loft Refit with certified polygon regions and initial smooth cubic proposals.
+//! Loft Refit with certified polygon regions and smooth cubic proposals.
 use super::*;
 use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::{One, Signed, Zero};
@@ -17,10 +17,11 @@ struct Section {
 /// internal bends above the legacy one-degree corner threshold. Constant spans
 /// and redundant collinear vertices disappear; true reversals remain.
 /// With at least two profiles, a set of clamped single-Bezier sources may
-/// instead use an initial endpoint-tangent cubic when its complete image error
+/// instead use an endpoint-tangent cubic with at most one common handle correction
+/// when its complete image error
 /// is bounded by half the tolerance. Monotone correspondence proposals require
 /// a complete certificate across every matching interval. Tolerance must be
-/// smaller than every endpoint chord. Adaptive smooth fitting, multispan smooth sources
+/// smaller than every endpoint chord. Subdivision, multispan smooth sources
 /// and mixed open/closed profiles remain unsupported.
 ///
 /// Collinearity and control order are checked with exact rational arithmetic.
@@ -31,7 +32,7 @@ struct Section {
 /// the complete image distance by `fit_tolerance`.
 /// Unclamped endpoints use the shared bounded exact extraction, retaining their
 /// rational values through handle construction and the final error check.
-/// The smooth initial proposal uses the shared endpoint-tangent constructor;
+/// Smooth proposals use the shared endpoint-tangent constructor and correction;
 /// its rounded controls require a continuous exact Bernstein certificate.
 /// This changes parameter correspondence and never mutates the sources.
 pub fn try_prepare_refitted_loft_sections(

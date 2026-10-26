@@ -1,5 +1,7 @@
 //! Endpoint-tangent proposal shared by geometric cubic fitting.
 use crate::{GeometryError, NurbsCurve, ParameterSide};
+mod adjust;
+pub(crate) use adjust::adjusted_cubic;
 mod correspondence;
 pub(crate) use correspondence::within_deviation;
 

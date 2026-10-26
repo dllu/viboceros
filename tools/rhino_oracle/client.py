@@ -1504,6 +1504,9 @@ class OracleClient:
             if any(op.get('inspect_refit_sets') for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('loft_refit_set_probe.py'),
                                 job_path / 'loft_refit_set_probe.py')
+            if any(op.get('inspect_refit_adjustment') for op in request['operations']):
+                shutil.copyfile(worker_source.with_name('loft_refit_adjustment_probe.py'),
+                                job_path / 'loft_refit_adjustment_probe.py')
             if any(op.get('inspect_refit_frames') for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('loft_refit_frame_probe.py'),
                                 job_path / 'loft_refit_frame_probe.py')

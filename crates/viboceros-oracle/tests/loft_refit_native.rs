@@ -48,10 +48,25 @@ fn zero_refit_matches_all_native_ordinary_lofts_and_preserves_sources() {
 }
 
 #[test]
-fn curved_refit_reports_the_missing_policy_instead_of_false_geometry() {
-    let (query, _) = fixture();
-    let mut count = 0;
-    for op in query["operations"].as_array().unwrap() {
+fn curved_refit_matches_native_or_reports_the_remaining_policy() {
+    let (query, native) = fixture();
+    let native_commands: Value = serde_json::from_slice(
+        &std::fs::read(
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../tools/rhino_oracle/observations/loft_refit_adjustment_commands.json"),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let mut matched = 0;
+    let mut pending = 0;
+    let mut maximum = 0_f64;
+    for (op, row) in query["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(native["results"].as_array().unwrap())
+    {
         if op["refit_tolerance"].as_f64().unwrap() <= 0.
             || op["id"].as_str().unwrap().starts_with("loft-refit-line-")
             || op["id"]
@@ -67,12 +82,47 @@ fn curved_refit_reports_the_missing_policy_instead_of_false_geometry() {
             let mut request = query.clone();
             request["operations"] = json!([op]);
             let request: ProbeRequest = serde_json::from_value(request).unwrap();
-            let error = run_request(&request).unwrap_err().to_string();
-            assert!(error.contains("Loft Refit currently requires"), "{error}");
-            count += 1;
+            match run_request(&request) {
+                Ok(actual) => {
+                    let expected = if command {
+                        let id = format!(
+                            "loft-refit-adjustment-command-quarter-{}",
+                            op["style"].as_str().unwrap()
+                        );
+                        &native_commands["results"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .find(|r| r["id"] == id)
+                            .unwrap()["value"]
+                    } else {
+                        &row["value"]
+                    };
+                    let mut expected = expected.clone();
+                    expected.as_object_mut().unwrap().remove("refitted");
+                    let value = &actual.results[0].value;
+                    let error = comparison::difference(value, &expected).unwrap();
+                    // Newly supported corrections use the recorded 1e-8 native
+                    // parity reserve; acceptance uses the continuous certificate.
+                    assert!(error <= 1e-8, "{} command={command}: {error}", op["id"]);
+                    if !command {
+                        assert_eq!(value["before"], value["after"]);
+                    }
+                    maximum = maximum.max(error);
+                    matched += 1;
+                }
+                Err(error) => {
+                    assert!(
+                        error.to_string().contains("Loft Refit currently requires"),
+                        "{error}"
+                    );
+                    pending += 1;
+                }
+            }
         }
     }
-    assert_eq!(count, 90);
+    assert_eq!((matched, pending), (10, 80));
+    println!("LOFT_REFIT_CURVED matched={matched} pending={pending} maximum={maximum}");
 }
 
 #[test]

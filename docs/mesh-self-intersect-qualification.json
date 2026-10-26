@@ -28358,7 +28358,7 @@
     "src/viewport/polygon_components/tests.rs": "808ca569dc1717dae8e5554f845f41b3727d4c1d21a37cdfb7c7c7d4b6b1d7ad",
     "src/viewport/scene.rs": "61ca36c1f2edf039a6d8784181a6202b465293f3150423b98ad921015155c532",
     "src/viewport/soft_crease.rs": "5b765bc34afc305eab1ecef15d51c83ef5bdf8e953a0e7d4f50b1eae52ccad0a",
-    "tools/rhino_oracle/client.py": "6202f8f013b085ac382d2a5e0ed1334bc3c6ef1ac352ea005667e927592a4337",
+    "tools/rhino_oracle/client.py": "b36d2f201d8020d51b2c911f00111a232e3c180da5c3c0db2d105dc1f2e3f91d",
     "tools/rhino_oracle/fixtures/mesh_self_intersect_controls.json": "9c7f33c60ac9c16365ed54aedb64c9f1cc0e471104ac408a9fad955c9127d7b5",
     "tools/rhino_oracle/fixtures/mesh_self_intersect_controls/mesh_self_intersect_controls_after_boolean_document.3dm": "7659d552cb1ec301e532d696763e72327ff387f0bff66e65c1da0c2b4bd8a4b5",
     "tools/rhino_oracle/fixtures/mesh_self_intersect_controls/mesh_self_intersect_controls_after_drop_cancel.3dm": "cace87d6f16be5d8e25198bcc036e7b422b60a39f83940e86c31f1810dfb11ce",
@@ -28433,10 +28433,10 @@
     "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
     "tools/rhino_oracle/observations/source_snapshots/f98c6bd863d9638633cadf15d6e8bedff378aa16a06bb80491c251c3cd37bec5.gz": "a12d46a5476486aea5efd2eeebe4dcdb7e64e88a9db526d1e00d2b0f87940864",
     "tools/rhino_oracle/outline_comparison.py": "d21f3b371976e508591e9999edabdfddc80483425508103fdce2529309afacd5",
-    "tools/rhino_oracle/qualification_sources.py": "029c6af8079b985cdf1f206ddf7f3e112171bb6d4205ddf0532cbe4dde4df566",
+    "tools/rhino_oracle/qualification_sources.py": "fc30579eed165293d5b45c9db3545ce45238cef947a8f2d3ed0cd29fe752dd83",
     "tools/rhino_oracle/report_mesh_boolean_commands.py": "5bae7df0d5edaf5c6ecdc296f518f5ed633f4c435c542d100d60a6e1cf19b0d2",
     "tools/rhino_oracle/report_mesh_self_intersect.py": "600b327d1f17ded674085877ca439e82c8efa6e3bf7b61e73ebdcbb4bf67d66c",
-    "tools/rhino_oracle/rhino_worker.py": "64cd083480c410577eacfbdac9aaf71243e3342bbcc2640e323d2d969906eed6",
+    "tools/rhino_oracle/rhino_worker.py": "ea6b32f20f4f25bc68ec19456e8188f88ffc70593726248588e640f63cf17bb6",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/test_mesh_boolean_commands.py": "2ff219d39574f514399d3dc6225c5ebf494f5f749b68b0c926ea4597af0f5b76",
     "tools/rhino_oracle/test_mesh_self_intersect.py": "6d18b7b72c6c7f74528f29612a2dd91fc35dce99654d14226e2f7530a4cb794f",
@@ -28540,6 +28540,6 @@
     "src/app/loft/input.rs": "5904724197fae8aa12aab2ff06cdf0d3f3c723ba2c864594fafe721ee66b8376",
     "src/app/loft/selection.rs": "6f9b88b99a419c9de9d8ef58a77eed5fb6a1bd3ebfe23aa1f6c1fd4e8dd1c2a3",
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "40c852ec2a108bc969579e0f05adb54d563f7b9457f640e32706f2130de1c404"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "ea88a8e1b15baaecb77ac67837654ac42ea4c9825322c6a297cad011908b3188"
   }
 }

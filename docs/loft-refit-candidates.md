@@ -1,12 +1,14 @@
-# Initial smooth Loft Refit
+# Smooth Loft Refit proposals
 
 [Loft Refit](loft-refit.md) · [Validation](loft-refit-candidates-validation.json)
 
-Refit now admits an initial endpoint-tangent cubic for sets of at least two
+Refit admits an endpoint-tangent cubic for sets of at least two
 clamped, single-Bezier profiles. For chord length `d` and the cosine `c` between
 the chord and an endpoint tangent, the initial handle length is
 `d * (2 - c²) / 3`. The shared constructor preserves endpoint positions and
 limiting tangent directions before rounding. Its output uses polynomial cubics.
+When the initial proposal fails, a
+[common handle correction](loft-refit-adjustment.md) can improve the fit.
 
 Acceptance requires a continuous Bernstein bound on the rounded candidate,
 compared with its complete source. An affine parameter correspondence is tried
@@ -22,14 +24,16 @@ limit applies; certificate degree, arithmetic and work limits remain unchanged.
 Map refinement allows 8–256 intervals over six attempts, caching at most 255
 closest-point queries per profile; each attempt uses the bounded certificate.
 Coincident endpoints, closed/multispan smooth profiles, unresolved certificates,
-and fits needing adjustment or subdivision retain explicit errors. Straight and
+and fits needing subdivision retain explicit errors. Straight and
 polygon fitting keep their established paths. A single smooth input uses a
 different native fitting branch and remains unsupported.
 
 Native captures cover 135 cases, including spatial cubics, rational profiles,
 tolerance sweeps, mixed companions, negative weight gauges, all five styles,
 closed lofts and point ends. Every admitted case compares complete surface
-records at `1e-9`; the validation record separates remaining gaps. The command
+records at `1e-9` in that initial corpus; the linked record retains the initial-proposal
+milestone. [Adjustment validation](loft-refit-adjustment-validation.json) records
+the expanded implementation, elliptical `1e-8` reserve and remaining gaps. The command
 path preserves sources and selection, creates one undo step, and leaves history
 intact when a tighter fit fails. General smooth fitting remains unfinished.
 
