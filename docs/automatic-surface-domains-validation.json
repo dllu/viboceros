@@ -1349,7 +1349,6 @@
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
     "crates/viboceros-command/src/lib.rs": "3491251117399cc12c426ea8c69e886bd218966f697254a4ac9603a9b0faee1f",
     "crates/viboceros-command/tests/reparameterize_faces.rs": "e7432a5c0712fccfbd95589bcdccf94dc5d0f8713792e3d2d834f2b8d901c726",
-    "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "c62469d1cf5b2be88fb4008baf219c9147ddcd8929fa75dd28ce7b07920a450c",
     "crates/viboceros-geometry/src/integration/cash_karp.rs": "48fc397c8ecbab908d5aaa2189931c476d8cd64eb1bca76fd85de201316c630f",
     "crates/viboceros-geometry/src/nurbs_surface.rs": "a1faeeee86cf6510b1a5a50ef93d37db2b1e19b633e9af174844bf74b59b88e1",
     "docs/automatic-surface-domains.md": "4492cd732862a09c4718158c03a19151bd9b96b014fb2706823a60d729642770",
@@ -1454,6 +1453,7 @@
     "d6c1a82d1c90433323b55e947676f3fa4e889c14:docs/commands/reparameterize.md": "bf7da3dd8896e19f561535ac59035749cf386892636cf36b17214cb4c4c828c9",
     "d6c1a82d1c90433323b55e947676f3fa4e889c14:tools/rhino_oracle/reparameterize_face_probe.py": "098ec0b200996a0f9a4878aa018626ba05f03601b8fddd8bda9ee1129656fcf1",
     "d6c1a82d1c90433323b55e947676f3fa4e889c14:tools/rhino_oracle/test_reparameterize_face_probe.py": "7b29187dca2039c622fae73fb5e95a8cfa1133e72de2d1df72833b33456d59c6",
-    "d6c1a82d1c90433323b55e947676f3fa4e889c14:docs/reparameterize-faces-validation.json": "41d961abd18b9077ba45c9af032f348fc27285bbf150bc60ac0800101208ef87"
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:docs/reparameterize-faces-validation.json": "41d961abd18b9077ba45c9af032f348fc27285bbf150bc60ac0800101208ef87",
+    "765530fee9f3820cbaf89b238553cfaa9a3d5112:crates/viboceros-geometry/src/curve/arc_length/trace.rs": "c62469d1cf5b2be88fb4008baf219c9147ddcd8929fa75dd28ce7b07920a450c"
   }
 }

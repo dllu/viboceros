@@ -187,6 +187,7 @@ pub use rectangle::Fixture as RectangleFixture;
 pub use surface_flow::Fixture as SurfaceFlowFixture;
 mod flow_roadlike;
 pub use arc_length_batch::Fixture as ArcLengthBatchFixture;
+pub use arc_length_batch::QuadratureFixture as CurveLengthParametersFixture;
 pub use flow_grips::Fixture as FlowGripsFixture;
 pub use flow_line::Fixture as FlowLineFixture;
 pub use flow_roadlike::Fixture as FlowRoadlikeFixture;
@@ -1812,6 +1813,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: ArcLengthBatchFixture,
     },
+    CurveLengthParameters {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurveLengthParametersFixture,
+    },
     FlowRoadlike {
         id: String,
         #[serde(flatten)]
@@ -3002,6 +3008,7 @@ impl Operation {
             | Self::FlowLine { id, .. }
             | Self::FlowRoadlike { id, .. }
             | Self::ArcLengthBatch { id, .. }
+            | Self::CurveLengthParameters { id, .. }
             | Self::OrientOnCurve { id, .. }
             | Self::CurvatureGraph { id, .. }
             | Self::ExtractCurvatureGraph { id, .. }
@@ -6266,6 +6273,9 @@ fn execute(
         }
         Operation::ArcLengthBatch { fixture, .. } => {
             arc_length_batch::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurveLengthParameters { fixture, .. } => {
+            arc_length_batch::quadrature(fixture, iterations, tolerance)?
         }
         Operation::FlowRoadlike { fixture, .. } => {
             flow_roadlike::run(fixture, iterations, tolerance)?

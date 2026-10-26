@@ -8,6 +8,51 @@ pub struct Fixture {
     pub fractions: Vec<f64>,
 }
 
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct QuadratureFixture {
+    pub curve: NurbsCurveDefinition,
+    pub fractions: Vec<f64>,
+    #[serde(default = "fit_clock_tolerance")]
+    pub fractional_tolerance: f64,
+}
+
+fn fit_clock_tolerance() -> f64 {
+    1e-4
+}
+
+pub(super) fn quadrature(
+    f: &QuadratureFixture,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    if f.fractions.len() > 4096 {
+        return Err(ProbeError::FixtureInvariant(
+            "length parameters accept at most 4096 fractions",
+        ));
+    }
+    if !f.fractional_tolerance.is_finite()
+        || f.fractional_tolerance <= 0.
+        || f.fractional_tolerance >= 1.
+    {
+        return Err(GeometryError::InvalidArcLengthIntegrationTolerance.into());
+    }
+    let curve = nurbs_curve_from_definition(&f.curve)?;
+    let sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), tolerance)?;
+    let before = nurbs_curve_definition_value(&curve);
+    measure_probe(iterations, || -> Result<Value, ProbeError> {
+        let parameters = sampler
+            .parameters_at_quadrature_normalized_lengths(&f.fractions, f.fractional_tolerance)?;
+        let points = parameters
+            .iter()
+            .map(|&t| curve.evaluate(t).map(Point3::to_array))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(
+            json!({"parameters":parameters,"points":points,"length":sampler.quadrature_length_estimate(f.fractional_tolerance)?,
+            "domain":[*curve.domain().start(),*curve.domain().end()],"before":before,"after":nurbs_curve_definition_value(&curve)}),
+        )
+    })
+}
+
 pub(super) fn run(
     f: &Fixture,
     iterations: u32,

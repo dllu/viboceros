@@ -81,7 +81,7 @@ impl ArcLengthSampler<'_> {
         self.integration_trace(fractional_tolerance, source_parameters, retain_all, false)
     }
 
-    fn integration_trace(
+    pub(super) fn integration_trace(
         &self,
         fractional_tolerance: Real,
         source_parameters: bool,

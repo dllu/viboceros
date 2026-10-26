@@ -1,0 +1,2302 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-quarter-0.1",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-quarter-0.1-shifted",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                2.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-cubic-0.1",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                2.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-cubic-0.1-shifted",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                0.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                2.0
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                3.0,
+                0.5,
+                2.0
+              ],
+              "weight": 1.2
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-circle-0.1",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                1.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-circle-0.1-shifted",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -0.5,
+            -0.5,
+            2.0,
+            2.0,
+            4.5,
+            4.5,
+            7.0,
+            7.0,
+            7.0
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                1.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -0.5,
+            -0.5,
+            2.0,
+            2.0,
+            4.5,
+            4.5,
+            7.0,
+            7.0,
+            7.0
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-quadratic-0.1",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-quadratic-0.1-shifted",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                3.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-polynomial_cubic-0.1",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-polynomial_cubic-0.1-shifted",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                1.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-smooth_cubic-0.1",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.3,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-smooth_cubic-0.1-shifted",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            0.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            0.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                2.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -1.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                1.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-quintic-0.1",
+      "curves": [
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 5,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-quintic-0.1-shifted",
+      "curves": [
+        {
+          "degree": 5,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 5,
+          "knots": [
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            -3.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0,
+            7.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                6.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                -13.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                13.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                -6.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-rational_line",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                2.0,
+                0.0
+              ],
+              "weight": 2.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                2.0,
+                2.0
+              ],
+              "weight": 2.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "inspect_scalar_clock": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-uneven_line",
+      "curves": [
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.125,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.25,
+                0.125,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.5,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                2.0,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "inspect_scalar_clock": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-unclamped_line",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            -1.0,
+            -1.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.5,
+                0.0
+              ],
+              "weight": 2.0
+            },
+            {
+              "point": [
+                4.0,
+                2.0,
+                0.0
+              ],
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            -1.0,
+            -1.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.5,
+                2.0
+              ],
+              "weight": 2.0
+            },
+            {
+              "point": [
+                4.0,
+                2.0,
+                2.0
+              ],
+              "weight": 0.5
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "inspect_scalar_clock": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-rational",
+      "curves": [
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.0,
+                0.0
+              ],
+              "weight": 2.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.25,
+                0.0
+              ],
+              "weight": 4.0
+            },
+            {
+              "point": [
+                2.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.75,
+                0.0,
+                3.0
+              ],
+              "weight": 2.0
+            },
+            {
+              "point": [
+                2.625,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.625,
+                0.28125,
+                3.0
+              ],
+              "weight": 4.0
+            },
+            {
+              "point": [
+                2.625,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                6.0
+              ],
+              "weight": 2.0
+            },
+            {
+              "point": [
+                3.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.25,
+                0.3125,
+                6.0
+              ],
+              "weight": 4.0
+            },
+            {
+              "point": [
+                3.25,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-scalar-clock-constant_span",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3.0,
+            3.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3.0,
+            3.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.125,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.375,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.375,
+                0.0,
+                3.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.375,
+                1.125,
+                3.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1,
+            2,
+            3.0,
+            3.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.25,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.75,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.75,
+                0.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.75,
+                1.25,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.0,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true,
+      "inspect_scalar_clock": true
+    }
+  ]
+}

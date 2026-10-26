@@ -124,9 +124,7 @@
     "preserved_entries": 1,
     "preexisting_unverifiable_records_left_unchanged": 69
   },
-  "reference_sources_sha256": {
-    "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "5b566778f28cc47d52109a7f474443a05795e1b4ce8102bd116fd1c4340ac086"
-  },
+  "reference_sources_sha256": {},
   "sha256": {
     "tools/rhino_oracle/fixtures/flow_auto_directions.json": "9ec5d77545e3a2bf9325c999ee830afad6b04d5efe53fb82b39e0137bac4aca8",
     "tools/rhino_oracle/flow_auto_direction_report.py": "d904a62652643c3ca39ac1e809079fa31f4e4fd1fa919c3145e4ef4ce5cdb231",
@@ -138,7 +136,8 @@
   "reference_sources_git_sha256": {
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:crates/viboceros-geometry/src/morph/flow.rs": "910ccae76c6f7ddf9b59e66a3079261373d099eaa390559d191d8edc52b3509f",
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:crates/viboceros-command/src/flow.rs": "b7d8c05b0697c8eb6ea13f2975bb3f14cf10d38a4a41c9b90ab99fd563826b6c",
-    "76ae3d7a661bd54636a2b05e7e11a716523d1210:tools/rhino_oracle/flow_probe.py": "eb3f7c53789ec04e5675121a640f98a281b2db92a0cf55ee14ea8ba6b011e7f8"
+    "76ae3d7a661bd54636a2b05e7e11a716523d1210:tools/rhino_oracle/flow_probe.py": "eb3f7c53789ec04e5675121a640f98a281b2db92a0cf55ee14ea8ba6b011e7f8",
+    "765530fee9f3820cbaf89b238553cfaa9a3d5112:crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "5b566778f28cc47d52109a7f474443a05795e1b4ce8102bd116fd1c4340ac086"
   },
   "git_sha256": {
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-development.md": "e1973c246de9455385c0b8d92b642453f6edf1d1ae92795b29e76eb15872b604",

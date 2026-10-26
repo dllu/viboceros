@@ -1504,6 +1504,12 @@ class OracleClient:
             if any(op.get('inspect_refit_sets') for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('loft_refit_set_probe.py'),
                                 job_path / 'loft_refit_set_probe.py')
+            if any(op.get('inspect_refit_frames') for op in request['operations']):
+                shutil.copyfile(worker_source.with_name('loft_refit_frame_probe.py'),
+                                job_path / 'loft_refit_frame_probe.py')
+            if any(op.get('inspect_scalar_clock') or op.get('op') == 'curve_length_parameters' for op in request['operations']):
+                shutil.copyfile(worker_source.with_name('loft_scalar_clock_probe.py'),
+                                job_path / 'loft_scalar_clock_probe.py')
             if any(op.get('inspect_refit_clock') for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('loft_refit_clock_probe.py'),
                                 job_path / 'loft_refit_clock_probe.py')

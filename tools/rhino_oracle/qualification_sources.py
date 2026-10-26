@@ -192,6 +192,11 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if 'crates/viboceros-geometry/src/curve/arc_length/incremental.rs' in paths:
+        paths = [*paths,
+            'crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs',
+            'crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs',
+        ]
     if 'crates/viboceros-geometry/src/curve_fit.rs' in paths:
         paths = [*paths,
             'crates/viboceros-geometry/src/curve_fit/interpolate.rs',

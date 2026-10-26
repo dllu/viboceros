@@ -2501,6 +2501,14 @@ def _loft(operation, iterations):
                 record['refit_sets'] = inspect(curves[0], refit,
                     Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
                     Rhino.Geometry, _nurbs_curve_definition)
+            if operation.get('inspect_refit_frames', False):
+                from loft_refit_frame_probe import inspect
+                record['refit_frames'] = inspect(curves[0], refit,
+                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    Rhino.Geometry, _nurbs_curve_definition)
+            if operation.get('inspect_scalar_clock', False):
+                from loft_scalar_clock_probe import inspect
+                record['scalar_clock'] = inspect(curves[0])
             if operation.get('inspect_refit_sources', False):
                 from loft_refit_source_probe import inspect
                 record['refit_sources'] = inspect(curves, refit,
@@ -13677,6 +13685,9 @@ def _execute(operation, iterations, tolerance):
         return run(operation, globals(), iterations, tolerance)
     if kind == 'arc_length_batch':
         from arc_length_batch_probe import run
+        return run(operation, globals(), iterations, tolerance)
+    if kind == 'curve_length_parameters':
+        from loft_scalar_clock_probe import run
         return run(operation, globals(), iterations, tolerance)
     if kind == 'spiral_layout':
         from spiral_layout_probe import run

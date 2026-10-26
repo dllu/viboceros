@@ -16,6 +16,8 @@ mod batch_tests;
 #[cfg(test)]
 mod rational_line_tests;
 #[cfg(test)]
+mod scalar_tests;
+#[cfg(test)]
 mod tests;
 
 // Bounds the optional cache to 16 MiB of parameter/length pairs. Counts

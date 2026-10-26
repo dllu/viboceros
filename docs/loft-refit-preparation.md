@@ -14,6 +14,10 @@ nine cases. Simplifying the inputs first does not explain the difference.
 Independent `Curve.Fit`, cubic-Bezier fitting, or single-input `MakeCompatible`
 therefore cannot simply replace the multiple-profile preparation. This evidence
 does not yet establish how every larger or mixed profile set is fitted.
+The [fitting-clock investigation](loft-fitting-clock.md) now rules out translation
+as the cause: two coincident inputs follow the same branch as a translated pair.
+It also retains independent inverse queries at the single fitter's observed
+length precision, with the remaining scalar SDK differences explicit.
 Six further cases vary profile count, scale and companion shape. For these three
 source families at two tolerances, two, three and four equal translated inputs
 produce exactly the same complete definition of profile zero. Different
