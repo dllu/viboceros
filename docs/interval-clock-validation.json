@@ -204,7 +204,6 @@
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
     "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
     "crates/viboceros-geometry/src/curve.rs": "b280d705b8c26126ab5e2a644ac404911963b517f2dfc3f57d5b6cd1cc0b8111",
-    "crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
     "crates/viboceros-geometry/src/curve/arc_length.rs": "d92bdc17559fcf9b5f7fdff801505403d34e1045b654bf6fd373e6f128843399",
     "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "fc5d666f07fc4d3751449c8da57fb4fd0381b0e64fcf4408f55ba0a1ce5c542c",
     "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "4f6ff6f752954a91a49d1b81ee2f70f3a085819a3d61fc93a7a9929a0fabcffe",
@@ -220,7 +219,6 @@
     "crates/viboceros-oracle/tests/interval_length_native.rs": "5cb4b5c7d8fdfda6b949c4579aa6dc3b386d08b816a2478c3c8bd0fedc5cfc95",
     "crates/viboceros-oracle/tests/fitting_clock_native.rs": "456b4f712ab280cdc00af85f746097f36c8836711ff2e9acf7bfac2b32ace4de",
     "crates/viboceros-oracle/tests/loft_refit_adaptive_join_native.rs": "5c37ab51f62c419bdc392d45a5b4a6afb108aa0818bc3d4259d5c655544a4896",
-    "tools/rhino_oracle/qualification_sources.py": "54571d89e3dcf44fb662bc953becae84cafa952a2d90d61ef9c418ab06cff796",
     "tools/rhino_oracle/loft_scalar_clock_probe.py": "5cfadc297b1476bafe2a3f1f97cebdf8b718a8310381734bd24fcddf1e20f42e",
     "tools/rhino_oracle/test_interval_length_clocks.py": "2db503c0064ef37ed589c01cc7f272d6eeafe9d084525395ff74a74668b8056b",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
@@ -246,5 +244,9 @@
     "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
     "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
     "crates/viboceros-oracle/src/curve_path_extrusion.rs": "2d6f83f75044a95a490fed392c88fd9256556e268136f91a2f32877a7f47b174"
+  },
+  "git_sha256": {
+    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
+    "86e0d56da09fc50b5f6d68381426b9ac822e945a:tools/rhino_oracle/qualification_sources.py": "54571d89e3dcf44fb662bc953becae84cafa952a2d90d61ef9c418ab06cff796"
   }
 }

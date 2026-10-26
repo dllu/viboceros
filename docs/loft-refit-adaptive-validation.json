@@ -220,7 +220,8 @@
     "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-geometry/src/lib.rs": "26dbfa3920c2f0aeca03da253c572e2ef8bf8d4ac6ee4290eb2d51ad75bef094",
     "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-geometry/src/loft.rs": "868f65db0db6f41a26250b61492e5793cd48ff9f97dd5d2bcfef1d417525b348",
     "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-geometry/src/loft/refit/adaptive.rs": "1d915d4f073c610e39cc09a76d4b64bca927a07c1b797a3d368405e7d542d9c3",
-    "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-geometry/src/loft/refit/adaptive/tests.rs": "e60c4adadc2d343a593783d4a41787592673786fd58574e1e07062ed8f65b1aa"
+    "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-geometry/src/loft/refit/adaptive/tests.rs": "e60c4adadc2d343a593783d4a41787592673786fd58574e1e07062ed8f65b1aa",
+    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd"
   },
   "sha256": {
     "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
@@ -228,7 +229,6 @@
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
     "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
     "crates/viboceros-geometry/src/error.rs": "b834b5a068f42e91fe7caab5b7fcf5321531d1b80947d70df84a93260f834504",
-    "crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
     "crates/viboceros-geometry/src/loft/compatible.rs": "d602e54a58f0e5e515c83af889b9224c42530d6850c57440adddda53b5beee89",
     "crates/viboceros-smlib/Cargo.toml": "13f973cc5eedfcce69ab2d179036f4acd1e1fd887869fd870b561c33df8871d9",
     "crates/viboceros-smlib/build.rs": "70c8959717a15d9d095eeee40a9ceea5ae76fa0d9711cc8749c20d6c87e1607c",

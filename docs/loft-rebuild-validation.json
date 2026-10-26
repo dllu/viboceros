@@ -81,7 +81,7 @@
     "src/app/tests/loft_rebuild.rs": "af004f33ee90810587e326b95c5bbb4b08a3970e9764977bc7bec73e09846a3d",
     "tools/rhino_oracle/generate_loft_rebuild.py": "1d33687f0f250802b4ec1545aacb2d7adf9c344040ba39209a9c5526cdccd5ac",
     "tools/rhino_oracle/test_loft_rebuild.py": "0f6fe3653e67c395e7baf5ebad12e482c668f41e29e7a6202e02cd19f000e03f",
-    "tools/rhino_oracle/qualification_sources.py": "54571d89e3dcf44fb662bc953becae84cafa952a2d90d61ef9c418ab06cff796",
+    "tools/rhino_oracle/qualification_sources.py": "5dd360fc94c8305b69c64adf1013f33e426a3addcac97a6054f1649d723543a3",
     "docs/loft-rebuild.md": "057510e4e1decdbd74d80e7a6449d397c48c3cfe9e0670e0ab9d002b9466dd7b",
     "docs/loft.md": "6a44b6b1e588dc7657b801f76469fa58f029cddb9205f8201004958fc7378cbe",
     "docs/commands/surfaces.md": "14c8d2fe8159965378276f1947545c326e5a85f9c411fdbaf2bf7dc75377e6d9",

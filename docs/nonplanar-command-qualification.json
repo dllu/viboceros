@@ -1274,7 +1274,7 @@
     "crates/viboceros-opennurbs/src/surface.rs": "e8c770b5d14442cb0962f9ed134b4fb148bcba2537b0b2ad48991e4381228268",
     "crates/viboceros-opennurbs/native/surface_queries.h": "35a5196560b1675e00b7489e69b3cc1507ea17b1d7575df3ae3368b8f95dfb01",
     "crates/viboceros-command/tests/support/insert_point/mesh.rs": "688a88e596e2b6e6c0f99b03aba299474be2ad9e7fba4d71ddf5b1ca24063aff",
-    "tools/rhino_oracle/qualification_sources.py": "54571d89e3dcf44fb662bc953becae84cafa952a2d90d61ef9c418ab06cff796",
+    "tools/rhino_oracle/qualification_sources.py": "5dd360fc94c8305b69c64adf1013f33e426a3addcac97a6054f1649d723543a3",
     "tools/rhino_oracle/fixtures/nonplanar_command_discovery.json": "8655d37d6fffa9bb39853275dbe1831c0c8f783efb74767eb69e7a71a07d0f0c",
     "tools/rhino_oracle/observations/nonplanar_command_discovery.json": "fd8a9cfaac0cc4557fe2940f606a6cb0d1e69be9c20b9246c726ec2705bf48a0",
     "tools/rhino_oracle/fixtures/nonplanar_command_discovery/nonplanar_command_default_flat.3dm": "9c120366a589eb1ab1b49ea5b9deafa96bddf4f93d7b21926f019f258c027906",

@@ -330,7 +330,6 @@
     "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
     "crates/viboceros-geometry/src/lib.rs": "4b7a4c520afb012471dbd002ae70bfc003e02fc0111964cedc6f35ab08667bea",
-    "crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
     "crates/viboceros-geometry/src/loft.rs": "674e5d2434f7e8760718856cf57d66f9b28223fe28dc4e1c8c71d0010600d71c",
     "crates/viboceros-geometry/src/surface_pullback.rs": "c0c0ed5b26e93b54bb1a6c1b88c6cc28d05bb32f13785776fd911b066d2f8721",
     "crates/viboceros-geometry/src/loft/refit.rs": "02c6849cf09a9eac79f4b28c93393fb2a511845d65ad78a4e730c41cfbf6550f",
@@ -464,6 +463,7 @@
   },
   "git_sha256": {
     "aaaad7202440486a655ce0cbc66c0ddbb5660e07:tools/rhino_oracle/qualification_sources.py": "c1cd033b977ebfcf2f374ca3977f689cd0a5bd127d07d0e0a9b437343d68d868",
-    "c0f063428b93b559435508089563f45a156f569c:docs/loft-refit-adaptive.md": "d4d47ffe96d3cbc9a88a8c1818e9752718969997631547e8b6c667e35f8a27eb"
+    "c0f063428b93b559435508089563f45a156f569c:docs/loft-refit-adaptive.md": "d4d47ffe96d3cbc9a88a8c1818e9752718969997631547e8b6c667e35f8a27eb",
+    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd"
   }
 }

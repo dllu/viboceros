@@ -14,7 +14,7 @@
   "performance_qualified": false,
   "sha256": {
     "crates/viboceros-geometry/src/lib.rs": "4b7a4c520afb012471dbd002ae70bfc003e02fc0111964cedc6f35ab08667bea",
-    "crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
+    "crates/viboceros-geometry/src/nurbs.rs": "3763f2b48cd95aa29d2ddbf61cf4421ecf083438e62b8decc0d13742deaccfda",
     "crates/viboceros-geometry/src/nurbs/discontinuities.rs": "87c657214a0440c18c436784203ea43b1c8a4645b0a5b6f9058bd1fc0b53fc13",
     "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
     "crates/viboceros-geometry/src/nurbs/periodic.rs": "17f80eb356608081b89e09d98ddd16bd2f8496f8305966e6299495877bace4f7",
@@ -56,10 +56,24 @@
     "tools/rhino_oracle/observations/source_snapshots/bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1.gz": "559f201c26b9a4ae150b6fda15b83aeba876b89ccd68f8aac25323e9de4a8501",
     "tools/rhino_oracle/observations/source_snapshots/cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4.gz": "a2dfe08d90f87953c31fca35f2149361e05513b95c25738682ac176e7252c5e5",
     "tools/rhino_oracle/observations/source_snapshots/d29c7322db26822bc6e4e0c3f15b384896238267a9cbdc55b764a126f64e436d.gz": "ae2a11533562b48d5704b3b3663e575d6fbed369ce30920364e8c5b74bb60b75",
-    "tools/rhino_oracle/qualification_sources.py": "54571d89e3dcf44fb662bc953becae84cafa952a2d90d61ef9c418ab06cff796",
+    "tools/rhino_oracle/qualification_sources.py": "5dd360fc94c8305b69c64adf1013f33e426a3addcac97a6054f1649d723543a3",
     "crates/viboceros-opennurbs/native/curve_speeds.h": "aa8198867c2a32d66afb4037c4400271fff7b39b4fba60a28a229da7e09d41dc",
     "crates/viboceros-opennurbs/src/curve/speeds.rs": "a86eb397c8f7bab0e6ddca11dd651b1f1f3b3b5cc8e91273a8117fdef2f9b263",
     "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",
-    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857"
+    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
+    "crates/viboceros-geometry/src/nurbs/conics.rs": "f6185937831be9c3ad7f2daf7a829f4a2d69712c62179b47d681862031b5042c",
+    "crates/viboceros-geometry/src/nurbs/tests.rs": "4dd1d1369bd6cc0bd02bb68fa18286bb81cce905dbcf7973b40152d969269cbf",
+    "crates/viboceros-geometry/src/nurbs/tests/conics.rs": "c704accf2bedd4b9f21229faf7f610fc14f591e58c175841a907af3a4e98882f",
+    "crates/viboceros-geometry/src/nurbs/tests/controls.rs": "26ca0095d03f9c164a1263444d9c8c071d9c0b37eeb47b57d4b406e23ad786eb",
+    "crates/viboceros-geometry/src/nurbs/tests/degree_weights.rs": "2bc8f7bd8d37b06334ea53cf3a252cc7a322c79e822f0f1d1958ac78bfc94997",
+    "crates/viboceros-geometry/src/nurbs/tests/evaluation.rs": "7ae52ee519a0482cb9f028cc9a437b72d91b95d6a2a2c90b38337f83b2533b62",
+    "crates/viboceros-geometry/src/nurbs/tests/extension.rs": "b8065259a2f95736d664ebf0de89cc2a2558fde0641426b7080b12ba9fdb449e",
+    "crates/viboceros-geometry/src/nurbs/tests/extension_boundaries.rs": "6b80bec62838269a07dbddf3b0d2980caa9ae36572f8be6d0175d00fe79f4592",
+    "crates/viboceros-geometry/src/nurbs/tests/extension_pieces.rs": "0351a41301b71a1a1a825a58424d7acdd01d1b9181d55ebd46f751015c639501",
+    "crates/viboceros-geometry/src/nurbs/tests/intersections.rs": "5ac8f2a4b6c2502976fd342f54f2426d3132b35a380ca35f723d1e23c8bcfd47",
+    "crates/viboceros-geometry/src/nurbs/tests/knots.rs": "b02f11f865e956bea754c44e3931afc9a6813a3c916b23670942902915738f29",
+    "crates/viboceros-geometry/src/nurbs/tests/projection.rs": "7e2b83359f79e2217fb1a8df0027a338e2d5060ccd62b7b9a7545e004342e78b",
+    "crates/viboceros-geometry/src/nurbs/tests/topology.rs": "bcb94de40043038efe424fa25d2001e652d27cf8f8674435c0098279dfbe2d5e",
+    "crates/viboceros-geometry/src/nurbs/tests/trimming.rs": "a551cc89a09cebba30d6c806edd326b018a27480fef0146396708e49ebd20373"
   }
 }

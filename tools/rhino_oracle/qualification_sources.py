@@ -318,6 +318,12 @@ def _expand_sources_once(paths):
         expanded.extend(['crates/viboceros-geometry/src/nurbs/knot_reduction.rs',
                          'crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs'])
         expanded.append('crates/viboceros-geometry/src/nurbs/discontinuities.rs')
+        expanded.extend(['crates/viboceros-geometry/src/nurbs/conics.rs',
+                         'crates/viboceros-geometry/src/nurbs/tests.rs'])
+        expanded.extend('crates/viboceros-geometry/src/nurbs/tests/' + name + '.rs'
+                        for name in ['conics', 'controls', 'degree_weights', 'evaluation',
+                                     'extension', 'extension_boundaries', 'extension_pieces',
+                                     'intersections', 'knots', 'projection', 'topology', 'trimming'])
     if 'crates/viboceros-oracle/src/lib.rs' in expanded:
         expanded.append('crates/viboceros-oracle/src/curve_path_extrusion.rs')
     if 'crates/viboceros-oracle/tests/support/surface_apex.rs' in expanded:

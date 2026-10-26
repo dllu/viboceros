@@ -362,7 +362,6 @@
     ".cargo/config.toml": "265335447699ebc6d87576734a5eac601774454a7b8ea4f4660a6a1184640816",
     "crates/viboceros-geometry/Cargo.toml": "86d9d3b8ce1cef28e5c788822bed50362349601957d8e0be25a8a8e657228cc8",
     "crates/viboceros-geometry/src/error.rs": "b834b5a068f42e91fe7caab5b7fcf5321531d1b80947d70df84a93260f834504",
-    "crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd",
     "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",
     "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e5e3178b571d2f5a1bd67888e8c1b111ab6d9f849a73512b3edb7a6e99f99aad",
@@ -555,7 +554,8 @@
     "aaaad7202440486a655ce0cbc66c0ddbb5660e07:crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "e1157e2964d099fe15a9400b329eb4e8fde2a42fda0f7e3bf1f04ae7f30e3bb5",
     "aaaad7202440486a655ce0cbc66c0ddbb5660e07:docs/loft-fitting-clock.md": "aeae180522d17933a01aadd6eb3975367529fb6bce43903bff63fa0833576fda",
     "aaaad7202440486a655ce0cbc66c0ddbb5660e07:crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs": "0b4b5ac93c9addc4d810c5a584cc453fb04a2843d7e63f90b6b74e61e8400e2b",
-    "c0f063428b93b559435508089563f45a156f569c:crates/viboceros-geometry/src/curve/arc_length/trace.rs": "704c6303b6b9696da1cac10b3ad27ca9aed7fa4ddd6bdd80de5a90a25087b200"
+    "c0f063428b93b559435508089563f45a156f569c:crates/viboceros-geometry/src/curve/arc_length/trace.rs": "704c6303b6b9696da1cac10b3ad27ca9aed7fa4ddd6bdd80de5a90a25087b200",
+    "86e0d56da09fc50b5f6d68381426b9ac822e945a:crates/viboceros-geometry/src/nurbs.rs": "e20a410ac1938b31dbbb833b2d3c3b12998404df5eeea908288b6fcfd9ec59cd"
   },
   "python_suite": {
     "tests": 1995,
