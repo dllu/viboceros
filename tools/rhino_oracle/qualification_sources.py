@@ -205,6 +205,7 @@ def _expand_sources_once(paths):
             'crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs',
             'crates/viboceros-geometry/src/curve/arc_length/scalar_tests.rs',
             'crates/viboceros-geometry/tests/loft_midpoint_clock_native.rs',
+            'crates/viboceros-geometry/tests/component_clock_native.rs',
         ]
     if 'crates/viboceros-geometry/src/curve_fit.rs' in paths:
         paths = [*paths,

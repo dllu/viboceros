@@ -2,6 +2,33 @@
 from loft_refit_probe import cubic_sections
 
 
+
+def numerical_clocks(curve):
+    # Inspect an owned duplicate so diagnostics cannot affect fitting caches.
+    from System import Array, Double
+    source = curve.DuplicateCurve()
+    try:
+        fractions = Array[Double]([i / 8. for i in range(9)])
+        rows = []
+        for accuracy in [1e-4, 1e-3, 5e-3, 1e-2]:
+            scalars = []
+            for fraction in [.25, .5, .75]:
+                success, parameter = source.NormalizedLengthParameter(fraction, accuracy)
+                if not success:
+                    raise ValueError('source scalar clock failed')
+                point = source.PointAt(parameter)
+                scalars.append(dict(fraction=fraction, parameter=float(parameter),
+                    point=[float(point.X), float(point.Y), float(point.Z)]))
+            batch = source.NormalizedLengthParameters(fractions, 0., accuracy)
+            if batch is None or len(batch) != 9:
+                raise ValueError('source batch clock failed')
+            rows.append(dict(fractional_tolerance=accuracy,
+                length=float(source.GetLength(accuracy)), scalars=scalars,
+                batch_parameters=[float(t) for t in batch]))
+        return rows
+    finally:
+        source.Dispose()
+
 def inspect(curves, tolerance, angle, absolute, geometry, definition):
     records = []
     for simplify in [False, True]:
@@ -18,6 +45,7 @@ def inspect(curves, tolerance, angle, absolute, geometry, definition):
                         2, 0, tolerance, angle) or [])
                     records.append(dict(simplified=simplify, source_count=count,
                         source_types=[s.GetType().Name for s in sources[:count]],
+                        numerical_clocks=numerical_clocks(sources[0]),
                         curves=[definition(c) for c in fitted]))
                 finally:
                     for c in reversed(fitted):

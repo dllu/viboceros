@@ -106,12 +106,17 @@ impl ArcLengthSampler<'_> {
             matches!(s.linear,
             Some(LinearSpan::Rational {controls}) if controls[0].weight()!=controls[1].weight())
         };
-        // Numerical scalar queries must consider natural span boundaries even
-        // when each span has constant speed. The precise inverse remains a
-        // separate contract; incremental batches retain their existing path.
+        let constant_speed =
+            self.spans.iter().all(|s| !s.variable_speed) && !self.spans.iter().any(quadrature_line);
+        // Analytic and polyline sources retain their exact length clocks.
+        // NURBS scalar queries also consider numerical span checkpoints.
+        let exact_clock = matches!(
+            self.curve(),
+            CurveRef::Line(_) | CurveRef::Circle(_) | CurveRef::Arc(_) | CurveRef::Polyline(_)
+        );
         if self.spans.iter().all(|s| !s.variable_speed)
             && (policy == InversePolicy::Incremental
-                || (self.spans.len() == 1 && !self.spans.iter().any(quadrature_line)))
+                || (constant_speed && (exact_clock || self.spans.len() == 1)))
         {
             let mut parameters = self.parameters_at_normalized_lengths(fractions)?;
             if policy == InversePolicy::Independent {
@@ -212,6 +217,14 @@ impl ArcLengthSampler<'_> {
                 };
                 previous = node;
                 out.push(self.source_parameter(node.parameter)?);
+                continue;
+            }
+            if policy == InversePolicy::Independent && constant_speed {
+                // Between natural checkpoints, constant speed has an affine
+                // inverse. Unequal-weight rational lines are excluded above.
+                let f = (target - lower.distance) / (upper.distance - lower.distance);
+                let parameter = stable_lerp(lower.parameter, upper.parameter, f);
+                out.push(self.source_parameter(parameter)?);
                 continue;
             }
             if policy == InversePolicy::Incremental && previous.distance > lower.distance {

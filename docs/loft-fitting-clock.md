@@ -9,7 +9,11 @@ and repeated fractions retain the same results as separate scalar calls.
 Natural knots participate in numerical scalar acceptance even when each span
 has constant speed. Nearby stationary plateaus use their right endpoint;
 natural domain ends remain exact.
-Incremental batches keep their existing, prefix-dependent behavior.
+Polyline and analytic constant-speed sources retain exact length clocks.
+Between NURBS checkpoints, constant-speed intervals use affine inversion instead
+of spending the shared numerical-integration budget. The full 1,048,576-query
+capacity remains available for these batches. Incremental batches retain their
+existing, prefix-dependent behavior.
 
 The JSON/Python operation `curve_length_parameters` accepts a NURBS `curve`,
 `fractions`, and optional `fractional_tolerance`, defaulting to `1e-4` for fitting
@@ -31,6 +35,12 @@ regions, and stationary spans. They match within `1e-9`; the previous constant-s
 shortcut bypassed these numerical stopping rules. Precise geometric inverses and
 incremental batch behavior remain unchanged. [Knot-query validation](scalar-knot-validation.json)
 retains these measurements and separate fitter counterexamples.
+A further 360 source-type comparisons distinguish NURBS scalar stopping from
+exact polyline scalar and batch clocks. The original and simplified sources
+still produce identical fitted definitions in the six measured profile sets;
+these clock differences alone do not establish the fitter's subdivision rule.
+[Constant-speed validation](constant-clock-validation.json) records the clock
+policies and bulk-query regression.
 
 Full scalar SDK parity remains unfinished. The retained strict diagnostic compares
 2,090 queries at five precisions and still fails on 14 curved-source queries;

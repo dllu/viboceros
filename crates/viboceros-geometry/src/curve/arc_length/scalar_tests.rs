@@ -170,3 +170,60 @@ fn nearby_numerical_queries_choose_the_right_end_of_a_zero_length_plateau() {
         [2., 2., 2.]
     );
 }
+
+#[test]
+fn full_capacity_constant_speed_scalar_batches_preserve_checkpoint_policy() {
+    let curve = NurbsCurve::try_new(
+        1,
+        [[0., 0., 0.], [1., 0., 0.], [1., 1.00001, 0.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+        vec![0., 0., 1., 2., 2.],
+    )
+    .unwrap();
+    let sampler =
+        ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT).unwrap();
+    let fractions = (0..MAX_LOOKUP_NODES)
+        .map(|i| i as f64 / (MAX_LOOKUP_NODES - 1) as f64)
+        .collect::<Vec<_>>();
+    let values = sampler
+        .parameters_at_quadrature_normalized_lengths(&fractions, 1e-8)
+        .unwrap();
+    assert_eq!(values.len(), fractions.len());
+    assert_eq!(values[0], 0.);
+    assert_eq!(*values.last().unwrap(), 2.);
+    assert!(values.windows(2).all(|w| w[0] <= w[1]));
+    assert_eq!(
+        sampler
+            .parameter_at_quadrature_normalized_length(0.5, 1e-4)
+            .unwrap(),
+        1.
+    );
+}
+
+#[test]
+fn analytic_polyline_clock_remains_exact_when_the_nurbs_clock_accepts_a_knot() {
+    let points = [[0., 0., 0.], [1., 0., 0.], [1.98, 0.0000098, 0.]]
+        .map(|p| Point3::try_from(p).unwrap())
+        .to_vec();
+    let curve = NurbsCurve::try_new(1, points.clone(), vec![0., 0., 1., 2., 2.]).unwrap();
+    let polyline = crate::Polyline3::try_new(points, Tolerance::DEFAULT).unwrap();
+    let nurbs =
+        ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT).unwrap();
+    let analytic =
+        ArcLengthSampler::try_new(CurveRef::Polyline(&polyline), Tolerance::DEFAULT).unwrap();
+    assert_eq!(
+        nurbs
+            .parameter_at_quadrature_normalized_length(0.5, 0.01)
+            .unwrap(),
+        1.
+    );
+    let exact = analytic.parameters_at_normalized_lengths(&[0.5]).unwrap()[0];
+    assert_eq!(
+        analytic
+            .parameter_at_quadrature_normalized_length(0.5, 0.01)
+            .unwrap(),
+        exact
+    );
+    assert!((exact - 1.).abs() > 0.009);
+}
