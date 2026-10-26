@@ -2014,7 +2014,7 @@
     "tools/rhino_oracle/report_mesh_component_unweld.py": "21e1f0a7fc1a0b0950338e7b2be81ec7aab9c86a40c10334f5bb790f8c6d3004",
     "tools/rhino_oracle/test_mesh_component_unweld.py": "ba9964d9daef47f3e413e43d8e8f44172043ab72d1d9f37e915a2ebf2577d910",
     "tools/rhino_oracle/client.py": "d44670763768ace8378178b452f537821f012954c4b6abe2c846941c147a1693",
-    "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
+    "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "crates/viboceros-command/src/mesh_seams.rs": "fae9bbdb286bd2441cd3c953da2e3e92034edde5b4635f1e5c3e3e751ba70ea0",
     "crates/viboceros-command/src/mesh_component_unweld.rs": "a9b596459c86e8c4a3f339b1d45c32e647ccdfa1c786572b78a3e510c44ba1af",

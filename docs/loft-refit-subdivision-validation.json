@@ -330,7 +330,7 @@
     "crates/viboceros-oracle/tests/loft_refit_polylines_native.rs": "6095242be215813b5868c31edeb889704c8f8e117dd66b613dcb948a6c69d044",
     "crates/viboceros-oracle/tests/loft_refit_native.rs": "0ee0c4a3934d2f51915c2b40afacf1039735bd218ce3b9451346538b48f5f77f",
     "tools/rhino_oracle/client.py": "d44670763768ace8378178b452f537821f012954c4b6abe2c846941c147a1693",
-    "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
+    "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/loft_refit_adjustment_probe.py": "970c8bab8564875f31b096346c747fa150e50e2a5c684e027559b414d5060555",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",

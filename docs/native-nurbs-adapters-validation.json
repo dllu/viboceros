@@ -387,7 +387,6 @@
     "tools/rhino_oracle/knot_reduction_probe.py": "4e0fbfbe4c045b01d46856aa6bc31c411a11df5562d1655ff8246f5a0e630bba",
     "tools/rhino_oracle/test_knot_reduction.py": "b3d40b3fe8394a1151a17b5d4a5279fa5f73e81fe8d6c0b6934885a57b0da7d2",
     "tools/rhino_oracle/client.py": "d44670763768ace8378178b452f537821f012954c4b6abe2c846941c147a1693",
-    "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
     "tools/rhino_oracle/fixtures/knot_reduction.json": "2893dee67345575f48c25c57e1422d9e9718191cf0f24db70cbf4157452383ca",
@@ -555,7 +554,8 @@
     "0aabd7c80f6cce51a079c71911eda7b227d19539:crates/viboceros-smlib/src/native/knot_refinement.rs": "8435bd50779e943f58ee47c372011abff39b6667cd4827968d4f40efa5c339dd",
     "0aabd7c80f6cce51a079c71911eda7b227d19539:tools/rhino_oracle/qualification_sources.py": "69364059d2e588db996cdae19eb032c8a8f6bcc2c1afcc32339736508a71a8ff",
     "0aabd7c80f6cce51a079c71911eda7b227d19539:crates/viboceros-smlib/src/native/knot_refinement/loft.rs": "6161abcd820a9a21f9bb8ac0fde143121a21d250a7e8f01d878ae777bbab2ba1",
-    "532254b3d49866d6bb18ac70e9a11495d48c695b:crates/viboceros-geometry/src/curve_fit/g1.rs": "ddb71a0761384450092708e723786d6a07ff2bf7a2faae02cd15289baadd9099"
+    "532254b3d49866d6bb18ac70e9a11495d48c695b:crates/viboceros-geometry/src/curve_fit/g1.rs": "ddb71a0761384450092708e723786d6a07ff2bf7a2faae02cd15289baadd9099",
+    "b08ce318cb40a91a135ff34043c91a81813239cf:tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3"
   },
   "python_suite": {
     "tests": 1995,

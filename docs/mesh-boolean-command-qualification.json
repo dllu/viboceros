@@ -117340,7 +117340,7 @@
     "tools/rhino_oracle/observations/source_snapshots/f98c6bd863d9638633cadf15d6e8bedff378aa16a06bb80491c251c3cd37bec5.gz": "a12d46a5476486aea5efd2eeebe4dcdb7e64e88a9db526d1e00d2b0f87940864",
     "tools/rhino_oracle/qualification_sources.py": "9ad4744ff4433c3b137da6495c28b903e64619902d8a82b459e0f30335e5605c",
     "tools/rhino_oracle/report_mesh_boolean_commands.py": "5bae7df0d5edaf5c6ecdc296f518f5ed633f4c435c542d100d60a6e1cf19b0d2",
-    "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
+    "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/test_mesh_boolean_commands.py": "2ff219d39574f514399d3dc6225c5ebf494f5f749b68b0c926ea4597af0f5b76",
     "src/app/boolean_solids/input.rs": "cc1b7fd52c339c8ebae03c2ba8c6a0d81954be014a258ff3334990d3bd6df32d",

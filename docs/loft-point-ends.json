@@ -480,7 +480,7 @@
     "tools/rhino_oracle/observations/source_snapshots/fede0d3ef3f62bcd52dbed935868c627ee58ccf42a306ce3db9e0ceb02146484.gz": "d449342d6e5ff1db8fe69c6503f06b12ed0c84e3d7248bf81232dd82cea23de0",
     "tools/rhino_oracle/observations/source_snapshots/ff65057ba2dff5d89f991e748558067cafbb9466cb1cbc13d349c9669e012242.gz": "30c33df6df35ce011f3e879c1bfb5811e3e2b394396233373eb75f3a507cc118",
     "tools/rhino_oracle/qualification_sources.py": "9ad4744ff4433c3b137da6495c28b903e64619902d8a82b459e0f30335e5605c",
-    "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
+    "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
     "tools/rhino_oracle/test_insert_point_command.py": "15e7c5731f4af32afd97775b3e8fd51ea2fcecf7045ee3f3400cc83b83e69595",
     "tools/rhino_oracle/test_loft_command_options.py": "82fce9f1beb2d944ff51ddd5cc41a26ae50c6fd1104702733258a2b98045bbff",
     "tools/rhino_oracle/test_loft_points.py": "de940a4c0e8c0b5e9690d1b0f49f414b5468611aca9a50ba810c0ce5f2ff4577",

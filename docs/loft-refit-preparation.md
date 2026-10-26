@@ -11,6 +11,11 @@ and angle tolerances. Nine equal translated pairs reproduce all control coordina
 weights of the corresponding loft sections; normalized knot
 vectors agree within `2e-16`. The loft then scales its surface domains.
 
+Older independent inspections used the document angle rather than the Loft
+overload's default. The [diagnostic angle correction](loft-refit-probes.md) now
+forwards the actual fitting angle and retains new shallow-bend counterexamples.
+Read those older inspection results with their captured document settings.
+
 The single-input call differs geometrically or structurally in eight of those
 nine cases. Simplifying the inputs first does not explain the difference.
 Independent `Curve.Fit`, cubic-Bezier fitting, or single-input `MakeCompatible`

@@ -2440,6 +2440,9 @@ def _loft(operation, iterations):
             or math.isnan(refit_angle) or math.isinf(refit_angle)
             or refit_angle < 0. or refit_angle > math.pi or refit is None):
         raise ValueError('invalid Loft refit angle tolerance')
+    # Diagnostic fits must use the same angle as the Loft overload. The
+    # overload without an angle uses the SDK default, not the document angle.
+    probe_angle = refit_angle if refit_angle is not None else math.pi / 180.
     curves = []
     styles = {
         "normal": Rhino.Geometry.LoftType.Normal,
@@ -2491,15 +2494,19 @@ def _loft(operation, iterations):
                 surfaces.append(_loft_surface_record(face, operation))
         if before is not None:
             record=dict(before=before, after=[_nurbs_curve_definition(c) for c in curves], surfaces=surfaces)
+            if any(operation.get(flag, False) for flag in (
+                    'inspect_refit_clock', 'inspect_refit_sets', 'inspect_refit_frames',
+                    'inspect_refit_sources', 'inspect_refit_beziers', 'inspect_refitted')):
+                record['refit_probe_angle_tolerance'] = probe_angle
             if operation.get('inspect_refit_clock', False):
                 from loft_refit_clock_probe import inspect
                 record['refit_clock'] = inspect(curves[0], refit,
-                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    probe_angle,
                     Rhino.Geometry, _nurbs_curve_definition)
             if operation.get('inspect_refit_sets', False):
                 from loft_refit_set_probe import inspect
                 record['refit_sets'] = inspect(curves[0], refit,
-                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    probe_angle,
                     Rhino.Geometry, _nurbs_curve_definition)
             if operation.get('inspect_refit_adjustment', False):
                 from loft_refit_adjustment_probe import inspect as adjustment_probe
@@ -2510,7 +2517,7 @@ def _loft(operation, iterations):
             if operation.get('inspect_refit_frames', False):
                 from loft_refit_frame_probe import inspect
                 record['refit_frames'] = inspect(curves[0], refit,
-                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    probe_angle,
                     Rhino.Geometry, _nurbs_curve_definition)
             if operation.get('inspect_scalar_clock', False):
                 from loft_scalar_clock_probe import inspect
@@ -2518,18 +2525,18 @@ def _loft(operation, iterations):
             if operation.get('inspect_refit_sources', False):
                 from loft_refit_source_probe import inspect
                 record['refit_sources'] = inspect(curves, refit,
-                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    probe_angle,
                     Rhino.RhinoDoc.ActiveDoc.ModelAbsoluteTolerance,
                     Rhino.Geometry, _nurbs_curve_definition)
             if operation.get('inspect_refit_beziers', False):
                 from loft_refit_probe import cubic_sections
                 record['refit_beziers'] = cubic_sections(curves, refit,
-                    Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians,
+                    probe_angle,
                     Rhino.Geometry, _nurbs_curve_definition)
             if operation.get('inspect_refitted', False):
                 record['refitted'] = []
                 for curve in curves:
-                    fitted = curve.Fit(3, refit, Rhino.RhinoDoc.ActiveDoc.ModelAngleToleranceRadians)
+                    fitted = curve.Fit(3, refit, probe_angle)
                     try:
                         record['refitted'].append(_nurbs_curve_definition(fitted) if fitted is not None else None)
                     finally:

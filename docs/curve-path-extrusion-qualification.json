@@ -58235,7 +58235,7 @@
     "tools/rhino_oracle/observations/source_snapshots/f39dd29b5e3ae0109fcb6ef92cd4c3aad49757713b42762b6fe8cad46eea8830.gz": "6021fe2d3e1132e6aa6fb5c351eae050ec010638f9e3e6f3f647971eb60b8b6f",
     "tools/rhino_oracle/qualification_sources.py": "9ad4744ff4433c3b137da6495c28b903e64619902d8a82b459e0f30335e5605c",
     "tools/rhino_oracle/report_curve_path_extrusion.py": "cdbbe03f72f7bb976444e8de860b264fcd37382db55f96d0cd36d6c672e65eea",
-    "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
+    "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/test_curve_path_extrusion.py": "d68f79650afb84e36235aac052a2d21ede83598194c6624708bd46f0bc38d978",
     "tools/usd_brep/curve_continuity_probe.cpp": "7b7502c9010e308aafa4aa579ccb6a73cd0f689342a57ecf483fa0bf6fcde562",

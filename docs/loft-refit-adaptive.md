@@ -29,7 +29,9 @@ final joined control net. Thirty-six fresh scale, tolerance and uneven-bend
 records retain different native bases; a scaled quarter-degree case has eight
 controls where its unscaled counterpart has ten. The proposed small-budget
 knot-removal and region-matching model did not reproduce all these cases and
-was removed. No command acceptance or existing fitting tolerance changed.
+was removed. [Diagnostic angle checks](loft-refit-probes.md) now distinguish
+public single-knot parity from composite fitting and region matching. No command
+acceptance or existing fitting tolerance changed.
 
 ```sh
 cargo test -p viboceros-geometry --lib loft::refit::adaptive --frozen

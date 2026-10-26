@@ -10,7 +10,10 @@ The Rust geometry and native SMLib APIs expose
 construction. Command overrides fail explicitly because the interactive Loft
 command does not expose this SDK setting.
 
-The existing one-degree corner resolution floor still applies. A larger explicit
+The Rust polygon path retains its current one-degree corner resolution floor.
+[New native probes](loft-refit-probes.md) resolve quarter-degree corners at small
+explicit angles; those inputs remain unsupported and require further qualification.
+A larger explicit
 angle can suppress polygon corners, requiring the pending adaptive fitter.
 Right-angle corners remain resolved at `pi/2`. Certified single-Bezier proposals
 retain their existing complete half-tolerance image bound and native parity

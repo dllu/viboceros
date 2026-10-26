@@ -199,7 +199,9 @@
     "532254b3d49866d6bb18ac70e9a11495d48c695b:crates/viboceros-geometry/src/loft/parameterize.rs": "fe9cee9aeaf96de001dc4d0758a5eebe4c6c04dc4b12c0ca24ca185ac5ddd67f",
     "532254b3d49866d6bb18ac70e9a11495d48c695b:crates/viboceros-oracle/src/loft.rs": "50e58f5f1194b1871ad10e834711f90b298f3cc301020efc4cc00663b08e8e1c",
     "532254b3d49866d6bb18ac70e9a11495d48c695b:crates/viboceros-command/src/loft.rs": "2afdeeac349f532a7cb6b343e096701200d0875e3d66def29736307fa8879c21",
-    "532254b3d49866d6bb18ac70e9a11495d48c695b:crates/viboceros-smlib/src/native/knot_refinement/loft.rs": "6231a144e2ed247bfd764016e410f29ec1eec680b27b4b25e0553db51ae91dcf"
+    "532254b3d49866d6bb18ac70e9a11495d48c695b:crates/viboceros-smlib/src/native/knot_refinement/loft.rs": "6231a144e2ed247bfd764016e410f29ec1eec680b27b4b25e0553db51ae91dcf",
+    "b08ce318cb40a91a135ff34043c91a81813239cf:docs/loft-refit-adaptive.md": "f0bea1100332208faed73d5cbc96b224dce340e88fd77fea84d4924396ca3288",
+    "b08ce318cb40a91a135ff34043c91a81813239cf:docs/loft-refit-angles.md": "58b96ba6e6d64a20649d1e4b2471e974265495580d1f802fd361e63491bc11c0"
   },
   "sha256": {
     "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
@@ -224,7 +226,6 @@
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
     "tools/rhino_oracle/fixtures/loft_refit_adjustment.json": "f13cecea6ba29d46eed0106c456eeae35154eb83f939747202abc76e4c306b47",
     "tools/rhino_oracle/fixtures/loft_refit_polylines.json": "f03aa5dfd5f36103fee168290e93556ff2a6cd1ae0066addd0672efcfd42145e",
-    "docs/loft-refit-angles.md": "58b96ba6e6d64a20649d1e4b2471e974265495580d1f802fd361e63491bc11c0",
     "crates/viboceros-geometry/src/curve_fit/g1/adjust.rs": "2d1cba7a4a45416503c73e1e5010dd95e366fc1d5e410fa125ff9cce7d6319f4",
     "crates/viboceros-geometry/src/curve_fit/g1/adjust/tests.rs": "77ea3214bd34a234678aca8930375dddb2ad6d55a40b17623a396e8c6ecd841f",
     "crates/viboceros-geometry/src/curve_fit/g1/tests.rs": "67755931af4cc364966100f7a86a0e3aec295ee15d40d0bbd5f68c86c5e36b73",
@@ -416,7 +417,6 @@
     "tools/rhino_oracle/generate_loft_refit_adaptive_lines.py": "5d644a5f9e893023a93497fc6f70a608820b28d001c9d6dd98e4588183162dc8",
     "tools/rhino_oracle/qualification_sources.py": "9ad4744ff4433c3b137da6495c28b903e64619902d8a82b459e0f30335e5605c",
     "tools/rhino_oracle/test_loft_refit_adaptive_lines.py": "c52eb9c4256f6e145895d9112f73a6dfa7436ea5422e9286fcafd7c55f75b457",
-    "docs/loft-refit-adaptive.md": "f0bea1100332208faed73d5cbc96b224dce340e88fd77fea84d4924396ca3288",
     "docs/loft-refit-candidates.md": "c667ae8c832216386278a64cf2aec9ab1657bb05a5058988f9079aeb87b4c0b9",
     "docs/loft-refit-adjustment.md": "fc58338fceb79f52e5e1bf3ff15fc98262fcf170c041a80399c409f1fbc2e4bd",
     "tools/rhino_oracle/fixtures/loft_refit_adaptive_lines.json": "2945fc74d7c444691334a524a1cc002bd5b4851cb6c0bb7ba8170ad0c18e21f1",

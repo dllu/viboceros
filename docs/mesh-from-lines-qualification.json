@@ -1888,7 +1888,7 @@
     "tools/rhino_oracle/test_mesh_from_lines.py": "e487e86d86a52823605aea40c938925b14f5dfd30b64fa65363c6203b2f6afd0",
     "tools/rhino_oracle/client.py": "d44670763768ace8378178b452f537821f012954c4b6abe2c846941c147a1693",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
-    "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
+    "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
     "tools/rhino_oracle/fixtures/mesh_from_lines.json": "f269d35c1eb72c243437baf3d3dd779423ced8daf64a0ba32893ee3aa1978e8a",
     "tools/rhino_oracle/observations/mesh_from_lines.json": "8f37832d16039b9751bcef2285c97e1099f5297f0bcc4c49c243260c501eee54",
     "tools/rhino_oracle/fixtures/mesh_from_lines_variants.json": "ea4a5fcbb95ffb0d38b281478c476b1cd4c4103d4b6d53e4483826b08637ac1b",

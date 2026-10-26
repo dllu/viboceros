@@ -5867,7 +5867,7 @@
     "tools/rhino_oracle/observations/source_snapshots/cda2aaeb84f5e2df817e020148104cd8cd457b6a2e5cc10c6287adf7489f680a.gz": "0cf66cebe10bdd0b8472b182cf6d9d22153248293af6da09b59bc5c6f9663afa",
     "tools/rhino_oracle/qualification_sources.py": "9ad4744ff4433c3b137da6495c28b903e64619902d8a82b459e0f30335e5605c",
     "tools/rhino_oracle/report_mesh_boolean.py": "603bb8950f3755b7f290dd178be4569ec1b2aad60e1b93e98d5acb134922670c",
-    "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
+    "tools/rhino_oracle/rhino_worker.py": "0c754f97f79996eeafd655907433b1a390a4153fabf53033ebbb6abdb500f7c7",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/test_mesh_boolean.py": "e49fc46f8725b452a4ccfe424c57ed170cd5ccf509efe09b445322e6185e47c0",
     "tools/rhino_oracle/mesh_boolean_command_cases.py": "5522e21f7fc96e1930aab6a68651fe37e93a5a50e8e62f7473534f07c381dc2f",
