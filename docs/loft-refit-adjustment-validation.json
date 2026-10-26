@@ -328,7 +328,7 @@
     "crates/viboceros-geometry/src/loft/refit/candidate.rs": "41b92e7d26d5c8da72827c2b81f3245bb1cf787bb51ed2863432a906c14bf1a5",
     "crates/viboceros-oracle/tests/loft_refit_coarse_native.rs": "ba557e1441f8722116725cd3e770229ed7a3f5c90258e7303090d34bc5c489c6",
     "crates/viboceros-oracle/tests/loft_refit_native.rs": "3cdd7e9e7b2b2a653da474c5bc3409e2a1d9e7ab84db19dc28e05e3d1955da2f",
-    "docs/loft-fitting-clock.md": "cfe3a64a75347d0d149addeb1165180d293aa838b64aa2f98329c215c2b1175d",
+    "docs/loft-fitting-clock.md": "aeae180522d17933a01aadd6eb3975367529fb6bce43903bff63fa0833576fda",
     "docs/loft-refit-adjustment.md": "4786ea5d921735c24688b322a3fc18d78ec3e23e8886721b07ffe901a6bf1d74",
     "docs/loft-refit-candidates.md": "8b6f792143d9637d5b6eca0332362980941f7cbc9f1ce055e60f6e18d37f8d77",
     "docs/loft-refit-preparation.md": "d0fd184989f297bac1a2bcf51195428e822c69584a603c9b6c0a36c0e75c23bb",
@@ -370,7 +370,7 @@
     "tools/rhino_oracle/observations/source_snapshots/e93663756c4b357db9033d7b38a90b9d50a2399e74376b97d28dba2df5738ce9.gz": "22076f3f84901d9a2d046b355eb213db0ef826bfdda78e2d7cf9a9264bdcf3cb",
     "tools/rhino_oracle/observations/source_snapshots/edee766003c4702c7c027ec4c68e661cc1b9dc35fe645c3c39b54ee77377ea81.gz": "141da062baad528de01638f1c2069278f0bfce7d418b386bb78700fc4adc4726",
     "tools/rhino_oracle/observations/source_snapshots/fa30b75a38da3cbb67e85e78f84a9ce4f5c6ff43d47bb8b4e2a41740cde7fa76.gz": "86f165d2b4dc9c5aa6a586cbaaab7fe1005ac24f5aa4c8e43d0ec790875f6986",
-    "tools/rhino_oracle/qualification_sources.py": "8e44b2f17906b7a0bd1e297fbeb8a6eee911a0a5660e17f4dd6309703f5113e3",
+    "tools/rhino_oracle/qualification_sources.py": "69364059d2e588db996cdae19eb032c8a8f6bcc2c1afcc32339736508a71a8ff",
     "tools/rhino_oracle/rhino_worker.py": "cd500dfc7f1f57e33f428a64d0afeafc8d37aba8bc1b611a69b27597cbe709f3",
     "tools/rhino_oracle/test_loft_refit_adjustment.py": "39c731daeff2edc61f33fa3802ed58065316ad46fe46dadf218c78ada3a6e337",
     "crates/viboceros-geometry/src/loft.rs": "1ec81978234e72686d3925c80078c3eb1b01d752ba22bbf4b1df664dc085d2a5",
@@ -388,7 +388,7 @@
     "crates/viboceros-oracle/tests/loft_refit_lines_native.rs": "bc37468944604a436a59321f25ef89df2dc81bfcb917bac0e671f38819a4d7f6",
     "crates/viboceros-geometry/tests/support/loft_rebuild.rs": "668b312194c4eef23d367f0c7fac9750e217ad44d42a954c1726128f2b64835b",
     "crates/viboceros-geometry/tests/support/loft_parameters.rs": "ffb76fa2679ee01a08338b5333677cfec50691bf1ecbc3c1ce318787b5e18a6e",
-    "crates/viboceros-smlib/src/native/knot_refinement.rs": "426ede226d35dcce94dbd3a5f6f9a97156a0451de22cfa72f430ee5ef79b8655",
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": "8435bd50779e943f58ee47c372011abff39b6667cd4827968d4f40efa5c339dd",
     "tools/rhino_oracle/structural_sdk.py": "a565761f039db10a0fe4a23e70ca66645a9adfa1d62c234f80bcee3ecd386231",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
     "Cargo.toml": "81c656385a19fc5a590a0c967317e945442430ded9af88368c129438db50e12b",
@@ -527,6 +527,11 @@
     "crates/viboceros-geometry/src/curve_fit/adaptive.rs": "f55668222afb298b423453f783828f7b24a9741025080af43442068dd10bac9e",
     "crates/viboceros-geometry/src/curve_fit/adaptive/tests.rs": "45808f9c195a545c2c99ad24d6082dab40f264ed98e09d8261c13d03a8473931",
     "crates/viboceros-geometry/src/nurbs/knot_reduction.rs": "f51c7adb70cb0bb4601e8412e7217233a582cb02609e367956d32966881359aa",
-    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857"
+    "crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs": "d71d977271d49ecfd2d357a9748d6cc8f1295f0664d6b983fe8ae3629f152857",
+    "crates/viboceros-smlib/src/native/knot_refinement/loft.rs": "6161abcd820a9a21f9bb8ac0fde143121a21d250a7e8f01d878ae777bbab2ba1",
+    "crates/viboceros-smlib/src/native/knot_refinement/interpolation.rs": "07f3e87d9cd72dbc9f53d233acc09fc85a4bda9099420a6ba14c1ffed53194a0",
+    "crates/viboceros-smlib/src/native/knot_refinement/interpolation/point_grid.rs": "cd7f110b1b6a40f95e4a0eebac08508a35a30e0ba18a5d75b47d49b7b5a1632a",
+    "crates/viboceros-smlib/src/native/knot_refinement/interpolation/tests.rs": "f69724d17ed8aab50ae20c4e0846b0313e3317ee1fe529ba24c60a6b4b6bf523",
+    "crates/viboceros-smlib/src/native/knot_refinement/trim.rs": "e8e664c31855d67513f9200ebbe84cd983b5c56e3369e1e965179e6e73ed4274"
   }
 }

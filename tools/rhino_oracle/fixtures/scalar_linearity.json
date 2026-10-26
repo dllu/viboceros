@@ -1,0 +1,532 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-cubic-y-0.0",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.5,
+              0.0,
+              0.0
+            ],
+            "weight": 1.4
+          },
+          {
+            "point": [
+              2.0,
+              -0.0,
+              0.0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.2
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    },
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-cubic-y-1e-08",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.5,
+              2e-08,
+              0.0
+            ],
+            "weight": 1.4
+          },
+          {
+            "point": [
+              2.0,
+              -1e-08,
+              0.0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              3.0,
+              5e-09,
+              0.0
+            ],
+            "weight": 1.2
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    },
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-cubic-y-0.0001",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.5,
+              0.0002,
+              0.0
+            ],
+            "weight": 1.4
+          },
+          {
+            "point": [
+              2.0,
+              -0.0001,
+              0.0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              3.0,
+              5e-05,
+              0.0
+            ],
+            "weight": 1.2
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    },
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-cubic-y-0.1",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.5,
+              0.2,
+              0.0
+            ],
+            "weight": 1.4
+          },
+          {
+            "point": [
+              2.0,
+              -0.1,
+              0.0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              3.0,
+              0.05,
+              0.0
+            ],
+            "weight": 1.2
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    },
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-cubic-y-1.0",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.5,
+              2.0,
+              0.0
+            ],
+            "weight": 1.4
+          },
+          {
+            "point": [
+              2.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              3.0,
+              0.5,
+              0.0
+            ],
+            "weight": 1.2
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    },
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-line-degree-1",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              2.0,
+              0.0
+            ],
+            "weight": 2.0
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    },
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-line-degree-2",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.6666666666666665,
+              1.3333333333333333,
+              0.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              4.0,
+              2.0,
+              0.0
+            ],
+            "weight": 2.0
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    },
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-line-degree-3",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0000000000000004,
+              1.0000000000000002,
+              0.0
+            ],
+            "weight": 1.3333333333333333
+          },
+          {
+            "point": [
+              3.2,
+              1.6,
+              0.0
+            ],
+            "weight": 1.6666666666666667
+          },
+          {
+            "point": [
+              4.0,
+              2.0,
+              0.0
+            ],
+            "weight": 2.0
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    },
+    {
+      "op": "curve_length_parameters",
+      "id": "scalar-linearity-line-degree-5",
+      "curve": {
+        "degree": 5,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.3333333333333335,
+              0.6666666666666667,
+              0.0
+            ],
+            "weight": 1.2
+          },
+          {
+            "point": [
+              2.285714285714286,
+              1.142857142857143,
+              0.0
+            ],
+            "weight": 1.4
+          },
+          {
+            "point": [
+              3.0000000000000004,
+              1.5000000000000002,
+              0.0
+            ],
+            "weight": 1.6
+          },
+          {
+            "point": [
+              3.555555555555556,
+              1.777777777777778,
+              0.0
+            ],
+            "weight": 1.8
+          },
+          {
+            "point": [
+              4.0,
+              2.0,
+              0.0
+            ],
+            "weight": 2.0
+          }
+        ]
+      },
+      "fractional_tolerance": 0.01,
+      "fractions": [
+        0.015625,
+        0.125,
+        0.5,
+        0.875,
+        0.984375
+      ]
+    }
+  ]
+}

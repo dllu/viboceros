@@ -30,6 +30,13 @@ of the `1e-4` comparisons. Adaptive smooth Loft Refit remains unfinished;
 [smooth proposals](loft-refit-candidates.md)
 have a separate continuous acceptance bound.
 
+Fresh overshoot references retain 24 direct queries with 768 positions, plus
+nine straightness/degree queries with 45 positions. They distinguish early
+fraction behavior from degree elevation and source-domain changes. Simple
+first-checkpoint and endpoint-first substitutions regress other native queries
+and were rejected. The [adapter validation](native-nurbs-adapters-validation.json)
+records the strict diagnostic without claiming those queries now match.
+
 Tolerance must lie strictly in `(0, 1)`. Kernel batches allow 1,048,576 fractions;
 the oracle accepts 4,096. Preparation and inverse refinement each allow 65,536
 steps, with 80 bracket updates per root. Errors yield no partial result or source

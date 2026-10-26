@@ -192,6 +192,14 @@ def with_shared_sources(paths):
 
 
 def _expand_sources_once(paths):
+    if 'crates/viboceros-smlib/src/native/knot_refinement.rs' in paths:
+        paths = [*paths,
+            'crates/viboceros-smlib/src/native/knot_refinement/loft.rs',
+            'crates/viboceros-smlib/src/native/knot_refinement/interpolation.rs',
+            'crates/viboceros-smlib/src/native/knot_refinement/interpolation/point_grid.rs',
+            'crates/viboceros-smlib/src/native/knot_refinement/interpolation/tests.rs',
+            'crates/viboceros-smlib/src/native/knot_refinement/trim.rs',
+        ]
     if 'crates/viboceros-geometry/src/curve/arc_length/incremental.rs' in paths:
         paths = [*paths,
             'crates/viboceros-geometry/src/curve/arc_length/incremental/tests.rs',
