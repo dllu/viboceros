@@ -40,7 +40,7 @@ fn requested_angles_resolve_acute_orthogonal_obtuse_and_reversing_corners() {
         let before = source.clone();
         let fit = try_prepare_refitted_loft_sections_with_angle(
             std::slice::from_ref(&source),
-            1e-10,
+            1e-7,
             retained.to_radians(),
         )
         .unwrap();
@@ -48,7 +48,7 @@ fn requested_angles_resolve_acute_orthogonal_obtuse_and_reversing_corners() {
         assert!(
             try_prepare_refitted_loft_sections_with_angle(
                 std::slice::from_ref(&source),
-                1e-10,
+                1e-7,
                 suppressed.to_radians(),
             )
             .is_err()
@@ -90,7 +90,7 @@ fn positive_angles_use_the_minimum_while_zero_and_default_keep_one_degree() {
         for angle in [1e-8, 0.05_f64.to_radians(), 0.1_f64.to_radians()] {
             let result = try_prepare_refitted_loft_sections_with_angle(
                 std::slice::from_ref(&source),
-                1e-10,
+                1e-7,
                 angle,
             );
             assert_eq!(
@@ -114,9 +114,9 @@ fn positive_angles_use_the_minimum_while_zero_and_default_keep_one_degree() {
                 );
             }
         }
-        assert!(try_prepare_refitted_loft_sections(std::slice::from_ref(&source), 1e-10).is_err());
+        assert!(try_prepare_refitted_loft_sections(std::slice::from_ref(&source), 1e-7).is_err());
         assert!(
-            try_prepare_refitted_loft_sections_with_angle(std::slice::from_ref(&source), 1e-10, 0.)
+            try_prepare_refitted_loft_sections_with_angle(std::slice::from_ref(&source), 1e-7, 0.)
                 .is_err()
         );
         assert_eq!(source, before);

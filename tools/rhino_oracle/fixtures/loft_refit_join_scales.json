@@ -1,0 +1,2411 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-1.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999996192282494,
+                0.0008726645152351496,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999996192282494,
+                0.0008726645152351496,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999996192282494,
+                0.0008726645152351496,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-2.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.999999238456499,
+                0.0017453290304702991,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.999999238456499,
+                0.0017453290304702991,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                8.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                8.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.999999238456499,
+                0.0017453290304702991,
+                8.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 2e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-4.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.999998476912998,
+                0.0034906580609405983,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                8.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                8.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.999998476912998,
+                0.0034906580609405983,
+                8.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                16.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                16.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.999998476912998,
+                0.0034906580609405983,
+                16.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 4e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-8.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                15.999996953825995,
+                0.0069813161218811965,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                16.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                16.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                15.999996953825995,
+                0.0069813161218811965,
+                16.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                32.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                32.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                15.999996953825995,
+                0.0069813161218811965,
+                32.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 8e-06,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-16.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                16.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                31.99999390765199,
+                0.013962632243762393,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                32.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                16.0,
+                0.0,
+                32.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                31.99999390765199,
+                0.013962632243762393,
+                32.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                64.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                16.0,
+                0.0,
+                64.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                31.99999390765199,
+                0.013962632243762393,
+                64.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 1.6e-05,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-32.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                32.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                63.99998781530398,
+                0.027925264487524786,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                64.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                32.0,
+                0.0,
+                64.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                63.99998781530398,
+                0.027925264487524786,
+                64.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                128.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                32.0,
+                0.0,
+                128.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                63.99998781530398,
+                0.027925264487524786,
+                128.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 3.2e-05,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-64.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                64.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                127.99997563060796,
+                0.05585052897504957,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                128.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                64.0,
+                0.0,
+                128.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                127.99997563060796,
+                0.05585052897504957,
+                128.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                256.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                64.0,
+                0.0,
+                256.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                127.99997563060796,
+                0.05585052897504957,
+                256.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 6.4e-05,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-128.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                128.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                255.99995126121593,
+                0.11170105795009914,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                256.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                128.0,
+                0.0,
+                256.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                255.99995126121593,
+                0.11170105795009914,
+                256.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                512.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                128.0,
+                0.0,
+                512.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                255.99995126121593,
+                0.11170105795009914,
+                512.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.000128,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-256.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                256.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                511.99990252243185,
+                0.2234021159001983,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                512.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                256.0,
+                0.0,
+                512.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                511.99990252243185,
+                0.2234021159001983,
+                512.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                1024.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                256.0,
+                0.0,
+                1024.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                511.99990252243185,
+                0.2234021159001983,
+                1024.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.000256,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.05-512.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                512.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1023.9998050448637,
+                0.4468042318003966,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                1024.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                512.0,
+                0.0,
+                1024.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1023.9998050448637,
+                0.4468042318003966,
+                1024.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2048.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                512.0,
+                0.0,
+                2048.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1023.9998050448637,
+                0.4468042318003966,
+                2048.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.000512,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-1.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999904807207345,
+                0.004363309284746571,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999904807207345,
+                0.004363309284746571,
+                2.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.9999904807207345,
+                0.004363309284746571,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.001,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-2.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.999980961441469,
+                0.008726618569493142,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                4.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.999980961441469,
+                0.008726618569493142,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                8.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                8.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.999980961441469,
+                0.008726618569493142,
+                8.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.002,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-4.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.999961922882938,
+                0.017453237138986284,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                8.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                8.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.999961922882938,
+                0.017453237138986284,
+                8.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                16.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                16.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                7.999961922882938,
+                0.017453237138986284,
+                16.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.004,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-8.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                15.999923845765876,
+                0.03490647427797257,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                16.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                16.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                15.999923845765876,
+                0.03490647427797257,
+                16.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                32.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                8.0,
+                0.0,
+                32.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                15.999923845765876,
+                0.03490647427797257,
+                32.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.008,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-16.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                16.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                31.999847691531752,
+                0.06981294855594514,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                32.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                16.0,
+                0.0,
+                32.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                31.999847691531752,
+                0.06981294855594514,
+                32.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                64.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                16.0,
+                0.0,
+                64.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                31.999847691531752,
+                0.06981294855594514,
+                64.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.016,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-32.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                32.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                63.999695383063504,
+                0.13962589711189027,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                64.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                32.0,
+                0.0,
+                64.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                63.999695383063504,
+                0.13962589711189027,
+                64.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                128.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                32.0,
+                0.0,
+                128.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                63.999695383063504,
+                0.13962589711189027,
+                128.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.032,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-64.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                64.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                127.99939076612701,
+                0.27925179422378055,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                128.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                64.0,
+                0.0,
+                128.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                127.99939076612701,
+                0.27925179422378055,
+                128.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                256.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                64.0,
+                0.0,
+                256.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                127.99939076612701,
+                0.27925179422378055,
+                256.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.064,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-128.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                128.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                255.99878153225401,
+                0.5585035884475611,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                256.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                128.0,
+                0.0,
+                256.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                255.99878153225401,
+                0.5585035884475611,
+                256.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                512.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                128.0,
+                0.0,
+                512.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                255.99878153225401,
+                0.5585035884475611,
+                512.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.128,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-256.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                256.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                511.99756306450803,
+                1.1170071768951222,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                512.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                256.0,
+                0.0,
+                512.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                511.99756306450803,
+                1.1170071768951222,
+                512.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                1024.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                256.0,
+                0.0,
+                1024.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                511.99756306450803,
+                1.1170071768951222,
+                1024.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.256,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    },
+    {
+      "op": "loft",
+      "id": "loft-refit-join-scales-angle-0.25-512.0",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                512.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1023.9951261290161,
+                2.2340143537902444,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                1024.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                512.0,
+                0.0,
+                1024.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1023.9951261290161,
+                2.2340143537902444,
+                1024.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            2.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2048.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                512.0,
+                0.0,
+                2048.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1023.9951261290161,
+                2.2340143537902444,
+                2048.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "style": "straight",
+      "closed": false,
+      "refit_tolerance": 0.512,
+      "inspect_inputs": true,
+      "sample_geometry": true,
+      "allow_empty": true
+    }
+  ]
+}

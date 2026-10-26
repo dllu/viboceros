@@ -3,7 +3,9 @@ use super::*;
 use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::{One, Signed, Zero};
 mod adaptive;
-pub use adaptive::{AdaptiveLinearRefitProposal, try_propose_adaptive_linear_refit};
+pub use adaptive::{
+    AdaptiveLinearRefitProposal, try_propose_adaptive_linear_refit, try_propose_joined_linear_refit,
+};
 mod candidate;
 mod matching;
 mod polyline;
@@ -13,8 +15,9 @@ struct Section {
     vertices: Vec<[Rational; 3]>,
 }
 
-/// Refit ordered profiles to certified polynomial cubics. Zero retains the
-/// original definitions. The polygon path requires same-sign weights and
+/// Refit ordered profiles to certified polynomial cubics. Tolerances at most
+/// twice the square root of machine epsilon retain the original definitions.
+/// The polygon path requires same-sign weights and
 /// continuous regions with ordered collinear controls, and
 /// internal bends above the legacy one-degree corner threshold. Constant spans
 /// and redundant collinear vertices disappear; true reversals remain.
@@ -25,7 +28,8 @@ struct Section {
 /// a complete certificate across every matching interval. Tolerance must be
 /// smaller than every endpoint chord. Multispan sources use the initial cubic;
 /// common handle correction remains qualified for single-Bezier sources.
-/// Subdivision and mixed open/closed profiles remain unsupported.
+/// Subdivision and mixed open/closed profiles remain unsupported. Separate
+/// certified adaptive proposals do not establish native command acceptance.
 ///
 /// Collinearity and control order are checked with exact rational arithmetic.
 /// Positive rational basis functions then keep the source on its endpoint
@@ -63,6 +67,12 @@ fn corner_angle(angle: Option<Real>) -> Real {
     angle.filter(|a| *a > 0.).map_or(default, |a| a.max(0.002))
 }
 
+// Native Refit preserves the source through twice the square-root-epsilon
+// threshold, including equality. Keep this policy separate from raw proposals.
+fn fitting_disabled(tolerance: Real) -> bool {
+    tolerance <= 2. * Real::EPSILON.sqrt()
+}
+
 fn validate_angle(angle: Option<Real>) -> Result<(), GeometryError> {
     if angle.is_some_and(|a| !a.is_finite() || !(0. ..=std::f64::consts::PI).contains(&a)) {
         return Err(GeometryError::InvalidContinuityAngle);
@@ -85,7 +95,7 @@ fn prepare(
             maximum: MAX_LOFT_SECTIONS,
         });
     }
-    if fit_tolerance == 0. {
+    if fitting_disabled(fit_tolerance) {
         return Ok(curves.to_vec());
     }
     let sections = curves
@@ -137,8 +147,8 @@ pub fn try_loft_nurbs_curves_refitted(
     loft(curves, style, closed, ends, fit_tolerance, None)
 }
 
-/// Ordered Refit Loft with an explicit corner angle in radians. Zero fitting
-/// tolerance preserves the source definitions but still matches section regions.
+/// Ordered Refit Loft with an explicit corner angle in radians. Disabled fitting
+/// preserves the source definitions but still matches section regions.
 pub fn try_loft_nurbs_curves_refitted_with_angle(
     curves: &[NurbsCurve],
     style: LoftStyle,
@@ -198,7 +208,7 @@ pub fn prepare_refitted_loft_sections_with_operations<E: From<GeometryError>>(
     refine: &mut impl FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E>,
 ) -> Result<Vec<NurbsCurve>, E> {
     let sections = prepare(curves, fit_tolerance, angle)?;
-    if fit_tolerance == 0. {
+    if fitting_disabled(fit_tolerance) {
         compatible::prepare_refit_with_operations(&sections, angle, clamp, elevate, refine)
     } else {
         compatible::prepare_with_operations(&sections, clamp, elevate, refine)

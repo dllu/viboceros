@@ -11,7 +11,7 @@ pub enum CurveContinuity {
 }
 
 unsafe extern "C" {
-    fn vibo_curve_discontinuities(
+    fn vibo_curve_discontinuities_with_curvature(
         degree: u32,
         count: usize,
         controls: *const f64,
@@ -19,6 +19,7 @@ unsafe extern "C" {
         knots: *const f64,
         continuity_kind: c_int,
         cos_angle_tolerance: f64,
+        curvature_tolerance: f64,
         found: *mut usize,
         parameters: *mut f64,
         error: *mut c_char,
@@ -59,12 +60,36 @@ pub fn curve_continuity_breaks(
     continuity: CurveContinuity,
     cos_angle_tolerance: f64,
 ) -> Result<Vec<f64>, CurveQueryError> {
+    curve_continuity_breaks_with_curvature(
+        degree,
+        controls,
+        knots,
+        continuity,
+        cos_angle_tolerance,
+        f64::EPSILON.sqrt(),
+    )
+}
+
+/// Geometric breaks with an explicit absolute curvature-vector tolerance.
+/// Curvature has units inverse to the supplied XYZ coordinates. This retains
+/// OpenNURBS' relative curvature and angular policies. Zero is permitted;
+/// negative or nonfinite tolerances fail before the native call.
+pub fn curve_continuity_breaks_with_curvature(
+    degree: usize,
+    controls: &[[f64; 4]],
+    knots: &[f64],
+    continuity: CurveContinuity,
+    cos_angle_tolerance: f64,
+    curvature_tolerance: f64,
+) -> Result<Vec<f64>, CurveQueryError> {
     let degree = u32::try_from(degree)
         .map_err(|_| CurveQueryError("Curve degree exceeds native range".into()))?;
     if degree == 0
         || degree as usize >= controls.len()
         || controls.len() > 1_000_000
         || controls.len().checked_add(degree as usize + 1) != Some(knots.len())
+        || !curvature_tolerance.is_finite()
+        || curvature_tolerance < 0.
         || !cos_angle_tolerance.is_finite()
         || !(-1. ..=1.).contains(&cos_angle_tolerance)
     {
@@ -78,7 +103,7 @@ pub fn curve_continuity_breaks(
     // All declared input/output buffers remain live during this synchronous
     // call; the native constructor owns its curve and retains no pointers.
     let status = unsafe {
-        vibo_curve_discontinuities(
+        vibo_curve_discontinuities_with_curvature(
             degree,
             controls.len(),
             controls.as_flattened().as_ptr(),
@@ -86,6 +111,7 @@ pub fn curve_continuity_breaks(
             knots.as_ptr(),
             continuity as c_int,
             cos_angle_tolerance,
+            curvature_tolerance,
             &mut found,
             parameters.as_mut_ptr(),
             error.as_mut_ptr().cast(),
@@ -167,6 +193,62 @@ mod tests {
             assert_eq!(controls, before);
         }
     }
+    #[test]
+    fn explicit_curvature_tolerance_retains_native_units_and_default_policy() {
+        let points = [
+            [0., 0., 0., 1.],
+            [1. / 3., 0., 0., 1.],
+            [2. / 3., 0., 0., 1.],
+            [1., 0., 0., 1.],
+            [4. / 3., 0., 0., 1.],
+            [5. / 3., 0.001, 0., 1.],
+            [2., 0.003, 0., 1.],
+        ];
+        let knots = [0., 0., 0., 0., 0.5, 0.5, 0.5, 1., 1., 1., 1.];
+        let cosine = 1_f64.to_radians().cos();
+        assert_eq!(
+            curve_continuity_breaks(3, &points, &knots, CurveContinuity::G2, cosine).unwrap(),
+            vec![0.5]
+        );
+        assert!(
+            curve_continuity_breaks_with_curvature(
+                3,
+                &points,
+                &knots,
+                CurveContinuity::G2,
+                cosine,
+                0.01
+            )
+            .unwrap()
+            .is_empty()
+        );
+        assert_eq!(
+            curve_continuity_breaks_with_curvature(
+                3,
+                &points,
+                &knots,
+                CurveContinuity::G2,
+                cosine,
+                0.005
+            )
+            .unwrap(),
+            vec![0.5]
+        );
+        for tolerance in [-1., f64::NAN, f64::INFINITY] {
+            assert!(
+                curve_continuity_breaks_with_curvature(
+                    3,
+                    &points,
+                    &knots,
+                    CurveContinuity::G2,
+                    cosine,
+                    tolerance
+                )
+                .is_err()
+            );
+        }
+    }
+
     #[test]
     fn invalid_discontinuity_inputs_decline_without_native_buffer_overruns() {
         let controls = [[0., 0., 0., 1.], [1., 0., 0., 1.]];

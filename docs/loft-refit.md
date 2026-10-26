@@ -9,9 +9,12 @@ attributes remain intact; accepting creates one undo step. Interactive Loft
 accepts `Refit` followed by a tolerance, or `RefitTolerance=<value>`.
 `Simplify=Refit` uses the current tolerance, defaulting to `1e-9`;
 `Simplify=None` disables simplification. Rebuild and Refit are mutually exclusive.
-Zero leaves the original profiles unchanged.
+Tolerances through `2 * sqrt(f64::EPSILON)` (approximately `2.98e-8`),
+including zero and equality, preserve the original profile definitions. Loft
+still prepares their common basis and region correspondence. This includes the
+`1e-9` default; choose a larger value to activate fitting.
 
-Positive Refit requires same-sign weights and continuous, exactly straight
+Active Refit requires same-sign weights and continuous, exactly straight
 regions with ordered controls. Exact rational span extraction admits the source;
 sampled linearity is insufficient. Constant spans and redundant collinear
 vertices disappear; reversals remain. Internal bends must exceed the legacy
@@ -44,8 +47,8 @@ lengths fail explicitly.
 
 [Polygon validation](loft-refit-polylines-validation.json) covers the new command
 behavior and full native surface records. Adaptive smooth Refit still needs its
-subdivision
-and piece-joining policy; the separate [source-parameter approximation](cubic-approximation.md)
+subdivision policy. [Certified joining proposals](loft-refit-adaptive.md) now
+reconstruct C1 regions but remain separate from command acceptance; the separate [source-parameter approximation](cubic-approximation.md)
 is not a substitute. [Profile-set preparation](loft-refit-preparation.md)
 retains the paired-input reference and its limits.
 

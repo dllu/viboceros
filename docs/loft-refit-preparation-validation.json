@@ -287,7 +287,6 @@
     "Length quadrature estimates and native-parameter point replay do not establish scalar inverse-parameter parity, continuous bounds or the general curved Loft Refit algorithm."
   ],
   "sha256": {
-    "crates/viboceros-geometry/src/loft/refit/tests.rs": "83d2024bb19ea83a218ce0083a314474967e2d6b636c67f125e5b0e91cd14696",
     "crates/viboceros-oracle/tests/loft_refit_lines_native.rs": "bc37468944604a436a59321f25ef89df2dc81bfcb917bac0e671f38819a4d7f6",
     "tools/rhino_oracle/generate_loft_refit_clock.py": "73b766a402549f2a055ece3e936ba1e96d5445a997bbd782aa9dd37bbf0b0a43",
     "tools/rhino_oracle/generate_loft_refit_sources.py": "3c5fb0ef64753d95a5af1d17bc6a3dd0fa5a64f586b946e47089dda6162ae00b",
@@ -368,6 +367,7 @@
     "765530fee9f3820cbaf89b238553cfaa9a3d5112:crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "5b566778f28cc47d52109a7f474443a05795e1b4ce8102bd116fd1c4340ac086",
     "ee35fb55e901f5bda57b5163ac2fd9477922f614:crates/viboceros-geometry/src/curve_fit.rs": "b5f529a3183b3e281882d01ad86e9f498b75af29ba865db8fd51370962e90522",
     "6c73e9adc0b597cbcb626a8aaf233531731cc72e:crates/viboceros-geometry/src/curve_fit/tests.rs": "2ddbd80248f463a81fe791e01026e525248df7f8e9ce1d11a733a414edbef1f2",
-    "9aa2920c249d315b598881e677c1076e8faf992f:crates/viboceros-geometry/src/nurbs.rs": "8809247594745c0fd04e5e60ac0ab87e37f70e639bfb5bebb73db63df8576d2b"
+    "9aa2920c249d315b598881e677c1076e8faf992f:crates/viboceros-geometry/src/nurbs.rs": "8809247594745c0fd04e5e60ac0ab87e37f70e639bfb5bebb73db63df8576d2b",
+    "9caac028ccb4bf392325413ec7a89d508bcdb790:crates/viboceros-geometry/src/loft/refit/tests.rs": "83d2024bb19ea83a218ce0083a314474967e2d6b636c67f125e5b0e91cd14696"
   }
 }

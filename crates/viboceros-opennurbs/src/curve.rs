@@ -2,7 +2,10 @@
 use std::ffi::{c_char, c_int};
 mod discontinuities;
 mod polyline;
-pub use discontinuities::{CurveContinuity, curve_continuity_breaks, curve_discontinuities};
+pub use discontinuities::{
+    CurveContinuity, curve_continuity_breaks, curve_continuity_breaks_with_curvature,
+    curve_discontinuities,
+};
 mod recognition;
 mod speeds;
 mod tangents;

@@ -227,12 +227,6 @@ fn region_breaks(
         .collect())
 }
 
-/// A fitted cubic can cross curvature changes, but resolved tangent corners
-/// still separate fitting regions. Reuse the scaled native classifier.
-pub(super) fn has_legacy_tangent_breaks(curve: &NurbsCurve) -> Result<bool, GeometryError> {
-    has_tangent_breaks(curve, 1_f64.to_radians())
-}
-
 pub(super) fn has_tangent_breaks(curve: &NurbsCurve, angle: Real) -> Result<bool, GeometryError> {
     Ok(!geometric_breaks(
         curve,
@@ -248,6 +242,31 @@ fn geometric_breaks(
     scale: Real,
     cosine: Real,
     continuity: CurveContinuity,
+) -> Result<Vec<Real>, GeometryError> {
+    geometric_breaks_impl(curve, scale, cosine, continuity, None)
+}
+
+// Composite fitting retains G2 regions at the measured absolute curvature
+// tolerance, in model units. Existing general matching keeps its own policy.
+pub(super) fn fitted_region_breaks(
+    curve: &NurbsCurve,
+    angle: Real,
+) -> Result<Vec<Real>, GeometryError> {
+    geometric_breaks_impl(
+        curve,
+        coordinate_scale(curve),
+        angle.cos(),
+        CurveContinuity::G2,
+        Some(0.01),
+    )
+}
+
+fn geometric_breaks_impl(
+    curve: &NurbsCurve,
+    scale: Real,
+    cosine: Real,
+    continuity: CurveContinuity,
+    curvature_tolerance: Option<Real>,
 ) -> Result<Vec<Real>, GeometryError> {
     // Classification is geometric: remove the world offset and scale before
     // testing curvature. This prevents distant, exact circles gaining breaks
@@ -280,13 +299,24 @@ fn geometric_breaks(
             *x /= local_scale;
         }
     }
-    Ok(viboceros_opennurbs::curve_continuity_breaks(
-        curve.degree(),
-        &controls,
-        curve.knots(),
-        continuity,
-        cosine,
-    )?)
+    if let Some(tolerance) = curvature_tolerance {
+        Ok(viboceros_opennurbs::curve_continuity_breaks_with_curvature(
+            curve.degree(),
+            &controls,
+            curve.knots(),
+            continuity,
+            cosine,
+            (tolerance * scale) * local_scale,
+        )?)
+    } else {
+        Ok(viboceros_opennurbs::curve_continuity_breaks(
+            curve.degree(),
+            &controls,
+            curve.knots(),
+            continuity,
+            cosine,
+        )?)
+    }
 }
 
 // Binary scaling preserves ordinary evaluation operation boundaries and keeps

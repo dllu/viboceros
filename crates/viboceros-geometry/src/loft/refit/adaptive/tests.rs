@@ -58,7 +58,7 @@ fn the_sample_reserve_is_separate_from_the_complete_requested_tolerance() {
 }
 
 #[test]
-fn sampling_cannot_hide_a_bump_between_all_seven_interior_stations() {
+fn sampling_cannot_hide_a_bump_between_the_interior_stations() {
     let source = polyline(&[[0., 0.], [0.049, 0.], [0.05, 1e-6], [0.051, 0.], [1., 0.]]);
     let sampler =
         ArcLengthSampler::try_new(CurveRef::NurbsCurve(&source), Tolerance::DEFAULT).unwrap();
@@ -98,4 +98,41 @@ fn invalid_tolerances_resolved_corners_and_depth_exhaustion_return_no_output() {
             .unwrap()
             .is_none()
     );
+}
+
+#[test]
+fn joined_proposals_preserve_the_source_and_require_a_complete_final_bound() {
+    let angle = 0.25_f64.to_radians();
+    for scale in [1., 2., 4., 1000.] {
+        let source = polyline(&[
+            [0., 0.],
+            [scale, 0.],
+            [scale * (1. + angle.cos()), scale * angle.sin()],
+        ]);
+        let before = source.clone();
+        let limit = 0.001 * scale;
+        let joined = try_propose_joined_linear_refit(&source, limit, 0.)
+            .unwrap()
+            .unwrap();
+        assert!(
+            source
+                .parameter_curve_deviation_bound(&joined, limit)
+                .unwrap()
+                .is_some()
+        );
+        assert_eq!(source, before);
+        // A certified proposal does not establish the native subdivision rule.
+        assert!(try_prepare_refitted_loft_sections(&[source.clone(), source], limit).is_err());
+    }
+}
+
+#[test]
+fn joined_proposals_validate_angles_before_constructing_any_output() {
+    let source = polyline(&[[0., 0.], [1., 0.], [2., 1e-5]]);
+    for angle in [-1., Real::NAN, Real::INFINITY, 2. * std::f64::consts::PI] {
+        assert!(matches!(
+            try_propose_joined_linear_refit(&source, 1e-6, angle),
+            Err(GeometryError::InvalidContinuityAngle)
+        ));
+    }
 }

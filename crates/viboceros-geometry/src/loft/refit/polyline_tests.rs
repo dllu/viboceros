@@ -30,7 +30,7 @@ fn rational_and_unclamped_straight_regions_keep_their_exact_active_vertices() {
             &[gauge, 2. * gauge, gauge, 2. * gauge, gauge],
         );
         let before = c.clone();
-        let fit = try_prepare_refitted_loft_sections(std::slice::from_ref(&c), 1e-12)
+        let fit = try_prepare_refitted_loft_sections(std::slice::from_ref(&c), 1e-7)
             .unwrap()
             .remove(0);
         assert_eq!(fit.control_points().len(), 7);
@@ -56,7 +56,7 @@ fn rational_and_unclamped_straight_regions_keep_their_exact_active_vertices() {
                 < 1e-15
         );
         assert_eq!(c, before);
-        assert!(try_prepare_refitted_loft_sections(&[c], 1e-300).is_err());
+        assert!(polyline::refit(&c, 1e-300, None).is_err());
     }
 }
 
@@ -74,7 +74,7 @@ fn collinear_vertices_and_constant_spans_merge_but_reversals_remain() {
         vec![0., 0., 1., 2., 3., 4., 4.],
         &[1.; 5],
     );
-    let fit = try_prepare_refitted_loft_sections(&[c], 1e-12)
+    let fit = try_prepare_refitted_loft_sections(&[c], 1e-7)
         .unwrap()
         .remove(0);
     assert_eq!(fit.control_points().len(), 7);
@@ -85,7 +85,7 @@ fn collinear_vertices_and_constant_spans_merge_but_reversals_remain() {
         vec![0., 0., 1., 2., 3., 3.],
         &[1.; 4],
     );
-    let fit = try_prepare_refitted_loft_sections(&[c], 1e-12)
+    let fit = try_prepare_refitted_loft_sections(&[c], 1e-7)
         .unwrap()
         .remove(0);
     assert_eq!(fit.control_points().len(), 10);
