@@ -15,9 +15,10 @@ pub use points::{
 };
 pub use rebuild::{try_loft_nurbs_curves_rebuilt, try_prepare_rebuilt_loft_sections_with};
 pub use refit::{
-    prepare_refitted_loft_sections_with_operations, try_loft_nurbs_curves_refitted,
-    try_loft_nurbs_curves_refitted_with_angle, try_prepare_refitted_loft_sections,
-    try_prepare_refitted_loft_sections_with_angle,
+    AdaptiveLinearRefitProposal, prepare_refitted_loft_sections_with_operations,
+    try_loft_nurbs_curves_refitted, try_loft_nurbs_curves_refitted_with_angle,
+    try_prepare_refitted_loft_sections, try_prepare_refitted_loft_sections_with_angle,
+    try_propose_adaptive_linear_refit,
 };
 #[cfg(test)]
 mod tests;

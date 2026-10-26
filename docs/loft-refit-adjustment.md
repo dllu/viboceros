@@ -38,8 +38,9 @@ The [subdivision references](loft-refit-subdivision-validation.json) distinguish
 whole-profile fits from independently trimmed fits, including source-domain
 changes and reversals. Fitting each half separately does not reproduce the joined
 result; those observations do not establish a subdivision or joining policy.
-General subdivision, piece joining, multispan smooth sources, single-input smooth
-preparation and explicit angle overrides remain unfinished. Degree, profile,
+General subdivision, piece joining and single-input smooth preparation remain
+unfinished. [Multispan proposals](loft-refit-candidates.md) and
+[explicit API angles](loft-refit-angles.md) have separate measured support. Degree, profile,
 work and correspondence limits follow the [shared proposals](loft-refit-candidates.md).
 
 ```sh

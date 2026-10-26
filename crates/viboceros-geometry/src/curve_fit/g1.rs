@@ -14,15 +14,23 @@ pub(crate) fn initial_cubic(source: &NurbsCurve) -> Result<NurbsCurve, GeometryE
     let domain = source.domain();
     let start = source.evaluate(*domain.start())?;
     let end = source.evaluate(*domain.end())?;
+    let start_tangent = source.tangent_at_on_side(*domain.start(), ParameterSide::Right)?;
+    let end_tangent = source.tangent_at_on_side(*domain.end(), ParameterSide::Left)?;
+    initial_cubic_from_frames(start, end, start_tangent, end_tangent)
+}
+
+/// Keep the original source's tangent frame at an adaptive interior endpoint.
+pub(crate) fn initial_cubic_from_frames(
+    start: crate::Point3,
+    end: crate::Point3,
+    start_tangent: crate::UnitVector3,
+    end_tangent: crate::UnitVector3,
+) -> Result<NurbsCurve, GeometryError> {
     let chord = start.vector_to(end)?;
     let length = chord.length()?;
     let axis = chord.normalized_nonzero()?.as_vector();
-    let start_tangent = source
-        .tangent_at_on_side(*domain.start(), ParameterSide::Right)?
-        .as_vector();
-    let end_tangent = source
-        .tangent_at_on_side(*domain.end(), ParameterSide::Left)?
-        .as_vector();
+    let start_tangent = start_tangent.as_vector();
+    let end_tangent = end_tangent.as_vector();
     let handle = |tangent: crate::Vector3| {
         let cosine = axis.dot(tangent)?.clamp(-1., 1.);
         tangent.scaled(length * ((2. - cosine * cosine) / 3.))

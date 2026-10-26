@@ -2,6 +2,8 @@
 use super::*;
 use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::{One, Signed, Zero};
+mod adaptive;
+pub use adaptive::{AdaptiveLinearRefitProposal, try_propose_adaptive_linear_refit};
 mod candidate;
 mod matching;
 mod polyline;
