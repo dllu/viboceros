@@ -17,7 +17,10 @@ sampled linearity is insufficient. Constant spans and redundant collinear
 vertices disappear; reversals remain. Internal bends must exceed the legacy
 one-degree corner threshold, with a conservative floating boundary margin.
 Shallower bends still require the adaptive smooth fitter.
-Mixed open/closed profile sets and explicit JSON Refit angle overrides fail.
+Mixed open/closed profile sets remain unsupported.
+[Explicit API angles](loft-refit-angles.md) can retain resolved polygon corners
+or use the existing certified smooth proposals; suppressed corners still need
+adaptive fitting.
 
 [Smooth proposals](loft-refit-candidates.md) are also supported for sets of
 at least two clamped single-Bezier profiles. The endpoint-tangent cubic, optionally

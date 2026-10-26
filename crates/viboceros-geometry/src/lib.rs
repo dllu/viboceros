@@ -289,11 +289,12 @@ pub use intersection::{
 pub use line::LineSegment;
 pub use loft::{
     LoftEndPoints, LoftInterpolation, LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS,
-    prepare_loft_sections_with_operations, try_loft_nurbs_curves, try_loft_nurbs_curves_rebuilt,
-    try_loft_nurbs_curves_refitted, try_loft_nurbs_curves_with_end_points,
+    prepare_loft_sections_with_operations, prepare_refitted_loft_sections_with_operations,
+    try_loft_nurbs_curves, try_loft_nurbs_curves_rebuilt, try_loft_nurbs_curves_refitted,
+    try_loft_nurbs_curves_refitted_with_angle, try_loft_nurbs_curves_with_end_points,
     try_loft_nurbs_curves_with_end_points_and_operations, try_loft_nurbs_curves_with_operations,
     try_loft_nurbs_curves_with_preparation, try_prepare_rebuilt_loft_sections_with,
-    try_prepare_refitted_loft_sections,
+    try_prepare_refitted_loft_sections, try_prepare_refitted_loft_sections_with_angle,
 };
 pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,

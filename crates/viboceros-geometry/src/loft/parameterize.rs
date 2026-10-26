@@ -19,6 +19,34 @@ pub(super) fn prepare<'a, E: From<GeometryError>>(
     curves: &'a [NurbsCurve],
     clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
 ) -> Result<Cow<'a, [NurbsCurve]>, E> {
+    prepare_impl(curves, clamp, 1_f64.to_radians().cos(), true)
+}
+
+pub(super) fn prepare_refit<'a, E: From<GeometryError>>(
+    curves: &'a [NurbsCurve],
+    angle: Option<Real>,
+    clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
+) -> Result<Cow<'a, [NurbsCurve]>, E> {
+    // The public Refit overload uses its default region angle at either end
+    // of the angular range. Degree-one profiles already share their chart
+    // when their knot vectors match; higher degrees still match G2 regions.
+    let cosine = angle
+        .filter(|a| *a > 0. && *a < std::f64::consts::PI)
+        .map_or_else(|| 1_f64.to_radians().cos(), Real::cos);
+    prepare_impl(
+        curves,
+        clamp,
+        cosine,
+        curves.iter().all(|c| c.degree() == 1),
+    )
+}
+
+fn prepare_impl<'a, E: From<GeometryError>>(
+    curves: &'a [NurbsCurve],
+    clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
+    cosine: Real,
+    preserve_matching_basis: bool,
+) -> Result<Cow<'a, [NurbsCurve]>, E> {
     if curves.is_empty() || curves.len() > MAX_LOFT_SECTIONS {
         return Err(GeometryError::LoftResourceLimit {
             context: "section count",
@@ -36,9 +64,10 @@ pub(super) fn prepare<'a, E: From<GeometryError>>(
     {
         return Err(control_limit.into());
     }
-    if curves
-        .iter()
-        .all(|c| c.degree() == curves[0].degree() && c.knots() == curves[0].knots())
+    if preserve_matching_basis
+        && curves
+            .iter()
+            .all(|c| c.degree() == curves[0].degree() && c.knots() == curves[0].knots())
     {
         return Ok(Cow::Borrowed(curves));
     }
@@ -77,7 +106,7 @@ pub(super) fn prepare<'a, E: From<GeometryError>>(
         }
         let scale = coordinate_scale(&curve);
         let mut breaks = vec![*domain.start()];
-        breaks.extend(region_breaks(&curve, scale)?);
+        breaks.extend(region_breaks(&curve, scale, cosine)?);
         breaks.push(*domain.end());
         sections.push(Section {
             curve,
@@ -174,7 +203,11 @@ pub(super) fn prepare<'a, E: From<GeometryError>>(
 // Piecewise affine knot changes preserve controls only across independent
 // Bezier boundaries (full multiplicity). Remapping a simple smooth knot would
 // deform the profile, even when curvature changes there.
-fn region_breaks(curve: &NurbsCurve, scale: Real) -> Result<Vec<Real>, GeometryError> {
+fn region_breaks(
+    curve: &NurbsCurve,
+    scale: Real,
+    cosine: Real,
+) -> Result<Vec<Real>, GeometryError> {
     let candidates = curve
         .knots()
         .chunk_by(|a, b| a == b)
@@ -224,7 +257,7 @@ fn region_breaks(curve: &NurbsCurve, scale: Real) -> Result<Vec<Real>, GeometryE
         &controls,
         curve.knots(),
         CurveContinuity::G2,
-        1_f64.to_radians().cos(),
+        cosine,
     )?;
     Ok(found
         .into_iter()

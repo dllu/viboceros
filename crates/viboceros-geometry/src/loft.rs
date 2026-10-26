@@ -14,7 +14,11 @@ pub use points::{
     try_loft_nurbs_curves_with_end_points_and_operations,
 };
 pub use rebuild::{try_loft_nurbs_curves_rebuilt, try_prepare_rebuilt_loft_sections_with};
-pub use refit::{try_loft_nurbs_curves_refitted, try_prepare_refitted_loft_sections};
+pub use refit::{
+    prepare_refitted_loft_sections_with_operations, try_loft_nurbs_curves_refitted,
+    try_loft_nurbs_curves_refitted_with_angle, try_prepare_refitted_loft_sections,
+    try_prepare_refitted_loft_sections_with_angle,
+};
 #[cfg(test)]
 mod tests;
 

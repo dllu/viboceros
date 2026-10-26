@@ -143,7 +143,7 @@ fn invalid_and_conflicting_simplification_is_rejected_before_geometry() {
         let error = run_request(&request).unwrap_err().to_string();
         assert!(error.contains(reason), "{error}");
     }
-    for angle in [-1., 4., 0.] {
+    for angle in [-1., 4.] {
         let mut op = query["operations"][0].clone();
         op["curves"] = json!([]);
         op["refit_tolerance"] = json!(0.001);

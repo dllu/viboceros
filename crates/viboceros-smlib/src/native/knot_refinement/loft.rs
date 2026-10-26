@@ -145,7 +145,7 @@ pub fn loft_surface_rebuilt(
 }
 
 /// Refit supported ordered profiles, then use native common-basis operations
-/// and interpolation. Curved profiles remain explicitly unsupported.
+/// and interpolation, retaining certified smooth proposals where available.
 pub fn loft_surface_refitted(
     curves: &[NurbsCurve],
     style: viboceros_geometry::LoftStyle,
@@ -153,16 +153,60 @@ pub fn loft_surface_refitted(
     ends: viboceros_geometry::LoftEndPoints,
     fit_tolerance: f64,
 ) -> Result<NurbsSurface, Error> {
+    refitted(curves, style, closed, ends, fit_tolerance, None)
+}
+
+/// Refit with an explicit corner angle in radians and native basis operations.
+pub fn loft_surface_refitted_with_angle(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    closed: bool,
+    ends: viboceros_geometry::LoftEndPoints,
+    fit_tolerance: f64,
+    angle: f64,
+) -> Result<NurbsSurface, Error> {
+    refitted(curves, style, closed, ends, fit_tolerance, Some(angle))
+}
+
+fn refitted(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    closed: bool,
+    ends: viboceros_geometry::LoftEndPoints,
+    fit_tolerance: f64,
+    angle: Option<f64>,
+) -> Result<NurbsSurface, Error> {
     if closed && !ends.is_empty() {
         return Err(viboceros_geometry::GeometryError::InvalidControlNet {
             context: "closed Loft cannot have point ends",
         }
         .into());
     }
-    let sections = viboceros_geometry::try_prepare_refitted_loft_sections(curves, fit_tolerance)?;
+    let mut prepare = |curves: &[NurbsCurve]| {
+        viboceros_geometry::prepare_refitted_loft_sections_with_operations(
+            curves,
+            fit_tolerance,
+            angle,
+            &mut clamp_curve,
+            &mut |c, d| change_curve_degree(c, d, false),
+            &mut insert_curve_knot,
+        )
+    };
     if ends.is_empty() {
-        loft_surface(&sections, style, closed)
+        viboceros_geometry::try_loft_nurbs_curves_with_operations(
+            curves,
+            style,
+            closed,
+            &mut prepare,
+            &mut solve_cubic_system,
+        )
     } else {
-        loft_surface_with_end_points(&sections, style, ends)
+        viboceros_geometry::try_loft_nurbs_curves_with_end_points_and_operations(
+            curves,
+            style,
+            ends,
+            &mut prepare,
+            &mut solve_cubic_system,
+        )
     }
 }
