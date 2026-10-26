@@ -20,6 +20,8 @@ pub(crate) mod exact;
 mod grip_deletion;
 mod grips;
 mod integration_frame;
+mod knot_reduction;
+pub use knot_reduction::{KnotReduction, MAX_KNOT_REDUCTION_GROUPS};
 mod linear_trim;
 mod parameter_frame;
 pub(crate) mod periodic;

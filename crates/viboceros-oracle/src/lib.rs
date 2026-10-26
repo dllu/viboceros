@@ -259,6 +259,7 @@ mod curve_native;
 mod curve_offset;
 mod ellipse_offset;
 mod extension_backend;
+mod knot_reduction;
 mod non_manifold_selection;
 mod planar_surface;
 mod volume_selection;
@@ -904,6 +905,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: NativeCurveFixture,
+    },
+    CurveKnotReduction {
+        id: String,
+        #[serde(flatten)]
+        fixture: knot_reduction::Fixture,
     },
     CurveCubicApproximation {
         id: String,
@@ -2834,6 +2840,7 @@ impl Operation {
             | Self::ThreeDmCurveInterchange { id, .. }
             | Self::ThreeDmBrepInterchange { id, .. }
             | Self::CurveNative { id, .. }
+            | Self::CurveKnotReduction { id, .. }
             | Self::CurveCubicApproximation { id, .. }
             | Self::CurveDeviationBound { id, .. }
             | Self::CurveArea { id, .. }
@@ -3596,6 +3603,9 @@ fn execute(
         }
         Operation::CurveNative { fixture, .. } => {
             curve_native::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurveKnotReduction { fixture, .. } => {
+            knot_reduction::run(fixture, iterations, tolerance)?
         }
         Operation::CurveCubicApproximation { fixture, .. } => {
             curve_approximation::run(fixture, iterations, tolerance)?

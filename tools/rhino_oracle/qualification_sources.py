@@ -292,6 +292,8 @@ def _expand_sources_once(paths):
                          'crates/viboceros-opennurbs/build.rs',
                          'crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp'])
     if 'crates/viboceros-geometry/src/nurbs.rs' in expanded:
+        expanded.extend(['crates/viboceros-geometry/src/nurbs/knot_reduction.rs',
+                         'crates/viboceros-geometry/src/nurbs/knot_reduction/tests.rs'])
         expanded.append('crates/viboceros-geometry/src/nurbs/discontinuities.rs')
     if 'crates/viboceros-oracle/src/lib.rs' in expanded:
         expanded.append('crates/viboceros-oracle/src/curve_path_extrusion.rs')

@@ -54,9 +54,11 @@ at `1e-6` and `1e-9`, analytical witnesses and resource checks. An integer-contr
 polynomial vanishes at five uniform samples yet exceeds one unit between them;
 the continuous bound detects it and forces refinement.
 
-This is a source-parameter approximation primitive. Smooth Rhino Loft Refit still
-requires its own fitting and parameterization policy and remains unimplemented.
-No Rhino Refit or arbitrary-scale performance parity is claimed.
+This is a source-parameter approximation primitive. Smooth Loft Refit supports
+certified initial and corrected G1 proposals; its adaptive subdivision and joining
+policy remains unfinished. See [Loft Refit](loft-refit-adjustment.md) and
+[bounded knot reduction](geometry/knot-reduction.md) for those separate APIs.
+No general Rhino Refit or arbitrary-scale performance parity is claimed.
 
 ```sh
 cargo test -p viboceros-geometry --lib surface_pullback::certificate

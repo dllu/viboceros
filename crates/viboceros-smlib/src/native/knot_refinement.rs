@@ -1205,8 +1205,20 @@ pub fn remove_surface_knot(
     brep::surface_from_native(fit_basis(NurbsInput::surface(&clamped), axis, &knots)?)
 }
 
-/// Collapse the command-selected groups from higher to lower parameters,
-/// fitting each complete group once with the shared native interpolator.
+/// Share multiplicity selection and complete displacement checks with the
+/// portable kernel, proposing controls through native basis interpolation.
+pub fn reduce_curve_knots_in_range(
+    source: &NurbsCurve,
+    minimum: usize,
+    maximum: usize,
+    limit: Option<f64>,
+) -> Result<viboceros_geometry::KnotReduction, Error> {
+    source.try_reduce_knots_in_range_with_remover(minimum, maximum, limit, &mut |curve, knots| {
+        brep::curve_from_native(fit_basis(NurbsInput::curve(curve), 0, knots)?)
+    })
+}
+
+/// Collapse multiple groups using the command's angular eligibility policy.
 pub fn remove_curve_multiple_knots(
     source: &NurbsCurve,
     remove_fully_multiple_knots: bool,

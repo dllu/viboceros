@@ -321,9 +321,10 @@ pub use morph::{
 pub use nurbs::{
     ConicFoci, ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,
     CurveCurveIntersectionParameters, CurveCurveOverlap, CurveExtensionBoundary,
-    CurveExtensionOperations, CurveExtensionSide, CurveExtensionStyle, CurveSoftEdit, NurbsCurve,
-    NurbsCurveParameterSampler, NurbsCurveSamplingSpan, WeightedPoint3, degree_change_knots,
-    knot_group_removal_knots, knot_removal_knots,
+    CurveExtensionOperations, CurveExtensionSide, CurveExtensionStyle, CurveSoftEdit,
+    KnotReduction, MAX_KNOT_REDUCTION_GROUPS, NurbsCurve, NurbsCurveParameterSampler,
+    NurbsCurveSamplingSpan, WeightedPoint3, degree_change_knots, knot_group_removal_knots,
+    knot_removal_knots,
 };
 pub use nurbs_surface::{
     NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceKnotDirection, SurfaceSoftEdit,

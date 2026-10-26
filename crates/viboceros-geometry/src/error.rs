@@ -367,6 +367,9 @@ pub enum GeometryError {
     #[error("maximum NURBS knot-removal kink angle must be finite and lie in [0, pi]")]
     InvalidKnotRemovalAngle,
 
+    #[error("invalid knot-reduction multiplicity range {minimum}..{maximum}")]
+    InvalidKnotReductionRange { minimum: usize, maximum: usize },
+
     #[error("knot removal is not supported for a periodic NURBS {direction}")]
     PeriodicKnotRemovalUnsupported { direction: &'static str },
 
