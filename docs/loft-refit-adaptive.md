@@ -35,6 +35,12 @@ also produces different pieces from paired Loft preparation; it cannot serve as
 a raw-piece oracle for the remaining fitting policy. Curved-source adaptive
 fitting remains unfinished.
 
+Twenty-four further native records vary only the source knot spacing. Equal
+source images can produce different fitted control counts, so a polygon proxy
+cannot establish native subdivision by geometric equivalence alone. Direct
+[interval-clock measurements](interval-clock-validation.json) retain the
+corresponding scalar length queries; they do not qualify a sampling rule.
+
 Invalid inputs, exhausted budgets and unresolved certificates produce no partial
 fit or source mutation. Limits remain 128 pieces, depth 24 and 512 source
 controls, plus the existing exact-arithmetic and correspondence budgets.

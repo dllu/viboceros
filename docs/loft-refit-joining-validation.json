@@ -346,7 +346,6 @@
     "tools/rhino_oracle/test_loft_refit_adaptive_join.py": "5e7e779495ec10a74a92e53c5a7d0c353be7d44f8ee5dac8ae54528c355c86b7",
     "tools/rhino_oracle/test_loft_refit_sampling_stages.py": "d38aa481f17af568b4cbb16352858e028d9f8be686c4970dd55cfaf70947cd77",
     "tools/rhino_oracle/capture_family.py": "dfb408cbc285d44242ab87b1d57337cc3ad12e2e999e33d3c323959d5eb9d8e9",
-    "docs/loft-refit-adaptive.md": "d4d47ffe96d3cbc9a88a8c1818e9752718969997631547e8b6c667e35f8a27eb",
     "docs/loft-refit.md": "2eeefd1570db17f20f4d53cbab4bf4c85e622144224afd70dfb22cfc7db7794c",
     "third_party/opennurbs/opennurbs_defines.h": "21bf71b8b3d4b4885c69863b4cd40370791ca7fde04abf45391afb334580bc35",
     "tools/rhino_oracle/fixtures/loft_refit_join_scales.json": "ac87da1849711ac51799acf37be7f23e653568f879aaf28b4903dc7839a03997",
@@ -464,6 +463,7 @@
     "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf"
   },
   "git_sha256": {
-    "aaaad7202440486a655ce0cbc66c0ddbb5660e07:tools/rhino_oracle/qualification_sources.py": "c1cd033b977ebfcf2f374ca3977f689cd0a5bd127d07d0e0a9b437343d68d868"
+    "aaaad7202440486a655ce0cbc66c0ddbb5660e07:tools/rhino_oracle/qualification_sources.py": "c1cd033b977ebfcf2f374ca3977f689cd0a5bd127d07d0e0a9b437343d68d868",
+    "c0f063428b93b559435508089563f45a156f569c:docs/loft-refit-adaptive.md": "d4d47ffe96d3cbc9a88a8c1818e9752718969997631547e8b6c667e35f8a27eb"
   }
 }

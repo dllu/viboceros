@@ -328,7 +328,7 @@
     "crates/viboceros-geometry/src/loft/refit/candidate.rs": "57464e7fc88c20062cb1ca8416fb45b52ea68f955ec98b442d0c68cda6e391c5",
     "crates/viboceros-oracle/tests/loft_refit_coarse_native.rs": "ba557e1441f8722116725cd3e770229ed7a3f5c90258e7303090d34bc5c489c6",
     "crates/viboceros-oracle/tests/loft_refit_native.rs": "0ee0c4a3934d2f51915c2b40afacf1039735bd218ce3b9451346538b48f5f77f",
-    "docs/loft-fitting-clock.md": "f10a9dc54ac79b95df449b5503c3947ee9157b2ed04c7febe1dda09b78c68279",
+    "docs/loft-fitting-clock.md": "12118a8d01152ac924d87ac5435540744d0b32502c9c9b8ed4052f5a75a1f8fc",
     "docs/loft-refit-adjustment.md": "fc58338fceb79f52e5e1bf3ff15fc98262fcf170c041a80399c409f1fbc2e4bd",
     "docs/loft-refit-candidates.md": "c667ae8c832216386278a64cf2aec9ab1657bb05a5058988f9079aeb87b4c0b9",
     "docs/loft-refit-preparation.md": "d3376cb9bd4ac3784f87a92855ed444dbf65ef87159c3c541b50c0a1b287b5ed",

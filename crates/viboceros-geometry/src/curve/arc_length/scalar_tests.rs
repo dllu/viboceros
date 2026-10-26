@@ -227,3 +227,56 @@ fn analytic_polyline_clock_remains_exact_when_the_nurbs_clock_accepts_a_knot() {
     );
     assert!((exact - 1.).abs() > 0.009);
 }
+
+#[test]
+fn numerical_scalar_queries_retain_interior_constant_speed_checkpoints() {
+    // Native interval-clock reference: the 0.06 checkpoint of the second
+    // span is within 1% of the requested distance, before the affine inverse.
+    let curve = NurbsCurve::try_new(
+        1,
+        [[0.75, 0., 0.], [1., 0., 0.], [1.5, 5e-6, 0.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+        vec![0.15, 0.15, 0.2, 0.4, 0.4],
+    )
+    .unwrap();
+    let sampler =
+        ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT).unwrap();
+    let numerical = sampler
+        .parameter_at_quadrature_normalized_length(0.375, 0.01)
+        .unwrap();
+    assert!((numerical - 0.212).abs() < 1e-14);
+    let precise = sampler.parameters_at_normalized_lengths(&[0.375]).unwrap()[0];
+    assert!((precise - 0.21250000000312505).abs() < 1e-14);
+    assert!((numerical - precise).abs() > 0.0004);
+    assert!(
+        (sampler
+            .parameter_at_quadrature_normalized_length(0.375, 1e-4)
+            .unwrap()
+            - precise)
+            .abs()
+            < 1e-14
+    );
+}
+
+#[test]
+fn large_constant_speed_length_queries_do_not_spend_the_scalar_inverse_step_budget() {
+    let segments = 20_000;
+    let points = (0..=segments)
+        .map(|i| Point3::try_new(i as Real, 0., 0.).unwrap())
+        .collect();
+    let knots = [
+        vec![0.],
+        (0..=segments).map(|i| i as Real).collect(),
+        vec![segments as Real],
+    ]
+    .concat();
+    let curve = NurbsCurve::try_new(1, points, knots).unwrap();
+    let sampler =
+        ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT).unwrap();
+    assert_eq!(sampler.total_length(), segments as Real);
+    assert_eq!(
+        sampler.quadrature_length_estimate(1e-4).unwrap(),
+        segments as Real
+    );
+}

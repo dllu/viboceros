@@ -6,8 +6,8 @@
 Cash–Karp trace across independent numerical inverse queries. Arbitrary order
 and repeated fractions retain the same results as separate scalar calls.
 `parameter_at_quadrature_normalized_length` is the scalar convenience method.
-Natural knots participate in numerical scalar acceptance even when each span
-has constant speed. Nearby stationary plateaus use their right endpoint;
+Natural knots and interior integration checkpoints participate in numerical
+scalar acceptance even on constant-speed NURBS spans. Nearby stationary plateaus use their right endpoint;
 natural domain ends remain exact.
 Polyline and analytic constant-speed sources retain exact length clocks.
 Between NURBS checkpoints, constant-speed intervals use affine inversion instead
@@ -17,8 +17,14 @@ existing, prefix-dependent behavior.
 
 The JSON/Python operation `curve_length_parameters` accepts a NURBS `curve`,
 `fractions`, and optional `fractional_tolerance`, defaulting to `1e-4` for fitting
-investigation. It returns parameters, points, quadrature length, domain and
-unchanged before/after definitions. Both oracle engines implement this operation.
+investigation. An optional `subdomain: [start, end]` restricts length queries to
+a nonempty interval inside the active source domain. Returned parameters keep
+the source chart. It returns parameters, points, quadrature length, the queried
+domain and unchanged whole-source before/after definitions. Both oracle engines
+implement this operation; invalid intervals fail without partial output.
+The [interval validation](interval-clock-validation.json) compares 96 native
+interval records with 1,056 reordered/repeated positions, including inherited
+knot spacing, reversed sources and shifted domains.
 
 Native single-input Refit domains equal the source length estimate at `1e-4`
 in 24 measurements. At this precision, 418 ordered/reversed scalar positions

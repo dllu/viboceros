@@ -141,7 +141,11 @@ impl ArcLengthSampler<'_> {
             fractional_tolerance,
             false,
             false,
-            policy == InversePolicy::Independent,
+            if policy == InversePolicy::Independent {
+                trace::TraceMode::ScalarInverse
+            } else {
+                trace::TraceMode::Geometric
+            },
         )?;
         let nodes = trace
             .iter()

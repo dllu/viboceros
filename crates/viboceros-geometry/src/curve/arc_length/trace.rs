@@ -2,6 +2,13 @@
 use super::*;
 use crate::integration::cash_karp;
 
+#[derive(Clone, Copy, PartialEq)]
+pub(super) enum TraceMode {
+    Geometric,
+    QuadratureLength,
+    ScalarInverse,
+}
+
 /// One accepted integration step in the original curve's parameter domain.
 /// Distances use Cash–Karp quadrature (or exact constant-speed/linear spans).
 /// The embedded step error is an estimate, not a guaranteed geometric bound.
@@ -44,7 +51,12 @@ impl ArcLengthSampler<'_> {
                 .quadrature_length_estimate(fractional_tolerance);
         }
         Ok(self
-            .integration_trace(fractional_tolerance, false, false, true)?
+            .integration_trace(
+                fractional_tolerance,
+                false,
+                false,
+                TraceMode::QuadratureLength,
+            )?
             .last()
             .unwrap()
             .distance())
@@ -78,7 +90,12 @@ impl ArcLengthSampler<'_> {
         source_parameters: bool,
         retain_all: bool,
     ) -> Result<Vec<ArcLengthCheckpoint>, GeometryError> {
-        self.integration_trace(fractional_tolerance, source_parameters, retain_all, false)
+        self.integration_trace(
+            fractional_tolerance,
+            source_parameters,
+            retain_all,
+            TraceMode::Geometric,
+        )
     }
 
     pub(super) fn integration_trace(
@@ -86,7 +103,7 @@ impl ArcLengthSampler<'_> {
         fractional_tolerance: Real,
         source_parameters: bool,
         retain_all: bool,
-        quadrature_linear: bool,
+        mode: TraceMode,
     ) -> Result<Vec<ArcLengthCheckpoint>, GeometryError> {
         if !fractional_tolerance.is_finite()
             || fractional_tolerance <= 0.
@@ -113,16 +130,23 @@ impl ArcLengthSampler<'_> {
         }];
         let (mut sum, mut correction) = (0., 0.);
         let mut attempted_steps = 0;
+        // Numerical scalar queries can accept interior integration checkpoints
+        // even on constant-speed NURBS spans. Exact analytic clocks and the
+        // public diagnostic trace keep their existing path.
+        let numerical_constant_spans = mode == TraceMode::ScalarInverse
+            && self.spans.len() > 1
+            && matches!(self.curve(), CurveRef::NurbsCurve(_));
         for span in &self.spans {
             let prefix = sum + correction;
             let start = map(span.start)?;
             if out.last().unwrap().parameter != start {
                 push(&mut out, start, prefix, 0.)?;
             }
-            let variable_line = quadrature_linear
+            let variable_line = mode != TraceMode::Geometric
                 && matches!(span.linear,
                 Some(LinearSpan::Rational { controls }) if controls[0].weight() != controls[1].weight());
-            if !span.variable_speed && !variable_line {
+            let constant_speed = !span.variable_speed && !variable_line;
+            if constant_speed && !numerical_constant_spans {
                 neumaier_add(&mut sum, &mut correction, span.length);
                 push(&mut out, map(span.end)?, sum + correction, 0.)?;
                 continue;
@@ -132,6 +156,9 @@ impl ArcLengthSampler<'_> {
                 fractional_tolerance,
                 cash_karp::MAX_STEPS.saturating_sub(attempted_steps),
                 |q| {
+                    if constant_speed {
+                        return Ok(1.);
+                    }
                     let t = if q == 1. {
                         span.end
                     } else {
@@ -165,14 +192,27 @@ impl ArcLengthSampler<'_> {
                 push(
                     &mut out,
                     map(t)?,
-                    prefix + node.integral * span.length,
-                    node.error * span.length,
+                    prefix
+                        + if constant_speed {
+                            node.parameter * span.length
+                        } else {
+                            node.integral * span.length
+                        },
+                    if constant_speed {
+                        0.
+                    } else {
+                        node.error * span.length
+                    },
                 )?;
             }
             neumaier_add(
                 &mut sum,
                 &mut correction,
-                trace.checkpoints.last().unwrap().integral * span.length,
+                if constant_speed {
+                    span.length
+                } else {
+                    trace.checkpoints.last().unwrap().integral * span.length
+                },
             );
             out.last_mut().unwrap().distance = sum + correction;
         }

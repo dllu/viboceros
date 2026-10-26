@@ -12,6 +12,10 @@ pub struct Fixture {
 pub struct QuadratureFixture {
     pub curve: NurbsCurveDefinition,
     pub fractions: Vec<f64>,
+    /// Restrict lengths to this source-parameter interval, without changing
+    /// the source definition or the domain of returned parameters.
+    #[serde(default)]
+    pub subdomain: Option<[f64; 2]>,
     #[serde(default = "fit_clock_tolerance")]
     pub fractional_tolerance: f64,
 }
@@ -37,7 +41,24 @@ pub(super) fn quadrature(
         return Err(GeometryError::InvalidArcLengthIntegrationTolerance.into());
     }
     let curve = nurbs_curve_from_definition(&f.curve)?;
-    let sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), tolerance)?;
+    let trimmed = match f.subdomain {
+        Some([start, end]) => {
+            if !start.is_finite()
+                || !end.is_finite()
+                || start >= end
+                || !curve.domain().contains(&start)
+                || !curve.domain().contains(&end)
+            {
+                return Err(ProbeError::FixtureInvariant(
+                    "invalid scalar length subdomain",
+                ));
+            }
+            Some(curve.try_trimmed(start..=end)?)
+        }
+        None => None,
+    };
+    let active = trimmed.as_ref().unwrap_or(&curve);
+    let sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(active), tolerance)?;
     let before = nurbs_curve_definition_value(&curve);
     measure_probe(iterations, || -> Result<Value, ProbeError> {
         let parameters = sampler
@@ -48,7 +69,7 @@ pub(super) fn quadrature(
             .collect::<Result<Vec<_>, _>>()?;
         Ok(
             json!({"parameters":parameters,"points":points,"length":sampler.quadrature_length_estimate(f.fractional_tolerance)?,
-            "domain":[*curve.domain().start(),*curve.domain().end()],"before":before,"after":nurbs_curve_definition_value(&curve)}),
+            "domain":[*active.domain().start(),*active.domain().end()],"before":before,"after":nurbs_curve_definition_value(&curve)}),
         )
     })
 }
