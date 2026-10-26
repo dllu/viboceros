@@ -11,15 +11,22 @@ pub(super) fn prepare(
     let mut sections = Vec::with_capacity(curves.len());
     for source in curves {
         let degree = source.degree();
+        let single_span = source.control_points().len() == degree + 1;
         let domain = source.domain();
         let knots = source.knots();
-        // The initial smooth branch covers single, clamped Bezier profiles.
-        // Internal kinks/regions need the existing polygon path or the pending
-        // adaptive fitter; closed and multispan smooth curves need subdivision.
+        // A proposal may cover several spans in one resolved tangent region.
+        // Positional jumps and resolved tangent breaks still need
+        // separate fits; the complete certificate remains authoritative.
         if degree > 16
-            || source.control_points().len() != degree + 1
             || !knots[..=degree].iter().all(|k| k == domain.start())
-            || !knots[degree + 1..].iter().all(|k| k == domain.end())
+            || !knots[source.control_points().len()..]
+                .iter()
+                .all(|k| k == domain.end())
+            || (!single_span
+                && (knots
+                    .chunk_by(|a, b| a == b)
+                    .any(|g| g[0] > *domain.start() && g[0] < *domain.end() && g.len() > degree)
+                    || super::super::parameterize::has_legacy_tangent_breaks(source)?))
         {
             return Err(unsupported());
         }
@@ -39,6 +46,12 @@ pub(super) fn prepare(
             if crate::curve_fit::g1::within_deviation(source, &candidate, tolerance * 0.5)? {
                 candidate
             } else {
+                // Native multispan references enter adaptive fitting here.
+                // A common handle correction is qualified only for a single
+                // Bezier source, even if it could satisfy a positional bound.
+                if !single_span {
+                    return Err(unsupported());
+                }
                 let Some(adjusted) =
                     crate::curve_fit::g1::adjusted_cubic(source, &candidate, tolerance * 0.5)?
                 else {
@@ -54,5 +67,7 @@ pub(super) fn prepare(
     Ok(sections)
 }
 
+#[cfg(test)]
+mod multispan_tests;
 #[cfg(test)]
 mod tests;

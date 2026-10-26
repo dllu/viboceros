@@ -16,13 +16,14 @@ struct Section {
 /// continuous regions with ordered collinear controls, and
 /// internal bends above the legacy one-degree corner threshold. Constant spans
 /// and redundant collinear vertices disappear; true reversals remain.
-/// With at least two profiles, a set of clamped single-Bezier sources may
+/// With at least two profiles, clamped sources without resolved tangent breaks may
 /// instead use an endpoint-tangent cubic with at most one common handle correction
 /// when its complete image error
 /// is bounded by half the tolerance. Monotone correspondence proposals require
 /// a complete certificate across every matching interval. Tolerance must be
-/// smaller than every endpoint chord. Subdivision, multispan smooth sources
-/// and mixed open/closed profiles remain unsupported.
+/// smaller than every endpoint chord. Multispan sources use the initial cubic;
+/// common handle correction remains qualified for single-Bezier sources.
+/// Subdivision and mixed open/closed profiles remain unsupported.
 ///
 /// Collinearity and control order are checked with exact rational arithmetic.
 /// Positive rational basis functions then keep the source on its endpoint

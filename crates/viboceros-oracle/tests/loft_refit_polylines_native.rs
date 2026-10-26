@@ -47,7 +47,10 @@ fn polygon_refit_matches_native_and_retains_unimplemented_smooth_cases() {
             let mut request = query.clone();
             request["operations"] = json!([op]);
             let result = run_request(&serde_json::from_value::<ProbeRequest>(request).unwrap());
-            if smooth || empty {
+            let subdivided = row["value"]["surfaces"][0]["control_count"][1]
+                .as_u64()
+                .is_some_and(|n| n > 4);
+            if (smooth && subdivided) || empty {
                 let error = result.unwrap_err().to_string();
                 assert!(
                     error.contains(if family == "loft_refit_polyline_ends" {
@@ -73,6 +76,6 @@ fn polygon_refit_matches_native_and_retains_unimplemented_smooth_cases() {
             matched += 1;
         }
     }
-    assert_eq!((matched, pending), (152, 34));
+    assert_eq!((matched, pending), (158, 28));
     println!("LOFT_REFIT_POLYLINES matched={matched} pending={pending} maximum={maximum}");
 }

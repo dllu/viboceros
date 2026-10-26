@@ -221,6 +221,30 @@ fn region_breaks(
     if candidates.is_empty() {
         return Ok(Vec::new());
     }
+    Ok(geometric_breaks(curve, scale, cosine, CurveContinuity::G2)?
+        .into_iter()
+        .filter(|t| candidates.binary_search_by(|c| c.total_cmp(t)).is_ok())
+        .collect())
+}
+
+/// A fitted cubic can cross curvature changes, but resolved tangent corners
+/// still separate fitting regions. Reuse the scaled native classifier.
+pub(super) fn has_legacy_tangent_breaks(curve: &NurbsCurve) -> Result<bool, GeometryError> {
+    Ok(!geometric_breaks(
+        curve,
+        coordinate_scale(curve),
+        1_f64.to_radians().cos(),
+        CurveContinuity::G1,
+    )?
+    .is_empty())
+}
+
+fn geometric_breaks(
+    curve: &NurbsCurve,
+    scale: Real,
+    cosine: Real,
+    continuity: CurveContinuity,
+) -> Result<Vec<Real>, GeometryError> {
     // Classification is geometric: remove the world offset and scale before
     // testing curvature. This prevents distant, exact circles gaining breaks
     // from cancellation in homogeneous derivative evaluation.
@@ -252,17 +276,13 @@ fn region_breaks(
             *x /= local_scale;
         }
     }
-    let found = viboceros_opennurbs::curve_continuity_breaks(
+    Ok(viboceros_opennurbs::curve_continuity_breaks(
         curve.degree(),
         &controls,
         curve.knots(),
-        CurveContinuity::G2,
+        continuity,
         cosine,
-    )?;
-    Ok(found
-        .into_iter()
-        .filter(|t| candidates.binary_search_by(|c| c.total_cmp(t)).is_ok())
-        .collect())
+    )?)
 }
 
 // Binary scaling preserves ordinary evaluation operation boundaries and keeps

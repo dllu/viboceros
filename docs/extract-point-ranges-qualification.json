@@ -78082,7 +78082,7 @@
     "tools/rhino_oracle/observations/source_snapshots/f7f8891856a9e47de7b1d02b6161ab45f3f9cee10871481d2547542dcc8febc9.gz": "3397166d5e2660b5b430a712fabb0f71b7896c461c34d22b13794cd8a98226c3",
     "tools/rhino_oracle/observations/source_snapshots/fc026de798511f760cdf732316624b4d70a08cefb83c64ae4526670f2d138a23.gz": "3a34b50a7c5e949e51c1f2e685115e49a0486a8a615266285d2dd5f89f938c73",
     "tools/rhino_oracle/owned_brep_command.py": "d4f80d5be8a04368c9810453134acbd2fa6d762deb0dd2ccae2efd343947169e",
-    "tools/rhino_oracle/qualification_sources.py": "c376b5c711bd1f26278544368d31da9a62d516e86e34d6d1507bee0d60a03702",
+    "tools/rhino_oracle/qualification_sources.py": "9e92992ba351630259c254d61f7c27ecb270fad6c2c75972a7acd34af6f22c1b",
     "tools/rhino_oracle/report_extract_point_ranges.py": "1acef8064e8273721c7d29ef48c9071227ace3d469564eb5dc73c29f7dfa3034",
     "tools/rhino_oracle/report_extract_points.py": "7e46df249f70c71e78f704768a9b8c1aed3e654ecf6fbd2a36ab7ff4a8166d83",
     "tools/rhino_oracle/test_extract_point_ranges.py": "c2c0c224c257624d5c361f4d294cc966488d4acc3afabe74f366870846131964",
@@ -78122,6 +78122,6 @@
     "crates/viboceros-geometry/src/bezier.rs": "758426eed4d35be3c0a928120e7ac607c6cd1059d6c827f78950fad22759f033",
     "crates/viboceros-geometry/src/bezier/polynomial.rs": "9b6227607fcd9954c904b89665f42338a6fefbe8d7327cd76075d3f14d337a0b",
     "crates/viboceros-geometry/src/brep/surface_partition/g1/exact_ray.rs": "a51abd99d4cecfa33dcbc27034653dd114df6d0a9ba0ba4fcb68df5adf250929",
-    "crates/viboceros-command/src/loft/refit_tests.rs": "ea88a8e1b15baaecb77ac67837654ac42ea4c9825322c6a297cad011908b3188"
+    "crates/viboceros-command/src/loft/refit_tests.rs": "791ca7a989f24a54848381ec72ab01fcd72263f2359765c71ee371e0d1c01d57"
   }
 }

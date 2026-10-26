@@ -16,18 +16,20 @@ regions with ordered controls. Exact rational span extraction admits the source;
 sampled linearity is insufficient. Constant spans and redundant collinear
 vertices disappear; reversals remain. Internal bends must exceed the legacy
 one-degree corner threshold, with a conservative floating boundary margin.
-Shallower bends still require the adaptive smooth fitter.
+Shallower bends can use a certified initial cubic; tighter settings still need
+the adaptive smooth fitter.
 Mixed open/closed profile sets remain unsupported.
 [Explicit API angles](loft-refit-angles.md) can retain resolved polygon corners
 or use the existing certified smooth proposals; suppressed corners still need
 adaptive fitting.
 
 [Smooth proposals](loft-refit-candidates.md) are also supported for sets of
-at least two clamped single-Bezier profiles. The endpoint-tangent cubic, optionally
+at least two clamped profiles without resolved tangent breaks. The endpoint-tangent cubic, optionally
 corrected by a common handle scale, must
 have a continuous positional bound within half the requested tolerance; the
 tolerance must be smaller than each endpoint chord. For example, `Refit=0.1`
-can fit an open polynomial cubic while tighter settings may need the pending
+can fit an open polynomial cubic; handle correction remains limited to single
+Bezier sources. Tighter settings may need the pending
 subdivision rules. Unsupported fits fail before document mutation.
 
 Degree-one proxies propose a shared region chart before cubic construction.

@@ -284,6 +284,8 @@ def _expand_sources_once(paths):
                          'crates/viboceros-geometry/src/loft/refit.rs',
                          'crates/viboceros-geometry/src/loft/refit/candidate.rs',
                          'crates/viboceros-geometry/src/loft/refit/candidate/tests.rs',
+                         'crates/viboceros-geometry/src/loft/refit/candidate/multispan_tests.rs',
+                         'crates/viboceros-oracle/tests/loft_refit_multispan_native.rs',
                          'crates/viboceros-geometry/src/curve_fit.rs',
                          'crates/viboceros-geometry/src/loft/refit/tests.rs',
                          'crates/viboceros-geometry/src/loft/refit/polyline.rs',
